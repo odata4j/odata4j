@@ -20,102 +20,92 @@ import core4j.ThrowingFunc1;
 
 public class InternalUtil {
 
-	
-	
-	
-	public static XMLEventReader2 newXMLEventReader(Reader reader){
-		XMLInputFactory2 f = XMLFactoryProvider2.getInstance().newXMLInputFactory2();
-		return f.createXMLEventReader(reader);
-	}
-	
-	
-	public static String reflectionToString(final Object obj){
-		StringBuilder rt = new StringBuilder();
-		Class<?> objClass = obj.getClass();
-		rt.append(objClass.getSimpleName());
-		rt.append('[');
-		
-		String content = Enumerable.create(objClass.getFields()).select(Funcs.wrap(new ThrowingFunc1<Field,String>(){
-			public String apply(Field f) throws Exception{
-				Object fValue = f.get(obj);
-				return f.getName() + ":" + fValue;
-			}})).join(",");
-		
-		rt.append(content);
-		
-		rt.append(']');
-		return rt.toString();
-	}
-	
-	public static String keyString(Object[] key){
-		
-		String keyValue;
-		if (key.length==1){
-			keyValue = keyString(key[0],false);
-		} else {
-			keyValue = Enumerable.create(key).select(new Func1<Object,String>(){
-				public String apply(Object input) {
-					return keyString(input,true);
-				}}).join(",");
-		}
-		
-		return "(" + keyValue + ")";
-	}
-	
-	@SuppressWarnings("unchecked")
-	private static Set<Object> integralTypes = Enumerable.create(
-			Integer.class,Integer.TYPE,Long.class,Long.TYPE,Short.class,Short.TYPE
-			).cast(Object.class).toSet();
-	
-	private static String keyString(Object key, boolean includePropName){
-		if (key instanceof UUID){
-			return "guid'" + key + "'";
-		}
-		else if (key instanceof String){
-			return "'" + ((String)key).replace("'","''") + "'";
+    public static XMLEventReader2 newXMLEventReader(Reader reader) {
+        XMLInputFactory2 f = XMLFactoryProvider2.getInstance().newXMLInputFactory2();
+        return f.createXMLEventReader(reader);
+    }
 
-		}
-		else if (integralTypes.contains(key.getClass())){
-			return key.toString();
-		}
-		else if (key instanceof OProperty<?>){
-			OProperty<?> oprop = (OProperty<?>)key;
-			String value = keyString(oprop.getValue(),false);
-			
-			if (includePropName)
-				return oprop.getName() + "="+ value;
-			else
-				return value;
-		}
-		else{
-			return key.toString();
-		}
-	}
-	
+    public static String reflectionToString(final Object obj) {
+        StringBuilder rt = new StringBuilder();
+        Class<?> objClass = obj.getClass();
+        rt.append(objClass.getSimpleName());
+        rt.append('[');
 
-	
-	public static OEntity toEntity(DataServicesAtomEntry dsae){
-		
-		final List<OProperty<?>> properties = dsae.properties;
-		
-		return new OEntity(){
+        String content = Enumerable.create(objClass.getFields()).select(Funcs.wrap(new ThrowingFunc1<Field, String>() {
+            public String apply(Field f) throws Exception {
+                Object fValue = f.get(obj);
+                return f.getName() + ":" + fValue;
+            }
+        })).join(",");
 
-			
-			@Override
-			public String toString() {
-				return "OEntity[" + Enumerable.create(getProperties()).join(",") + "]";
-			}
-			@Override
-			public List<OProperty<?>> getKeyProperties() {
-				throw new UnsupportedOperationException();
-			}
+        rt.append(content);
 
-			@Override
-			public List<OProperty<?>> getProperties() {
-				return properties;
-			}};
-			
-	}
-	
+        rt.append(']');
+        return rt.toString();
+    }
+
+    public static String keyString(Object[] key) {
+
+        String keyValue;
+        if (key.length == 1) {
+            keyValue = keyString(key[0], false);
+        } else {
+            keyValue = Enumerable.create(key).select(new Func1<Object, String>() {
+                public String apply(Object input) {
+                    return keyString(input, true);
+                }
+            }).join(",");
+        }
+
+        return "(" + keyValue + ")";
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Set<Object> integralTypes = Enumerable.create(Integer.class, Integer.TYPE, Long.class, Long.TYPE, Short.class, Short.TYPE).cast(Object.class).toSet();
+
+    private static String keyString(Object key, boolean includePropName) {
+        if (key instanceof UUID) {
+            return "guid'" + key + "'";
+        } else if (key instanceof String) {
+            return "'" + ((String) key).replace("'", "''") + "'";
+
+        } else if (integralTypes.contains(key.getClass())) {
+            return key.toString();
+        } else if (key instanceof OProperty<?>) {
+            OProperty<?> oprop = (OProperty<?>) key;
+            String value = keyString(oprop.getValue(), false);
+
+            if (includePropName)
+                return oprop.getName() + "=" + value;
+            else
+                return value;
+        } else {
+            return key.toString();
+        }
+    }
+
+    public static OEntity toEntity(DataServicesAtomEntry dsae) {
+
+        final List<OProperty<?>> properties = dsae.properties;
+
+        return new OEntity() {
+
+            @Override
+            public String toString() {
+                return "OEntity[" + Enumerable.create(getProperties()).join(",") + "]";
+            }
+
+            @Override
+            public List<OProperty<?>> getKeyProperties() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public List<OProperty<?>> getProperties() {
+                return properties;
+            }
+        };
+
+    }
 
 }

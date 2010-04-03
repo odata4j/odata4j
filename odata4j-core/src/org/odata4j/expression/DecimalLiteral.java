@@ -4,5 +4,5 @@ import java.math.BigDecimal;
 
 public interface DecimalLiteral extends LiteralExpression {
 
-	public abstract BigDecimal getValue();
+    public abstract BigDecimal getValue();
 }

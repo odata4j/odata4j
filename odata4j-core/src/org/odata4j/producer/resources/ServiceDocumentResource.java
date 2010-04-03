@@ -18,20 +18,17 @@ import com.sun.jersey.api.core.HttpContext;
 @Path("")
 public class ServiceDocumentResource {
 
+    @GET
+    @Produces(ODataConstants.APPLICATION_XML_CHARSET)
+    public Response getServiceDocument(@Context HttpContext context, @Context ODataProducer producer) {
 
-	
-	@GET
-	@Produces(ODataConstants.APPLICATION_XML_CHARSET)
-	public Response getServiceDocument(@Context HttpContext context, @Context ODataProducer producer){
-		
-		String baseUri = context.getUriInfo().getBaseUri().toString();
-		
-		EdmDataServices s = producer.getMetadata();
-		
-		StringWriter w = new StringWriter();
-		ServiceDocumentWriter.write(baseUri, s,w);
-		
+        String baseUri = context.getUriInfo().getBaseUri().toString();
 
-		return Response.ok(w.toString(),ODataConstants.APPLICATION_XML_CHARSET).header(ODataConstants.Headers.DATA_SERVICE_VERSION,ODataConstants.DATA_SERVICE_VERSION).build();
-	}
+        EdmDataServices s = producer.getMetadata();
+
+        StringWriter w = new StringWriter();
+        ServiceDocumentWriter.write(baseUri, s, w);
+
+        return Response.ok(w.toString(), ODataConstants.APPLICATION_XML_CHARSET).header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION).build();
+    }
 }

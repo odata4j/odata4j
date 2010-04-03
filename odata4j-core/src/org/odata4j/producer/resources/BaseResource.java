@@ -15,15 +15,15 @@ import com.sun.jersey.api.core.HttpRequestContext;
 
 public abstract class BaseResource {
 
-	protected List<OProperty<?>> getRequestEntityProperties(HttpRequestContext request){
-		String requestEntity = request.getEntity(String.class);
-		
-		XMLEventReader2 reader = InternalUtil.newXMLEventReader(new StringReader(requestEntity));
-		AtomEntry entry =  AtomFeedParser.parseFeed(reader).entries.iterator().next();
-		DataServicesAtomEntry dsae = (DataServicesAtomEntry)entry;
-		OEntity entity = InternalUtil.toEntity(dsae);
-		
-		final List<OProperty<?>> properties =entity.getProperties();
-		return properties;
-	}
+    protected List<OProperty<?>> getRequestEntityProperties(HttpRequestContext request) {
+        String requestEntity = request.getEntity(String.class);
+
+        XMLEventReader2 reader = InternalUtil.newXMLEventReader(new StringReader(requestEntity));
+        AtomEntry entry = AtomFeedParser.parseFeed(reader).entries.iterator().next();
+        DataServicesAtomEntry dsae = (DataServicesAtomEntry) entry;
+        OEntity entity = InternalUtil.toEntity(dsae);
+
+        final List<OProperty<?>> properties = entity.getProperties();
+        return properties;
+    }
 }

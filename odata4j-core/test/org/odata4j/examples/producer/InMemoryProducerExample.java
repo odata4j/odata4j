@@ -35,37 +35,43 @@ public class InMemoryProducerExample {
                 Thread[] threads = new Thread[1000];
                 int count = tg.enumerate(threads, true);
                 return Enumerable.create(threads).take(count);
-            }}, "Id");
+            }
+        }, "Id");
 
         // expose all files in the current directory (File instances) as an entity-set called "Files"
         producer.register(File.class, String.class, "Files", new Func<Iterable<File>>() {
             public Iterable<File> apply() {
                 return Enumerable.create(new File(".").listFiles());
-            }}, "Name");
+            }
+        }, "Name");
 
         // expose current system properties (Map.Entry instances) as an entity-set called "SystemProperties"
         producer.register(Entry.class, String.class, "SystemProperties", new Func<Iterable<Entry>>() {
             public Iterable<Entry> apply() {
                 return (Iterable<Entry>) (Object) System.getProperties().entrySet();
-            }}, "Key");
+            }
+        }, "Key");
 
         // expose current environment variables (Map.Entry instances) as an entity-set called "EnvironmentVariables"
         producer.register(Entry.class, String.class, "EnvironmentVariables", new Func<Iterable<Entry>>() {
             public Iterable<Entry> apply() {
                 return (Iterable<Entry>) (Object) System.getenv().entrySet();
-            }}, "Key");
+            }
+        }, "Key");
 
         // expose this producer's entity-types (EdmEntityType instances) as an entity-set called "EdmEntityTypes"
         producer.register(EdmEntityType.class, String.class, "EdmEntityTypes", new Func<Iterable<EdmEntityType>>() {
             public Iterable<EdmEntityType> apply() {
                 return producer.getMetadata().getEntityTypes();
-            }}, "FQName");
+            }
+        }, "FQName");
 
         // expose a current listing of exchange traded funds sourced from an external csv (EtfInfo instances) as an entity-set called "ETFs"
         producer.register(EtfInfo.class, String.class, "ETFs", Funcs.wrap(new ThrowingFunc<Iterable<EtfInfo>>() {
             public Iterable<EtfInfo> apply() throws Exception {
                 return getETFs();
-            }}), "Symbol");
+            }
+        }), "Symbol");
 
         // register the producer as the static instance, then launch the http server
         ODataProducerProvider.setInstance(producer);
@@ -81,7 +87,7 @@ public class InMemoryProducerExample {
     }
 
     public static class EtfInfo {
-        
+
         private final String name;
         private final String symbol;
         private final String fundType;

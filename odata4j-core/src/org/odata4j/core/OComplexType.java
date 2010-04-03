@@ -4,5 +4,5 @@ import java.util.List;
 
 public interface OComplexType {
 
-	public abstract List<OProperty<?>> getProperties();
+    public abstract List<OProperty<?>> getProperties();
 }

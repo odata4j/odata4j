@@ -16,33 +16,33 @@ import com.sun.jersey.spi.HeaderDelegateProvider;
 
 public class ClientUtil {
 
-	static {
-		if (PlatformUtil.runningOnAndroid())
-			androidJerseyClientHack();
-		
-	}
+    static {
+        if (PlatformUtil.runningOnAndroid())
+            androidJerseyClientHack();
 
-	@SuppressWarnings("unchecked")
-	private static void androidJerseyClientHack(){
-	 try  {
-	        RuntimeDelegate rd = RuntimeDelegate.getInstance();
-	        Field f = AbstractRuntimeDelegate.class.getDeclaredField("hps");
-	        f.setAccessible(true);
-	        Set<HeaderDelegateProvider<?>> hps =    (Set<HeaderDelegateProvider<?>>) f.get(rd);
-	        hps.clear();
-	        hps.add(new MediaTypeProvider());
+    }
 
-	    } catch(Exception e){
-	    	throw new RuntimeException(e);
-	    }
-	}
-	public static Client newClient(){
-	
-		DefaultClientConfig cc = new DefaultClientConfig();
-		cc.getSingletons().add(new StringProvider2());
-		Client client = Client.create(cc);
-		return client;
-	}
+    @SuppressWarnings("unchecked")
+    private static void androidJerseyClientHack() {
+        try {
+            RuntimeDelegate rd = RuntimeDelegate.getInstance();
+            Field f = AbstractRuntimeDelegate.class.getDeclaredField("hps");
+            f.setAccessible(true);
+            Set<HeaderDelegateProvider<?>> hps = (Set<HeaderDelegateProvider<?>>) f.get(rd);
+            hps.clear();
+            hps.add(new MediaTypeProvider());
 
-	
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Client newClient() {
+
+        DefaultClientConfig cc = new DefaultClientConfig();
+        cc.getSingletons().add(new StringProvider2());
+        Client client = Client.create(cc);
+        return client;
+    }
+
 }

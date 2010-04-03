@@ -17,41 +17,27 @@ import javax.ws.rs.core.MultivaluedMap;
 import com.sun.jersey.core.provider.AbstractMessageReaderWriterProvider;
 import com.sun.jersey.core.util.ReaderWriter;
 
-@Produces({"text/plain", "*/*"})
-@Consumes({"text/plain", "*/*"})
+@Produces( { "text/plain", "*/*" })
+@Consumes( { "text/plain", "*/*" })
 public final class StringProvider2 extends AbstractMessageReaderWriterProvider<String> {
-    
+
     public boolean isReadable(Class<?> type, Type genericType, Annotation annotations[], MediaType mediaType) {
         return type == String.class;
     }
-    
-    public String readFrom(
-            Class<String> type, 
-            Type genericType, 
-            Annotation annotations[],
-            MediaType mediaType, 
-            MultivaluedMap<String, String> httpHeaders, 
-            InputStream entityStream) throws IOException {
+
+    public String readFrom(Class<String> type, Type genericType, Annotation annotations[], MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException {
         return readFromAsString(entityStream, mediaType);
     }
 
     public boolean isWriteable(Class<?> type, Type genericType, Annotation annotations[], MediaType mediaType) {
         return type == String.class;
     }
-    
-    public void writeTo(
-            String t, 
-            Class<?> type, 
-            Type genericType, 
-            Annotation annotations[], 
-            MediaType mediaType, 
-            MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException {
-     //   writeToAsString(t, entityStream, mediaType);
-    	
-    	 Writer osw = new BufferedWriter(new OutputStreamWriter(entityStream,
-                ReaderWriter.getCharset(mediaType)),8*1024);  // explicit 8k size FOR ANDROID
-         osw.write(t);
-         osw.flush();
+
+    public void writeTo(String t, Class<?> type, Type genericType, Annotation annotations[], MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
+        // writeToAsString(t, entityStream, mediaType);
+
+        Writer osw = new BufferedWriter(new OutputStreamWriter(entityStream, ReaderWriter.getCharset(mediaType)), 8 * 1024); // explicit 8k size FOR ANDROID
+        osw.write(t);
+        osw.flush();
     }
 }

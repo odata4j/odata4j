@@ -4,5 +4,5 @@ import java.util.Properties;
 
 public interface ODataProducerFactory {
 
-	public abstract ODataProducer create(Properties properties);
+    public abstract ODataProducer create(Properties properties);
 }

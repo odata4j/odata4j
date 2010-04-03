@@ -26,8 +26,7 @@ import org.odata4j.repack.org.apache.commons.codec.DecoderException;
 import org.odata4j.repack.org.apache.commons.codec.EncoderException;
 
 /**
- * Hex encoder and decoder. The charset used for certain operation can be set, the default is set in
- * {@link #DEFAULT_CHARSET_NAME}
+ * Hex encoder and decoder. The charset used for certain operation can be set, the default is set in {@link #DEFAULT_CHARSET_NAME}
  * 
  * @since 1.1
  * @author Apache Software Foundation
@@ -43,17 +42,15 @@ public class Hex implements BinaryEncoder, BinaryDecoder {
     /**
      * Used to build output as Hex
      */
-    private static final char[] DIGITS_LOWER = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+    private static final char[] DIGITS_LOWER = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
     /**
      * Used to build output as Hex
      */
-    private static final char[] DIGITS_UPPER = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+    private static final char[] DIGITS_UPPER = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
     /**
-     * Converts an array of characters representing hexadecimal values into an array of bytes of those same values. The
-     * returned array will be half the length of the passed array, as it takes two characters to represent any given
-     * byte. An exception is thrown if the passed char array has an odd number of elements.
+     * Converts an array of characters representing hexadecimal values into an array of bytes of those same values. The returned array will be half the length of the passed array, as it takes two characters to represent any given byte. An exception is thrown if the passed char array has an odd number of elements.
      * 
      * @param data
      *            An array of characters containing hexadecimal digits
@@ -72,7 +69,7 @@ public class Hex implements BinaryEncoder, BinaryDecoder {
         byte[] out = new byte[len >> 1];
 
         // two characters form the hex value.
-        for (int i = 0, j = 0; j < len; i++) {
+        for(int i = 0, j = 0; j < len; i++) {
             int f = toDigit(data[j], j) << 4;
             j++;
             f = f | toDigit(data[j], j);
@@ -84,9 +81,7 @@ public class Hex implements BinaryEncoder, BinaryDecoder {
     }
 
     /**
-     * Converts an array of bytes into an array of characters representing the hexadecimal values of each byte in order.
-     * The returned array will be double the length of the passed array, as it takes two characters to represent any
-     * given byte.
+     * Converts an array of bytes into an array of characters representing the hexadecimal values of each byte in order. The returned array will be double the length of the passed array, as it takes two characters to represent any given byte.
      * 
      * @param data
      *            a byte[] to convert to Hex characters
@@ -97,9 +92,7 @@ public class Hex implements BinaryEncoder, BinaryDecoder {
     }
 
     /**
-     * Converts an array of bytes into an array of characters representing the hexadecimal values of each byte in order.
-     * The returned array will be double the length of the passed array, as it takes two characters to represent any
-     * given byte.
+     * Converts an array of bytes into an array of characters representing the hexadecimal values of each byte in order. The returned array will be double the length of the passed array, as it takes two characters to represent any given byte.
      * 
      * @param data
      *            a byte[] to convert to Hex characters
@@ -113,9 +106,7 @@ public class Hex implements BinaryEncoder, BinaryDecoder {
     }
 
     /**
-     * Converts an array of bytes into an array of characters representing the hexadecimal values of each byte in order.
-     * The returned array will be double the length of the passed array, as it takes two characters to represent any
-     * given byte.
+     * Converts an array of bytes into an array of characters representing the hexadecimal values of each byte in order. The returned array will be double the length of the passed array, as it takes two characters to represent any given byte.
      * 
      * @param data
      *            a byte[] to convert to Hex characters
@@ -128,7 +119,7 @@ public class Hex implements BinaryEncoder, BinaryDecoder {
         int l = data.length;
         char[] out = new char[l << 1];
         // two characters form the hex value.
-        for (int i = 0, j = 0; i < l; i++) {
+        for(int i = 0, j = 0; i < l; i++) {
             out[j++] = toDigits[(0xF0 & data[i]) >>> 4];
             out[j++] = toDigits[0x0F & data[i]];
         }
@@ -136,8 +127,7 @@ public class Hex implements BinaryEncoder, BinaryDecoder {
     }
 
     /**
-     * Converts an array of bytes into a String representing the hexadecimal values of each byte in order. The returned
-     * String will be double the length of the passed array, as it takes two characters to represent any given byte.
+     * Converts an array of bytes into a String representing the hexadecimal values of each byte in order. The returned String will be double the length of the passed array, as it takes two characters to represent any given byte.
      * 
      * @param data
      *            a byte[] to convert to Hex characters
@@ -189,9 +179,7 @@ public class Hex implements BinaryEncoder, BinaryDecoder {
     }
 
     /**
-     * Converts an array of character bytes representing hexadecimal values into an array of bytes of those same values.
-     * The returned array will be half the length of the passed array, as it takes two characters to represent any given
-     * byte. An exception is thrown if the passed char array has an odd number of elements.
+     * Converts an array of character bytes representing hexadecimal values into an array of bytes of those same values. The returned array will be half the length of the passed array, as it takes two characters to represent any given byte. An exception is thrown if the passed char array has an odd number of elements.
      * 
      * @param array
      *            An array of character bytes containing hexadecimal digits
@@ -209,16 +197,13 @@ public class Hex implements BinaryEncoder, BinaryDecoder {
     }
 
     /**
-     * Converts a String or an array of character bytes representing hexadecimal values into an array of bytes of those
-     * same values. The returned array will be half the length of the passed String or array, as it takes two characters
-     * to represent any given byte. An exception is thrown if the passed char array has an odd number of elements.
+     * Converts a String or an array of character bytes representing hexadecimal values into an array of bytes of those same values. The returned array will be half the length of the passed String or array, as it takes two characters to represent any given byte. An exception is thrown if the passed char array has an odd number of elements.
      * 
      * @param object
      *            A String or, an array of character bytes containing hexadecimal digits
      * @return A byte array containing binary data decoded from the supplied byte array (representing characters).
      * @throws DecoderException
-     *             Thrown if an odd number of characters is supplied to this function or the object is not a String or
-     *             char[]
+     *             Thrown if an odd number of characters is supplied to this function or the object is not a String or char[]
      * @see #decodeHex(char[])
      */
     public Object decode(Object object) throws DecoderException {
@@ -231,20 +216,16 @@ public class Hex implements BinaryEncoder, BinaryDecoder {
     }
 
     /**
-     * Converts an array of bytes into an array of bytes for the characters representing the hexadecimal values of each
-     * byte in order. The returned array will be double the length of the passed array, as it takes two characters to
-     * represent any given byte.
+     * Converts an array of bytes into an array of bytes for the characters representing the hexadecimal values of each byte in order. The returned array will be double the length of the passed array, as it takes two characters to represent any given byte.
      * <p>
-     * The conversion from hexadecimal characters to the returned bytes is performed with the charset named by
-     * {@link #getCharsetName()}.
+     * The conversion from hexadecimal characters to the returned bytes is performed with the charset named by {@link #getCharsetName()}.
      * </p>
      * 
      * @param array
      *            a byte[] to convert to Hex characters
      * @return A byte[] containing the bytes of the hexadecimal characters
      * @throws IllegalStateException
-     *             if the charsetName is invalid. This API throws {@link IllegalStateException} instead of
-     *             {@link UnsupportedEncodingException} for backward compatibility.
+     *             if the charsetName is invalid. This API throws {@link IllegalStateException} instead of {@link UnsupportedEncodingException} for backward compatibility.
      * @see #encodeHex(byte[])
      */
     public byte[] encode(byte[] array) {
@@ -252,12 +233,9 @@ public class Hex implements BinaryEncoder, BinaryDecoder {
     }
 
     /**
-     * Converts a String or an array of bytes into an array of characters representing the hexadecimal values of each
-     * byte in order. The returned array will be double the length of the passed String or array, as it takes two
-     * characters to represent any given byte.
+     * Converts a String or an array of bytes into an array of characters representing the hexadecimal values of each byte in order. The returned array will be double the length of the passed String or array, as it takes two characters to represent any given byte.
      * <p>
-     * The conversion from hexadecimal characters to bytes to be encoded to performed with the charset named by
-     * {@link #getCharsetName()}.
+     * The conversion from hexadecimal characters to bytes to be encoded to performed with the charset named by {@link #getCharsetName()}.
      * </p>
      * 
      * @param object

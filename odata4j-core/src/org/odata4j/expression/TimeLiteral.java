@@ -4,5 +4,5 @@ import org.joda.time.LocalTime;
 
 public interface TimeLiteral extends LiteralExpression {
 
-	public abstract LocalTime getValue();
+    public abstract LocalTime getValue();
 }

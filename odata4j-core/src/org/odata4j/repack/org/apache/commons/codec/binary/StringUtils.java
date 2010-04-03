@@ -22,8 +22,7 @@ import java.io.UnsupportedEncodingException;
 import org.odata4j.repack.org.apache.commons.codec.CharEncoding;
 
 /**
- * Converts String to and from bytes using the encodings required by the Java specification. These encodings are specified in <a
- * href="http://java.sun.com/j2se/1.4.2/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
+ * Converts String to and from bytes using the encodings required by the Java specification. These encodings are specified in <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
  * 
  * @see CharEncoding
  * @see <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
@@ -34,8 +33,7 @@ import org.odata4j.repack.org.apache.commons.codec.CharEncoding;
 public class StringUtils {
 
     /**
-     * Encodes the given string into a sequence of bytes using the ISO-8859-1 charset, storing the result into a new
-     * byte array.
+     * Encodes the given string into a sequence of bytes using the ISO-8859-1 charset, storing the result into a new byte array.
      * 
      * @param string
      *            the String to encode
@@ -50,8 +48,7 @@ public class StringUtils {
     }
 
     /**
-     * Encodes the given string into a sequence of bytes using the US-ASCII charset, storing the result into a new byte
-     * array.
+     * Encodes the given string into a sequence of bytes using the US-ASCII charset, storing the result into a new byte array.
      * 
      * @param string
      *            the String to encode
@@ -66,8 +63,7 @@ public class StringUtils {
     }
 
     /**
-     * Encodes the given string into a sequence of bytes using the UTF-16 charset, storing the result into a new byte
-     * array.
+     * Encodes the given string into a sequence of bytes using the UTF-16 charset, storing the result into a new byte array.
      * 
      * @param string
      *            the String to encode
@@ -82,8 +78,7 @@ public class StringUtils {
     }
 
     /**
-     * Encodes the given string into a sequence of bytes using the UTF-16BE charset, storing the result into a new byte
-     * array.
+     * Encodes the given string into a sequence of bytes using the UTF-16BE charset, storing the result into a new byte array.
      * 
      * @param string
      *            the String to encode
@@ -98,8 +93,7 @@ public class StringUtils {
     }
 
     /**
-     * Encodes the given string into a sequence of bytes using the UTF-16LE charset, storing the result into a new byte
-     * array.
+     * Encodes the given string into a sequence of bytes using the UTF-16LE charset, storing the result into a new byte array.
      * 
      * @param string
      *            the String to encode
@@ -114,8 +108,7 @@ public class StringUtils {
     }
 
     /**
-     * Encodes the given string into a sequence of bytes using the UTF-8 charset, storing the result into a new byte
-     * array.
+     * Encodes the given string into a sequence of bytes using the UTF-8 charset, storing the result into a new byte array.
      * 
      * @param string
      *            the String to encode
@@ -130,11 +123,9 @@ public class StringUtils {
     }
 
     /**
-     * Encodes the given string into a sequence of bytes using the named charset, storing the result into a new byte
-     * array.
+     * Encodes the given string into a sequence of bytes using the named charset, storing the result into a new byte array.
      * <p>
-     * This method catches {@link UnsupportedEncodingException} and rethrows it as {@link IllegalStateException}, which
-     * should never happen for a required charset name. Use this method when the encoding is required to be in the JRE.
+     * This method catches {@link UnsupportedEncodingException} and rethrows it as {@link IllegalStateException}, which should never happen for a required charset name. Use this method when the encoding is required to be in the JRE.
      * </p>
      * 
      * @param string
@@ -143,8 +134,7 @@ public class StringUtils {
      *            The name of a required {@link java.nio.charset.Charset}
      * @return encoded bytes
      * @throws IllegalStateException
-     *             Thrown when a {@link UnsupportedEncodingException} is caught, which should never happen for a
-     *             required charset name.
+     *             Thrown when a {@link UnsupportedEncodingException} is caught, which should never happen for a required charset name.
      * @see CharEncoding
      * @see String#getBytes(String)
      */
@@ -166,8 +156,7 @@ public class StringUtils {
     /**
      * Constructs a new <code>String</code> by decoding the specified array of bytes using the given charset.
      * <p>
-     * This method catches {@link UnsupportedEncodingException} and re-throws it as {@link IllegalStateException}, which
-     * should never happen for a required charset name. Use this method when the encoding is required to be in the JRE.
+     * This method catches {@link UnsupportedEncodingException} and re-throws it as {@link IllegalStateException}, which should never happen for a required charset name. Use this method when the encoding is required to be in the JRE.
      * </p>
      * 
      * @param bytes
@@ -176,8 +165,7 @@ public class StringUtils {
      *            The name of a required {@link java.nio.charset.Charset}
      * @return A new <code>String</code> decoded from the specified array of bytes using the given charset.
      * @throws IllegalStateException
-     *             Thrown when a {@link UnsupportedEncodingException} is caught, which should never happen for a
-     *             required charset name.
+     *             Thrown when a {@link UnsupportedEncodingException} is caught, which should never happen for a required charset name.
      * @see CharEncoding
      * @see String#String(byte[], String)
      */
@@ -199,8 +187,7 @@ public class StringUtils {
      *            The bytes to be decoded into characters
      * @return A new <code>String</code> decoded from the specified array of bytes using the given charset.
      * @throws IllegalStateException
-     *             Thrown when a {@link UnsupportedEncodingException} is caught, which should never happen since the
-     *             charset is required.
+     *             Thrown when a {@link UnsupportedEncodingException} is caught, which should never happen since the charset is required.
      */
     public static String newStringIso8859_1(byte[] bytes) {
         return StringUtils.newString(bytes, CharEncoding.ISO_8859_1);
@@ -213,8 +200,7 @@ public class StringUtils {
      *            The bytes to be decoded into characters
      * @return A new <code>String</code> decoded from the specified array of bytes using the given charset.
      * @throws IllegalStateException
-     *             Thrown when a {@link UnsupportedEncodingException} is caught, which should never happen since the
-     *             charset is required.
+     *             Thrown when a {@link UnsupportedEncodingException} is caught, which should never happen since the charset is required.
      */
     public static String newStringUsAscii(byte[] bytes) {
         return StringUtils.newString(bytes, CharEncoding.US_ASCII);
@@ -227,8 +213,7 @@ public class StringUtils {
      *            The bytes to be decoded into characters
      * @return A new <code>String</code> decoded from the specified array of bytes using the given charset.
      * @throws IllegalStateException
-     *             Thrown when a {@link UnsupportedEncodingException} is caught, which should never happen since the
-     *             charset is required.
+     *             Thrown when a {@link UnsupportedEncodingException} is caught, which should never happen since the charset is required.
      */
     public static String newStringUtf16(byte[] bytes) {
         return StringUtils.newString(bytes, CharEncoding.UTF_16);
@@ -241,8 +226,7 @@ public class StringUtils {
      *            The bytes to be decoded into characters
      * @return A new <code>String</code> decoded from the specified array of bytes using the given charset.
      * @throws IllegalStateException
-     *             Thrown when a {@link UnsupportedEncodingException} is caught, which should never happen since the
-     *             charset is required.
+     *             Thrown when a {@link UnsupportedEncodingException} is caught, which should never happen since the charset is required.
      */
     public static String newStringUtf16Be(byte[] bytes) {
         return StringUtils.newString(bytes, CharEncoding.UTF_16BE);
@@ -255,8 +239,7 @@ public class StringUtils {
      *            The bytes to be decoded into characters
      * @return A new <code>String</code> decoded from the specified array of bytes using the given charset.
      * @throws IllegalStateException
-     *             Thrown when a {@link UnsupportedEncodingException} is caught, which should never happen since the
-     *             charset is required.
+     *             Thrown when a {@link UnsupportedEncodingException} is caught, which should never happen since the charset is required.
      */
     public static String newStringUtf16Le(byte[] bytes) {
         return StringUtils.newString(bytes, CharEncoding.UTF_16LE);
@@ -269,8 +252,7 @@ public class StringUtils {
      *            The bytes to be decoded into characters
      * @return A new <code>String</code> decoded from the specified array of bytes using the given charset.
      * @throws IllegalStateException
-     *             Thrown when a {@link UnsupportedEncodingException} is caught, which should never happen since the
-     *             charset is required.
+     *             Thrown when a {@link UnsupportedEncodingException} is caught, which should never happen since the charset is required.
      */
     public static String newStringUtf8(byte[] bytes) {
         return StringUtils.newString(bytes, CharEncoding.UTF_8);

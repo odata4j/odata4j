@@ -4,5 +4,5 @@ import java.util.UUID;
 
 public interface GuidLiteral extends LiteralExpression {
 
-	public abstract UUID getValue();
+    public abstract UUID getValue();
 }

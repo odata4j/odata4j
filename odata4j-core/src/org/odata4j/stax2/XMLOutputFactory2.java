@@ -4,5 +4,5 @@ import java.io.Writer;
 
 public interface XMLOutputFactory2 {
 
-	public XMLEventWriter2 createXMLEventWriter(Writer writer) ;
+    public XMLEventWriter2 createXMLEventWriter(Writer writer);
 }
