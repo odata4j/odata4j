@@ -10,8 +10,8 @@ public abstract class XMLFactoryProvider2 {
 		try {
 			String clazz =  
 				    PlatformUtil.runningOnAndroid()?
-					"odata4j.stax2.domimpl.DomXMLFactoryProvider2":
-					"odata4j.stax2.staximpl.StaxXMLFactoryProvider2";
+					"org.odata4j.stax2.domimpl.DomXMLFactoryProvider2":
+					"org.odata4j.stax2.staximpl.StaxXMLFactoryProvider2";
 			
 			STAX = (XMLFactoryProvider2)Class.forName(clazz).newInstance();
 

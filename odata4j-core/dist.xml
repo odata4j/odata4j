@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." default="dist" name="odata4j-core-dist">
+	<property name="dist.version" value="0.1" />
+	<property name="dist.versiondir" value="dist/${dist.version}" />
+	<property name="dist.archivename" value="odata4j-archive-${dist.version}" />
+	<property name="dist.archivedir" value="${dist.versiondir}/${dist.archivename}" />
+	<property name="dist.coredir" value="${dist.archivedir}/odata4j" />
+	<property name="dist.corejar" value="${dist.coredir}/odata4j-${dist.version}.jar" />
+	<property name="dist.bundlesdir" value="${dist.archivedir}/bundles" />
+	<property name="dist.bundlejar" value="${dist.bundlesdir}/odata4j-bundle-${dist.version}.jar" />
+	<property name="dist.clientbundlejar" value="${dist.bundlesdir}/odata4j-clientbundle-${dist.version}.jar" />
+
+	<target name="dist">
+		
+		<!-- rebuild -->
+		<ant antfile="build.xml" target="build" />
+
+		<!-- clean dir -->
+		<delete dir="${dist.versiondir}" />
+		<mkdir dir="${dist.coredir}" />
+
+		<!-- create odata4j.jar -->
+		<jar destfile="${dist.corejar}" basedir="bin" includes="**/*.class" excludes="org/odata4j/test/**" />
+		<copy todir="${dist.coredir}" flatten="true">
+			<resources>
+				<file file="lib/eclipselink.jar" />
+				<file file="lib/javax.persistence_2.0.0.v201002051058.jar" />
+				<file file="lib/jersey-client-1.1.5.jar" />
+				<file file="lib/jersey-core-1.1.5.jar" />
+				<file file="lib/jsr311-api-1.1.jar" />
+				<file file="lib/jersey-server-1.1.5.jar" />
+				<file file="lib/core4j-0.1.jar" />
+				<file file="lib/joda-time-1.6.jar" />
+			</resources>
+		</copy>
+		
+		<!-- create bundle jars -->
+		<mkdir dir="${dist.bundlesdir}" />
+		<jar destfile="${dist.bundlejar}" duplicate="preserve">
+			<zipgroupfileset dir="${dist.coredir}" includes="*.jar" />
+		</jar>
+		<jar destfile="${dist.clientbundlejar}" duplicate="preserve">
+			<zipgroupfileset dir="${dist.coredir}" includes="*.jar"
+				excludes="eclipselink.jar javax.persistence_2.0.0.v201002051058.jar jersey-server-1.1.5.jar"   />
+		</jar>
+
+		<!-- create archive zip -->
+		<zip destfile="${dist.versiondir}/${dist.archivename}.zip" basedir="${dist.archivedir}" />
+
+	</target>
+</project>
