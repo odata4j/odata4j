@@ -83,7 +83,7 @@ public class PrintExpressionVisitor implements ExpressionVisitor {
 
 	@Override
 	public void visit(DivExpression expr) {
-		append("dev");
+		append("div");
 	}
 
 	@Override
@@ -153,7 +153,7 @@ public class PrintExpressionVisitor implements ExpressionVisitor {
 
 	@Override
 	public void visit(MulExpression expr) {
-		append("me");
+		append("mul");
 	}
 
 	@Override

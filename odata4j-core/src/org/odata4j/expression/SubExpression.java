@@ -1,7 +1,5 @@
 package org.odata4j.expression;
 
-public interface SubExpression extends BoolCommonExpression {
+public interface SubExpression extends BoolCommonExpression, BinaryCommonExpression {
 
-	public abstract CommonExpression getLHS();
-	public abstract CommonExpression getRHS();
 }

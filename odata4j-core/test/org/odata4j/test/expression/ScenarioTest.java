@@ -38,9 +38,9 @@ public class ScenarioTest {
 		Assert.assertEquals(1,c.getEntitySets().count());
 		
 		Assert.assertEquals(0,c.getEntities("Foos1").execute().count());
-		foos.add(new Foo("1"));
-		foos.add(new Foo("2"));
-		foos.add(new Foo("3"));
+		foos.add(new Foo("1",3,3));
+		foos.add(new Foo("2",2,2));
+		foos.add(new Foo("3",1,1));
 		Assert.assertEquals(3,c.getEntities("Foos1").execute().count());
 		Assert.assertEquals(1,c.getEntities("Foos1").top(1).execute().count());
 		Assert.assertEquals("1",c.getEntities("Foos1").top(1).execute().first().getProperties().get(0).getValue());
@@ -52,6 +52,20 @@ public class ScenarioTest {
 		Assert.assertEquals(0,c.getEntities("Foos1").filter("Id ne Id").execute().count());
 		Assert.assertEquals(3,c.getEntities("Foos1").filter("true or false").execute().count());
 		Assert.assertEquals("3",c.getEntities("Foos1").orderBy("Id desc").top(1).execute().first().getProperties().get(0).getValue());
+		
+		Assert.assertEquals("3",c.getEntities("Foos1").orderBy("Id desc, Int32").top(1).execute().first().getProperties().get(0).getValue());
+		Assert.assertEquals(1,c.getEntities("Foos1").filter("Int32 eq 2").execute().count());
+		Assert.assertEquals(1,c.getEntities("Foos1").filter("Int32 gt 2").execute().count());
+		Assert.assertEquals(1,c.getEntities("Foos1").filter("Int64 eq 2").execute().count());
+		Assert.assertEquals(3,c.getEntities("Foos1").filter("Int32 lt "+ Integer.MAX_VALUE + 100).execute().count());
+		Assert.assertEquals(2,c.getEntities("Foos1").filter("Int32 ge 2").execute().count());
+		Assert.assertEquals(2,c.getEntities("Foos1").filter("Int32 le 2").execute().count());
+		Assert.assertEquals(1,c.getEntities("Foos1").filter("Int32 add 2 sub 2 eq 2 ").execute().count());
+		Assert.assertEquals(1,c.getEntities("Foos1").filter("Int32 mul 3 eq 6 ").execute().count());
+		Assert.assertEquals(1,c.getEntities("Foos1").filter("Int32 div 1 eq 2 ").execute().count());
+		Assert.assertEquals(1,c.getEntities("Foos1").filter("(((Int32 mul 6) div 2) div 3) eq 2 ").execute().count());
+		Assert.assertEquals(2,c.getEntities("Foos1").filter("Int32 mod 2 eq 1").execute().count());
+		
 		server.stop();
 		
 		
@@ -60,11 +74,21 @@ public class ScenarioTest {
 	
 	private static class Foo {
 		private final String id;
-		public Foo(String id){
+	    private final int int32;
+	    private final int int64;
+		public Foo(String id, int int32, int int64){
 			this.id = id;
+		    this.int32 = int32;
+		    this.int64 = int64;
 		}
 		public String getId(){
 			return id;
+		}
+		public int getInt32() {
+			return int32;
+		}
+		public int getInt64() {
+			return int64;
 		}
 	}
 }

@@ -259,6 +259,7 @@ public class InMemoryProducer implements ODataProducer {
 	private Enumerable<Object> orderBy(Enumerable<Object> iter, List<OrderByExpression> orderBys, final PropertyModel properties ){
 		for(final OrderByExpression orderBy : Enumerable.create(orderBys).reverse())
 			iter = iter.orderBy(new Comparator<Object>(){
+				@SuppressWarnings("unchecked")
 				public int compare(Object o1, Object o2) {
 					Comparable lhs = (Comparable)InMemoryEvaluation.evaluate(orderBy.getExpression(), o1, properties);
 					Comparable rhs = (Comparable)InMemoryEvaluation.evaluate(orderBy.getExpression(), o2, properties);
