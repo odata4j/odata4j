@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.commons.codec2.DecoderException;
-import org.apache.commons.codec2.binary.Hex;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.odata4j.repack.org.apache.commons.codec.DecoderException;
+import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
 
 import core4j.Enumerable;
 import core4j.Func1;

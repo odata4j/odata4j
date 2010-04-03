@@ -6,7 +6,6 @@ import java.util.List;
 import javax.ws.rs.core.MediaType;
 
 
-import org.apache.commons.codec2.binary.Base64;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
@@ -18,6 +17,7 @@ import org.odata4j.edm.EdmType;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityResponse;
+import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
 import org.odata4j.stax2.QName2;
 import org.odata4j.stax2.XMLFactoryProvider2;
 import org.odata4j.stax2.XMLWriter2;

@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.UUID;
 
 
-import org.apache.commons.codec2.binary.Base64;
-import org.apache.commons.codec2.binary.Hex;
 import org.joda.time.LocalDateTime;
 import org.odata4j.edm.EdmType;
 import org.odata4j.expression.ExpressionParser;
+import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
+import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
 
 public class OProperties {
 

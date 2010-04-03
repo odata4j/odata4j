@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.commons.codec2.binary;
+package org.odata4j.repack.org.apache.commons.codec.binary;
 
 import java.io.UnsupportedEncodingException;
 
-import org.apache.commons.codec2.BinaryDecoder;
-import org.apache.commons.codec2.BinaryEncoder;
-import org.apache.commons.codec2.CharEncoding;
-import org.apache.commons.codec2.DecoderException;
-import org.apache.commons.codec2.EncoderException;
+import org.odata4j.repack.org.apache.commons.codec.BinaryDecoder;
+import org.odata4j.repack.org.apache.commons.codec.BinaryEncoder;
+import org.odata4j.repack.org.apache.commons.codec.CharEncoding;
+import org.odata4j.repack.org.apache.commons.codec.DecoderException;
+import org.odata4j.repack.org.apache.commons.codec.EncoderException;
 
 /**
  * Hex encoder and decoder. The charset used for certain operation can be set, the default is set in

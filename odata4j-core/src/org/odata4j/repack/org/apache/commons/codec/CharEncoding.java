@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.commons.codec2;
+package org.odata4j.repack.org.apache.commons.codec;
 
 /**
  * Character encoding names required of every implementation of the Java platform.

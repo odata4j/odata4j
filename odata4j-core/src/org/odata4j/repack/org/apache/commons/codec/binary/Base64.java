@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.commons.codec2.binary;
+package org.odata4j.repack.org.apache.commons.codec.binary;
 
 import java.math.BigInteger;
 
-import org.apache.commons.codec2.BinaryDecoder;
-import org.apache.commons.codec2.BinaryEncoder;
-import org.apache.commons.codec2.DecoderException;
-import org.apache.commons.codec2.EncoderException;
+import org.odata4j.repack.org.apache.commons.codec.BinaryDecoder;
+import org.odata4j.repack.org.apache.commons.codec.BinaryEncoder;
+import org.odata4j.repack.org.apache.commons.codec.DecoderException;
+import org.odata4j.repack.org.apache.commons.codec.EncoderException;
 
 /**
  * Provides Base64 encoding and decoding as defined by RFC 2045.

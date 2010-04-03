@@ -5,13 +5,13 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.ws.rs.core.MediaType;
 
 
-import org.apache.commons.codec2.binary.Base64;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.odata4j.consumer.ODataClient;
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.core.OClientBehavior;
 import org.odata4j.core.ODataConstants;
+import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
 
 public class AzureTableBehavior implements OClientBehavior {
 

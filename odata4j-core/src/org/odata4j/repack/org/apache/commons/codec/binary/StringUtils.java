@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.commons.codec2.binary;
+package org.odata4j.repack.org.apache.commons.codec.binary;
 
 import java.io.UnsupportedEncodingException;
 
-import org.apache.commons.codec2.CharEncoding;
+import org.odata4j.repack.org.apache.commons.codec.CharEncoding;
 
 /**
  * Converts String to and from bytes using the encodings required by the Java specification. These encodings are specified in <a

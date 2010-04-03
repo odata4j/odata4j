@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.commons.codec2;
+package org.odata4j.repack.org.apache.commons.codec;
 
 /**
  * <p>Provides the highest level of abstraction for Decoders.
