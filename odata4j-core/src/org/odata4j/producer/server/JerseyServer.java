@@ -43,6 +43,10 @@ public class JerseyServer {
 	public void addAppResourceClass(Class<?> clazz){
 		appResourceClasses.add(clazz);
 	}
+	public void addAppResourceClass(Iterable<Class<?>> classes){
+		for(Class<?> clazz : classes)
+			appResourceClasses.add(clazz);
+	}
 	public void addRootResourceClass(Class<?> clazz){
 		rootResourceClasses.add(clazz);
 	}

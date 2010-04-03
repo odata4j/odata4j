@@ -119,6 +119,8 @@ public class ExpressionTest {
 		t(Expression.or(exp,exp),"a eq 1 or a eq 1");
 		t(Expression.or(exp,Expression.and(exp,exp)),"a eq 1 or a eq 1 and a eq 1");
 		t(Expression.or(Expression.and(exp,exp),exp),"a eq 1 and a eq 1 or a eq 1");
+		t(Expression.and(Expression.boolean_(true),Expression.boolean_(false)),"true and false");
+		
 		
 		t(Expression.lt(Expression.simpleProperty("a"), Expression.integral(1)),"a lt 1");
 		t(Expression.gt(Expression.simpleProperty("a"), Expression.integral(1)),"a gt 1");

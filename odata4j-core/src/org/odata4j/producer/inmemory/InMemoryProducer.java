@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import org.odata4j.edm.EdmEntityType;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmType;
+import org.odata4j.expression.*;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.InlineCount;
@@ -40,18 +42,9 @@ public class InMemoryProducer implements ODataProducer {
 		Class<TKey> keyClass;
 		Func<Iterable<TEntity>> get;
 		Func1<Object,TKey> id;
-		Map<String,Method> getters;
+		PropertyModel properties;
 		
-		public Object invokeGetter( Object target, String propertyName){
-			try {
-				Method m = getters.get(propertyName);
-				if (!m.isAccessible())
-					m.setAccessible(true);
-				return m.invoke(target);
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			}
-		}
+		
 	}
 	
 	private static final String ID_PROPNAME = "EntityId";
@@ -103,7 +96,7 @@ public class InMemoryProducer implements ODataProducer {
 			List<EdmProperty> properties = new ArrayList<EdmProperty>();
 			properties.add(new EdmProperty(ID_PROPNAME, getEdmType(ei.keyClass), false, null));
 			
-			properties.addAll(toEdmProperties(ei.entityClass));
+			properties.addAll(toEdmProperties(ei.properties));
 			
 			
 			EdmEntityType eet = new EdmEntityType(namespace, entitySetName, ID_PROPNAME,properties, null);
@@ -147,14 +140,14 @@ public class InMemoryProducer implements ODataProducer {
 			@SuppressWarnings("unchecked")
 			@Override
 			public TKey apply(TEntity input) {
-				return (TKey)eis.get(entitySetName).invokeGetter(input, idPropertyName);
+				return (TKey)eis.get(entitySetName).properties.getPropertyValue(input, idPropertyName);
 			}});
 	}
 	public <TEntity,TKey> void register(Class<TEntity> entityClass, Class<TKey> keyClass, String entitySetName, 
 			Func<Iterable<TEntity>> get, final Func1<TEntity,TKey> id){
 		
 		EntityInfo<TEntity,TKey> ei = new EntityInfo<TEntity, TKey>();
-		ei.getters = getBeanGetters(entityClass);
+		ei.properties = new BeanBasedPropertyModel(entityClass);
 		ei.entityClass = entityClass;
 		ei.get = get;
 		ei.id = widen(id);
@@ -173,22 +166,21 @@ public class InMemoryProducer implements ODataProducer {
 		properties.add(OProperties.simple(ID_PROPNAME, getEdmType(ei.keyClass), key));
 		
 		
-		for(String getterName : ei.getters.keySet()){
-			Method getter = ei.getters.get(getterName);
+		for(String propName : ei.properties.getPropertyNames()){
 			EdmType type;
-			Object value = ei.invokeGetter(obj, getterName);
-			
-			if (getter.getReturnType().isEnum()){
+			Object value =ei.properties.getPropertyValue(obj, propName);
+			Class<?> propType = ei.properties.getPropertyType(propName);
+			if (propType.isEnum()){
 				type = EdmType.STRING;
 			} else {
-				type = findEdmType(getter.getReturnType());
+				type = findEdmType(propType);
 				if (type==null)
 					continue;
 			}
 			if (type==EdmType.STRING)
 				value = value.toString();
 			
-			properties.add(OProperties.simple(getterName, type, value));
+			properties.add(OProperties.simple(propName, type, value));
 		}
 		
 		
@@ -209,12 +201,30 @@ public class InMemoryProducer implements ODataProducer {
 	}
 	
 	
+	
+	
+	private static Predicate1<Object> filterToPredicate(final BoolCommonExpression filter, final PropertyModel properties){
+		return new Predicate1<Object>(){
+			public boolean apply(Object input) {
+				return InMemoryEvaluation.evaluate(filter,input, properties);
+			}};
+	}
+	
 	@Override
 	public EntitiesResponse getEntities(String entitySetName, QueryInfo queryInfo) {
 		final EdmEntitySet ees = metadata.getEdmEntitySet(entitySetName);
 		final EntityInfo<?,?> ei = eis.get(entitySetName);
 		
 		Enumerable<Object> iter = Enumerable.create(ei.get.apply()).cast(Object.class);
+		
+		if (queryInfo.filter != null)
+			iter = iter.where(filterToPredicate(queryInfo.filter,ei.properties));
+		
+		final Integer inlineCount = queryInfo.inlineCount==InlineCount.ALLPAGES?iter.count():null;
+		
+		if (queryInfo.orderBy != null)
+			iter = orderBy(iter,queryInfo.orderBy,ei.properties);
+		
 		
 		if (queryInfo.skip != null)
 			iter = iter.skip(queryInfo.skip);
@@ -226,7 +236,7 @@ public class InMemoryProducer implements ODataProducer {
 				return toOEntity(ei,input);
 			}}).toList();
 		
-		final Integer inlineCount = queryInfo.inlineCount==InlineCount.ALLPAGES?iter.count():null;
+		
 		
 		return new EntitiesResponse(){
 
@@ -246,6 +256,17 @@ public class InMemoryProducer implements ODataProducer {
 			}};
 	}
 
+	private Enumerable<Object> orderBy(Enumerable<Object> iter, List<OrderByExpression> orderBys, final PropertyModel properties ){
+		for(final OrderByExpression orderBy : Enumerable.create(orderBys).reverse())
+			iter = iter.orderBy(new Comparator<Object>(){
+				public int compare(Object o1, Object o2) {
+					Comparable lhs = (Comparable)InMemoryEvaluation.evaluate(orderBy.getExpression(), o1, properties);
+					Comparable rhs = (Comparable)InMemoryEvaluation.evaluate(orderBy.getExpression(), o2, properties);
+					return (orderBy.isAscending()?1:-1)*lhs.compareTo(rhs);
+				}});
+		return iter;
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public EntityResponse getEntity(String entitySetName, Object entityKey) {
@@ -286,22 +307,22 @@ public class InMemoryProducer implements ODataProducer {
 
 	
 	
-	private Collection<EdmProperty> toEdmProperties(Class<?> entityClass){
+	private Collection<EdmProperty> toEdmProperties(PropertyModel model){
 		List<EdmProperty> rt = new ArrayList<EdmProperty>();
 		
-		Map<String,Method> getters = getBeanGetters(entityClass);
-		for(String name : getters.keySet()){
-			Class<?> returnType = getters.get(name).getReturnType();
+
+		for(String propName : model.getPropertyNames()){
+			Class<?> propType = model.getPropertyType(propName);
 			EdmType type;
-			if (returnType.isEnum()){
+			if (propType.isEnum()){
 				type = EdmType.STRING;
 			} else {
-				type = findEdmType(returnType);
+				type = findEdmType(propType);
 				if (type==null)
 					continue;
 			
 			}
-			rt.add(new EdmProperty(name,type,true,null));
+			rt.add(new EdmProperty(propName,type,true,null));
 		}
 		
 		return rt;
@@ -322,39 +343,7 @@ public class InMemoryProducer implements ODataProducer {
 	}
 	
 	
-	private static Map<String,Method> getBeanGetters(Class<?> clazz){
-		
-		 Map<String,Method> rt = new HashMap<String,Method>();
-		 for(Method method : clazz.getMethods()){
-			String methodName = method.getName();
-			if (
-					methodName.startsWith("get") 
-					&& methodName.length()>3 
-					&& Character.isUpperCase(methodName.charAt(3))
-					&& method.getParameterTypes().length==0
-					&& !method.getReturnType().equals(Void.TYPE)
-					&& !Modifier.isStatic(method.getModifiers())
-					
-					){
-				String name = methodName.substring(3);
-				rt.put(name, method);
-				
-			}
-			if (
-					methodName.startsWith("is") 
-					&& methodName.length()>2
-					&& Character.isUpperCase(methodName.charAt(2))
-					&& method.getParameterTypes().length==0
-					&& (method.getReturnType().equals(Boolean.class) || method.getReturnType().equals(Boolean.TYPE))
-					&& !Modifier.isStatic(method.getModifiers())
-					){
-				String name = methodName.substring(2);
-				rt.put(name, method);
-				
-			}
-		 }
-		 return rt;
-	}
+	
 	
 	
 	

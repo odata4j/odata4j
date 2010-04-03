@@ -10,12 +10,20 @@ import org.joda.time.LocalTime;
 public class Expression {
 
 
+	
 	public static NullLiteral null_(){
-		return new NullLiteral(){ };
+		return new NullLiteral(){ 
+			@Override
+			public String toString() {
+				return NullLiteral.class.getSimpleName();
+			}};
 	}
 	public static IntegralLiteral integral(final long value){
-		return new IntegralLiteral(){
-
+		return new IntegralLiteral() {
+			@Override
+			public String toString() {
+				return IntegralLiteral.class.getSimpleName();
+			}
 			@Override
 			public long getValue() {
 				return value;
@@ -23,7 +31,10 @@ public class Expression {
 	}
 	public static BooleanLiteral boolean_(final boolean value){
 		return new BooleanLiteral(){
-
+			@Override
+			public String toString() {
+				return BooleanLiteral.class.getSimpleName();
+			}
 			@Override
 			public boolean getValue() {
 				return value;
@@ -31,7 +42,10 @@ public class Expression {
 	}
 	public static DateTimeLiteral dateTime(final LocalDateTime value){
 		return new DateTimeLiteral(){
-
+			@Override
+			public String toString() {
+				return DateTimeLiteral.class.getSimpleName();
+			}
 			@Override
 			public LocalDateTime getValue() {
 				return value;
@@ -39,7 +53,10 @@ public class Expression {
 	}
 	public static DateTimeOffsetLiteral dateTimeOffset(final DateTime value){
 		return new DateTimeOffsetLiteral(){
-
+			@Override
+			public String toString() {
+				return DateTimeOffsetLiteral.class.getSimpleName();
+			}
 			@Override
 			public DateTime getValue() {
 				return value;
@@ -47,7 +64,10 @@ public class Expression {
 	}
 	public static TimeLiteral time(final LocalTime value){
 		return new TimeLiteral(){
-
+			@Override
+			public String toString() {
+				return TimeLiteral.class.getSimpleName();
+			}
 			@Override
 			public LocalTime getValue() {
 				return value;
@@ -55,7 +75,10 @@ public class Expression {
 	}
 	public static StringLiteral string(final String value){
 		return new StringLiteral(){
-
+			@Override
+			public String toString() {
+				return StringLiteral.class.getSimpleName();
+			}
 			@Override
 			public String getValue() {
 				return value;
@@ -63,7 +86,10 @@ public class Expression {
 	}
 	public static GuidLiteral guid(final UUID value){
 		return new GuidLiteral(){
-
+			@Override
+			public String toString() {
+				return GuidLiteral.class.getSimpleName();
+			}
 			@Override
 			public UUID getValue() {
 				return value;
@@ -71,7 +97,10 @@ public class Expression {
 	}
 	public static DecimalLiteral decimal(final BigDecimal value){
 		return new DecimalLiteral(){
-
+			@Override
+			public String toString() {
+				return DecimalLiteral.class.getSimpleName();
+			}
 			@Override
 			public BigDecimal getValue() {
 				return value;
@@ -79,7 +108,10 @@ public class Expression {
 	}
 	public static BinaryLiteral binary(final byte[] value){
 		return new BinaryLiteral(){
-
+			@Override
+			public String toString() {
+				return BinaryLiteral.class.getSimpleName();
+			}
 			@Override
 			public byte[] getValue() {
 				return value;
@@ -87,7 +119,10 @@ public class Expression {
 	}
 	public static SingleLiteral single(final float value){
 		return new SingleLiteral(){
-
+			@Override
+			public String toString() {
+				return SingleLiteral.class.getSimpleName();
+			}
 			@Override
 			public float getValue() {
 				return value;
@@ -95,7 +130,10 @@ public class Expression {
 	}
 	public static DoubleLiteral double_(final double value){
 		return new DoubleLiteral(){
-
+			@Override
+			public String toString() {
+				return DoubleLiteral.class.getSimpleName();
+			}
 			@Override
 			public double getValue() {
 				return value;
@@ -103,7 +141,10 @@ public class Expression {
 	}
 	public static Int64Literal int64(final long value){
 		return new Int64Literal(){
-
+			@Override
+			public String toString() {
+				return Int64Literal.class.getSimpleName();
+			}
 			@Override
 			public long getValue() {
 				return value;
@@ -111,7 +152,10 @@ public class Expression {
 	}
 	public static EntitySimpleProperty simpleProperty(final String propertyName){
 		return new EntitySimpleProperty(){
-
+			@Override
+			public String toString() {
+				return EntitySimpleProperty.class.getSimpleName();
+			}
 			@Override
 			public String getPropertyName() {
 				return propertyName;
@@ -120,7 +164,10 @@ public class Expression {
 	
 	public static EqExpression eq(final CommonExpression lhs, final CommonExpression rhs){
 		return new EqExpression() {
-			
+			@Override
+			public String toString() {
+				return EqExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getRHS() {
 				return rhs;
@@ -134,7 +181,10 @@ public class Expression {
 	}
 	public static NeExpression ne(final CommonExpression lhs, final CommonExpression rhs){
 		return new NeExpression() {
-			
+			@Override
+			public String toString() {
+				return NeExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getRHS() {
 				return rhs;
@@ -148,7 +198,10 @@ public class Expression {
 	}
 	public static AndExpression and(final BoolCommonExpression lhs, final BoolCommonExpression rhs){
 		return new AndExpression() {
-			
+			@Override
+			public String toString() {
+				return AndExpression.class.getSimpleName();
+			}
 			@Override
 			public BoolCommonExpression getRHS() {
 				return rhs;
@@ -162,7 +215,10 @@ public class Expression {
 	}
 	public static OrExpression or(final BoolCommonExpression lhs, final BoolCommonExpression rhs){
 		return new OrExpression() {
-			
+			@Override
+			public String toString() {
+				return OrExpression.class.getSimpleName();
+			}
 			@Override
 			public BoolCommonExpression getRHS() {
 				return rhs;
@@ -176,7 +232,10 @@ public class Expression {
 	}
 	public static LtExpression lt(final CommonExpression lhs, final CommonExpression rhs){
 		return new LtExpression() {
-			
+			@Override
+			public String toString() {
+				return LtExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getRHS() {
 				return rhs;
@@ -190,7 +249,10 @@ public class Expression {
 	}
 	public static GtExpression gt(final CommonExpression lhs, final CommonExpression rhs){
 		return new GtExpression() {
-			
+			@Override
+			public String toString() {
+				return GtExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getRHS() {
 				return rhs;
@@ -204,7 +266,10 @@ public class Expression {
 	}
 	public static LeExpression le(final CommonExpression lhs, final CommonExpression rhs){
 		return new LeExpression() {
-			
+			@Override
+			public String toString() {
+				return LeExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getRHS() {
 				return rhs;
@@ -218,7 +283,10 @@ public class Expression {
 	}
 	public static GeExpression ge(final CommonExpression lhs, final CommonExpression rhs){
 		return new GeExpression() {
-			
+			@Override
+			public String toString() {
+				return GeExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getRHS() {
 				return rhs;
@@ -232,7 +300,10 @@ public class Expression {
 	}
 	public static AddExpression add(final CommonExpression lhs, final CommonExpression rhs){
 		return new AddExpression() {
-			
+			@Override
+			public String toString() {
+				return AddExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getRHS() {
 				return rhs;
@@ -246,7 +317,10 @@ public class Expression {
 	}
 	public static SubExpression sub(final CommonExpression lhs, final CommonExpression rhs){
 		return new SubExpression() {
-			
+			@Override
+			public String toString() {
+				return SubExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getRHS() {
 				return rhs;
@@ -260,7 +334,10 @@ public class Expression {
 	}
 	public static MulExpression mul(final CommonExpression lhs, final CommonExpression rhs){
 		return new MulExpression() {
-			
+			@Override
+			public String toString() {
+				return MulExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getRHS() {
 				return rhs;
@@ -274,7 +351,10 @@ public class Expression {
 	}
 	public static DivExpression div(final CommonExpression lhs, final CommonExpression rhs){
 		return new DivExpression() {
-			
+			@Override
+			public String toString() {
+				return DivExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getRHS() {
 				return rhs;
@@ -288,7 +368,10 @@ public class Expression {
 	}
 	public static ModExpression mod(final CommonExpression lhs, final CommonExpression rhs){
 		return new ModExpression() {
-			
+			@Override
+			public String toString() {
+				return ModExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getRHS() {
 				return rhs;
@@ -302,7 +385,10 @@ public class Expression {
 	}
 	public static ParenExpression paren(final CommonExpression expression){
 		return new ParenExpression() {
-
+			@Override
+			public String toString() {
+				return ParenExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getExpression() {
 				return expression;
@@ -313,7 +399,10 @@ public class Expression {
 	
 	public static NotExpression not(final CommonExpression expression){
 		return new NotExpression() {
-
+			@Override
+			public String toString() {
+				return NotExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getExpression() {
 				return expression;
@@ -324,7 +413,10 @@ public class Expression {
 	
 	public static NegateExpression negate(final CommonExpression expression){
 		return new NegateExpression() {
-
+			@Override
+			public String toString() {
+				return NegateExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getExpression() {
 				return expression;
@@ -342,7 +434,10 @@ public class Expression {
 	}
 	public static CastExpression cast(final CommonExpression expression, final String type){
 		return new CastExpression(){
-
+			@Override
+			public String toString() {
+				return CastExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getExpression() {
 				return expression;
@@ -359,7 +454,10 @@ public class Expression {
 	}
 	public static IsofExpression isof(final CommonExpression expression, final String type){
 		return new IsofExpression(){
-
+			@Override
+			public String toString() {
+				return IsofExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getExpression() {
 				return expression;
@@ -373,7 +471,10 @@ public class Expression {
 	
 	public static EndsWithMethodCallExpression endsWith(final CommonExpression target, final CommonExpression value){
 		return new EndsWithMethodCallExpression(){
-
+			@Override
+			public String toString() {
+				return EndsWithMethodCallExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getTarget() {
 				return target;
@@ -386,7 +487,10 @@ public class Expression {
 	}
 	public static StartsWithMethodCallExpression startsWith(final CommonExpression target, final CommonExpression value){
 		return new StartsWithMethodCallExpression(){
-
+			@Override
+			public String toString() {
+				return StartsWithMethodCallExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getTarget() {
 				return target;
@@ -402,7 +506,10 @@ public class Expression {
 	}
 	public static SubstringOfMethodCallExpression substringOf(final CommonExpression value, final CommonExpression target){
 		return new SubstringOfMethodCallExpression(){
-
+			@Override
+			public String toString() {
+				return SubstringOfMethodCallExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getTarget() {
 				return target;
@@ -415,7 +522,10 @@ public class Expression {
 	}
 	public static IndexOfMethodCallExpression indexOf(final CommonExpression target, final CommonExpression value){
 		return new IndexOfMethodCallExpression(){
-
+			@Override
+			public String toString() {
+				return IndexOfMethodCallExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getTarget() {
 				return target;
@@ -428,7 +538,10 @@ public class Expression {
 	}
 	public static ReplaceMethodCallExpression replace(final CommonExpression target, final CommonExpression find, final CommonExpression replace){
 		return new ReplaceMethodCallExpression(){
-
+			@Override
+			public String toString() {
+				return ReplaceMethodCallExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getFind() {
 				return find;
@@ -446,7 +559,10 @@ public class Expression {
 	}
 	public static ToLowerMethodCallExpression toLower(final CommonExpression target){
 		return new ToLowerMethodCallExpression(){
-			
+			@Override
+			public String toString() {
+				return ToLowerMethodCallExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getTarget() {
 				return target;
@@ -454,7 +570,10 @@ public class Expression {
 	}
 	public static ToUpperMethodCallExpression toUpper(final CommonExpression target){
 		return new ToUpperMethodCallExpression(){
-			
+			@Override
+			public String toString() {
+				return ToUpperMethodCallExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getTarget() {
 				return target;
@@ -462,7 +581,10 @@ public class Expression {
 	}
 	public static TrimMethodCallExpression trim(final CommonExpression target){
 		return new TrimMethodCallExpression(){
-			
+			@Override
+			public String toString() {
+				return TrimMethodCallExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getTarget() {
 				return target;
@@ -473,7 +595,10 @@ public class Expression {
 	}
 	public static SubstringMethodCallExpression substring(final CommonExpression target, final CommonExpression start, final CommonExpression length){
 		return new SubstringMethodCallExpression(){
-			
+			@Override
+			public String toString() {
+				return SubstringMethodCallExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getTarget() {
 				return target;
@@ -491,7 +616,10 @@ public class Expression {
 	}
 	public static ConcatMethodCallExpression concat(final CommonExpression lhs, final CommonExpression rhs){
 		return new ConcatMethodCallExpression(){
-
+			@Override
+			public String toString() {
+				return ConcatMethodCallExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getLHS() {
 				return lhs;
@@ -504,7 +632,10 @@ public class Expression {
 	}
 	public static LengthMethodCallExpression length(final CommonExpression target){
 		return new LengthMethodCallExpression(){
-			
+			@Override
+			public String toString() {
+				return LengthMethodCallExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getTarget() {
 				return target;
@@ -512,7 +643,10 @@ public class Expression {
 	}
 	public static YearMethodCallExpression year(final CommonExpression target){
 		return new YearMethodCallExpression(){
-			
+			@Override
+			public String toString() {
+				return YearMethodCallExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getTarget() {
 				return target;
@@ -520,7 +654,10 @@ public class Expression {
 	}
 	public static MonthMethodCallExpression month(final CommonExpression target){
 		return new MonthMethodCallExpression(){
-			
+			@Override
+			public String toString() {
+				return MonthMethodCallExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getTarget() {
 				return target;
@@ -528,7 +665,10 @@ public class Expression {
 	}
 	public static DayMethodCallExpression day(final CommonExpression target){
 		return new DayMethodCallExpression(){
-			
+			@Override
+			public String toString() {
+				return DayMethodCallExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getTarget() {
 				return target;
@@ -536,7 +676,10 @@ public class Expression {
 	}
 	public static HourMethodCallExpression hour(final CommonExpression target){
 		return new HourMethodCallExpression(){
-			
+			@Override
+			public String toString() {
+				return HourMethodCallExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getTarget() {
 				return target;
@@ -544,7 +687,10 @@ public class Expression {
 	}
 	public static MinuteMethodCallExpression minute(final CommonExpression target){
 		return new MinuteMethodCallExpression(){
-			
+			@Override
+			public String toString() {
+				return MinuteMethodCallExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getTarget() {
 				return target;
@@ -552,7 +698,10 @@ public class Expression {
 	}
 	public static SecondMethodCallExpression second(final CommonExpression target){
 		return new SecondMethodCallExpression(){
-			
+			@Override
+			public String toString() {
+				return SecondMethodCallExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getTarget() {
 				return target;
@@ -560,7 +709,10 @@ public class Expression {
 	}
 	public static RoundMethodCallExpression round(final CommonExpression target){
 		return new RoundMethodCallExpression(){
-			
+			@Override
+			public String toString() {
+				return RoundMethodCallExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getTarget() {
 				return target;
@@ -568,7 +720,10 @@ public class Expression {
 	}
 	public static CeilingMethodCallExpression ceiling(final CommonExpression target){
 		return new CeilingMethodCallExpression(){
-			
+			@Override
+			public String toString() {
+				return CeilingMethodCallExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getTarget() {
 				return target;
@@ -576,7 +731,10 @@ public class Expression {
 	}
 	public static FloorMethodCallExpression floor(final CommonExpression target){
 		return new FloorMethodCallExpression(){
-			
+			@Override
+			public String toString() {
+				return FloorMethodCallExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getTarget() {
 				return target;
@@ -584,7 +742,10 @@ public class Expression {
 	}
 	public static OrderByExpression orderBy(final CommonExpression expression, final boolean isAscending){
 		return new OrderByExpression(){
-
+			@Override
+			public String toString() {
+				return OrderByExpression.class.getSimpleName();
+			}
 			@Override
 			public CommonExpression getExpression() {
 				return expression;
