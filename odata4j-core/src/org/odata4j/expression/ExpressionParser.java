@@ -54,7 +54,7 @@ public class ExpressionParser {
 	public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormat.forPattern("HH:mm:ss");
 	
 	
-	
+	public static boolean DUMP_EXPRESSION_INFO = false;
 	
 	
 	public static CommonExpression parse(String value){
@@ -62,7 +62,8 @@ public class ExpressionParser {
 		//dump(value,tokens,null);
 		
 		CommonExpression rt = readExpression( tokens);
-		dump(value,tokens,rt);
+		if (DUMP_EXPRESSION_INFO)
+			dump(value,tokens,rt);
 		
 		return rt;
 	}
@@ -74,7 +75,8 @@ public class ExpressionParser {
 		//dump(value,tokens,null);
 		
 		List<CommonExpression> expressions = readExpressions(tokens);
-		dump(value,tokens,Enumerable.create(expressions).toArray(CommonExpression.class));
+		if (DUMP_EXPRESSION_INFO)
+			dump(value,tokens,Enumerable.create(expressions).toArray(CommonExpression.class));
 		
 		return Enumerable.create(expressions).select(new Func1<CommonExpression,OrderByExpression>(){
 			public OrderByExpression apply(CommonExpression input) {

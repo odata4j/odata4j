@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.ws.rs.core.MediaType;
 
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;

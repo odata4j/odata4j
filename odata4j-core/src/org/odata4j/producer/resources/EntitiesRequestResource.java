@@ -30,7 +30,6 @@ import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.xml.AtomFeedWriter;
 
-
 import com.sun.jersey.api.core.HttpContext;
 
 @Path("{entitySetName}")

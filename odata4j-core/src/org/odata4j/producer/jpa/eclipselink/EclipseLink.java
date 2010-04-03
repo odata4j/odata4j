@@ -5,7 +5,6 @@ import java.util.Map;
 
 import javax.persistence.metamodel.SingularAttribute;
 
-
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metamodel.AttributeImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;

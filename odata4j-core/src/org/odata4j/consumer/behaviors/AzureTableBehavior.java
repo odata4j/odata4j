@@ -4,7 +4,6 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.ws.rs.core.MediaType;
 
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.odata4j.consumer.ODataClient;

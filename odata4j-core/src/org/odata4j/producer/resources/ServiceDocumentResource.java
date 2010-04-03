@@ -13,7 +13,6 @@ import org.odata4j.edm.EdmDataServices;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.xml.ServiceDocumentWriter;
 
-
 import com.sun.jersey.api.core.HttpContext;
 
 @Path("")

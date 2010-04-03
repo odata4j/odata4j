@@ -1,5 +1,5 @@
 package org.odata4j.expression;
 
-public interface MulExpression extends BoolCommonExpression, BinaryCommonExpression {
+public interface MulExpression extends CommonExpression, BinaryCommonExpression {
 
 }

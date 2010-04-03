@@ -1,7 +1,5 @@
 package org.odata4j.producer.inmemory;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -19,13 +17,13 @@ import org.odata4j.edm.EdmEntityType;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmType;
-import org.odata4j.expression.*;
+import org.odata4j.expression.BoolCommonExpression;
+import org.odata4j.expression.OrderByExpression;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.InlineCount;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
-
 
 import com.sun.jersey.api.NotFoundException;
 
@@ -38,6 +36,7 @@ public class InMemoryProducer implements ODataProducer {
 
 	
 	private static class EntityInfo<TEntity,TKey>{
+		@SuppressWarnings("unused")
 		Class<TEntity> entityClass;
 		Class<TKey> keyClass;
 		Func<Iterable<TEntity>> get;
@@ -147,7 +146,7 @@ public class InMemoryProducer implements ODataProducer {
 			Func<Iterable<TEntity>> get, final Func1<TEntity,TKey> id){
 		
 		EntityInfo<TEntity,TKey> ei = new EntityInfo<TEntity, TKey>();
-		ei.properties = new BeanBasedPropertyModel(entityClass);
+		ei.properties = new AugmentedBeanBasedPropertyModel(entityClass);
 		ei.entityClass = entityClass;
 		ei.get = get;
 		ei.id = widen(id);
@@ -156,7 +155,33 @@ public class InMemoryProducer implements ODataProducer {
 		this.metadata = buildMetadata();
 	}
 	
+	private static class AugmentedBeanBasedPropertyModel extends BeanBasedPropertyModel{
 
+		public AugmentedBeanBasedPropertyModel(Class<?> clazz) {
+			super(clazz);
+		}
+		
+		@Override
+		public Class<?> getPropertyType(String propertyName) {
+			Class<?> rt = super.getPropertyType(propertyName);
+			if (rt.isEnum())
+				return String.class;
+			return rt;
+		}
+		
+		@Override
+		public Object getPropertyValue(Object target, String propertyName) {
+			Class<?> baseType = super.getPropertyType(propertyName);
+			Object rt = super.getPropertyValue(target, propertyName);
+			if (baseType.isEnum())
+				return ((Enum<?>)rt).name();
+			return rt;
+		}
+		
+	}
+
+	
+	
 	
 	
 	private OEntity toOEntity(EntityInfo<?,?> ei, Object obj){
@@ -170,15 +195,9 @@ public class InMemoryProducer implements ODataProducer {
 			EdmType type;
 			Object value =ei.properties.getPropertyValue(obj, propName);
 			Class<?> propType = ei.properties.getPropertyType(propName);
-			if (propType.isEnum()){
-				type = EdmType.STRING;
-			} else {
-				type = findEdmType(propType);
-				if (type==null)
-					continue;
-			}
-			if (type==EdmType.STRING)
-				value = value.toString();
+			type = findEdmType(propType);
+			if (type==null)
+				continue;
 			
 			properties.add(OProperties.simple(propName, type, value));
 		}
@@ -274,10 +293,8 @@ public class InMemoryProducer implements ODataProducer {
 		final EdmEntitySet ees = metadata.getEdmEntitySet(entitySetName);
 		final EntityInfo<?,?> ei = eis.get(entitySetName);
 		
-		// TODO make more generic
-		if (ei.keyClass.equals(Long.class) && entityKey instanceof Integer){
-			entityKey = ((Integer)entityKey).longValue();
-		}
+		entityKey = InMemoryEvaluation.cast(entityKey, ei.keyClass);
+		
 		Iterable<Object> iter = (Iterable<Object>)ei.get.apply();
 		
 		final Object finalKey = entityKey;
@@ -314,15 +331,9 @@ public class InMemoryProducer implements ODataProducer {
 
 		for(String propName : model.getPropertyNames()){
 			Class<?> propType = model.getPropertyType(propName);
-			EdmType type;
-			if (propType.isEnum()){
-				type = EdmType.STRING;
-			} else {
-				type = findEdmType(propType);
-				if (type==null)
-					continue;
-			
-			}
+			EdmType type = findEdmType(propType);
+			if (type==null)
+				continue;
 			rt.add(new EdmProperty(propName,type,true,null));
 		}
 		

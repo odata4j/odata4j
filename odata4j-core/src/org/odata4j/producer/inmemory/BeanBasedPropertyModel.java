@@ -1,6 +1,5 @@
 package org.odata4j.producer.inmemory;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
@@ -22,7 +21,9 @@ public class BeanBasedPropertyModel implements PropertyModel {
 		return getters.keySet();
 	}
 
-
+	public Class<?> getClazz() {
+		return clazz;
+	}
 
 	@Override
 	public Class<?> getPropertyType(String propertyName) {

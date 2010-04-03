@@ -43,12 +43,16 @@ public class JerseyServer {
 	public void addAppResourceClass(Class<?> clazz){
 		appResourceClasses.add(clazz);
 	}
-	public void addAppResourceClass(Iterable<Class<?>> classes){
+	public void addAppResourceClasses(Iterable<Class<?>> classes){
 		for(Class<?> clazz : classes)
 			appResourceClasses.add(clazz);
 	}
 	public void addRootResourceClass(Class<?> clazz){
 		rootResourceClasses.add(clazz);
+	}
+	public void addRootResourceClasses(Iterable<Class<?>> classes){
+		for(Class<?> clazz : classes)
+			rootResourceClasses.add(clazz);
 	}
 	public  <T extends ContainerRequestFilter> void addJerseyRequestFilter(Class<T> filter){
 		jerseyRequestFilters.add(filter.getName());

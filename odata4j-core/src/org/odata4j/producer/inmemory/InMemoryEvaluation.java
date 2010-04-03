@@ -3,7 +3,30 @@ package org.odata4j.producer.inmemory;
 import java.math.BigDecimal;
 import java.util.Set;
 
-import org.odata4j.expression.*;
+import org.odata4j.expression.AddExpression;
+import org.odata4j.expression.AndExpression;
+import org.odata4j.expression.BinaryCommonExpression;
+import org.odata4j.expression.BoolCommonExpression;
+import org.odata4j.expression.BooleanLiteral;
+import org.odata4j.expression.CommonExpression;
+import org.odata4j.expression.DivExpression;
+import org.odata4j.expression.EntitySimpleProperty;
+import org.odata4j.expression.EqExpression;
+import org.odata4j.expression.GeExpression;
+import org.odata4j.expression.GtExpression;
+import org.odata4j.expression.IntegralLiteral;
+import org.odata4j.expression.LeExpression;
+import org.odata4j.expression.LtExpression;
+import org.odata4j.expression.ModExpression;
+import org.odata4j.expression.MulExpression;
+import org.odata4j.expression.NeExpression;
+import org.odata4j.expression.NotExpression;
+import org.odata4j.expression.NullLiteral;
+import org.odata4j.expression.OrExpression;
+import org.odata4j.expression.ParenExpression;
+import org.odata4j.expression.StringLiteral;
+import org.odata4j.expression.SubExpression;
+import org.odata4j.expression.SubstringOfMethodCallExpression;
 
 import core4j.Enumerable;
 
@@ -11,38 +34,42 @@ public class InMemoryEvaluation {
 
 	public static Object evaluate(CommonExpression expression, Object target, PropertyModel properties){
 		
-		if (expression instanceof EntitySimpleProperty){
+		if (expression instanceof BoolCommonExpression)
+			return evaluate((BoolCommonExpression)expression,target,properties);
+		
+		if (expression instanceof EntitySimpleProperty)
 			return properties.getPropertyValue(target, ((EntitySimpleProperty)expression).getPropertyName());
-		}
-		if (expression instanceof StringLiteral){
+		
+		if (expression instanceof NullLiteral)
+			return null;
+		
+		if (expression instanceof StringLiteral)
 			return ((StringLiteral)expression).getValue();
-		}
-		if (expression instanceof IntegralLiteral){
+		
+		if (expression instanceof IntegralLiteral)
 			return ((IntegralLiteral)expression).getValue();
-		}
-		if (expression instanceof AddExpression){
+		
+		if (expression instanceof AddExpression)
 			return binaryFunction((BinaryCommonExpression)expression,target,properties,BinaryFunction.ADD);
-		}
-		if (expression instanceof SubExpression){
+		
+		if (expression instanceof SubExpression)
 			return binaryFunction((BinaryCommonExpression)expression,target,properties,BinaryFunction.SUB);
-		}
-		if (expression instanceof MulExpression){
+		
+		if (expression instanceof MulExpression)
 			return binaryFunction((BinaryCommonExpression)expression,target,properties,BinaryFunction.MUL);
-		}
-		if (expression instanceof DivExpression){
+		
+		if (expression instanceof DivExpression)
 			return binaryFunction((BinaryCommonExpression)expression,target,properties,BinaryFunction.DIV);
-		}
-		if (expression instanceof ModExpression){
+		
+		if (expression instanceof ModExpression)
 			return binaryFunction((BinaryCommonExpression)expression,target,properties,BinaryFunction.MOD);
-		}
-		if (expression instanceof ParenExpression){
-			ParenExpression pe = (ParenExpression)expression;
-			return evaluate(pe.getExpression(),target,properties);
-		}
+		
+		if (expression instanceof ParenExpression) 
+			return evaluate(((ParenExpression)expression).getExpression(),target,properties);
+		
 		throw new UnsupportedOperationException("unsupported expression " + expression);
 	}
 	
-	@SuppressWarnings("unchecked")
 	public static boolean evaluate(BoolCommonExpression expression, Object target, PropertyModel properties){
 		if (expression instanceof EqExpression){
 			return equals((EqExpression)expression,target,properties);
@@ -73,6 +100,18 @@ public class InMemoryEvaluation {
 		}
 		if (expression instanceof LeExpression){
 			return compareTo((LeExpression)expression,target,properties) <= 0;
+		}
+		
+		if (expression instanceof NotExpression){
+			NotExpression e = (NotExpression)expression;
+			Boolean rt = (Boolean) evaluate(e.getExpression(),target,properties) ;
+			return !rt;
+		}
+		if (expression instanceof SubstringOfMethodCallExpression){
+			SubstringOfMethodCallExpression e = (SubstringOfMethodCallExpression)expression;
+			String targetValue = (String) evaluate(e.getTarget(),target,properties) ;
+			String searchValue = (String) evaluate(e.getValue(),target,properties) ;
+			return targetValue != null && searchValue != null &&  targetValue.contains(searchValue);
 		}
 		throw new UnsupportedOperationException("unsupported expression " + expression);
 	}	
@@ -240,10 +279,12 @@ public class InMemoryEvaluation {
 		return ((Comparable)pair.lhs).compareTo(((Comparable)pair.rhs));
 	}
 	
+	@SuppressWarnings("unchecked")
 	private static final Set<Class> SUPPORTED_CLASSES_FOR_BINARY_PROMOTION = Enumerable.create(
 			BigDecimal.class,Double.class,Float.class,Byte.class,Integer.class,Short.class,Long.class
 			).cast(Class.class).toSet();
 	
+	@SuppressWarnings("unchecked")
 	private static void binaryNumericPromotion(ObjectPair pair){
 		
 //		§ Edm.Decimal
@@ -254,6 +295,8 @@ public class InMemoryEvaluation {
 //		§ Edm.Int32
 //		§ Edm.Int64
 		
+		if (pair.lhs==null||pair.rhs==null)
+			return;
 		Class<?> lhsClass = pair.lhs.getClass();
 		Class<?> rhsClass = pair.rhs.getClass();
 		if (lhsClass.equals(rhsClass))
@@ -303,6 +346,31 @@ public class InMemoryEvaluation {
 //		§ If binary numeric promotion is supported, a data service SHOULD use a castExpression to promote an operand to the target type.
 	
 		
+	}
+	
+	
+	public static Object cast(Object obj, Class<?> targetType){
+		if (obj==null)
+			return null;
+		Class<?> objClass = obj.getClass();
+		if(targetType.isAssignableFrom(objClass))
+			return obj;
+		
+		if ((obj instanceof Number) && targetType.equals(Double.class))
+			return ((Double)obj).doubleValue();
+		if ((obj instanceof Number) && targetType.equals(Float.class))
+			return ((Number)obj).floatValue();
+		if ((obj instanceof Number) && targetType.equals(Long.class))
+			return ((Number)obj).longValue();
+		if ((obj instanceof Number) && targetType.equals(Integer.class))
+			return ((Number)obj).intValue();
+		if ((obj instanceof Number) && targetType.equals(Short.class))
+			return ((Number)obj).shortValue();
+		if ((obj instanceof Number) && targetType.equals(Byte.class))
+			return ((Number)obj).byteValue();
+		
+		
+		throw new UnsupportedOperationException("Unable to cast a " + objClass.getSimpleName() + " to a " + targetType.getSimpleName());
 	}
 	
 	

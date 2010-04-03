@@ -11,7 +11,6 @@ import org.odata4j.xml.AtomFeedParser;
 import org.odata4j.xml.AtomFeedParser.AtomEntry;
 import org.odata4j.xml.AtomFeedParser.DataServicesAtomEntry;
 
-
 import com.sun.jersey.api.core.HttpRequestContext;
 
 public abstract class BaseResource {

@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-
 import org.joda.time.LocalDateTime;
 import org.odata4j.edm.EdmType;
 import org.odata4j.expression.ExpressionParser;

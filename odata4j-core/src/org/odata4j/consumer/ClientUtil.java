@@ -8,7 +8,6 @@ import javax.ws.rs.ext.RuntimeDelegate;
 import org.odata4j.internal.PlatformUtil;
 import org.odata4j.internal.StringProvider2;
 
-
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.core.impl.provider.header.MediaTypeProvider;

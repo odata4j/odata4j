@@ -5,7 +5,6 @@ import javax.ws.rs.ext.Provider;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.ODataProducerFactory;
 
-
 import com.sun.jersey.core.impl.provider.xml.LazySingletonContextProvider;
 
 @Provider

@@ -15,7 +15,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OProperty;
 import org.odata4j.producer.EntityResponse;

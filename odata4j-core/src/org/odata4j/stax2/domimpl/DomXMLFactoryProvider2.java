@@ -6,7 +6,6 @@ import java.io.Writer;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-
 import org.odata4j.internal.PlatformUtil;
 import org.odata4j.stax2.Attribute2;
 import org.odata4j.stax2.EndElement2;

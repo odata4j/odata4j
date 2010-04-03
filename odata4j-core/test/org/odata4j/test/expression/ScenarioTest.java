@@ -7,18 +7,20 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.expression.ExpressionParser;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.resources.ODataProducerProvider;
 import org.odata4j.producer.resources.ODataResourceConfig;
 import org.odata4j.producer.server.JerseyServer;
 
-import core4j.Func;
 import core4j.Funcs;
 
 public class ScenarioTest {
 
 	@Test
 	public void testScenario(){
+		
+		ExpressionParser.DUMP_EXPRESSION_INFO = true;
 		
 		String uri = "http://localhost:18888/";
 		
@@ -27,7 +29,7 @@ public class ScenarioTest {
 		
 		
 		JerseyServer server = new JerseyServer(uri);
-		server.addAppResourceClass(new ODataResourceConfig().getClasses());
+		server.addAppResourceClasses(new ODataResourceConfig().getClasses());
 		server.start();
 		
 		ODataConsumer c = ODataConsumer.create(uri);
@@ -38,9 +40,9 @@ public class ScenarioTest {
 		Assert.assertEquals(1,c.getEntitySets().count());
 		
 		Assert.assertEquals(0,c.getEntities("Foos1").execute().count());
-		foos.add(new Foo("1",3,3));
-		foos.add(new Foo("2",2,2));
-		foos.add(new Foo("3",1,1));
+		foos.add(new Foo("1",3,3,"Alpha"));
+		foos.add(new Foo("2",2,2,null));
+		foos.add(new Foo("3",1,1,"Gamma"));
 		Assert.assertEquals(3,c.getEntities("Foos1").execute().count());
 		Assert.assertEquals(1,c.getEntities("Foos1").top(1).execute().count());
 		Assert.assertEquals("1",c.getEntities("Foos1").top(1).execute().first().getProperties().get(0).getValue());
@@ -65,6 +67,11 @@ public class ScenarioTest {
 		Assert.assertEquals(1,c.getEntities("Foos1").filter("Int32 div 1 eq 2 ").execute().count());
 		Assert.assertEquals(1,c.getEntities("Foos1").filter("(((Int32 mul 6) div 2) div 3) eq 2 ").execute().count());
 		Assert.assertEquals(2,c.getEntities("Foos1").filter("Int32 mod 2 eq 1").execute().count());
+		Assert.assertEquals(2,c.getEntities("Foos1").filter("not (Int32 eq 2)").execute().count());
+		Assert.assertEquals(0,c.getEntities("Foos1").filter("Id eq null").execute().count());
+		Assert.assertEquals(3,c.getEntities("Foos1").filter("null eq null").execute().count());
+		Assert.assertEquals(1,c.getEntities("Foos1").filter("Name eq null").execute().count());
+		Assert.assertEquals(1,c.getEntities("Foos1").filter("substringof('lph',Name)").execute().count());
 		
 		server.stop();
 		
@@ -72,14 +79,16 @@ public class ScenarioTest {
 	}
 
 	
-	private static class Foo {
+	public static class Foo {
 		private final String id;
 	    private final int int32;
 	    private final int int64;
-		public Foo(String id, int int32, int int64){
+	    private final String name;
+		public Foo(String id, int int32, int int64, String name){
 			this.id = id;
 		    this.int32 = int32;
 		    this.int64 = int64;
+		    this.name = name;
 		}
 		public String getId(){
 			return id;
@@ -89,6 +98,9 @@ public class ScenarioTest {
 		}
 		public int getInt64() {
 			return int64;
+		}
+		public String getName(){
+			return name;
 		}
 	}
 }

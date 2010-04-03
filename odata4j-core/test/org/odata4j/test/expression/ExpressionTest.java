@@ -5,6 +5,11 @@ import java.util.List;
 import java.util.UUID;
 
 import junit.framework.Assert;
+
+import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
+import org.junit.Test;
 import org.odata4j.edm.EdmType;
 import org.odata4j.expression.AddExpression;
 import org.odata4j.expression.AndExpression;
@@ -63,15 +68,12 @@ import org.odata4j.expression.ToUpperMethodCallExpression;
 import org.odata4j.expression.TrimMethodCallExpression;
 import org.odata4j.expression.YearMethodCallExpression;
 
-import org.joda.time.DateTime;
-import org.joda.time.LocalDateTime;
-import org.joda.time.LocalTime;
-import org.junit.Test;
-
 public class ExpressionTest {
 
 	@Test
 	public void testExpressionParsing(){
+		
+		ExpressionParser.DUMP_EXPRESSION_INFO = true;
 		
 		t(Expression.null_(),"null");
 		t(Expression.boolean_(true),"true");
