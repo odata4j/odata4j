@@ -1,6 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="lib" path="lib/eclipselink.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/odata4j-core/lib/eclipselink-javadocs.zip!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/javax.persistence_2.0.0.v201002051058.jar"/>
+	<classpathentry kind="lib" path="lib/jersey-client-1.1.5.jar" sourcepath="lib/jersey-client-1.1.5-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/odata4j-core/lib/jersey-client-1.1.5-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/jersey-core-1.1.5.jar" sourcepath="lib/jersey-core-1.1.5-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/odata4j-core/lib/jersey-core-1.1.5-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/jsr311-api-1.1.jar" sourcepath="lib/jsr311-api-1.1-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/odata4j-core/lib/jsr311-api-1.1-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/jersey-server-1.1.5.jar" sourcepath="lib/jersey-server-1.1.5-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/odata4j-core/lib/jersey-server-1.1.5-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/core4j-0.1.jar" sourcepath="lib/core4j-0.1-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/odata4j-core/lib/core4j-0.1-javadoc.jar!/doc/apidoc"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/joda-time-1.6.jar" sourcepath="lib/joda-time-1.6-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/odata4j-core/lib/joda-time-1.6-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/junit.jar"/>
+	<classpathentry kind="lib" path="lib/org.hamcrest.core_1.1.0.v20090501071000.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
