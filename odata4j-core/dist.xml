@@ -9,6 +9,7 @@
 	<property name="dist.bundlesdir" value="${dist.archivedir}/bundles" />
 	<property name="dist.bundlejar" value="${dist.bundlesdir}/odata4j-bundle-${dist.version}.jar" />
 	<property name="dist.clientbundlejar" value="${dist.bundlesdir}/odata4j-clientbundle-${dist.version}.jar" />
+	<property name="dist.nojpabundlejar" value="${dist.bundlesdir}/odata4j-nojpabundle-${dist.version}.jar" />
 
 	<target name="dist">
 		
@@ -43,7 +44,11 @@
 			<zipgroupfileset dir="${dist.coredir}" includes="*.jar"
 				excludes="eclipselink.jar javax.persistence_2.0.0.v201002051058.jar jersey-server-1.1.5.jar"   />
 		</jar>
-
+		<jar destfile="${dist.nojpabundlejar}" duplicate="preserve">
+			<zipgroupfileset dir="${dist.coredir}" includes="*.jar"
+				excludes="eclipselink.jar javax.persistence_2.0.0.v201002051058.jar"   />
+		</jar>
+		
 		<!-- create archive zip -->
 		<zip destfile="${dist.versiondir}/${dist.archivename}.zip" basedir="${dist.archivedir}" />
 

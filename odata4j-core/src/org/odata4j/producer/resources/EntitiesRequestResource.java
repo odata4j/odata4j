@@ -32,7 +32,7 @@ import org.odata4j.xml.AtomFeedWriter;
 
 import com.sun.jersey.api.core.HttpContext;
 
-@Path("{entitySetName}")
+@Path("{entitySetName}{optionalParens: (\\(\\))?}")
 public class EntitiesRequestResource extends BaseResource {
 
 	private static final Logger log = Logger.getLogger(EntitiesRequestResource.class.getName());

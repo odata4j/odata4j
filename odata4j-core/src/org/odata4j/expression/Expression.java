@@ -774,7 +774,36 @@ public class Expression {
 	
 	
 	
-	
+	public static Object literalValue(LiteralExpression expression){
+		if (expression instanceof BinaryLiteral)
+			return ((BinaryLiteral)expression).getValue();
+		if (expression instanceof BooleanLiteral)
+			return ((BooleanLiteral)expression).getValue();
+		if (expression instanceof DateTimeLiteral)
+			return ((DateTimeLiteral)expression).getValue();
+		if (expression instanceof DateTimeOffsetLiteral)
+			return ((DateTimeOffsetLiteral)expression).getValue();
+		if (expression instanceof DecimalLiteral)
+			return ((DecimalLiteral)expression).getValue();
+		if (expression instanceof DoubleLiteral)
+			return ((DoubleLiteral)expression).getValue();
+		if (expression instanceof StringLiteral)
+			return ((StringLiteral)expression).getValue();
+		if (expression instanceof GuidLiteral)
+			return ((GuidLiteral)expression).getValue();
+		if (expression instanceof Int64Literal)
+			return ((Int64Literal)expression).getValue();
+		if (expression instanceof IntegralLiteral)
+			return ((IntegralLiteral)expression).getValue();
+		if (expression instanceof NullLiteral)
+			return null;
+		if (expression instanceof SingleLiteral)
+			return ((SingleLiteral)expression).getValue();
+		if (expression instanceof TimeLiteral)
+			return ((TimeLiteral)expression).getValue();
+		
+		throw new UnsupportedOperationException("Implement " + expression);
+	}
 	
 	
 	
