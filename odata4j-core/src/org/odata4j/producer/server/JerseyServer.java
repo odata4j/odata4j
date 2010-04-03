@@ -28,7 +28,7 @@ public class JerseyServer {
 	
 	private HttpServer server;
 	private final String appBaseUri;
-	private final List<Filter> sunFilters = new ArrayList<Filter>();
+	private final List<Filter> httpServerFilters = new ArrayList<Filter>();
 	private final List<String> jerseyRequestFilters = new ArrayList<String>();
 	private final List<String> jerseyResponseFilters = new ArrayList<String>();
 	private final List<String> jerseyResourceFilters = new ArrayList<String>();
@@ -63,8 +63,8 @@ public class JerseyServer {
 	public  <T extends ResourceFilterFactory> void addJerseyResourceFilter(Class<T> filter){
 		jerseyResourceFilters.add(filter.getName());
 	}
-	public void addFilter(Filter filter){
-		sunFilters.add(filter);
+	public void addHttpServerFilter(Filter filter){
+		httpServerFilters.add(filter);
 		
 	}
 
@@ -89,12 +89,12 @@ public class JerseyServer {
 				 server.createContext("/", rootHttpHandler);
 			}
 			
-			// add sun filters to all contexts
+			// add httpserver filters to all contexts
 			 Object tmp = CoreUtils.getFieldValue(server,"server",Object.class);
 			 tmp = CoreUtils.getFieldValue(tmp,"contexts",Object.class);
 			 tmp = CoreUtils.getFieldValue(tmp,"list",Object.class);
 			 for(HttpContext context : ((List<HttpContext>)tmp))
-				 context.getFilters().addAll(sunFilters);
+				 context.getFilters().addAll(httpServerFilters);
 			
 			
 			server.start();

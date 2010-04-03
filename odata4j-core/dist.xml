@@ -21,7 +21,7 @@
 		<mkdir dir="${dist.coredir}" />
 
 		<!-- create odata4j.jar -->
-		<jar destfile="${dist.corejar}" basedir="bin" includes="**/*.class" excludes="org/odata4j/test/**" />
+		<jar destfile="${dist.corejar}" basedir="bin" includes="**/*.class" excludes="org/odata4j/test/** org/odata4j/examples/**" />
 		<copy todir="${dist.coredir}" flatten="true">
 			<resources>
 				<file file="lib/eclipselink.jar" />
