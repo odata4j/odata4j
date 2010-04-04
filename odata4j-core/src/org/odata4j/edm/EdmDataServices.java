@@ -5,9 +5,11 @@ import java.util.List;
 
 public class EdmDataServices {
 
+    public final String version;
     public final List<EdmSchema> schemas;
 
-    public EdmDataServices(List<EdmSchema> schemas) {
+    public EdmDataServices(String version, List<EdmSchema> schemas) {
+        this.version = version;
         this.schemas = schemas;
     }
 
@@ -27,6 +29,13 @@ public class EdmDataServices {
         List<EdmEntityType> rt = new ArrayList<EdmEntityType>();
         for(EdmSchema schema : this.schemas) {
             rt.addAll(schema.entityTypes);
+        }
+        return rt;
+    }
+    public Iterable<EdmAssociation> getAssociations() {
+        List<EdmAssociation> rt = new ArrayList<EdmAssociation>();
+        for(EdmSchema schema : this.schemas) {
+            rt.addAll(schema.associations);
         }
         return rt;
     }

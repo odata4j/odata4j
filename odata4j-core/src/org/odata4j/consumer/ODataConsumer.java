@@ -6,6 +6,7 @@ import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityRef;
 import org.odata4j.core.OModify;
 import org.odata4j.core.OQuery;
+import org.odata4j.edm.EdmDataServices;
 import org.odata4j.xml.AtomFeedParser.CollectionInfo;
 
 import core4j.Enumerable;
@@ -17,6 +18,9 @@ public class ODataConsumer {
     private final ODataClient client;
 
     private ODataConsumer(String serviceRootUri, OClientBehavior... behaviors) {
+        if (!serviceRootUri.endsWith("/"))
+            serviceRootUri = serviceRootUri+"/";
+        
         this.serviceRootUri = serviceRootUri;
         this.client = new ODataClient(behaviors);
     }
@@ -33,6 +37,9 @@ public class ODataConsumer {
         return new ODataConsumer(serviceRootUri, behaviors);
     }
 
+    
+    
+    
     public Enumerable<String> getEntitySets() {
 
         ODataClientRequest request = ODataClientRequest.get(serviceRootUri);
@@ -42,6 +49,17 @@ public class ODataConsumer {
             }
         });
     }
+    
+    public EdmDataServices getMetadata() {
+        ODataClientRequest request = ODataClientRequest.get(serviceRootUri + "$metadata");
+        return client.getMetadata(request);
+    }
+    
+    
+    
+    
+    
+    
 
     public OQuery<OEntity> getEntities(String entitySetName) {
         return new OQueryImpl<OEntity>(client, OEntity.class, serviceRootUri, entitySetName);
@@ -66,5 +84,7 @@ public class ODataConsumer {
     public OEntityRef<Void> deleteEntity(String entitySetName, Object... key) {
         return new OEntityRefImpl<Void>(true, client, serviceRootUri, entitySetName, key);
     }
+
+    
 
 }

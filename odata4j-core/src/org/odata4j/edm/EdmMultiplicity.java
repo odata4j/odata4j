@@ -13,4 +13,12 @@ public enum EdmMultiplicity {
     public String getSymbolString() {
         return symbolString;
     }
+    
+    public static EdmMultiplicity fromSymbolString(String symbolString){
+        for(EdmMultiplicity m : EdmMultiplicity.values()){
+            if (m.getSymbolString().equals(symbolString))
+                return m;
+        }
+        throw new IllegalArgumentException("Invalid symbolString " + symbolString);
+    }
 }

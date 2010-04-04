@@ -4,5 +4,6 @@ public interface StartElement2 {
 
     QName2 getName();
 
-    Attribute2 getAttributeByName(QName2 qName2);
+    Attribute2 getAttributeByName(QName2 name);
+    Attribute2 getAttributeByName(String name);
 }

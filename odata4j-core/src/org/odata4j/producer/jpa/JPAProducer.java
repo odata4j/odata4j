@@ -47,7 +47,7 @@ public class JPAProducer implements ODataProducer {
         this.namespace = namespace;
 
         em = emf.createEntityManager(); // necessary for metamodel
-        this.metadata = EdmGenerator.buildEdm(emf, this.namespace);
+        this.metadata = JPAEdmGenerator.buildEdm(emf, this.namespace);
     }
 
     @Override

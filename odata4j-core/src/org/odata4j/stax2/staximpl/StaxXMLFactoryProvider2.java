@@ -208,7 +208,12 @@ public class StaxXMLFactoryProvider2 extends XMLFactoryProvider2 {
         public QName2 getName() {
             return new QName2(real.getName().getNamespaceURI(), real.getName().getLocalPart());
         }
-
+        
+        @Override
+        public Attribute2 getAttributeByName(String name) {
+            return getAttributeByName(new QName2(name)); 
+        }
+        
         @Override
         public Attribute2 getAttributeByName(QName2 name) {
             Attribute att = real.getAttributeByName(toQName(name));

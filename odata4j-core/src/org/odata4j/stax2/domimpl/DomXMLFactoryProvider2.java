@@ -214,6 +214,11 @@ public class DomXMLFactoryProvider2 extends XMLFactoryProvider2 {
         }
 
         @Override
+        public Attribute2 getAttributeByName(String name) {
+            return getAttributeByName(new QName2(name)); 
+        }
+        
+        @Override
         public Attribute2 getAttributeByName(QName2 qName2) {
 
             final Attr attr = element.getAttributeNodeNS(qName2.getNamespaceURI(), qName2.getLocalPart());

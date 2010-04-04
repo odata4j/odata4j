@@ -15,6 +15,7 @@ import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Type;
 import javax.persistence.metamodel.Type.PersistenceType;
 
+import org.odata4j.core.ODataConstants;
 import org.odata4j.edm.EdmAssociation;
 import org.odata4j.edm.EdmAssociationEnd;
 import org.odata4j.edm.EdmAssociationSet;
@@ -34,7 +35,7 @@ import core4j.Enumerable;
 import core4j.Func1;
 import core4j.Predicate1;
 
-public class EdmGenerator {
+public class JPAEdmGenerator {
 
     public static EdmType toEdmType(SingularAttribute<?, ?> sa) {
 
@@ -68,7 +69,7 @@ public class EdmGenerator {
         if (eclipseLinkProps.containsKey("MaxLength"))
             maxLength = (Integer) eclipseLinkProps.get("MaxLength");
 
-        return new EdmProperty(name, type, nullable, maxLength);
+        return new EdmProperty(name, type, nullable, maxLength, null, null, null, null, null, null);
     }
 
     public static EdmDataServices buildEdm(EntityManagerFactory emf, String namespace) {
@@ -213,12 +214,12 @@ public class EdmGenerator {
 
         }
 
-        EdmEntityContainer container = new EdmEntityContainer(namespace + "Entities", true, entitySets, associationSets);
+        EdmEntityContainer container = new EdmEntityContainer(namespace + "Entities", true, null, entitySets, associationSets,null);
 
-        EdmSchema modelSchema = new EdmSchema(modelNamespace, edmEntityTypes, associations, null);
-        EdmSchema containerSchema = new EdmSchema(namespace + "Container", null, null, Enumerable.create(container).toList());
+        EdmSchema modelSchema = new EdmSchema(modelNamespace, edmEntityTypes, null, associations, null);
+        EdmSchema containerSchema = new EdmSchema(namespace + "Container", null, null, null, Enumerable.create(container).toList());
 
-        EdmDataServices services = new EdmDataServices(Enumerable.create(modelSchema, containerSchema).toList());
+        EdmDataServices services = new EdmDataServices(ODataConstants.DATA_SERVICE_VERSION,Enumerable.create(modelSchema, containerSchema).toList());
         return services;
     }
 

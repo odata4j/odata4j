@@ -20,7 +20,7 @@ import org.odata4j.stax2.XMLFactoryProvider2;
 
 import core4j.Enumerable;
 
-public class AtomFeedParser {
+public class AtomFeedParser extends BaseParser {
 
     public static class CollectionInfo {
         public String url;
@@ -67,32 +67,7 @@ public class AtomFeedParser {
         }
     }
 
-    private static final String NS_APP = "http://www.w3.org/2007/app";
-    private static final String NS_XML = "http://www.w3.org/XML/1998/namespace";
-    private static final String NS_ATOM = "http://www.w3.org/2005/Atom";
-
-    public static final String NS_METADATA = "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata";
-    public static final String NS_DATASERVICES = "http://schemas.microsoft.com/ado/2007/08/dataservices";
-
-    public static final QName2 ATOM_ENTRY = new QName2(NS_ATOM, "entry");
-    public static final QName2 ATOM_ID = new QName2(NS_ATOM, "id");
-    public static final QName2 ATOM_TITLE = new QName2(NS_ATOM, "title");
-    public static final QName2 ATOM_UPDATED = new QName2(NS_ATOM, "updated");
-    public static final QName2 ATOM_CATEGORY = new QName2(NS_ATOM, "category");
-    public static final QName2 ATOM_CONTENT = new QName2(NS_ATOM, "content");
-    public static final QName2 ATOM_LINK = new QName2(NS_ATOM, "link");
-
-    public static final QName2 APP_WORKSPACE = new QName2(NS_APP, "workspace");
-    public static final QName2 APP_SERVICE = new QName2(NS_APP, "service");
-    public static final QName2 APP_COLLECTION = new QName2(NS_APP, "collection");
-    public static final QName2 APP_ACCEPT = new QName2(NS_APP, "accept");
-
-    public static final QName2 M_ETAG = new QName2(NS_METADATA, "etag");
-    public static final QName2 M_PROPERTIES = new QName2(NS_METADATA, "properties");
-    public static final QName2 M_TYPE = new QName2(NS_METADATA, "type");
-    public static final QName2 M_NULL = new QName2(NS_METADATA, "null");
-
-    public static final QName2 XML_BASE = new QName2(NS_XML, "base");
+    
 
     public static AtomFeed parseFeed(XMLEventReader2 reader) {
 
@@ -118,24 +93,7 @@ public class AtomFeedParser {
 
     }
 
-    public static Iterable<CollectionInfo> parseCollections(XMLEventReader2 reader) throws Exception {
-
-        String baseUrl = null;
-        while (reader.hasNext()) {
-            XMLEvent2 event = reader.nextEvent();
-            if (isStartElement(event, APP_SERVICE)) {
-                baseUrl = event.asStartElement().getAttributeByName(XML_BASE).getValue();
-            }
-            if (isStartElement(event, APP_WORKSPACE)) {
-                return parseWorkspace(baseUrl, reader, event.asStartElement());
-            }
-            if (event.isStartElement()) {
-                // log(event.toString());
-            }
-
-        }
-        throw new RuntimeException();
-    }
+   
 
     private static Iterable<OProperty<?>> parseProperties(XMLEventReader2 reader, StartElement2 propertiesElement) {
         List<OProperty<?>> rt = new ArrayList<OProperty<?>>();
@@ -178,14 +136,7 @@ public class AtomFeedParser {
         throw new RuntimeException();
     }
 
-    private static String getAttributeValueIfExists(StartElement2 element, String localName) {
-        return getAttributeValueIfExists(element, new QName2(null, localName));
-    }
-
-    private static String getAttributeValueIfExists(StartElement2 element, QName2 attName) {
-        Attribute2 rt = element.getAttributeByName(attName);
-        return rt == null ? null : rt.getValue();
-    }
+   
 
     private static DataServicesAtomEntry parseDSAtomEntry(String etag, XMLEventReader2 reader, XMLEvent2 event) {
         DataServicesAtomEntry dsae = new DataServicesAtomEntry();
@@ -292,59 +243,8 @@ public class AtomFeedParser {
         throw new RuntimeException();
     }
 
-    private static Iterable<CollectionInfo> parseWorkspace(String baseUrl, XMLEventReader2 reader, StartElement2 startElement) throws Exception {
-        List<CollectionInfo> rt = new ArrayList<CollectionInfo>();
+   
 
-        while (reader.hasNext()) {
-            XMLEvent2 event = reader.nextEvent();
-
-            if (event.isEndElement() && event.asEndElement().getName().equals(startElement.getName())) {
-                return rt;
-            }
-
-            if (isStartElement(event, APP_COLLECTION)) {
-                rt.add(parseCollection(baseUrl, reader, event.asStartElement()));
-            }
-
-        }
-        return rt;
-    }
-
-    private static CollectionInfo parseCollection(String baseUrl, XMLEventReader2 reader, StartElement2 startElement) throws Exception {
-        CollectionInfo rt = new CollectionInfo();
-
-        String href = getAttributeValueIfExists(startElement, "href");
-        rt.url = urlCombine(baseUrl, href);
-
-        while (reader.hasNext()) {
-            XMLEvent2 event = reader.nextEvent();
-
-            if (event.isEndElement() && event.asEndElement().getName().equals(startElement.getName())) {
-                return rt;
-            }
-
-            if (isStartElement(event, ATOM_TITLE)) {
-
-                rt.title = reader.getElementText();
-            }
-
-            if (isStartElement(event, APP_ACCEPT)) {
-
-                rt.accept = reader.getElementText();
-            }
-
-        }
-
-        return rt;
-    }
-
-    private static boolean isStartElement(XMLEvent2 event, QName2 qname) {
-        return event.isStartElement() && event.asStartElement().getName().equals(qname);
-    }
-
-    private static String urlCombine(String base, String rel) {
-        if (!base.endsWith("/") && !rel.startsWith("/"))
-            base = base + "/";
-        return base + rel;
-    }
+  
+   
 }

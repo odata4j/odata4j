@@ -7,10 +7,13 @@ import javax.ws.rs.core.MediaType;
 
 import org.odata4j.consumer.behaviors.MethodTunnelingBehavior;
 import org.odata4j.core.OClientBehavior;
+import org.odata4j.edm.EdmDataServices;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.stax2.XMLEventReader2;
 import org.odata4j.xml.AtomFeedParser;
 import org.odata4j.xml.AtomFeedWriter;
+import org.odata4j.xml.EdmxParser;
+import org.odata4j.xml.ServiceDocumentParser;
 import org.odata4j.xml.AtomFeedParser.AtomEntry;
 import org.odata4j.xml.AtomFeedParser.AtomFeed;
 import org.odata4j.xml.AtomFeedParser.CollectionInfo;
@@ -39,53 +42,42 @@ public class ODataClient {
         this.behaviors = Enumerable.create(requiredBehaviors).concat(Enumerable.create(behaviors)).toArray(OClientBehavior.class);
     }
 
+    
+    public EdmDataServices getMetadata(ODataClientRequest request){
+        
+        ClientResponse response = doRequest(request, 200);
+        XMLEventReader2 reader = doXmlRequest(response);
+        return EdmxParser.parseMetadata(reader);
+    }
+    
     public Iterable<CollectionInfo> getCollections(ODataClientRequest request) {
-
-        try {
-            ClientResponse response = doRequest(request, 200);
-            XMLEventReader2 reader = doXmlRequest(response);
-            return AtomFeedParser.parseCollections(reader);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        
+        ClientResponse response = doRequest(request, 200);
+        XMLEventReader2 reader = doXmlRequest(response);
+        return ServiceDocumentParser.parseCollections(reader);
     }
 
     public AtomEntry getEntity(ODataClientRequest request) {
-        try {
-            ClientResponse response = doRequest(request, 404, 200);
-            if (response.getStatus() == 404)
-                return null;
-            XMLEventReader2 reader = doXmlRequest(response);
-            return AtomFeedParser.parseFeed(reader).entries.iterator().next();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
+        
+        ClientResponse response = doRequest(request, 404, 200);
+        if (response.getStatus() == 404)
+            return null;
+        XMLEventReader2 reader = doXmlRequest(response);
+        return AtomFeedParser.parseFeed(reader).entries.iterator().next();
     }
 
     public AtomFeed getEntities(ODataClientRequest request) {
 
-        try {
-            ClientResponse response = doRequest(request, 200);
-            XMLEventReader2 reader = doXmlRequest(response);
-            return AtomFeedParser.parseFeed(reader);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
+        ClientResponse response = doRequest(request, 200);
+        XMLEventReader2 reader = doXmlRequest(response);
+        return AtomFeedParser.parseFeed(reader);
     }
 
     public DataServicesAtomEntry createEntity(ODataClientRequest request) {
 
-        try {
-            ClientResponse response = doRequest(request, 201);
-            XMLEventReader2 reader = doXmlRequest(response);
-            return (DataServicesAtomEntry) AtomFeedParser.parseFeed(reader).entries.iterator().next();
-        } catch (Exception e) {
-
-            throw new RuntimeException(e);
-        }
-
+        ClientResponse response = doRequest(request, 201);
+        XMLEventReader2 reader = doXmlRequest(response);
+        return (DataServicesAtomEntry) AtomFeedParser.parseFeed(reader).entries.iterator().next();
     }
 
     public boolean updateEntity(ODataClientRequest request) {
@@ -153,7 +145,7 @@ public class ODataClient {
 
     }
 
-    private XMLEventReader2 doXmlRequest(ClientResponse response) throws Exception {
+    private XMLEventReader2 doXmlRequest(ClientResponse response)  {
 
         String textEntity = response.getEntity(String.class);
         if (DUMP_RESPONSE_BODY)

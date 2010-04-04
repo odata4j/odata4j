@@ -5,9 +5,10 @@ import java.util.List;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperty;
+import org.odata4j.examples.BaseExample;
 import org.odata4j.examples.ODataEndpoints;
 
-public class NetflixConsumerExample {
+public class NetflixConsumerExample extends BaseExample {
 
     public static void main(String[] args) {
 
@@ -28,12 +29,6 @@ public class NetflixConsumerExample {
 
     }
 
-    public static void report(String msg) {
-        System.out.println(msg);
-    }
 
-    public static void report(String msg, Object... args) {
-        System.out.println(String.format(msg, args));
-    }
 
 }

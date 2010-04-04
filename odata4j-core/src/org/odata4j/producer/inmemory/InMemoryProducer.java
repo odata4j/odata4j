@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperties;
@@ -85,7 +86,7 @@ public class InMemoryProducer implements ODataProducer {
             EntityInfo<?, ?> ei = eis.get(entitySetName);
 
             List<EdmProperty> properties = new ArrayList<EdmProperty>();
-            properties.add(new EdmProperty(ID_PROPNAME, getEdmType(ei.keyClass), false, null));
+            properties.add(new EdmProperty(ID_PROPNAME, getEdmType(ei.keyClass), false, null, null,null,null, null, null, null));
 
             properties.addAll(toEdmProperties(ei.properties));
 
@@ -95,12 +96,12 @@ public class InMemoryProducer implements ODataProducer {
             entityTypes.add(eet);
         }
 
-        EdmEntityContainer container = new EdmEntityContainer(CONTAINER_NAME, true, entitySets, null);
+        EdmEntityContainer container = new EdmEntityContainer(CONTAINER_NAME, true, null, entitySets, null,null);
         containers.add(container);
 
-        EdmSchema schema = new EdmSchema(namespace, entityTypes, null, containers);
+        EdmSchema schema = new EdmSchema(namespace, entityTypes, null, null, containers);
         schemas.add(schema);
-        EdmDataServices rt = new EdmDataServices(schemas);
+        EdmDataServices rt = new EdmDataServices(ODataConstants.DATA_SERVICE_VERSION,schemas);
         return rt;
     }
 
@@ -299,7 +300,7 @@ public class InMemoryProducer implements ODataProducer {
             EdmType type = findEdmType(propType);
             if (type == null)
                 continue;
-            rt.add(new EdmProperty(propName, type, true, null));
+            rt.add(new EdmProperty(propName, type, true, null, null, null, null, null, null, null));
         }
 
         return rt;
