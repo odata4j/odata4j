@@ -8,7 +8,7 @@ import org.odata4j.producer.server.JerseyServer;
 
 import com.sun.jersey.api.container.filter.LoggingFilter;
 
-public class ExampleUtil {
+public class ProducerUtil {
 
     public static void hostODataServer(String baseUri) {
         JerseyServer server = new JerseyServer(baseUri);
@@ -29,4 +29,6 @@ public class ExampleUtil {
         server.stop();
         System.exit(0);
     }
+    
+  
 }

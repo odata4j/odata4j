@@ -22,6 +22,9 @@ import org.odata4j.stax2.XMLFactoryProvider2;
 import org.odata4j.stax2.XMLWriter2;
 import org.odata4j.xml.AtomFeedParser.DataServicesAtomEntry;
 
+import core4j.Enumerable;
+import core4j.Func1;
+
 public class AtomFeedWriter extends BaseWriter {
 
     public static String generateResponseEntry(String baseUri, EntityResponse response, Writer w) {
@@ -39,7 +42,7 @@ public class AtomFeedWriter extends BaseWriter {
         writer.writeNamespace("d", d);
         writer.writeAttribute("xml:base", baseUri);
 
-        String absId = writeEntry(writer, response.getEntity().getKeyProperties(), response.getEntity().getProperties(), entitySetName, baseUri, updated, ees);
+        String absId = writeEntry(writer, getPropertyNames(response.getEntitySet()), response.getEntity().getProperties(), entitySetName, baseUri, updated, ees);
         writer.endDocument();
         return absId;
     }
@@ -90,28 +93,30 @@ public class AtomFeedWriter extends BaseWriter {
 
         for(OEntity entity : response.getEntities()) {
             writer.startElement("entry");
-            writeEntry(writer, entity.getKeyProperties(), entity.getProperties(), entitySetName, baseUri, updated, ees);
+            writeEntry(writer, getPropertyNames(response.getEntitySet()), entity.getProperties(), entitySetName, baseUri, updated, ees);
             writer.endElement("entry");
         }
         writer.endDocument();
 
     }
 
-    private static String writeEntry(XMLWriter2 writer, List<OProperty<?>> keyProperties, List<OProperty<?>> entityProperties, String entitySetName, String baseUri, String updated, EdmEntitySet ees) {
+    
+    private static List<String> getPropertyNames(EdmEntitySet ees){
+        return Enumerable.create(ees.type.key).toList();    // TODO multiple key names?
+    }
+    
+    private static String writeEntry(XMLWriter2 writer, List<String> keyPropertyNames, final List<OProperty<?>> entityProperties, String entitySetName, String baseUri, String updated, EdmEntitySet ees) {
 
         String key = null;
-        if (keyProperties != null) {
-
-            key = InternalUtil.keyString(keyProperties.toArray());
-            //			
-            // if (keyProperties.size() ==1){
-            // Object keyValue = keyProperties.get(0).getValue();
-            // key = keyValue.toString();
-            // if (keyValue instanceof String)
-            // key= "'"+ key + "'";
-            // } else {
-            // throw new RuntimeException("Implement multiple keys");
-            // }
+        if (keyPropertyNames != null) {
+            Object[] keyProperties = Enumerable.create(keyPropertyNames).select(new Func1<String,OProperty<?>>(){
+                public OProperty<?> apply(String input) {
+                    for(OProperty<?> entityProperty : entityProperties)
+                        if(entityProperty.getName().equals(input))
+                            return entityProperty;
+                        throw new IllegalArgumentException("Key property '" + input + "' is invalid");
+                }}).cast(Object.class).toArray(Object.class);
+            key = InternalUtil.keyString( keyProperties);
         }
 
         String relid = null;

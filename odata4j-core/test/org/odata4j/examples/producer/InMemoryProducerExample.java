@@ -75,7 +75,7 @@ public class InMemoryProducerExample {
 
         // register the producer as the static instance, then launch the http server
         ODataProducerProvider.setInstance(producer);
-        ExampleUtil.hostODataServer(endpointUri);
+        ProducerUtil.hostODataServer(endpointUri);
     }
 
     private static Iterable<EtfInfo> getETFs() throws Exception {

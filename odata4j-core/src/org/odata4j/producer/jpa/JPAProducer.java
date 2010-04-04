@@ -17,6 +17,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.EntityType;
 
+import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
@@ -32,7 +33,6 @@ import org.odata4j.producer.QueryInfo;
 
 import core4j.Enumerable;
 import core4j.Func1;
-import core4j.Predicate1;
 
 public class JPAProducer implements ODataProducer {
 
@@ -119,20 +119,7 @@ public class JPAProducer implements ODataProducer {
     }
 
     private OEntity makeEntity(final EdmEntitySet ees, final EntityType<?> jpaEntityType, final String keyPropertyName, final Object jpaEntity) {
-        return new OEntity() {
-            public List<OProperty<?>> getProperties() {
-                return jpaEntityToOProperties(ees, jpaEntityType, jpaEntity);
-            }
-
-            @Override
-            public List<OProperty<?>> getKeyProperties() {
-                return Enumerable.create(getProperties()).where(new Predicate1<OProperty<?>>() {
-                    public boolean apply(OProperty<?> input) {
-                        return input.getName().equals(keyPropertyName);
-                    }
-                }).toList();
-            }
-        };
+        return OEntities.create(jpaEntityToOProperties(ees, jpaEntityType, jpaEntity));
     }
 
     private EntitiesResponse getEntities(final Context context) {

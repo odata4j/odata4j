@@ -12,7 +12,7 @@ public class JPAProducerExample {
         String endpointUri = "http://localhost:8886/JPAProducerExample.svc/";
         
         // this example assumes you have an appropriate persistence.xml containing a valid persistence unit definition 
-        // (in this case named NorthwindService) mapping your jps entity classes, etc
+        // (in this case named NorthwindService) mapping your jpa entity classes, etc
         
         // create a JPAProducer by giving it a EntityManagerFactory
         String persistenceUnitName = "NorthwindService";
@@ -21,7 +21,7 @@ public class JPAProducerExample {
 
         // register the producer as the static instance, then launch the http server
         ODataProducerProvider.setInstance(producer);
-        ExampleUtil.hostODataServer(endpointUri);
+        ProducerUtil.hostODataServer(endpointUri);
 
     }
 

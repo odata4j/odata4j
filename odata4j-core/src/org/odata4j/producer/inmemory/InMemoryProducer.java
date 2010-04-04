@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
@@ -183,22 +184,8 @@ public class InMemoryProducer implements ODataProducer {
 
             properties.add(OProperties.simple(propName, type, value));
         }
-
-        final List<OProperty<?>> keyProperties = properties.subList(0, 1);
-        OEntity oe = new OEntity() {
-
-            @Override
-            public List<OProperty<?>> getKeyProperties() {
-                return keyProperties;
-            }
-
-            @Override
-            public List<OProperty<?>> getProperties() {
-                return properties;
-            }
-        };
-
-        return oe;
+        
+        return OEntities.create(properties); 
     }
 
     private static Predicate1<Object> filterToPredicate(final BoolCommonExpression filter, final PropertyModel properties) {

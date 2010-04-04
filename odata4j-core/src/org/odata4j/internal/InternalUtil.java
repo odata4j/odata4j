@@ -2,10 +2,10 @@ package org.odata4j.internal;
 
 import java.io.Reader;
 import java.lang.reflect.Field;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperty;
 import org.odata4j.stax2.XMLEventReader2;
@@ -61,7 +61,7 @@ public class InternalUtil {
     }
 
     @SuppressWarnings("unchecked")
-    private static Set<Object> integralTypes = Enumerable.create(Integer.class, Integer.TYPE, Long.class, Long.TYPE, Short.class, Short.TYPE).cast(Object.class).toSet();
+    private static final Set<Object> INTEGRAL_TYPES = Enumerable.create(Integer.class, Integer.TYPE, Long.class, Long.TYPE, Short.class, Short.TYPE).cast(Object.class).toSet();
 
     private static String keyString(Object key, boolean includePropName) {
         if (key instanceof UUID) {
@@ -69,7 +69,7 @@ public class InternalUtil {
         } else if (key instanceof String) {
             return "'" + ((String) key).replace("'", "''") + "'";
 
-        } else if (integralTypes.contains(key.getClass())) {
+        } else if (INTEGRAL_TYPES.contains(key.getClass())) {
             return key.toString();
         } else if (key instanceof OProperty<?>) {
             OProperty<?> oprop = (OProperty<?>) key;
@@ -85,27 +85,7 @@ public class InternalUtil {
     }
 
     public static OEntity toEntity(DataServicesAtomEntry dsae) {
-
-        final List<OProperty<?>> properties = dsae.properties;
-
-        return new OEntity() {
-
-            @Override
-            public String toString() {
-                return "OEntity[" + Enumerable.create(getProperties()).join(",") + "]";
-            }
-
-            @Override
-            public List<OProperty<?>> getKeyProperties() {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public List<OProperty<?>> getProperties() {
-                return properties;
-            }
-        };
-
+        return OEntities.create(dsae.properties);
     }
 
 }
