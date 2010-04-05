@@ -59,8 +59,6 @@ public class BaseExample {
             String p = String.format("Property Name=%s Type=%s Nullable=%s",property.name,property.type,property.nullable);
             if (property.maxLength != null)
                 p = p + " MaxLength="+ property.maxLength;
-            if (property.fcTargetPath != null)
-                p = p + " TargetPath="+ property.fcTargetPath;
             if (property.unicode != null)
                 p = p + " Unicode="+ property.unicode;
             if (property.fixedLength != null)
@@ -69,10 +67,16 @@ public class BaseExample {
             if (property.storeGeneratedPattern != null)
                 p = p + " StoreGeneratedPattern="+ property.storeGeneratedPattern;  
             
+            if (property.fcTargetPath != null)
+                p = p + " TargetPath="+ property.fcTargetPath;
             if (property.fcContentKind != null)
                 p = p + " ContentKind="+ property.fcContentKind;
             if (property.fcKeepInContent != null)
                 p = p + " KeepInContent="+ property.fcKeepInContent;
+            if (property.fcEpmContentKind != null)
+                p = p + " EpmContentKind="+ property.fcEpmContentKind;
+            if (property.fcEpmKeepInContent != null)
+                p = p + " EpmKeepInContent="+ property.fcEpmKeepInContent;
             report("    "+ p);
         }
     }
@@ -83,9 +87,15 @@ public class BaseExample {
             report("Schema Namespace=%s",schema.namespace);
             
             for(EdmEntityType et : schema.entityTypes){
-                report("  EntityType Name=%s",et.name);
+                String ets = String.format("  EntityType Name=%s",et.name);
+                if (et.hasStream != null)
+                    ets = ets + " HasStream="+et.hasStream;
+                report(ets);
                 
-                report("    Key PropertyRef Name=%s",et.key);
+                for(String key : et.keys){
+                    report("    Key PropertyRef Name=%s",key);
+                }
+                
                 reportProperties(et.properties);
                 for(EdmNavigationProperty np : et.navigationProperties){
                     report("    NavigationProperty Name=%s Relationship=%s FromRole=%s ToRole=%s",

@@ -13,10 +13,12 @@ public class EdmProperty {
     public final String fcTargetPath;
     public final String fcContentKind;
     public final String fcKeepInContent;
+    public final String fcEpmContentKind;
+    public final String fcEpmKeepInContent;
 
     public EdmProperty(String name, EdmType type, boolean nullable, Integer maxLength, Boolean unicode, Boolean fixedLength,
             String storeGeneratedPattern,
-            String fcTargetPath,String fcContentKind,String fcKeepInContent) {
+            String fcTargetPath,String fcContentKind,String fcKeepInContent, String fcEpmContentKind, String fcEpmKeepInContent) {
         this.name = name;
         this.type = type;
         this.nullable = nullable;
@@ -28,6 +30,8 @@ public class EdmProperty {
         this.fcTargetPath = fcTargetPath;
         this.fcContentKind = fcContentKind;
         this.fcKeepInContent = fcKeepInContent;
+        this.fcEpmContentKind = fcEpmContentKind;
+        this.fcEpmKeepInContent = fcEpmKeepInContent;
     }
 
 }

@@ -86,11 +86,11 @@ public class InMemoryProducer implements ODataProducer {
             EntityInfo<?, ?> ei = eis.get(entitySetName);
 
             List<EdmProperty> properties = new ArrayList<EdmProperty>();
-            properties.add(new EdmProperty(ID_PROPNAME, getEdmType(ei.keyClass), false, null, null,null,null, null, null, null));
+            properties.add(new EdmProperty(ID_PROPNAME, getEdmType(ei.keyClass), false, null, null,null,null, null, null, null, null, null));
 
             properties.addAll(toEdmProperties(ei.properties));
 
-            EdmEntityType eet = new EdmEntityType(namespace, entitySetName, ID_PROPNAME, properties, null);
+            EdmEntityType eet = new EdmEntityType(namespace, entitySetName, null, Enumerable.create(ID_PROPNAME).toList(), properties, null);
             EdmEntitySet ees = new EdmEntitySet(entitySetName, eet);
             entitySets.add(ees);
             entityTypes.add(eet);
@@ -300,7 +300,7 @@ public class InMemoryProducer implements ODataProducer {
             EdmType type = findEdmType(propType);
             if (type == null)
                 continue;
-            rt.add(new EdmProperty(propName, type, true, null, null, null, null, null, null, null));
+            rt.add(new EdmProperty(propName, type, true, null, null, null, null, null, null, null, null, null));
         }
 
         return rt;

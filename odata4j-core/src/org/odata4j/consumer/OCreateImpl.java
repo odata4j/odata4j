@@ -8,6 +8,7 @@ import javax.ws.rs.core.MediaType;
 import org.odata4j.core.OCreate;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperty;
+import org.odata4j.internal.FeedCustomizationMapping;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.xml.AtomFeedParser.DataServicesAtomEntry;
 
@@ -19,10 +20,13 @@ public class OCreateImpl<T> implements OCreate<T> {
 
     private final List<OProperty<?>> props = new ArrayList<OProperty<?>>();
 
-    public OCreateImpl(ODataClient client, String serviceRootUri, String entitySetName) {
+    private final FeedCustomizationMapping fcMapping;
+    
+    public OCreateImpl(ODataClient client, String serviceRootUri, String entitySetName, FeedCustomizationMapping fcMapping) {
         this.client = client;
         this.serviceRootUri = serviceRootUri;
         this.entitySetName = entitySetName;
+        this.fcMapping = fcMapping;
     }
 
     @SuppressWarnings("unchecked")
@@ -35,7 +39,7 @@ public class OCreateImpl<T> implements OCreate<T> {
         ODataClientRequest request = ODataClientRequest.post(serviceRootUri + entitySetName, entry);
 
         DataServicesAtomEntry dsae = client.createEntity(request);
-        OEntity rt = InternalUtil.toEntity(dsae);
+        OEntity rt = InternalUtil.toEntity(dsae,fcMapping);
         return (T) rt;
     }
 

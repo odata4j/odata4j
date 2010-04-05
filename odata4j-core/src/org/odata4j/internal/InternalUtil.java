@@ -2,11 +2,13 @@ package org.odata4j.internal;
 
 import java.io.Reader;
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
+import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
 import org.odata4j.stax2.XMLEventReader2;
 import org.odata4j.stax2.XMLFactoryProvider2;
@@ -84,8 +86,18 @@ public class InternalUtil {
         }
     }
 
-    public static OEntity toEntity(DataServicesAtomEntry dsae) {
-        return OEntities.create(dsae.properties);
+    public static OEntity toEntity(DataServicesAtomEntry dsae, FeedCustomizationMapping mapping) {
+        if (mapping==null)
+            return OEntities.create(dsae.properties);
+        
+        Enumerable<OProperty<?>> properties = Enumerable.create(dsae.properties);
+        if (mapping.titlePropName != null)
+            properties = properties.concat(OProperties.string(mapping.titlePropName, dsae.title));
+        if (mapping.summaryPropName != null)
+            properties = properties.concat(OProperties.string(mapping.summaryPropName, dsae.summary));
+        
+        return OEntities.create(properties.toList());
+       
     }
 
 }

@@ -1,5 +1,8 @@
 package org.odata4j.consumer;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.odata4j.core.OClientBehavior;
 import org.odata4j.core.OCreate;
 import org.odata4j.core.OEntity;
@@ -7,6 +10,10 @@ import org.odata4j.core.OEntityRef;
 import org.odata4j.core.OModify;
 import org.odata4j.core.OQuery;
 import org.odata4j.edm.EdmDataServices;
+import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.edm.EdmEntityType;
+import org.odata4j.edm.EdmProperty;
+import org.odata4j.internal.FeedCustomizationMapping;
 import org.odata4j.xml.AtomFeedParser.CollectionInfo;
 
 import core4j.Enumerable;
@@ -41,7 +48,6 @@ public class ODataConsumer {
     
     
     public Enumerable<String> getEntitySets() {
-
         ODataClientRequest request = ODataClientRequest.get(serviceRootUri);
         return Enumerable.create(client.getCollections(request)).select(new Func1<CollectionInfo, String>() {
             public String apply(CollectionInfo input) {
@@ -50,27 +56,32 @@ public class ODataConsumer {
         });
     }
     
+    private EdmDataServices cachedMetadata;
     public EdmDataServices getMetadata() {
-        ODataClientRequest request = ODataClientRequest.get(serviceRootUri + "$metadata");
-        return client.getMetadata(request);
+        if (cachedMetadata==null){
+            ODataClientRequest request = ODataClientRequest.get(serviceRootUri + "$metadata");
+            cachedMetadata = client.getMetadata(request);
+        }
+        return cachedMetadata;
     }
     
     
     
     
     
-    
-
     public OQuery<OEntity> getEntities(String entitySetName) {
-        return new OQueryImpl<OEntity>(client, OEntity.class, serviceRootUri, entitySetName);
+        FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
+        return new OQueryImpl<OEntity>(client, OEntity.class, serviceRootUri, entitySetName, mapping);
     }
 
     public OEntityRef<OEntity> getEntity(String entitySetName, Object... key) {
-        return new OEntityRefImpl<OEntity>(false, client, serviceRootUri, entitySetName, key);
+        FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
+        return new OEntityRefImpl<OEntity>(false, client, serviceRootUri, entitySetName, key, mapping);
     }
 
     public OCreate<OEntity> createEntity(String entitySetName) {
-        return new OCreateImpl<OEntity>(client, serviceRootUri, entitySetName);
+        FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
+        return new OCreateImpl<OEntity>(client, serviceRootUri, entitySetName, mapping);
     }
 
     public OModify<OEntity> updateEntity(OEntity entity, String entitySetName, Object... key) {
@@ -82,9 +93,36 @@ public class ODataConsumer {
     }
 
     public OEntityRef<Void> deleteEntity(String entitySetName, Object... key) {
-        return new OEntityRefImpl<Void>(true, client, serviceRootUri, entitySetName, key);
+        FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
+        return new OEntityRefImpl<Void>(true, client, serviceRootUri, entitySetName, key, mapping);
     }
 
+    
+    
+    
+    
+    
+    
+    
+    private final Map<String,FeedCustomizationMapping> cachedMappings = new HashMap<String,FeedCustomizationMapping>();
+    
+    private FeedCustomizationMapping getFeedCustomizationMapping(String entitySetName){
+        
+        if (!cachedMappings.containsKey(entitySetName)) {
+            EdmDataServices metadata = getMetadata();
+            EdmEntitySet ees = metadata.getEdmEntitySet(entitySetName);
+            EdmEntityType eet = ees.type;
+            FeedCustomizationMapping rt = new FeedCustomizationMapping();
+            for(EdmProperty ep : eet.properties){
+                if ("SyndicationTitle".equals(ep.fcTargetPath) && "false".equals(ep.fcKeepInContent))
+                    rt.titlePropName = ep.name;  
+                if ("SyndicationSummary".equals(ep.fcTargetPath) && "false".equals(ep.fcKeepInContent))
+                    rt.summaryPropName = ep.name;  
+            }
+            cachedMappings.put(entitySetName, rt);
+        }
+        return cachedMappings.get(entitySetName);
+    }
     
 
 }

@@ -155,7 +155,7 @@ public class JPAProducer implements ODataProducer {
         try {
             context.ees = metadata.getEdmEntitySet(entitySetName);
             context.jpaEntityType = findJPAEntityType(context.em, context.ees.type.name);
-            context.keyPropertyName = context.ees.type.key;
+            context.keyPropertyName = context.ees.type.keys.get(0); 
             context.entityKey = entityKey;
             context.query = query;
             return fn.apply(context);

@@ -123,6 +123,12 @@ public class OProperties {
     public static OProperty<BigDecimal> decimal(String name, BigDecimal value) {
         return new PropertyImpl<BigDecimal>(name, EdmType.DECIMAL, value);
     }
+    public static OProperty<BigDecimal> decimal(String name, long value) {
+        return new PropertyImpl<BigDecimal>(name, EdmType.DECIMAL, BigDecimal.valueOf(value));
+    }
+    public static OProperty<BigDecimal> decimal(String name, double value) {
+        return new PropertyImpl<BigDecimal>(name, EdmType.DECIMAL, BigDecimal.valueOf(value));
+    }
 
     public static OProperty<byte[]> binary(String name, byte[] value) {
         return new PropertyImpl<byte[]>(name, EdmType.BINARY, value);

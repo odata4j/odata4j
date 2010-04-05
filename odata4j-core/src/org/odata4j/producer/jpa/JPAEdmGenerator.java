@@ -69,7 +69,7 @@ public class JPAEdmGenerator {
         if (eclipseLinkProps.containsKey("MaxLength"))
             maxLength = (Integer) eclipseLinkProps.get("MaxLength");
 
-        return new EdmProperty(name, type, nullable, maxLength, null, null, null, null, null, null);
+        return new EdmProperty(name, type, nullable, maxLength, null, null, null, null, null, null, null, null);
     }
 
     public static EdmDataServices buildEdm(EntityManagerFactory emf, String namespace) {
@@ -114,7 +114,7 @@ public class JPAEdmGenerator {
 
             }
 
-            EdmEntityType eet = new EdmEntityType(modelNamespace, name, key, properties, navigationProperties);
+            EdmEntityType eet = new EdmEntityType(modelNamespace, name, null, Enumerable.create(key).toList(), properties, navigationProperties);
             edmEntityTypes.add(eet);
 
             EdmEntitySet ees = new EdmEntitySet(name, eet);

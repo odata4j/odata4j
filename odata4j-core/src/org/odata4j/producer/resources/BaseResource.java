@@ -21,7 +21,7 @@ public abstract class BaseResource {
         XMLEventReader2 reader = InternalUtil.newXMLEventReader(new StringReader(requestEntity));
         AtomEntry entry = AtomFeedParser.parseFeed(reader).entries.iterator().next();
         DataServicesAtomEntry dsae = (DataServicesAtomEntry) entry;
-        OEntity entity = InternalUtil.toEntity(dsae);
+        OEntity entity = InternalUtil.toEntity(dsae,null);
 
         final List<OProperty<?>> properties = entity.getProperties();
         return properties;

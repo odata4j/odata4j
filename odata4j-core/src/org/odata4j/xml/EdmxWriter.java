@@ -43,9 +43,12 @@ public class EdmxWriter extends BaseWriter {
                 writer.writeAttribute("Name", eet.name);
 
                 writer.startElement(new QName2("Key"));
-                writer.startElement(new QName2("PropertyRef"));
-                writer.writeAttribute("Name", eet.key);
-                writer.endElement("PropertyRef");
+                for(String key : eet.keys){
+                    writer.startElement(new QName2("PropertyRef"));
+                    writer.writeAttribute("Name", key);
+                    writer.endElement("PropertyRef");
+                }
+
                 writer.endElement("Key");
 
                 for(EdmProperty prop : eet.properties) {

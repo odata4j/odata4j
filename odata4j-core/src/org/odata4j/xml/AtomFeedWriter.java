@@ -102,7 +102,7 @@ public class AtomFeedWriter extends BaseWriter {
 
     
     private static List<String> getPropertyNames(EdmEntitySet ees){
-        return Enumerable.create(ees.type.key).toList();    // TODO multiple key names?
+        return ees.type.keys;
     }
     
     private static String writeEntry(XMLWriter2 writer, List<String> keyPropertyNames, final List<OProperty<?>> entityProperties, String entitySetName, String baseUri, String updated, EdmEntitySet ees) {
@@ -207,10 +207,11 @@ public class AtomFeedWriter extends BaseWriter {
                     sValue = value.toString();
             } else if (type == EdmType.DATETIME) {
                 writer.writeAttribute(new QName2(m, "type", "m"), type.toTypeString());
-                LocalDateTime ldt = (LocalDateTime) value;
-                DateTime dt = ldt.toDateTime(DateTimeZone.UTC);
-                if (value != null)
+                if (value != null) {
+                    LocalDateTime ldt = (LocalDateTime) value;
+                    DateTime dt = ldt.toDateTime(DateTimeZone.UTC);
                     sValue = toString(dt);
+                }
             } else if (type == EdmType.BINARY) {
                 writer.writeAttribute(new QName2(m, "type", "m"), type.toTypeString());
                 byte[] bValue = (byte[]) value;

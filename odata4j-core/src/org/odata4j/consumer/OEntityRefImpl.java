@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.odata4j.core.OEntityRef;
 import org.odata4j.internal.EntitySegment;
+import org.odata4j.internal.FeedCustomizationMapping;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.xml.AtomFeedParser.AtomEntry;
 import org.odata4j.xml.AtomFeedParser.DataServicesAtomEntry;
@@ -18,13 +19,16 @@ public class OEntityRefImpl<T> implements OEntityRef<T> {
     private final String serviceRootUri;
     private final List<EntitySegment> segments = new ArrayList<EntitySegment>();
 
-    public OEntityRefImpl(boolean isDelete, ODataClient client, String serviceRootUri, String entitySetName, Object[] key) {
+    private final FeedCustomizationMapping fcMapping;
+   
+    public OEntityRefImpl(boolean isDelete, ODataClient client, String serviceRootUri, String entitySetName, Object[] key, FeedCustomizationMapping fcMapping) {
         this.isDelete = isDelete;
         this.client = client;
         this.serviceRootUri = serviceRootUri;
 
         segments.add(new EntitySegment(entitySetName, key));
-
+        
+        this.fcMapping = fcMapping;
     }
 
     @Override
@@ -53,7 +57,7 @@ public class OEntityRefImpl<T> implements OEntityRef<T> {
                 return null;
             DataServicesAtomEntry dsae = (DataServicesAtomEntry) entry;
 
-            return (T) InternalUtil.toEntity(dsae);
+            return (T) InternalUtil.toEntity(dsae,fcMapping);
         }
     }
 

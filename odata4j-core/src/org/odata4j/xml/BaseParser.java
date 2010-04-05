@@ -16,12 +16,27 @@ public class BaseParser {
 
     public static final String NS_METADATA = "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata";
     public static final String NS_DATASERVICES = "http://schemas.microsoft.com/ado/2007/08/dataservices";
+    public static final String NS_EDM2006 = "http://schemas.microsoft.com/ado/2006/04/edm";
     public static final String NS_EDM2007 = "http://schemas.microsoft.com/ado/2007/05/edm";
     public static final String NS_EDM2008 = "http://schemas.microsoft.com/ado/2008/09/edm";
     public static final String NS_EDMX = "http://schemas.microsoft.com/ado/2007/06/edmx";
     public static final String NS_EDMANNOTATION = "http://schemas.microsoft.com/ado/2009/02/edm/annotation";
    
     public static final QName2 EDMX_DATASERVICES = new QName2(NS_EDMX, "DataServices");
+    
+    public static final QName2 EDM2006_SCHEMA = new QName2(NS_EDM2006, "Schema");
+    public static final QName2 EDM2006_ENTITYTYPE = new QName2(NS_EDM2006, "EntityType");
+    public static final QName2 EDM2006_ASSOCIATION = new QName2(NS_EDM2006, "Association");
+    public static final QName2 EDM2006_COMPLEXTYPE = new QName2(NS_EDM2006, "ComplexType");
+    public static final QName2 EDM2006_ENTITYCONTAINER = new QName2(NS_EDM2006, "EntityContainer");
+    public static final QName2 EDM2006_ENTITYSET = new QName2(NS_EDM2006, "EntitySet");
+    public static final QName2 EDM2006_ASSOCIATIONSET = new QName2(NS_EDM2006, "AssociationSet");
+    public static final QName2 EDM2006_FUNCTIONIMPORT = new QName2(NS_EDM2006, "FunctionImport");
+    public static final QName2 EDM2006_PARAMETER = new QName2(NS_EDM2006, "Parameter");
+    public static final QName2 EDM2006_END = new QName2(NS_EDM2006,"End");
+    public static final QName2 EDM2006_PROPERTYREF = new QName2(NS_EDM2006,"PropertyRef");
+    public static final QName2 EDM2006_PROPERTY = new QName2(NS_EDM2006,"Property");
+    public static final QName2 EDM2006_NAVIGATIONPROPERTY = new QName2(NS_EDM2006,"NavigationProperty");
     
     public static final QName2 EDM2007_SCHEMA = new QName2(NS_EDM2007, "Schema");
     public static final QName2 EDM2007_ENTITYTYPE = new QName2(NS_EDM2007, "EntityType");
@@ -55,6 +70,7 @@ public class BaseParser {
     public static final QName2 ATOM_ENTRY = new QName2(NS_ATOM, "entry");
     public static final QName2 ATOM_ID = new QName2(NS_ATOM, "id");
     public static final QName2 ATOM_TITLE = new QName2(NS_ATOM, "title");
+    public static final QName2 ATOM_SUMMARY = new QName2(NS_ATOM, "summary");
     public static final QName2 ATOM_UPDATED = new QName2(NS_ATOM, "updated");
     public static final QName2 ATOM_CATEGORY = new QName2(NS_ATOM, "category");
     public static final QName2 ATOM_CONTENT = new QName2(NS_ATOM, "content");
@@ -72,6 +88,8 @@ public class BaseParser {
     public static final QName2 M_FC_TARGETPATH = new QName2(NS_METADATA,"FC_TargetPath");
     public static final QName2 M_FC_CONTENTKIND = new QName2(NS_METADATA,"FC_ContentKind");
     public static final QName2 M_FC_KEEPINCONTENT = new QName2(NS_METADATA,"FC_KeepInContent");
+    public static final QName2 M_FC_EPMCONTENTKIND = new QName2(NS_METADATA,"FC_EpmContentKind");
+    public static final QName2 M_FC_EPMKEEPINCONTENT = new QName2(NS_METADATA,"FC_EpmKeepInContent");
 
     public static final QName2 XML_BASE = new QName2(NS_XML, "base");
     

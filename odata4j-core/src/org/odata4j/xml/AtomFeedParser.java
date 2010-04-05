@@ -41,6 +41,7 @@ public class AtomFeedParser extends BaseParser {
     public abstract static class AtomEntry {
         public String id;
         public String title;
+        public String summary;
         public String updated;
         public String categoryTerm;
         public String categoryScheme;
@@ -168,6 +169,7 @@ public class AtomFeedParser extends BaseParser {
         String categoryTerm = null;
         String categoryScheme = null;
         String title = null;
+        String summary = null;
         String updated = null;
         String contentType = null;
 
@@ -181,6 +183,7 @@ public class AtomFeedParser extends BaseParser {
             if (event.isEndElement() && event.asEndElement().getName().equals(entryElement.getName())) {
                 rt.id = id;
                 rt.title = title;
+                rt.summary = summary;
                 rt.updated = updated;
                 rt.categoryScheme = categoryScheme;
                 rt.categoryTerm = categoryTerm;
@@ -192,6 +195,8 @@ public class AtomFeedParser extends BaseParser {
                 id = reader.getElementText();
             } else if (isStartElement(event, ATOM_TITLE)) {
                 title = reader.getElementText();
+            } else if (isStartElement(event, ATOM_SUMMARY)) {
+                summary = reader.getElementText();
             } else if (isStartElement(event, ATOM_UPDATED)) {
                 updated = reader.getElementText();
             } else if (isStartElement(event, ATOM_CATEGORY)) {

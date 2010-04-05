@@ -9,6 +9,7 @@ import java.util.Map;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OQuery;
 import org.odata4j.internal.EntitySegment;
+import org.odata4j.internal.FeedCustomizationMapping;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.xml.AtomFeedParser.AtomEntry;
 import org.odata4j.xml.AtomFeedParser.AtomFeed;
@@ -33,12 +34,16 @@ public class OQueryImpl<T> implements OQuery<T> {
     private String filter;
     private String select;
     private String lastSegment;
+    
+    private final FeedCustomizationMapping fcMapping;
 
-    public OQueryImpl(ODataClient client, Class<T> entityType, String serviceRootUri, String entitySetName) {
+    public OQueryImpl(ODataClient client, Class<T> entityType, String serviceRootUri, String entitySetName, FeedCustomizationMapping fcMapping) {
         this.client = client;
         this.entityType = entityType;
         this.serviceRootUri = serviceRootUri;
         this.lastSegment = entitySetName;
+        
+        this.fcMapping = fcMapping;
     }
 
     @Override
@@ -123,7 +128,7 @@ public class OQueryImpl<T> implements OQuery<T> {
             return entries.select(new Func1<AtomEntry, OEntity>() {
                 public OEntity apply(AtomEntry input) {
                     DataServicesAtomEntry dsae = (DataServicesAtomEntry) input;
-                    return InternalUtil.toEntity(dsae);
+                    return InternalUtil.toEntity(dsae,fcMapping);
                 }
             }).cast(entityType);
 
