@@ -6,7 +6,6 @@ import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
 import org.odata4j.examples.BaseExample;
-import org.odata4j.examples.ODataEndpoints;
 
 public class AzureTableStorageConsumerExample extends BaseExample {
 
@@ -25,7 +24,7 @@ public class AzureTableStorageConsumerExample extends BaseExample {
         reportEntities(c,"Tables",100);
 
 
-       // String tableName = "TempTable1271004684233";
+        // create composite key to use for entity-level tests
         OProperty<?>[] entityKey = new OProperty<?>[]{OProperties.string("PartitionKey", ""), OProperties.string("RowKey", "1")};
       
         report("Ensure the new entity does not exist");

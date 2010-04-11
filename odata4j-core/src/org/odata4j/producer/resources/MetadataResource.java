@@ -17,7 +17,7 @@ import org.odata4j.xml.EdmxWriter;
 public class MetadataResource {
 
     @GET
-    @Produces(ODataConstants.APPLICATION_XML_CHARSET)
+    @Produces(ODataConstants.APPLICATION_XML_CHARSET_UTF8)
     public Response getMetadata(@Context ODataProducer producer) {
 
         EdmDataServices s = producer.getMetadata();
@@ -25,6 +25,6 @@ public class MetadataResource {
         StringWriter w = new StringWriter();
         EdmxWriter.write(s, w);
 
-        return Response.ok(w.toString(), ODataConstants.APPLICATION_XML_CHARSET).header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION).build();
+        return Response.ok(w.toString(), ODataConstants.APPLICATION_XML_CHARSET_UTF8).header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION).build();
     }
 }

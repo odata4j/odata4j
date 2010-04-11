@@ -72,7 +72,7 @@ public class EntityRequestResource extends BaseResource {
     }
 
     @GET
-    @Produces(ODataConstants.APPLICATION_ATOM_XML_CHARSET)
+    @Produces(ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8)
     public Response getEntity(@Context HttpContext context, @Context ODataProducer producer, final @PathParam("entitySetName") String entitySetName, @PathParam("id") String id) {
 
         log.info(String.format("getEntity(%s,%s)", entitySetName, id));
@@ -89,7 +89,7 @@ public class EntityRequestResource extends BaseResource {
         AtomFeedWriter.generateResponseEntry(baseUri, response, sw);
         String entity = sw.toString();
 
-        return Response.ok(entity, ODataConstants.APPLICATION_ATOM_XML_CHARSET).header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION).build();
+        return Response.ok(entity, ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8).header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION).build();
 
     }
 
