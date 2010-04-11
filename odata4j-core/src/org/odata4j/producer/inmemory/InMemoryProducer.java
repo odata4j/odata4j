@@ -29,10 +29,10 @@ import org.odata4j.producer.QueryInfo;
 
 import com.sun.jersey.api.NotFoundException;
 
-import core4j.Enumerable;
-import core4j.Func;
-import core4j.Func1;
-import core4j.Predicate1;
+import org.core4j.Enumerable;
+import org.core4j.Func;
+import org.core4j.Func1;
+import org.core4j.Predicate1;
 
 public class InMemoryProducer implements ODataProducer {
 

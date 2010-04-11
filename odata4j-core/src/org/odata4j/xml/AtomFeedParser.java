@@ -18,7 +18,7 @@ import org.odata4j.stax2.XMLEventReader2;
 import org.odata4j.stax2.XMLEventWriter2;
 import org.odata4j.stax2.XMLFactoryProvider2;
 
-import core4j.Enumerable;
+import org.core4j.Enumerable;
 
 public class AtomFeedParser extends BaseParser {
 

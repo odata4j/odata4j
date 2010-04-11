@@ -1,6 +1,6 @@
 package org.odata4j.core;
 
-import core4j.Func1;
+import org.core4j.Func1;
 
 public class OFuncs {
 

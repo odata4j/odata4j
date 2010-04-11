@@ -10,9 +10,9 @@ import org.odata4j.stax2.StartElement2;
 import org.odata4j.stax2.XMLEvent2;
 import org.odata4j.stax2.XMLEventReader2;
 
-import core4j.Enumerable;
-import core4j.Func1;
-import core4j.Predicate1;
+import org.core4j.Enumerable;
+import org.core4j.Func1;
+import org.core4j.Predicate1;
 
 public class EdmxParser extends BaseParser {
 

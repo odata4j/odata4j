@@ -2,8 +2,8 @@ package org.odata4j.core;
 
 import java.util.List;
 
-import core4j.Enumerable;
-import core4j.Predicate1;
+import org.core4j.Enumerable;
+import org.core4j.Predicate1;
 
 public class OEntities {
 

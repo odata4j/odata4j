@@ -15,10 +15,10 @@ import org.odata4j.xml.AtomFeedParser.AtomEntry;
 import org.odata4j.xml.AtomFeedParser.AtomFeed;
 import org.odata4j.xml.AtomFeedParser.DataServicesAtomEntry;
 
-import core4j.Enumerable;
-import core4j.Func;
-import core4j.Func1;
-import core4j.ReadOnlyIterator;
+import org.core4j.Enumerable;
+import org.core4j.Func;
+import org.core4j.Func1;
+import org.core4j.ReadOnlyIterator;
 
 public class OQueryImpl<T> implements OQuery<T> {
 

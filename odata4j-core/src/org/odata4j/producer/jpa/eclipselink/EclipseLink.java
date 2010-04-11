@@ -10,7 +10,7 @@ import org.eclipse.persistence.internal.jpa.metamodel.AttributeImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.odata4j.edm.EdmType;
 
-import core4j.CoreUtils;
+import org.core4j.CoreUtils;
 
 public class EclipseLink {
 

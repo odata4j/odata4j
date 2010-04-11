@@ -23,14 +23,11 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 
-import core4j.Enumerable;
+import org.core4j.Enumerable;
 
 public class ODataClient {
 
-    public static boolean DUMP_REQUEST_HEADERS;
-    public static boolean DUMP_REQUEST_BODY;
-    public static boolean DUMP_RESPONSE_HEADERS;
-    public static boolean DUMP_RESPONSE_BODY;
+
 
     private final OClientBehavior[] requiredBehaviors = new OClientBehavior[] { new MethodTunnelingBehavior("MERGE") }; // jersey hates MERGE, tunnel through POST
     private final OClientBehavior[] behaviors;
@@ -113,7 +110,7 @@ public class ODataClient {
             b.header(header, request.getHeaders().get(header));
         }
 
-        if (DUMP_REQUEST_HEADERS)
+        if (ODataConsumer.DUMP_REQUEST_HEADERS)
             log(request.getMethod() + " " + webResource.toString());
 
         // request body
@@ -124,7 +121,7 @@ public class ODataClient {
             StringWriter sw = new StringWriter();
             AtomFeedWriter.generateRequestEntry(dsae, sw);
             String entity = sw.toString();
-            if (DUMP_REQUEST_BODY)
+            if (ODataConsumer.DUMP_REQUEST_BODY)
                 log(entity);
             b.entity(entity, MediaType.APPLICATION_ATOM_XML);
 
@@ -133,7 +130,7 @@ public class ODataClient {
         // execute request
         ClientResponse response = b.method(request.getMethod(), ClientResponse.class);
 
-        if (DUMP_RESPONSE_HEADERS)
+        if (ODataConsumer.DUMP_RESPONSE_HEADERS)
             dumpHeaders(response);
         int status = response.getStatus();
         for(int expStatus : expectedResponseStatus) {
@@ -148,7 +145,7 @@ public class ODataClient {
     private XMLEventReader2 doXmlRequest(ClientResponse response)  {
 
         String textEntity = response.getEntity(String.class);
-        if (DUMP_RESPONSE_BODY)
+        if (ODataConsumer.DUMP_RESPONSE_BODY)
             log(textEntity);
 
         return InternalUtil.newXMLEventReader(new StringReader(textEntity));

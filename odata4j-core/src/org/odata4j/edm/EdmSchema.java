@@ -2,7 +2,7 @@ package org.odata4j.edm;
 
 import java.util.List;
 
-import core4j.Enumerable;
+import org.core4j.Enumerable;
 
 public class EdmSchema {
 

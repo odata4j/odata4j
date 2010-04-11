@@ -6,8 +6,8 @@ import javax.ws.rs.core.MediaType;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.odata4j.consumer.ODataClient;
 import org.odata4j.consumer.ODataClientRequest;
+import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OClientBehavior;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
@@ -47,7 +47,7 @@ public class AzureTableBehavior implements OClientBehavior {
             String canonicalizedResource = "/" + account + "/" + path;
             String stringToSign = request.getMethod() + "\n\n" + contentType + "\n" + date + "\n" + canonicalizedResource;
 
-            if (ODataClient.DUMP_REQUEST_HEADERS)
+            if (ODataConsumer.DUMP_REQUEST_HEADERS)
                 System.out.println("stringToSign: " + stringToSign);
 
             Mac mac = Mac.getInstance("HmacSHA256");
@@ -58,7 +58,7 @@ public class AzureTableBehavior implements OClientBehavior {
             String sig = base64Encode(sigBytes);
             String auth = "SharedKey " + account + ":" + sig;
 
-            if (ODataClient.DUMP_REQUEST_HEADERS)
+            if (ODataConsumer.DUMP_REQUEST_HEADERS)
                 System.out.println("auth: " + auth);
 
             request = request.header("x-ms-version", "2009-09-19").header("x-ms-date", date).header("Authorization", auth).header("DataServiceVersion", "1.0;NetFx").header("MaxDataServiceVersion", "1.0;NetFx");

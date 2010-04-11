@@ -22,8 +22,8 @@ import org.odata4j.stax2.XMLFactoryProvider2;
 import org.odata4j.stax2.XMLWriter2;
 import org.odata4j.xml.AtomFeedParser.DataServicesAtomEntry;
 
-import core4j.Enumerable;
-import core4j.Func1;
+import org.core4j.Enumerable;
+import org.core4j.Func1;
 
 public class AtomFeedWriter extends BaseWriter {
 

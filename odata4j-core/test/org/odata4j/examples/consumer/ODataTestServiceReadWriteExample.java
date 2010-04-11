@@ -3,7 +3,6 @@ package org.odata4j.examples.consumer;
 import static org.odata4j.examples.ODataEndpoints.ODATA_TEST_SERVICE_READWRITE2;
 
 import org.joda.time.LocalDateTime;
-import org.odata4j.consumer.ODataClient;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OFuncs;
@@ -18,10 +17,10 @@ public class ODataTestServiceReadWriteExample extends BaseExample {
         // create a new odata consumer pointing to the odata test read-write service
         ODataConsumer c = ODataConsumer.create(ODATA_TEST_SERVICE_READWRITE2);
         
-//        ODataClient.DUMP_REQUEST_HEADERS = true;
-//        ODataClient.DUMP_REQUEST_BODY = true;
-//        ODataClient.DUMP_RESPONSE_HEADERS = true;
-//        ODataClient.DUMP_RESPONSE_BODY = true;
+        ODataConsumer.DUMP_REQUEST_HEADERS = true;
+        ODataConsumer.DUMP_REQUEST_BODY = true;
+        ODataConsumer.DUMP_RESPONSE_HEADERS = true;
+        ODataConsumer.DUMP_RESPONSE_BODY = true;
         
         // take a look at the service edm
         reportMetadata(c.getMetadata());

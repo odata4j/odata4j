@@ -16,11 +16,16 @@ import org.odata4j.edm.EdmProperty;
 import org.odata4j.internal.FeedCustomizationMapping;
 import org.odata4j.xml.AtomFeedParser.CollectionInfo;
 
-import core4j.Enumerable;
-import core4j.Func1;
+import org.core4j.Enumerable;
+import org.core4j.Func1;
 
 public class ODataConsumer {
 
+    public static boolean DUMP_REQUEST_HEADERS;
+    public static boolean DUMP_REQUEST_BODY;
+    public static boolean DUMP_RESPONSE_HEADERS;
+    public static boolean DUMP_RESPONSE_BODY;
+    
     private final String serviceRootUri;
     private final ODataClient client;
 

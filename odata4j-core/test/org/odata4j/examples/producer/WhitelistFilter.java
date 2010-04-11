@@ -7,7 +7,7 @@ import java.util.logging.Logger;
 import com.sun.net.httpserver.Filter;
 import com.sun.net.httpserver.HttpExchange;
 
-import core4j.Enumerable;
+import org.core4j.Enumerable;
 
 public class WhitelistFilter extends Filter {
 

@@ -10,7 +10,7 @@ import org.odata4j.internal.InternalUtil;
 import org.odata4j.xml.AtomFeedParser.AtomEntry;
 import org.odata4j.xml.AtomFeedParser.DataServicesAtomEntry;
 
-import core4j.Enumerable;
+import org.core4j.Enumerable;
 
 public class OEntityRefImpl<T> implements OEntityRef<T> {
 

@@ -19,8 +19,8 @@ import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
-import core4j.CoreUtils;
-import core4j.Enumerable;
+import org.core4j.CoreUtils;
+import org.core4j.Enumerable;
 
 public class JerseyServer {
 

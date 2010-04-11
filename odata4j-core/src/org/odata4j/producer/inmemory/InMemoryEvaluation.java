@@ -28,7 +28,7 @@ import org.odata4j.expression.StringLiteral;
 import org.odata4j.expression.SubExpression;
 import org.odata4j.expression.SubstringOfMethodCallExpression;
 
-import core4j.Enumerable;
+import org.core4j.Enumerable;
 
 public class InMemoryEvaluation {
 

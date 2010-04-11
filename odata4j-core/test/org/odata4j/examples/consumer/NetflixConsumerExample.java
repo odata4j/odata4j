@@ -14,6 +14,8 @@ public class NetflixConsumerExample extends BaseExample {
 
         ODataConsumer c = ODataConsumer.create(ODataEndpoints.NETFLIX);
 
+        //ODataConsumer.DUMP_REQUEST_HEADERS = true;
+        
         // locate the netflix id for Morgan Spurlock
         int morganSpurlockId = c.getEntities("People").filter("substringof('Spurlock',Name)").execute().first().getProperty("Id", Integer.class).getValue();
 

@@ -16,6 +16,10 @@ public class EdmProperty {
     public final String fcEpmContentKind;
     public final String fcEpmKeepInContent;
 
+    public EdmProperty(String name, EdmType type, boolean nullable){
+        this(name,type,nullable,null,null,null,null,null,null,null,null,null);
+    }
+            
     public EdmProperty(String name, EdmType type, boolean nullable, Integer maxLength, Boolean unicode, Boolean fixedLength,
             String storeGeneratedPattern,
             String fcTargetPath,String fcContentKind,String fcKeepInContent, String fcEpmContentKind, String fcEpmKeepInContent) {

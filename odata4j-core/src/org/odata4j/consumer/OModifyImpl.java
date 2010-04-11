@@ -11,8 +11,8 @@ import org.odata4j.core.OProperty;
 import org.odata4j.internal.EntitySegment;
 import org.odata4j.xml.AtomFeedParser.DataServicesAtomEntry;
 
-import core4j.Enumerable;
-import core4j.Predicate1;
+import org.core4j.Enumerable;
+import org.core4j.Predicate1;
 
 public class OModifyImpl<T> implements OModify<T> {
 

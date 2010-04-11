@@ -5,7 +5,7 @@ import org.odata4j.stax2.QName2;
 import org.odata4j.stax2.StartElement2;
 import org.odata4j.stax2.XMLEvent2;
 
-import core4j.Enumerable;
+import org.core4j.Enumerable;
 
 public class BaseParser {
     

@@ -18,7 +18,7 @@ import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSchema;
 
-import core4j.Enumerable;
+import org.core4j.Enumerable;
 
 public class BaseExample {
 

@@ -2,7 +2,6 @@ package org.odata4j.internal;
 
 import java.io.Reader;
 import java.lang.reflect.Field;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -15,10 +14,10 @@ import org.odata4j.stax2.XMLFactoryProvider2;
 import org.odata4j.stax2.XMLInputFactory2;
 import org.odata4j.xml.AtomFeedParser.DataServicesAtomEntry;
 
-import core4j.Enumerable;
-import core4j.Func1;
-import core4j.Funcs;
-import core4j.ThrowingFunc1;
+import org.core4j.Enumerable;
+import org.core4j.Func1;
+import org.core4j.Funcs;
+import org.core4j.ThrowingFunc1;
 
 public class InternalUtil {
 

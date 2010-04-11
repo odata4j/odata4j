@@ -26,7 +26,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import core4j.ReadOnlyIterator;
+import org.core4j.ReadOnlyIterator;
 
 public class DomXMLFactoryProvider2 extends XMLFactoryProvider2 {
 

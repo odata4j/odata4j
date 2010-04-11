@@ -13,7 +13,7 @@ import org.odata4j.producer.resources.ODataProducerProvider;
 import org.odata4j.producer.resources.ODataResourceConfig;
 import org.odata4j.producer.server.JerseyServer;
 
-import core4j.Funcs;
+import org.core4j.Funcs;
 
 public class ScenarioTest {
 

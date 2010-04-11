@@ -10,8 +10,8 @@ import org.odata4j.stax2.QName2;
 import org.odata4j.stax2.XMLFactoryProvider2;
 import org.odata4j.stax2.XMLWriter2;
 
-import core4j.Enumerable;
-import core4j.Funcs;
+import org.core4j.Enumerable;
+import org.core4j.Funcs;
 
 public class ServiceDocumentWriter extends BaseWriter {
 

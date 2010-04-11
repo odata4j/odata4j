@@ -1,6 +1,6 @@
 package org.odata4j.core;
 
-import core4j.Enumerable;
+import org.core4j.Enumerable;
 
 public interface OQuery<T> {
 

@@ -31,9 +31,9 @@ import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmType;
 import org.odata4j.producer.jpa.eclipselink.EclipseLink;
 
-import core4j.Enumerable;
-import core4j.Func1;
-import core4j.Predicate1;
+import org.core4j.Enumerable;
+import org.core4j.Func1;
+import org.core4j.Predicate1;
 
 public class JPAEdmGenerator {
 

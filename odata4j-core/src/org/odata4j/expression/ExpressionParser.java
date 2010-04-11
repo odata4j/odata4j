@@ -14,9 +14,9 @@ import org.joda.time.format.DateTimeFormatter;
 import org.odata4j.repack.org.apache.commons.codec.DecoderException;
 import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
 
-import core4j.Enumerable;
-import core4j.Func1;
-import core4j.Func2;
+import org.core4j.Enumerable;
+import org.core4j.Func1;
+import org.core4j.Func2;
 
 public class ExpressionParser {
 

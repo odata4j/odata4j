@@ -31,8 +31,8 @@ import org.odata4j.producer.InlineCount;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
 
-import core4j.Enumerable;
-import core4j.Func1;
+import org.core4j.Enumerable;
+import org.core4j.Func1;
 
 public class JPAProducer implements ODataProducer {
 
