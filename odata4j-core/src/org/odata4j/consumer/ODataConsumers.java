@@ -20,7 +20,7 @@ public class ODataConsumers {
     public static ODataConsumer dallas(String serviceRootUri, String accountKey, String uniqueUserId) {
         OClientBehavior dallasAuth = new DallasAuthenticationBehavior(accountKey, uniqueUserId);
 
-        OClientBehavior paging = new OldStylePagingBehavior(50, 20);
+        OClientBehavior paging = new OldStylePagingBehavior(50, 1);
 
         return ODataConsumer.create(serviceRootUri, dallasAuth, paging);
     }

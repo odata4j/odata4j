@@ -17,4 +17,7 @@ public class ODataEndpoints {
     public static final String OLD_NORTHWIND = "http://northwindazure.cloudapp.net/Northwind.svc/";
     public static final String HANSELMAN_SO = "http://173.46.159.103/service.svc/";
     public static final String BASEBALL_STATS = "http://173.46.159.199/baseballstats/BaseballStats.svc/";
+    
+    public static final String DALLAS_AP = "https://api.sqlazureservices.com/APService.svc/";
+    public static final String DALLAS_UNESCO_UIS = "https://api.sqlazureservices.com/UnService.svc/";
 }

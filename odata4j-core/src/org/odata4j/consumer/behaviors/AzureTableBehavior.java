@@ -35,6 +35,7 @@ public class AzureTableBehavior implements OClientBehavior {
             // CanonicalizedResource;
 
             String path = request.getUrl().substring(request.getUrl().indexOf('/', 8) + 1);
+            boolean isTableRequest = path.startsWith("Tables(");
             String contentType = request.getHeaders().get("Content-Type");
             contentType = contentType == null ? "" : contentType;
             boolean isPut = request.getMethod().equals("PUT");
@@ -61,13 +62,20 @@ public class AzureTableBehavior implements OClientBehavior {
             if (ODataConsumer.DUMP_REQUEST_HEADERS)
                 System.out.println("auth: " + auth);
 
-            request = request.header("x-ms-version", "2009-09-19").header("x-ms-date", date).header("Authorization", auth).header("DataServiceVersion", "1.0;NetFx").header("MaxDataServiceVersion", "1.0;NetFx");
+            request = request
+                    .header("x-ms-version", "2009-09-19")
+                    .header("x-ms-date", date).header("Authorization", auth)
+                    .header("DataServiceVersion", "1.0;NetFx")
+                    .header("MaxDataServiceVersion", "1.0;NetFx");
 
-            if (isPut || isDelete || (isPost && request.getHeaders().containsKey(ODataConstants.Headers.X_HTTP_METHOD)))
+            if (isPut 
+                    || (isDelete && !isTableRequest)
+                    || (isPost && request.getHeaders().containsKey(ODataConstants.Headers.X_HTTP_METHOD)))
                 request = request.header("If-Match", "*"); // azure tables require for put,delete,merge
 
             if (isDelete) {
                 request = request.header("Content-Type", MediaType.APPLICATION_ATOM_XML);
+                request = request.header("Content-Length", "0");
             }
 
             return request;

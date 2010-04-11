@@ -62,10 +62,13 @@ public class ODataConsumer {
     }
     
     private EdmDataServices cachedMetadata;
+    private boolean gotMetadata;
+    
     public EdmDataServices getMetadata() {
-        if (cachedMetadata==null){
+        if (!gotMetadata){
             ODataClientRequest request = ODataClientRequest.get(serviceRootUri + "$metadata");
             cachedMetadata = client.getMetadata(request);
+            gotMetadata = true;
         }
         return cachedMetadata;
     }
@@ -86,19 +89,23 @@ public class ODataConsumer {
 
     public OCreate<OEntity> createEntity(String entitySetName) {
         FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
+        gotMetadata = false;
         return new OCreateImpl<OEntity>(client, serviceRootUri, entitySetName, mapping);
     }
 
     public OModify<OEntity> updateEntity(OEntity entity, String entitySetName, Object... key) {
+        gotMetadata = false;
         return new OModifyImpl<OEntity>(entity, client, serviceRootUri, entitySetName, key);
     }
 
     public OModify<OEntity> mergeEntity(String entitySetName, Object... key) {
+        gotMetadata = false;
         return new OModifyImpl<OEntity>(null, client, serviceRootUri, entitySetName, key);
     }
 
     public OEntityRef<Void> deleteEntity(String entitySetName, Object... key) {
         FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
+        gotMetadata = false;
         return new OEntityRefImpl<Void>(true, client, serviceRootUri, entitySetName, key, mapping);
     }
 
@@ -114,15 +121,20 @@ public class ODataConsumer {
     private FeedCustomizationMapping getFeedCustomizationMapping(String entitySetName){
         
         if (!cachedMappings.containsKey(entitySetName)) {
-            EdmDataServices metadata = getMetadata();
-            EdmEntitySet ees = metadata.getEdmEntitySet(entitySetName);
-            EdmEntityType eet = ees.type;
+           
             FeedCustomizationMapping rt = new FeedCustomizationMapping();
-            for(EdmProperty ep : eet.properties){
-                if ("SyndicationTitle".equals(ep.fcTargetPath) && "false".equals(ep.fcKeepInContent))
-                    rt.titlePropName = ep.name;  
-                if ("SyndicationSummary".equals(ep.fcTargetPath) && "false".equals(ep.fcKeepInContent))
-                    rt.summaryPropName = ep.name;  
+            
+            EdmDataServices metadata = getMetadata();
+            if (metadata != null) {
+                EdmEntitySet ees = metadata.getEdmEntitySet(entitySetName);
+                EdmEntityType eet = ees.type;
+                
+                for(EdmProperty ep : eet.properties){
+                    if ("SyndicationTitle".equals(ep.fcTargetPath) && "false".equals(ep.fcKeepInContent))
+                        rt.titlePropName = ep.name;  
+                    if ("SyndicationSummary".equals(ep.fcTargetPath) && "false".equals(ep.fcKeepInContent))
+                        rt.summaryPropName = ep.name;  
+                }
             }
             cachedMappings.put(entitySetName, rt);
         }

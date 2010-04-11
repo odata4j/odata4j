@@ -42,7 +42,9 @@ public class ODataClient {
     
     public EdmDataServices getMetadata(ODataClientRequest request){
         
-        ClientResponse response = doRequest(request, 200);
+        ClientResponse response = doRequest(request, 200,404);
+        if (response.getStatus()==404)
+            return null;
         XMLEventReader2 reader = doXmlRequest(response);
         return EdmxParser.parseMetadata(reader);
     }
