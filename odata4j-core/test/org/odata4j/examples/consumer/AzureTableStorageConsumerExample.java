@@ -9,9 +9,9 @@ import org.odata4j.examples.BaseExample;
 
 public class AzureTableStorageConsumerExample extends BaseExample {
 
-    public static void main(String[] args) {
+    public static void main(String... args) {
 
-        String[] azureCreds = System.getenv("AZURESTORAGE").split(":");
+        String[] azureCreds = args.length>0?args:System.getenv("AZURESTORAGE").split(":");
         String account = azureCreds[0];
         String key = azureCreds[1];
         

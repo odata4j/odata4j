@@ -7,9 +7,9 @@ import org.odata4j.examples.ODataEndpoints;
 
 public class DallasConsumerExampleAP extends BaseExample {
 
-    public static void main(String[] args) {
+    public static void main(String... args) {
 
-        String[] dallasCreds = System.getenv("DALLAS").split(":");
+        String[] dallasCreds = args.length>0?args:System.getenv("DALLAS").split(":");
         String accountKey = dallasCreds[0];
         String uniqueUserId = dallasCreds[1];
         

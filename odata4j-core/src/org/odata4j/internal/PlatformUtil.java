@@ -18,7 +18,6 @@ public class PlatformUtil {
         if (runningOnAndroid()) {
             androidInit();
         }
-        // RUNNING_ON_ANDROID= true;
     }
 
     private static void androidInit() {

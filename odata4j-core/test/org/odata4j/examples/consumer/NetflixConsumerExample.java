@@ -10,7 +10,7 @@ import org.odata4j.examples.ODataEndpoints;
 
 public class NetflixConsumerExample extends BaseExample {
 
-    public static void main(String[] args) {
+    public static void main(String... args) {
 
         ODataConsumer c = ODataConsumer.create(ODataEndpoints.NETFLIX);
 

@@ -20,4 +20,6 @@ public class ODataEndpoints {
     
     public static final String DALLAS_AP = "https://api.sqlazureservices.com/APService.svc/";
     public static final String DALLAS_UNESCO_UIS = "https://api.sqlazureservices.com/UnService.svc/";
+    
+    public static final String ODATA4JSAMPLE_APPSPOT = "http://odata4j-sample.appspot.com/datastore.svc/";
 }

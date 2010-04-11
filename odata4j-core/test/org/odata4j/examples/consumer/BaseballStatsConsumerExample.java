@@ -8,7 +8,7 @@ import org.odata4j.examples.ODataEndpoints;
 public class BaseballStatsConsumerExample extends BaseExample {
 
     
-    public static void main(String[] args) {
+    public static void main() {
         
         ODataConsumer c = ODataConsumer.create(ODataEndpoints.BASEBALL_STATS);
         ODataConsumer.DUMP_REQUEST_HEADERS = true;
