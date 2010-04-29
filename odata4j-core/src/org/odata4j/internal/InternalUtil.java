@@ -9,6 +9,7 @@ import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
+import org.odata4j.producer.inmemory.BeanBasedPropertyModel;
 import org.odata4j.stax2.XMLEventReader2;
 import org.odata4j.stax2.XMLFactoryProvider2;
 import org.odata4j.stax2.XMLInputFactory2;
@@ -97,6 +98,25 @@ public class InternalUtil {
         
         return OEntities.create(properties.toList());
        
+    }
+    
+    public static <T> T toPojo(Class<T> pojoClass, DataServicesAtomEntry dsae, FeedCustomizationMapping mapping){
+        OEntity oe = toEntity(dsae,mapping);
+        
+        try {
+            T rt = pojoClass.newInstance();
+            
+            BeanBasedPropertyModel properties = new BeanBasedPropertyModel(pojoClass);
+            
+            for(OProperty<?> op : oe.getProperties()){
+                properties.setPropertyValue(rt,op.getName(),op.getValue());
+            }
+            
+            return rt;
+        } catch (Exception e) {
+           throw new RuntimeException(e);
+        } 
+        
     }
 
 }

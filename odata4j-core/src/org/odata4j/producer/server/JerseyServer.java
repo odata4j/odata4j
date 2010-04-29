@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Logger;
 
 import com.sun.jersey.api.container.ContainerFactory;
@@ -75,7 +77,12 @@ public class JerseyServer {
     }
 
     public void stop() {
+       
         server.stop(0);
+        
+        Executor e = server.getExecutor();
+        ThreadPoolExecutor tpe = (ThreadPoolExecutor)e;
+        tpe.shutdown();
     }
 
     @SuppressWarnings("unchecked")

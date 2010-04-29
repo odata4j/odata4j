@@ -9,10 +9,12 @@ public class BeanBasedPropertyModel implements PropertyModel {
 
     private final Class<?> clazz;
     private final Map<String, Method> getters;
+    private final Map<String, Method> setters;
 
     public BeanBasedPropertyModel(Class<?> clazz) {
         this.clazz = clazz;
         this.getters = getBeanGetters(clazz);
+        this.setters = getBeanSetters(clazz);
     }
 
     @Override
@@ -35,6 +37,17 @@ public class BeanBasedPropertyModel implements PropertyModel {
             throw new IllegalArgumentException("No getter found for propertyName " + propertyName);
         return method;
     }
+    
+    private Method getSetter(String propertyName) {
+        Method method = findSetter(propertyName);
+        if (method == null)
+            throw new IllegalArgumentException("No setter found for propertyName " + propertyName);
+        return method;
+    }
+    
+    private Method findSetter(String propertyName) {
+        return setters.get(propertyName);
+    }
 
     @Override
     public Object getPropertyValue(Object target, String propertyName) {
@@ -49,6 +62,21 @@ public class BeanBasedPropertyModel implements PropertyModel {
             throw new RuntimeException(e);
         }
     }
+    
+    @Override
+    public void setPropertyValue(Object target, String propertyName, Object propertyValue) {
+        Method method = findSetter(propertyName);
+        if (method==null)
+            return;
+        if (!method.isAccessible())
+            method.setAccessible(true);
+
+        try {
+            method.invoke(target,propertyValue);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private static Map<String, Method> getBeanGetters(Class<?> clazz) {
 
@@ -56,7 +84,6 @@ public class BeanBasedPropertyModel implements PropertyModel {
         for(Method method : clazz.getMethods()) {
             String methodName = method.getName();
             if (methodName.startsWith("get") && methodName.length() > 3 && Character.isUpperCase(methodName.charAt(3)) && method.getParameterTypes().length == 0 && !method.getReturnType().equals(Void.TYPE) && !Modifier.isStatic(method.getModifiers())
-
             ) {
                 String name = methodName.substring(3);
                 rt.put(name, method);
@@ -70,5 +97,22 @@ public class BeanBasedPropertyModel implements PropertyModel {
         }
         return rt;
     }
+    
+    private static Map<String, Method> getBeanSetters(Class<?> clazz) {
+
+        Map<String, Method> rt = new HashMap<String, Method>();
+        for(Method method : clazz.getMethods()) {
+            String methodName = method.getName();
+            if (methodName.startsWith("set") && methodName.length() > 3 && Character.isUpperCase(methodName.charAt(3)) && method.getParameterTypes().length == 1 && method.getReturnType().equals(Void.TYPE) && !Modifier.isStatic(method.getModifiers())
+            ) {
+                String name = methodName.substring(3);
+                rt.put(name, method);
+
+            }
+            
+        }
+        return rt;
+    }
+
 
 }

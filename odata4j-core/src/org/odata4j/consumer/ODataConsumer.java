@@ -13,6 +13,7 @@ import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmEntityType;
 import org.odata4j.edm.EdmProperty;
+import org.odata4j.examples.producer.RoundtripExample.Customer;
 import org.odata4j.internal.FeedCustomizationMapping;
 import org.odata4j.xml.AtomFeedParser.CollectionInfo;
 
@@ -78,8 +79,14 @@ public class ODataConsumer {
     
     
     public OQuery<OEntity> getEntities(String entitySetName) {
+        //FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
+        //return new OQueryImpl<OEntity>(client, OEntity.class, serviceRootUri, entitySetName, mapping);
+        return getEntities(OEntity.class,entitySetName);
+    }
+    
+    public <T>  OQuery<T> getEntities(Class<T> pojoClass, String entitySetName) {
         FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
-        return new OQueryImpl<OEntity>(client, OEntity.class, serviceRootUri, entitySetName, mapping);
+        return new OQueryImpl<T>(client, pojoClass, serviceRootUri, entitySetName, mapping);
     }
 
     public OEntityRef<OEntity> getEntity(String entitySetName, Object... key) {
@@ -140,6 +147,8 @@ public class ODataConsumer {
         }
         return cachedMappings.get(entitySetName);
     }
+
+   
     
 
 }

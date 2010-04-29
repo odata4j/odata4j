@@ -123,18 +123,16 @@ public class OQueryImpl<T> implements OQuery<T> {
 
         Enumerable<AtomEntry> entries = getEntries(request);
 
-        if (entityType.equals(OEntity.class)) {
-
-            return entries.select(new Func1<AtomEntry, OEntity>() {
-                public OEntity apply(AtomEntry input) {
-                    DataServicesAtomEntry dsae = (DataServicesAtomEntry) input;
-                    return InternalUtil.toEntity(dsae,fcMapping);
-                }
-            }).cast(entityType);
-
-        }
-
-        throw new UnsupportedOperationException("Entity type " + entityType);
+        return entries.select(new Func1<AtomEntry, T>() {
+            public T apply(AtomEntry input) {
+                DataServicesAtomEntry dsae = (DataServicesAtomEntry) input;
+                
+                if (entityType.equals(OEntity.class))
+                  return (T)InternalUtil.toEntity(dsae,fcMapping);
+                else
+                  return (T)InternalUtil.toPojo(entityType, dsae,fcMapping);
+            }
+        }).cast(entityType);
     }
 
     private Enumerable<AtomEntry> getEntries(final ODataClientRequest request) {

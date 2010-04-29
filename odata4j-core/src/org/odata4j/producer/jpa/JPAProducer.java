@@ -3,6 +3,7 @@ package org.odata4j.producer.jpa;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -174,11 +175,18 @@ public class JPAProducer implements ODataProducer {
                 Attribute<?, ?> att = entityType.getAttribute(ep.name);
                 Member member = att.getJavaMember();
 
-                if (!(member instanceof Field))
-                    throw new UnsupportedOperationException("Implement member" + member);
-                Field field = (Field) member;
-                Object value = field.get(jpaEntity);
-                if (ep.type == EdmType.STRING) {
+   				Object value;
+   				if (member instanceof Method) {
+   					Method method = (Method) member;
+   					value = method.invoke(jpaEntity);
+   				} else if (member instanceof Field) {
+   					Field field = (Field) member;
+   					value = field.get(jpaEntity);
+   				} else {
+   					throw new UnsupportedOperationException("Implement member" + member);
+   				}
+
+   				if (ep.type == EdmType.STRING) {
                     String sValue = (String) value;
                     rt.add(OProperties.string(ep.name, sValue));
                 } else if (ep.type == EdmType.INT32) {

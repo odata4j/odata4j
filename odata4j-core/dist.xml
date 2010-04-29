@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project basedir="." default="dist" name="odata4j-core-dist">
-	<property name="dist.version" value="0.1" />
+	
+	<!-- this property labels the build -->
+	<property name="dist.version" value="SNAPSHOT-20100429" />
+	<!-- <property name="dist.version" value="0.1" /> -->
+	
 	<property name="dist.versiondir" value="dist/${dist.version}" />
 	<property name="dist.archivename" value="odata4j-archive-${dist.version}" />
 	<property name="dist.archivedir" value="${dist.versiondir}/${dist.archivename}" />

@@ -51,6 +51,8 @@ public class JPAEdmGenerator {
             return EdmType.INT16;
         if (javaType.equals(Integer.class) || javaType.equals(Integer.TYPE))
             return EdmType.INT32;
+        if (javaType.equals(Long.class) || javaType.equals(Long.TYPE))
+        	return EdmType.INT64;
         if (javaType.equals(Boolean.class) || javaType.equals(Boolean.TYPE))
             return EdmType.BOOLEAN;
         if (javaType.equals(Date.class))
