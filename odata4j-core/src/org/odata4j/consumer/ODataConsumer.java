@@ -15,7 +15,7 @@ import org.odata4j.edm.EdmEntityType;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.examples.producer.RoundtripExample.Customer;
 import org.odata4j.internal.FeedCustomizationMapping;
-import org.odata4j.xml.AtomFeedParser.CollectionInfo;
+import org.odata4j.xml.AtomFeedFormatParser.CollectionInfo;
 
 import org.core4j.Enumerable;
 import org.core4j.Func1;
@@ -76,24 +76,28 @@ public class ODataConsumer {
     
     
     
-    
-    
     public OQuery<OEntity> getEntities(String entitySetName) {
-        //FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
-        //return new OQueryImpl<OEntity>(client, OEntity.class, serviceRootUri, entitySetName, mapping);
         return getEntities(OEntity.class,entitySetName);
     }
     
-    public <T>  OQuery<T> getEntities(Class<T> pojoClass, String entitySetName) {
+    public <T> OQuery<T> getEntities(Class<T> entityType, String entitySetName) {
         FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
-        return new OQueryImpl<T>(client, pojoClass, serviceRootUri, entitySetName, mapping);
+        return new OQueryImpl<T>(client, entityType, serviceRootUri, entitySetName, mapping);
     }
 
+    
+    
     public OEntityRef<OEntity> getEntity(String entitySetName, Object... key) {
+        return getEntity(OEntity.class,entitySetName,key);
+    }
+    
+    public <T> OEntityRef<T> getEntity(Class<T> entityType, String entitySetName, Object... key) {
         FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
-        return new OEntityRefImpl<OEntity>(false, client, serviceRootUri, entitySetName, key, mapping);
+        return new OEntityRefImpl<T>(false, client, entityType, serviceRootUri, entitySetName, key, mapping);
     }
 
+    
+    
     public OCreate<OEntity> createEntity(String entitySetName) {
         FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
         gotMetadata = false;
@@ -113,7 +117,7 @@ public class ODataConsumer {
     public OEntityRef<Void> deleteEntity(String entitySetName, Object... key) {
         FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
         gotMetadata = false;
-        return new OEntityRefImpl<Void>(true, client, serviceRootUri, entitySetName, key, mapping);
+        return new OEntityRefImpl<Void>(true, client, null, serviceRootUri, entitySetName, key, mapping);
     }
 
     

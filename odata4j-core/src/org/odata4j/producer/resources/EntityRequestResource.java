@@ -19,7 +19,7 @@ import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OProperty;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.ODataProducer;
-import org.odata4j.xml.AtomFeedWriter;
+import org.odata4j.xml.AtomFeedFormatWriter;
 
 import com.sun.jersey.api.core.HttpContext;
 
@@ -86,7 +86,7 @@ public class EntityRequestResource extends BaseResource {
 
         String baseUri = context.getUriInfo().getBaseUri().toString();
         StringWriter sw = new StringWriter();
-        AtomFeedWriter.generateResponseEntry(baseUri, response, sw);
+        AtomFeedFormatWriter.generateResponseEntry(baseUri, response, sw);
         String entity = sw.toString();
 
         return Response.ok(entity, ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8).header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION).build();

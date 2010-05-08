@@ -9,7 +9,7 @@ import org.odata4j.core.OEntity;
 import org.odata4j.core.OModify;
 import org.odata4j.core.OProperty;
 import org.odata4j.internal.EntitySegment;
-import org.odata4j.xml.AtomFeedParser.DataServicesAtomEntry;
+import org.odata4j.xml.AtomFeedFormatParser.DataServicesAtomEntry;
 
 import org.core4j.Enumerable;
 import org.core4j.Predicate1;

@@ -7,8 +7,8 @@ import org.odata4j.core.OEntityRef;
 import org.odata4j.internal.EntitySegment;
 import org.odata4j.internal.FeedCustomizationMapping;
 import org.odata4j.internal.InternalUtil;
-import org.odata4j.xml.AtomFeedParser.AtomEntry;
-import org.odata4j.xml.AtomFeedParser.DataServicesAtomEntry;
+import org.odata4j.xml.AtomFeedFormatParser.AtomEntry;
+import org.odata4j.xml.AtomFeedFormatParser.DataServicesAtomEntry;
 
 import org.core4j.Enumerable;
 
@@ -16,14 +16,16 @@ public class OEntityRefImpl<T> implements OEntityRef<T> {
 
     private final boolean isDelete;
     private final ODataClient client;
+    private final Class<T> entityType;
     private final String serviceRootUri;
     private final List<EntitySegment> segments = new ArrayList<EntitySegment>();
 
     private final FeedCustomizationMapping fcMapping;
    
-    public OEntityRefImpl(boolean isDelete, ODataClient client, String serviceRootUri, String entitySetName, Object[] key, FeedCustomizationMapping fcMapping) {
+    public OEntityRefImpl(boolean isDelete, ODataClient client, Class<T> entityType, String serviceRootUri, String entitySetName, Object[] key, FeedCustomizationMapping fcMapping) {
         this.isDelete = isDelete;
         this.client = client;
+        this.entityType = entityType;
         this.serviceRootUri = serviceRootUri;
 
         segments.add(new EntitySegment(entitySetName, key));
@@ -57,7 +59,7 @@ public class OEntityRefImpl<T> implements OEntityRef<T> {
                 return null;
             DataServicesAtomEntry dsae = (DataServicesAtomEntry) entry;
 
-            return (T) InternalUtil.toEntity(dsae,fcMapping);
+            return (T) InternalUtil.toEntity(entityType, dsae,fcMapping);
         }
     }
 

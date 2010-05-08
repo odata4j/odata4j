@@ -10,7 +10,7 @@ import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperty;
 import org.odata4j.internal.FeedCustomizationMapping;
 import org.odata4j.internal.InternalUtil;
-import org.odata4j.xml.AtomFeedParser.DataServicesAtomEntry;
+import org.odata4j.xml.AtomFeedFormatParser.DataServicesAtomEntry;
 
 public class OCreateImpl<T> implements OCreate<T> {
 
@@ -39,7 +39,7 @@ public class OCreateImpl<T> implements OCreate<T> {
         ODataClientRequest request = ODataClientRequest.post(serviceRootUri + entitySetName, entry);
 
         DataServicesAtomEntry dsae = client.createEntity(request);
-        OEntity rt = InternalUtil.toEntity(dsae,fcMapping);
+        OEntity rt = InternalUtil.toOEntity(dsae,fcMapping);
         return (T) rt;
     }
 

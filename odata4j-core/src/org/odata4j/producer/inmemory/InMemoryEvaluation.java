@@ -373,6 +373,9 @@ public class InMemoryEvaluation {
         if ((obj instanceof Number) && targetType.equals(Byte.class))
             return ((Number) obj).byteValue();
 
+        if (objClass.equals(Integer.class) && targetType.equals(Integer.TYPE))
+            return obj;
+        
         throw new UnsupportedOperationException("Unable to cast a " + objClass.getSimpleName() + " to a " + targetType.getSimpleName());
     }
 

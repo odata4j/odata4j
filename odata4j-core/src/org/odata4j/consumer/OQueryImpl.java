@@ -11,9 +11,9 @@ import org.odata4j.core.OQuery;
 import org.odata4j.internal.EntitySegment;
 import org.odata4j.internal.FeedCustomizationMapping;
 import org.odata4j.internal.InternalUtil;
-import org.odata4j.xml.AtomFeedParser.AtomEntry;
-import org.odata4j.xml.AtomFeedParser.AtomFeed;
-import org.odata4j.xml.AtomFeedParser.DataServicesAtomEntry;
+import org.odata4j.xml.AtomFeedFormatParser.AtomEntry;
+import org.odata4j.xml.AtomFeedFormatParser.AtomFeed;
+import org.odata4j.xml.AtomFeedFormatParser.DataServicesAtomEntry;
 
 import org.core4j.Enumerable;
 import org.core4j.Func;
@@ -126,11 +126,8 @@ public class OQueryImpl<T> implements OQuery<T> {
         return entries.select(new Func1<AtomEntry, T>() {
             public T apply(AtomEntry input) {
                 DataServicesAtomEntry dsae = (DataServicesAtomEntry) input;
-                
-                if (entityType.equals(OEntity.class))
-                  return (T)InternalUtil.toEntity(dsae,fcMapping);
-                else
-                  return (T)InternalUtil.toPojo(entityType, dsae,fcMapping);
+              
+                return InternalUtil.toEntity(entityType, dsae, fcMapping);
             }
         }).cast(entityType);
     }

@@ -1,7 +1,12 @@
 package org.odata4j.internal;
 
 import java.io.Reader;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -10,10 +15,11 @@ import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
 import org.odata4j.producer.inmemory.BeanBasedPropertyModel;
+import org.odata4j.producer.inmemory.BeanModel;
 import org.odata4j.stax2.XMLEventReader2;
 import org.odata4j.stax2.XMLFactoryProvider2;
 import org.odata4j.stax2.XMLInputFactory2;
-import org.odata4j.xml.AtomFeedParser.DataServicesAtomEntry;
+import org.odata4j.xml.AtomFeedFormatParser.DataServicesAtomEntry;
 
 import org.core4j.Enumerable;
 import org.core4j.Func1;
@@ -86,7 +92,15 @@ public class InternalUtil {
         }
     }
 
-    public static OEntity toEntity(DataServicesAtomEntry dsae, FeedCustomizationMapping mapping) {
+    public static <T> T toEntity(Class<T> entityType, DataServicesAtomEntry dsae, FeedCustomizationMapping fcMapping){
+        OEntity oe = InternalUtil.toOEntity(dsae,fcMapping);
+        if (entityType.equals(OEntity.class))
+          return (T)oe;
+        else
+          return (T)InternalUtil.toPojo(entityType, oe);
+    }
+    
+    public static OEntity toOEntity(DataServicesAtomEntry dsae, FeedCustomizationMapping mapping) {
         if (mapping==null)
             return OEntities.create(dsae.properties);
         
@@ -100,16 +114,24 @@ public class InternalUtil {
        
     }
     
-    public static <T> T toPojo(Class<T> pojoClass, DataServicesAtomEntry dsae, FeedCustomizationMapping mapping){
-        OEntity oe = toEntity(dsae,mapping);
-        
+    public static <T> T toPojo(Class<T> pojoClass, OEntity oe){
+       
         try {
-            T rt = pojoClass.newInstance();
             
-            BeanBasedPropertyModel properties = new BeanBasedPropertyModel(pojoClass);
+            Constructor<T> defaultCtor = findDefaultDeclaredConstructor(pojoClass);
+            if (defaultCtor==null)
+                throw new RuntimeException("Unable to find a default constructor for " + pojoClass.getName());
+            
+            if (!defaultCtor.isAccessible())
+                defaultCtor.setAccessible(true);
+            
+            T rt = defaultCtor.newInstance();
+            
+            BeanModel beanModel = new BeanModel(pojoClass);
             
             for(OProperty<?> op : oe.getProperties()){
-                properties.setPropertyValue(rt,op.getName(),op.getValue());
+                if (beanModel.canWrite(op.getName()))
+                    beanModel.setPropertyValue(rt,op.getName(),op.getValue());
             }
             
             return rt;
@@ -118,5 +140,16 @@ public class InternalUtil {
         } 
         
     }
+    
+    
+    private static <T> Constructor<T> findDefaultDeclaredConstructor(Class<T> pojoClass){
+        for(Constructor<?> ctor : pojoClass.getDeclaredConstructors()){
+            if (ctor.getParameterTypes().length==0)
+                return (Constructor<T>)ctor;
+        }
+        return null;
+    }
+    
+
 
 }

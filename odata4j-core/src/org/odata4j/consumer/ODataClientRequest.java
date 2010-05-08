@@ -3,7 +3,7 @@ package org.odata4j.consumer;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.odata4j.xml.AtomFeedParser.DataServicesAtomEntry;
+import org.odata4j.xml.AtomFeedFormatParser.DataServicesAtomEntry;
 
 public class ODataClientRequest {
 

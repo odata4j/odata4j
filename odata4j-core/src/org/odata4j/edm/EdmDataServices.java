@@ -39,5 +39,13 @@ public class EdmDataServices {
         }
         return rt;
     }
+    public Iterable<EdmEntitySet> getEntitySets(){
+        List<EdmEntitySet> rt = new ArrayList<EdmEntitySet>();
+        for(EdmSchema schema : this.schemas) {
+            for(EdmEntityContainer eec : schema.entityContainers)
+                rt.addAll(eec.entitySets);
+        }
+        return rt;
+    }
 
 }

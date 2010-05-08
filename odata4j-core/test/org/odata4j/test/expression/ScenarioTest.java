@@ -24,7 +24,7 @@ public class ScenarioTest {
 
         String uri = "http://localhost:18888/";
 
-        InMemoryProducer producer = new InMemoryProducer("Test");
+        InMemoryProducer producer = new InMemoryProducer("ScenarioTest");
         ODataProducerProvider.setInstance(producer);
 
         JerseyServer server = new JerseyServer(uri);
