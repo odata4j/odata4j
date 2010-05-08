@@ -3,6 +3,8 @@ package org.odata4j.consumer;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.core4j.Enumerable;
+import org.core4j.Func1;
 import org.odata4j.core.OClientBehavior;
 import org.odata4j.core.OCreate;
 import org.odata4j.core.OEntity;
@@ -13,12 +15,8 @@ import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmEntityType;
 import org.odata4j.edm.EdmProperty;
-import org.odata4j.examples.producer.RoundtripExample.Customer;
-import org.odata4j.internal.FeedCustomizationMapping;
 import org.odata4j.format.xml.AtomFeedFormatParser.CollectionInfo;
-
-import org.core4j.Enumerable;
-import org.core4j.Func1;
+import org.odata4j.internal.FeedCustomizationMapping;
 
 public class ODataConsumer {
 

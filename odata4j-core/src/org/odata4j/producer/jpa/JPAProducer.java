@@ -18,6 +18,8 @@ import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.EntityType;
 
+import org.core4j.Enumerable;
+import org.core4j.Func1;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperties;
@@ -31,9 +33,6 @@ import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.InlineCount;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
-
-import org.core4j.Enumerable;
-import org.core4j.Func1;
 
 public class JPAProducer implements ODataProducer {
 

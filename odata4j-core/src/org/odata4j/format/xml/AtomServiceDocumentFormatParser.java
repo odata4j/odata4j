@@ -3,10 +3,10 @@ package org.odata4j.format.xml;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.odata4j.format.xml.AtomFeedFormatParser.CollectionInfo;
 import org.odata4j.stax2.StartElement2;
 import org.odata4j.stax2.XMLEvent2;
 import org.odata4j.stax2.XMLEventReader2;
-import org.odata4j.format.xml.AtomFeedFormatParser.CollectionInfo;
 
 public class AtomServiceDocumentFormatParser extends XmlFormatParser {
 

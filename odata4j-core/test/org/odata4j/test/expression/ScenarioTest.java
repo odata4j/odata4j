@@ -5,6 +5,7 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.core4j.Funcs;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.expression.ExpressionParser;
@@ -12,8 +13,6 @@ import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.resources.ODataProducerProvider;
 import org.odata4j.producer.resources.ODataResourceConfig;
 import org.odata4j.producer.server.JerseyServer;
-
-import org.core4j.Funcs;
 
 public class ScenarioTest {
 

@@ -1,11 +1,10 @@
 package org.odata4j.format.xml;
 
+import org.core4j.Enumerable;
 import org.odata4j.stax2.Attribute2;
 import org.odata4j.stax2.QName2;
 import org.odata4j.stax2.StartElement2;
 import org.odata4j.stax2.XMLEvent2;
-
-import org.core4j.Enumerable;
 
 public class XmlFormatParser {
     

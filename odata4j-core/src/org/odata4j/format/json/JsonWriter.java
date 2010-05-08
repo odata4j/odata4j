@@ -63,7 +63,7 @@ public class JsonWriter {
             throw new RuntimeException(e);
         }
     }
-    public void writeArraySeparator() {
+    public void writeSeparator() {
         try {
             writer.write(", ");
         } catch (IOException e) {

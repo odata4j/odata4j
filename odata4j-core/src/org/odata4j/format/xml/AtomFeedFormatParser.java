@@ -6,10 +6,10 @@ import java.util.List;
 
 import javax.ws.rs.core.MediaType;
 
+import org.core4j.Enumerable;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmType;
-import org.odata4j.format.xml.XmlFormatParser;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.stax2.Attribute2;
 import org.odata4j.stax2.QName2;
@@ -18,8 +18,6 @@ import org.odata4j.stax2.XMLEvent2;
 import org.odata4j.stax2.XMLEventReader2;
 import org.odata4j.stax2.XMLEventWriter2;
 import org.odata4j.stax2.XMLFactoryProvider2;
-
-import org.core4j.Enumerable;
 
 public class AtomFeedFormatParser extends XmlFormatParser {
 

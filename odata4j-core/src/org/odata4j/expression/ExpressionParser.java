@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.core4j.Enumerable;
+import org.core4j.Func1;
+import org.core4j.Func2;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
@@ -13,10 +16,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.odata4j.repack.org.apache.commons.codec.DecoderException;
 import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
-
-import org.core4j.Enumerable;
-import org.core4j.Func1;
-import org.core4j.Func2;
 
 public class ExpressionParser {
 

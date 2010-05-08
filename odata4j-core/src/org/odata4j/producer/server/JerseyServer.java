@@ -9,6 +9,9 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Logger;
 
+import org.core4j.CoreUtils;
+import org.core4j.Enumerable;
+
 import com.sun.jersey.api.container.ContainerFactory;
 import com.sun.jersey.api.container.httpserver.HttpServerFactory;
 import com.sun.jersey.api.core.DefaultResourceConfig;
@@ -20,9 +23,6 @@ import com.sun.net.httpserver.Filter;
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-
-import org.core4j.CoreUtils;
-import org.core4j.Enumerable;
 
 public class JerseyServer {
 

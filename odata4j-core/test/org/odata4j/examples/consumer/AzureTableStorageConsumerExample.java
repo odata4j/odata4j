@@ -1,5 +1,6 @@
 package org.odata4j.examples.consumer;
 
+import org.core4j.Enumerable;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.consumer.ODataConsumers;
 import org.odata4j.core.OEntity;
@@ -26,9 +27,10 @@ public class AzureTableStorageConsumerExample extends BaseExample {
 
         // create composite key to use for entity-level tests
         OProperty<?>[] entityKey = new OProperty<?>[]{OProperties.string("PartitionKey", ""), OProperties.string("RowKey", "1")};
-      
+        Object[] entityKeyObjects = Enumerable.create(entityKey).cast(Object.class).toArray(Object.class);  // to prevent compiler warnings below
+        
         report("Ensure the new entity does not exist");
-        c.deleteEntity(tableName, entityKey).execute();
+        c.deleteEntity(tableName, entityKeyObjects).execute();
         reportEntities(c,tableName,100);
         
         report("Create a new entity");
@@ -38,17 +40,17 @@ public class AzureTableStorageConsumerExample extends BaseExample {
         reportEntities(c,tableName,100);
         
         report("Update the new entity");
-        c.updateEntity(newEntity, tableName,entityKey)
+        c.updateEntity(newEntity, tableName,entityKeyObjects)
             .properties(OProperties.string("Value", "Sortof Large")).execute();
         reportEntities(c,tableName,100);
         
         report("Merge the new entity");
-        c.mergeEntity(tableName, entityKey)
+        c.mergeEntity(tableName, entityKeyObjects)
             .properties(OProperties.string("foo", "baz")).execute();
         reportEntities(c,tableName,100);
         
         report("Delete the new entity");
-        c.deleteEntity(tableName, entityKey).execute();
+        c.deleteEntity(tableName, entityKeyObjects).execute();
         reportEntities(c,tableName,100);
         
         

@@ -3,14 +3,13 @@ package org.odata4j.consumer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.core4j.Enumerable;
 import org.odata4j.core.OEntityRef;
+import org.odata4j.format.xml.AtomFeedFormatParser.AtomEntry;
+import org.odata4j.format.xml.AtomFeedFormatParser.DataServicesAtomEntry;
 import org.odata4j.internal.EntitySegment;
 import org.odata4j.internal.FeedCustomizationMapping;
 import org.odata4j.internal.InternalUtil;
-import org.odata4j.format.xml.AtomFeedFormatParser.AtomEntry;
-import org.odata4j.format.xml.AtomFeedFormatParser.DataServicesAtomEntry;
-
-import org.core4j.Enumerable;
 
 public class OEntityRefImpl<T> implements OEntityRef<T> {
 
@@ -39,7 +38,6 @@ public class OEntityRefImpl<T> implements OEntityRef<T> {
         return this;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public T execute() {
 

@@ -5,14 +5,13 @@ import java.util.List;
 
 import javax.ws.rs.core.MediaType;
 
+import org.core4j.Enumerable;
+import org.core4j.Predicate1;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OModify;
 import org.odata4j.core.OProperty;
-import org.odata4j.internal.EntitySegment;
 import org.odata4j.format.xml.AtomFeedFormatParser.DataServicesAtomEntry;
-
-import org.core4j.Enumerable;
-import org.core4j.Predicate1;
+import org.odata4j.internal.EntitySegment;
 
 public class OModifyImpl<T> implements OModify<T> {
 

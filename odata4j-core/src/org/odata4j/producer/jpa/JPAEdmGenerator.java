@@ -15,6 +15,9 @@ import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Type;
 import javax.persistence.metamodel.Type.PersistenceType;
 
+import org.core4j.Enumerable;
+import org.core4j.Func1;
+import org.core4j.Predicate1;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.edm.EdmAssociation;
 import org.odata4j.edm.EdmAssociationEnd;
@@ -30,10 +33,6 @@ import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmType;
 import org.odata4j.producer.jpa.eclipselink.EclipseLink;
-
-import org.core4j.Enumerable;
-import org.core4j.Func1;
-import org.core4j.Predicate1;
 
 public class JPAEdmGenerator {
 

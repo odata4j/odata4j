@@ -10,10 +10,9 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 
+import org.core4j.Enumerable;
 import org.odata4j.stax2.QName2;
 import org.odata4j.stax2.XMLWriter2;
-
-import org.core4j.Enumerable;
 
 public class StaxXMLWriter2 implements XMLWriter2 {
 

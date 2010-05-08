@@ -7,6 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.core4j.Enumerable;
+import org.core4j.Func;
+import org.core4j.Func1;
+import org.core4j.Predicate1;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
@@ -28,11 +32,6 @@ import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
 
 import com.sun.jersey.api.NotFoundException;
-
-import org.core4j.Enumerable;
-import org.core4j.Func;
-import org.core4j.Func1;
-import org.core4j.Predicate1;
 
 public class InMemoryProducer implements ODataProducer {
 

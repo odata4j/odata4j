@@ -11,15 +11,17 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OProperty;
+import org.odata4j.format.FormatWriter;
+import org.odata4j.format.FormatWriterFactory;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.ODataProducer;
-import org.odata4j.format.xml.AtomFeedFormatWriter;
 
 import com.sun.jersey.api.core.HttpContext;
 
@@ -72,8 +74,8 @@ public class EntityRequestResource extends BaseResource {
     }
 
     @GET
-    @Produces(ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8)
-    public Response getEntity(@Context HttpContext context, @Context ODataProducer producer, final @PathParam("entitySetName") String entitySetName, @PathParam("id") String id) {
+    @Produces({ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8,ODataConstants.TEXT_JAVASCRIPT_CHARSET_UTF8,ODataConstants.APPLICATION_JAVASCRIPT_CHARSET_UTF8})
+    public Response getEntity(@Context HttpContext context, @Context ODataProducer producer, final @PathParam("entitySetName") String entitySetName, @PathParam("id") String id, @QueryParam("$format") String format, @QueryParam("$callback") String callback) {
 
         log.info(String.format("getEntity(%s,%s)", entitySetName, id));
 
@@ -86,10 +88,11 @@ public class EntityRequestResource extends BaseResource {
 
         String baseUri = context.getUriInfo().getBaseUri().toString();
         StringWriter sw = new StringWriter();
-        AtomFeedFormatWriter.generateResponseEntry(baseUri, response, sw);
+        FormatWriter<EntityResponse> fw = FormatWriterFactory.getFormatWriter(EntityResponse.class,context.getRequest().getAcceptableMediaTypes(), format, callback);
+        fw.write(baseUri, sw, response);
         String entity = sw.toString();
 
-        return Response.ok(entity, ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8).header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION).build();
+        return Response.ok(entity, fw.getContentType()).header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION).build();
 
     }
 

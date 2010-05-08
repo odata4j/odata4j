@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import org.core4j.Enumerable;
+
 import com.sun.net.httpserver.Filter;
 import com.sun.net.httpserver.HttpExchange;
-
-import org.core4j.Enumerable;
 
 public class WhitelistFilter extends Filter {
 

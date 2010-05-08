@@ -12,7 +12,6 @@ import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.resources.ODataProducerProvider;
 import org.odata4j.producer.resources.ODataResourceConfig;
 import org.odata4j.producer.server.JerseyServer;
-import org.odata4j.test.expression.ScenarioTest.Foo;
 
 public class PojoTest {
 
@@ -54,7 +53,7 @@ public class PojoTest {
         
     }
     
-    private static class Pojo1{
+    public static class Pojo1{
         private int id;
         private String name;
         protected Pojo1() {}

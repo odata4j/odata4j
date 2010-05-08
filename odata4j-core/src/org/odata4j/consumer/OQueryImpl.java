@@ -6,19 +6,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.odata4j.core.OEntity;
-import org.odata4j.core.OQuery;
-import org.odata4j.internal.EntitySegment;
-import org.odata4j.internal.FeedCustomizationMapping;
-import org.odata4j.internal.InternalUtil;
-import org.odata4j.format.xml.AtomFeedFormatParser.AtomEntry;
-import org.odata4j.format.xml.AtomFeedFormatParser.AtomFeed;
-import org.odata4j.format.xml.AtomFeedFormatParser.DataServicesAtomEntry;
-
 import org.core4j.Enumerable;
 import org.core4j.Func;
 import org.core4j.Func1;
 import org.core4j.ReadOnlyIterator;
+import org.odata4j.core.OQuery;
+import org.odata4j.format.xml.AtomFeedFormatParser.AtomEntry;
+import org.odata4j.format.xml.AtomFeedFormatParser.AtomFeed;
+import org.odata4j.format.xml.AtomFeedFormatParser.DataServicesAtomEntry;
+import org.odata4j.internal.EntitySegment;
+import org.odata4j.internal.FeedCustomizationMapping;
+import org.odata4j.internal.InternalUtil;
 
 public class OQueryImpl<T> implements OQuery<T> {
 

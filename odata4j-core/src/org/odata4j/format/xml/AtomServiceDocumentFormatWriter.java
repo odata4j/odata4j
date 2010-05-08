@@ -4,16 +4,11 @@ import java.io.Writer;
 
 import org.odata4j.core.ODataConstants;
 import org.odata4j.edm.EdmDataServices;
-import org.odata4j.edm.EdmEntityContainer;
 import org.odata4j.edm.EdmEntitySet;
-import org.odata4j.edm.EdmSchema;
 import org.odata4j.format.FormatWriter;
 import org.odata4j.stax2.QName2;
 import org.odata4j.stax2.XMLFactoryProvider2;
 import org.odata4j.stax2.XMLWriter2;
-
-import org.core4j.Enumerable;
-import org.core4j.Funcs;
 
 public class AtomServiceDocumentFormatWriter extends XmlFormatWriter implements FormatWriter<EdmDataServices> {
 

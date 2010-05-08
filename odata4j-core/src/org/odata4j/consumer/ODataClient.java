@@ -5,25 +5,24 @@ import java.io.StringWriter;
 
 import javax.ws.rs.core.MediaType;
 
+import org.core4j.Enumerable;
 import org.odata4j.consumer.behaviors.MethodTunnelingBehavior;
 import org.odata4j.core.OClientBehavior;
 import org.odata4j.edm.EdmDataServices;
-import org.odata4j.internal.InternalUtil;
-import org.odata4j.stax2.XMLEventReader2;
+import org.odata4j.format.xml.AtomEntryFormatWriter;
 import org.odata4j.format.xml.AtomFeedFormatParser;
-import org.odata4j.format.xml.AtomFeedFormatWriter;
 import org.odata4j.format.xml.AtomServiceDocumentFormatParser;
 import org.odata4j.format.xml.EdmxFormatParser;
 import org.odata4j.format.xml.AtomFeedFormatParser.AtomEntry;
 import org.odata4j.format.xml.AtomFeedFormatParser.AtomFeed;
 import org.odata4j.format.xml.AtomFeedFormatParser.CollectionInfo;
 import org.odata4j.format.xml.AtomFeedFormatParser.DataServicesAtomEntry;
+import org.odata4j.internal.InternalUtil;
+import org.odata4j.stax2.XMLEventReader2;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-
-import org.core4j.Enumerable;
 
 public class ODataClient {
 
@@ -121,7 +120,7 @@ public class ODataClient {
             DataServicesAtomEntry dsae = request.getEntry();
 
             StringWriter sw = new StringWriter();
-            AtomFeedFormatWriter.generateRequestEntry(dsae, sw);
+            new AtomEntryFormatWriter().writeRequestEntry(sw,dsae);
             String entity = sw.toString();
             if (ODataConsumer.DUMP_REQUEST_BODY)
                 log(entity);

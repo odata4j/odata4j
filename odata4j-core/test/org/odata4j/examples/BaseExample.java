@@ -2,6 +2,7 @@ package org.odata4j.examples;
 
 import java.util.List;
 
+import org.core4j.Enumerable;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperty;
@@ -17,8 +18,6 @@ import org.odata4j.edm.EdmFunctionParameter;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSchema;
-
-import org.core4j.Enumerable;
 
 public class BaseExample {
 

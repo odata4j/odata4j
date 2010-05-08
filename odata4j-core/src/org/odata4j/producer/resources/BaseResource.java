@@ -5,11 +5,11 @@ import java.util.List;
 
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperty;
-import org.odata4j.internal.InternalUtil;
-import org.odata4j.stax2.XMLEventReader2;
 import org.odata4j.format.xml.AtomFeedFormatParser;
 import org.odata4j.format.xml.AtomFeedFormatParser.AtomEntry;
 import org.odata4j.format.xml.AtomFeedFormatParser.DataServicesAtomEntry;
+import org.odata4j.internal.InternalUtil;
+import org.odata4j.stax2.XMLEventReader2;
 
 import com.sun.jersey.api.core.HttpRequestContext;
 

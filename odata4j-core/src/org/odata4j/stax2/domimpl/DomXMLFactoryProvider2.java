@@ -6,6 +6,7 @@ import java.io.Writer;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.core4j.ReadOnlyIterator;
 import org.odata4j.internal.PlatformUtil;
 import org.odata4j.stax2.Attribute2;
 import org.odata4j.stax2.EndElement2;
@@ -25,8 +26,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
-
-import org.core4j.ReadOnlyIterator;
 
 public class DomXMLFactoryProvider2 extends XMLFactoryProvider2 {
 

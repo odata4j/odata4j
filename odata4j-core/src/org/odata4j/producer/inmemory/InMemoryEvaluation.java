@@ -3,6 +3,7 @@ package org.odata4j.producer.inmemory;
 import java.math.BigDecimal;
 import java.util.Set;
 
+import org.core4j.Enumerable;
 import org.odata4j.expression.AddExpression;
 import org.odata4j.expression.AndExpression;
 import org.odata4j.expression.BinaryCommonExpression;
@@ -27,8 +28,6 @@ import org.odata4j.expression.ParenExpression;
 import org.odata4j.expression.StringLiteral;
 import org.odata4j.expression.SubExpression;
 import org.odata4j.expression.SubstringOfMethodCallExpression;
-
-import org.core4j.Enumerable;
 
 public class InMemoryEvaluation {
 

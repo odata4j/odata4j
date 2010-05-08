@@ -4,16 +4,15 @@ import java.io.File;
 import java.net.URL;
 import java.util.Map.Entry;
 
-import org.odata4j.edm.EdmEntityType;
-import org.odata4j.producer.inmemory.InMemoryProducer;
-import org.odata4j.producer.resources.ODataProducerProvider;
-
 import org.core4j.Enumerable;
 import org.core4j.Enumerables;
 import org.core4j.Func;
 import org.core4j.Func1;
 import org.core4j.Funcs;
 import org.core4j.ThrowingFunc;
+import org.odata4j.edm.EdmEntityType;
+import org.odata4j.producer.inmemory.InMemoryProducer;
+import org.odata4j.producer.resources.ODataProducerProvider;
 
 public class InMemoryProducerExample {
 

@@ -4,15 +4,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.odata4j.edm.*;
+import org.core4j.Enumerable;
+import org.core4j.Func1;
+import org.core4j.Predicate1;
+import org.odata4j.edm.EdmAssociation;
+import org.odata4j.edm.EdmAssociationEnd;
+import org.odata4j.edm.EdmAssociationSet;
+import org.odata4j.edm.EdmAssociationSetEnd;
+import org.odata4j.edm.EdmComplexType;
+import org.odata4j.edm.EdmDataServices;
+import org.odata4j.edm.EdmEntityContainer;
+import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.edm.EdmEntityType;
+import org.odata4j.edm.EdmFunctionImport;
+import org.odata4j.edm.EdmFunctionParameter;
+import org.odata4j.edm.EdmMultiplicity;
+import org.odata4j.edm.EdmNavigationProperty;
+import org.odata4j.edm.EdmProperty;
+import org.odata4j.edm.EdmSchema;
+import org.odata4j.edm.EdmType;
 import org.odata4j.stax2.QName2;
 import org.odata4j.stax2.StartElement2;
 import org.odata4j.stax2.XMLEvent2;
 import org.odata4j.stax2.XMLEventReader2;
-
-import org.core4j.Enumerable;
-import org.core4j.Func1;
-import org.core4j.Predicate1;
 
 public class EdmxFormatParser extends XmlFormatParser {
 

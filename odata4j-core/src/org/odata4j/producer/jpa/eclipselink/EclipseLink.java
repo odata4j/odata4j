@@ -5,12 +5,11 @@ import java.util.Map;
 
 import javax.persistence.metamodel.SingularAttribute;
 
+import org.core4j.CoreUtils;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metamodel.AttributeImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.odata4j.edm.EdmType;
-
-import org.core4j.CoreUtils;
 
 public class EclipseLink {
 

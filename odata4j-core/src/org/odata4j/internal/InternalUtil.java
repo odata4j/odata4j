@@ -3,28 +3,23 @@ package org.odata4j.internal;
 import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-
-import org.odata4j.core.OEntities;
-import org.odata4j.core.OEntity;
-import org.odata4j.core.OProperties;
-import org.odata4j.core.OProperty;
-import org.odata4j.producer.inmemory.BeanBasedPropertyModel;
-import org.odata4j.producer.inmemory.BeanModel;
-import org.odata4j.stax2.XMLEventReader2;
-import org.odata4j.stax2.XMLFactoryProvider2;
-import org.odata4j.stax2.XMLInputFactory2;
-import org.odata4j.format.xml.AtomFeedFormatParser.DataServicesAtomEntry;
 
 import org.core4j.Enumerable;
 import org.core4j.Func1;
 import org.core4j.Funcs;
 import org.core4j.ThrowingFunc1;
+import org.odata4j.core.OEntities;
+import org.odata4j.core.OEntity;
+import org.odata4j.core.OProperties;
+import org.odata4j.core.OProperty;
+import org.odata4j.format.xml.AtomFeedFormatParser.DataServicesAtomEntry;
+import org.odata4j.producer.inmemory.BeanModel;
+import org.odata4j.stax2.XMLEventReader2;
+import org.odata4j.stax2.XMLFactoryProvider2;
+import org.odata4j.stax2.XMLInputFactory2;
 
 public class InternalUtil {
 
@@ -92,6 +87,7 @@ public class InternalUtil {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> T toEntity(Class<T> entityType, DataServicesAtomEntry dsae, FeedCustomizationMapping fcMapping){
         OEntity oe = InternalUtil.toOEntity(dsae,fcMapping);
         if (entityType.equals(OEntity.class))
@@ -142,12 +138,31 @@ public class InternalUtil {
     }
     
     
+    @SuppressWarnings("unchecked")
     private static <T> Constructor<T> findDefaultDeclaredConstructor(Class<T> pojoClass){
         for(Constructor<?> ctor : pojoClass.getDeclaredConstructors()){
             if (ctor.getParameterTypes().length==0)
                 return (Constructor<T>)ctor;
         }
         return null;
+    }
+    
+    
+    public static String getEntityRelId(List<String> keyPropertyNames, final List<OProperty<?>> entityProperties, String entitySetName){
+        String key = null;
+        if (keyPropertyNames != null) {
+            Object[] keyProperties = Enumerable.create(keyPropertyNames).select(new Func1<String,OProperty<?>>(){
+                public OProperty<?> apply(String input) {
+                    for(OProperty<?> entityProperty : entityProperties)
+                        if(entityProperty.getName().equals(input))
+                            return entityProperty;
+                        throw new IllegalArgumentException("Key property '" + input + "' is invalid");
+                }}).cast(Object.class).toArray(Object.class);
+            key = InternalUtil.keyString( keyProperties);
+        }
+        
+        return entitySetName + key;
+
     }
     
 

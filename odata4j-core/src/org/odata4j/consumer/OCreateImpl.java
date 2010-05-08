@@ -8,9 +8,9 @@ import javax.ws.rs.core.MediaType;
 import org.odata4j.core.OCreate;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperty;
+import org.odata4j.format.xml.AtomFeedFormatParser.DataServicesAtomEntry;
 import org.odata4j.internal.FeedCustomizationMapping;
 import org.odata4j.internal.InternalUtil;
-import org.odata4j.format.xml.AtomFeedFormatParser.DataServicesAtomEntry;
 
 public class OCreateImpl<T> implements OCreate<T> {
 
