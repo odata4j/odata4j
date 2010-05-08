@@ -28,7 +28,7 @@ import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.InlineCount;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
-import org.odata4j.xml.AtomFeedFormatWriter;
+import org.odata4j.format.xml.AtomFeedFormatWriter;
 
 import com.sun.jersey.api.core.HttpContext;
 

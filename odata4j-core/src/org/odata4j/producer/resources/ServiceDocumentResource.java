@@ -14,7 +14,7 @@ import org.odata4j.edm.EdmDataServices;
 import org.odata4j.format.FormatWriter;
 import org.odata4j.format.FormatWriterFactory;
 import org.odata4j.producer.ODataProducer;
-import org.odata4j.xml.AtomServiceDocumentFormatWriter;
+import org.odata4j.format.xml.AtomServiceDocumentFormatWriter;
 
 import com.sun.jersey.api.core.HttpContext;
 

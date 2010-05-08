@@ -15,7 +15,7 @@ import org.odata4j.edm.EdmEntityType;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.examples.producer.RoundtripExample.Customer;
 import org.odata4j.internal.FeedCustomizationMapping;
-import org.odata4j.xml.AtomFeedFormatParser.CollectionInfo;
+import org.odata4j.format.xml.AtomFeedFormatParser.CollectionInfo;
 
 import org.core4j.Enumerable;
 import org.core4j.Func1;

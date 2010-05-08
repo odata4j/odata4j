@@ -2,7 +2,7 @@ package org.odata4j.format;
 
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.format.json.JsonServiceDocumentFormatWriter;
-import org.odata4j.xml.AtomServiceDocumentFormatWriter;
+import org.odata4j.format.xml.AtomServiceDocumentFormatWriter;
 
 public class FormatWriterFactory {
 

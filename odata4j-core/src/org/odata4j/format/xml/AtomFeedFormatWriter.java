@@ -20,7 +20,7 @@ import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
 import org.odata4j.stax2.QName2;
 import org.odata4j.stax2.XMLFactoryProvider2;
 import org.odata4j.stax2.XMLWriter2;
-import org.odata4j.xml.AtomFeedFormatParser.DataServicesAtomEntry;
+import org.odata4j.format.xml.AtomFeedFormatParser.DataServicesAtomEntry;
 
 import org.core4j.Enumerable;
 import org.core4j.Func1;

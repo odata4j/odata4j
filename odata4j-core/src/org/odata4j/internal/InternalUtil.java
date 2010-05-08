@@ -19,7 +19,7 @@ import org.odata4j.producer.inmemory.BeanModel;
 import org.odata4j.stax2.XMLEventReader2;
 import org.odata4j.stax2.XMLFactoryProvider2;
 import org.odata4j.stax2.XMLInputFactory2;
-import org.odata4j.xml.AtomFeedFormatParser.DataServicesAtomEntry;
+import org.odata4j.format.xml.AtomFeedFormatParser.DataServicesAtomEntry;
 
 import org.core4j.Enumerable;
 import org.core4j.Func1;
