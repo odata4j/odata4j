@@ -46,9 +46,7 @@ public class JsonWriter {
         }
     }
     
-    private String encode(String unencoded){
-        return unencoded;
-    }
+  
     public void startArray() {
         try {
             writer.write("[\n");
@@ -77,4 +75,64 @@ public class JsonWriter {
             throw new RuntimeException(e);
         }
     }
+    public void writeNull() {
+        try {
+            writer.write("null");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void writeNumber(int value) {
+        try {
+            writer.write(Integer.toString(value));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void writeBoolean(boolean value) {
+        try {
+            writer.write(value?"true":"false");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void writeRaw(String value) {
+        try {
+            writer.write(value);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    
+    
+    
+    private String encode(String unencoded){
+        StringBuilder sb = new StringBuilder();
+        for(int i=0;i<unencoded.length();i++){
+            char c = unencoded.charAt(i);
+            if (c=='\\')
+                sb.append("\\\\");
+            else if (c=='"')
+                sb.append("\\\"");
+            else if (c=='\n')
+                sb.append("\\n");
+            else if (c=='\r')
+                sb.append("\\r");
+            else if (c=='\f')
+                sb.append("\\f");
+            else if (c=='\b')
+                sb.append("\\b");
+            else if (c=='\t')
+                sb.append("\\t");
+            
+            else
+                sb.append(c);
+        }
+        return sb.toString();
+    }
+    
+    
+    
+   
 }

@@ -13,6 +13,7 @@ import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmType;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
+import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
 import org.odata4j.stax2.QName2;
 import org.odata4j.stax2.XMLWriter2;
 
@@ -29,9 +30,7 @@ public class XmlFormatWriter {
     protected static final String scheme = "http://schemas.microsoft.com/ado/2007/08/dataservices/scheme";
     protected static final String related = "http://schemas.microsoft.com/ado/2007/08/dataservices/related/";
 
-    protected static String toString(DateTime utc) {
-        return utc.toString("yyyy-MM-dd'T'HH:mm:ss'Z'");
-    }
+
     
     
     
@@ -107,7 +106,7 @@ public class XmlFormatWriter {
             } else if (type == EdmType.BYTE) {
                 writer.writeAttribute(new QName2(m, "type", "m"), type.toTypeString());
                 if (value != null)
-                    sValue = value.toString();
+                    sValue = Hex.encodeHexString(new byte[]{(Byte)value});
             } else if (type == EdmType.DECIMAL) {
                 writer.writeAttribute(new QName2(m, "type", "m"), type.toTypeString());
                 if (value != null)
@@ -128,13 +127,25 @@ public class XmlFormatWriter {
                 if (value != null) {
                     LocalDateTime ldt = (LocalDateTime) value;
                     DateTime dt = ldt.toDateTime(DateTimeZone.UTC);
-                    sValue = toString(dt);
+                    sValue = InternalUtil.toString(dt);
                 }
             } else if (type == EdmType.BINARY) {
                 writer.writeAttribute(new QName2(m, "type", "m"), type.toTypeString());
                 byte[] bValue = (byte[]) value;
                 if (value != null)
                     sValue = Base64.encodeBase64String(bValue);
+            } else if (type == EdmType.GUID) {
+                writer.writeAttribute(new QName2(m, "type", "m"), type.toTypeString());
+                if (value != null)
+                    sValue = value.toString();
+            } else if (type == EdmType.TIME) {
+                writer.writeAttribute(new QName2(m, "type", "m"), type.toTypeString());
+                if (value != null)
+                    sValue = value.toString();
+            } else if (type == EdmType.DATETIMEOFFSET) {
+                writer.writeAttribute(new QName2(m, "type", "m"), type.toTypeString());
+                if (value != null)
+                    sValue = InternalUtil.toString((DateTime)value);
             } else {
                 throw new UnsupportedOperationException("Implement " + type);
             }

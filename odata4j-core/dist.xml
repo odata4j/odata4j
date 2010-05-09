@@ -2,7 +2,7 @@
 <project basedir="." default="dist" name="odata4j-core-dist">
 	
 	<!-- this property labels the build -->
-	<property name="dist.version" value="SNAPSHOT-20100429" />
+	<property name="dist.version" value="SNAPSHOT-20100509" />
 	<!-- <property name="dist.version" value="0.1" /> -->
 	
 	<property name="dist.versiondir" value="dist/${dist.version}" />

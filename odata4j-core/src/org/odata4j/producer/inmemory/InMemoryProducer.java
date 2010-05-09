@@ -1,16 +1,21 @@
 package org.odata4j.producer.inmemory;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.core4j.Enumerable;
 import org.core4j.Func;
 import org.core4j.Func1;
 import org.core4j.Predicate1;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
@@ -49,15 +54,28 @@ public class InMemoryProducer implements ODataProducer {
     private static final String CONTAINER_NAME = "Container";
     private static final Map<Class<?>, EdmType> SUPPORTED_TYPES = new HashMap<Class<?>, EdmType>();
     static {
-        SUPPORTED_TYPES.put(String.class, EdmType.STRING);
-        SUPPORTED_TYPES.put(Long.class, EdmType.INT64);
-        SUPPORTED_TYPES.put(Long.TYPE, EdmType.INT64);
-        SUPPORTED_TYPES.put(Integer.class, EdmType.INT32);
-        SUPPORTED_TYPES.put(Integer.TYPE, EdmType.INT32);
+        SUPPORTED_TYPES.put(byte[].class, EdmType.BINARY);
         SUPPORTED_TYPES.put(Boolean.class, EdmType.BOOLEAN);
         SUPPORTED_TYPES.put(Boolean.TYPE, EdmType.BOOLEAN);
+        SUPPORTED_TYPES.put(byte.class, EdmType.BYTE);
+        SUPPORTED_TYPES.put(LocalDateTime.class, EdmType.DATETIME);
+        SUPPORTED_TYPES.put(BigDecimal.class, EdmType.DECIMAL);
+        SUPPORTED_TYPES.put(Double.class, EdmType.DOUBLE);
+        SUPPORTED_TYPES.put(Double.TYPE, EdmType.DOUBLE);
+        SUPPORTED_TYPES.put(UUID.class, EdmType.GUID);
+        SUPPORTED_TYPES.put(Short.class, EdmType.INT16);
+        SUPPORTED_TYPES.put(Short.TYPE, EdmType.INT16);
+        SUPPORTED_TYPES.put(Integer.class, EdmType.INT32);
+        SUPPORTED_TYPES.put(Integer.TYPE, EdmType.INT32);
+        SUPPORTED_TYPES.put(Long.class, EdmType.INT64);
+        SUPPORTED_TYPES.put(Long.TYPE, EdmType.INT64);
+        SUPPORTED_TYPES.put(Float.class, EdmType.SINGLE);
+        SUPPORTED_TYPES.put(Float.TYPE, EdmType.SINGLE);
+        SUPPORTED_TYPES.put(String.class, EdmType.STRING);
+        SUPPORTED_TYPES.put(LocalTime.class, EdmType.TIME);
+        SUPPORTED_TYPES.put(DateTime.class, EdmType.DATETIMEOFFSET);
+        
         SUPPORTED_TYPES.put(Object.class, EdmType.STRING);
-
     }
 
     private final String namespace;

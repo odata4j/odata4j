@@ -8,6 +8,7 @@ import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OEntity;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.format.FormatWriter;
+import org.odata4j.internal.InternalUtil;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.stax2.QName2;
 import org.odata4j.stax2.XMLFactoryProvider2;
@@ -29,7 +30,7 @@ public class AtomFeedFormatWriter extends XmlFormatWriter implements FormatWrite
         EdmEntitySet ees = response.getEntitySet();
         String entitySetName = ees.name;
         DateTime utc = new DateTime().withZone(DateTimeZone.UTC);
-        String updated = toString(utc);
+        String updated = InternalUtil.toString(utc);
 
         XMLWriter2 writer = XMLFactoryProvider2.getInstance().newXMLWriterFactory2().createXMLWriter(w);
         writer.startDocument();

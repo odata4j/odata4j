@@ -11,6 +11,7 @@ import org.core4j.Enumerable;
 import org.core4j.Func1;
 import org.core4j.Funcs;
 import org.core4j.ThrowingFunc1;
+import org.joda.time.DateTime;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperties;
@@ -165,6 +166,9 @@ public class InternalUtil {
 
     }
     
+    public static String toString(DateTime utc) {
+        return utc.toString("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    }
 
 
 }

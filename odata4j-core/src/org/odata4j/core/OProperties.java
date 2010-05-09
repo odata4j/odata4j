@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
 import org.odata4j.edm.EdmType;
 import org.odata4j.expression.ExpressionParser;
 import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
@@ -66,6 +67,9 @@ public class OProperties {
 
             LocalDateTime dValue = value == null ? null : new LocalDateTime(ExpressionParser.DATETIME_FORMATTER.parseDateTime(value));
             return OProperties.datetime(name, dValue);
+        } else if (EdmType.TIME.toTypeString().equals(type)) { 
+            LocalTime tValue =  value == null ? null : new LocalTime(value);
+            return OProperties.time(name, tValue);
         } else if (EdmType.STRING.toTypeString().equals(type) || type == null) {
             return OProperties.string(name, value);
         }
@@ -114,6 +118,10 @@ public class OProperties {
 
     public static OProperty<LocalDateTime> datetime(String name, Date value) {
         return new PropertyImpl<LocalDateTime>(name, EdmType.DATETIME, new LocalDateTime(value));
+    }
+    
+    public static OProperty<LocalTime> time(String name, LocalTime value) {
+        return new PropertyImpl<LocalTime>(name, EdmType.TIME, value);
     }
 
     public static OProperty<Short> short_(String name, Short value) {
