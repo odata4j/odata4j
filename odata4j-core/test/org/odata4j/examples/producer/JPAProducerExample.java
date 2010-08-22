@@ -17,7 +17,7 @@ public class JPAProducerExample {
         // create a JPAProducer by giving it a EntityManagerFactory
         String persistenceUnitName = "NorthwindService";
         String namespace = "Northwind";
-        JPAProducer producer = new JPAProducer(Persistence.createEntityManagerFactory(persistenceUnitName), namespace);
+        JPAProducer producer = new JPAProducer(Persistence.createEntityManagerFactory(persistenceUnitName), namespace,50);
 
         // register the producer as the static instance, then launch the http server
         ODataProducerProvider.setInstance(producer);

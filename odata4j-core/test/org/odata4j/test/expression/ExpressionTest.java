@@ -2,7 +2,6 @@ package org.odata4j.test.expression;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.UUID;
 
 import junit.framework.Assert;
 
@@ -10,6 +9,7 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.junit.Test;
+import org.odata4j.core.Guid;
 import org.odata4j.edm.EdmType;
 import org.odata4j.expression.AddExpression;
 import org.odata4j.expression.AndExpression;
@@ -102,7 +102,10 @@ public class ExpressionTest {
         t(Expression.dateTime(new LocalDateTime("2008-10-13")), "datetime'2008-10-13T00:00:00'");
         t(Expression.dateTimeOffset(new DateTime("2008-10-13T00:00:00-04:00")), "datetimeoffset'2008-10-13T00:00:00-04:00'");
         t(Expression.time(new LocalTime("13:20:00")), "time'13:20:00'");
-        t(Expression.guid(UUID.fromString("12345678-aa-aa-bbbb-ccccddddffff")), "guid'12345678-aaaa-bbbb-ccccddddffff'");
+        t(Expression.guid(Guid.fromString("12345678-aaaa-bbbb-ccccddddffff")), "guid'12345678-aaaa-bbbb-ccccddddffff'");
+        t(Expression.guid(Guid.fromString("bf4eeb4d-2ded-4aa6-a167-0571e1057e3b")), "guid'bf4eeb4d-2ded-4aa6-a167-0571e1057e3b'");
+                                                                               
+        
         t(Expression.decimal(new BigDecimal("2.345")), "decimal'2.345'");
         t(Expression.binary(new byte[] { (byte) 0xff }), "X'FF'");
         t(Expression.binary(new byte[] { (byte) 0x00, (byte) 0xaa, (byte) 0xff }), "binary'00aaff'");

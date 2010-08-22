@@ -1,5 +1,7 @@
 package org.odata4j.consumer;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
 
@@ -41,8 +43,8 @@ public class ODataClient {
     
     public EdmDataServices getMetadata(ODataClientRequest request){
         
-        ClientResponse response = doRequest(request, 200,404);
-        if (response.getStatus()==404)
+        ClientResponse response = doRequest(request, 200,404,400);
+        if (response.getStatus()==404||response.getStatus()==400)
             return null;
         XMLEventReader2 reader = doXmlRequest(response);
         return EdmxFormatParser.parseMetadata(reader);
@@ -57,8 +59,10 @@ public class ODataClient {
 
     public AtomEntry getEntity(ODataClientRequest request) {
         
-        ClientResponse response = doRequest(request, 404, 200);
+        ClientResponse response = doRequest(request, 404, 200,204);
         if (response.getStatus() == 404)
+            return null;
+        if (response.getStatus() == 204)
             return null;
         XMLEventReader2 reader = doXmlRequest(response);
         return AtomFeedFormatParser.parseFeed(reader).entries.iterator().next();
@@ -145,11 +149,21 @@ public class ODataClient {
 
     private XMLEventReader2 doXmlRequest(ClientResponse response)  {
 
-        String textEntity = response.getEntity(String.class);
-        if (ODataConsumer.DUMP_RESPONSE_BODY)
+        
+        if (ODataConsumer.DUMP_RESPONSE_BODY) {
+            String textEntity = response.getEntity(String.class);
             log(textEntity);
+            return InternalUtil.newXMLEventReader(new StringReader(textEntity));
+        }
+        
+        InputStream textEntity = response.getEntityInputStream();
+        try {
+            return InternalUtil.newXMLEventReader(new InputStreamReader(textEntity,"UTF-8"));
+        } catch (Exception e){
+            throw new RuntimeException(e);
+        }
 
-        return InternalUtil.newXMLEventReader(new StringReader(textEntity));
+       
     }
 
     private void dumpHeaders(ClientResponse response) {

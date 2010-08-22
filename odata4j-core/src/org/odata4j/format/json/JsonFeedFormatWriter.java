@@ -3,6 +3,8 @@ package org.odata4j.format.json;
 import org.odata4j.core.OEntity;
 import org.odata4j.producer.EntitiesResponse;
 
+import com.sun.jersey.api.core.ExtendedUriInfo;
+
 public class JsonFeedFormatWriter extends JsonFormatWriter<EntitiesResponse> {
 
     public JsonFeedFormatWriter(String jsonpCallback) {
@@ -10,7 +12,7 @@ public class JsonFeedFormatWriter extends JsonFormatWriter<EntitiesResponse> {
     }
 
     @Override
-    public void writeContent(String baseUri, JsonWriter jw, EntitiesResponse target) {
+    public void writeContent(ExtendedUriInfo uriInfo, JsonWriter jw, EntitiesResponse target) {
         
         jw.startObject();
         {
@@ -23,7 +25,7 @@ public class JsonFeedFormatWriter extends JsonFormatWriter<EntitiesResponse> {
                     
                     if (isFirst) isFirst = false; else jw.writeSeparator();
                     
-                    writeOEntity(baseUri, jw,oe,target.getEntitySet());
+                    writeOEntity(uriInfo, jw,oe,target.getEntitySet());
                 }
                 
             }

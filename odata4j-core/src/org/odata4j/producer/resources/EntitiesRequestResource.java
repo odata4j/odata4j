@@ -49,9 +49,8 @@ public class EntitiesRequestResource extends BaseResource {
 
         EntityResponse response = producer.createEntity(entitySetName, properties);
 
-        String baseUri = context.getUriInfo().getBaseUri().toString();
         StringWriter sw = new StringWriter();
-        String entryId = new AtomEntryFormatWriter().writeAndReturnId(baseUri, sw, response);
+        String entryId = new AtomEntryFormatWriter().writeAndReturnId(context.getUriInfo(), sw, response);
         String responseEntity = sw.toString();
 
         return Response.ok(responseEntity, ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8).status(Status.CREATED).location(URI.create(entryId)).header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION).build();
@@ -60,18 +59,27 @@ public class EntitiesRequestResource extends BaseResource {
 
     @GET
     @Produces({ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8,ODataConstants.TEXT_JAVASCRIPT_CHARSET_UTF8,ODataConstants.APPLICATION_JAVASCRIPT_CHARSET_UTF8})
-    public Response getEntities(@Context HttpContext context, @Context ODataProducer producer, @PathParam("entitySetName") String entitySetName, @QueryParam("$inlinecount") String inlineCount, @QueryParam("$top") String top, @QueryParam("$skip") String skip, @QueryParam("$filter") String filter, @QueryParam("$orderby") String orderBy, @QueryParam("$format") String format, @QueryParam("$callback") String callback) {
+    public Response getEntities(@Context HttpContext context,  @Context ODataProducer producer, 
+            @PathParam("entitySetName") String entitySetName, 
+            @QueryParam("$inlinecount") String inlineCount, 
+            @QueryParam("$top") String top, 
+            @QueryParam("$skip") String skip,
+            @QueryParam("$filter") String filter,
+            @QueryParam("$orderby") String orderBy, 
+            @QueryParam("$format") String format, 
+            @QueryParam("$callback") String callback,
+            @QueryParam("$skiptoken") String skipToken
+            ) {
 
-        log.info(String.format("getEntities(%s,%s,%s,%s,%s,%s)", entitySetName, inlineCount, top, skip, filter, orderBy));
+        log.info(String.format("getEntities(%s,%s,%s,%s,%s,%s,%s)", entitySetName, inlineCount, top, skip, filter, orderBy, skipToken));
 
-        final QueryInfo finalQuery = new QueryInfo(parseInlineCount(inlineCount), parseTop(top), parseSkip(skip), parseFilter(filter), parseOrderBy(orderBy));
+        QueryInfo query = new QueryInfo(parseInlineCount(inlineCount), parseTop(top), parseSkip(skip), parseFilter(filter), parseOrderBy(orderBy), parseSkipToken(skipToken));
 
-        EntitiesResponse response = producer.getEntities(entitySetName, finalQuery);
+        EntitiesResponse response = producer.getEntities(entitySetName, query);
 
-        String baseUri = context.getUriInfo().getBaseUri().toString();
         StringWriter sw = new StringWriter();
         FormatWriter<EntitiesResponse> fw = FormatWriterFactory.getFormatWriter(EntitiesResponse.class, context.getRequest().getAcceptableMediaTypes(),format, callback);
-        fw.write(baseUri, sw, response);
+        fw.write(context.getUriInfo(), sw, response);
         String entity = sw.toString();
        
         return Response.ok(entity, fw.getContentType()).header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION).build();
@@ -108,6 +116,10 @@ public class EntitiesRequestResource extends BaseResource {
         if (orderBy == null)
             return null;
         return ExpressionParser.parseOrderBy(orderBy);
+    }
+    
+    private String parseSkipToken(String skipToken) {
+        return skipToken;
     }
 
 }

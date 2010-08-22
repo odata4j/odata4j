@@ -87,6 +87,7 @@ public class DomXMLFactoryProvider2 extends XMLFactoryProvider2 {
             factory.setNamespaceAware(true);
             try {
                 DocumentBuilder builder = factory.newDocumentBuilder();
+               
                 Document document = builder.parse(new InputSource(reader));
                 return new DomXMLEventReader2(document);
             } catch (Exception e) {
@@ -296,6 +297,7 @@ public class DomXMLFactoryProvider2 extends XMLFactoryProvider2 {
         public String toString() {
             return event.toString();
         }
+        
 
     }
 

@@ -12,4 +12,6 @@ public interface EntitiesResponse {
     public List<OEntity> getEntities();
 
     public Integer getInlineCount();
+    
+    public String getSkipToken();
 }

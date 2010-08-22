@@ -1,5 +1,6 @@
 package org.odata4j.examples.consumer;
 
+import org.odata4j.consumer.ODataClient;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.consumer.ODataConsumers;
 import org.odata4j.core.OEntity;
@@ -11,11 +12,17 @@ public class DallasConsumerExampleUnescoUIS extends BaseExample {
 
     public static void main(String... args) {
 
+        boolean dump = false;
+        ODataConsumer.DUMP_REQUEST_BODY = dump;
+        ODataConsumer.DUMP_REQUEST_HEADERS = dump;
+        ODataConsumer.DUMP_RESPONSE_BODY = dump;
+        ODataConsumer.DUMP_RESPONSE_HEADERS = dump;
+        
         String[] dallasCreds = args.length>0?args:System.getenv("DALLAS").split(":");
         String accountKey = dallasCreds[0];
         String uniqueUserId = dallasCreds[1];
         
-        ODataConsumer c = ODataConsumers.dallas(ODataEndpoints.DALLAS_UNESCO_UIS,accountKey,uniqueUserId);
+        ODataConsumer c = ODataConsumers.dallas(ODataEndpoints.DALLAS_CTP2_UNESCO_UIS,accountKey,uniqueUserId);
         
         // Public expenditure on education as % of GDP [XGDP_FSGOV]
         for(OEntity entity : c.getEntities("UNESCO/XGDP_FSGOV").execute()
@@ -26,7 +33,7 @@ public class DallasConsumerExampleUnescoUIS extends BaseExample {
                     entity.getProperty("timePeriod").getValue(),
                     entity.getProperty("observationValue").getValue());
         }
-        
+      
         // Number of national feature films produced [C_F_220006]
         for(OEntity entity : c.getEntities("UNESCO/C_F_220006").execute()
                 .orderBy(OFuncs.entityPropertyValue("observationValue", Double.class))     

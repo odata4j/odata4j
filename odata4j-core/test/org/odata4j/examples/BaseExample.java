@@ -98,7 +98,7 @@ public class BaseExample {
                 reportProperties(et.properties);
                 for(EdmNavigationProperty np : et.navigationProperties){
                     report("    NavigationProperty Name=%s Relationship=%s FromRole=%s ToRole=%s",
-                            np.name,np.relationship.getFQName(),np.fromRole.role,np.toRole.role);
+                            np.name,np.relationship.getFQNamespaceName(),np.fromRole.role,np.toRole.role);
                 }
                  
             }
@@ -110,25 +110,25 @@ public class BaseExample {
             }
             for(EdmAssociation assoc : schema.associations){
                 report("  Association Name=%s",assoc.name);
-                report("    End Role=%s Type=%s Multiplicity=%s",assoc.end1.role,assoc.end1.type.getFQName(),assoc.end1.multiplicity);
-                report("    End Role=%s Type=%s Multiplicity=%s",assoc.end2.role,assoc.end2.type.getFQName(),assoc.end2.multiplicity);
+                report("    End Role=%s Type=%s Multiplicity=%s",assoc.end1.role,assoc.end1.type.getFQNamespaceName(),assoc.end1.multiplicity);
+                report("    End Role=%s Type=%s Multiplicity=%s",assoc.end2.role,assoc.end2.type.getFQNamespaceName(),assoc.end2.multiplicity);
             }
             for(EdmEntityContainer ec : schema.entityContainers){
                 report("  EntityContainer Name=%s IsDefault=%s LazyLoadingEnabled=%s",ec.name,ec.isDefault,ec.lazyLoadingEnabled);
                 
                 for(EdmEntitySet ees : ec.entitySets){
-                    report("    EntitySet Name=%s EntityType=%s",ees.name,ees.type.getFQName());
+                    report("    EntitySet Name=%s EntityType=%s",ees.name,ees.type.getFQNamespaceName());
                 }
                 
                 for(EdmAssociationSet eas : ec.associationSets){
-                    report("    AssociationSet Name=%s Association=%s",eas.name,eas.association.getFQName());
+                    report("    AssociationSet Name=%s Association=%s",eas.name,eas.association.getFQNamespaceName());
                     report("      End Role=%s EntitySet=%s",eas.end1.role.role,eas.end1.entitySet.name);
                     report("      End Role=%s EntitySet=%s",eas.end2.role.role,eas.end2.entitySet.name);
                 }
                 
                 for(EdmFunctionImport efi : ec.functionImports){
                     report("    FunctionImport Name=%s EntitySet=%s ReturnType=%s HttpMethod=%s",
-                            efi.name,efi.entitySet.name,efi.returnType.getFQName(),efi.httpMethod);
+                            efi.name,efi.entitySet.name,efi.returnType.getFQNamespaceName(),efi.httpMethod);
                     for(EdmFunctionParameter efp : efi.parameters){
                         report("      Parameter Name=%s Type=%s Mode=%s",efp.name,efp.type,efp.mode);
                     }

@@ -2,12 +2,12 @@ package org.odata4j.format.json;
 
 import java.io.Writer;
 import java.math.BigDecimal;
-import java.util.UUID;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
+import org.odata4j.core.Guid;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperty;
@@ -18,6 +18,8 @@ import org.odata4j.internal.InternalUtil;
 import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
 import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
 
+import com.sun.jersey.api.core.ExtendedUriInfo;
+
 public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
     
     private final String jsonpCallback;
@@ -26,7 +28,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
     }
     
     
-    abstract protected void writeContent(String baseUri, JsonWriter jw,  T target);
+    abstract protected void writeContent(ExtendedUriInfo uriInfo, JsonWriter jw,  T target);
    
     public String getContentType() {
         return jsonpCallback==null?ODataConstants.APPLICATION_JAVASCRIPT_CHARSET_UTF8:ODataConstants.TEXT_JAVASCRIPT_CHARSET_UTF8;
@@ -36,7 +38,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
         return jsonpCallback;
     }
     
-    public void write(String baseUri, Writer w, T target) {
+    public void write(ExtendedUriInfo uriInfo, Writer w, T target) {
         
         JsonWriter jw = new JsonWriter(w);
         if (getJsonpCallback() != null)
@@ -45,7 +47,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
         jw.startObject();
         {
             jw.writeName("d");
-            writeContent(baseUri,jw,target);
+            writeContent(uriInfo,jw,target);
         }
         jw.endObject(); 
         
@@ -56,7 +58,9 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
     
    
     
-    protected void writeOEntity(String baseUri, JsonWriter jw, OEntity oe, EdmEntitySet ees){
+    protected void writeOEntity(ExtendedUriInfo uriInfo, JsonWriter jw, OEntity oe, EdmEntitySet ees){
+        
+        String baseUri = uriInfo.getBaseUri().toString();
         
         jw.startObject();
         {
@@ -69,7 +73,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
                 jw.writeString(absId);
                 jw.writeSeparator();
                 jw.writeName("type");
-                jw.writeString(ees.type.getFQName());
+                jw.writeString(ees.type.getFQNamespaceName());
             }
             jw.endObject();
             jw.writeSeparator();
@@ -99,7 +103,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
                 else if (prop.getType().equals(EdmType.DOUBLE)) 
                     jw.writeString(prop.getValue().toString());
                 else if (prop.getType().equals(EdmType.GUID))
-                    jw.writeString("guid'" + (UUID)prop.getValue() + "'");
+                    jw.writeString("guid'" + (Guid)prop.getValue() + "'");
                 else if (prop.getType().equals(EdmType.INT16)) 
                     jw.writeNumber((Short)prop.getValue());
                 else if (prop.getType().equals(EdmType.INT32)) 

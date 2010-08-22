@@ -183,8 +183,19 @@ public class OQueryImpl<T> implements OQuery<T> {
                 if (feed.next == null)
                     return IterationResult.done();
 
-                String skiptoken = feed.next.substring(feed.next.indexOf("$skiptoken=") + "$skiptoken=".length());
-                request = request.queryParam("$skiptoken", skiptoken);
+                int skipTokenIndex = feed.next.indexOf("$skiptoken=");
+                if( skipTokenIndex > -1) {
+                    String skiptoken = feed.next.substring(skipTokenIndex + "$skiptoken=".length());
+                    request = request.queryParam("$skiptoken", skiptoken);
+                } else if (feed.next.toLowerCase().startsWith("http")){
+                    request = ODataClientRequest.get(feed.next);
+                } else {
+                    throw new UnsupportedOperationException();
+                }
+                
+                
+                
+               
             }
 
             feed = null;

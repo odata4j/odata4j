@@ -4,8 +4,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
-
 import org.core4j.Enumerable;
 import org.core4j.Func1;
 import org.core4j.Func2;
@@ -14,6 +12,7 @@ import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.odata4j.core.Guid;
 import org.odata4j.repack.org.apache.commons.codec.DecoderException;
 import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
 
@@ -387,8 +386,8 @@ public class ExpressionParser {
             } else if (word.equals("guid")) {
                 // odata: dddddddd-dddd-dddd-dddddddddddd
                 // java: dddddddd-dd-dd-dddd-dddddddddddd
-                value = value.substring(0, 11) + "-" + value.substring(11);
-                return Expression.guid(UUID.fromString(value));
+               // value = value.substring(0, 11) + "-" + value.substring(11);
+                return Expression.guid(Guid.fromString(value));
             } else if (word.equals("decimal")) {
                 return Expression.decimal(new BigDecimal(value));
             } else if (word.equals("X") || word.equals("binary")) {

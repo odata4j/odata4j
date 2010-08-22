@@ -72,6 +72,16 @@ public class InMemoryProducerExample {
             }
         }), "Symbol");
 
+      
+        // expose an large list of integers as an entity-set called "Integers"
+        producer.register(Integer.class, Integer.class, "Integers",new Func<Iterable<Integer>>() {
+            public Iterable<Integer> apply() {
+                return Enumerable.range(0, Integer.MAX_VALUE);
+            }
+        },Funcs.method(Integer.class, Integer.class, "intValue"));
+        
+        
+        
         // register the producer as the static instance, then launch the http server
         ODataProducerProvider.setInstance(producer);
         ProducerUtil.hostODataServer(endpointUri);

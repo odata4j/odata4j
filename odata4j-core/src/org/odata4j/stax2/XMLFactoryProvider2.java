@@ -4,7 +4,7 @@ import org.odata4j.internal.PlatformUtil;
 
 public abstract class XMLFactoryProvider2 {
 
-    private static final XMLFactoryProvider2 STAX;
+    private static XMLFactoryProvider2 STAX;
     static {
         try {
             String clazz = PlatformUtil.runningOnAndroid() ? "org.odata4j.stax2.domimpl.DomXMLFactoryProvider2" : "org.odata4j.stax2.staximpl.StaxXMLFactoryProvider2";
@@ -16,6 +16,10 @@ public abstract class XMLFactoryProvider2 {
         }
     }
 
+    public static void setInstance(XMLFactoryProvider2 instance){
+        STAX = instance;
+    }
+    
     public static XMLFactoryProvider2 getInstance() {
         return STAX;
     }

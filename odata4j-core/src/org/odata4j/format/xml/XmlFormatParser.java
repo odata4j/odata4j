@@ -18,6 +18,7 @@ public class XmlFormatParser {
     public static final String NS_EDM2006 = "http://schemas.microsoft.com/ado/2006/04/edm";
     public static final String NS_EDM2007 = "http://schemas.microsoft.com/ado/2007/05/edm";
     public static final String NS_EDM2008 = "http://schemas.microsoft.com/ado/2008/09/edm";
+    public static final String NS_EDM2009 = "http://schemas.microsoft.com/ado/2009/08/edm";
     public static final String NS_EDMX = "http://schemas.microsoft.com/ado/2007/06/edmx";
     public static final String NS_EDMANNOTATION = "http://schemas.microsoft.com/ado/2009/02/edm/annotation";
    
@@ -64,6 +65,20 @@ public class XmlFormatParser {
     public static final QName2 EDM2008_PROPERTYREF = new QName2(NS_EDM2008,"PropertyRef");
     public static final QName2 EDM2008_PROPERTY = new QName2(NS_EDM2008,"Property");
     public static final QName2 EDM2008_NAVIGATIONPROPERTY = new QName2(NS_EDM2008,"NavigationProperty");
+    
+    public static final QName2 EDM2009_SCHEMA = new QName2(NS_EDM2009, "Schema");
+    public static final QName2 EDM2009_ENTITYTYPE = new QName2(NS_EDM2009, "EntityType");
+    public static final QName2 EDM2009_ASSOCIATION = new QName2(NS_EDM2009, "Association");
+    public static final QName2 EDM2009_COMPLEXTYPE = new QName2(NS_EDM2009, "ComplexType");
+    public static final QName2 EDM2009_ENTITYCONTAINER = new QName2(NS_EDM2009, "EntityContainer");
+    public static final QName2 EDM2009_ENTITYSET = new QName2(NS_EDM2009, "EntitySet");
+    public static final QName2 EDM2009_ASSOCIATIONSET = new QName2(NS_EDM2009, "AssociationSet");
+    public static final QName2 EDM2009_FUNCTIONIMPORT = new QName2(NS_EDM2009, "FunctionImport");
+    public static final QName2 EDM2009_PARAMETER = new QName2(NS_EDM2009, "Parameter");
+    public static final QName2 EDM2009_END = new QName2(NS_EDM2009,"End");
+    public static final QName2 EDM2009_PROPERTYREF = new QName2(NS_EDM2009,"PropertyRef");
+    public static final QName2 EDM2009_PROPERTY = new QName2(NS_EDM2009,"Property");
+    public static final QName2 EDM2009_NAVIGATIONPROPERTY = new QName2(NS_EDM2009,"NavigationProperty");
     
     
     public static final QName2 ATOM_ENTRY = new QName2(NS_ATOM, "entry");

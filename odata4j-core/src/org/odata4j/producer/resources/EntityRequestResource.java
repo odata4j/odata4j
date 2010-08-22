@@ -86,10 +86,9 @@ public class EntityRequestResource extends BaseResource {
         if (response == null)
             return Response.status(Status.NOT_FOUND).build();
 
-        String baseUri = context.getUriInfo().getBaseUri().toString();
         StringWriter sw = new StringWriter();
         FormatWriter<EntityResponse> fw = FormatWriterFactory.getFormatWriter(EntityResponse.class,context.getRequest().getAcceptableMediaTypes(), format, callback);
-        fw.write(baseUri, sw, response);
+        fw.write(context.getUriInfo(), sw, response);
         String entity = sw.toString();
 
         return Response.ok(entity, fw.getContentType()).header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION).build();

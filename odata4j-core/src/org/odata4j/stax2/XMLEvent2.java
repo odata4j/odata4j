@@ -10,4 +10,5 @@ public interface XMLEvent2 {
 
     EndElement2 asEndElement();
 
+    
 }

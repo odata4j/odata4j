@@ -1,11 +1,11 @@
 package org.odata4j.expression;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
+import org.odata4j.core.Guid;
 
 public class Expression {
 
@@ -102,7 +102,7 @@ public class Expression {
         };
     }
 
-    public static GuidLiteral guid(final UUID value) {
+    public static GuidLiteral guid(final Guid value) {
         return new GuidLiteral() {
             @Override
             public String toString() {
@@ -110,7 +110,7 @@ public class Expression {
             }
 
             @Override
-            public UUID getValue() {
+            public Guid getValue() {
                 return value;
             }
         };

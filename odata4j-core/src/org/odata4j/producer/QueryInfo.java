@@ -12,13 +12,15 @@ public class QueryInfo {
     public final Integer skip;
     public final BoolCommonExpression filter;
     public final List<OrderByExpression> orderBy;
+    public final String skipToken;
 
-    public QueryInfo(InlineCount inlineCount, Integer top, Integer skip, BoolCommonExpression filter, List<OrderByExpression> orderBy) {
+    public QueryInfo(InlineCount inlineCount, Integer top, Integer skip, BoolCommonExpression filter, List<OrderByExpression> orderBy, String skipToken) {
         this.inlineCount = inlineCount;
         this.top = top;
         this.skip = skip;
         this.filter = filter;
         this.orderBy = orderBy;
+        this.skipToken = skipToken;
     }
 
 }

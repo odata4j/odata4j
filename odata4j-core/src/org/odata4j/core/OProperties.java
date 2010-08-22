@@ -3,7 +3,6 @@ package org.odata4j.core;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
@@ -29,7 +28,7 @@ public class OProperties {
     public static OProperty<?> parse(String name, String type, String value) {
 
         if (EdmType.GUID.toTypeString().equals(type)) {
-            UUID uValue = value == null ? null : UUID.fromString(value);
+            Guid uValue = value == null ? null : Guid.fromString(value);
             return OProperties.guid(name, uValue);
         } else if (EdmType.BOOLEAN.toTypeString().equals(type)) {
             Boolean bValue = value == null ? null : Boolean.parseBoolean(value);
@@ -92,12 +91,12 @@ public class OProperties {
         return new PropertyImpl<String>(name, EdmType.STRING, value);
     }
 
-    public static OProperty<UUID> guid(String name, String value) {
-        return guid(name, UUID.fromString(value));
+    public static OProperty<Guid> guid(String name, String value) {
+        return guid(name, Guid.fromString(value));
     }
 
-    public static OProperty<UUID> guid(String name, UUID value) {
-        return new PropertyImpl<UUID>(name, EdmType.GUID, value);
+    public static OProperty<Guid> guid(String name, Guid value) {
+        return new PropertyImpl<Guid>(name, EdmType.GUID, value);
     }
 
     public static OProperty<Boolean> boolean_(String name, Boolean value) {

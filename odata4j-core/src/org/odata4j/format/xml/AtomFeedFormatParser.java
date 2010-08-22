@@ -45,7 +45,16 @@ public class AtomFeedFormatParser extends XmlFormatParser {
         public String categoryTerm;
         public String categoryScheme;
         public String contentType;
+        
+        public List<AtomLink> links;
 
+    }
+    
+    public static class AtomLink{
+        public String relation;
+        public String title;
+        public String type;
+        public String href;
     }
 
     public static class BasicAtomEntry extends AtomEntry {
@@ -110,7 +119,7 @@ public class AtomFeedFormatParser extends XmlFormatParser {
                 String name = event.asStartElement().getName().getLocalPart();
                 Attribute2 typeAttribute = event.asStartElement().getAttributeByName(M_TYPE);
                 Attribute2 nullAttribute = event.asStartElement().getAttributeByName(M_NULL);
-                boolean isNull = nullAttribute != null && nullAttribute.getValue().equals("true");
+                boolean isNull = nullAttribute != null && "true".equals(nullAttribute.getValue());
 
                 OProperty<?> op = null;
 
@@ -138,6 +147,16 @@ public class AtomFeedFormatParser extends XmlFormatParser {
 
    
 
+    private static AtomLink parseAtomLink(StartElement2 linkElement){
+        AtomLink rt = new AtomLink();
+        rt.relation = getAttributeValueIfExists(linkElement, "rel");
+        rt.type =  getAttributeValueIfExists(linkElement, "type");
+        rt.title =  getAttributeValueIfExists(linkElement, "title");
+        rt.href =  getAttributeValueIfExists(linkElement, "href");
+        return rt;
+    }
+    
+    
     private static DataServicesAtomEntry parseDSAtomEntry(String etag, XMLEventReader2 reader, XMLEvent2 event) {
         DataServicesAtomEntry dsae = new DataServicesAtomEntry();
         dsae.etag = etag;
@@ -171,7 +190,8 @@ public class AtomFeedFormatParser extends XmlFormatParser {
         String summary = null;
         String updated = null;
         String contentType = null;
-
+        List<AtomLink> links = new ArrayList<AtomLink>();
+        
         String etag = getAttributeValueIfExists(entryElement, M_ETAG);
 
         AtomEntry rt = null;
@@ -187,6 +207,7 @@ public class AtomFeedFormatParser extends XmlFormatParser {
                 rt.categoryScheme = categoryScheme;
                 rt.categoryTerm = categoryTerm;
                 rt.contentType = contentType;
+                rt.links = links;
                 return rt;
             }
 
@@ -202,6 +223,9 @@ public class AtomFeedFormatParser extends XmlFormatParser {
                 categoryTerm = getAttributeValueIfExists(event.asStartElement(), "term");
                 categoryScheme = getAttributeValueIfExists(event.asStartElement(), "scheme");
 
+            } else if  (isStartElement(event, ATOM_LINK)) {
+                AtomLink link = parseAtomLink(event.asStartElement());
+                links.add(link);
             } else if (isStartElement(event, M_PROPERTIES)) {
                 rt = parseDSAtomEntry(etag, reader, event);
             } else if (isStartElement(event, ATOM_CONTENT)) {

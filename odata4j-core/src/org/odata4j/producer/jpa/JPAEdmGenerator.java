@@ -115,7 +115,7 @@ public class JPAEdmGenerator {
 
             }
 
-            EdmEntityType eet = new EdmEntityType(modelNamespace, name, null, Enumerable.create(key).toList(), properties, navigationProperties);
+            EdmEntityType eet = new EdmEntityType(modelNamespace, null, name, null, Enumerable.create(key).toList(), properties, navigationProperties);
             edmEntityTypes.add(eet);
 
             EdmEntitySet ees = new EdmEntitySet(name, eet);
@@ -163,7 +163,7 @@ public class JPAEdmGenerator {
                         if (assocEnd2Name.equals(eet1.name))
                             assocEnd2Name = assocEnd2Name + "1";
                         EdmAssociationEnd assocEnd2 = new EdmAssociationEnd(assocEnd2Name, eet2, m2);
-                        EdmAssociation assoc = new EdmAssociation(modelNamespace, assocName, assocEnd1, assocEnd2);
+                        EdmAssociation assoc = new EdmAssociation(modelNamespace, null, assocName, assocEnd1, assocEnd2);
 
                         associations.add(assoc);
 
@@ -217,8 +217,8 @@ public class JPAEdmGenerator {
 
         EdmEntityContainer container = new EdmEntityContainer(namespace + "Entities", true, null, entitySets, associationSets,null);
 
-        EdmSchema modelSchema = new EdmSchema(modelNamespace, edmEntityTypes, null, associations, null);
-        EdmSchema containerSchema = new EdmSchema(namespace + "Container", null, null, null, Enumerable.create(container).toList());
+        EdmSchema modelSchema = new EdmSchema(modelNamespace, null, edmEntityTypes, null, associations, null);
+        EdmSchema containerSchema = new EdmSchema(namespace + "Container", null, null, null, null, Enumerable.create(container).toList());
 
         EdmDataServices services = new EdmDataServices(ODataConstants.DATA_SERVICE_VERSION,Enumerable.create(modelSchema, containerSchema).toList());
         return services;

@@ -1,11 +1,10 @@
 package org.odata4j.test.expression;
 
 import java.math.BigDecimal;
-import java.util.UUID;
-
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
+import org.odata4j.core.Guid;
 
 public class PojoWithAllTypes{  // except sbyte
 
@@ -16,7 +15,7 @@ public class PojoWithAllTypes{  // except sbyte
     private final LocalDateTime dateTime;
     private final BigDecimal decimal;
     private final double double_;
-    private final UUID guid;
+    private final Guid guid;
     private final short int16;
     private final int int32;
     private final long int64;
@@ -26,7 +25,7 @@ public class PojoWithAllTypes{  // except sbyte
     private final DateTime dateTimeOffset;
     
     public PojoWithAllTypes(byte[] binary, boolean boolean_, byte byte_, LocalDateTime dateTime, BigDecimal decimal,
-            double double_, UUID guid, short int16, int int32, long int64, float single, String string, LocalTime time, DateTime dateTimeOffset
+            double double_, Guid guid, short int16, int int32, long int64, float single, String string, LocalTime time, DateTime dateTimeOffset
             
             ){
         this.binary = binary;
@@ -63,7 +62,7 @@ public class PojoWithAllTypes{  // except sbyte
     public double getDouble() {
         return double_;
     }
-    public UUID getGuid() {
+    public Guid getGuid() {
         return guid;
     }
     public short getInt16() {

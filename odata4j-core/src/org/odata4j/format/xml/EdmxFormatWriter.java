@@ -67,7 +67,7 @@ public class EdmxFormatWriter extends XmlFormatWriter {
 
                     writer.startElement(new QName2("NavigationProperty"));
                     writer.writeAttribute("Name", np.name);
-                    writer.writeAttribute("Relationship", np.relationship.getFQName());
+                    writer.writeAttribute("Relationship", np.relationship.getFQNamespaceName());
                     writer.writeAttribute("FromRole", np.fromRole.role);
                     writer.writeAttribute("ToRole", np.toRole.role);
 
@@ -79,7 +79,7 @@ public class EdmxFormatWriter extends XmlFormatWriter {
 
             }
 
-            // Associaion
+            // Association
             for(EdmAssociation assoc : schema.associations) {
                 writer.startElement(new QName2("Association"));
 
@@ -87,13 +87,13 @@ public class EdmxFormatWriter extends XmlFormatWriter {
 
                 writer.startElement(new QName2("End"));
                 writer.writeAttribute("Role", assoc.end1.role);
-                writer.writeAttribute("Type", assoc.end1.type.getFQName());
+                writer.writeAttribute("Type", assoc.end1.type.getFQNamespaceName());
                 writer.writeAttribute("Multiplicity", assoc.end1.multiplicity.getSymbolString());
                 writer.endElement("End");
 
                 writer.startElement(new QName2("End"));
                 writer.writeAttribute("Role", assoc.end2.role);
-                writer.writeAttribute("Type", assoc.end2.type.getFQName());
+                writer.writeAttribute("Type", assoc.end2.type.getFQNamespaceName());
                 writer.writeAttribute("Multiplicity", assoc.end2.multiplicity.getSymbolString());
                 writer.endElement("End");
 
@@ -110,13 +110,13 @@ public class EdmxFormatWriter extends XmlFormatWriter {
                 for(EdmEntitySet ees : container.entitySets) {
                     writer.startElement(new QName2("EntitySet"));
                     writer.writeAttribute("Name", ees.name);
-                    writer.writeAttribute("EntityType", ees.type.getFQName());
+                    writer.writeAttribute("EntityType", ees.type.getFQNamespaceName());
                     writer.endElement("EntitySet");
                 }
                 for(EdmAssociationSet eas : container.associationSets) {
                     writer.startElement(new QName2("AssociationSet"));
                     writer.writeAttribute("Name", eas.name);
-                    writer.writeAttribute("Association", eas.association.getFQName());
+                    writer.writeAttribute("Association", eas.association.getFQNamespaceName());
 
                     writer.startElement(new QName2("End"));
                     writer.writeAttribute("Role", eas.end1.role.role);

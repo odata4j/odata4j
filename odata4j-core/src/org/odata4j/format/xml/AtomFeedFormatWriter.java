@@ -14,6 +14,8 @@ import org.odata4j.stax2.QName2;
 import org.odata4j.stax2.XMLFactoryProvider2;
 import org.odata4j.stax2.XMLWriter2;
 
+import com.sun.jersey.api.core.ExtendedUriInfo;
+
 public class AtomFeedFormatWriter extends XmlFormatWriter implements FormatWriter<EntitiesResponse> {
 
     @Override
@@ -25,8 +27,10 @@ public class AtomFeedFormatWriter extends XmlFormatWriter implements FormatWrite
 
 
     @Override
-    public void write(String baseUri, Writer w, EntitiesResponse response) {
+    public void write(ExtendedUriInfo uriInfo, Writer w, EntitiesResponse response) {
 
+        String baseUri = uriInfo.getBaseUri().toString();
+        
         EdmEntitySet ees = response.getEntitySet();
         String entitySetName = ees.name;
         DateTime utc = new DateTime().withZone(DateTimeZone.UTC);
@@ -57,6 +61,13 @@ public class AtomFeedFormatWriter extends XmlFormatWriter implements FormatWrite
             writeEntry(writer, response.getEntitySet().type.keys, entity.getProperties(), entitySetName, baseUri, updated, ees);
             writer.endElement("entry");
         }
+        
+        if (response.getSkipToken() != null){
+            //<link rel="next" href="https://odata.sqlazurelabs.com/OData.svc/v0.1/rp1uiewita/StackOverflow/Tags/?$filter=TagName%20gt%20'a'&amp;$skiptoken=52" />
+            String nextHref = uriInfo.getRequestUriBuilder().replaceQueryParam("$skiptoken", response.getSkipToken()).build().toString();
+            writeElement(writer, "link", null, "rel", "next", "href", nextHref);
+        }
+        
         writer.endDocument();
 
     }

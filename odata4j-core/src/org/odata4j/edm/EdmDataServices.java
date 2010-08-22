@@ -14,6 +14,12 @@ public class EdmDataServices {
     }
 
     public EdmEntitySet getEdmEntitySet(String entitySetName) {
+        EdmEntitySet ees = findEdmEntitySet(entitySetName);
+        if (ees!=null)
+            return ees;
+        throw new RuntimeException("EdmEntitySet " + entitySetName + " not found");
+    }
+    public EdmEntitySet findEdmEntitySet(String entitySetName) {
         for(EdmSchema schema : this.schemas) {
             for(EdmEntityContainer eec : schema.entityContainers) {
                 for(EdmEntitySet ees : eec.entitySets) {
@@ -22,7 +28,7 @@ public class EdmDataServices {
                 }
             }
         }
-        throw new RuntimeException("EdmEntitySet " + entitySetName + " not found");
+        return null;
     }
 
     public Iterable<EdmEntityType> getEntityTypes() {

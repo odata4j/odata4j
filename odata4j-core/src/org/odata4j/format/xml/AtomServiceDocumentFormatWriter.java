@@ -10,6 +10,8 @@ import org.odata4j.stax2.QName2;
 import org.odata4j.stax2.XMLFactoryProvider2;
 import org.odata4j.stax2.XMLWriter2;
 
+import com.sun.jersey.api.core.ExtendedUriInfo;
+
 public class AtomServiceDocumentFormatWriter extends XmlFormatWriter implements FormatWriter<EdmDataServices> {
 
     
@@ -19,14 +21,14 @@ public class AtomServiceDocumentFormatWriter extends XmlFormatWriter implements 
     }
     
     @Override
-    public void write(String baseUri,Writer w, EdmDataServices target) {
+    public void write(ExtendedUriInfo uriInfo,Writer w, EdmDataServices target) {
         XMLWriter2 writer = XMLFactoryProvider2.getInstance().newXMLWriterFactory2().createXMLWriter(w);
         writer.startDocument();
 
         String xmlns = app;
 
         writer.startElement(new QName2("service"), xmlns);
-        writer.writeAttribute(new QName2("xml:base"), baseUri);
+        writer.writeAttribute(new QName2("xml:base"), uriInfo.getBaseUri().toString());
         writer.writeNamespace("atom", atom);
         writer.writeNamespace("app", app);
 

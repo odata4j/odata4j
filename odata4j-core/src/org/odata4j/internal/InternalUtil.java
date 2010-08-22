@@ -3,19 +3,24 @@ package org.odata4j.internal;
 import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 import org.core4j.Enumerable;
 import org.core4j.Func1;
 import org.core4j.Funcs;
 import org.core4j.ThrowingFunc1;
 import org.joda.time.DateTime;
+import org.odata4j.core.Guid;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
+import org.odata4j.core.OLink;
+import org.odata4j.core.OLinks;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
+import org.odata4j.format.xml.XmlFormatWriter;
+import org.odata4j.format.xml.AtomFeedFormatParser.AtomLink;
 import org.odata4j.format.xml.AtomFeedFormatParser.DataServicesAtomEntry;
 import org.odata4j.producer.inmemory.BeanModel;
 import org.odata4j.stax2.XMLEventReader2;
@@ -67,8 +72,8 @@ public class InternalUtil {
     @SuppressWarnings("unchecked")
     private static final Set<Object> INTEGRAL_TYPES = Enumerable.create(Integer.class, Integer.TYPE, Long.class, Long.TYPE, Short.class, Short.TYPE).cast(Object.class).toSet();
 
-    private static String keyString(Object key, boolean includePropName) {
-        if (key instanceof UUID) {
+    public static String keyString(Object key, boolean includePropName) {
+        if (key instanceof Guid) {
             return "guid'" + key + "'";
         } else if (key instanceof String) {
             return "'" + ((String) key).replace("'", "''") + "'";
@@ -99,7 +104,7 @@ public class InternalUtil {
     
     public static OEntity toOEntity(DataServicesAtomEntry dsae, FeedCustomizationMapping mapping) {
         if (mapping==null)
-            return OEntities.create(dsae.properties);
+            return OEntities.create(dsae.properties,toOLinks(dsae.links),dsae.title);
         
         Enumerable<OProperty<?>> properties = Enumerable.create(dsae.properties);
         if (mapping.titlePropName != null)
@@ -107,8 +112,22 @@ public class InternalUtil {
         if (mapping.summaryPropName != null)
             properties = properties.concat(OProperties.string(mapping.summaryPropName, dsae.summary));
         
-        return OEntities.create(properties.toList());
+        return OEntities.create(properties.toList(),toOLinks(dsae.links),dsae.title);
        
+    }
+    
+    private static List<OLink> toOLinks(List<AtomLink> links){
+        List<OLink> rt = new ArrayList<OLink>(links.size());
+        for(AtomLink link : links){
+            
+            if (link.relation.startsWith(XmlFormatWriter.related)){
+                if (link.type.equals(XmlFormatWriter.atom_feed_content_type))
+                    rt.add( OLinks.relatedEntities(link.relation, link.title, link.href) );
+                if (link.type.equals(XmlFormatWriter.atom_entry_content_type))
+                    rt.add( OLinks.relatedEntity(link.relation, link.title, link.href) );
+            }
+        }
+        return rt;
     }
     
     public static <T> T toPojo(Class<T> pojoClass, OEntity oe){

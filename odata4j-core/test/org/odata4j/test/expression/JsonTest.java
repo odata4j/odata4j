@@ -3,7 +3,6 @@ package org.odata4j.test.expression;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import junit.framework.Assert;
 
@@ -13,6 +12,7 @@ import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.core.Guid;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.resources.ODataProducerProvider;
 import org.odata4j.producer.resources.ODataResourceConfig;
@@ -43,7 +43,7 @@ public class JsonTest {
             producer.register(PojoWithAllTypes.class, Integer.TYPE, "Pojo", Funcs.constant((Iterable<PojoWithAllTypes>) pojos), "Int32");
           
             pojos.add(new PojoWithAllTypes(new byte[]{0x01,0x02,0x03},true,(byte)0x05,new LocalDateTime(),new BigDecimal("123.456"),123.456,
-                    UUID.randomUUID(), (short)123, 1, Long.MAX_VALUE,123.456F, "John", new LocalTime(),new DateTime()
+                    Guid.randomGuid(), (short)123, 1, Long.MAX_VALUE,123.456F, "John", new LocalTime(),new DateTime()
                     ));
            
             Client httpClient = Client.create();

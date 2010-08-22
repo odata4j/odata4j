@@ -11,6 +11,6 @@ public class EntitySegment {
 
     @Override
     public String toString() {
-        return this.segment + InternalUtil.keyString(this.key);
+        return this.segment + (key==null?"":InternalUtil.keyString(this.key));
     }
 }

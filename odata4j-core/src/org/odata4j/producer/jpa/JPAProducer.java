@@ -28,11 +28,13 @@ import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmType;
+import org.odata4j.internal.InternalUtil;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.InlineCount;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
+import org.odata4j.producer.Responses;
 
 public class JPAProducer implements ODataProducer {
 
@@ -40,11 +42,13 @@ public class JPAProducer implements ODataProducer {
     private final EntityManager em;
     private final String namespace;
     private final EdmDataServices metadata;
+    private final int maxResults;
 
-    public JPAProducer(EntityManagerFactory emf, String namespace) {
+    public JPAProducer(EntityManagerFactory emf, String namespace, int maxResults) {
 
         this.emf = emf;
         this.namespace = namespace;
+        this.maxResults = maxResults;
 
         em = emf.createEntityManager(); // necessary for metamodel
         this.metadata = JPAEdmGenerator.buildEdm(emf, this.namespace);
@@ -119,33 +123,25 @@ public class JPAProducer implements ODataProducer {
     }
 
     private OEntity makeEntity(final EdmEntitySet ees, final EntityType<?> jpaEntityType, final String keyPropertyName, final Object jpaEntity) {
-        return OEntities.create(jpaEntityToOProperties(ees, jpaEntityType, jpaEntity));
+        return OEntities.create(jpaEntityToOProperties(ees, jpaEntityType, jpaEntity), null);
     }
 
     private EntitiesResponse getEntities(final Context context) {
 
-        final DynamicEntitiesResponse response = enumJpaEntities(context.em, context.jpaEntityType.getJavaType(), context.query);
+        final DynamicEntitiesResponse response = enumJpaEntities(context.em, context.jpaEntityType.getJavaType(), context.query, maxResults);
         final List<OEntity> entities = response.jpaEntities.select(new Func1<Object, OEntity>() {
             public OEntity apply(final Object input) {
                 return makeEntity(context, input);
             }
         }).toList();
 
-        return new EntitiesResponse() {
-            public List<OEntity> getEntities() {
-                return entities;
-            }
-
-            @Override
-            public EdmEntitySet getEntitySet() {
-                return context.ees;
-            }
-
-            @Override
-            public Integer getInlineCount() {
-                return response.inlineCount;
-            }
-        };
+        String skipToken = null;
+        if (response.useSkipToken){
+            skipToken = InternalUtil.keyString(Enumerable.create(entities).last().getProperty(context.keyPropertyName).getValue(),false);
+        }
+        
+        return Responses.entities(entities, context.ees, response.inlineCount, skipToken);
+       
     }
 
     private <T> T common(final String entitySetName, Object entityKey, QueryInfo query, Func1<Context, T> fn) {
@@ -228,15 +224,17 @@ public class JPAProducer implements ODataProducer {
 
     private static class DynamicEntitiesResponse {
         public final Integer inlineCount;
+        public final boolean useSkipToken;
         public final Enumerable<Object> jpaEntities;
 
-        public DynamicEntitiesResponse(Enumerable<Object> jpaEntities, Integer inlineCount) {
+        public DynamicEntitiesResponse(Enumerable<Object> jpaEntities, Integer inlineCount, boolean useSkipToken) {
             this.jpaEntities = jpaEntities;
             this.inlineCount = inlineCount;
+            this.useSkipToken = useSkipToken;
         }
     }
 
-    public static DynamicEntitiesResponse enumJpaEntities(EntityManager em, Class<?> clazz, QueryInfo query) {
+    public static DynamicEntitiesResponse enumJpaEntities(EntityManager em, Class<?> clazz, QueryInfo query, int maxResults) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Object> cq = cb.createQuery();
 
@@ -257,17 +255,25 @@ public class JPAProducer implements ODataProducer {
 
         Integer inlineCount = query.inlineCount == InlineCount.ALLPAGES ? tq.getResultList().size() : null;
 
+       
         if (query.top != null) {
-            if (query.top.equals(0)) {
-                return new DynamicEntitiesResponse(Enumerable.empty(Object.class), inlineCount);
-            }
-            tq = tq.setMaxResults(query.top);
+            if (query.top.equals(0)) 
+                return new DynamicEntitiesResponse(Enumerable.empty(Object.class), inlineCount,false);
+            
+            if (query.top < maxResults)
+                maxResults = query.top;
         }
+        tq = tq.setMaxResults(maxResults + 1);
+        
         if (query.skip != null) {
             tq = tq.setFirstResult(query.skip);
         }
         List<Object> results = tq.getResultList();
-        return new DynamicEntitiesResponse(Enumerable.create(results), inlineCount);
+        boolean useSkipToken = results.size()>maxResults;
+        
+        Enumerable<Object> jpaEntities = Enumerable.create(results).take(maxResults);
+         
+        return new DynamicEntitiesResponse(jpaEntities, inlineCount, useSkipToken);
     }
 
     private static Object createNewJPAEntity(EdmEntitySet ees, EntityType<?> jpaEntityType, List<OProperty<?>> properties) {

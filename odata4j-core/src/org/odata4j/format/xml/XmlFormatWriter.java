@@ -28,11 +28,11 @@ public class XmlFormatWriter {
     protected static String app = "http://www.w3.org/2007/app";
 
     protected static final String scheme = "http://schemas.microsoft.com/ado/2007/08/dataservices/scheme";
-    protected static final String related = "http://schemas.microsoft.com/ado/2007/08/dataservices/related/";
+    public static final String related = "http://schemas.microsoft.com/ado/2007/08/dataservices/related/";
 
 
-    
-    
+    public static final String atom_feed_content_type = "application/atom+xml;type=feed";
+    public static final String atom_entry_content_type = "application/atom+xml;type=entry";
     
     protected String writeEntry(XMLWriter2 writer, List<String> keyPropertyNames, List<OProperty<?>> entityProperties, String entitySetName, String baseUri, String updated, EdmEntitySet ees) {
 
@@ -62,7 +62,7 @@ public class XmlFormatWriter {
 
                 String otherEntity = np.toRole.type.name;
                 String rel = related + otherEntity;
-                String type = "application/atom+xml;type=feed";
+                String type = atom_feed_content_type;
                 String title = otherEntity;
                 String href = relid + "/" + otherEntity;
 
@@ -70,7 +70,7 @@ public class XmlFormatWriter {
 
             }
 
-            writeElement(writer, "category", null, "term", ees.type.getFQName(), "scheme", scheme);
+            writeElement(writer, "category", null, "term", ees.type.getFQNamespaceName(), "scheme", scheme);
         }
 
         writer.startElement("content");

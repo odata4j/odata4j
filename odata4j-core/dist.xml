@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project basedir="." default="dist" name="odata4j-core-dist">
 	
-	<!-- this property labels the build -->
-	<property name="dist.version" value="SNAPSHOT-20100509" />
-	<!-- <property name="dist.version" value="0.1" /> -->
+	<!-- <property name="dist.version" value="SNAPSHOT-20100704" /> -->
+	<property name="dist.version" value="0.2" />
 	
+	<property name="dist.projectname" value="odata4j" />
 	<property name="dist.versiondir" value="dist/${dist.version}" />
-	<property name="dist.archivename" value="odata4j-archive-${dist.version}" />
+	<property name="dist.archivename" value="${dist.projectname}-archive-${dist.version}" />
 	<property name="dist.archivedir" value="${dist.versiondir}/${dist.archivename}" />
-	<property name="dist.coredir" value="${dist.archivedir}/odata4j" />
-	<property name="dist.corejar" value="${dist.coredir}/odata4j-${dist.version}.jar" />
+	<property name="dist.coredir" value="${dist.archivedir}/${dist.projectname}" />
+	<property name="dist.javadocdir" value="${dist.coredir}/javadoc" />
+	<property name="dist.corejar.bin" value="${dist.coredir}/${dist.projectname}-${dist.version}.jar" />
+	<property name="dist.corejar.src" value="${dist.coredir}/${dist.projectname}-${dist.version}-sources.jar" />
+	<property name="dist.corejar.doc" value="${dist.coredir}/${dist.projectname}-${dist.version}-javadoc.jar" />
 	<property name="dist.bundlesdir" value="${dist.archivedir}/bundles" />
-	<property name="dist.bundlejar" value="${dist.bundlesdir}/odata4j-bundle-${dist.version}.jar" />
-	<property name="dist.clientbundlejar" value="${dist.bundlesdir}/odata4j-clientbundle-${dist.version}.jar" />
-	<property name="dist.nojpabundlejar" value="${dist.bundlesdir}/odata4j-nojpabundle-${dist.version}.jar" />
+	<property name="dist.bundlejar" value="${dist.bundlesdir}/${dist.projectname}-bundle-${dist.version}.jar" />
+	<property name="dist.clientbundlejar" value="${dist.bundlesdir}/${dist.projectname}-clientbundle-${dist.version}.jar" />
+	<property name="dist.nojpabundlejar" value="${dist.bundlesdir}/${dist.projectname}-nojpabundle-${dist.version}.jar" />
 
 	<target name="dist">
 		
@@ -24,9 +27,14 @@
 		<delete dir="${dist.versiondir}" />
 		<mkdir dir="${dist.coredir}" />
 
-		<!-- create odata4j.jar -->
-		<jar destfile="${dist.corejar}" basedir="bin" includes="**/*.class" excludes="org/odata4j/test/** org/odata4j/examples/**" />
+		<!-- create odata4j jar -->
+		<jar destfile="${dist.corejar.bin}" basedir="bin" includes="**/*.class" excludes="org/odata4j/test/** org/odata4j/examples/**" />
 		<copy todir="${dist.coredir}" flatten="true">
+			<fileset dir="lib">
+				<exclude name="core4j-*-javadoc.jar"/>
+				<exclude name="core4j-*-sources.jar"/>
+				<include name="core4j-*.jar"/>
+			</fileset>
 			<resources>
 				<file file="lib/eclipselink.jar" />
 				<file file="lib/javax.persistence_2.0.0.v201002051058.jar" />
@@ -34,23 +42,68 @@
 				<file file="lib/jersey-core-1.1.5.jar" />
 				<file file="lib/jsr311-api-1.1.jar" />
 				<file file="lib/jersey-server-1.1.5.jar" />
-				<file file="lib/core4j-0.1.jar" />
 				<file file="lib/joda-time-1.6.jar" />
 			</resources>
+		</copy>
+		
+		<!-- create odata4j source jar -->
+		<jar destfile="${dist.corejar.src}" basedir="src" includes="**/*.java" excludes="org/odata4j/test/** org/odata4j/examples/**" />
+		
+		<!-- create odata4j doc jar -->
+		<javadoc 
+			destdir="${dist.javadocdir}"
+			defaultexcludes="yes" access="public" 
+			useexternalfile="true"
+			use="true" version="false" splitindex="true" 
+			doctitle="${dist.projectname} - ${dist.version}" 
+			windowtitle="${dist.projectname} - ${dist.version}" 
+			nodeprecated="true" nodeprecatedlist="false" noindex="false"
+			nonavbar="false" notree="false" verbose="false"
+			source="1.6">
+			<classpath>
+				<pathelement path="lib/javax.persistence_2.0.0.v201002051058.jar" />
+				<pathelement path="lib/jsr311-api-1.1.jar" />
+				<pathelement path="lib/joda-time-1.6.jar" />
+				<pathelement path="lib/jersey-core-1.1.5.jar" />
+				<pathelement path="lib/jersey-server-1.1.5.jar" />
+				<pathelement path="lib/jersey-client-1.1.5.jar" />
+				<pathelement path="lib/core4j-0.3.jar" />
+				<pathelement path="lib/eclipselink.jar" />
+				
+			</classpath>
+	    	<fileset dir="src">
+	             <include name="**/*.java"/>
+	        </fileset>
+			<link href="http://java.sun.com/javase/6/docs/api/" />
+			<link href="https://jersey.dev.java.net/nonav/apidocs/1.1.5/jersey/" />
+			<link href="http://joda-time.sourceforge.net/api-release/" />
+			<link href="http://download.oracle.com/javaee/6/api/" />
+			<link href="http://core4j.googlecode.com/svn/trunk/core4j/doc/javadoc/" />
+			
+		    <bottom><![CDATA[<i><a href="http://odata4j.org">http://odata4j.org</a></i>]]></bottom>
+		</javadoc>
+		<jar destfile="${dist.corejar.doc}" basedir="${dist.javadocdir}" includes="*/**" excludes="org/odata4j/test/** org/odata4j/examples/**" />
+		
+		<!-- update latest javadoc -->
+		<delete dir="doc/javadoc" />
+		<copy todir="doc/javadoc" >
+			<fileset dir="${dist.javadocdir}">
+            	<include name="**/*"/>
+        	</fileset>
 		</copy>
 		
 		<!-- create bundle jars -->
 		<mkdir dir="${dist.bundlesdir}" />
 		<jar destfile="${dist.bundlejar}" duplicate="preserve">
-			<zipgroupfileset dir="${dist.coredir}" includes="*.jar" />
+			<zipgroupfileset dir="${dist.coredir}" includes="*.jar" excludes="*-sources.jar *-javadoc.jar" />
 		</jar>
 		<jar destfile="${dist.clientbundlejar}" duplicate="preserve">
 			<zipgroupfileset dir="${dist.coredir}" includes="*.jar"
-				excludes="eclipselink.jar javax.persistence_2.0.0.v201002051058.jar jersey-server-1.1.5.jar"   />
+				excludes="eclipselink.jar javax.persistence_2.0.0.v201002051058.jar jersey-server-1.1.5.jar *-sources.jar *-javadoc.jar"   />
 		</jar>
 		<jar destfile="${dist.nojpabundlejar}" duplicate="preserve">
 			<zipgroupfileset dir="${dist.coredir}" includes="*.jar"
-				excludes="eclipselink.jar javax.persistence_2.0.0.v201002051058.jar"   />
+				excludes="eclipselink.jar javax.persistence_2.0.0.v201002051058.jar *-sources.jar *-javadoc.jar"   />
 		</jar>
 		
 		<!-- create archive zip -->
