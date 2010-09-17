@@ -30,11 +30,28 @@ public class EdmDataServices {
         }
         return null;
     }
+    public EdmComplexType findEdmComplexType(String complexTypeFQName) {
+        for(EdmSchema schema : this.schemas) {
+            for(EdmComplexType ect : schema.complexTypes) {
+                if (ect.getFQName().equals(complexTypeFQName))
+                    return ect;
+            }
+        }
+        return null;
+    }
+    
 
     public Iterable<EdmEntityType> getEntityTypes() {
         List<EdmEntityType> rt = new ArrayList<EdmEntityType>();
         for(EdmSchema schema : this.schemas) {
             rt.addAll(schema.entityTypes);
+        }
+        return rt;
+    }
+    public Iterable<EdmComplexType> getComplexTypes() {
+        List<EdmComplexType> rt = new ArrayList<EdmComplexType>();
+        for(EdmSchema schema : this.schemas) {
+            rt.addAll(schema.complexTypes);
         }
         return rt;
     }
@@ -53,5 +70,7 @@ public class EdmDataServices {
         }
         return rt;
     }
+
+  
 
 }

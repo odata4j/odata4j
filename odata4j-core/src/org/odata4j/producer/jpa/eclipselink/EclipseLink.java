@@ -21,7 +21,7 @@ public class EclipseLink {
 
         DatabaseField df = dm.getField();
 
-        if (df != null && type == EdmType.STRING) {
+        if (df != null && EdmType.STRING.equals(type)) {
             rt.put("MaxLength", df.getLength());
         }
         return rt;

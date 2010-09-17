@@ -1,9 +1,11 @@
 package org.odata4j.format.xml;
 
 import java.io.Writer;
+import java.util.List;
 
 import org.odata4j.edm.EdmAssociation;
 import org.odata4j.edm.EdmAssociationSet;
+import org.odata4j.edm.EdmComplexType;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntityContainer;
 import org.odata4j.edm.EdmEntitySet;
@@ -17,6 +19,8 @@ import org.odata4j.stax2.XMLWriter2;
 
 public class EdmxFormatWriter extends XmlFormatWriter {
 
+    
+  
     public static void write(EdmDataServices services, Writer w) {
 
         XMLWriter2 writer = XMLFactoryProvider2.getInstance().newXMLWriterFactory2().createXMLWriter(w);
@@ -36,6 +40,16 @@ public class EdmxFormatWriter extends XmlFormatWriter {
             writer.writeNamespace("d", d);
             writer.writeNamespace("m", m);
 
+            // ComplexType
+            for(EdmComplexType ect : schema.complexTypes) {
+                writer.startElement(new QName2("ComplexType"));
+                
+                writer.writeAttribute("Name", ect.name);
+                
+                write(ect.properties,writer);
+                
+                writer.endElement("ComplexType");
+            }
             // EntityType
             for(EdmEntityType eet : schema.entityTypes) {
                 writer.startElement(new QName2("EntityType"));
@@ -51,17 +65,7 @@ public class EdmxFormatWriter extends XmlFormatWriter {
 
                 writer.endElement("Key");
 
-                for(EdmProperty prop : eet.properties) {
-
-                    writer.startElement(new QName2("Property"));
-
-                    writer.writeAttribute("Name", prop.name);
-                    writer.writeAttribute("Type", prop.type.toTypeString());
-                    writer.writeAttribute("Nullable", Boolean.toString(prop.nullable));
-                    if (prop.maxLength != null)
-                        writer.writeAttribute("MaxLength", Integer.toString(prop.maxLength));
-                    writer.endElement("Property");
-                }
+                write(eet.properties,writer);
 
                 for(EdmNavigationProperty np : eet.navigationProperties) {
 
@@ -140,4 +144,21 @@ public class EdmxFormatWriter extends XmlFormatWriter {
 
         writer.endDocument();
     }
+    
+    
+    
+    private static void write(List<EdmProperty> properties, XMLWriter2 writer){
+        for(EdmProperty prop : properties) {
+
+            writer.startElement(new QName2("Property"));
+
+            writer.writeAttribute("Name", prop.name);
+            writer.writeAttribute("Type", prop.type.toTypeString());
+            writer.writeAttribute("Nullable", Boolean.toString(prop.nullable));
+            if (prop.maxLength != null)
+                writer.writeAttribute("MaxLength", Integer.toString(prop.maxLength));
+            writer.endElement("Property");
+        }
+    }
+    
 }

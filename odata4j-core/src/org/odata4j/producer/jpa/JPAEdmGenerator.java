@@ -8,8 +8,11 @@ import java.util.Map;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.Attribute.PersistentAttributeType;
 import javax.persistence.metamodel.CollectionAttribute;
+import javax.persistence.metamodel.EmbeddableType;
 import javax.persistence.metamodel.EntityType;
+import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Type;
@@ -18,11 +21,13 @@ import javax.persistence.metamodel.Type.PersistenceType;
 import org.core4j.Enumerable;
 import org.core4j.Func1;
 import org.core4j.Predicate1;
+import org.joda.time.Instant;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.edm.EdmAssociation;
 import org.odata4j.edm.EdmAssociationEnd;
 import org.odata4j.edm.EdmAssociationSet;
 import org.odata4j.edm.EdmAssociationSetEnd;
+import org.odata4j.edm.EdmComplexType;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntityContainer;
 import org.odata4j.edm.EdmEntitySet;
@@ -38,6 +43,7 @@ public class JPAEdmGenerator {
 
     public static EdmType toEdmType(SingularAttribute<?, ?> sa) {
 
+        
         Class<?> javaType = sa.getType().getJavaType();
 
         if (javaType.equals(String.class))
@@ -54,15 +60,29 @@ public class JPAEdmGenerator {
         	return EdmType.INT64;
         if (javaType.equals(Boolean.class) || javaType.equals(Boolean.TYPE))
             return EdmType.BOOLEAN;
+        if (javaType.equals(Double.class) || javaType.equals(Double.TYPE))
+            return EdmType.DOUBLE;
         if (javaType.equals(Date.class))
             return EdmType.DATETIME;
+        if (javaType.equals(Instant.class))
+            return EdmType.DATETIME;
+       
 
         throw new UnsupportedOperationException(javaType.toString());
     }
 
-    private static EdmProperty toEdmProperty(SingularAttribute<?, ?> sa) {
+    private static EdmProperty toEdmProperty(String modelNamespace, SingularAttribute<?, ?> sa) {
         String name = sa.getName();
-        EdmType type = toEdmType(sa);
+        EdmType type;
+        if (sa.getPersistentAttributeType() == PersistentAttributeType.EMBEDDED){
+            String simpleName = sa.getJavaType().getSimpleName();
+            type = EdmType.get(modelNamespace + "." + simpleName);
+        } else if (sa.getBindableJavaType().isEnum()){
+            // TODO assume string mapping for now, @Enumerated info not avail in metamodel?
+            type = EdmType.STRING;
+        } else {
+            type = toEdmType(sa);
+        }
         boolean nullable = sa.isOptional();
         Integer maxLength = null;
 
@@ -73,11 +93,31 @@ public class JPAEdmGenerator {
         return new EdmProperty(name, type, nullable, maxLength, null, null, null, null, null, null, null, null);
     }
 
+    private static List<EdmProperty> getProperties(String modelNamespace, ManagedType<?> et){
+        List<EdmProperty> properties = new ArrayList<EdmProperty>();
+        for(Attribute<?, ?> att : et.getAttributes()) {
+
+            if (att.isCollection()) {
+
+            } else {
+                SingularAttribute<?, ?> sa = (SingularAttribute<?, ?>) att;
+
+                Type<?> type = sa.getType();
+                if (type.getPersistenceType().equals(PersistenceType.BASIC) || type.getPersistenceType().equals(PersistenceType.EMBEDDABLE) ) {
+                    EdmProperty prop = toEdmProperty(modelNamespace, sa);
+                    properties.add(prop);
+                } 
+            }
+        }
+        return properties;
+    }
+    
     public static EdmDataServices buildEdm(EntityManagerFactory emf, String namespace) {
 
         String modelNamespace = namespace + "Model";
 
         List<EdmEntityType> edmEntityTypes = new ArrayList<EdmEntityType>();
+        List<EdmComplexType> edmComplexTypes = new ArrayList<EdmComplexType>();
         List<EdmAssociation> associations = new ArrayList<EdmAssociation>();
 
         List<EdmEntitySet> entitySets = new ArrayList<EdmEntitySet>();
@@ -85,36 +125,29 @@ public class JPAEdmGenerator {
 
         Metamodel mm = emf.getMetamodel();
 
+        
+        // complex types
+        for(EmbeddableType<?> et : mm.getEmbeddables()){
+ 
+            String name = et.getJavaType().getSimpleName();
+            List<EdmProperty> properties = getProperties(modelNamespace, et);
+            
+            EdmComplexType ect = new EdmComplexType(modelNamespace, name, properties);
+            edmComplexTypes.add(ect);
+        }
+        
         // entities
 
         for(EntityType<?> et : mm.getEntities()) {
-
+           
             SingularAttribute<?, ?> idAttribute = et.getId(null);
 
             String name = et.getName();
             String key = idAttribute.getName();
-            List<EdmProperty> properties = new ArrayList<EdmProperty>();
+            
+            List<EdmProperty> properties = getProperties(modelNamespace, et);
             List<EdmNavigationProperty> navigationProperties = new ArrayList<EdmNavigationProperty>();
-
-            for(Attribute<?, ?> att : et.getAttributes()) {
-
-                if (att.isCollection()) {
-
-                } else {
-                    SingularAttribute<?, ?> sa = (SingularAttribute<?, ?>) att;
-
-                    Type<?> type = sa.getType();
-                    if (!type.getPersistenceType().equals(PersistenceType.ENTITY)) {
-
-                        EdmProperty prop = toEdmProperty(sa);
-
-                        properties.add(prop);
-                    }
-
-                }
-
-            }
-
+           
             EdmEntityType eet = new EdmEntityType(modelNamespace, null, name, null, Enumerable.create(key).toList(), properties, navigationProperties);
             edmEntityTypes.add(eet);
 
@@ -217,7 +250,7 @@ public class JPAEdmGenerator {
 
         EdmEntityContainer container = new EdmEntityContainer(namespace + "Entities", true, null, entitySets, associationSets,null);
 
-        EdmSchema modelSchema = new EdmSchema(modelNamespace, null, edmEntityTypes, null, associations, null);
+        EdmSchema modelSchema = new EdmSchema(modelNamespace, null, edmEntityTypes, edmComplexTypes, associations, null);
         EdmSchema containerSchema = new EdmSchema(namespace + "Container", null, null, null, null, Enumerable.create(container).toList());
 
         EdmDataServices services = new EdmDataServices(ODataConstants.DATA_SERVICE_VERSION,Enumerable.create(modelSchema, containerSchema).toList());

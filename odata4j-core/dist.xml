@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project basedir="." default="dist" name="odata4j-core-dist">
 	
-	<!-- <property name="dist.version" value="SNAPSHOT-20100704" /> -->
-	<property name="dist.version" value="0.2" />
+	<property name="dist.version" value="SNAPSHOT-20100906" />
+	<!-- <property name="dist.version" value="0.2" /> -->
 	
 	<property name="dist.projectname" value="odata4j" />
 	<property name="dist.versiondir" value="dist/${dist.version}" />
