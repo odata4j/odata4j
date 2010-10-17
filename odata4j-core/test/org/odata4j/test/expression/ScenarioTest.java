@@ -57,7 +57,7 @@ public class ScenarioTest {
         Assert.assertEquals(1, c.getEntities("Foos1").filter("Int32 eq 2").execute().count());
         Assert.assertEquals(1, c.getEntities("Foos1").filter("Int32 gt 2").execute().count());
         Assert.assertEquals(1, c.getEntities("Foos1").filter("Int64 eq 2").execute().count());
-        Assert.assertEquals(3, c.getEntities("Foos1").filter("Int32 lt " + Integer.MAX_VALUE + 100).execute().count());
+        
         Assert.assertEquals(2, c.getEntities("Foos1").filter("Int32 ge 2").execute().count());
         Assert.assertEquals(2, c.getEntities("Foos1").filter("Int32 le 2").execute().count());
         Assert.assertEquals(1, c.getEntities("Foos1").filter("Int32 add 2 sub 2 eq 2 ").execute().count());
@@ -70,7 +70,9 @@ public class ScenarioTest {
         Assert.assertEquals(3, c.getEntities("Foos1").filter("null eq null").execute().count());
         Assert.assertEquals(1, c.getEntities("Foos1").filter("Name eq null").execute().count());
         Assert.assertEquals(1, c.getEntities("Foos1").filter("substringof('lph',Name)").execute().count());
-
+        
+        // this test fails in 0.3
+        Assert.assertEquals(3, c.getEntities("Foos1").filter("Int32 lt " + Integer.MAX_VALUE + 100).execute().count());
         server.stop();
 
     }

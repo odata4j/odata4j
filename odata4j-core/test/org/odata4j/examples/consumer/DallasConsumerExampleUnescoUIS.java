@@ -1,6 +1,5 @@
 package org.odata4j.examples.consumer;
 
-import org.odata4j.consumer.ODataClient;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.consumer.ODataConsumers;
 import org.odata4j.core.OEntity;

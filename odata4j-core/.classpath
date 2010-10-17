@@ -41,5 +41,6 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/odata4j-core/lib/core4j-0.3-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/xmlpull_1_1_3_4c.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

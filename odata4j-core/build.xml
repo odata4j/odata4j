@@ -23,6 +23,7 @@
         <pathelement location="lib/junit.jar"/>
         <pathelement location="lib/org.hamcrest.core_1.1.0.v20090501071000.jar"/>
         <pathelement location="lib/core4j-0.3.jar"/>
+        <pathelement location="lib/xmlpull_1_1_3_4c.jar"/>
     </path>
     <target name="init">
         <mkdir dir="bin"/>
@@ -115,6 +116,17 @@
         <java classname="org.odata4j.examples.consumer.ODataTestServiceReadWriteExample" failonerror="true" fork="yes">
             <classpath refid="odata4j-core.classpath"/>
         </java>
+    </target>
+    <target name="org.odata4j.test.expression">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="org.odata4j.test.expression.ExpressionTest" todir="${junit.output.dir}"/>
+            <test name="org.odata4j.test.expression.JsonTest" todir="${junit.output.dir}"/>
+            <test name="org.odata4j.test.expression.PojoTest" todir="${junit.output.dir}"/>
+            <test name="org.odata4j.test.expression.ScenarioTest" todir="${junit.output.dir}"/>
+            <classpath refid="odata4j-core.classpath"/>
+        </junit>
     </target>
     <target name="PojoTest">
         <mkdir dir="${junit.output.dir}"/>

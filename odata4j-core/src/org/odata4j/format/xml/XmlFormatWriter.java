@@ -35,6 +35,7 @@ public class XmlFormatWriter {
     public static final String atom_entry_content_type = "application/atom+xml;type=entry";
     
     
+    @SuppressWarnings("unchecked")
     private void writeProperties(XMLWriter2 writer, List<OProperty<?>> properties){
         for(OProperty<?> prop : properties) {
             String name = prop.getName();

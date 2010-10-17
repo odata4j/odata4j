@@ -462,7 +462,7 @@ public class ExpressionParser {
                     return Expression.boolean_(false);
                 return Expression.simpleProperty(token.value);
             } else if (token.type == TokenType.NUMBER) {
-                Long value = Long.parseLong(token.value);
+                int value = Integer.parseInt(token.value);
                 return Expression.integral(value);
             } else if (token.type == TokenType.EXPRESSION) {
                 return ((ExpressionToken) token).expression;

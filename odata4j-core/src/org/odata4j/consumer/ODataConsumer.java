@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.core4j.Enumerable;
 import org.core4j.Func1;
+import org.odata4j.core.NamedValue;
 import org.odata4j.core.OClientBehavior;
 import org.odata4j.core.OCreate;
 import org.odata4j.core.OEntity;
@@ -29,27 +30,77 @@ public class ODataConsumer {
     
     private static class ParsedHref{
         public String entitySetName;
-        public Object key;
+        public Object[] key;
         public String navProperty;
         
         private ParsedHref(){}
         public static ParsedHref parse(String href){
-            String[] tokens = href.split("/");
-            String navProperty = tokens[1];
-            String entitySetName = tokens[0].substring(0,tokens[0].indexOf('('));
+            // href: entityset(keyvalue[,keyvalue])/navprop[/navprop]
+            // keyvalue: <literal> for one key value -or- <name=literal> for multiple key values
             
-            String keyString = tokens[0].substring(tokens[0].indexOf('('));
-            keyString = keyString.substring(1,keyString.length()-1);
-            System.out.println("keyString " + keyString);
-            CommonExpression expr = ExpressionParser.parse(keyString);
-            LiteralExpression literal = (LiteralExpression)expr;
-            Object key = Expression.literalValue(literal);
+            int slashIndex = href.indexOf('/');
+            String head = href.substring(0,slashIndex);
+            String navProperty = href.substring(slashIndex+1);
+
+            int pIndex = head.indexOf('(');
+            String entitySetName = head.substring(0,pIndex);
             
+            String keyString = head.substring(pIndex+1,head.length()-1);  // keyvalue[,keyvalue]
+            String[] keyValues = keyString.split(",");
+            Object[] key;
+            if (keyValues.length==1){
+                // segments with one key value should not include the name
+                key = new Object[]{parseKeyValue(keyValues[0],false)};
+            } else {
+                // segments with multiple key values should include the name (ie they should be NamedValue)
+                key = Enumerable.create(keyValues).select(new Func1<String,Object>(){
+                    public Object apply(String keyValue) {
+                       return parseKeyValue(keyValue,true);
+                    }}).toArray(Object.class);
+            }
+      
             ParsedHref rt = new ParsedHref();
             rt.entitySetName= entitySetName;
             rt.key = key;
             rt.navProperty = navProperty;
             return rt;
+        }
+        
+        private static Object parseKeyValue(String keyValue, boolean expectName){
+           
+            String name = null;
+            if (expectName){
+                int equalsIndex = keyValue.indexOf('=');
+                if (equalsIndex<0)
+                    throw new IllegalArgumentException("Expected name for key value: " + keyValue);
+                name = keyValue.substring(0,equalsIndex);
+                keyValue = keyValue.substring(equalsIndex+1);
+            }
+            CommonExpression expr = ExpressionParser.parse(keyValue);
+            LiteralExpression literal = (LiteralExpression)expr;
+            Object rt = Expression.literalValue(literal);
+            return expectName?new NamedValueImpl<Object>(name,rt):rt;
+        }
+        
+        private static class NamedValueImpl<T> implements NamedValue<T> {
+
+            private final String name;
+            private final T value;
+            
+            public NamedValueImpl(String name, T value){
+                this.name = name;
+                this.value = value;
+            }
+            @Override
+            public String getName() {
+               return name;
+            }
+
+            @Override
+            public T getValue() {
+               return value;
+            }
+            
         }
     }
     

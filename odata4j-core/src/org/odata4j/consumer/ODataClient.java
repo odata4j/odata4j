@@ -65,7 +65,7 @@ public class ODataClient {
         if (response.getStatus() == 204)
             return null;
         XMLEventReader2 reader = doXmlRequest(response);
-        return AtomFeedFormatParser.parseFeed(reader).entries.iterator().next();
+        return Enumerable.create(AtomFeedFormatParser.parseFeed(reader).entries).firstOrNull();
     }
 
     public AtomFeed getEntities(ODataClientRequest request) {

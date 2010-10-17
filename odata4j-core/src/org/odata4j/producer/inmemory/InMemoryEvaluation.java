@@ -280,14 +280,14 @@ public class InMemoryEvaluation {
         return (pair.lhs == null ? pair.rhs == null : pair.lhs.equals(pair.rhs));
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private static int compareTo(BinaryCommonExpression be, Object target, PropertyModel properties) {
         ObjectPair pair = new ObjectPair(be.getLHS(), be.getRHS(), target, properties);
         binaryNumericPromotion(pair);
         return ((Comparable) pair.lhs).compareTo(((Comparable) pair.rhs));
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private static final Set<Class> SUPPORTED_CLASSES_FOR_BINARY_PROMOTION = Enumerable.create(BigDecimal.class, Double.class, Float.class, Byte.class, Integer.class, Short.class, Long.class).cast(Class.class).toSet();
 
     @SuppressWarnings("unchecked")

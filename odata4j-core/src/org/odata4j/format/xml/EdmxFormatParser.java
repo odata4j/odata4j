@@ -7,7 +7,6 @@ import java.util.Map;
 import org.core4j.Enumerable;
 import org.core4j.Func1;
 import org.core4j.Predicate1;
-import org.core4j.xml.XAttribute;
 import org.odata4j.edm.EdmAssociation;
 import org.odata4j.edm.EdmAssociationEnd;
 import org.odata4j.edm.EdmAssociationSet;
@@ -24,7 +23,6 @@ import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmType;
-import org.odata4j.stax2.Attribute2;
 import org.odata4j.stax2.QName2;
 import org.odata4j.stax2.StartElement2;
 import org.odata4j.stax2.XMLEvent2;
@@ -163,20 +161,14 @@ public class EdmxFormatParser extends XmlFormatParser {
             for(final EdmEntityContainer edmEntityContainer : edmSchema.entityContainers) {
                 for(int i = 0; i < edmEntityContainer.functionImports.size(); i++) {
                     final TempEdmFunctionImport tmpEfi = (TempEdmFunctionImport) edmEntityContainer.functionImports.get(i);
-                    EdmEntitySet ees = Enumerable.create(edmEntityContainer.entitySets).first(new Predicate1<EdmEntitySet>(){
+                    EdmEntitySet ees = Enumerable.create(edmEntityContainer.entitySets).firstOrNull(new Predicate1<EdmEntitySet>(){
                         public boolean apply(EdmEntitySet input) {
                             return input.name.equals(tmpEfi.entitySetName);
                         }});
                     
-                    EdmEntityType eet = Enumerable.create(allEetsByFQName.values()).first(new Predicate1<EdmEntityType>() {
-                        public boolean apply(EdmEntityType input) {
-                            String fqName = input.getFQAliasName()!=null?input.getFQAliasName():input.getFQNamespaceName();
-                            return fqName.equals(tmpEfi.returnTypeName) || 
-                            ("Collection("+fqName+")").equals(tmpEfi.returnTypeName);
-                        }
-                    });
+                    EdmType type = EdmType.get(tmpEfi.returnTypeName);
                     
-                    edmEntityContainer.functionImports.set(i, new EdmFunctionImport(tmpEfi.name,ees,eet,tmpEfi.httpMethod,tmpEfi.parameters));
+                    edmEntityContainer.functionImports.set(i, new EdmFunctionImport(tmpEfi.name,ees,type,tmpEfi.httpMethod,tmpEfi.parameters));
                 }
             }
             
@@ -268,7 +260,7 @@ public class EdmxFormatParser extends XmlFormatParser {
 
     private static EdmFunctionImport parseEdmFunctionImport(XMLEventReader2 reader, String schemaNamespace, StartElement2 functionImportElement) {
         String name = functionImportElement.getAttributeByName("Name").getValue();
-        String entitySet = functionImportElement.getAttributeByName("EntitySet").getValue();
+        String entitySet = getAttributeValueIfExists(functionImportElement,"EntitySet");
         String returnType = functionImportElement.getAttributeByName("ReturnType").getValue();
         String httpMethod = getAttributeValueIfExists(functionImportElement, new QName2(NS_METADATA,"HttpMethod"));
 

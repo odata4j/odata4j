@@ -13,6 +13,7 @@ import org.core4j.Funcs;
 import org.core4j.ThrowingFunc1;
 import org.joda.time.DateTime;
 import org.odata4j.core.Guid;
+import org.odata4j.core.NamedValue;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OLink;
@@ -77,15 +78,16 @@ public class InternalUtil {
             return "guid'" + key + "'";
         } else if (key instanceof String) {
             return "'" + ((String) key).replace("'", "''") + "'";
-
+        } else if (key instanceof Long) {
+        	return key.toString() + "L";
         } else if (INTEGRAL_TYPES.contains(key.getClass())) {
             return key.toString();
-        } else if (key instanceof OProperty<?>) {
-            OProperty<?> oprop = (OProperty<?>) key;
-            String value = keyString(oprop.getValue(), false);
+        } else if (key instanceof NamedValue<?>) {
+            NamedValue<?> namedValue = (NamedValue<?>) key;
+            String value = keyString(namedValue.getValue(), false);
 
             if (includePropName)
-                return oprop.getName() + "=" + value;
+                return namedValue.getName() + "=" + value;
             else
                 return value;
         } else {

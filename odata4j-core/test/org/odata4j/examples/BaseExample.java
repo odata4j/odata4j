@@ -128,7 +128,7 @@ public class BaseExample {
                 
                 for(EdmFunctionImport efi : ec.functionImports){
                     report("    FunctionImport Name=%s EntitySet=%s ReturnType=%s HttpMethod=%s",
-                            efi.name,efi.entitySet.name,efi.returnType.getFQNamespaceName(),efi.httpMethod);
+                            efi.name,efi.entitySet==null?null:efi.entitySet.name,efi.returnType,efi.httpMethod);
                     for(EdmFunctionParameter efp : efi.parameters){
                         report("      Parameter Name=%s Type=%s Mode=%s",efp.name,efp.type,efp.mode);
                     }

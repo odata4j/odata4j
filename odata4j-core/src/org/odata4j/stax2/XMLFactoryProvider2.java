@@ -7,10 +7,8 @@ public abstract class XMLFactoryProvider2 {
     private static XMLFactoryProvider2 STAX;
     static {
         try {
-            String clazz = PlatformUtil.runningOnAndroid() ? "org.odata4j.stax2.domimpl.DomXMLFactoryProvider2" : "org.odata4j.stax2.staximpl.StaxXMLFactoryProvider2";
-
+            String clazz = PlatformUtil.runningOnAndroid() ? "org.odata4j.stax2.xppimpl.XmlPullXMLFactoryProvider2" : "org.odata4j.stax2.staximpl.StaxXMLFactoryProvider2";
             STAX = (XMLFactoryProvider2) Class.forName(clazz).newInstance();
-
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

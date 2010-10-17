@@ -16,7 +16,7 @@ import org.odata4j.producer.resources.ODataProducerProvider;
 
 public class InMemoryProducerExample {
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static void main(String[] args) {
 
         String endpointUri = "http://localhost:8887/InMemoryProducerExample.svc/";

@@ -18,7 +18,7 @@ public class Expression {
         };
     }
 
-    public static IntegralLiteral integral(final long value) {
+    public static IntegralLiteral integral(final int value) {
         return new IntegralLiteral() {
             @Override
             public String toString() {
@@ -26,7 +26,7 @@ public class Expression {
             }
 
             @Override
-            public long getValue() {
+            public int getValue() {
                 return value;
             }
         };
