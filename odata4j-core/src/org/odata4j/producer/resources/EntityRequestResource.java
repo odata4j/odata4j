@@ -109,6 +109,8 @@ public class EntityRequestResource extends BaseResource {
         Object idObject;
         if (cleanid.startsWith("'") && cleanid.endsWith("'")) {
             idObject = cleanid.substring(1, cleanid.length() - 1);
+        } else if (cleanid.endsWith("L")){
+            idObject = Long.parseLong(cleanid.substring(0,cleanid.length()-1));
         } else {
             idObject = Integer.parseInt(cleanid);
         }
