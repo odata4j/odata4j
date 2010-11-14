@@ -73,7 +73,14 @@ public class EntitiesRequestResource extends BaseResource {
 
         log.info(String.format("getEntities(%s,%s,%s,%s,%s,%s,%s)", entitySetName, inlineCount, top, skip, filter, orderBy, skipToken));
 
-        QueryInfo query = new QueryInfo(parseInlineCount(inlineCount), parseTop(top), parseSkip(skip), parseFilter(filter), parseOrderBy(orderBy), parseSkipToken(skipToken));
+        QueryInfo query = new QueryInfo(
+                parseInlineCount(inlineCount), 
+                parseTop(top), 
+                parseSkip(skip), 
+                parseFilter(filter), 
+                parseOrderBy(orderBy), 
+                parseSkipToken(skipToken),
+                parseCustomOptions(context));
 
         EntitiesResponse response = producer.getEntities(entitySetName, query);
 
@@ -84,6 +91,14 @@ public class EntitiesRequestResource extends BaseResource {
        
         return Response.ok(entity, fw.getContentType()).header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION).build();
 
+    }
+    
+    private Map<String,String> parseCustomOptions(HttpContext context){
+        Map<String,String> rt = new HashMap<String,String>();
+        for(String qp : context.getRequest().getQueryParameters().keySet())
+            if (!qp.startsWith("$"))
+                rt.put(qp,context.getRequest().getQueryParameters().getFirst(qp));
+        return rt;
     }
 
     private InlineCount parseInlineCount(String inlineCount) {

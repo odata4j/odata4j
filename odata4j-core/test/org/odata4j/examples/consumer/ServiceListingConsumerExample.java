@@ -15,6 +15,7 @@ public class ServiceListingConsumerExample extends BaseExample {
        // ODataConsumer.DUMP_RESPONSE_HEADERS = true;
         
         Enumerable<String> smallServices = Enumerable.create(
+                ODataEndpoints.NORTHWIND,   
                 ODataEndpoints.ODATA4JSAMPLE_APPSPOT,
                 ODataEndpoints.ODATA_WEBSITE_DATA, 
                 ODataEndpoints.ODATA_TEST_SERVICE_READONLY,  
@@ -24,14 +25,15 @@ public class ServiceListingConsumerExample extends BaseExample {
                 ODataEndpoints.EU_TECH_ED,
                 ODataEndpoints.PLURALSIGHT, 
                 ODataEndpoints.TELERIK_TV,   
-                ODataEndpoints.AGILITRAIN
-               
+                ODataEndpoints.AGILITRAIN,
+                ODataEndpoints.PROAGORA_FR,
+                ODataEndpoints.PROAGORA_EN
         );
         
         
         Enumerable<String> brokenServices = Enumerable.create(
                 ODataEndpoints.CITY_OF_EDMONTON,
-                ODataEndpoints.NORTHWIND,   // 500 on a specific skiptoken link
+               
                 ODataEndpoints.DEVEXPRESS,  // skiptoken not implemented
                 ODataEndpoints.DEVTRANSIT,  // returning 500 for access problems
                 ODataEndpoints.LOGMYTIME   // returning proper 4xx, we should handle better in listing
@@ -55,6 +57,7 @@ public class ServiceListingConsumerExample extends BaseExample {
             for(String entitySet : c.getEntitySets()){
                 reportEntities(entitySet,c.getEntities(entitySet).execute());
             }
+            return;
         }
         
         // print out the first record in each entity set exposed by large services

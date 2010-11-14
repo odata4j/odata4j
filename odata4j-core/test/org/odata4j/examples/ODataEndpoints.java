@@ -38,4 +38,8 @@ public class ODataEndpoints {
     public static final String AGILITRAIN = "https://agilitrain.com/services/AgiliTrain.svc/";
     public static final String DEVTRANSIT = "http://transit.cloudapp.net/DevTransitODataService.svc/";
     public static final String LOGMYTIME = "http://api.logmytime.de/V1/Api.svc/";
+    public static final String PROAGORA_EN = "http://proagora.com/en/odata/";
+    public static final String PROAGORA_FR = "http://proagora.com/fr/odata/";
+    public static final String TWITPIC = "http://odata.twitpic.com/";
+    public static final String EBAY = "http://ebayodata.cloudapp.net/";
 }

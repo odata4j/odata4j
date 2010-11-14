@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project basedir="." default="dist" name="odata4j-core-dist">
 	
-	<!-- <property name="dist.version" value="SNAPSHOT-20101016" /> -->
-	<property name="dist.version" value="0.3" />
+	<property name="dist.version" value="SNAPSHOT-20101020" />
+	<!-- <property name="dist.version" value="0.3" /> -->
 	
 	<property name="dist.projectname" value="odata4j" />
 	<property name="dist.versiondir" value="dist/${dist.version}" />
@@ -49,7 +49,7 @@
 		<!-- create odata4j source jar -->
 		<jar destfile="${dist.corejar.src}" basedir="src" includes="**/*.java" excludes="org/odata4j/test/** org/odata4j/examples/**" />
 		
-		<!-- create odata4j doc jar -->
+		<!-- create odata4j doc jar
 		<javadoc 
 			destdir="${dist.javadocdir}"
 			defaultexcludes="yes" access="public" 
@@ -84,15 +84,17 @@
 			
 		    <bottom><![CDATA[<i><a href="http://odata4j.org">http://odata4j.org</a></i>]]></bottom>
 		</javadoc>
-		<jar destfile="${dist.corejar.doc}" basedir="${dist.javadocdir}" includes="*/**" excludes="org/odata4j/test/** org/odata4j/examples/**" />
 		
-		<!-- update latest javadoc -->
+		<jar destfile="${dist.corejar.doc}" basedir="${dist.javadocdir}" includes="*/**" excludes="org/odata4j/test/** org/odata4j/examples/**" />
+		 -->
+		<!-- update latest javadoc 
 		<delete dir="doc/javadoc" />
 		<copy todir="doc/javadoc" >
 			<fileset dir="${dist.javadocdir}">
             	<include name="**/*"/>
         	</fileset>
 		</copy>
+		-->
 		
 		<!-- create bundle jars -->
 		<mkdir dir="${dist.bundlesdir}" />

@@ -1,6 +1,8 @@
 package org.odata4j.examples.producer;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 import org.odata4j.producer.resources.CrossDomainResourceConfig;
 import org.odata4j.producer.resources.ODataResourceConfig;
@@ -13,12 +15,8 @@ public class ProducerUtil {
     public static void hostODataServer(String baseUri) {
        
         JerseyServer server= startODataServer(baseUri);
-        try {
-            System.out.println("Press any key to exit");
-            System.in.read();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        System.out.println("Press any key to exit");
+        readLine();
         server.stop();
     }
     
@@ -34,6 +32,14 @@ public class ProducerUtil {
         
         return server;
         
+    }
+    
+    public static void readLine(){
+        try {
+            new BufferedReader(new InputStreamReader(System.in)).readLine();
+        } catch (IOException e) {
+           throw new RuntimeException(e);
+        }
     }
     
   

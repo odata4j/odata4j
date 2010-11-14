@@ -13,12 +13,13 @@ import org.odata4j.core.OClientBehavior;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.format.xml.AtomEntryFormatWriter;
 import org.odata4j.format.xml.AtomFeedFormatParser;
-import org.odata4j.format.xml.AtomServiceDocumentFormatParser;
-import org.odata4j.format.xml.EdmxFormatParser;
 import org.odata4j.format.xml.AtomFeedFormatParser.AtomEntry;
 import org.odata4j.format.xml.AtomFeedFormatParser.AtomFeed;
 import org.odata4j.format.xml.AtomFeedFormatParser.CollectionInfo;
 import org.odata4j.format.xml.AtomFeedFormatParser.DataServicesAtomEntry;
+import org.odata4j.format.xml.AtomServiceDocumentFormatParser;
+import org.odata4j.format.xml.EdmxFormatParser;
+import org.odata4j.internal.BOMWorkaroundReader;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.stax2.XMLEventReader2;
 
@@ -146,26 +147,23 @@ public class ODataClient {
         throw new RuntimeException(String.format("Expected status %s, found %s:", Enumerable.create(expectedResponseStatus).join(" or "), status) + "\n" + response.getEntity(String.class));
 
     }
-
     private XMLEventReader2 doXmlRequest(ClientResponse response)  {
 
-        
         if (ODataConsumer.DUMP_RESPONSE_BODY) {
             String textEntity = response.getEntity(String.class);
             log(textEntity);
-            return InternalUtil.newXMLEventReader(new StringReader(textEntity));
+            return InternalUtil.newXMLEventReader(new BOMWorkaroundReader(new StringReader(textEntity)));
         }
         
         InputStream textEntity = response.getEntityInputStream();
         try {
-            return InternalUtil.newXMLEventReader(new InputStreamReader(textEntity,"UTF-8"));
+            return InternalUtil.newXMLEventReader(new BOMWorkaroundReader(new InputStreamReader(textEntity,"UTF-8")));
         } catch (Exception e){
             throw new RuntimeException(e);
         }
-
-       
     }
-
+    
+   
     private void dumpHeaders(ClientResponse response) {
         log("Status: " + response.getStatus());
         for(String key : response.getHeaders().keySet()) {

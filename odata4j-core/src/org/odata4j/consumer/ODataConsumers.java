@@ -27,4 +27,11 @@ public class ODataConsumers {
         OClientBehavior basicAuth = new BasicAuthenticationBehavior("accountKey", accountKey);
         return ODataConsumer.create(serviceRootUri, basicAuth);
     }
+    
+    public static ODataConsumer dataMarket(String serviceRootUri, String accountKey) {
+        OClientBehavior basicAuth = new BasicAuthenticationBehavior("accountKey", accountKey);
+        return ODataConsumer.create(serviceRootUri, basicAuth);
+    }
+    
+    
 }
