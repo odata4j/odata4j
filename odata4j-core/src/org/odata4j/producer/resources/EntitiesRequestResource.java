@@ -2,9 +2,6 @@ package org.odata4j.producer.resources;
 
 import java.io.StringWriter;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.ws.rs.GET;
@@ -18,21 +15,19 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.odata4j.core.ODataConstants;
-import org.odata4j.core.OProperty;
-import org.odata4j.expression.BoolCommonExpression;
-import org.odata4j.expression.CommonExpression;
-import org.odata4j.expression.ExpressionParser;
-import org.odata4j.expression.OrderByExpression;
 import org.odata4j.format.FormatWriter;
 import org.odata4j.format.FormatWriterFactory;
 import org.odata4j.format.xml.AtomEntryFormatWriter;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityResponse;
-import org.odata4j.producer.InlineCount;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
 
 import com.sun.jersey.api.core.HttpContext;
+import java.util.List;
+import javax.ws.rs.Consumes;
+import org.odata4j.core.Guid;
+import org.odata4j.core.OEntity;
 
 @Path("{entitySetName}{optionalParens: ((\\(\\))?)}")
 public class EntitiesRequestResource extends BaseResource {
@@ -45,9 +40,9 @@ public class EntitiesRequestResource extends BaseResource {
 
         log.info(String.format("createEntity(%s)", entitySetName));
 
-        List<OProperty<?>> properties = this.getRequestEntityProperties(context.getRequest());
+        OEntity entity = this.getRequestEntity(context.getRequest());
 
-        EntityResponse response = producer.createEntity(entitySetName, properties);
+        EntityResponse response = producer.createEntity(entitySetName, entity);
 
         StringWriter sw = new StringWriter();
         String entryId = new AtomEntryFormatWriter().writeAndReturnId(context.getUriInfo(), sw, response);
@@ -58,83 +53,97 @@ public class EntitiesRequestResource extends BaseResource {
     }
 
     @GET
-    @Produces({ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8,ODataConstants.TEXT_JAVASCRIPT_CHARSET_UTF8,ODataConstants.APPLICATION_JAVASCRIPT_CHARSET_UTF8})
-    public Response getEntities(@Context HttpContext context,  @Context ODataProducer producer, 
-            @PathParam("entitySetName") String entitySetName, 
-            @QueryParam("$inlinecount") String inlineCount, 
-            @QueryParam("$top") String top, 
+    @Produces({ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8, ODataConstants.TEXT_JAVASCRIPT_CHARSET_UTF8, ODataConstants.APPLICATION_JAVASCRIPT_CHARSET_UTF8})
+    public Response getEntities(@Context HttpContext context, @Context ODataProducer producer,
+            @PathParam("entitySetName") String entitySetName,
+            @QueryParam("$inlinecount") String inlineCount,
+            @QueryParam("$top") String top,
             @QueryParam("$skip") String skip,
             @QueryParam("$filter") String filter,
-            @QueryParam("$orderby") String orderBy, 
-            @QueryParam("$format") String format, 
+            @QueryParam("$orderby") String orderBy,
+            @QueryParam("$format") String format,
             @QueryParam("$callback") String callback,
-            @QueryParam("$skiptoken") String skipToken
-            ) {
+            @QueryParam("$skiptoken") String skipToken) {
 
         log.info(String.format("getEntities(%s,%s,%s,%s,%s,%s,%s)", entitySetName, inlineCount, top, skip, filter, orderBy, skipToken));
-
+        
         QueryInfo query = new QueryInfo(
-                parseInlineCount(inlineCount), 
-                parseTop(top), 
-                parseSkip(skip), 
-                parseFilter(filter), 
-                parseOrderBy(orderBy), 
-                parseSkipToken(skipToken),
-                parseCustomOptions(context));
+                OptionsQueryParser.parseInlineCount(inlineCount),
+                OptionsQueryParser.parseTop(top),
+                OptionsQueryParser.parseSkip(skip),
+                OptionsQueryParser.parseFilter(filter),
+                OptionsQueryParser.parseOrderBy(orderBy),
+                OptionsQueryParser.parseSkipToken(skipToken),
+                OptionsQueryParser.parseCustomOptions(context));
 
         EntitiesResponse response = producer.getEntities(entitySetName, query);
 
         StringWriter sw = new StringWriter();
-        FormatWriter<EntitiesResponse> fw = FormatWriterFactory.getFormatWriter(EntitiesResponse.class, context.getRequest().getAcceptableMediaTypes(),format, callback);
+        FormatWriter<EntitiesResponse> fw = FormatWriterFactory.getFormatWriter(EntitiesResponse.class, context.getRequest().getAcceptableMediaTypes(), format, callback);
         fw.write(context.getUriInfo(), sw, response);
         String entity = sw.toString();
-       
+
         return Response.ok(entity, fw.getContentType()).header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION).build();
 
     }
-    
-    private Map<String,String> parseCustomOptions(HttpContext context){
-        Map<String,String> rt = new HashMap<String,String>();
-        for(String qp : context.getRequest().getQueryParameters().keySet())
-            if (!qp.startsWith("$"))
-                rt.put(qp,context.getRequest().getQueryParameters().getFirst(qp));
-        return rt;
-    }
 
-    private InlineCount parseInlineCount(String inlineCount) {
-        if (inlineCount == null)
-            return null;
-        Map<String, InlineCount> rt = new HashMap<String, InlineCount>();
-        rt.put("allpages", InlineCount.ALLPAGES);
-        rt.put("none", InlineCount.NONE);
-        return rt.get(inlineCount);
-    }
+    @POST
+    @Consumes(ODataBatchProvider.MULTIPART_MIXED)
+    @Produces(ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8)
+    public Response processBatch(
+            @Context ODataProducer producer,
+            final List<BatchBodyPart> bodyParts) {
 
-    private Integer parseTop(String top) {
-        return top == null ? null : Integer.parseInt(top);
-    }
+        log.info(String.format("processBatch(%s)", ""));
 
-    private Integer parseSkip(String skip) {
-        return skip == null ? null : Integer.parseInt(skip);
-    }
+        EntityRequestResource er = new EntityRequestResource();
 
-    private BoolCommonExpression parseFilter(String filter) {
-        if (filter == null)
-            return null;
-        CommonExpression ce = ExpressionParser.parse(filter);
-        if (!(ce instanceof BoolCommonExpression))
-            throw new RuntimeException("Bad filter");
-        return (BoolCommonExpression) ce;
-    }
+        String changesetBoundary = "changesetresponse_" + Guid.randomGuid().toString();
+        String batchBoundary = "batchresponse_" + Guid.randomGuid().toString();
+        StringBuilder batchResponse = new StringBuilder("\n--");
+        batchResponse.append(batchBoundary);
 
-    private List<OrderByExpression> parseOrderBy(String orderBy) {
-        if (orderBy == null)
-            return null;
-        return ExpressionParser.parseOrderBy(orderBy);
-    }
-    
-    private String parseSkipToken(String skipToken) {
-        return skipToken;
-    }
+        batchResponse.append("\nContent-Type: multipart/mixed; boundary=").append(changesetBoundary);
+        batchResponse.append('\n');
 
+        for (BatchBodyPart bodyPart : bodyParts) {
+            HttpContext context = bodyPart.createHttpContext();
+            String entitySetName = bodyPart.getEntitySetName();
+            String entityId = bodyPart.getEntityKey();
+            Response response = null;
+
+            switch (bodyPart.getHttpMethod()) {
+                case POST:
+                    response = this.createEntity(context, producer, entitySetName);
+                    break;
+                case PUT:
+                    response = er.updateEntity(context, producer, entitySetName, entityId);
+                    break;
+                case MERGE:
+                    response = er.mergeEntity(context, producer, entitySetName, entityId);
+                    break;
+                case DELETE:
+                    response = er.deleteEntity(context, producer, entitySetName, entityId);
+                    break;
+                case GET:
+                    throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            batchResponse.append("\n--").append(changesetBoundary);
+            batchResponse.append("\nContent-Type: application/http");
+            batchResponse.append("\nContent-Transfer-Encoding: binary\n");
+
+            batchResponse.append(ODataBatchProvider.createResponseBodyPart(
+                    bodyPart,
+                    response));
+        }
+
+        batchResponse.append("--").append(changesetBoundary).append("--\n");
+        batchResponse.append("--").append(batchBoundary).append("--\n");
+
+        return Response.status(Status.ACCEPTED).type(
+                ODataBatchProvider.MULTIPART_MIXED + ";boundary=" + batchBoundary).header(
+                ODataConstants.Headers.DATA_SERVICE_VERSION,
+                ODataConstants.DATA_SERVICE_VERSION).entity(batchResponse.toString()).build();
+    }
 }

@@ -19,6 +19,7 @@ import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
 public class ExpressionParser {
 
     private static class Methods {
+
         public static final String CAST = "cast";
         public static final String ISOF = "isof";
         public static final String ENDSWITH = "endswith";
@@ -42,13 +43,10 @@ public class ExpressionParser {
         public static final String FLOOR = "floor";
         public static final String CEILING = "ceiling";
     }
-
     private static Set<String> METHODS = Enumerable.create(Methods.CAST, Methods.ISOF, Methods.ENDSWITH, Methods.STARTSWITH, Methods.SUBSTRINGOF, Methods.INDEXOF, Methods.REPLACE, Methods.TOLOWER, Methods.TOUPPER, Methods.TRIM, Methods.SUBSTRING, Methods.CONCAT, Methods.LENGTH, Methods.YEAR, Methods.MONTH, Methods.DAY, Methods.HOUR, Methods.MINUTE, Methods.SECOND, Methods.ROUND, Methods.FLOOR, Methods.CEILING).toSet();
-
     public static final DateTimeFormatter DATETIMEOFFSET_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
     public static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
     public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormat.forPattern("HH:mm:ss");
-
     public static boolean DUMP_EXPRESSION_INFO = false;
 
     public static CommonExpression parse(String value) {
@@ -56,8 +54,9 @@ public class ExpressionParser {
         // dump(value,tokens,null);
 
         CommonExpression rt = readExpression(tokens);
-        if (DUMP_EXPRESSION_INFO)
+        if (DUMP_EXPRESSION_INFO) {
             dump(value, tokens, rt);
+        }
 
         return rt;
     }
@@ -67,13 +66,16 @@ public class ExpressionParser {
         // dump(value,tokens,null);
 
         List<CommonExpression> expressions = readExpressions(tokens);
-        if (DUMP_EXPRESSION_INFO)
+        if (DUMP_EXPRESSION_INFO) {
             dump(value, tokens, Enumerable.create(expressions).toArray(CommonExpression.class));
+        }
 
         return Enumerable.create(expressions).select(new Func1<CommonExpression, OrderByExpression>() {
+
             public OrderByExpression apply(CommonExpression input) {
-                if (input instanceof OrderByExpression)
+                if (input instanceof OrderByExpression) {
                     return (OrderByExpression) input;
+                }
                 return Expression.orderBy(input, true); // default to asc
 
             }
@@ -83,12 +85,14 @@ public class ExpressionParser {
 
     private static void dump(String value, List<Token> tokens, CommonExpression... expressions) {
         String msg = "[" + value + "] -> " + Enumerable.create(tokens).join("");
-        if (expressions != null)
+        if (expressions != null) {
             msg = msg + " -> " + Enumerable.create(expressions).select(new Func1<CommonExpression, String>() {
+
                 public String apply(CommonExpression input) {
                     return dump(input);
                 }
             }).join(",");
+        }
         System.out.println(msg);
     }
 
@@ -103,7 +107,7 @@ public class ExpressionParser {
     private static CommonExpression processBinaryExpression(List<Token> tokens, String op, Func2<CommonExpression, CommonExpression, CommonExpression> fn) {
 
         int ts = tokens.size();
-        for(int i = 0; i < ts; i++) {
+        for (int i = 0; i < ts; i++) {
             Token t = tokens.get(i);
 
             if (i < ts - 2) {
@@ -124,7 +128,7 @@ public class ExpressionParser {
     private static CommonExpression processUnaryExpression(List<Token> tokens, String op, boolean whitespaceRequired, Func1<CommonExpression, CommonExpression> fn) {
 
         int ts = tokens.size();
-        for(int i = 0; i < ts; i++) {
+        for (int i = 0; i < ts; i++) {
             Token t = tokens.get(i);
 
             if (i < ts - 1) {
@@ -241,8 +245,9 @@ public class ExpressionParser {
         } else if (methodName.equals(Methods.ROUND) && methodArguments.size() == 1) {
             CommonExpression arg1 = methodArguments.get(0);
             return Expression.round(arg1);
-        } else
+        } else {
             throw new RuntimeException("Implement method " + methodName);
+        }
     }
 
     private static List<CommonExpression> readExpressions(List<Token> tokens) {
@@ -250,7 +255,7 @@ public class ExpressionParser {
 
         int stack = 0;
         int start = 0;
-        for(int i = 0; i < tokens.size(); i++) {
+        for (int i = 0; i < tokens.size(); i++) {
             Token token = tokens.get(i);
             if (token.type == TokenType.OPENPAREN) {
                 stack++;
@@ -274,7 +279,7 @@ public class ExpressionParser {
     private static List<Token> processParentheses(List<Token> tokens) {
         List<Token> rt = new ArrayList<Token>();
 
-        for(int i = 0; i < tokens.size(); i++) {
+        for (int i = 0; i < tokens.size(); i++) {
             Token openToken = tokens.get(i);
             if (openToken.type == TokenType.OPENPAREN) {
 
@@ -295,7 +300,7 @@ public class ExpressionParser {
                 int stack = 0;
                 int start = i;
                 List<CommonExpression> methodArguments = new ArrayList<CommonExpression>();
-                for(int j = i + 1; j < tokens.size(); j++) {
+                for (int j = i + 1; j < tokens.size(); j++) {
                     Token closeToken = tokens.get(j);
                     if (closeToken.type == TokenType.OPENPAREN) {
                         stack++;
@@ -347,8 +352,9 @@ public class ExpressionParser {
     }
 
     private static <T extends CommonExpression> void assertType(CommonExpression expression, Class<T> type) {
-        if (!type.isAssignableFrom(expression.getClass()))
+        if (!type.isAssignableFrom(expression.getClass())) {
             throw new RuntimeException("Expected " + type.getSimpleName());
+        }
     }
 
     private static CommonExpression readExpression(List<Token> tokens) {
@@ -386,7 +392,7 @@ public class ExpressionParser {
             } else if (word.equals("guid")) {
                 // odata: dddddddd-dddd-dddd-dddddddddddd
                 // java: dddddddd-dd-dd-dddd-dddddddddddd
-               // value = value.substring(0, 11) + "-" + value.substring(11);
+                // value = value.substring(0, 11) + "-" + value.substring(11);
                 return Expression.guid(Guid.fromString(value));
             } else if (word.equals("decimal")) {
                 return Expression.decimal(new BigDecimal(value));
@@ -454,146 +460,180 @@ public class ExpressionParser {
             if (token.type == TokenType.QUOTED_STRING) {
                 return Expression.string(unquote(token.value));
             } else if (token.type == TokenType.WORD) {
-                if (token.value.equals("null"))
+                if (token.value.equals("null")) {
                     return Expression.null_();
-                if (token.value.equals("true"))
+                }
+                if (token.value.equals("true")) {
                     return Expression.boolean_(true);
-                if (token.value.equals("false"))
+                }
+                if (token.value.equals("false")) {
                     return Expression.boolean_(false);
+                }
                 return Expression.simpleProperty(token.value);
             } else if (token.type == TokenType.NUMBER) {
                 int value = Integer.parseInt(token.value);
                 return Expression.integral(value);
             } else if (token.type == TokenType.EXPRESSION) {
                 return ((ExpressionToken) token).expression;
-            } else
+            } else {
                 throw new RuntimeException("Unexpected");
+            }
         }
 
         // process operators from least to highest precedence
 
         // Conditional OR: or
         rt = processBinaryExpression(tokens, "or", new Func2<CommonExpression, CommonExpression, CommonExpression>() {
+
             public CommonExpression apply(CommonExpression lhs, CommonExpression rhs) {
                 assertType(lhs, BoolCommonExpression.class);
                 assertType(rhs, BoolCommonExpression.class);
                 return Expression.or((BoolCommonExpression) lhs, (BoolCommonExpression) rhs);
             }
         });
-        if (rt != null)
+        if (rt != null) {
             return rt;
+        }
 
         // Conditional AND: and
         rt = processBinaryExpression(tokens, "and", new Func2<CommonExpression, CommonExpression, CommonExpression>() {
+
             public CommonExpression apply(CommonExpression lhs, CommonExpression rhs) {
-                assertType(lhs, BoolCommonExpression.class);
+                assertType(lhs, BoolCommonExpression.class );
                 assertType(rhs, BoolCommonExpression.class);
                 return Expression.and((BoolCommonExpression) lhs, (BoolCommonExpression) rhs);
             }
         });
-        if (rt != null)
+        if (rt != null) {
             return rt;
+        }
 
         // Equality: eq ne
         rt = processBinaryExpression(tokens, "eq", new Func2<CommonExpression, CommonExpression, CommonExpression>() {
+
             public CommonExpression apply(CommonExpression lhs, CommonExpression rhs) {
                 return Expression.eq(lhs, rhs);
             }
         });
-        if (rt != null)
+        if (rt != null) {
             return rt;
+        }
         rt = processBinaryExpression(tokens, "ne", new Func2<CommonExpression, CommonExpression, CommonExpression>() {
+
             public CommonExpression apply(CommonExpression lhs, CommonExpression rhs) {
                 return Expression.ne(lhs, rhs);
             }
         });
-        if (rt != null)
+        if (rt != null) {
             return rt;
+        }
 
         // Relational and type testing: lt, gt, le, ge, isof(T) , isof(x,T)
         rt = processBinaryExpression(tokens, "lt", new Func2<CommonExpression, CommonExpression, CommonExpression>() {
+
             public CommonExpression apply(CommonExpression lhs, CommonExpression rhs) {
                 return Expression.lt(lhs, rhs);
             }
         });
-        if (rt != null)
+        if (rt != null) {
             return rt;
+        }
         rt = processBinaryExpression(tokens, "gt", new Func2<CommonExpression, CommonExpression, CommonExpression>() {
+
             public CommonExpression apply(CommonExpression lhs, CommonExpression rhs) {
                 return Expression.gt(lhs, rhs);
             }
         });
-        if (rt != null)
+        if (rt != null) {
             return rt;
+        }
         rt = processBinaryExpression(tokens, "le", new Func2<CommonExpression, CommonExpression, CommonExpression>() {
+
             public CommonExpression apply(CommonExpression lhs, CommonExpression rhs) {
                 return Expression.le(lhs, rhs);
             }
         });
-        if (rt != null)
+        if (rt != null) {
             return rt;
+        }
         rt = processBinaryExpression(tokens, "ge", new Func2<CommonExpression, CommonExpression, CommonExpression>() {
+
             public CommonExpression apply(CommonExpression lhs, CommonExpression rhs) {
                 return Expression.ge(lhs, rhs);
             }
         });
-        if (rt != null)
+        if (rt != null) {
             return rt;
+        }
 
         // Additive: add, sub
         rt = processBinaryExpression(tokens, "add", new Func2<CommonExpression, CommonExpression, CommonExpression>() {
+
             public CommonExpression apply(CommonExpression lhs, CommonExpression rhs) {
                 return Expression.add(lhs, rhs);
             }
         });
-        if (rt != null)
+        if (rt != null) {
             return rt;
+        }
         rt = processBinaryExpression(tokens, "sub", new Func2<CommonExpression, CommonExpression, CommonExpression>() {
+
             public CommonExpression apply(CommonExpression lhs, CommonExpression rhs) {
                 return Expression.sub(lhs, rhs);
             }
         });
-        if (rt != null)
+        if (rt != null) {
             return rt;
+        }
 
         // Multiplicative: mul, div, mod
         rt = processBinaryExpression(tokens, "mul", new Func2<CommonExpression, CommonExpression, CommonExpression>() {
+
             public CommonExpression apply(CommonExpression lhs, CommonExpression rhs) {
                 return Expression.mul(lhs, rhs);
             }
         });
-        if (rt != null)
+        if (rt != null) {
             return rt;
+        }
         rt = processBinaryExpression(tokens, "div", new Func2<CommonExpression, CommonExpression, CommonExpression>() {
+
             public CommonExpression apply(CommonExpression lhs, CommonExpression rhs) {
                 return Expression.div(lhs, rhs);
             }
         });
-        if (rt != null)
+        if (rt != null) {
             return rt;
+        }
         rt = processBinaryExpression(tokens, "mod", new Func2<CommonExpression, CommonExpression, CommonExpression>() {
+
             public CommonExpression apply(CommonExpression lhs, CommonExpression rhs) {
                 return Expression.mod(lhs, rhs);
             }
         });
-        if (rt != null)
+        if (rt != null) {
             return rt;
+        }
 
         // Unary: not x, -x, cast(T), cast(x,T)
         rt = processUnaryExpression(tokens, "not", true, new Func1<CommonExpression, CommonExpression>() {
+
             public CommonExpression apply(CommonExpression expression) {
                 return Expression.not(expression);
             }
         });
-        if (rt != null)
+        if (rt != null) {
             return rt;
+        }
         rt = processUnaryExpression(tokens, "-", false, new Func1<CommonExpression, CommonExpression>() {
+
             public CommonExpression apply(CommonExpression expression) {
                 return Expression.negate(expression);
             }
         });
-        if (rt != null)
+        if (rt != null) {
             return rt;
+        }
 
         throw new RuntimeException("Unexpected");
 
@@ -605,25 +645,27 @@ public class ExpressionParser {
 
     private static List<Token> trimWhitespace(List<Token> tokens) {
         int start = 0;
-        while (tokens.get(start).type == TokenType.WHITESPACE)
+        while (tokens.get(start).type == TokenType.WHITESPACE) {
             start++;
+        }
         int end = tokens.size() - 1;
-        while (tokens.get(end).type == TokenType.WHITESPACE)
+        while (tokens.get(end).type == TokenType.WHITESPACE) {
             end--;
+        }
         return tokens.subList(start, end + 1);
 
     }
 
     // tokenizer
-
     private static List<Token> tokenize(String value) {
         List<Token> rt = new ArrayList<Token>();
         int current = 0;
         int end = 0;
 
         while (true) {
-            if (current == value.length())
+            if (current == value.length()) {
                 return rt;
+            }
             char c = value.charAt(current);
             if (Character.isWhitespace(c)) {
                 end = readWhitespace(value, current);
@@ -668,15 +710,18 @@ public class ExpressionParser {
 
     private static int readDigits(String value, int start) {
         int rt = start;
-        while (rt < value.length() && Character.isDigit(value.charAt(rt)))
+        while (rt < value.length() && Character.isDigit(value.charAt(rt))) {
             rt++;
+        }
         return rt;
     }
 
     private static int readWord(String value, int start) {
         int rt = start;
-        while (rt < value.length() && Character.isLetterOrDigit(value.charAt(rt)))
+        while (rt < value.length()
+                && (Character.isLetterOrDigit(value.charAt(rt)) || value.charAt(rt) == '/')) {
             rt++;
+        }
         return rt;
     }
 
@@ -684,10 +729,11 @@ public class ExpressionParser {
         int rt = start;
 
         while (value.charAt(rt) != '\'' || (rt < value.length() - 1 && value.charAt(rt + 1) == '\'')) {
-            if (value.charAt(rt) != '\'')
+            if (value.charAt(rt) != '\'') {
                 rt++;
-            else
+            } else {
                 rt += 2;
+            }
         }
         rt++;
         return rt;
@@ -695,16 +741,19 @@ public class ExpressionParser {
 
     private static int readWhitespace(String value, int start) {
         int rt = start;
-        while (rt < value.length() && Character.isWhitespace(value.charAt(rt)))
+        while (rt < value.length() && Character.isWhitespace(value.charAt(rt))) {
             rt++;
+        }
         return rt;
     }
 
     private static enum TokenType {
-        UNKNOWN, WHITESPACE, QUOTED_STRING, WORD, SYMBOL, NUMBER, OPENPAREN, CLOSEPAREN, EXPRESSION, ;
+
+        UNKNOWN, WHITESPACE, QUOTED_STRING, WORD, SYMBOL, NUMBER, OPENPAREN, CLOSEPAREN, EXPRESSION,;
     }
 
     private static class Token {
+
         public final TokenType type;
         public final String value;
 
@@ -720,6 +769,7 @@ public class ExpressionParser {
     }
 
     private static class ExpressionToken extends Token {
+
         public final CommonExpression expression;
         private final List<Token> tokens;
 

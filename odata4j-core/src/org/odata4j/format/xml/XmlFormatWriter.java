@@ -9,6 +9,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.edm.EdmMultiplicity;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmType;
 import org.odata4j.internal.InternalUtil;
@@ -23,21 +24,16 @@ public class XmlFormatWriter {
     protected static String d = "http://schemas.microsoft.com/ado/2007/08/dataservices";
     protected static String m = "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata";
     protected static String edm = "http://schemas.microsoft.com/ado/2006/04/edm";
-
     protected static String atom = "http://www.w3.org/2005/Atom";
     protected static String app = "http://www.w3.org/2007/app";
-
     protected static final String scheme = "http://schemas.microsoft.com/ado/2007/08/dataservices/scheme";
     public static final String related = "http://schemas.microsoft.com/ado/2007/08/dataservices/related/";
-
-
     public static final String atom_feed_content_type = "application/atom+xml;type=feed";
     public static final String atom_entry_content_type = "application/atom+xml;type=entry";
-    
-    
+
     @SuppressWarnings("unchecked")
-    private void writeProperties(XMLWriter2 writer, List<OProperty<?>> properties){
-        for(OProperty<?> prop : properties) {
+    private void writeProperties(XMLWriter2 writer, List<OProperty<?>> properties) {
+        for (OProperty<?> prop : properties) {
             String name = prop.getName();
             EdmType type = prop.getType();
             Object value = prop.getValue();
@@ -46,50 +42,60 @@ public class XmlFormatWriter {
 
             String sValue = null;
 
-           
-            if (!type.isPrimitive() ){
+
+            if (!type.isPrimitive()) {
                 writer.writeAttribute(new QName2(m, "type", "m"), type.toTypeString());
                 // complex
-                List<OProperty<?>> complexProperties = (List<OProperty<?>>)value;
-                if (complexProperties != null)
-                    writeProperties(writer,complexProperties);
+                List<OProperty<?>> complexProperties = (List<OProperty<?>>) value;
+                if (complexProperties != null) {
+                    writeProperties(writer, complexProperties);
+                }
             } else {
                 // simple
                 if (type == EdmType.INT32) {
                     writer.writeAttribute(new QName2(m, "type", "m"), type.toTypeString());
-                    if (value != null)
+                    if (value != null) {
                         sValue = value.toString();
+                    }
                 } else if (type == EdmType.INT16) {
                     writer.writeAttribute(new QName2(m, "type", "m"), type.toTypeString());
-                    if (value != null)
+                    if (value != null) {
                         sValue = value.toString();
+                    }
                 } else if (type == EdmType.INT64) {
                     writer.writeAttribute(new QName2(m, "type", "m"), type.toTypeString());
-                    if (value != null)
+                    if (value != null) {
                         sValue = value.toString();
+                    }
                 } else if (type == EdmType.BOOLEAN) {
                     writer.writeAttribute(new QName2(m, "type", "m"), type.toTypeString());
-                    if (value != null)
+                    if (value != null) {
                         sValue = value.toString();
+                    }
                 } else if (type == EdmType.BYTE) {
                     writer.writeAttribute(new QName2(m, "type", "m"), type.toTypeString());
-                    if (value != null)
-                        sValue = Hex.encodeHexString(new byte[]{(Byte)value});
+                    if (value != null) {
+                        sValue = Hex.encodeHexString(new byte[]{(Byte) value});
+                    }
                 } else if (type == EdmType.DECIMAL) {
                     writer.writeAttribute(new QName2(m, "type", "m"), type.toTypeString());
-                    if (value != null)
+                    if (value != null) {
                         sValue = value.toString();
+                    }
                 } else if (type == EdmType.SINGLE) {
                     writer.writeAttribute(new QName2(m, "type", "m"), type.toTypeString());
-                    if (value != null)
+                    if (value != null) {
                         sValue = value.toString();
+                    }
                 } else if (type == EdmType.DOUBLE) {
                     writer.writeAttribute(new QName2(m, "type", "m"), type.toTypeString());
-                    if (value != null)
+                    if (value != null) {
                         sValue = value.toString();
+                    }
                 } else if (type == EdmType.STRING) {
-                    if (value != null)
+                    if (value != null) {
                         sValue = value.toString();
+                    }
                 } else if (type == EdmType.DATETIME) {
                     writer.writeAttribute(new QName2(m, "type", "m"), type.toTypeString());
                     if (value != null) {
@@ -100,20 +106,24 @@ public class XmlFormatWriter {
                 } else if (type == EdmType.BINARY) {
                     writer.writeAttribute(new QName2(m, "type", "m"), type.toTypeString());
                     byte[] bValue = (byte[]) value;
-                    if (value != null)
+                    if (value != null) {
                         sValue = Base64.encodeBase64String(bValue);
+                    }
                 } else if (type == EdmType.GUID) {
                     writer.writeAttribute(new QName2(m, "type", "m"), type.toTypeString());
-                    if (value != null)
+                    if (value != null) {
                         sValue = value.toString();
+                    }
                 } else if (type == EdmType.TIME) {
                     writer.writeAttribute(new QName2(m, "type", "m"), type.toTypeString());
-                    if (value != null)
+                    if (value != null) {
                         sValue = value.toString();
+                    }
                 } else if (type == EdmType.DATETIMEOFFSET) {
                     writer.writeAttribute(new QName2(m, "type", "m"), type.toTypeString());
-                    if (value != null)
-                        sValue = InternalUtil.toString((DateTime)value);
+                    if (value != null) {
+                        sValue = InternalUtil.toString((DateTime) value);
+                    }
                 } else {
                     throw new UnsupportedOperationException("Implement " + type);
                 }
@@ -128,13 +138,13 @@ public class XmlFormatWriter {
 
         }
     }
-    
+
     protected String writeEntry(XMLWriter2 writer, List<String> keyPropertyNames, List<OProperty<?>> entityProperties, String entitySetName, String baseUri, String updated, EdmEntitySet ees) {
 
         String relid = null;
         String absid = null;
         if (entitySetName != null) {
-            relid = InternalUtil.getEntityRelId(keyPropertyNames,entityProperties,entitySetName);
+            relid = InternalUtil.getEntityRelId(keyPropertyNames, entityProperties, entitySetName);
             absid = baseUri + relid;
             writeElement(writer, "id", absid);
         }
@@ -146,18 +156,22 @@ public class XmlFormatWriter {
         writeElement(writer, "name", null);
         writer.endElement("author");
 
-        if (entitySetName != null)
+        if (entitySetName != null) {
             writeElement(writer, "link", null, "rel", "edit", "title", entitySetName, "href", relid);
+        }
 
         if (ees != null) {
-            for(EdmNavigationProperty np : ees.type.navigationProperties) {
+            for (EdmNavigationProperty np : ees.type.navigationProperties) {
 
                 // <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Products" type="application/atom+xml;type=feed" title="Products"
                 // href="Suppliers(1)/Products" />
 
-                String otherEntity = np.toRole.type.name;
+                String otherEntity = np.name;
                 String rel = related + otherEntity;
                 String type = atom_feed_content_type;
+                if (np.toRole.multiplicity != EdmMultiplicity.MANY) {
+                    type = atom_entry_content_type;
+                }
                 String title = otherEntity;
                 String href = relid + "/" + otherEntity;
 
@@ -173,7 +187,7 @@ public class XmlFormatWriter {
 
         writer.startElement(new QName2(m, "properties", "m"));
 
-        writeProperties(writer,entityProperties);
+        writeProperties(writer, entityProperties);
 
         writer.endElement("properties");
         writer.endElement("content");
@@ -183,11 +197,12 @@ public class XmlFormatWriter {
 
     protected void writeElement(XMLWriter2 writer, String elementName, String elementText, String... attributes) {
         writer.startElement(elementName);
-        for(int i = 0; i < attributes.length; i += 2) {
+        for (int i = 0; i < attributes.length; i += 2) {
             writer.writeAttribute(attributes[i], attributes[i + 1]);
         }
-        if (elementText != null)
+        if (elementText != null) {
             writer.writeText(elementText);
+        }
         writer.endElement(elementName);
     }
 }

@@ -106,7 +106,7 @@ public class InternalUtil {
     
     public static OEntity toOEntity(DataServicesAtomEntry dsae, FeedCustomizationMapping mapping) {
         if (mapping==null)
-            return OEntities.create(dsae.properties,toOLinks(dsae.links),dsae.title);
+            return OEntities.create(dsae.properties,toOLinks(dsae.links),dsae.title, dsae.categoryTerm);
         
         Enumerable<OProperty<?>> properties = Enumerable.create(dsae.properties);
         if (mapping.titlePropName != null)
@@ -114,7 +114,7 @@ public class InternalUtil {
         if (mapping.summaryPropName != null)
             properties = properties.concat(OProperties.string(mapping.summaryPropName, dsae.summary));
         
-        return OEntities.create(properties.toList(),toOLinks(dsae.links),dsae.title);
+        return OEntities.create(properties.toList(),toOLinks(dsae.links),dsae.title, dsae.categoryTerm);
        
     }
     

@@ -187,8 +187,8 @@ public class JPAEdmGenerator {
 
                         EdmEntityType eet1 = eetsByName.get(et2.getName());
                         EdmEntityType eet2 = eetsByName.get(aet.getName());
-                        EdmMultiplicity m1 = EdmMultiplicity.ZERO_TO_ONE;
-                        EdmMultiplicity m2 = EdmMultiplicity.MANY;
+                        EdmMultiplicity m1 = EdmMultiplicity.MANY;
+                        EdmMultiplicity m2 = EdmMultiplicity.ZERO_TO_ONE;
 
                         String assocName = String.format("FK_%s_%s", eet1.name, eet2.name);
                         EdmAssociationEnd assocEnd1 = new EdmAssociationEnd(eet1.name, eet1, m1);
