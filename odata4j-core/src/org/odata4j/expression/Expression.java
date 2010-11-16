@@ -462,6 +462,21 @@ public class Expression {
         };
     }
 
+    public static BoolParenExpression boolParen(final CommonExpression expression) {
+        return new BoolParenExpression() {
+            @Override
+            public String toString() {
+                return BoolParenExpression.class.getSimpleName();
+            }
+
+            @Override
+            public CommonExpression getExpression() {
+                return expression;
+            }
+
+        };
+    }
+
     public static NotExpression not(final CommonExpression expression) {
         return new NotExpression() {
             @Override
@@ -1046,6 +1061,11 @@ public class Expression {
             visitor.visit((ParenExpression) expr);
             visitor.beforeDescend();
             visit(((ParenExpression) expr).getExpression(), visitor);
+            visitor.afterDescend();
+        } else if (expr instanceof BoolParenExpression) {
+            visitor.visit((BoolParenExpression) expr);
+            visitor.beforeDescend();
+            visit(((BoolParenExpression) expr).getExpression(), visitor);
             visitor.afterDescend();
         } else if (expr instanceof NotExpression) {
             visitor.visit((NotExpression) expr);

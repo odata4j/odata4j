@@ -78,6 +78,8 @@ public interface ExpressionVisitor {
 
     public void visit(ParenExpression expr);
 
+    public void visit(BoolParenExpression expr);
+    
     public void visit(ReplaceMethodCallExpression expr);
 
     public void visit(StartsWithMethodCallExpression expr);

@@ -334,8 +334,14 @@ public class ExpressionParser {
 
                             // paren expression: replace t ( t t t ) t with t et t
                             CommonExpression expressionInsideParens = readExpression(tokensInsideParens);
+                            CommonExpression exp = null;
+                            if (expressionInsideParens instanceof BoolCommonExpression) {
+                                exp = Expression.boolParen(expressionInsideParens);
+                            } else {
+                                exp = Expression.paren(expressionInsideParens);
+                            }
 
-                            ExpressionToken et = new ExpressionToken(Expression.paren(expressionInsideParens), tokensIncludingParens);
+                            ExpressionToken et = new ExpressionToken(exp, tokensIncludingParens);
                             rt.add(et);
                         }
 

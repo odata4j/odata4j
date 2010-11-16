@@ -8,6 +8,7 @@ import org.odata4j.expression.AddExpression;
 import org.odata4j.expression.AndExpression;
 import org.odata4j.expression.BinaryCommonExpression;
 import org.odata4j.expression.BoolCommonExpression;
+import org.odata4j.expression.BoolParenExpression;
 import org.odata4j.expression.BooleanLiteral;
 import org.odata4j.expression.CommonExpression;
 import org.odata4j.expression.DivExpression;
@@ -69,6 +70,9 @@ public class InMemoryEvaluation {
 
         if (expression instanceof ParenExpression)
             return evaluate(((ParenExpression) expression).getExpression(), target, properties);
+        
+        if (expression instanceof BoolParenExpression)
+            return evaluate(((BoolParenExpression) expression).getExpression(), target, properties);
 
         throw new UnsupportedOperationException("unsupported expression " + expression);
     }
@@ -119,6 +123,11 @@ public class InMemoryEvaluation {
         if (expression instanceof ParenExpression){
             Object o = null;
         }
+        if (expression instanceof BoolParenExpression){
+            BoolParenExpression e = (BoolParenExpression) expression;
+            return evaluate((BoolCommonExpression) e.getExpression(), target, properties);
+        }
+
         throw new UnsupportedOperationException("unsupported expression " + expression);
     }
 

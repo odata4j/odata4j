@@ -188,6 +188,11 @@ public class PrintExpressionVisitor implements ExpressionVisitor {
     }
 
     @Override
+    public void visit(BoolParenExpression expr) {
+        append("boolParen");
+    }
+
+    @Override
     public void visit(ReplaceMethodCallExpression expr) {
         append("replace");
     }

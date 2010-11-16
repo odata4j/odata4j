@@ -12,6 +12,7 @@ import org.odata4j.expression.AddExpression;
 import org.odata4j.expression.AndExpression;
 import org.odata4j.expression.BinaryCommonExpression;
 import org.odata4j.expression.BoolCommonExpression;
+import org.odata4j.expression.BoolParenExpression;
 import org.odata4j.expression.BooleanLiteral;
 import org.odata4j.expression.CommonExpression;
 import org.odata4j.expression.DivExpression;
@@ -80,6 +81,10 @@ public class InJPAEvaluation {
             return evaluate(((ParenExpression) expression).getExpression(), cb, root);
         }
 
+        if (expression instanceof BoolParenExpression){
+            return evaluate(((BoolParenExpression) expression).getExpression(), cb, root);
+        }
+
         throw new UnsupportedOperationException("unsupported expression " + expression);
     }
 
@@ -111,14 +116,15 @@ public class InJPAEvaluation {
 
         if (expression instanceof GtExpression) {
             ObjectPair pair = createPair((GtExpression) expression, cb, root);
-            return cb.greaterThan(
-                    InJPAEvaluation.<Long>buildPathExpression(root, (String) pair.lhs),
-                    (Long) pair.rhs);
+            return cb.gt(
+                    InJPAEvaluation.<Number>buildPathExpression(root, (String) pair.lhs),
+                    (Number) pair.rhs);
         }
         if (expression instanceof LtExpression) {
             ObjectPair pair = createPair((LtExpression) expression, cb, root);
-            return cb.lessThan(
-                    InJPAEvaluation.<Long>buildPathExpression(root, (String) pair.lhs), (Long) pair.rhs);
+            return cb.lt(
+                    InJPAEvaluation.<Number>buildPathExpression(root, (String) pair.lhs),
+                    (Number) pair.rhs);
         }
         if (expression instanceof GeExpression) {
             ObjectPair pair = createPair((GeExpression) expression, cb, root);
@@ -150,7 +156,10 @@ public class InJPAEvaluation {
         }
 
         if (expression instanceof ParenExpression) {
-            ParenExpression e = (ParenExpression) expression;
+        }
+
+        if (expression instanceof BoolParenExpression){
+            BoolParenExpression e = (BoolParenExpression) expression;
             return evaluate((BoolCommonExpression) e.getExpression(), cb, root);
         }
 
