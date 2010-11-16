@@ -15,6 +15,7 @@ import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.EqExpression;
 import org.odata4j.expression.GeExpression;
 import org.odata4j.expression.GtExpression;
+import org.odata4j.expression.Int64Literal;
 import org.odata4j.expression.IntegralLiteral;
 import org.odata4j.expression.LeExpression;
 import org.odata4j.expression.LtExpression;
@@ -47,6 +48,9 @@ public class InMemoryEvaluation {
 
         if (expression instanceof IntegralLiteral)
             return ((IntegralLiteral) expression).getValue();
+        
+        if (expression instanceof Int64Literal)
+            return ((Int64Literal) expression).getValue();
 
         if (expression instanceof AddExpression)
             return binaryFunction((BinaryCommonExpression) expression, target, properties, BinaryFunction.ADD);
@@ -111,6 +115,9 @@ public class InMemoryEvaluation {
             String targetValue = (String) evaluate(e.getTarget(), target, properties);
             String searchValue = (String) evaluate(e.getValue(), target, properties);
             return targetValue != null && searchValue != null && targetValue.contains(searchValue);
+        }
+        if (expression instanceof ParenExpression){
+            Object o = null;
         }
         throw new UnsupportedOperationException("unsupported expression " + expression);
     }

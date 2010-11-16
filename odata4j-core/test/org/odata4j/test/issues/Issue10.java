@@ -19,7 +19,7 @@ public class Issue10 {
     @Test
     public void issue10(){
         
-        String endpointUri = "http://localhost:8887/Issue10.svc/";
+        String endpointUri = "http://localhost:8810/Issue10.svc/";
         
         final QueryInfo[] lastQuery = new QueryInfo[1];
         InMemoryProducer producer = new InMemoryProducer("Issue10"){

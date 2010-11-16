@@ -70,8 +70,6 @@ public class ScenarioTest {
         Assert.assertEquals(3, c.getEntities("Foos1").filter("null eq null").execute().count());
         Assert.assertEquals(1, c.getEntities("Foos1").filter("Name eq null").execute().count());
         Assert.assertEquals(1, c.getEntities("Foos1").filter("substringof('lph',Name)").execute().count());
-        
-        // this test fails in 0.3
         Assert.assertEquals(3, c.getEntities("Foos1").filter("Int32 lt " + Integer.MAX_VALUE + 100).execute().count());
         server.stop();
 

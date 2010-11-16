@@ -471,8 +471,13 @@ public class ExpressionParser {
                 }
                 return Expression.simpleProperty(token.value);
             } else if (token.type == TokenType.NUMBER) {
-                int value = Integer.parseInt(token.value);
-                return Expression.integral(value);
+                try {
+                    int value = Integer.parseInt(token.value);
+                    return Expression.integral(value);
+                } catch (NumberFormatException e){
+                    long value  = Long.parseLong(token.value);
+                    return Expression.int64(value);
+                }
             } else if (token.type == TokenType.EXPRESSION) {
                 return ((ExpressionToken) token).expression;
             } else {

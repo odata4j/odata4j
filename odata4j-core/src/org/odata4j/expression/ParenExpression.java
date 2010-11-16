@@ -1,6 +1,6 @@
 package org.odata4j.expression;
 
-public interface ParenExpression extends BoolCommonExpression {
+public interface ParenExpression extends CommonExpression {
 
     public abstract CommonExpression getExpression();
 }
