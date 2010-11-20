@@ -14,20 +14,18 @@ import org.odata4j.expression.CommonExpression;
 import org.odata4j.expression.DivExpression;
 import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.EqExpression;
+import org.odata4j.expression.Expression;
 import org.odata4j.expression.GeExpression;
 import org.odata4j.expression.GtExpression;
-import org.odata4j.expression.Int64Literal;
-import org.odata4j.expression.IntegralLiteral;
 import org.odata4j.expression.LeExpression;
+import org.odata4j.expression.LiteralExpression;
 import org.odata4j.expression.LtExpression;
 import org.odata4j.expression.ModExpression;
 import org.odata4j.expression.MulExpression;
 import org.odata4j.expression.NeExpression;
 import org.odata4j.expression.NotExpression;
-import org.odata4j.expression.NullLiteral;
 import org.odata4j.expression.OrExpression;
 import org.odata4j.expression.ParenExpression;
-import org.odata4j.expression.StringLiteral;
 import org.odata4j.expression.SubExpression;
 import org.odata4j.expression.SubstringOfMethodCallExpression;
 
@@ -35,23 +33,14 @@ public class InMemoryEvaluation {
 
     public static Object evaluate(CommonExpression expression, Object target, PropertyModel properties) {
 
+        if (expression instanceof LiteralExpression)
+            return Expression.literalValue((LiteralExpression)expression);
+        
         if (expression instanceof BoolCommonExpression)
             return evaluate((BoolCommonExpression) expression, target, properties);
 
         if (expression instanceof EntitySimpleProperty)
             return properties.getPropertyValue(target, ((EntitySimpleProperty) expression).getPropertyName());
-
-        if (expression instanceof NullLiteral)
-            return null;
-
-        if (expression instanceof StringLiteral)
-            return ((StringLiteral) expression).getValue();
-
-        if (expression instanceof IntegralLiteral)
-            return ((IntegralLiteral) expression).getValue();
-        
-        if (expression instanceof Int64Literal)
-            return ((Int64Literal) expression).getValue();
 
         if (expression instanceof AddExpression)
             return binaryFunction((BinaryCommonExpression) expression, target, properties, BinaryFunction.ADD);
