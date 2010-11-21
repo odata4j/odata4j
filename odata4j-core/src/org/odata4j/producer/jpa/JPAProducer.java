@@ -38,6 +38,7 @@ import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmType;
 import org.odata4j.expression.OrderByExpression;
 import org.odata4j.internal.InternalUtil;
+import org.odata4j.internal.TypeConverter;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.InlineCount;
@@ -133,15 +134,15 @@ public class JPAProducer implements ODataProducer {
         EntityType<?> jpaEntityType;
         String keyPropertyName;
         EntityManager em;
-        Object entityKey;
+        Object typeSafeEntityKey;
         QueryInfo query;
     }
 
     private EntityResponse getEntity(final Context context) {
-
-        Object jpaEntity = context.em.find(context.jpaEntityType.getJavaType(), context.entityKey);
+       
+        Object jpaEntity = context.em.find(context.jpaEntityType.getJavaType(), context.typeSafeEntityKey);
         if (jpaEntity == null) {
-            throw new EntityNotFoundException(context.jpaEntityType.getJavaType() + " not found with key " + context.entityKey);
+            throw new EntityNotFoundException(context.jpaEntityType.getJavaType() + " not found with key " + context.typeSafeEntityKey);
         }
 
         final OEntity entity = makeEntity(context, jpaEntity);
@@ -187,46 +188,47 @@ public class JPAProducer implements ODataProducer {
 
     }
 
+    
+    
     private NavPropertyResponse getNavProperty(final Context context, String navProp) {
-        final Object jpaEntity = context.em.find(context.jpaEntityType.getJavaType(), context.entityKey);
+        final Object jpaEntity = context.em.find(context.jpaEntityType.getJavaType(), context.typeSafeEntityKey);
         if (jpaEntity == null) {
-            throw new EntityNotFoundException(
-                    context.jpaEntityType.getJavaType() + " not found with key " + context.entityKey);
+            throw new EntityNotFoundException( context.jpaEntityType.getJavaType() + " not found with key " + context.typeSafeEntityKey);
         }
 
-        Object entityProp = jpaEntity;
+        Object currentPointer = jpaEntity;
         String propName = null;
         Object propInfo = null;
         EdmEntitySet ees = null;
 
         for (String pn : navProp.split("/")) {
-            if (entityProp instanceof Iterable) {
+            if (currentPointer instanceof Iterable) {
                 throw new UnsupportedOperationException(
                         String.format(
                         "The request URI is not valid. Since the segment '%s' refers to a collection, this must be the last segment in the request URI. All intermediate segments must refer to a single resource.",
-                        entityProp.getClass().getSimpleName()));
+                        currentPointer.getClass().getSimpleName()));
             }
 
             String[] propSplit = pn.split("\\(");
             propName = propSplit[0];
 
-            entityProp = CoreUtils.getFieldValue(
-                    entityProp,
+            currentPointer = CoreUtils.getFieldValue(
+                    currentPointer,
                     propName,
-                    entityProp.getClass());
+                    currentPointer.getClass());
 
             if (propSplit.length > 1) {
                 String id = (String) OptionsQueryParser.parseIdObject(
                         "(" + propSplit[1]);
 
                 propInfo = this.metadata.findEdmProperty(propName);
-                entityProp = this.findEntityById(
-                        (Iterable) entityProp,
+                currentPointer = this.findEntityById(
+                        (Iterable) currentPointer,
                         ((EdmNavigationProperty) propInfo).toRole.type.keys,
                         Integer.parseInt(id));
             }
 
-            if (entityProp == null) {
+            if (currentPointer == null) {
                 throw new EntityNotFoundException(
                         String.format(
                         "Resource not found for the segment '%s'.",
@@ -243,8 +245,8 @@ public class JPAProducer implements ODataProducer {
                     context.em,
                     ((EdmNavigationProperty) propInfo).toRole.type.name);
 
-            if (entityProp instanceof Iterable) {
-                for (Object item : (Iterable) entityProp) {
+            if (currentPointer instanceof Iterable) {
+                for (Object item : (Iterable) currentPointer) {
                     if (ees == null) {
                         ees = this.metadata.findEdmEntitySet(item.getClass().getSimpleName());
                     }
@@ -261,22 +263,22 @@ public class JPAProducer implements ODataProducer {
 
                 mul = EdmMultiplicity.MANY;
             } else {
-                ees = this.metadata.findEdmEntitySet(entityProp.getClass().getSimpleName());
+                ees = this.metadata.findEdmEntitySet(currentPointer.getClass().getSimpleName());
                 final OEntity entity = OEntities.create(
                         jpaEntityToOProperties(
                         ees,
                         jpatype,
-                        entityProp),
+                        currentPointer),
                         null);
 
                 entities.add(entity);
             }
         } else {
-            ees = this.metadata.findEdmEntitySet(entityProp.getClass().getSimpleName());
+            ees = this.metadata.findEdmEntitySet(currentPointer.getClass().getSimpleName());
             OProperty op = OProperties.simple(
                     ((EdmProperty) propInfo).name,
                     ((EdmProperty) propInfo).type,
-                    entityProp);
+                    currentPointer);
 
             List<OProperty<?>> ls = new LinkedList<OProperty<?>>();
             ls.add(op);
@@ -322,7 +324,7 @@ public class JPAProducer implements ODataProducer {
             context.ees = metadata.getEdmEntitySet(entitySetName);
             context.jpaEntityType = findJPAEntityType(context.em, context.ees.type.name);
             context.keyPropertyName = context.ees.type.keys.get(0);
-            context.entityKey = entityKey;
+            context.typeSafeEntityKey = typeSafeEntityKey(context.em, context.jpaEntityType, entityKey);
             context.query = query;
             return fn.apply(context);
 
@@ -366,7 +368,10 @@ public class JPAProducer implements ODataProducer {
                 } else if (ep.type == EdmType.INT64) {
                     Long iValue = (Long) value;
                     rt.add(OProperties.int64(ep.name, iValue));
-                } else if (ep.type == EdmType.DECIMAL) {
+                } else if (ep.type == EdmType.BYTE) {
+                    Byte bValue = (Byte) value;
+                    rt.add(OProperties.byte_(ep.name, bValue));
+                }  else if (ep.type == EdmType.DECIMAL) {
                     BigDecimal dValue = (BigDecimal) value;
                     rt.add(OProperties.decimal(ep.name, dValue));
                 } else if (ep.type == EdmType.DATETIME) {
@@ -592,7 +597,8 @@ public class JPAProducer implements ODataProducer {
         try {
             em.getTransaction().begin();
             EntityType<?> jpaEntityType = findJPAEntityType(em, ees.type.name);
-            Object jpaEntity = em.find(jpaEntityType.getJavaType(), entityKey);
+            Object typeSafeEntityKey = typeSafeEntityKey(em, jpaEntityType, entityKey);
+            Object jpaEntity = em.find(jpaEntityType.getJavaType(), typeSafeEntityKey);
             em.remove(jpaEntity);
             em.getTransaction().commit();
 
@@ -610,7 +616,8 @@ public class JPAProducer implements ODataProducer {
         try {
             em.getTransaction().begin();
             EntityType<?> jpaEntityType = findJPAEntityType(em, ees.type.name);
-            Object jpaEntity = em.find(jpaEntityType.getJavaType(), entityKey);
+            Object typeSafeEntityKey = typeSafeEntityKey(em, jpaEntityType, entityKey);
+            Object jpaEntity = em.find(jpaEntityType.getJavaType(), typeSafeEntityKey);
 
             applyOProperties(jpaEntityType, entity.getProperties(), jpaEntity);
 
@@ -637,5 +644,10 @@ public class JPAProducer implements ODataProducer {
         } finally {
             em.close();
         }
+    }
+    
+    
+    private Object typeSafeEntityKey(EntityManager em, EntityType<?> jpaEntityType, Object entityKey){
+        return TypeConverter.convert(entityKey, em.getMetamodel().entity(jpaEntityType.getJavaType()).getIdType().getJavaType());
     }
 }

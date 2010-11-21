@@ -1,6 +1,7 @@
 package org.odata4j.producer.jpa;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -14,6 +15,7 @@ import javax.persistence.metamodel.EmbeddableType;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.Metamodel;
+import javax.persistence.metamodel.PluralAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Type;
 import javax.persistence.metamodel.Type.PersistenceType;
@@ -43,7 +45,6 @@ public class JPAEdmGenerator {
 
     public static EdmType toEdmType(SingularAttribute<?, ?> sa) {
 
-        
         Class<?> javaType = sa.getType().getJavaType();
 
         if (javaType.equals(String.class))
@@ -66,6 +67,10 @@ public class JPAEdmGenerator {
             return EdmType.DATETIME;
         if (javaType.equals(Instant.class))
             return EdmType.DATETIME;
+        if (javaType.equals(Timestamp.class))
+            return EdmType.DATETIME;
+        if (javaType.equals(Byte.TYPE))
+            return EdmType.BYTE;
        
 
         throw new UnsupportedOperationException(javaType.toString());
@@ -226,7 +231,7 @@ public class JPAEdmGenerator {
 
                 if (att.isCollection()) {
 
-                    CollectionAttribute<?, ?> ca = (CollectionAttribute<?, ?>) att;
+                    PluralAttribute<?, ?, ?> ca = (PluralAttribute<?, ?, ?>) att;
 
                     EntityType<?> cat = (EntityType<?>) ca.getElementType();
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project basedir="." default="dist" name="odata4j-core-dist">
 	
-	<property name="dist.version" value="SNAPSHOT-20101020" />
+	<property name="dist.version" value="SNAPSHOT-20101121" />
 	<!-- <property name="dist.version" value="0.3" /> -->
 	
 	<property name="dist.projectname" value="odata4j" />
@@ -96,7 +96,7 @@
 		</copy>
 		-->
 		
-		<!-- create bundle jars -->
+		<!-- create bundle jars 
 		<mkdir dir="${dist.bundlesdir}" />
 		<jar destfile="${dist.bundlejar}" duplicate="preserve">
 			<zipgroupfileset dir="${dist.coredir}" includes="*.jar" excludes="*-sources.jar *-javadoc.jar xmlpull*" />
@@ -109,9 +109,9 @@
 			<zipgroupfileset dir="${dist.coredir}" includes="*.jar"
 				excludes="eclipselink.jar javax.persistence_2.0.0.v201002051058.jar *-sources.jar *-javadoc.jar xmlpull*"   />
 		</jar>
-		
-		<!-- create archive zip -->
+		-->
+		<!-- create archive zip
 		<zip destfile="${dist.versiondir}/${dist.archivename}.zip" basedir="${dist.archivedir}" />
-
+		 -->
 	</target>
 </project>
