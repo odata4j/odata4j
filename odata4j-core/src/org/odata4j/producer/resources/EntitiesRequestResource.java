@@ -2,8 +2,10 @@ package org.odata4j.producer.resources;
 
 import java.io.StringWriter;
 import java.net.URI;
+import java.util.List;
 import java.util.logging.Logger;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -14,7 +16,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.odata4j.core.Guid;
 import org.odata4j.core.ODataConstants;
+import org.odata4j.core.OEntity;
 import org.odata4j.format.FormatWriter;
 import org.odata4j.format.FormatWriterFactory;
 import org.odata4j.format.xml.AtomEntryFormatWriter;
@@ -24,10 +28,6 @@ import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
 
 import com.sun.jersey.api.core.HttpContext;
-import java.util.List;
-import javax.ws.rs.Consumes;
-import org.odata4j.core.Guid;
-import org.odata4j.core.OEntity;
 
 @Path("{entitySetName}{optionalParens: ((\\(\\))?)}")
 public class EntitiesRequestResource extends BaseResource {

@@ -2,6 +2,7 @@ package org.odata4j.producer.jpa;
 
 import java.math.BigDecimal;
 import java.util.Set;
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Path;

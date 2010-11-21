@@ -104,7 +104,7 @@ public class AtomFeedFormatParser extends XmlFormatParser {
 
    
 
-    private static Iterable<OProperty<?>> parseProperties(XMLEventReader2 reader, StartElement2 propertiesElement) {
+    public static Iterable<OProperty<?>> parseProperties(XMLEventReader2 reader, StartElement2 propertiesElement) {
         List<OProperty<?>> rt = new ArrayList<OProperty<?>>();
 
         while (reader.hasNext()) {

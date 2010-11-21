@@ -1,6 +1,5 @@
 package org.odata4j.producer.resources;
 
-import com.sun.jersey.api.core.HttpContext;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,6 +9,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
@@ -19,6 +19,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
+
+import com.sun.jersey.api.core.HttpContext;
 
 @Provider
 @Consumes(ODataBatchProvider.MULTIPART_MIXED)

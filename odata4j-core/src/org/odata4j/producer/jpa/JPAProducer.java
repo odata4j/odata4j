@@ -1,8 +1,5 @@
 package org.odata4j.producer.jpa;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
@@ -22,8 +19,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.EntityType;
-import org.core4j.CoreUtils;
 
+import org.core4j.CoreUtils;
 import org.core4j.Enumerable;
 import org.core4j.Func1;
 import org.joda.time.LocalDateTime;
@@ -47,10 +44,14 @@ import org.odata4j.producer.InlineCount;
 import org.odata4j.producer.NavPropertyResponse;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
-import org.odata4j.producer.inmemory.ListUtils;
 import org.odata4j.producer.Responses;
+import org.odata4j.producer.inmemory.ListUtils;
 import org.odata4j.producer.resources.BaseResource;
 import org.odata4j.producer.resources.OptionsQueryParser;
+
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
 
 public class JPAProducer implements ODataProducer {
 

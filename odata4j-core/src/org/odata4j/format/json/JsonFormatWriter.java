@@ -12,6 +12,7 @@ import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmType;
 import org.odata4j.format.FormatWriter;
 import org.odata4j.internal.InternalUtil;
@@ -19,8 +20,6 @@ import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
 import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
 
 import com.sun.jersey.api.core.ExtendedUriInfo;
-import org.odata4j.edm.EdmNavigationProperty;
-import org.odata4j.edm.EdmProperty;
 
 public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
 

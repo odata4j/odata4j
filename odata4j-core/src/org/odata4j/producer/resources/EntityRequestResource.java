@@ -1,7 +1,6 @@
 package org.odata4j.producer.resources;
 
 import java.io.StringWriter;
-import java.util.List;
 import java.util.logging.Logger;
 
 import javax.ws.rs.DELETE;

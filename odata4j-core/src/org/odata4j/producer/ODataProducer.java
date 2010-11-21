@@ -1,9 +1,6 @@
 package org.odata4j.producer;
 
-import java.util.List;
 import org.odata4j.core.OEntity;
-
-import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmDataServices;
 
 public interface ODataProducer {

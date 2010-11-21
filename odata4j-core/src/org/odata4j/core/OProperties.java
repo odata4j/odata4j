@@ -58,7 +58,7 @@ public class OProperties {
             byte[] bValue = new Base64().decode(value);
             return OProperties.binary(name, bValue);
         } else if (EdmType.DATETIME.toTypeString().equals(type)) {
-            if (value != null && value.matches(".*\\.\\d{1,7}(Z|\\+\\d{2}:\\d{2})?$")) {
+            if (value != null && value.matches(".*\\.\\d{1,7}(Z|(\\+|\\-)\\d{2}:\\d{2})?$")) {
                 value = value.substring(0, value.lastIndexOf('.'));
             }
             if (value != null && value.endsWith("Z"))

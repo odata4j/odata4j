@@ -1,8 +1,8 @@
 package org.odata4j.producer.resources;
 
-import com.sun.jersey.api.core.HttpContext;
 import java.io.StringWriter;
 import java.util.logging.Logger;
+
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -13,6 +13,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OEntity;
 import org.odata4j.edm.EdmEntitySet;
@@ -24,6 +25,8 @@ import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.NavPropertyResponse;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
+
+import com.sun.jersey.api.core.HttpContext;
 
 public class PropertyRequestResource extends BaseResource {
 

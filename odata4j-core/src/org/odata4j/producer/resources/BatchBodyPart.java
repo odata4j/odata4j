@@ -1,12 +1,5 @@
 package org.odata4j.producer.resources;
 
-import com.sun.jersey.api.core.ExtendedUriInfo;
-import com.sun.jersey.api.core.HttpContext;
-import com.sun.jersey.api.core.HttpRequestContext;
-import com.sun.jersey.api.core.HttpResponseContext;
-import com.sun.jersey.api.representation.Form;
-import com.sun.jersey.core.header.QualitySourceMediaType;
-import com.sun.jersey.core.util.StringKeyStringValueIgnoreCaseMultivaluedMap;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.net.URI;
@@ -15,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.EntityTag;
@@ -24,8 +18,17 @@ import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Variant;
+
 import org.odata4j.core.ODataConstants;
 import org.odata4j.producer.resources.ODataBatchProvider.HTTP_METHOD;
+
+import com.sun.jersey.api.core.ExtendedUriInfo;
+import com.sun.jersey.api.core.HttpContext;
+import com.sun.jersey.api.core.HttpRequestContext;
+import com.sun.jersey.api.core.HttpResponseContext;
+import com.sun.jersey.api.representation.Form;
+import com.sun.jersey.core.header.QualitySourceMediaType;
+import com.sun.jersey.core.util.StringKeyStringValueIgnoreCaseMultivaluedMap;
 
 public class BatchBodyPart {
 

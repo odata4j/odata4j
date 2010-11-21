@@ -4,15 +4,17 @@
  */
 package org.odata4j.producer.resources;
 
-import com.sun.jersey.api.core.HttpContext;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.CommonExpression;
 import org.odata4j.expression.ExpressionParser;
 import org.odata4j.expression.OrderByExpression;
 import org.odata4j.producer.InlineCount;
+
+import com.sun.jersey.api.core.HttpContext;
 
 /**
  *

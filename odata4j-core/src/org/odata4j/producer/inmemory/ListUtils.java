@@ -3,7 +3,7 @@ package org.odata4j.producer.inmemory;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
-import org.core4j.CoreUtils;
+
 import org.core4j.Enumerable;
 import org.core4j.Predicate1;
 import org.odata4j.core.OEntity;
