@@ -24,7 +24,7 @@ import org.odata4j.producer.ODataProducer;
 
 import com.sun.jersey.api.core.HttpContext;
 
-@Path("{entitySetName}{id: (\\(([^\\)]*)\\))}")
+@Path("{entitySetName}{id: (\\(.+?\\))}")
 public class EntityRequestResource extends BaseResource {
 
     private static final Logger log = Logger.getLogger(EntityRequestResource.class.getName());

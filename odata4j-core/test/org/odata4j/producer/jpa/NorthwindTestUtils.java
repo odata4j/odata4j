@@ -38,7 +38,7 @@ public class NorthwindTestUtils {
         try {
             conn =
                     DriverManager.getConnection("jdbc:hsqldb:mem:northwind",
-                            "sa", "");
+                    "sa", "");
             Statement statement = conn.createStatement();
 
             InputStream xml = NorthwindTestUtils.class.getResourceAsStream(
@@ -89,8 +89,7 @@ public class NorthwindTestUtils {
                 }
                 in.close();
             } catch (IOException ex) {
-                Logger.getLogger(JPAProducerQueryOptionTest.class.getName())
-                        .log(Level.SEVERE, null, ex);
+                Logger.getLogger(JPAProducerQueryOptionTest.class.getName()).log(Level.SEVERE, null, ex);
             }
 
         } catch (Exception ex) {
@@ -110,8 +109,7 @@ public class NorthwindTestUtils {
         uri = uri.replace(" ", "%20");
         WebResource webResource = client.resource(endpointUri + uri);
 
-        String result =
-                webResource.accept("application/json").get(String.class);
+        String result = webResource.accept("application/json").get(String.class);
 
         // ignore format for human read
         result = result.replace(", ", ",");
@@ -125,15 +123,15 @@ public class NorthwindTestUtils {
         result = result.replace("\\n", "");
 
         // different naming
-        result =
-                result.replace("NorthwindModel.Categories",
-                        "NorthwindModel.Category");
-        result =
-                result.replace("NorthwindModel.Products",
-                        "NorthwindModel.Product");
-        result =
-                result.replace("NorthwindModel.Suppliers",
-                        "NorthwindModel.Supplier");
+        result = result.replace(
+                "NorthwindModel.Categories",
+                "NorthwindModel.Category");
+        result = result.replace(
+                "NorthwindModel.Products",
+                "NorthwindModel.Product");
+        result = result.replace(
+                "NorthwindModel.Suppliers",
+                "NorthwindModel.Supplier");
 
         result = result.replace(
                 "http://localhost:8810/northwind",
@@ -141,8 +139,8 @@ public class NorthwindTestUtils {
 
         String expect =
                 NorthwindTestUtils.readFileToString(
-                        RESOURCES_ROOT + RESOURCES_TYPE + "/" + inp + "."
-                                + RESOURCES_TYPE);
+                RESOURCES_ROOT + RESOURCES_TYPE + "/" + inp + "."
+                + RESOURCES_TYPE);
 
         // replace braces for ignore fields order in json
         expect = expect.replace("}}]", "");
@@ -154,10 +152,9 @@ public class NorthwindTestUtils {
         result = result.replace("}}", "}");
 
         // TODO: __next
-        expect =
-                expect.replace(
-                        ",\"__next\":\"http://services.odata.org/Northwind/Northwind.svc/Products?$orderby=ProductID&$skiptoken=20,20\"}",
-                        "");
+        expect = expect.replace(
+                ",\"__next\":\"http://services.odata.org/Northwind/Northwind.svc/Products?$orderby=ProductID&$skiptoken=20,20\"}",
+                "");
 
         // no result tag by MS (?)
         expect = expect.replace("{\"results\":", "");
