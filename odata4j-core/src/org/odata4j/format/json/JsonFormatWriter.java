@@ -1,7 +1,6 @@
 package org.odata4j.format.json;
 
 import java.io.Writer;
-import java.math.BigDecimal;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -20,6 +19,7 @@ import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
 import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
 
 import com.sun.jersey.api.core.ExtendedUriInfo;
+import java.util.Locale;
 
 public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
 
@@ -106,9 +106,11 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
                     String date = "\"\\/Date(" + millis + ")\\/\"";
                     jw.writeRaw(date);
                 } else if (prop.getType().equals(EdmType.DECIMAL)) {
-                    jw.writeString("decimal'" + (BigDecimal) pvalue + "'");
+                    // jw.writeString("decimal'" + (BigDecimal) pvalue + "'");
+                    jw.writeString(String.format(Locale.ENGLISH, "%1$.4f", pvalue));
                 } else if (prop.getType().equals(EdmType.DOUBLE)) {
-                    jw.writeString(pvalue.toString());
+//                    jw.writeString(pvalue.toString());
+                    jw.writeString(String.format(Locale.ENGLISH, "%1$.4f", pvalue));
                 } else if (prop.getType().equals(EdmType.GUID)) {
                     jw.writeString("guid'" + (Guid) pvalue + "'");
                 } else if (prop.getType().equals(EdmType.INT16)) {
@@ -130,11 +132,16 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
                 }
             }
 
-            // TODO: SG expose json navigation property
             if (ees != null) {
+                isFirst = true;
                 jw.writeSeparator();
                 for (EdmNavigationProperty np : ees.type.navigationProperties) {
-
+                    if (isFirst) {
+                        isFirst = false;
+                    } else {
+                        jw.writeSeparator();
+                    }
+                    
                     jw.writeName(np.name);
                     jw.startObject();
                     {
@@ -146,10 +153,8 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
                             jw.writeString(absId + "/" + np.name);
                         }
                         jw.endObject();
-                        jw.writeSeparator();
                     }
                     jw.endObject();
-                    jw.writeSeparator();
                 }
             }
         }

@@ -95,7 +95,7 @@ public class InJPAEvaluation {
             return cb.equal(buildPathExpression(root, (String) pair.lhs), pair.rhs);
         }
         if (expression instanceof NeExpression) {
-            ObjectPair pair = createPair((EqExpression) expression, cb, root);
+            ObjectPair pair = createPair((NeExpression) expression, cb, root);
             return cb.notEqual(buildPathExpression(root, (String) pair.lhs), pair.rhs);
         }
         if (expression instanceof AndExpression) {

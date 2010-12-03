@@ -218,14 +218,14 @@ public class JPAProducer implements ODataProducer {
                     currentPointer.getClass());
 
             if (propSplit.length > 1) {
-                String id = (String) OptionsQueryParser.parseIdObject(
+                Integer id = (Integer) OptionsQueryParser.parseIdObject(
                         "(" + propSplit[1]);
 
                 propInfo = this.metadata.findEdmProperty(propName);
                 currentPointer = this.findEntityById(
                         (Iterable) currentPointer,
                         ((EdmNavigationProperty) propInfo).toRole.type.keys,
-                        Integer.parseInt(id));
+                        id);
             }
 
             if (currentPointer == null) {
