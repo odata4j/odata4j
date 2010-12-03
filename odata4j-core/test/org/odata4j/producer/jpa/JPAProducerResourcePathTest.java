@@ -2,6 +2,7 @@ package org.odata4j.producer.jpa;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -12,12 +13,14 @@ import org.odata4j.producer.resources.ODataProducerProvider;
 import org.odata4j.producer.server.JerseyServer;
 
 /**
- *
+ * 
  * @author sergei.grizenok
  */
 public class JPAProducerResourcePathTest {
 
-    private static final String endpointUri = "http://localhost:8810/northwind/Northwind.svc/";
+    private static final String endpointUri =
+            "http://localhost:8810/northwind/Northwind.svc/";
+    
     private static EntityManagerFactory emf;
     private static JerseyServer server;
 

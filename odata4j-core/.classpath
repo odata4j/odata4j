@@ -42,5 +42,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/xmlpull_1_1_3_4c.jar"/>
+	<classpathentry kind="lib" path="lib/hsqldb-1.8.0.10.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
