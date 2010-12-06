@@ -3,6 +3,8 @@ package org.odata4j.core;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
@@ -12,6 +14,8 @@ import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
 import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
 
 public class OProperties {
+
+    private static Pattern longDatePattern = Pattern.compile("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}");
 
     public static <T> OProperty<?> simple(String name, EdmType type, T value) {
         return new PropertyImpl<T>(name, type, value);
@@ -58,16 +62,15 @@ public class OProperties {
             byte[] bValue = new Base64().decode(value);
             return OProperties.binary(name, bValue);
         } else if (EdmType.DATETIME.toTypeString().equals(type)) {
-            if (value != null && value.matches(".*\\.\\d{1,7}(Z|(\\+|\\-)\\d{2}:\\d{2})?$")) {
-                value = value.substring(0, value.lastIndexOf('.'));
+            Matcher matcher = longDatePattern.matcher(value);
+            while (matcher.find()) {
+                value = matcher.group();
             }
-            if (value != null && value.endsWith("Z"))
-                value = value.substring(0, value.length() - 1);
 
             LocalDateTime dValue = value == null ? null : new LocalDateTime(ExpressionParser.DATETIME_FORMATTER.parseDateTime(value));
             return OProperties.datetime(name, dValue);
-        } else if (EdmType.TIME.toTypeString().equals(type)) { 
-            LocalTime tValue =  value == null ? null : new LocalTime(value);
+        } else if (EdmType.TIME.toTypeString().equals(type)) {
+            LocalTime tValue = value == null ? null : new LocalTime(value);
             return OProperties.time(name, tValue);
         } else if (EdmType.STRING.toTypeString().equals(type) || type == null) {
             return OProperties.string(name, value);
@@ -118,7 +121,7 @@ public class OProperties {
     public static OProperty<LocalDateTime> datetime(String name, Date value) {
         return new PropertyImpl<LocalDateTime>(name, EdmType.DATETIME, new LocalDateTime(value));
     }
-    
+
     public static OProperty<LocalTime> time(String name, LocalTime value) {
         return new PropertyImpl<LocalTime>(name, EdmType.TIME, value);
     }
@@ -130,9 +133,11 @@ public class OProperties {
     public static OProperty<BigDecimal> decimal(String name, BigDecimal value) {
         return new PropertyImpl<BigDecimal>(name, EdmType.DECIMAL, value);
     }
+
     public static OProperty<BigDecimal> decimal(String name, long value) {
         return new PropertyImpl<BigDecimal>(name, EdmType.DECIMAL, BigDecimal.valueOf(value));
     }
+
     public static OProperty<BigDecimal> decimal(String name, double value) {
         return new PropertyImpl<BigDecimal>(name, EdmType.DECIMAL, BigDecimal.valueOf(value));
     }
@@ -180,7 +185,5 @@ public class OProperties {
             }
             return String.format("OProperty[%s,%s,%s]", name, type, value);
         }
-
     }
-
 }
