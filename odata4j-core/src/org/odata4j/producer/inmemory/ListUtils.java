@@ -1,13 +1,17 @@
 package org.odata4j.producer.inmemory;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.core4j.Enumerable;
+import org.core4j.Func1;
 import org.core4j.Predicate1;
 import org.odata4j.core.OEntity;
+import org.odata4j.core.OLink;
 import org.odata4j.core.OProperty;
+import org.odata4j.core.ORelatedEntitiesLink;
 import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.OrderByExpression;
 import org.odata4j.internal.InternalUtil;
@@ -156,6 +160,34 @@ public class ListUtils {
             public Class<?> getPropertyType(String propertyName) {
                 return entity.getProperty(propertyName).getValue().getClass();
             }
+
+			@Override
+			public Iterable<?> getCollectionValue(Object target, String collectionName) {
+				OLink link = ((OEntity) target).getLink(collectionName, null);
+				if (link instanceof ORelatedEntitiesLink) {
+					ORelatedEntitiesLink elink = (ORelatedEntitiesLink)link;
+					return elink.getRelatedEntities();
+				}
+				else
+					return null;
+			}
+
+			@Override
+			public Iterable<String> getCollectionNames() {
+				if (entity.getLinks() == null)
+					return Collections.emptyList();
+				else
+					return Enumerable.create(entity.getLinks()).select(new Func1<OLink, String>() {
+						@Override
+						public String apply(OLink input) {
+							return input.getTitle();
+						}});
+			}
+
+			@Override
+			public Class<?> getCollectionElementType(String collectionName) {
+				throw new UnsupportedOperationException("Not supported");
+			}
         };
     }
 }

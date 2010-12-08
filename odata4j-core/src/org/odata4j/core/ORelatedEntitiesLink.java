@@ -1,5 +1,7 @@
 package org.odata4j.core;
 
-public interface ORelatedEntitiesLink extends OLink {
+import java.util.List;
 
+public interface ORelatedEntitiesLink extends OLink {
+	public abstract List<OEntity> getRelatedEntities();
 }

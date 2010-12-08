@@ -32,6 +32,7 @@ public class OQueryImpl<T> implements OQuery<T> {
     private String filter;
     private String select;
     private String lastSegment;
+    private String expand;
     
     private final FeedCustomizationMapping fcMapping;
 
@@ -75,8 +76,8 @@ public class OQueryImpl<T> implements OQuery<T> {
     }
 
     @Override
-    public OQuery<T> custom(String name, String value) {
-        customs.put(name, value);
+    public OQuery<T> expand(String expand) {
+        this.expand = expand;
         return this;
     }
 
@@ -89,6 +90,12 @@ public class OQueryImpl<T> implements OQuery<T> {
     public OQuery<T> nav(Object[] key, String navProperty) {
         segments.add(new EntitySegment(lastSegment, key));
         lastSegment = navProperty;
+        return this;
+    }
+
+    @Override
+    public OQuery<T> custom(String name, String value) {
+        customs.put(name, value);
         return this;
     }
 
@@ -118,7 +125,10 @@ public class OQueryImpl<T> implements OQuery<T> {
         for(String name : customs.keySet()) {
             request = request.queryParam(name, customs.get(name));
         }
-
+        if (expand != null) {
+            request = request.queryParam("$expand", expand);
+        }
+        
         Enumerable<AtomEntry> entries = getEntries(request);
 
         return entries.select(new Func1<AtomEntry, T>() {

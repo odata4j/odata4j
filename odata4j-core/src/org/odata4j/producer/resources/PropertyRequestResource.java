@@ -101,7 +101,8 @@ public class PropertyRequestResource extends BaseResource {
                 OptionsQueryParser.parseFilter(filter),
                 OptionsQueryParser.parseOrderBy(orderBy),
                 OptionsQueryParser.parseSkipToken(skipToken),
-                OptionsQueryParser.parseCustomOptions(context));
+                OptionsQueryParser.parseCustomOptions(context),
+                null /* $expand not supported here */);
 
         Object idObject = OptionsQueryParser.parseIdObject(id);
         final NavPropertyResponse response = producer.getNavProperty(

@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.CommonExpression;
+import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.ExpressionParser;
 import org.odata4j.expression.OrderByExpression;
 import org.odata4j.producer.InlineCount;
@@ -94,4 +95,12 @@ public class OptionsQueryParser {
         }
         return idObject;
     }
+    
+    public static List<EntitySimpleProperty> parseExpand(String expand) {
+    	if (expand == null) {
+    		return null;
+    	}
+    	return ExpressionParser.parseExpand(expand);
+    }
+
 }

@@ -4,10 +4,16 @@ import java.util.List;
 
 import javax.ws.rs.core.MediaType;
 
+import org.core4j.Enumerable;
+import org.core4j.Predicate1;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
+import org.odata4j.core.OEntity;
+import org.odata4j.core.OLink;
 import org.odata4j.core.OProperty;
+import org.odata4j.core.ORelatedEntitiesLink;
+import org.odata4j.core.ORelatedEntityLink;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmMultiplicity;
 import org.odata4j.edm.EdmNavigationProperty;
@@ -139,7 +145,7 @@ public class XmlFormatWriter {
         }
     }
 
-    protected String writeEntry(XMLWriter2 writer, List<String> keyPropertyNames, List<OProperty<?>> entityProperties, String entitySetName, String baseUri, String updated, EdmEntitySet ees) {
+    protected String writeEntry(XMLWriter2 writer, List<String> keyPropertyNames, List<OProperty<?>> entityProperties, List<OLink> entityLinks, String entitySetName, String baseUri, String updated, EdmEntitySet ees) {
 
         String relid = null;
         String absid = null;
@@ -172,11 +178,30 @@ public class XmlFormatWriter {
                 if (np.toRole.multiplicity != EdmMultiplicity.MANY) {
                     type = atom_entry_content_type;
                 }
-                String title = otherEntity;
+                final String title = otherEntity;
                 String href = relid + "/" + otherEntity;
+                
+                //	check whether we have to write inlined entities 
+                OLink linkToInline = entityLinks != null
+                	? Enumerable.create(entityLinks).firstOrNull(new Predicate1<OLink>() {
+						@Override
+						public boolean apply(OLink input) {
+							return title.equals(input.getTitle());
+						}})
+					: null;
 
-                writeElement(writer, "link", null, "rel", rel, "type", type, "title", title, "href", href);
-
+                if (linkToInline == null) {
+                	writeElement(writer, "link", null, "rel", rel, "type", type, "title", title, "href", href);
+                } else {
+                    writer.startElement("link");
+                    writer.writeAttribute("rel", rel);
+                    writer.writeAttribute("type", type);
+                    writer.writeAttribute("title", title);
+                    writer.writeAttribute("href", href);
+                	// write the inlined entities inside the link element
+                	writeLinkInline(writer, linkToInline, href, baseUri, updated);
+                    writer.endElement("link");
+                }
             }
 
             writeElement(writer, "category", null, "term", ees.type.getFQNamespaceName(), "scheme", scheme);
@@ -194,6 +219,33 @@ public class XmlFormatWriter {
         return absid;
 
     }
+
+	protected void writeLinkInline(XMLWriter2 writer, OLink linkToInline,
+			String href, String baseUri, String updated) {
+		writer.startElement(new QName2(m, "inline", "m"));
+		if (linkToInline instanceof ORelatedEntitiesLink) {
+			ORelatedEntitiesLink relLink = ((ORelatedEntitiesLink)linkToInline);
+			List<OEntity> entities = relLink.getRelatedEntities();
+
+		    if (entities != null && !entities.isEmpty()) {
+		    	writer.startElement(new QName2("feed"));
+		        writeElement(writer, "title", linkToInline.getTitle(), "type", "text");
+		        writeElement(writer, "id", baseUri + href);
+		        writeElement(writer, "updated", updated);
+		        writeElement(writer, "link", null, "rel", "self", "title", linkToInline.getTitle(), "href", href);
+		        for(OEntity entity : ((ORelatedEntitiesLink)linkToInline).getRelatedEntities()) {
+		        	writer.startElement("entry");
+		        	writeEntry(writer, entity.getEntitySet().type.keys, entity.getProperties(), entity.getLinks(), entity.getEntitySet().name, baseUri, updated, entity.getEntitySet());
+		        	writer.endElement("entry");
+		        }
+		        writer.endElement("feed");
+		    }
+		} else if (linkToInline instanceof ORelatedEntityLink) {
+			// 
+		} else
+			throw new RuntimeException("Unknown OLink type " + linkToInline.getClass());
+		writer.endElement("inline");
+	}
 
     protected void writeElement(XMLWriter2 writer, String elementName, String elementText, String... attributes) {
         writer.startElement(elementName);

@@ -81,6 +81,7 @@ public class XmlFormatParser {
     public static final QName2 EDM2009_NAVIGATIONPROPERTY = new QName2(NS_EDM2009,"NavigationProperty");
     
     
+    public static final QName2 ATOM_FEED = new QName2(NS_ATOM, "feed");
     public static final QName2 ATOM_ENTRY = new QName2(NS_ATOM, "entry");
     public static final QName2 ATOM_ID = new QName2(NS_ATOM, "id");
     public static final QName2 ATOM_TITLE = new QName2(NS_ATOM, "title");

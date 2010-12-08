@@ -23,4 +23,19 @@ public class BeanBasedPropertyModel implements PropertyModel {
         return beanModel.getPropertyValue(target, propertyName);
     }
 
+	@Override
+	public Iterable<String> getCollectionNames() {
+		return beanModel.getCollectionNames();
+	}
+
+	@Override
+	public Iterable<?> getCollectionValue(Object target, String collectionName) {
+		return beanModel.getCollectionValue(target, collectionName);
+	}
+
+	@Override
+	public Class<?> getCollectionElementType(String collectionName) {
+		return beanModel.getCollectionElementType(collectionName);
+	}
+
 }

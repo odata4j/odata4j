@@ -4,6 +4,7 @@ import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -20,6 +21,8 @@ import org.odata4j.core.OLink;
 import org.odata4j.core.OLinks;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
+import org.odata4j.core.ORelatedEntitiesLink;
+import org.odata4j.core.ORelatedEntityLink;
 import org.odata4j.format.xml.AtomFeedFormatParser.AtomLink;
 import org.odata4j.format.xml.AtomFeedFormatParser.DataServicesAtomEntry;
 import org.odata4j.format.xml.XmlFormatWriter;
@@ -106,7 +109,7 @@ public class InternalUtil {
     
     public static OEntity toOEntity(DataServicesAtomEntry dsae, FeedCustomizationMapping mapping) {
         if (mapping==null)
-            return OEntities.create(dsae.properties,toOLinks(dsae.links),dsae.title, dsae.categoryTerm);
+            return OEntities.create(dsae.properties,toOLinks(dsae.links, mapping),dsae.title, dsae.categoryTerm);
         
         Enumerable<OProperty<?>> properties = Enumerable.create(dsae.properties);
         if (mapping.titlePropName != null)
@@ -114,19 +117,32 @@ public class InternalUtil {
         if (mapping.summaryPropName != null)
             properties = properties.concat(OProperties.string(mapping.summaryPropName, dsae.summary));
         
-        return OEntities.create(properties.toList(),toOLinks(dsae.links),dsae.title, dsae.categoryTerm);
+        return OEntities.create(properties.toList(),toOLinks(dsae.links, mapping),dsae.title, dsae.categoryTerm);
        
     }
     
-    private static List<OLink> toOLinks(List<AtomLink> links){
+    private static List<OLink> toOLinks(List<AtomLink> links, final FeedCustomizationMapping mapping){
         List<OLink> rt = new ArrayList<OLink>(links.size());
         for(AtomLink link : links){
             
             if (link.relation.startsWith(XmlFormatWriter.related)){
-                if (link.type.equals(XmlFormatWriter.atom_feed_content_type))
-                    rt.add( OLinks.relatedEntities(link.relation, link.title, link.href) );
-                if (link.type.equals(XmlFormatWriter.atom_entry_content_type))
-                    rt.add( OLinks.relatedEntity(link.relation, link.title, link.href) );
+                if (link.type.equals(XmlFormatWriter.atom_feed_content_type)) {
+                	List<OEntity> relatedEntities = null;
+                	// do we have inlined entities
+                	if (link.feed != null && link.feed.entries != null) {
+	                	relatedEntities = Enumerable.create(link.feed.entries)
+	                		.cast(DataServicesAtomEntry.class)
+	                		.select(new Func1<DataServicesAtomEntry, OEntity>() {
+								@Override
+								public OEntity apply(DataServicesAtomEntry input) {
+									return toOEntity(input, mapping);
+								}
+	                		}).toList();
+                	}
+                    rt.add( OLinks.relatedEntities(link.relation, link.title, link.href, relatedEntities) );
+                } else if (link.type.equals(XmlFormatWriter.atom_entry_content_type))
+                	// TODO parse the inlined entity in AtomFeedFormatParser
+                    rt.add( OLinks.relatedEntity(link.relation, link.title, link.href, null) );
             }
         }
         return rt;
@@ -145,11 +161,32 @@ public class InternalUtil {
             
             T rt = defaultCtor.newInstance();
             
-            BeanModel beanModel = new BeanModel(pojoClass);
+            final BeanModel beanModel = new BeanModel(pojoClass);
             
             for(OProperty<?> op : oe.getProperties()){
                 if (beanModel.canWrite(op.getName()))
                     beanModel.setPropertyValue(rt,op.getName(),op.getValue());
+            }
+            
+            for(OLink l : oe.getLinks()) {
+            	if (l instanceof ORelatedEntitiesLink) {
+            		ORelatedEntitiesLink ol = (ORelatedEntitiesLink)l;
+            		final String collectionName = ol.getTitle();
+            		if (beanModel.canWrite(ol.getTitle())) {
+            			Collection<Object> relatedEntities = ol.getRelatedEntities() == null
+            				? null
+            				: Enumerable.create(ol.getRelatedEntities())
+	            				.select(new Func1<OEntity, Object>() {
+									@Override
+									public Object apply(OEntity input) {
+										return toPojo(beanModel.getCollectionElementType(collectionName), input);
+									}
+								}).toList();
+            			beanModel.setCollectionValue(rt, collectionName, relatedEntities);
+            		}
+            	} else if (l instanceof ORelatedEntityLink) {
+            		// TODO set entity
+            	}
             }
             
             return rt;

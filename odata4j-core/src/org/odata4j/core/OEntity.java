@@ -2,7 +2,11 @@ package org.odata4j.core;
 
 import java.util.List;
 
+import org.odata4j.edm.EdmEntitySet;
+
 public interface OEntity {
+
+    public abstract EdmEntitySet getEntitySet();
 
     public abstract List<OProperty<?>> getProperties();
     public abstract OProperty<?> getProperty(String propName);

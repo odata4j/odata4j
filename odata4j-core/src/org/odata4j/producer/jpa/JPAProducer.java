@@ -6,6 +6,7 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,7 +19,9 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.Attribute.PersistentAttributeType;
 import javax.persistence.metamodel.EntityType;
+import javax.persistence.metamodel.PluralAttribute;
 
 import org.core4j.CoreUtils;
 import org.core4j.Enumerable;
@@ -28,6 +31,7 @@ import org.odata4j.core.AtomInfo;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OLink;
+import org.odata4j.core.OLinks;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmDataServices;
@@ -36,6 +40,7 @@ import org.odata4j.edm.EdmMultiplicity;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmType;
+import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.OrderByExpression;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.internal.TypeConverter;
@@ -145,7 +150,7 @@ public class JPAProducer implements ODataProducer {
             throw new EntityNotFoundException(context.jpaEntityType.getJavaType() + " not found with key " + context.typeSafeEntityKey);
         }
 
-        final OEntity entity = makeEntity(context, jpaEntity);
+        final OEntity entity = makeEntity(context, jpaEntity, context.query.expand);
         return new EntityResponse() {
 
             @Override
@@ -161,21 +166,17 @@ public class JPAProducer implements ODataProducer {
 
     }
 
-    private OEntity makeEntity(Context context, final Object jpaEntity) {
-        return makeEntity(context.ees, context.jpaEntityType, context.keyPropertyName, jpaEntity);
+    private OEntity makeEntity(Context context, final Object jpaEntity, List<EntitySimpleProperty> expand) {
+        return jpaEntityToOEntity(context.ees, context.jpaEntityType, jpaEntity, expand);
     }
 
-    private OEntity makeEntity(final EdmEntitySet ees, final EntityType<?> jpaEntityType, final String keyPropertyName, final Object jpaEntity) {
-        return OEntities.create(jpaEntityToOProperties(ees, jpaEntityType, jpaEntity), null);
-    }
-
-    private EntitiesResponse getEntities(final Context context) {
+	private EntitiesResponse getEntities(final Context context) {
 
         final DynamicEntitiesResponse response = enumJpaEntities(context.em, context.jpaEntityType.getJavaType(), context.query, maxResults);
         final List<OEntity> entities = response.jpaEntities.select(new Func1<Object, OEntity>() {
 
             public OEntity apply(final Object input) {
-                return makeEntity(context, input);
+                return makeEntity(context, input, context.query.expand);
             }
         }).toList();
 
@@ -251,11 +252,10 @@ public class JPAProducer implements ODataProducer {
                         ees = this.metadata.findEdmEntitySet(item.getClass().getSimpleName());
                     }
 
-                    final OEntity entity = OEntities.create(
-                            jpaEntityToOProperties(
+                    final OEntity entity = jpaEntityToOEntity(
                             ees,
                             jpatype,
-                            item),
+                            item,
                             null);
 
                     entities.add(entity);
@@ -264,11 +264,10 @@ public class JPAProducer implements ODataProducer {
                 mul = EdmMultiplicity.MANY;
             } else {
                 ees = this.metadata.findEdmEntitySet(currentPointer.getClass().getSimpleName());
-                final OEntity entity = OEntities.create(
-                        jpaEntityToOProperties(
+                final OEntity entity = jpaEntityToOEntity(
                         ees,
                         jpatype,
-                        currentPointer),
+                        currentPointer,
                         null);
 
                 entities.add(entity);
@@ -283,7 +282,7 @@ public class JPAProducer implements ODataProducer {
             List<OProperty<?>> ls = new LinkedList<OProperty<?>>();
             ls.add(op);
 
-            final OEntity entity = OEntities.create(ls, null);
+            final OEntity entity = OEntities.create(ees, ls, null);
             entities.add(entity);
         }
 
@@ -333,10 +332,12 @@ public class JPAProducer implements ODataProducer {
         }
     }
 
-    private static List<OProperty<?>> jpaEntityToOProperties(EdmEntitySet ees, EntityType<?> entityType, Object jpaEntity) {
-        List<OProperty<?>> rt = new ArrayList<OProperty<?>>();
+    private OEntity jpaEntityToOEntity(EdmEntitySet ees, EntityType<?> entityType, Object jpaEntity, List<EntitySimpleProperty> expand) {
+        List<OProperty<?>> properties = new ArrayList<OProperty<?>>();
+        List<OLink> links = new ArrayList<OLink>();
 
         try {
+        	//	get properties
             for (EdmProperty ep : ees.type.properties) {
 
                 Attribute<?, ?> att = entityType.getAttribute(ep.name);
@@ -355,41 +356,74 @@ public class JPAProducer implements ODataProducer {
 
                 if (ep.type == EdmType.STRING) {
                     String sValue = (String) value;
-                    rt.add(OProperties.string(ep.name, sValue));
+                    properties.add(OProperties.string(ep.name, sValue));
                 } else if (ep.type == EdmType.INT32) {
                     Integer iValue = (Integer) value;
-                    rt.add(OProperties.int32(ep.name, iValue));
+                    properties.add(OProperties.int32(ep.name, iValue));
                 } else if (ep.type == EdmType.BOOLEAN) {
                     Boolean bValue = (Boolean) value;
-                    rt.add(OProperties.boolean_(ep.name, bValue));
+                    properties.add(OProperties.boolean_(ep.name, bValue));
                 } else if (ep.type == EdmType.INT16) {
                     Short sValue = (Short) value;
-                    rt.add(OProperties.short_(ep.name, sValue));
+                    properties.add(OProperties.short_(ep.name, sValue));
                 } else if (ep.type == EdmType.INT64) {
                     Long iValue = (Long) value;
-                    rt.add(OProperties.int64(ep.name, iValue));
+                    properties.add(OProperties.int64(ep.name, iValue));
                 } else if (ep.type == EdmType.BYTE) {
                     Byte bValue = (Byte) value;
-                    rt.add(OProperties.byte_(ep.name, bValue));
+                    properties.add(OProperties.byte_(ep.name, bValue));
                 }  else if (ep.type == EdmType.DECIMAL) {
                     BigDecimal dValue = (BigDecimal) value;
-                    rt.add(OProperties.decimal(ep.name, dValue));
+                    properties.add(OProperties.decimal(ep.name, dValue));
                 } else if (ep.type == EdmType.DATETIME) {
                     Date dValue = (Date) value;
-                    rt.add(OProperties.datetime(ep.name, dValue));
+                    properties.add(OProperties.datetime(ep.name, dValue));
                 } else if (ep.type == EdmType.BINARY) {
                     byte[] bValue = (byte[]) value;
-                    rt.add(OProperties.binary(ep.name, bValue));
+                    properties.add(OProperties.binary(ep.name, bValue));
                 } else {
                     throw new UnsupportedOperationException("Implement " + ep.type);
                 }
-
             }
+            
+            //	get the collections if neccessary
+            if (expand != null && !expand.isEmpty()) {
+                for (final EntitySimpleProperty prop : expand) {
+                	
+                	Attribute<?, ?> att = entityType.getAttribute(prop.getPropertyName());
+                	if (att.getPersistentAttributeType() == PersistentAttributeType.ONE_TO_MANY) {
+                		Member member = att.getJavaMember();
+                		Collection<?> value;
+                        if (member instanceof Method) {
+                            Method method = (Method) member;
+                            value = (Collection<?>)method.invoke(jpaEntity);
+                        } else if (member instanceof Field) {
+                            Field field = (Field) member;
+                            value = (Collection<?>)field.get(jpaEntity);
+                        } else {
+                            throw new UnsupportedOperationException("Implement member" + member);
+                        }
+                        
+                    	List<OEntity> relatedEntities = new ArrayList<OEntity>();
+                        for(Object relatedEntity : value) {
+                        	EntityType<?> elementEntityType = (EntityType<?>)((PluralAttribute<?,?,?>)att).getElementType();
+                        	EdmEntitySet elementEntitySet = metadata.getEdmEntitySet(elementEntityType.getName());
+                        	// because we support simple properties only at the moment we do not
+                			// navigate along the property path
+                        	relatedEntities.add(jpaEntityToOEntity(elementEntitySet, elementEntityType, relatedEntity, null));
+                        }
+                    	links.add(OLinks.relatedEntities(null, prop.getPropertyName(), null, relatedEntities));
+                	} else if (att.isAssociation()) {
+                		// TODO implement this too
+                	}
+                }   
+            }
+            
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
-        return rt;
+        return OEntities.create(ees, properties, links);
     }
 
     private static EntityType<?> findJPAEntityType(EntityManager em, String jpaEntityTypeName) {
@@ -453,6 +487,7 @@ public class JPAProducer implements ODataProducer {
                 ? tq.getResultList().size()
                 : null;
 
+        int queryMaxResult = maxResults;
         if (query.top != null) {
             if (query.top.equals(0)) {
                 return new DynamicEntitiesResponse(
@@ -462,19 +497,21 @@ public class JPAProducer implements ODataProducer {
             }
 
             if (query.top < maxResults) {
-                maxResults = query.top;
+            	queryMaxResult = query.top;
             }
         }
-
-        tq = tq.setMaxResults(maxResults + 1);
+        tq = tq.setMaxResults(queryMaxResult + 1);
+        
         if (query.skip != null) {
             tq = tq.setFirstResult(query.skip);
         }
 
         List<Object> results = tq.getResultList();
-        boolean useSkipToken = results.size() > maxResults;
+        boolean useSkipToken = query.top != null
+        						? query.top > maxResults && results.size() > queryMaxResult
+        						: results.size() > queryMaxResult;
 
-        Enumerable<Object> jpaEntities = Enumerable.create(results).take(maxResults);
+        Enumerable<Object> jpaEntities = Enumerable.create(results).take(queryMaxResult);
         return new DynamicEntitiesResponse(jpaEntities, inlineCount, useSkipToken);
     }
 
@@ -569,7 +606,7 @@ public class JPAProducer implements ODataProducer {
             em.persist(jpaEntity);
             em.getTransaction().commit();
 
-            final OEntity responseEntity = makeEntity(ees, jpaEntityType, null, jpaEntity);
+            final OEntity responseEntity = jpaEntityToOEntity(ees, jpaEntityType, jpaEntity, null);
 
             return new EntityResponse() {
 

@@ -96,6 +96,24 @@ public class ExpressionParser {
         }
         System.out.println(msg);
     }
+    
+    public static List<EntitySimpleProperty> parseExpand(String value) {
+        List<Token> tokens = tokenize(value);
+        // dump(value,tokens,null);
+
+        List<CommonExpression> expressions = readExpressions(tokens);
+        
+        //	since we support currently simple properties only we have to
+        //	confine ourselves to EntitySimpleProperties.
+        return Enumerable.create(expressions).select(new Func1<CommonExpression, EntitySimpleProperty>() {
+            public EntitySimpleProperty apply(CommonExpression input) {
+                if (input instanceof EntitySimpleProperty)
+                    return (EntitySimpleProperty) input;
+                return null;
+            }
+        }).toList();
+    }
+
 
     private static String dump(CommonExpression expr) {
 

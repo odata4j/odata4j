@@ -8,4 +8,11 @@ public interface PropertyModel {
     public abstract Iterable<String> getPropertyNames();
 
     public abstract Class<?> getPropertyType(String propertyName);
+    
+    public abstract Iterable<?> getCollectionValue(Object target, String collectionName);
+
+    public abstract Iterable<String> getCollectionNames();
+    
+    public abstract Class<?> getCollectionElementType(String collectionName);
+    
 }

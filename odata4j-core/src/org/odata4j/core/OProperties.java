@@ -17,8 +17,37 @@ public class OProperties {
 
     private static Pattern longDatePattern = Pattern.compile("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}");
 
-    public static <T> OProperty<?> simple(String name, EdmType type, T value) {
-        return new PropertyImpl<T>(name, type, value);
+    public static <T> OProperty<?> simple(String name, EdmType type, T value) {    	
+        if (type == EdmType.STRING) {
+            String sValue = (String) value;
+            return OProperties.string(name, sValue);
+        } else if (type == EdmType.BOOLEAN) {
+            Boolean bValue = (Boolean) value;
+            return OProperties.boolean_(name, bValue);
+        } else if (type == EdmType.INT16) {
+            Short sValue = (Short) value;
+            return OProperties.short_(name, sValue);
+        } else if (type == EdmType.INT32) {
+            Integer iValue = (Integer) value;
+            return OProperties.int32(name, iValue);
+        } else if (type == EdmType.INT64) {
+            Long iValue = (Long) value;
+            return OProperties.int64(name, iValue);
+        } else if (type == EdmType.BYTE) {
+            Byte bValue = (Byte) value;
+            return OProperties.byte_(name, bValue);
+        }  else if (type == EdmType.DECIMAL) {
+            BigDecimal dValue = (BigDecimal) value;
+            return OProperties.decimal(name, dValue);
+        } else if (type == EdmType.DATETIME) {
+            Date dValue = (Date) value;
+            return OProperties.datetime(name, dValue);
+        } else if (type == EdmType.BINARY) {
+            byte[] bValue = (byte[]) value;
+            return OProperties.binary(name, bValue);
+        } else {
+            return new PropertyImpl<T>(name, type, value);
+        }
     }
 
     public static OProperty<?> null_(String name, String type) {
@@ -62,12 +91,14 @@ public class OProperties {
             byte[] bValue = new Base64().decode(value);
             return OProperties.binary(name, bValue);
         } else if (EdmType.DATETIME.toTypeString().equals(type)) {
-            Matcher matcher = longDatePattern.matcher(value);
-            while (matcher.find()) {
-                value = matcher.group();
-            }
-
-            LocalDateTime dValue = value == null ? null : new LocalDateTime(ExpressionParser.DATETIME_FORMATTER.parseDateTime(value));
+        	LocalDateTime dValue = null;
+        	if (value != null) {
+	            Matcher matcher = longDatePattern.matcher(value);
+	            while (matcher.find()) {
+	                value = matcher.group();
+	            }
+	            dValue = value == null ? null : new LocalDateTime(ExpressionParser.DATETIME_FORMATTER.parseDateTime(value));
+        	}
             return OProperties.datetime(name, dValue);
         } else if (EdmType.TIME.toTypeString().equals(type)) {
             LocalTime tValue = value == null ? null : new LocalTime(value);

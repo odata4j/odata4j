@@ -63,9 +63,10 @@ public class EntitiesRequestResource extends BaseResource {
             @QueryParam("$orderby") String orderBy,
             @QueryParam("$format") String format,
             @QueryParam("$callback") String callback,
-            @QueryParam("$skiptoken") String skipToken) {
+            @QueryParam("$skiptoken") String skipToken,
+            @QueryParam("$expand") String expand) {
 
-        log.info(String.format("getEntities(%s,%s,%s,%s,%s,%s,%s)", entitySetName, inlineCount, top, skip, filter, orderBy, skipToken));
+        log.info(String.format("getEntities(%s,%s,%s,%s,%s,%s,%s,%s)", entitySetName, inlineCount, top, skip, filter, orderBy, skipToken, expand));
         
         QueryInfo query = new QueryInfo(
                 OptionsQueryParser.parseInlineCount(inlineCount),
@@ -74,7 +75,8 @@ public class EntitiesRequestResource extends BaseResource {
                 OptionsQueryParser.parseFilter(filter),
                 OptionsQueryParser.parseOrderBy(orderBy),
                 OptionsQueryParser.parseSkipToken(skipToken),
-                OptionsQueryParser.parseCustomOptions(context));
+                OptionsQueryParser.parseCustomOptions(context),
+                OptionsQueryParser.parseExpand(expand));
 
         EntitiesResponse response = producer.getEntities(entitySetName, query);
 

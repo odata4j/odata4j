@@ -55,6 +55,7 @@ public class AtomFeedFormatParser extends XmlFormatParser {
         public String title;
         public String type;
         public String href;
+        public AtomFeed feed;
     }
 
     public static class BasicAtomEntry extends AtomEntry {
@@ -93,6 +94,9 @@ public class AtomFeedFormatParser extends XmlFormatParser {
                 if ("next".equals(event.asStartElement().getAttributeByName(new QName2("rel")).getValue())) {
                     feed.next = event.asStartElement().getAttributeByName(new QName2("href")).getValue();
                 }
+            } else if (isEndElement(event, ATOM_FEED)) {
+            	// return from a sub feed, if we went down the hierarchy 
+            	break;
             }
 
         }
@@ -147,12 +151,22 @@ public class AtomFeedFormatParser extends XmlFormatParser {
 
    
 
-    private static AtomLink parseAtomLink(StartElement2 linkElement){
+    private static AtomLink parseAtomLink(XMLEventReader2 reader, StartElement2 linkElement){
         AtomLink rt = new AtomLink();
         rt.relation = getAttributeValueIfExists(linkElement, "rel");
         rt.type =  getAttributeValueIfExists(linkElement, "type");
         rt.title =  getAttributeValueIfExists(linkElement, "title");
         rt.href =  getAttributeValueIfExists(linkElement, "href");
+        
+        while (reader.hasNext()) {
+        	XMLEvent2 event = reader.nextEvent();
+        	
+        	if (event.isEndElement() && event.asEndElement().getName().equals(linkElement.getName())) {
+        		break;
+        	} else if (isStartElement(event, ATOM_FEED)) {
+        		rt.feed = parseFeed(reader);
+        	}
+        }
         return rt;
     }
     
@@ -224,7 +238,7 @@ public class AtomFeedFormatParser extends XmlFormatParser {
                 categoryScheme = getAttributeValueIfExists(event.asStartElement(), "scheme");
 
             } else if  (isStartElement(event, ATOM_LINK)) {
-                AtomLink link = parseAtomLink(event.asStartElement());
+                AtomLink link = parseAtomLink(reader, event.asStartElement());
                 links.add(link);
             } else if (isStartElement(event, M_PROPERTIES)) {
                 rt = parseDSAtomEntry(etag, reader, event);

@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.core4j.Enumerable;
 import org.core4j.Func;
@@ -19,16 +20,25 @@ import org.odata4j.core.Guid;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
+import org.odata4j.core.OLink;
+import org.odata4j.core.OLinks;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
+import org.odata4j.edm.EdmAssociation;
+import org.odata4j.edm.EdmAssociationEnd;
+import org.odata4j.edm.EdmAssociationSet;
+import org.odata4j.edm.EdmAssociationSetEnd;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntityContainer;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmEntityType;
+import org.odata4j.edm.EdmMultiplicity;
+import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmType;
 import org.odata4j.expression.BoolCommonExpression;
+import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.OrderByExpression;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.producer.EntitiesResponse;
@@ -44,7 +54,9 @@ import com.sun.jersey.api.NotFoundException;
 public class InMemoryProducer implements ODataProducer {
 
     private static class EntityInfo<TEntity, TKey> {
+    	String entitySetName;
         Class<TKey> keyClass;
+        Class<TEntity> entityClass;
         Func<Iterable<TEntity>> get;
         Func1<Object, TKey> id;
         PropertyModel properties;
@@ -106,6 +118,8 @@ public class InMemoryProducer implements ODataProducer {
         List<EdmEntityContainer> containers = new ArrayList<EdmEntityContainer>();
         List<EdmEntitySet> entitySets = new ArrayList<EdmEntitySet>();
         List<EdmEntityType> entityTypes = new ArrayList<EdmEntityType>();
+        List<EdmAssociation> associations = new ArrayList<EdmAssociation>();
+        List<EdmAssociationSet> associationSets = new ArrayList<EdmAssociationSet>();
 
         for(String entitySetName : eis.keySet()) {
             EntityInfo<?, ?> ei = eis.get(entitySetName);
@@ -114,17 +128,70 @@ public class InMemoryProducer implements ODataProducer {
             properties.add(new EdmProperty(ID_PROPNAME, getEdmType(ei.keyClass), false, null, null,null,null, null, null, null, null, null));
 
             properties.addAll(toEdmProperties(ei.properties));
-
+            
             EdmEntityType eet = new EdmEntityType(namespace, null, entitySetName, null, Enumerable.create(ID_PROPNAME).toList(), properties, null);
+
             EdmEntitySet ees = new EdmEntitySet(entitySetName, eet);
             entitySets.add(ees);
             entityTypes.add(eet);
         }
+        
+        // TODO handle back references too
+        
+        Map<String, EdmEntityType> eetsByName = Enumerable.create(entityTypes).toMap(new Func1<EdmEntityType, String>() {
+            public String apply(EdmEntityType input) {
+                return input.name;
+            }
+        });
+        Map<String, EdmEntitySet> eesByName = Enumerable.create(entitySets).toMap(new Func1<EdmEntitySet, String>() {
+            public String apply(EdmEntitySet input) {
+                return input.name;
+            }
+        });
+        Map<Class<?>, String> eeNameByClass = new HashMap<Class<?>, String>();
+        for(Entry<String, EntityInfo<?, ?>> e : eis.entrySet())
+        	eeNameByClass.put(e.getValue().entityClass, e.getKey());
 
-        EdmEntityContainer container = new EdmEntityContainer(CONTAINER_NAME, true, null, entitySets, null,null);
+        for(String entitySetName : eis.keySet()) {
+            EntityInfo<?, ?> ei = eis.get(entitySetName);
+            
+	        for(String assocProp : ei.properties.getCollectionNames()) {
+	
+                EdmEntityType eet1 = eetsByName.get(entitySetName);
+                
+                Class<?> clazz2 = ei.properties.getCollectionElementType(assocProp);
+                String eetName2 = eeNameByClass.get(clazz2);
+                EdmEntityType eet2 =  eetsByName.get(eetName2);
+
+                EdmMultiplicity m1 = EdmMultiplicity.ZERO_TO_ONE;
+                EdmMultiplicity m2 = EdmMultiplicity.MANY;
+
+                String assocName = String.format("FK_%s_%s", eet1.name, eet2.name);
+                EdmAssociationEnd assocEnd1 = new EdmAssociationEnd(eet1.name, eet1, m1);
+                String assocEnd2Name = eet2.name;
+                if (assocEnd2Name.equals(eet1.name))
+                    assocEnd2Name = assocEnd2Name + "1";
+                EdmAssociationEnd assocEnd2 = new EdmAssociationEnd(assocEnd2Name, eet2, m2);
+                EdmAssociation assoc = new EdmAssociation(namespace, null, assocName, assocEnd1, assocEnd2);
+                
+                associations.add(assoc);
+
+                EdmEntitySet ees1 = eesByName.get(eet1.name);
+                EdmEntitySet ees2 = eesByName.get(eet2.name);
+                EdmAssociationSet eas = new EdmAssociationSet(assocName, assoc, new EdmAssociationSetEnd(assocEnd1, ees1), new EdmAssociationSetEnd(assocEnd2, ees2));
+
+                associationSets.add(eas);
+
+                EdmNavigationProperty np = new EdmNavigationProperty(assocProp, assoc, assoc.end1, assoc.end2);
+
+                eet1.navigationProperties.add(np);
+	        }
+        }
+        
+        EdmEntityContainer container = new EdmEntityContainer(CONTAINER_NAME, true, null, entitySets, associationSets, null);
         containers.add(container);
 
-        EdmSchema schema = new EdmSchema(namespace, null, entityTypes, null, null, containers);
+        EdmSchema schema = new EdmSchema(namespace, null, entityTypes, null, associations, containers);
         schemas.add(schema);
         EdmDataServices rt = new EdmDataServices(ODataConstants.DATA_SERVICE_VERSION,schemas);
         return rt;
@@ -165,10 +232,12 @@ public class InMemoryProducer implements ODataProducer {
     public <TEntity, TKey> void register(Class<TEntity> entityClass, PropertyModel propertyModel, Class<TKey> keyClass, String entitySetName, Func<Iterable<TEntity>> get, final Func1<TEntity, TKey> id) {
 
         EntityInfo<TEntity, TKey> ei = new EntityInfo<TEntity, TKey>();
+        ei.entitySetName = entitySetName;
         ei.properties = propertyModel;
         ei.get = get;
         ei.id = widen(id);
         ei.keyClass = keyClass;
+        ei.entityClass = entityClass;
         
         eis.put(entitySetName, ei);
         this.metadata = buildMetadata();
@@ -199,7 +268,9 @@ public class InMemoryProducer implements ODataProducer {
 
     }
 
-    private OEntity toOEntity(EntityInfo<?, ?> ei, Object obj) {
+    private OEntity toOEntity(EdmEntitySet ees, Object obj, List<EntitySimpleProperty> expand) {
+    	EntityInfo<?, ?> ei = eis.get(ees.name);
+    	final List<OLink> links = new ArrayList<OLink>();
         final List<OProperty<?>> properties = new ArrayList<OProperty<?>>();
 
         Object key = ei.id.apply(obj);
@@ -216,7 +287,47 @@ public class InMemoryProducer implements ODataProducer {
             properties.add(OProperties.simple(propName, type, value));
         }
         
-        return OEntities.create(properties, null); 
+        if (expand != null && !expand.isEmpty()) {
+        	EdmEntityType edmEntityType = ees.type;
+        	
+            for (final EntitySimpleProperty prop : expand) {
+            	EdmNavigationProperty edmNavProperty = Enumerable.create(edmEntityType.navigationProperties)
+            													 .firstOrNull(new Predicate1<EdmNavigationProperty>() {
+																		@Override
+																		public boolean apply(EdmNavigationProperty input) {
+																			return prop.getPropertyName().equals(input.name);
+																		}});
+            	
+            	if (edmNavProperty.toRole.multiplicity == EdmMultiplicity.MANY) {
+	            	List<OEntity> relatedEntities = new ArrayList<OEntity>();
+	            	Iterable<?> values = ei.properties.getCollectionValue(obj, prop.getPropertyName());
+	            	if (values != null) {
+	            		EdmEntitySet relEntitySet = null;
+	            		
+	            		for(final Object entity : values) {
+	            			if (relEntitySet == null) {
+	            				EntityInfo<?, ?> oei = Enumerable.create(eis.values())
+	            								.firstOrNull(new Predicate1<InMemoryProducer.EntityInfo<?,?>>() {
+	    				        							@Override
+	    				        							public boolean apply(EntityInfo<?, ?> input) {
+	    				        								return entity.getClass().equals(input.entityClass);
+	    				        							}});
+	            				relEntitySet = metadata.getEdmEntitySet(oei.entitySetName);
+	            			}        	
+	            			// because we support simple properties only at the moment we do not
+	            			// navigate along the property path
+	            			relatedEntities.add(toOEntity(relEntitySet, entity, null)); 
+	            		}
+	            	}
+	        		// relation and href will be filled in later for atom or json
+	        		links.add(OLinks.relatedEntities(null, edmNavProperty.name, null, relatedEntities));
+	            } else {
+	            	//	TODO handle the toOne or toZero navigation properties as well
+	            }
+            }
+        }
+               
+        return OEntities.create(ees, properties, links); 
     }
 
     private static Predicate1<Object> filterToPredicate(final BoolCommonExpression filter, final PropertyModel properties) {
@@ -248,7 +359,7 @@ public class InMemoryProducer implements ODataProducer {
         // work with oentities
         Enumerable<OEntity> entities = objects.select(new Func1<Object, OEntity>() {
             public OEntity apply(Object input) {
-                return toOEntity(ei, input);
+                return toOEntity(ees, input, queryInfo.expand);
             }
         });
         
@@ -329,7 +440,9 @@ public class InMemoryProducer implements ODataProducer {
         if (rt == null)
             throw new NotFoundException();
 
-        final OEntity oe = toOEntity(ei, rt);
+        //	TODO if we add the QueryInfo to getEntity than call to Entity with QueryInfo.expand
+        //	otherwise remove this comment
+        final OEntity oe = toOEntity(ees, rt, null);
 
         return new EntityResponse() {
 

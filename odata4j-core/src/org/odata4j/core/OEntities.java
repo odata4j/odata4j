@@ -4,15 +4,16 @@ import java.util.List;
 
 import org.core4j.Enumerable;
 import org.core4j.Predicate1;
+import org.odata4j.edm.EdmEntitySet;
 
 public class OEntities {
 
-    public static OEntity create(List<OProperty<?>> properties, List<OLink> links) {
-        return new OEntityImpl(properties, links);
+    public static OEntity create(EdmEntitySet entitySet, List<OProperty<?>> properties, List<OLink> links) {
+        return new OEntityImpl(entitySet, properties, links);
     }
 
     public static OEntity create(List<OProperty<?>> properties, List<OLink> links, String title, String categoryTerm) {
-        return new OEntityAtomImpl(properties, links, title, categoryTerm);
+        return new OEntityAtomImpl(null, properties, links, title, categoryTerm);
     }
 
     private static class OEntityAtomImpl extends OEntityImpl implements AtomInfo {
@@ -20,8 +21,8 @@ public class OEntities {
         private final String title;
         private final String categoryTerm;
 
-        public OEntityAtomImpl(List<OProperty<?>> properties, List<OLink> links, String title, String categoryTerm) {
-            super(properties, links);
+        public OEntityAtomImpl(EdmEntitySet entitySet, List<OProperty<?>> properties, List<OLink> links, String title, String categoryTerm) {
+            super(entitySet, properties, links);
             this.title = title;
             this.categoryTerm = categoryTerm;
         }
@@ -39,10 +40,12 @@ public class OEntities {
 
     private static class OEntityImpl implements OEntity {
 
+    	private final EdmEntitySet entitySet;
         private final List<OProperty<?>> properties;
         private final List<OLink> links;
 
-        public OEntityImpl(List<OProperty<?>> properties, List<OLink> links) {
+        public OEntityImpl(EdmEntitySet entitySet, List<OProperty<?>> properties, List<OLink> links) {
+        	this.entitySet = entitySet;
             this.properties = properties;
             this.links = links;
         }
@@ -51,6 +54,11 @@ public class OEntities {
         public String toString() {
             return "OEntity[" + Enumerable.create(getProperties()).join(",") + "]";
         }
+        
+		@Override
+		public EdmEntitySet getEntitySet() {
+			return entitySet;
+		}
 
         @Override
         public List<OProperty<?>> getProperties() {

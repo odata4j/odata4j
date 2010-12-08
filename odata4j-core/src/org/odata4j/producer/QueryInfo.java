@@ -1,11 +1,13 @@
 package org.odata4j.producer;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.odata4j.expression.BoolCommonExpression;
+import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.OrderByExpression;
 
 public class QueryInfo {
@@ -17,7 +19,9 @@ public class QueryInfo {
     public final List<OrderByExpression> orderBy;
     public final String skipToken;
     public final Map<String,String> customOptions;
-    public QueryInfo(InlineCount inlineCount, Integer top, Integer skip, BoolCommonExpression filter, List<OrderByExpression> orderBy, String skipToken, Map<String,String> customOptions) {
+    public final List<EntitySimpleProperty> expand;
+    
+    public QueryInfo(InlineCount inlineCount, Integer top, Integer skip, BoolCommonExpression filter, List<OrderByExpression> orderBy, String skipToken, Map<String,String> customOptions, List<EntitySimpleProperty> expand) {
         this.inlineCount = inlineCount;
         this.top = top;
         this.skip = skip;
@@ -25,6 +29,7 @@ public class QueryInfo {
         this.orderBy = orderBy;
         this.skipToken = skipToken;
         this.customOptions = Collections.unmodifiableMap(customOptions==null?new HashMap<String,String>():customOptions);
+        this.expand = Collections.unmodifiableList(expand==null?new ArrayList<EntitySimpleProperty>():expand);
     }
 
 }
