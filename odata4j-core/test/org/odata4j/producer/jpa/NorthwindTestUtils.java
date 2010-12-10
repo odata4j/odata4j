@@ -207,10 +207,6 @@ public class NorthwindTestUtils {
                 RESOURCES_ROOT + RESOURCES_TYPE + "/" + inp + "."
                 + RESOURCES_TYPE, "utf-8");
         
-        System.out.println("Expected:" + expect);
-        System.out.println("Result:" + result);
-        
-        
         try {
         	DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         	Document expectedDocument = factory.newDocumentBuilder().parse(new InputSource(new StringReader(expect)));
@@ -225,7 +221,7 @@ public class NorthwindTestUtils {
 
     private static void assertEquals(Node expected, Node result) {
     	Assert.assertEquals(expected.getNodeType(), result.getNodeType());
-    	Assert.assertEquals(expected.getLocalName(), result.getLocalName());
+    	Assert.assertEquals(expected.getNodeName(), result.getNodeName());
     	Assert.assertEquals(expected.getNamespaceURI(), result.getNamespaceURI());
     	
     	assertAttributesEquals(expected, result);
@@ -334,13 +330,13 @@ public class NorthwindTestUtils {
 	    				&& "edit".equals(((Attr)expected.getAttributes().getNamedItem("rel")).getNodeValue()) ) {
 	    			resultValue = resultValue.replace("Categories", "Category");
 	    			resultValue = resultValue.replace("Products", "Product");
+	    			resultValue = resultValue.replace("Suppliers", "Supplier");
 	    		} else if ("link".equals(expected.getNodeName()) 
 	    				&& "next".equals(((Attr)expected.getAttributes().getNamedItem("rel")).getNodeValue())
 	    				&& "href".equals(attr.getName())) {
 	    			resultValue = expectedValue; // we are using a different $skiptoken mechanism
 	    		}
 
-	    		
 	    		Assert.assertEquals(expectedValue, resultValue);
 	    	}
     	}    	

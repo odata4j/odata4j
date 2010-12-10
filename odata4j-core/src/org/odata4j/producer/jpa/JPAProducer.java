@@ -22,6 +22,7 @@ import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Attribute.PersistentAttributeType;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.PluralAttribute;
+import javax.persistence.metamodel.SingularAttribute;
 
 import org.core4j.CoreUtils;
 import org.core4j.Enumerable;
@@ -342,17 +343,7 @@ public class JPAProducer implements ODataProducer {
 
                 Attribute<?, ?> att = entityType.getAttribute(ep.name);
                 Member member = att.getJavaMember();
-
-                Object value;
-                if (member instanceof Method) {
-                    Method method = (Method) member;
-                    value = method.invoke(jpaEntity);
-                } else if (member instanceof Field) {
-                    Field field = (Field) member;
-                    value = field.get(jpaEntity);
-                } else {
-                    throw new UnsupportedOperationException("Implement member" + member);
-                }
+                Object value = getValue(jpaEntity, member);
 
                 if (ep.type == EdmType.STRING) {
                     String sValue = (String) value;
@@ -386,25 +377,17 @@ public class JPAProducer implements ODataProducer {
                 }
             }
             
-            //	get the collections if neccessary
+            //	get the collections if necessary
             if (expand != null && !expand.isEmpty()) {
                 for (final EntitySimpleProperty prop : expand) {
                 	
                 	Attribute<?, ?> att = entityType.getAttribute(prop.getPropertyName());
-                	if (att.getPersistentAttributeType() == PersistentAttributeType.ONE_TO_MANY) {
-                		Member member = att.getJavaMember();
-                		Collection<?> value;
-                        if (member instanceof Method) {
-                            Method method = (Method) member;
-                            value = (Collection<?>)method.invoke(jpaEntity);
-                        } else if (member instanceof Field) {
-                            Field field = (Field) member;
-                            value = (Collection<?>)field.get(jpaEntity);
-                        } else {
-                            throw new UnsupportedOperationException("Implement member" + member);
-                        }
-                        
-                    	List<OEntity> relatedEntities = new ArrayList<OEntity>();
+                	if (att.getPersistentAttributeType() == PersistentAttributeType.ONE_TO_MANY
+                		|| att.getPersistentAttributeType() == PersistentAttributeType.MANY_TO_MANY) {
+                		
+                		Collection<?> value = getValue(jpaEntity, att.getJavaMember());
+
+                		List<OEntity> relatedEntities = new ArrayList<OEntity>();
                         for(Object relatedEntity : value) {
                         	EntityType<?> elementEntityType = (EntityType<?>)((PluralAttribute<?,?,?>)att).getElementType();
                         	EdmEntitySet elementEntitySet = metadata.getEdmEntitySet(elementEntityType.getName());
@@ -413,8 +396,12 @@ public class JPAProducer implements ODataProducer {
                         	relatedEntities.add(jpaEntityToOEntity(elementEntitySet, elementEntityType, relatedEntity, null));
                         }
                     	links.add(OLinks.relatedEntities(null, prop.getPropertyName(), null, relatedEntities));
-                	} else if (att.isAssociation()) {
-                		// TODO implement this too
+                	} else if (att.getPersistentAttributeType() == PersistentAttributeType.ONE_TO_ONE
+                				|| att.getPersistentAttributeType() == PersistentAttributeType.MANY_TO_ONE) {
+                    	EntityType<?> relatedEntityType = (EntityType<?>)((SingularAttribute<?,?>)att).getType();
+                    	EdmEntitySet relatedEntitySet = metadata.getEdmEntitySet(relatedEntityType.getName());                		
+                		Object relatedEntity = getValue(jpaEntity, att.getJavaMember());
+                		links.add(OLinks.relatedEntity(null, prop.getPropertyName(), null, jpaEntityToOEntity(relatedEntitySet, relatedEntityType, relatedEntity, null)));
                 	}
                 }   
             }
@@ -424,6 +411,18 @@ public class JPAProducer implements ODataProducer {
         }
 
         return OEntities.create(ees, properties, links);
+    }
+    
+    private <T> T getValue(Object obj, Member member) throws Exception {    	
+    	if (member instanceof Method) {
+            Method method = (Method) member;
+            return (T)method.invoke(obj);
+        } else if (member instanceof Field) {
+            Field field = (Field) member;
+            return (T)field.get(obj);
+        } else {
+            throw new UnsupportedOperationException("Implement member" + member);
+        }
     }
 
     private static EntityType<?> findJPAEntityType(EntityManager em, String jpaEntityTypeName) {

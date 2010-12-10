@@ -241,7 +241,10 @@ public class XmlFormatWriter {
 		        writer.endElement("feed");
 		    }
 		} else if (linkToInline instanceof ORelatedEntityLink) {
-			// 
+			OEntity entity = ((ORelatedEntityLink)linkToInline).getRelatedEntity();
+        	writer.startElement("entry");
+        	writeEntry(writer, entity.getEntitySet().type.keys, entity.getProperties(), entity.getLinks(), entity.getEntitySet().name, baseUri, updated, entity.getEntitySet());
+        	writer.endElement("entry");
 		} else
 			throw new RuntimeException("Unknown OLink type " + linkToInline.getClass());
 		writer.endElement("inline");
