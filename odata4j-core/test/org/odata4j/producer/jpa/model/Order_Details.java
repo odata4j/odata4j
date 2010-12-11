@@ -2,14 +2,13 @@ package org.odata4j.producer.jpa.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
@@ -27,10 +26,12 @@ public class Order_Details implements Serializable {
     @Basic(optional = false)
     @Column(name = "Discount")
     private Double Discount;
-    @JoinColumn(name = "ProductID", referencedColumnName = "ProductID", insertable = false, updatable = false)
+    @JoinColumn(name = "ProductID", referencedColumnName = "ProductID",
+            insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private Products Product;
-    @JoinColumn(name = "OrderID", referencedColumnName = "OrderID", insertable = false, updatable = false)
+    @JoinColumn(name = "OrderID", referencedColumnName = "OrderID",
+            insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private Orders Order;
 
@@ -41,7 +42,8 @@ public class Order_Details implements Serializable {
         this.orderDetailsPK = orderDetailsPK;
     }
 
-    public Order_Details(Order_DetailsPK orderDetailsPK, BigDecimal unitPrice, short quantity, Double discount) {
+    public Order_Details(Order_DetailsPK orderDetailsPK, BigDecimal unitPrice,
+        short quantity, Double discount) {
         this.orderDetailsPK = orderDetailsPK;
         this.UnitPrice = unitPrice;
         this.Quantity = quantity;
@@ -103,7 +105,8 @@ public class Order_Details implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (orderDetailsPK != null ? orderDetailsPK.hashCode() : 0);
+        hash += (orderDetailsPK != null
+                ? orderDetailsPK.hashCode() : 0);
         return hash;
     }
 
@@ -113,7 +116,9 @@ public class Order_Details implements Serializable {
             return false;
         }
         Order_Details other = (Order_Details) object;
-        if ((this.orderDetailsPK == null && other.orderDetailsPK != null) || (this.orderDetailsPK != null && !this.orderDetailsPK.equals(other.orderDetailsPK))) {
+        if ((this.orderDetailsPK == null && other.orderDetailsPK != null)
+                || (this.orderDetailsPK != null && !this.orderDetailsPK
+                        .equals(other.orderDetailsPK))) {
             return false;
         }
         return true;
@@ -121,7 +126,8 @@ public class Order_Details implements Serializable {
 
     @Override
     public String toString() {
-        return "org.odata4j.examples.producer.model.OrderDetails[orderDetailsPK=" + orderDetailsPK + "]";
+        return "org.odata4j.examples.producer.model.OrderDetails[orderDetailsPK="
+                + orderDetailsPK + "]";
     }
 
 }

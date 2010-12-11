@@ -2,6 +2,7 @@ package org.odata4j.producer.jpa.model;
 
 import java.io.Serializable;
 import java.util.Collection;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,8 +10,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -170,7 +169,8 @@ public class Suppliers implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (SupplierID != null ? SupplierID.hashCode() : 0);
+        hash += (SupplierID != null
+                ? SupplierID.hashCode() : 0);
         return hash;
     }
 
@@ -180,7 +180,9 @@ public class Suppliers implements Serializable {
             return false;
         }
         Suppliers other = (Suppliers) object;
-        if ((this.SupplierID == null && other.SupplierID != null) || (this.SupplierID != null && !this.SupplierID.equals(other.SupplierID))) {
+        if ((this.SupplierID == null && other.SupplierID != null)
+                || (this.SupplierID != null && !this.SupplierID
+                        .equals(other.SupplierID))) {
             return false;
         }
         return true;
@@ -188,6 +190,7 @@ public class Suppliers implements Serializable {
 
     @Override
     public String toString() {
-        return "org.odata4j.examples.producer.model.Suppliers[supplierID=" + SupplierID + "]";
+        return "org.odata4j.examples.producer.model.Suppliers[supplierID="
+                + SupplierID + "]";
     }
 }

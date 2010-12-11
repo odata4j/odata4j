@@ -1,12 +1,15 @@
 package org.odata4j.producer.jpa.model;
 
 import java.io.Serializable;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 @Embeddable
 public class Order_DetailsPK implements Serializable {
+
+    private static final long serialVersionUID = 1L;
     @Basic(optional = false)
     @Column(name = "OrderID")
     private int orderID;
@@ -63,7 +66,8 @@ public class Order_DetailsPK implements Serializable {
 
     @Override
     public String toString() {
-        return "org.odata4j.examples.producer.model.OrderDetailsPK[orderID=" + orderID + ", productID=" + productID + "]";
+        return "org.odata4j.examples.producer.model.OrderDetailsPK[orderID="
+                + orderID + ", productID=" + productID + "]";
     }
 
 }

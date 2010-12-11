@@ -100,7 +100,7 @@ public class PropertyRequestResource extends BaseResource {
                 OptionsQueryParser.parseSkip(skip),
                 OptionsQueryParser.parseFilter(filter),
                 OptionsQueryParser.parseOrderBy(orderBy),
-                OptionsQueryParser.parseSkipToken(skipToken),
+                OptionsQueryParser.parseSkipToken(orderBy, skipToken),
                 OptionsQueryParser.parseCustomOptions(context),
                 null /* $expand not supported here */);
 
@@ -116,7 +116,7 @@ public class PropertyRequestResource extends BaseResource {
         }
 
         StringWriter sw = new StringWriter();
-        FormatWriter fwBase = null;
+        FormatWriter<?> fwBase = null;
 
         if (response.getMultiplicity() == EdmMultiplicity.ONE
                 && response.getEntities().size() == 1) {

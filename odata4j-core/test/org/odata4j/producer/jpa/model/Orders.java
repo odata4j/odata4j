@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -11,8 +12,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -57,7 +56,7 @@ public class Orders implements Serializable {
     private String ShipPostalCode;
     @Column(name = "ShipCountry")
     private String ShipCountry;
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "Order")
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "Orders")
     private Customers Customer;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "Order")
     private Collection<Order_Details> OrderDetails;
@@ -195,7 +194,8 @@ public class Orders implements Serializable {
         return OrderDetails;
     }
 
-    public void setOrderDetailsCollection(Collection<Order_Details> orderDetailsCollection) {
+    public void setOrderDetailsCollection(
+        Collection<Order_Details> orderDetailsCollection) {
         this.OrderDetails = orderDetailsCollection;
     }
 
@@ -210,7 +210,8 @@ public class Orders implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (OrderID != null ? OrderID.hashCode() : 0);
+        hash += (OrderID != null
+                ? OrderID.hashCode() : 0);
         return hash;
     }
 
@@ -220,7 +221,8 @@ public class Orders implements Serializable {
             return false;
         }
         Orders other = (Orders) object;
-        if ((this.OrderID == null && other.OrderID != null) || (this.OrderID != null && !this.OrderID.equals(other.OrderID))) {
+        if ((this.OrderID == null && other.OrderID != null)
+                || (this.OrderID != null && !this.OrderID.equals(other.OrderID))) {
             return false;
         }
         return true;
@@ -228,7 +230,8 @@ public class Orders implements Serializable {
 
     @Override
     public String toString() {
-        return "org.odata4j.examples.producer.model.Orders[orderID=" + OrderID + "]";
+        return "org.odata4j.examples.producer.model.Orders[orderID=" + OrderID
+                + "]";
     }
 
 }

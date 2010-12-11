@@ -67,14 +67,14 @@ public class EntitiesRequestResource extends BaseResource {
             @QueryParam("$expand") String expand) {
 
         log.info(String.format("getEntities(%s,%s,%s,%s,%s,%s,%s,%s)", entitySetName, inlineCount, top, skip, filter, orderBy, skipToken, expand));
-        
+       
         QueryInfo query = new QueryInfo(
                 OptionsQueryParser.parseInlineCount(inlineCount),
                 OptionsQueryParser.parseTop(top),
                 OptionsQueryParser.parseSkip(skip),
                 OptionsQueryParser.parseFilter(filter),
                 OptionsQueryParser.parseOrderBy(orderBy),
-                OptionsQueryParser.parseSkipToken(skipToken),
+                OptionsQueryParser.parseSkipToken(orderBy, skipToken),
                 OptionsQueryParser.parseCustomOptions(context),
                 OptionsQueryParser.parseExpand(expand));
 

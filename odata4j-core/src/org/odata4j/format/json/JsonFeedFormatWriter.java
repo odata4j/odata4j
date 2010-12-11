@@ -13,36 +13,47 @@ public class JsonFeedFormatWriter extends JsonFormatWriter<EntitiesResponse> {
 
     @Override
     public void writeContent(ExtendedUriInfo uriInfo, JsonWriter jw, EntitiesResponse target) {
-        
+
         jw.startObject();
         {
             jw.writeName("results");
-            
+
             jw.startArray();
             {
                 boolean isFirst = true;
-                for(OEntity oe : target.getEntities()){
-                    
-                    if (isFirst) isFirst = false; else jw.writeSeparator();
-                    
-                    writeOEntity(uriInfo, jw,oe,target.getEntitySet());
+                for (OEntity oe : target.getEntities()) {
+
+                    if (isFirst) {
+                        isFirst = false;
+                    } else {
+                        jw.writeSeparator();
+                    }
+
+                    writeOEntity(uriInfo, jw, oe, target.getEntitySet());
                 }
-                
+
             }
-            jw.endArray(); 
-            
-            // TODO __count or __next
-            
-        
+            jw.endArray();
+
+            if (target.getInlineCount() != null) {
+                jw.writeSeparator();
+                jw.writeName("__count");
+                jw.writeString(target.getInlineCount().toString());
+            }
+
+            if (target.getSkipToken() != null) {
+                String nextHref = uriInfo.getRequestUriBuilder().replaceQueryParam(
+                        "$skiptoken",
+                        target.getSkipToken()).build().toString();
+
+                jw.writeSeparator();
+                jw.writeName("__next");
+                jw.writeString(nextHref);
+            }
         }
         jw.endObject();
     }
-
-
-    
-    
-    
-/*
+    /*
 
     // entities v2
     {
@@ -75,5 +86,5 @@ public class JsonFeedFormatWriter extends JsonFormatWriter<EntitiesResponse> {
     }
     ]
     }
-*/
+     */
 }

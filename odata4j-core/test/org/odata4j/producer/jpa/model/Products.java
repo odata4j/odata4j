@@ -3,6 +3,7 @@ package org.odata4j.producer.jpa.model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Collection;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -14,7 +15,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 @Entity
 @Table(name = "Products")
@@ -136,7 +136,8 @@ public class Products implements Serializable {
         return Order_Details;
     }
 
-    public void setOrderDetailsCollection(Collection<Order_Details> orderDetailsCollection) {
+    public void setOrderDetailsCollection(
+        Collection<Order_Details> orderDetailsCollection) {
         this.Order_Details = orderDetailsCollection;
     }
 
@@ -156,10 +157,27 @@ public class Products implements Serializable {
         this.Category = categoryID;
     }
 
+    public void setCategoryID(Integer categoryID) {
+        CategoryID = categoryID;
+    }
+
+    public Integer getCategoryID() {
+        return CategoryID;
+    }
+
+    public void setSupplierID(Integer supplierID) {
+        SupplierID = supplierID;
+    }
+
+    public Integer getSupplierID() {
+        return SupplierID;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (ProductID != null ? ProductID.hashCode() : 0);
+        hash += (ProductID != null
+                ? ProductID.hashCode() : 0);
         return hash;
     }
 
@@ -169,7 +187,9 @@ public class Products implements Serializable {
             return false;
         }
         Products other = (Products) object;
-        if ((this.ProductID == null && other.ProductID != null) || (this.ProductID != null && !this.ProductID.equals(other.ProductID))) {
+        if ((this.ProductID == null && other.ProductID != null)
+                || (this.ProductID != null && !this.ProductID
+                        .equals(other.ProductID))) {
             return false;
         }
         return true;
@@ -177,6 +197,7 @@ public class Products implements Serializable {
 
     @Override
     public String toString() {
-        return "org.odata4j.examples.producer.model.Products[productID=" + ProductID + "]";
+        return "org.odata4j.examples.producer.model.Products[productID="
+                + ProductID + "]";
     }
 }

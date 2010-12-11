@@ -35,6 +35,22 @@
 }
 }, {
 "__metadata": {
+"uri": "http://services.odata.org/northwind/Northwind.svc/Products(3)", "type": "NorthwindModel.Product"
+}, "ProductID": 3, "ProductName": "Aniseed Syrup", "SupplierID": 1, "CategoryID": 2, "QuantityPerUnit": "12 - 550 ml bottles", "UnitPrice": "10.0000", "UnitsInStock": 13, "UnitsOnOrder": 70, "ReorderLevel": 25, "Discontinued": false, "Category": {
+"__deferred": {
+"uri": "http://services.odata.org/northwind/Northwind.svc/Products(3)/Category"
+}
+}, "Order_Details": {
+"__deferred": {
+"uri": "http://services.odata.org/northwind/Northwind.svc/Products(3)/Order_Details"
+}
+}, "Supplier": {
+"__deferred": {
+"uri": "http://services.odata.org/northwind/Northwind.svc/Products(3)/Supplier"
+}
+}
+}, {
+"__metadata": {
 "uri": "http://services.odata.org/northwind/Northwind.svc/Products(4)", "type": "NorthwindModel.Product"
 }, "ProductID": 4, "ProductName": "Chef Anton's Cajun Seasoning", "SupplierID": 2, "CategoryID": 2, "QuantityPerUnit": "48 - 6 oz jars", "UnitPrice": "22.0000", "UnitsInStock": 53, "UnitsOnOrder": 0, "ReorderLevel": 0, "Discontinued": false, "Category": {
 "__deferred": {
@@ -179,6 +195,22 @@
 }
 }, {
 "__metadata": {
+"uri": "http://services.odata.org/northwind/Northwind.svc/Products(13)", "type": "NorthwindModel.Product"
+}, "ProductID": 13, "ProductName": "Konbu", "SupplierID": 6, "CategoryID": 8, "QuantityPerUnit": "2 kg box", "UnitPrice": "6.0000", "UnitsInStock": 24, "UnitsOnOrder": 0, "ReorderLevel": 5, "Discontinued": false, "Category": {
+"__deferred": {
+"uri": "http://services.odata.org/northwind/Northwind.svc/Products(13)/Category"
+}
+}, "Order_Details": {
+"__deferred": {
+"uri": "http://services.odata.org/northwind/Northwind.svc/Products(13)/Order_Details"
+}
+}, "Supplier": {
+"__deferred": {
+"uri": "http://services.odata.org/northwind/Northwind.svc/Products(13)/Supplier"
+}
+}
+}, {
+"__metadata": {
 "uri": "http://services.odata.org/northwind/Northwind.svc/Products(14)", "type": "NorthwindModel.Product"
 }, "ProductID": 14, "ProductName": "Tofu", "SupplierID": 6, "CategoryID": 7, "QuantityPerUnit": "40 - 100 g pkgs.", "UnitPrice": "23.2500", "UnitsInStock": 35, "UnitsOnOrder": 0, "ReorderLevel": 0, "Discontinued": false, "Category": {
 "__deferred": {
@@ -259,6 +291,22 @@
 }
 }, {
 "__metadata": {
+"uri": "http://services.odata.org/northwind/Northwind.svc/Products(19)", "type": "NorthwindModel.Product"
+}, "ProductID": 19, "ProductName": "Teatime Chocolate Biscuits", "SupplierID": 8, "CategoryID": 3, "QuantityPerUnit": "10 boxes x 12 pieces", "UnitPrice": "9.2000", "UnitsInStock": 25, "UnitsOnOrder": 0, "ReorderLevel": 5, "Discontinued": false, "Category": {
+"__deferred": {
+"uri": "http://services.odata.org/northwind/Northwind.svc/Products(19)/Category"
+}
+}, "Order_Details": {
+"__deferred": {
+"uri": "http://services.odata.org/northwind/Northwind.svc/Products(19)/Order_Details"
+}
+}, "Supplier": {
+"__deferred": {
+"uri": "http://services.odata.org/northwind/Northwind.svc/Products(19)/Supplier"
+}
+}
+}, {
+"__metadata": {
 "uri": "http://services.odata.org/northwind/Northwind.svc/Products(20)", "type": "NorthwindModel.Product"
 }, "ProductID": 20, "ProductName": "Sir Rodney's Marmalade", "SupplierID": 8, "CategoryID": 3, "QuantityPerUnit": "30 gift boxes", "UnitPrice": "81.0000", "UnitsInStock": 40, "UnitsOnOrder": 0, "ReorderLevel": 0, "Discontinued": false, "Category": {
 "__deferred": {
@@ -273,55 +321,7 @@
 "uri": "http://services.odata.org/northwind/Northwind.svc/Products(20)/Supplier"
 }
 }
-}, {
-"__metadata": {
-"uri": "http://services.odata.org/northwind/Northwind.svc/Products(22)", "type": "NorthwindModel.Product"
-}, "ProductID": 22, "ProductName": "Gustaf's Knäckebröd", "SupplierID": 9, "CategoryID": 5, "QuantityPerUnit": "24 - 500 g pkgs.", "UnitPrice": "21.0000", "UnitsInStock": 104, "UnitsOnOrder": 0, "ReorderLevel": 25, "Discontinued": false, "Category": {
-"__deferred": {
-"uri": "http://services.odata.org/northwind/Northwind.svc/Products(22)/Category"
 }
-}, "Order_Details": {
-"__deferred": {
-"uri": "http://services.odata.org/northwind/Northwind.svc/Products(22)/Order_Details"
-}
-}, "Supplier": {
-"__deferred": {
-"uri": "http://services.odata.org/northwind/Northwind.svc/Products(22)/Supplier"
-}
-}
-}, {
-"__metadata": {
-"uri": "http://services.odata.org/northwind/Northwind.svc/Products(26)", "type": "NorthwindModel.Product"
-}, "ProductID": 26, "ProductName": "Gumbär Gummibärchen", "SupplierID": 11, "CategoryID": 3, "QuantityPerUnit": "100 - 250 g bags", "UnitPrice": "31.2300", "UnitsInStock": 15, "UnitsOnOrder": 0, "ReorderLevel": 0, "Discontinued": false, "Category": {
-"__deferred": {
-"uri": "http://services.odata.org/northwind/Northwind.svc/Products(26)/Category"
-}
-}, "Order_Details": {
-"__deferred": {
-"uri": "http://services.odata.org/northwind/Northwind.svc/Products(26)/Order_Details"
-}
-}, "Supplier": {
-"__deferred": {
-"uri": "http://services.odata.org/northwind/Northwind.svc/Products(26)/Supplier"
-}
-}
-}, {
-"__metadata": {
-"uri": "http://services.odata.org/northwind/Northwind.svc/Products(27)", "type": "NorthwindModel.Product"
-}, "ProductID": 27, "ProductName": "Schoggi Schokolade", "SupplierID": 11, "CategoryID": 3, "QuantityPerUnit": "100 - 100 g pieces", "UnitPrice": "43.9000", "UnitsInStock": 49, "UnitsOnOrder": 0, "ReorderLevel": 30, "Discontinued": false, "Category": {
-"__deferred": {
-"uri": "http://services.odata.org/northwind/Northwind.svc/Products(27)/Category"
-}
-}, "Order_Details": {
-"__deferred": {
-"uri": "http://services.odata.org/northwind/Northwind.svc/Products(27)/Order_Details"
-}
-}, "Supplier": {
-"__deferred": {
-"uri": "http://services.odata.org/northwind/Northwind.svc/Products(27)/Supplier"
-}
-}
-}
-], "__next": "http://services.odata.org/Northwind/Northwind.svc/Products?$filter=(UnitPrice%20sub%205)%20gt%2010&$skiptoken=27"
+], "__next": "http://services.odata.org/Northwind/Northwind.svc/Products?$top=4980&$skiptoken=20"
 }
 }

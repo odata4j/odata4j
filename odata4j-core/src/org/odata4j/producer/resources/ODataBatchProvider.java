@@ -74,7 +74,7 @@ public class ODataBatchProvider implements MessageBodyReader<List<BatchBodyPart>
     }
 
     @Override
-    public boolean isReadable(Class type, Type genericType, Annotation[] antns, MediaType mt) {
+    public boolean isReadable(Class<?> type, Type genericType, Annotation[] antns, MediaType mt) {
         if (genericType instanceof ParameterizedType) {
             for (Type gType : ((ParameterizedType) genericType).getActualTypeArguments()) {
                 if (gType == BatchBodyPart.class && type == List.class) {

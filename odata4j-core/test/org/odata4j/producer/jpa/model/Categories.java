@@ -2,6 +2,7 @@ package org.odata4j.producer.jpa.model;
 
 import java.io.Serializable;
 import java.util.Collection;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,8 +10,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -90,7 +89,8 @@ public class Categories implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (CategoryID != null ? CategoryID.hashCode() : 0);
+        hash += (CategoryID != null
+                ? CategoryID.hashCode() : 0);
         return hash;
     }
 
@@ -100,7 +100,9 @@ public class Categories implements Serializable {
             return false;
         }
         Categories other = (Categories) object;
-        if ((this.CategoryID == null && other.CategoryID != null) || (this.CategoryID != null && !this.CategoryID.equals(other.CategoryID))) {
+        if ((this.CategoryID == null && other.CategoryID != null)
+                || (this.CategoryID != null && !this.CategoryID
+                        .equals(other.CategoryID))) {
             return false;
         }
         return true;
@@ -108,7 +110,8 @@ public class Categories implements Serializable {
 
     @Override
     public String toString() {
-        return "org.odata4j.examples.producer.model.Categories[categoryID=" + CategoryID + "]";
+        return "org.odata4j.examples.producer.model.Categories[categoryID="
+                + CategoryID + "]";
     }
 
 }

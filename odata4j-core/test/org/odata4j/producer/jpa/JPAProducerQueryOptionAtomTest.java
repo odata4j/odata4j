@@ -165,7 +165,6 @@ public class JPAProducerQueryOptionAtomTest {
         NorthwindTestUtils.TestAtomResult(endpointUri, uri, inp);
     }
     
-    
     @Test
     public void SystemQueryOptionOrderByTop21Test() {
         String inp = "SystemQueryOptionOrderByTop21";

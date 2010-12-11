@@ -17,19 +17,36 @@ public class QueryInfo {
     public final Integer skip;
     public final BoolCommonExpression filter;
     public final List<OrderByExpression> orderBy;
-    public final String skipToken;
-    public final Map<String,String> customOptions;
+    public final BoolCommonExpression skipToken;
+    public final Map<String, String> customOptions;
     public final List<EntitySimpleProperty> expand;
-    
-    public QueryInfo(InlineCount inlineCount, Integer top, Integer skip, BoolCommonExpression filter, List<OrderByExpression> orderBy, String skipToken, Map<String,String> customOptions, List<EntitySimpleProperty> expand) {
+
+    public QueryInfo(
+        InlineCount inlineCount,
+        Integer top,
+        Integer skip,
+        BoolCommonExpression filter,
+        List<OrderByExpression> orderBy,
+        BoolCommonExpression skipToken,
+        Map<String, String> customOptions,
+        List<EntitySimpleProperty> expand) {
+
         this.inlineCount = inlineCount;
         this.top = top;
         this.skip = skip;
         this.filter = filter;
         this.orderBy = orderBy;
         this.skipToken = skipToken;
-        this.customOptions = Collections.unmodifiableMap(customOptions==null?new HashMap<String,String>():customOptions);
-        this.expand = Collections.unmodifiableList(expand==null?new ArrayList<EntitySimpleProperty>():expand);
+
+        this.customOptions = Collections.unmodifiableMap(
+                customOptions == null
+                        ? new HashMap<String, String>()
+                                : customOptions);
+
+        this.expand = Collections.unmodifiableList(
+                expand == null
+                        ? new ArrayList<EntitySimpleProperty>()
+                                : expand);
     }
 
 }

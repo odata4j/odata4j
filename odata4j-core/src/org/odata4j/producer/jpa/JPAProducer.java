@@ -17,6 +17,8 @@ import javax.persistence.EntityNotFoundException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Attribute.PersistentAttributeType;
@@ -145,13 +147,22 @@ public class JPAProducer implements ODataProducer {
     }
 
     private EntityResponse getEntity(final Context context) {
-       
-        Object jpaEntity = context.em.find(context.jpaEntityType.getJavaType(), context.typeSafeEntityKey);
+        Object jpaEntity = context.em.find(
+                context.jpaEntityType.getJavaType(),
+                context.typeSafeEntityKey);
+
         if (jpaEntity == null) {
-            throw new EntityNotFoundException(context.jpaEntityType.getJavaType() + " not found with key " + context.typeSafeEntityKey);
+            throw new EntityNotFoundException(
+                    context.jpaEntityType.getJavaType()
+                    + " not found with key "
+                    + context.typeSafeEntityKey);
         }
 
-        final OEntity entity = makeEntity(context, jpaEntity, context.query.expand);
+        final OEntity entity = makeEntity(
+                context,
+                jpaEntity,
+                context.query == null ? null : context.query.expand);
+
         return new EntityResponse() {
 
             @Override
@@ -164,14 +175,13 @@ public class JPAProducer implements ODataProducer {
                 return context.ees;
             }
         };
-
     }
 
     private OEntity makeEntity(Context context, final Object jpaEntity, List<EntitySimpleProperty> expand) {
         return jpaEntityToOEntity(context.ees, context.jpaEntityType, jpaEntity, expand);
     }
 
-	private EntitiesResponse getEntities(final Context context) {
+    private EntitiesResponse getEntities(final Context context) {
 
         final DynamicEntitiesResponse response = enumJpaEntities(context.em, context.jpaEntityType.getJavaType(), context.query, maxResults);
         final List<OEntity> entities = response.jpaEntities.select(new Func1<Object, OEntity>() {
@@ -183,19 +193,41 @@ public class JPAProducer implements ODataProducer {
 
         String skipToken = null;
         if (response.useSkipToken) {
-            skipToken = InternalUtil.keyString(Enumerable.create(entities).last().getProperty(context.keyPropertyName).getValue(), false);
+
+            OEntity last = Enumerable.create(entities).last();
+            List<String> values = new LinkedList<String>();
+
+            if (context.query.orderBy != null) {
+                for (OrderByExpression ord : context.query.orderBy) {
+                    String field = ((EntitySimpleProperty) ord.getExpression()).getPropertyName();
+                    Object value = last.getProperty(field).getValue();
+
+                    if (value instanceof String) {
+                        value = "'" + value + "'";
+                    }
+
+                    values.add(value.toString());
+                }
+            }
+
+            values.add(InternalUtil.keyString(
+                    last.getProperty(context.keyPropertyName).getValue(),
+                    false));
+
+            skipToken = Enumerable.create(values).join(",");
         }
 
         return Responses.entities(entities, context.ees, response.inlineCount, skipToken);
 
     }
 
-    
-    
     private NavPropertyResponse getNavProperty(final Context context, String navProp) {
-        final Object jpaEntity = context.em.find(context.jpaEntityType.getJavaType(), context.typeSafeEntityKey);
+        final Object jpaEntity = context.em.find(
+                context.jpaEntityType.getJavaType(),
+                context.typeSafeEntityKey);
+
         if (jpaEntity == null) {
-            throw new EntityNotFoundException( context.jpaEntityType.getJavaType() + " not found with key " + context.typeSafeEntityKey);
+            throw new EntityNotFoundException(context.jpaEntityType.getJavaType() + " not found with key " + context.typeSafeEntityKey);
         }
 
         Object currentPointer = jpaEntity;
@@ -205,8 +237,7 @@ public class JPAProducer implements ODataProducer {
 
         for (String pn : navProp.split("/")) {
             if (currentPointer instanceof Iterable) {
-                throw new UnsupportedOperationException(
-                        String.format(
+                throw new UnsupportedOperationException(String.format(
                         "The request URI is not valid. Since the segment '%s' refers to a collection, this must be the last segment in the request URI. All intermediate segments must refer to a single resource.",
                         currentPointer.getClass().getSimpleName()));
             }
@@ -225,7 +256,7 @@ public class JPAProducer implements ODataProducer {
 
                 propInfo = this.metadata.findEdmProperty(propName);
                 currentPointer = this.findEntityById(
-                        (Iterable) currentPointer,
+                        (Iterable<?>) currentPointer,
                         ((EdmNavigationProperty) propInfo).toRole.type.keys,
                         id);
             }
@@ -243,12 +274,12 @@ public class JPAProducer implements ODataProducer {
         EdmMultiplicity mul = EdmMultiplicity.ONE;
 
         if (propInfo instanceof EdmNavigationProperty) {
-            EntityType jpatype = findJPAEntityType(
+            EntityType<?> jpatype = findJPAEntityType(
                     context.em,
                     ((EdmNavigationProperty) propInfo).toRole.type.name);
 
             if (currentPointer instanceof Iterable) {
-                for (Object item : (Iterable) currentPointer) {
+                for (Object item : (Iterable<?>) currentPointer) {
                     if (ees == null) {
                         ees = this.metadata.findEdmEntitySet(item.getClass().getSimpleName());
                     }
@@ -275,7 +306,7 @@ public class JPAProducer implements ODataProducer {
             }
         } else {
             ees = this.metadata.findEdmEntitySet(currentPointer.getClass().getSimpleName());
-            OProperty op = OProperties.simple(
+            OProperty<?> op = OProperties.simple(
                     ((EdmProperty) propInfo).name,
                     ((EdmProperty) propInfo).type,
                     currentPointer);
@@ -299,7 +330,7 @@ public class JPAProducer implements ODataProducer {
                 skipToken);
     }
 
-    private Object findEntityById(Iterable entities, List<String> keys, Integer id) {
+    private Object findEntityById(Iterable<?> entities, List<String> keys, Integer id) {
         for (Object entity : entities) {
             for (String idkey : keys) {
                 Object value = CoreUtils.getFieldValue(
@@ -338,7 +369,7 @@ public class JPAProducer implements ODataProducer {
         List<OLink> links = new ArrayList<OLink>();
 
         try {
-        	//	get properties
+            //	get properties
             for (EdmProperty ep : ees.type.properties) {
 
                 Attribute<?, ?> att = entityType.getAttribute(ep.name);
@@ -363,7 +394,7 @@ public class JPAProducer implements ODataProducer {
                 } else if (ep.type == EdmType.BYTE) {
                     Byte bValue = (Byte) value;
                     properties.add(OProperties.byte_(ep.name, bValue));
-                }  else if (ep.type == EdmType.DECIMAL) {
+                } else if (ep.type == EdmType.DECIMAL) {
                     BigDecimal dValue = (BigDecimal) value;
                     properties.add(OProperties.decimal(ep.name, dValue));
                 } else if (ep.type == EdmType.DATETIME) {
@@ -376,50 +407,51 @@ public class JPAProducer implements ODataProducer {
                     throw new UnsupportedOperationException("Implement " + ep.type);
                 }
             }
-            
+
             //	get the collections if necessary
             if (expand != null && !expand.isEmpty()) {
                 for (final EntitySimpleProperty prop : expand) {
-                	
-                	Attribute<?, ?> att = entityType.getAttribute(prop.getPropertyName());
-                	if (att.getPersistentAttributeType() == PersistentAttributeType.ONE_TO_MANY
-                		|| att.getPersistentAttributeType() == PersistentAttributeType.MANY_TO_MANY) {
-                		
-                		Collection<?> value = getValue(jpaEntity, att.getJavaMember());
 
-                		List<OEntity> relatedEntities = new ArrayList<OEntity>();
-                        for(Object relatedEntity : value) {
-                        	EntityType<?> elementEntityType = (EntityType<?>)((PluralAttribute<?,?,?>)att).getElementType();
-                        	EdmEntitySet elementEntitySet = metadata.getEdmEntitySet(elementEntityType.getName());
-                        	// because we support simple properties only at the moment we do not
-                			// navigate along the property path
-                        	relatedEntities.add(jpaEntityToOEntity(elementEntitySet, elementEntityType, relatedEntity, null));
+                    Attribute<?, ?> att = entityType.getAttribute(prop.getPropertyName());
+                    if (att.getPersistentAttributeType() == PersistentAttributeType.ONE_TO_MANY
+                            || att.getPersistentAttributeType() == PersistentAttributeType.MANY_TO_MANY) {
+
+                        Collection<?> value = getValue(jpaEntity, att.getJavaMember());
+
+                        List<OEntity> relatedEntities = new ArrayList<OEntity>();
+                        for (Object relatedEntity : value) {
+                            EntityType<?> elementEntityType = (EntityType<?>) ((PluralAttribute<?, ?, ?>) att).getElementType();
+                            EdmEntitySet elementEntitySet = metadata.getEdmEntitySet(elementEntityType.getName());
+                            // because we support simple properties only at the moment we do not
+                            // navigate along the property path
+                            relatedEntities.add(jpaEntityToOEntity(elementEntitySet, elementEntityType, relatedEntity, null));
                         }
-                    	links.add(OLinks.relatedEntities(null, prop.getPropertyName(), null, relatedEntities));
-                	} else if (att.getPersistentAttributeType() == PersistentAttributeType.ONE_TO_ONE
-                				|| att.getPersistentAttributeType() == PersistentAttributeType.MANY_TO_ONE) {
-                    	EntityType<?> relatedEntityType = (EntityType<?>)((SingularAttribute<?,?>)att).getType();
-                    	EdmEntitySet relatedEntitySet = metadata.getEdmEntitySet(relatedEntityType.getName());                		
-                		Object relatedEntity = getValue(jpaEntity, att.getJavaMember());
-                		links.add(OLinks.relatedEntity(null, prop.getPropertyName(), null, jpaEntityToOEntity(relatedEntitySet, relatedEntityType, relatedEntity, null)));
-                	}
-                }   
+                        links.add(OLinks.relatedEntities(null, prop.getPropertyName(), null, relatedEntities));
+                    } else if (att.getPersistentAttributeType() == PersistentAttributeType.ONE_TO_ONE
+                            || att.getPersistentAttributeType() == PersistentAttributeType.MANY_TO_ONE) {
+                        EntityType<?> relatedEntityType = (EntityType<?>) ((SingularAttribute<?, ?>) att).getType();
+                        EdmEntitySet relatedEntitySet = metadata.getEdmEntitySet(relatedEntityType.getName());
+                        Object relatedEntity = getValue(jpaEntity, att.getJavaMember());
+                        links.add(OLinks.relatedEntity(null, prop.getPropertyName(), null, jpaEntityToOEntity(relatedEntitySet, relatedEntityType, relatedEntity, null)));
+                    }
+                }
             }
-            
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
         return OEntities.create(ees, properties, links);
     }
-    
-    private <T> T getValue(Object obj, Member member) throws Exception {    	
-    	if (member instanceof Method) {
+
+    @SuppressWarnings("unchecked")
+	private <T> T getValue(Object obj, Member member) throws Exception {
+        if (member instanceof Method) {
             Method method = (Method) member;
-            return (T)method.invoke(obj);
+            return (T) method.invoke(obj);
         } else if (member instanceof Field) {
             Field field = (Field) member;
-            return (T)field.get(obj);
+            return (T) field.get(obj);
         } else {
             throw new UnsupportedOperationException("Implement member" + member);
         }
@@ -448,25 +480,45 @@ public class JPAProducer implements ODataProducer {
     }
 
     public static DynamicEntitiesResponse enumJpaEntities(
-            EntityManager em, Class<?> clazz,
-            QueryInfo query,
-            int maxResults) {
+            EntityManager em,
+            Class<?> clazz,
+            final QueryInfo query,
+            final int maxResults) {
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Object> cq = cb.createQuery();
 
         Root<?> root = cq.from(em.getMetamodel().entity(clazz));
-        cq = cq.select(root);
+        cq.select(root);
 
+        Expression<Boolean> predicate = null;
         if (query.filter != null) {
-            cq = cq.where(
-                    InJPAEvaluation.evaluate(
+
+            predicate = InJPAEvaluation.evaluate(
                     query.filter,
                     cb,
-                    root));
+                    root);
+        }
+
+        if (query.skipToken != null) {
+            Expression<Boolean> skipPredicate = InJPAEvaluation.evaluate(
+                    query.skipToken,
+                    cb,
+                    root);
+
+            if (predicate != null) {
+                predicate = cb.and(predicate, skipPredicate);
+            } else {
+                predicate = skipPredicate;
+            }
+        }
+
+        if (predicate != null) {
+            cq.where(predicate);
         }
 
         if (query.orderBy != null) {
+            List<Order> orders = new LinkedList<Order>();
             for (OrderByExpression orderBy : query.orderBy) {
                 String field = (String) InJPAEvaluation.evaluate(
                         orderBy.getExpression(),
@@ -474,14 +526,17 @@ public class JPAProducer implements ODataProducer {
                         root);
 
                 if (orderBy.isAscending()) {
-                    cq = cq.orderBy(cb.asc(root.get(field)));
+                    orders.add(cb.asc(root.get(field)));
                 } else {
-                    cq = cq.orderBy(cb.desc(root.get(field)));
+                    orders.add(cb.desc(root.get(field)));
                 }
             }
+
+            cq.orderBy(orders);
         }
 
         TypedQuery<Object> tq = em.createQuery(cq);
+
         Integer inlineCount = query.inlineCount == InlineCount.ALLPAGES
                 ? tq.getResultList().size()
                 : null;
@@ -496,19 +551,20 @@ public class JPAProducer implements ODataProducer {
             }
 
             if (query.top < maxResults) {
-            	queryMaxResult = query.top;
+                queryMaxResult = query.top;
             }
         }
-        tq = tq.setMaxResults(queryMaxResult + 1);
         
+        tq = tq.setMaxResults(queryMaxResult + 1);
+
         if (query.skip != null) {
             tq = tq.setFirstResult(query.skip);
         }
 
         List<Object> results = tq.getResultList();
         boolean useSkipToken = query.top != null
-        						? query.top > maxResults && results.size() > queryMaxResult
-        						: results.size() > queryMaxResult;
+                ? query.top > maxResults && results.size() > queryMaxResult
+                : results.size() > queryMaxResult;
 
         Enumerable<Object> jpaEntities = Enumerable.create(results).take(queryMaxResult);
         return new DynamicEntitiesResponse(jpaEntities, inlineCount, useSkipToken);
@@ -681,9 +737,8 @@ public class JPAProducer implements ODataProducer {
             em.close();
         }
     }
-    
-    
-    private Object typeSafeEntityKey(EntityManager em, EntityType<?> jpaEntityType, Object entityKey){
+
+    private Object typeSafeEntityKey(EntityManager em, EntityType<?> jpaEntityType, Object entityKey) {
         return TypeConverter.convert(entityKey, em.getMetamodel().entity(jpaEntityType.getJavaType()).getIdType().getJavaType());
     }
 }

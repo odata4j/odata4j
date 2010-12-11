@@ -87,7 +87,8 @@ public class OEntities {
             return links;
         }
         
-        @Override
+        @SuppressWarnings("unchecked")
+		@Override
         public <T extends OLink> T getLink(String title, Class<T> linkClass) {
            for(OLink link : getLinks())
                if (link.getTitle().equals(title))

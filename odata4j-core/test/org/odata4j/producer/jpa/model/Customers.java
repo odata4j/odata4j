@@ -1,13 +1,12 @@
 package org.odata4j.producer.jpa.model;
 
 import java.io.Serializable;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -40,9 +39,10 @@ public class Customers implements Serializable {
     private String Phone;
     @Column(name = "Fax")
     private String Fax;
-    @JoinColumn(name = "CustomerID", referencedColumnName = "CustomerID", insertable = false, updatable = false)
+    @JoinColumn(name = "CustomerID", referencedColumnName = "CustomerID",
+            insertable = false, updatable = false)
     @OneToOne(optional = false)
-    private Orders Order;
+    private Orders Orders;
 
     public Customers() {
     }
@@ -145,17 +145,18 @@ public class Customers implements Serializable {
     }
 
     public Orders getOrders() {
-        return Order;
+        return Orders;
     }
 
     public void setOrders(Orders orders) {
-        this.Order = orders;
+        this.Orders = orders;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (CustomerID != null ? CustomerID.hashCode() : 0);
+        hash += (CustomerID != null
+                ? CustomerID.hashCode() : 0);
         return hash;
     }
 
@@ -165,7 +166,9 @@ public class Customers implements Serializable {
             return false;
         }
         Customers other = (Customers) object;
-        if ((this.CustomerID == null && other.CustomerID != null) || (this.CustomerID != null && !this.CustomerID.equals(other.CustomerID))) {
+        if ((this.CustomerID == null && other.CustomerID != null)
+                || (this.CustomerID != null && !this.CustomerID
+                        .equals(other.CustomerID))) {
             return false;
         }
         return true;
@@ -173,7 +176,8 @@ public class Customers implements Serializable {
 
     @Override
     public String toString() {
-        return "org.odata4j.examples.producer.model.Customers[customerID=" + CustomerID + "]";
+        return "org.odata4j.examples.producer.model.Customers[customerID="
+                + CustomerID + "]";
     }
 
 }

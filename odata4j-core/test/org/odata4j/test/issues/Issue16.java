@@ -3,14 +3,11 @@ package org.odata4j.test.issues;
 import junit.framework.Assert;
 
 import org.core4j.Enumerable;
-import org.core4j.Func;
-import org.core4j.Funcs;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.examples.producer.ProducerUtil;
-import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.NavPropertyResponse;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.Responses;

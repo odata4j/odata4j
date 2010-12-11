@@ -2,6 +2,7 @@ package org.odata4j.producer.jpa.model;
 
 import java.io.Serializable;
 import java.util.Date;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,8 +11,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -66,7 +65,8 @@ public class Employees implements Serializable {
     private Integer ReportsTo;
     @Column(name = "PhotoPath")
     private String PhotoPath;
-    @JoinColumn(name = "EmployeeID", referencedColumnName = "EmployeeID", insertable = false, updatable = false)
+    @JoinColumn(name = "EmployeeID", referencedColumnName = "EmployeeID",
+            insertable = false, updatable = false)
     @OneToOne(optional = false)
     private Orders Order;
 
@@ -238,7 +238,8 @@ public class Employees implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (EmployeeID != null ? EmployeeID.hashCode() : 0);
+        hash += (EmployeeID != null
+                ? EmployeeID.hashCode() : 0);
         return hash;
     }
 
@@ -248,7 +249,9 @@ public class Employees implements Serializable {
             return false;
         }
         Employees other = (Employees) object;
-        if ((this.EmployeeID == null && other.EmployeeID != null) || (this.EmployeeID != null && !this.EmployeeID.equals(other.EmployeeID))) {
+        if ((this.EmployeeID == null && other.EmployeeID != null)
+                || (this.EmployeeID != null && !this.EmployeeID
+                        .equals(other.EmployeeID))) {
             return false;
         }
         return true;
@@ -256,7 +259,8 @@ public class Employees implements Serializable {
 
     @Override
     public String toString() {
-        return "org.odata4j.examples.producer.model.Employees[employeeID=" + EmployeeID + "]";
+        return "org.odata4j.examples.producer.model.Employees[employeeID="
+                + EmployeeID + "]";
     }
 
 }

@@ -12,15 +12,10 @@ import org.odata4j.examples.producer.ProducerUtil;
 import org.odata4j.producer.resources.ODataProducerProvider;
 import org.odata4j.producer.server.JerseyServer;
 
-/**
- * 
- * @author sergei.grizenok
- */
 public class JPAProducerQueryOptionTest {
 
     private static final String endpointUri =
             "http://localhost:8810/northwind/Northwind.svc/";
-    
     private static EntityManagerFactory emf;
     private static JerseyServer server;
 
@@ -35,7 +30,7 @@ public class JPAProducerQueryOptionTest {
         JPAProducer producer = new JPAProducer(
                 emf,
                 namespace,
-                50);
+                20);
 
         NorthwindTestUtils.fillDatabase(emf);
 
@@ -65,14 +60,14 @@ public class JPAProducerQueryOptionTest {
     @Test
     public void SystemQueryOptionOrderByTest() {
         String inp = "SystemQueryOptionOrderByTest";
-        String uri = "Products?$top=20&$orderby=ProductID";
+        String uri = "Products?$orderby=ProductID";
         NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
     }
 
     @Test
     public void SystemQueryOptionOrderByDescTest() {
         String inp = "SystemQueryOptionOrderByDescTest";
-        String uri = "Products?$top=10&$orderby=ProductID desc";
+        String uri = "Products?$orderby=ProductID desc";
         NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
     }
 
@@ -104,17 +99,30 @@ public class JPAProducerQueryOptionTest {
         NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
     }
 
+//    @Test
+//    public void SystemQueryOptionTop5000Test() {
+//        String inp = "SystemQueryOptionTop5000Test";
+//        String uri = "Products?$top=5000";
+//        TestUtils.TestJSONResult(endpointUri, uri, inp);
+//    }
     @Test
-    public void SystemQueryOptionFilterEqualTest() {
-        String inp = "SystemQueryOptionFilterEqualTest";
-        String uri = "Suppliers?$filter=Country eq 'Brazil'";
+    public void SystemQueryOptionSkipTokenTest() {
+        String inp = "SystemQueryOptionSkipTokenTest";
+        String uri = "Customers?$top=5&$skiptoken='ANATR'";
         NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
     }
 
     @Test
-    public void SystemQueryOptionFilterNotEqualTest() {
-        String inp = "SystemQueryOptionFilterNotEqualTest";
-        String uri = "Suppliers?$filter=Country ne 'UK'";
+    public void SystemQueryOptionSkipTokenWithOrderByTest() {
+        String inp = "SystemQueryOptionSkipTokenWithOrderByTest";
+        String uri = "Products?$orderby=SupplierID desc, ProductName&$skiptoken=20,'Gula Malacca',44";
+        NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
+    }
+
+    @Test
+    public void SystemQueryOptionFilterEqualTest() {
+        String inp = "SystemQueryOptionFilterEqualTest";
+        String uri = "Suppliers?$filter=Country eq 'Brazil'";
         NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
     }
 
@@ -128,14 +136,7 @@ public class JPAProducerQueryOptionTest {
     @Test
     public void SystemQueryOptionFilterGreaterThanOrEqualTest() {
         String inp = "SystemQueryOptionFilterGreaterThanOrEqualTest";
-        String uri = "Products?$top=20&$filter=UnitPrice ge 10";
-        NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
-    }
-
-    @Test
-    public void SystemQueryOptionFilterLessThanTest() {
-        String inp = "SystemQueryOptionFilterLessThanTest";
-        String uri = "Products?$top=20&$filter=UnitPrice lt 20";
+        String uri = "Products?$filter=UnitPrice ge 10";
         NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
     }
 
@@ -143,6 +144,13 @@ public class JPAProducerQueryOptionTest {
     public void SystemQueryOptionFilterLessThanOrEqualTest() {
         String inp = "SystemQueryOptionFilterLessThanOrEqualTest";
         String uri = "Products?$top=20&$filter=UnitPrice le 100";
+        NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
+    }
+
+    @Test
+    public void SystemQueryOptionFilterLessThanTest() {
+        String inp = "SystemQueryOptionFilterLessThanTest";
+        String uri = "Products?$filter=UnitPrice lt 20";
         NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
     }
 
@@ -168,21 +176,18 @@ public class JPAProducerQueryOptionTest {
                 "Products?$top=10&$filter=%28UnitPrice%20gt%205%29%20and%20%28UnitPrice%20lt%2020%29";
         NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
     }
-
     // @Test
     // public void SystemQueryOptionFilterLogicalNotTest() {
     // String inp = "SystemQueryOptionFilterLogicalNotTest";
     // String uri = "Products?$filter=not endswith(QuantityPerUnit,'bags')";
     // NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
     // }
-    //
     // @Test
     // public void SystemQueryOptionFilterAdditionTest() {
     // String inp = "SystemQueryOptionFilterAdditionTest";
     // String uri = "Products?$filter=(UnitPrice add 5) gt 10";
     // NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
     // }
-    //
     // @Test
     // public void SystemQueryOptionFilterSubtractionTest() {
     // String inp = "SystemQueryOptionFilterSubtractionTest";
@@ -217,7 +222,6 @@ public class JPAProducerQueryOptionTest {
     // String uri = "Products?$filter=(UnitPrice sub 5) gt 10";
     // NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
     // }
-
     // @Test
     // public void SystemQueryOptionFilterBoolSubstringOfTest() {
     // String inp = "SystemQueryOptionFilterBoolSubstringOfTest";
@@ -393,7 +397,6 @@ public class JPAProducerQueryOptionTest {
     // String uri = "Orders?$filter=isof(ShipCountry, 'Edm.String')";
     // NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
     // }
-
     // @Test
     // public void SystemQueryOptionExpand1Test() {
     // String inp = "SystemQueryOptionExpand1Test";
@@ -414,14 +417,12 @@ public class JPAProducerQueryOptionTest {
     // String uri = "Products?$expand=Category,Supplier";
     // NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
     // }
-
     // @Test
     // public void SystemQueryOptionFormatAtomTest() {
     // String inp = "SystemQueryOptionFormatAtomTest";
     // String uri = "Products?$format=atom";
     // NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
     // }
-
     // @Test
     // public void SystemQueryOptionSelect1Test() {
     // String inp = "SystemQueryOptionSelect1Test";
@@ -435,7 +436,6 @@ public class JPAProducerQueryOptionTest {
     // String uri = "Products?$top=20&$select=ProductName,Category";
     // NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
     // }
-
     // @Test
     // public void SystemQueryOptionFormatJsonTest() {
     // String inp = "SystemQueryOptionFormatJsonTest";
@@ -443,17 +443,17 @@ public class JPAProducerQueryOptionTest {
     // NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
     // }
 
-    // @Test
-    // public void SystemQueryOptionInlinecountTest() {
-    // String inp = "SystemQueryOptionInlinecountTest";
-    // String uri = "Products?$top=20&$inlinecount=allpages";
-    // NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
-    // }
+    @Test
+    public void SystemQueryOptionInlinecountTest() {
+        String inp = "SystemQueryOptionInlinecountTest";
+        String uri = "Products?$inlinecount=allpages";
+        NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
+    }
 
-    // @Test
-    // public void SystemQueryOptionInlinecountTopTest() {
-    // String inp = "SystemQueryOptionInlinecountTopTest";
-    // String uri = "Products?$inlinecount=allpages&$top=5&Price gt 200";
-    // NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
-    // }
+    @Test
+    public void SystemQueryOptionInlinecountTopTest() {
+        String inp = "SystemQueryOptionInlinecountTopTest";
+        String uri = "Products?$top=5&$inlinecount=allpages&Price gt 200";
+        NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
+    }
 }

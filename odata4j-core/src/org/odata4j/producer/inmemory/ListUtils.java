@@ -101,8 +101,8 @@ public class ListUtils {
 
                 @SuppressWarnings("unchecked")
                 public int compare(OEntity o1, OEntity o2) {
-                    Comparable lhs = (Comparable) InMemoryEvaluation.evaluate(orderBy.getExpression(), o1, properties);
-                    Comparable rhs = (Comparable) InMemoryEvaluation.evaluate(orderBy.getExpression(), o2, properties);
+                    Comparable<Comparable<?>> lhs = (Comparable<Comparable<?>>) InMemoryEvaluation.evaluate(orderBy.getExpression(), o1, properties);
+                    Comparable<?> rhs = (Comparable<?>) InMemoryEvaluation.evaluate(orderBy.getExpression(), o2, properties);
                     return (orderBy.isAscending() ? 1 : -1) * lhs.compareTo(rhs);
                 }
             });
