@@ -1,13 +1,15 @@
 package org.odata4j.producer.jpa.model;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -41,8 +43,8 @@ public class Customers implements Serializable {
     private String Fax;
     @JoinColumn(name = "CustomerID", referencedColumnName = "CustomerID",
             insertable = false, updatable = false)
-    @OneToOne(optional = false)
-    private Orders Orders;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "Customer")
+    private Collection<Orders> Orders;
 
     public Customers() {
     }
@@ -144,11 +146,11 @@ public class Customers implements Serializable {
         this.Fax = fax;
     }
 
-    public Orders getOrders() {
+    public Collection<Orders> getOrders() {
         return Orders;
     }
 
-    public void setOrders(Orders orders) {
+    public void setOrders(Collection<Orders> orders) {
         this.Orders = orders;
     }
 

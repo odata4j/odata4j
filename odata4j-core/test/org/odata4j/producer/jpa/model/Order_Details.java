@@ -25,7 +25,7 @@ public class Order_Details implements Serializable {
     private short Quantity;
     @Basic(optional = false)
     @Column(name = "Discount")
-    private Double Discount;
+    private Float Discount;
     @JoinColumn(name = "ProductID", referencedColumnName = "ProductID",
             insertable = false, updatable = false)
     @ManyToOne(optional = false)
@@ -43,7 +43,7 @@ public class Order_Details implements Serializable {
     }
 
     public Order_Details(Order_DetailsPK orderDetailsPK, BigDecimal unitPrice,
-        short quantity, Double discount) {
+        short quantity, Float discount) {
         this.orderDetailsPK = orderDetailsPK;
         this.UnitPrice = unitPrice;
         this.Quantity = quantity;
@@ -78,11 +78,11 @@ public class Order_Details implements Serializable {
         this.Quantity = quantity;
     }
 
-    public Double getDiscount() {
+    public Float getDiscount() {
         return Discount;
     }
 
-    public void setDiscount(Double discount) {
+    public void setDiscount(Float discount) {
         this.Discount = discount;
     }
 

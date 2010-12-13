@@ -62,6 +62,8 @@ public class JPAEdmGenerator {
             return EdmType.BOOLEAN;
         if (javaType.equals(Double.class) || javaType.equals(Double.TYPE))
             return EdmType.DOUBLE;
+        if (javaType.equals(Float.class) || javaType.equals(Float.TYPE))
+            return EdmType.SINGLE;
         if (javaType.equals(Date.class))
             return EdmType.DATETIME;
         if (javaType.equals(Instant.class))
@@ -107,7 +109,11 @@ public class JPAEdmGenerator {
                 SingularAttribute<?, ?> sa = (SingularAttribute<?, ?>) att;
 
                 Type<?> type = sa.getType();
-                if (type.getPersistenceType().equals(PersistenceType.BASIC) || type.getPersistenceType().equals(PersistenceType.EMBEDDABLE) ) {
+                // Do we have an embedded composite key here? If so, we have to flatten the @EmbeddedId since
+                // only any set of non-nullable, immutable, <EDMSimpleType> declared properties MAY serve as the key.
+                if (sa.isId() && type.getPersistenceType() == PersistenceType.EMBEDDABLE) {
+                	properties.addAll(getProperties(modelNamespace, (ManagedType<?>)sa.getType()));
+                } else if (type.getPersistenceType().equals(PersistenceType.BASIC) || type.getPersistenceType().equals(PersistenceType.EMBEDDABLE) ) {
                     EdmProperty prop = toEdmProperty(modelNamespace, sa);
                     properties.add(prop);
                 } 
@@ -141,23 +147,33 @@ public class JPAEdmGenerator {
         }
         
         // entities
-
         for(EntityType<?> et : mm.getEntities()) {
            
-            SingularAttribute<?, ?> idAttribute = et.getId(null);
-
             String name = et.getName();
-            String key = idAttribute.getName();
+
+            List<String> keys = new ArrayList<String>();
+            SingularAttribute<?, ?> idAttribute = et.getId(null);
             
+            //	handle composite embedded keys (@EmbeddedId)
+            if (idAttribute.getPersistentAttributeType() == PersistentAttributeType.EMBEDDED) {
+            	keys = Enumerable.create(getProperties(modelNamespace, (ManagedType<?>)idAttribute.getType()))
+        				.select(new Func1<EdmProperty, String>() {
+							@Override
+							public String apply(EdmProperty input) {
+								return input.name;
+							}}).toList();
+            } else {
+            	keys = Enumerable.create(idAttribute.getName()).toList();
+            }
+
             List<EdmProperty> properties = getProperties(modelNamespace, et);
             List<EdmNavigationProperty> navigationProperties = new ArrayList<EdmNavigationProperty>();
            
-            EdmEntityType eet = new EdmEntityType(modelNamespace, null, name, null, Enumerable.create(key).toList(), properties, navigationProperties);
+            EdmEntityType eet = new EdmEntityType(modelNamespace, null, name, null, keys, properties, navigationProperties);
             edmEntityTypes.add(eet);
 
             EdmEntitySet ees = new EdmEntitySet(name, eet);
             entitySets.add(ees);
-
         }
 
         Map<String, EdmEntityType> eetsByName = Enumerable.create(edmEntityTypes).toMap(new Func1<EdmEntityType, String>() {

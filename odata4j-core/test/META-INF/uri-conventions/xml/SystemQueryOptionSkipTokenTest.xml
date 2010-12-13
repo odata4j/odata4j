@@ -1,1 +1,142 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><feed xml:base="http://services.odata.org/northwind/Northwind.svc/" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns="http://www.w3.org/2005/Atom">  <title type="text">Customers</title>  <id>http://services.odata.org/Northwind/Northwind.svc/Customers</id>  <updated>2010-12-07T13:53:03Z</updated>  <link rel="self" title="Customers" href="Customers" />  <entry>    <id>http://services.odata.org/northwind/Northwind.svc/Customers('FAMIA')</id>    <title type="text"></title>    <updated>2010-12-07T13:53:03Z</updated>    <author>      <name />    </author>    <link rel="edit" title="Customer" href="Customers('FAMIA')" />    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Orders" type="application/atom+xml;type=feed" title="Orders" href="Customers('FAMIA')/Orders" />    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/CustomerDemographics" type="application/atom+xml;type=feed" title="CustomerDemographics" href="Customers('FAMIA')/CustomerDemographics" />    <category term="NorthwindModel.Customer" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />    <content type="application/xml">      <m:properties>        <d:CustomerID>FAMIA</d:CustomerID>        <d:CompanyName>Familia Arquibaldo</d:CompanyName>        <d:ContactName>Aria Cruz</d:ContactName>        <d:ContactTitle>Marketing Assistant</d:ContactTitle>        <d:Address>Rua Orós,92</d:Address>        <d:City>Sao Paulo</d:City>        <d:Region>SP</d:Region>        <d:PostalCode>05442-030</d:PostalCode>        <d:Country>Brazil</d:Country>        <d:Phone>(11) 555-9857</d:Phone>        <d:Fax m:null="true" />      </m:properties>    </content>  </entry>  <entry>    <id>http://services.odata.org/northwind/Northwind.svc/Customers('FISSA')</id>    <title type="text"></title>    <updated>2010-12-07T13:53:03Z</updated>    <author>      <name />    </author>    <link rel="edit" title="Customer" href="Customers('FISSA')" />    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Orders" type="application/atom+xml;type=feed" title="Orders" href="Customers('FISSA')/Orders" />    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/CustomerDemographics" type="application/atom+xml;type=feed" title="CustomerDemographics" href="Customers('FISSA')/CustomerDemographics" />    <category term="NorthwindModel.Customer" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />    <content type="application/xml">      <m:properties>        <d:CustomerID>FISSA</d:CustomerID>        <d:CompanyName>FISSA Fabrica Inter. Salchichas S.A.</d:CompanyName>        <d:ContactName>Diego Roel</d:ContactName>        <d:ContactTitle>Accounting Manager</d:ContactTitle>        <d:Address>C/ Moralzarzal,86</d:Address>        <d:City>Madrid</d:City>        <d:Region m:null="true" />        <d:PostalCode>28034</d:PostalCode>        <d:Country>Spain</d:Country>        <d:Phone>(91) 555 94 44</d:Phone>        <d:Fax>(91) 555 55 93</d:Fax>      </m:properties>    </content>  </entry>  <entry>    <id>http://services.odata.org/northwind/Northwind.svc/Customers('FOLIG')</id>    <title type="text"></title>    <updated>2010-12-07T13:53:03Z</updated>    <author>      <name />    </author>    <link rel="edit" title="Customer" href="Customers('FOLIG')" />    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Orders" type="application/atom+xml;type=feed" title="Orders" href="Customers('FOLIG')/Orders" />    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/CustomerDemographics" type="application/atom+xml;type=feed" title="CustomerDemographics" href="Customers('FOLIG')/CustomerDemographics" />    <category term="NorthwindModel.Customer" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />    <content type="application/xml">      <m:properties>        <d:CustomerID>FOLIG</d:CustomerID>        <d:CompanyName>Folies gourmandes</d:CompanyName>        <d:ContactName>Martine Rancé</d:ContactName>        <d:ContactTitle>Assistant Sales Agent</d:ContactTitle>        <d:Address>184,chaussée de Tournai</d:Address>        <d:City>Lille</d:City>        <d:Region m:null="true" />        <d:PostalCode>59000</d:PostalCode>        <d:Country>France</d:Country>        <d:Phone>20.16.10.16</d:Phone>        <d:Fax>20.16.10.17</d:Fax>      </m:properties>    </content>  </entry>  <entry>    <id>http://services.odata.org/northwind/Northwind.svc/Customers('FOLKO')</id>    <title type="text"></title>    <updated>2010-12-07T13:53:03Z</updated>    <author>      <name />    </author>    <link rel="edit" title="Customer" href="Customers('FOLKO')" />    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Orders" type="application/atom+xml;type=feed" title="Orders" href="Customers('FOLKO')/Orders" />    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/CustomerDemographics" type="application/atom+xml;type=feed" title="CustomerDemographics" href="Customers('FOLKO')/CustomerDemographics" />    <category term="NorthwindModel.Customer" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />    <content type="application/xml">      <m:properties>        <d:CustomerID>FOLKO</d:CustomerID>        <d:CompanyName>Folk och fä HB</d:CompanyName>        <d:ContactName>Maria Larsson</d:ContactName>        <d:ContactTitle>Owner</d:ContactTitle>        <d:Address>Åkergatan 24</d:Address>        <d:City>Bräcke</d:City>        <d:Region m:null="true" />        <d:PostalCode>S-844 67</d:PostalCode>        <d:Country>Sweden</d:Country>        <d:Phone>0695-34 67 21</d:Phone>        <d:Fax m:null="true" />      </m:properties>    </content>  </entry>  <entry>    <id>http://services.odata.org/northwind/Northwind.svc/Customers('FRANK')</id>    <title type="text"></title>    <updated>2010-12-07T13:53:03Z</updated>    <author>      <name />    </author>    <link rel="edit" title="Customer" href="Customers('FRANK')" />    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Orders" type="application/atom+xml;type=feed" title="Orders" href="Customers('FRANK')/Orders" />    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/CustomerDemographics" type="application/atom+xml;type=feed" title="CustomerDemographics" href="Customers('FRANK')/CustomerDemographics" />    <category term="NorthwindModel.Customer" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />    <content type="application/xml">      <m:properties>        <d:CustomerID>FRANK</d:CustomerID>        <d:CompanyName>Frankenversand</d:CompanyName>        <d:ContactName>Peter Franken</d:ContactName>        <d:ContactTitle>Marketing Manager</d:ContactTitle>        <d:Address>Berliner Platz 43</d:Address>        <d:City>München</d:City>        <d:Region m:null="true" />        <d:PostalCode>80805</d:PostalCode>        <d:Country>Germany</d:Country>        <d:Phone>089-0877310</d:Phone>        <d:Fax>089-0877451</d:Fax>      </m:properties>    </content>  </entry></feed>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<feed xml:base="http://services.odata.org/northwind/Northwind.svc/" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns="http://www.w3.org/2005/Atom">
+  <title type="text">Customers</title>
+  <id>http://services.odata.org/northwind/Northwind.svc/Customers</id>
+  <updated>2010-12-13T12:59:18Z</updated>
+  <link rel="self" title="Customers" href="Customers" />
+  <entry>
+    <id>http://services.odata.org/northwind/Northwind.svc/Customers('ANTON')</id>
+    <title type="text"></title>
+    <updated>2010-12-13T12:59:18Z</updated>
+    <author>
+      <name />
+    </author>
+    <link rel="edit" title="Customer" href="Customers('ANTON')" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Orders" type="application/atom+xml;type=feed" title="Orders" href="Customers('ANTON')/Orders" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/CustomerDemographics" type="application/atom+xml;type=feed" title="CustomerDemographics" href="Customers('ANTON')/CustomerDemographics" />
+    <category term="NorthwindModel.Customer" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/xml">
+      <m:properties>
+        <d:CustomerID>ANTON</d:CustomerID>
+        <d:CompanyName>Antonio Moreno Taquería</d:CompanyName>
+        <d:ContactName>Antonio Moreno</d:ContactName>
+        <d:ContactTitle>Owner</d:ContactTitle>
+        <d:Address>Mataderos  2312</d:Address>
+        <d:City>México D.F.</d:City>
+        <d:Region m:null="true" />
+        <d:PostalCode>05023</d:PostalCode>
+        <d:Country>Mexico</d:Country>
+        <d:Phone>(5) 555-3932</d:Phone>
+        <d:Fax m:null="true" />
+      </m:properties>
+    </content>
+  </entry>
+  <entry>
+    <id>http://services.odata.org/northwind/Northwind.svc/Customers('AROUT')</id>
+    <title type="text"></title>
+    <updated>2010-12-13T12:59:18Z</updated>
+    <author>
+      <name />
+    </author>
+    <link rel="edit" title="Customer" href="Customers('AROUT')" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Orders" type="application/atom+xml;type=feed" title="Orders" href="Customers('AROUT')/Orders" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/CustomerDemographics" type="application/atom+xml;type=feed" title="CustomerDemographics" href="Customers('AROUT')/CustomerDemographics" />
+    <category term="NorthwindModel.Customer" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/xml">
+      <m:properties>
+        <d:CustomerID>AROUT</d:CustomerID>
+        <d:CompanyName>Around the Horn</d:CompanyName>
+        <d:ContactName>Thomas Hardy</d:ContactName>
+        <d:ContactTitle>Sales Representative</d:ContactTitle>
+        <d:Address>120 Hanover Sq.</d:Address>
+        <d:City>London</d:City>
+        <d:Region m:null="true" />
+        <d:PostalCode>WA1 1DP</d:PostalCode>
+        <d:Country>UK</d:Country>
+        <d:Phone>(171) 555-7788</d:Phone>
+        <d:Fax>(171) 555-6750</d:Fax>
+      </m:properties>
+    </content>
+  </entry>
+  <entry>
+    <id>http://services.odata.org/northwind/Northwind.svc/Customers('BERGS')</id>
+    <title type="text"></title>
+    <updated>2010-12-13T12:59:18Z</updated>
+    <author>
+      <name />
+    </author>
+    <link rel="edit" title="Customer" href="Customers('BERGS')" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Orders" type="application/atom+xml;type=feed" title="Orders" href="Customers('BERGS')/Orders" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/CustomerDemographics" type="application/atom+xml;type=feed" title="CustomerDemographics" href="Customers('BERGS')/CustomerDemographics" />
+    <category term="NorthwindModel.Customer" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/xml">
+      <m:properties>
+        <d:CustomerID>BERGS</d:CustomerID>
+        <d:CompanyName>Berglunds snabbköp</d:CompanyName>
+        <d:ContactName>Christina Berglund</d:ContactName>
+        <d:ContactTitle>Order Administrator</d:ContactTitle>
+        <d:Address>Berguvsvägen  8</d:Address>
+        <d:City>Luleå</d:City>
+        <d:Region m:null="true" />
+        <d:PostalCode>S-958 22</d:PostalCode>
+        <d:Country>Sweden</d:Country>
+        <d:Phone>0921-12 34 65</d:Phone>
+        <d:Fax>0921-12 34 67</d:Fax>
+      </m:properties>
+    </content>
+  </entry>
+  <entry>
+    <id>http://services.odata.org/northwind/Northwind.svc/Customers('BLAUS')</id>
+    <title type="text"></title>
+    <updated>2010-12-13T12:59:18Z</updated>
+    <author>
+      <name />
+    </author>
+    <link rel="edit" title="Customer" href="Customers('BLAUS')" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Orders" type="application/atom+xml;type=feed" title="Orders" href="Customers('BLAUS')/Orders" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/CustomerDemographics" type="application/atom+xml;type=feed" title="CustomerDemographics" href="Customers('BLAUS')/CustomerDemographics" />
+    <category term="NorthwindModel.Customer" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/xml">
+      <m:properties>
+        <d:CustomerID>BLAUS</d:CustomerID>
+        <d:CompanyName>Blauer See Delikatessen</d:CompanyName>
+        <d:ContactName>Hanna Moos</d:ContactName>
+        <d:ContactTitle>Sales Representative</d:ContactTitle>
+        <d:Address>Forsterstr. 57</d:Address>
+        <d:City>Mannheim</d:City>
+        <d:Region m:null="true" />
+        <d:PostalCode>68306</d:PostalCode>
+        <d:Country>Germany</d:Country>
+        <d:Phone>0621-08460</d:Phone>
+        <d:Fax>0621-08924</d:Fax>
+      </m:properties>
+    </content>
+  </entry>
+  <entry>
+    <id>http://services.odata.org/northwind/Northwind.svc/Customers('BLONP')</id>
+    <title type="text"></title>
+    <updated>2010-12-13T12:59:18Z</updated>
+    <author>
+      <name />
+    </author>
+    <link rel="edit" title="Customer" href="Customers('BLONP')" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Orders" type="application/atom+xml;type=feed" title="Orders" href="Customers('BLONP')/Orders" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/CustomerDemographics" type="application/atom+xml;type=feed" title="CustomerDemographics" href="Customers('BLONP')/CustomerDemographics" />
+    <category term="NorthwindModel.Customer" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/xml">
+      <m:properties>
+        <d:CustomerID>BLONP</d:CustomerID>
+        <d:CompanyName>Blondesddsl père et fils</d:CompanyName>
+        <d:ContactName>Frédérique Citeaux</d:ContactName>
+        <d:ContactTitle>Marketing Manager</d:ContactTitle>
+        <d:Address>24, place Kléber</d:Address>
+        <d:City>Strasbourg</d:City>
+        <d:Region m:null="true" />
+        <d:PostalCode>67000</d:PostalCode>
+        <d:Country>France</d:Country>
+        <d:Phone>88.60.15.31</d:Phone>
+        <d:Fax>88.60.15.32</d:Fax>
+      </m:properties>
+    </content>
+  </entry>
+</feed>

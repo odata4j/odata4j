@@ -12,6 +12,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -56,7 +57,7 @@ public class Orders implements Serializable {
     private String ShipPostalCode;
     @Column(name = "ShipCountry")
     private String ShipCountry;
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "Orders")
+    @ManyToOne
     private Customers Customer;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "Order")
     private Collection<Order_Details> OrderDetails;

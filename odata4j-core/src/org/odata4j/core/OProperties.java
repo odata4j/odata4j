@@ -18,6 +18,10 @@ public class OProperties {
     private static Pattern longDatePattern = Pattern.compile("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}");
 
     public static <T> OProperty<?> simple(String name, EdmType type, T value) {    	
+    	return simple(name, type, value, false);
+    }	
+    	
+    public static <T> OProperty<?> simple(String name, EdmType type, T value, boolean exceptionOnUnknownType) {    	
         if (type == EdmType.STRING) {
             String sValue = (String) value;
             return OProperties.string(name, sValue);
@@ -45,8 +49,18 @@ public class OProperties {
         } else if (type == EdmType.BINARY) {
             byte[] bValue = (byte[]) value;
             return OProperties.binary(name, bValue);
+        } else if (type == EdmType.DOUBLE) {
+        	Double dValue = (Double) value;
+            return OProperties.double_(name, dValue);
+        } else if (type == EdmType.SINGLE) {
+        	Float fValue = (Float) value;
+            return OProperties.single(name, fValue);
         } else {
-            return new PropertyImpl<T>(name, type, value);
+        	if (exceptionOnUnknownType) {
+        		throw new UnsupportedOperationException("Implement " + type);
+        	} else {
+        		return new PropertyImpl<T>(name, type, value);
+        	}
         }
     }
 

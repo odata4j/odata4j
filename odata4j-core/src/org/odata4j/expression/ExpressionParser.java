@@ -749,7 +749,7 @@ public class ExpressionParser {
     private static int readWord(String value, int start) {
         int rt = start;
         while (rt < value.length()
-                && (Character.isLetterOrDigit(value.charAt(rt)) || value.charAt(rt) == '/')) {
+                && (Character.isLetterOrDigit(value.charAt(rt)) || value.charAt(rt) == '/' || value.charAt(rt) == '_')) {
             rt++;
         }
         return rt;

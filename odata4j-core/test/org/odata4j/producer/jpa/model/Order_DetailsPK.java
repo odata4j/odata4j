@@ -12,40 +12,40 @@ public class Order_DetailsPK implements Serializable {
     private static final long serialVersionUID = 1L;
     @Basic(optional = false)
     @Column(name = "OrderID")
-    private int orderID;
+    private int OrderID;
     @Basic(optional = false)
     @Column(name = "ProductID")
-    private int productID;
+    private int ProductID;
 
     public Order_DetailsPK() {
     }
 
     public Order_DetailsPK(int orderID, int productID) {
-        this.orderID = orderID;
-        this.productID = productID;
+        this.OrderID = orderID;
+        this.ProductID = productID;
     }
 
     public int getOrderID() {
-        return orderID;
+        return OrderID;
     }
 
     public void setOrderID(int orderID) {
-        this.orderID = orderID;
+        this.OrderID = orderID;
     }
 
     public int getProductID() {
-        return productID;
+        return ProductID;
     }
 
     public void setProductID(int productID) {
-        this.productID = productID;
+        this.ProductID = productID;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (int) orderID;
-        hash += (int) productID;
+        hash += (int) OrderID;
+        hash += (int) ProductID;
         return hash;
     }
 
@@ -55,10 +55,10 @@ public class Order_DetailsPK implements Serializable {
             return false;
         }
         Order_DetailsPK other = (Order_DetailsPK) object;
-        if (this.orderID != other.orderID) {
+        if (this.OrderID != other.OrderID) {
             return false;
         }
-        if (this.productID != other.productID) {
+        if (this.ProductID != other.ProductID) {
             return false;
         }
         return true;
@@ -67,7 +67,7 @@ public class Order_DetailsPK implements Serializable {
     @Override
     public String toString() {
         return "org.odata4j.examples.producer.model.OrderDetailsPK[orderID="
-                + orderID + ", productID=" + productID + "]";
+                + OrderID + ", productID=" + ProductID + "]";
     }
 
 }

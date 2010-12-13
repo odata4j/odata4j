@@ -4,8 +4,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
-import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
@@ -23,6 +23,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Attribute.PersistentAttributeType;
 import javax.persistence.metamodel.EntityType;
+import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.PluralAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 
@@ -42,7 +43,6 @@ import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmMultiplicity;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
-import org.odata4j.edm.EdmType;
 import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.OrderByExpression;
 import org.odata4j.internal.InternalUtil;
@@ -369,74 +369,73 @@ public class JPAProducer implements ODataProducer {
         List<OLink> links = new ArrayList<OLink>();
 
         try {
-            //	get properties
+        	SingularAttribute<?, ?> idAtt = entityType.getId(null); 
+        	boolean hasEmbeddedCompositeKey = idAtt.getPersistentAttributeType() == PersistentAttributeType.EMBEDDED;
+        	//	get properties
             for (EdmProperty ep : ees.type.properties) {
+            	
+            	//	we have a embedded composite key and we want a property from that key
+            	if (hasEmbeddedCompositeKey && ees.type.keys.contains(ep.name)) {
+            		//	get the composite id
+	                Member member = idAtt.getJavaMember();
+	                Object key = getValue(jpaEntity, member);
+	                
+	                //	get the property from the key
+	                ManagedType<?> keyType = (ManagedType<?>)idAtt.getType();
+	                Attribute<?, ?> att = keyType.getAttribute(ep.name);
+	                member = att.getJavaMember();
+	                if (member == null) { // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_95:_20091017:_Attribute.getJavaMember.28.29_returns_null_for_a_BasicType_on_a_MappedSuperclass_because_of_an_uninitialized_accessor
+	                	member = getJavaMember(key.getClass(), ep.name);
+	                }	
+	                Object value = getValue(key, member);
+                
+                	properties.add(OProperties.simple(ep.name, ep.type, value, true));
+                	
+            	} else {
+            		//	get the simple attribute
+            		Attribute<?, ?> att = entityType.getAttribute(ep.name);
+                	Member member = att.getJavaMember();
+                    Object value = getValue(jpaEntity, member);
+                
+                	properties.add(OProperties.simple(ep.name, ep.type, value, true));
+            	}
 
-                Attribute<?, ?> att = entityType.getAttribute(ep.name);
-                Member member = att.getJavaMember();
-                Object value = getValue(jpaEntity, member);
-
-                if (ep.type == EdmType.STRING) {
-                    String sValue = (String) value;
-                    properties.add(OProperties.string(ep.name, sValue));
-                } else if (ep.type == EdmType.INT32) {
-                    Integer iValue = (Integer) value;
-                    properties.add(OProperties.int32(ep.name, iValue));
-                } else if (ep.type == EdmType.BOOLEAN) {
-                    Boolean bValue = (Boolean) value;
-                    properties.add(OProperties.boolean_(ep.name, bValue));
-                } else if (ep.type == EdmType.INT16) {
-                    Short sValue = (Short) value;
-                    properties.add(OProperties.short_(ep.name, sValue));
-                } else if (ep.type == EdmType.INT64) {
-                    Long iValue = (Long) value;
-                    properties.add(OProperties.int64(ep.name, iValue));
-                } else if (ep.type == EdmType.BYTE) {
-                    Byte bValue = (Byte) value;
-                    properties.add(OProperties.byte_(ep.name, bValue));
-                } else if (ep.type == EdmType.DECIMAL) {
-                    BigDecimal dValue = (BigDecimal) value;
-                    properties.add(OProperties.decimal(ep.name, dValue));
-                } else if (ep.type == EdmType.DATETIME) {
-                    Date dValue = (Date) value;
-                    properties.add(OProperties.datetime(ep.name, dValue));
-                } else if (ep.type == EdmType.BINARY) {
-                    byte[] bValue = (byte[]) value;
-                    properties.add(OProperties.binary(ep.name, bValue));
-                } else {
-                    throw new UnsupportedOperationException("Implement " + ep.type);
-                }
             }
-
+            
             //	get the collections if necessary
             if (expand != null && !expand.isEmpty()) {
-                for (final EntitySimpleProperty prop : expand) {
+                for (final EntitySimpleProperty propPath : expand) {
 
-                    Attribute<?, ?> att = entityType.getAttribute(prop.getPropertyName());
-                    if (att.getPersistentAttributeType() == PersistentAttributeType.ONE_TO_MANY
-                            || att.getPersistentAttributeType() == PersistentAttributeType.MANY_TO_MANY) {
+            		//	split the property path into the first and remaining parts 
+            		String[] props = propPath.getPropertyName().split("/", 2);
+            		String prop = props[0];
+            		List<EntitySimpleProperty> remainingPropPath = props.length > 1 ? Arrays.asList(org.odata4j.expression.Expression.simpleProperty(props[1])) : null;
+            		
+                	Attribute<?, ?> att = entityType.getAttribute(prop);
+                	if (att.getPersistentAttributeType() == PersistentAttributeType.ONE_TO_MANY
+                		|| att.getPersistentAttributeType() == PersistentAttributeType.MANY_TO_MANY) {
+                		
+                		Collection<?> value = getValue(jpaEntity, att.getJavaMember());
 
-                        Collection<?> value = getValue(jpaEntity, att.getJavaMember());
-
-                        List<OEntity> relatedEntities = new ArrayList<OEntity>();
-                        for (Object relatedEntity : value) {
-                            EntityType<?> elementEntityType = (EntityType<?>) ((PluralAttribute<?, ?, ?>) att).getElementType();
-                            EdmEntitySet elementEntitySet = metadata.getEdmEntitySet(elementEntityType.getName());
-                            // because we support simple properties only at the moment we do not
-                            // navigate along the property path
-                            relatedEntities.add(jpaEntityToOEntity(elementEntitySet, elementEntityType, relatedEntity, null));
+                		List<OEntity> relatedEntities = new ArrayList<OEntity>();
+                        for(Object relatedEntity : value) {
+                        	EntityType<?> elementEntityType = (EntityType<?>)((PluralAttribute<?,?,?>)att).getElementType();
+                        	EdmEntitySet elementEntitySet = metadata.getEdmEntitySet(elementEntityType.getName());
+                        	relatedEntities.add(jpaEntityToOEntity(elementEntitySet, elementEntityType, relatedEntity, remainingPropPath));
                         }
-                        links.add(OLinks.relatedEntities(null, prop.getPropertyName(), null, relatedEntities));
-                    } else if (att.getPersistentAttributeType() == PersistentAttributeType.ONE_TO_ONE
-                            || att.getPersistentAttributeType() == PersistentAttributeType.MANY_TO_ONE) {
-                        EntityType<?> relatedEntityType = (EntityType<?>) ((SingularAttribute<?, ?>) att).getType();
-                        EdmEntitySet relatedEntitySet = metadata.getEdmEntitySet(relatedEntityType.getName());
-                        Object relatedEntity = getValue(jpaEntity, att.getJavaMember());
-                        links.add(OLinks.relatedEntity(null, prop.getPropertyName(), null, jpaEntityToOEntity(relatedEntitySet, relatedEntityType, relatedEntity, null)));
-                    }
-                }
+                    	links.add(OLinks.relatedEntities(null, prop, null, relatedEntities));
+                	} else if (att.getPersistentAttributeType() == PersistentAttributeType.ONE_TO_ONE
+                				|| att.getPersistentAttributeType() == PersistentAttributeType.MANY_TO_ONE) {
+                    	EntityType<?> relatedEntityType = (EntityType<?>)((SingularAttribute<?,?>)att).getType();
+                    	EdmEntitySet relatedEntitySet = metadata.getEdmEntitySet(relatedEntityType.getName());                		
+                		Object relatedEntity = getValue(jpaEntity, att.getJavaMember());
+                		links.add(OLinks.relatedEntity(null, prop, null, 
+                				  jpaEntityToOEntity(relatedEntitySet, relatedEntityType, relatedEntity, remainingPropPath)));
+                	}
+                	
+                }   
             }
-
+            
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -457,6 +456,25 @@ public class JPAProducer implements ODataProducer {
         }
     }
 
+    private static Member getJavaMember(Class<?> type, String name) {
+    	try {
+			Field field = CoreUtils.getField(type, name);
+			field.setAccessible(true);
+			return field;
+		} catch (Exception ignore) { }
+		
+		String methodName = "get" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
+		while (!type.equals(Object.class)) {
+			try {
+				Method method = type.getDeclaredMethod(methodName);
+				method.setAccessible(true);
+				return method;
+			} catch (Exception ignore) { }
+			type = type.getSuperclass();
+		}
+    	return null;
+    }
+    
     private static EntityType<?> findJPAEntityType(EntityManager em, String jpaEntityTypeName) {
         for (EntityType<?> et : em.getMetamodel().getEntities()) {
             if (et.getName().equals(jpaEntityTypeName)) {
