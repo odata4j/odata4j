@@ -1,19 +1,5 @@
 package org.odata4j.producer.jpa;
 
-import java.lang.reflect.Method;
-import java.math.BigDecimal;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.metamodel.SingularAttribute;
-
-import org.core4j.Enumerable;
 import org.odata4j.expression.AddExpression;
 import org.odata4j.expression.AndExpression;
 import org.odata4j.expression.BinaryCommonExpression;
@@ -42,26 +28,19 @@ import org.odata4j.producer.resources.OptionsQueryParser;
 
 public class InJPAEvaluation {
 
-    @SuppressWarnings("unchecked")
-    private static final Set<Class> SUPPORTED_CLASSES_FOR_BINARY_PROMOTION =
-            Enumerable.create(
-                    BigDecimal.class,
-                    Double.class,
-                    Float.class,
-                    Byte.class,
-                    Integer.class,
-                    Short.class,
-                    Long.class).cast(Class.class).toSet();
+    public static String primaryKeyName;
 
-    public static Object evaluate(CommonExpression expression,
-        CriteriaBuilder cb, Root<?> root) {
+    public static Object evaluate(CommonExpression expression) {
 
         if (expression instanceof BoolCommonExpression) {
-            return evaluate((BoolCommonExpression) expression, cb, root);
+            return evaluate((BoolCommonExpression) expression);
         }
 
         if (expression instanceof EntitySimpleProperty) {
-            return ((EntitySimpleProperty) expression).getPropertyName();
+            String field = ((EntitySimpleProperty) expression).getPropertyName();
+            return "t." + (field.equals(OptionsQueryParser.PRIMARY_KEY_NAME)
+                    ? primaryKeyName
+                    : field.replace("/", "."));
         }
 
         if (expression instanceof NullLiteral) {
@@ -69,442 +48,125 @@ public class InJPAEvaluation {
         }
 
         if (expression instanceof LiteralExpression) {
-            return org.odata4j.expression.Expression.literalValue(
+            Object result = org.odata4j.expression.Expression.literalValue(
                     (LiteralExpression) expression);
+
+            result = "'" + result + "'";
+            return result;
         }
 
         if (expression instanceof AddExpression) {
-            return binaryFunction((BinaryCommonExpression) expression, cb,
-                    root, BinaryFunction.ADD);
+            ObjectPair pair = createPair((BinaryCommonExpression) expression);
+            return String.format("%1s + %2s", pair.lhs, pair.rhs);
         }
 
         if (expression instanceof SubExpression) {
-            return binaryFunction((BinaryCommonExpression) expression, cb,
-                    root, BinaryFunction.SUB);
+            ObjectPair pair = createPair((BinaryCommonExpression) expression);
+            return String.format("%1s - %2s", pair.lhs, pair.rhs);
         }
 
         if (expression instanceof MulExpression) {
-            return binaryFunction((BinaryCommonExpression) expression, cb,
-                    root, BinaryFunction.MUL);
+            ObjectPair pair = createPair((BinaryCommonExpression) expression);
+            return String.format("%1s * %2s", pair.lhs, pair.rhs);
         }
 
         if (expression instanceof DivExpression) {
-            return binaryFunction((BinaryCommonExpression) expression, cb,
-                    root, BinaryFunction.DIV);
+            ObjectPair pair = createPair((BinaryCommonExpression) expression);
+            return String.format("%1s / %2s", pair.lhs, pair.rhs);
         }
 
         if (expression instanceof ModExpression) {
-            return binaryFunction((BinaryCommonExpression) expression, cb,
-                    root, BinaryFunction.MOD);
+            ObjectPair pair = createPair((BinaryCommonExpression) expression);
+            return String.format("MOD(%1s, %2s)", pair.lhs, pair.rhs);
         }
 
         if (expression instanceof ParenExpression) {
-            return evaluate(((ParenExpression) expression).getExpression(), cb,
-                    root);
+            return evaluate(((ParenExpression) expression).getExpression());
         }
 
         if (expression instanceof BoolParenExpression) {
-            return evaluate(((BoolParenExpression) expression).getExpression(),
-                    cb, root);
+            return evaluate(((BoolParenExpression) expression).getExpression());
         }
 
-        throw new UnsupportedOperationException("unsupported expression "
-                + expression);
+        throw new UnsupportedOperationException(
+                "unsupported expression " + expression);
     }
 
-    public static Expression<Boolean> evaluate(BoolCommonExpression expression,
-        CriteriaBuilder cb, Root<?> root) {
+    public static String evaluate(BoolCommonExpression expression) {
         if (expression instanceof EqExpression) {
-            ObjectPair pair = createPair((EqExpression) expression, cb, root);
-            return cb.equal(buildPathExpression(root, (String) pair.lhs),
-                    pair.rhs);
+            ObjectPair pair = createPair((EqExpression) expression);
+            return String.format("%1s = %2s", pair.lhs, pair.rhs);
         }
+
         if (expression instanceof NeExpression) {
-            ObjectPair pair = createPair((NeExpression) expression, cb, root);
-            return cb.notEqual(buildPathExpression(root, (String) pair.lhs),
-                    pair.rhs);
+            ObjectPair pair = createPair((NeExpression) expression);
+            return String.format("%1s <> %2s", pair.lhs, pair.rhs);
         }
         if (expression instanceof AndExpression) {
             AndExpression e = (AndExpression) expression;
-            return cb.and(
-                    evaluate(e.getLHS(), cb, root),
-                    evaluate(e.getRHS(), cb, root));
+            return String.format(
+                    "%1s AND %2s",
+                    evaluate(e.getLHS()),
+                    evaluate(e.getRHS()));
         }
         if (expression instanceof OrExpression) {
             OrExpression e = (OrExpression) expression;
-            return cb.or(
-                    evaluate(e.getLHS(), cb, root),
-                    evaluate(e.getRHS(), cb, root));
+            return String.format(
+                    "%1s OR %2s",
+                    evaluate(e.getLHS()),
+                    evaluate(e.getRHS()));
         }
         if (expression instanceof BooleanLiteral) {
-            // return ((BooleanLiteral) expression).getValue();
-            throw new UnsupportedOperationException(
-                "unsupported/tested expression " + expression);
+            return Boolean.toString(((BooleanLiteral) expression).getValue());
         }
 
         if (expression instanceof GtExpression) {
-            ObjectPair pair = createPair((GtExpression) expression, cb, root);
-
-            Object field =
-                    InJPAEvaluation
-                            .buildPathExpression(root, (String) pair.lhs);
-            return callExpressionMethod(
-                    cb,
-                    "greaterThan",
-                    new Object[] {
-                            field, pair.rhs });
+            ObjectPair pair = createPair((GtExpression) expression);
+            return String.format("%1s > %2s", pair.lhs, pair.rhs);
         }
         if (expression instanceof LtExpression) {
-            ObjectPair pair = createPair((LtExpression) expression, cb, root);
-
-            Object field =
-                    InJPAEvaluation
-                            .buildPathExpression(root, (String) pair.lhs);
-            return callExpressionMethod(
-                    cb,
-                    "lessThan",
-                    new Object[] {
-                            field, pair.rhs });
+            ObjectPair pair = createPair((LtExpression) expression);
+            return String.format("%1s < %2s", pair.lhs, pair.rhs);
         }
         if (expression instanceof GeExpression) {
-            ObjectPair pair = createPair((GeExpression) expression, cb, root);
-
-            Object field =
-                    InJPAEvaluation
-                            .buildPathExpression(root, (String) pair.lhs);
-            return callExpressionMethod(
-                    cb,
-                    "greaterThanOrEqualTo",
-                    new Object[] {
-                            field, pair.rhs });
+            ObjectPair pair = createPair((GeExpression) expression);
+            return String.format("%1s >= %2s", pair.lhs, pair.rhs);
         }
         if (expression instanceof LeExpression) {
-            ObjectPair pair = createPair((LeExpression) expression, cb, root);
-
-            Object field =
-                    InJPAEvaluation
-                            .buildPathExpression(root, (String) pair.lhs);
-            return callExpressionMethod(
-                    cb,
-                    "lessThanOrEqualTo",
-                    new Object[] {
-                            field, pair.rhs });
+            ObjectPair pair = createPair((LeExpression) expression);
+            return String.format("%1s <= %2s", pair.lhs, pair.rhs);
         }
 
         if (expression instanceof NotExpression) {
-            // NotExpression e = (NotExpression) expression;
-            throw new UnsupportedOperationException(
-                "unsupported/tested expression " + expression);
-            // return cb.not((Expression<Boolean>) evaluate(
-            // e.getExpression(),
-            // cb,
-            // root));
+            NotExpression e = (NotExpression) expression;
+            return String.format(
+                    "NOT %1s",
+                    evaluate(e.getExpression()));
         }
+
         if (expression instanceof SubstringOfMethodCallExpression) {
             // SubstringOfMethodCallExpression e
             // =(SubstringOfMethodCallExpression) expression;
-            // String cbValue = (String) evaluate(e.getTarget(), cb, root);
-            // String searchValue = (String) evaluate(e.getValue(), cb, root);
+            // String cbValue = (String) evaluate(e.getTarget());
+            // String searchValue = (String) evaluate(e.getValue());
             // return cbValue != null && searchValue != null &&
             // cbValue.contains(searchValue);
             throw new UnsupportedOperationException(
-                "unsupported/tested expression " + expression);
+                    "unsupported/tested expression " + expression);
         }
 
         if (expression instanceof ParenExpression) {
+            ParenExpression e = (ParenExpression) expression;
+            return "(" + evaluate((ParenExpression) e.getExpression()) + ")";
         }
 
         if (expression instanceof BoolParenExpression) {
             BoolParenExpression e = (BoolParenExpression) expression;
-            return evaluate((BoolCommonExpression) e.getExpression(), cb, root);
+            return "(" + evaluate((BoolCommonExpression) e.getExpression()) + ")";
         }
 
         throw new UnsupportedOperationException("unsupported expression "
                 + expression);
-    }
-
-    @SuppressWarnings("unchecked")
-    private static Path<?> buildPathExpression(Root<?> root, String path) {
-        Path<?> expPath = null;
-        for (String prop : path.split("/")) {
-            SingularAttribute<?, ?> attr = null;
-
-            try {
-                attr = root.getModel().getSingularAttribute(prop);
-            } catch (IllegalArgumentException e) {
-                if (prop.equals(OptionsQueryParser.PRIMARY_KEY_NAME)) {
-                    Class<?> primaryKeyType =
-                            root.getModel().getIdType().getJavaType();
-                    attr = root.getModel().getId(primaryKeyType);
-                } else {
-                    throw new UnsupportedOperationException(
-                        "Model attribute not found " + prop);
-                }
-            }
-
-            if (expPath == null) {
-                expPath = root.get((SingularAttribute) attr);
-            } else {
-                expPath = expPath.get((SingularAttribute) attr);
-            }
-        }
-
-        return expPath;
-    }
-
-    private static Predicate callExpressionMethod(Object target,
-        String methodName, Object[] parms) {
-        // java generic sucks
-        Class<?> partypes[] = new Class[2];
-        partypes[0] = Expression.class;
-        partypes[1] = Comparable.class;
-
-        Predicate result = null;
-        try {
-            Method method = target.getClass().getMethod(methodName, partypes);
-            result = (Predicate) method.invoke(target, parms);
-        } catch (Exception ex) {
-            Logger.getLogger(JPAProducer.class.getName()).log(Level.SEVERE,
-                    null, ex);
-            throw new UnsupportedOperationException(
-                "unsupported Expression Method " + methodName);
-        }
-
-        return result;
-    }
-
-    private static interface BinaryFunction {
-
-        public abstract BigDecimal apply(BigDecimal lhs, BigDecimal rhs);
-
-        public abstract Double apply(Double lhs, Double rhs);
-
-        public abstract Float apply(Float lhs, Float rhs);
-
-        public abstract Integer apply(Integer lhs, Integer rhs);
-
-        public abstract Long apply(Long lhs, Long rhs);
-
-        public static final BinaryFunction ADD = new BinaryFunction() {
-
-            public BigDecimal apply(BigDecimal lhs, BigDecimal rhs) {
-                return lhs.add(rhs);
-            }
-
-            public Double apply(Double lhs, Double rhs) {
-                return lhs + rhs;
-            }
-
-            public Float apply(Float lhs, Float rhs) {
-                return lhs + rhs;
-            }
-
-            public Integer apply(Integer lhs, Integer rhs) {
-                return lhs + rhs;
-            }
-
-            public Long apply(Long lhs, Long rhs) {
-                return lhs + rhs;
-            }
-        };
-        public static final BinaryFunction SUB = new BinaryFunction() {
-
-            public BigDecimal apply(BigDecimal lhs, BigDecimal rhs) {
-                return lhs.subtract(rhs);
-            }
-
-            public Double apply(Double lhs, Double rhs) {
-                return lhs - rhs;
-            }
-
-            public Float apply(Float lhs, Float rhs) {
-                return lhs - rhs;
-            }
-
-            public Integer apply(Integer lhs, Integer rhs) {
-                return lhs - rhs;
-            }
-
-            public Long apply(Long lhs, Long rhs) {
-                return lhs - rhs;
-            }
-        };
-        public static final BinaryFunction MUL = new BinaryFunction() {
-
-            public BigDecimal apply(BigDecimal lhs, BigDecimal rhs) {
-                return lhs.multiply(rhs);
-            }
-
-            public Double apply(Double lhs, Double rhs) {
-                return lhs * rhs;
-            }
-
-            public Float apply(Float lhs, Float rhs) {
-                return lhs * rhs;
-            }
-
-            public Integer apply(Integer lhs, Integer rhs) {
-                return lhs * rhs;
-            }
-
-            public Long apply(Long lhs, Long rhs) {
-                return lhs * rhs;
-            }
-        };
-        public static final BinaryFunction DIV = new BinaryFunction() {
-
-            public BigDecimal apply(BigDecimal lhs, BigDecimal rhs) {
-                return lhs.divide(rhs);
-            }
-
-            public Double apply(Double lhs, Double rhs) {
-                return lhs / rhs;
-            }
-
-            public Float apply(Float lhs, Float rhs) {
-                return lhs / rhs;
-            }
-
-            public Integer apply(Integer lhs, Integer rhs) {
-                return lhs / rhs;
-            }
-
-            public Long apply(Long lhs, Long rhs) {
-                return lhs / rhs;
-            }
-        };
-        public static final BinaryFunction MOD = new BinaryFunction() {
-
-            public BigDecimal apply(BigDecimal lhs, BigDecimal rhs) {
-                return lhs.remainder(rhs);
-            }
-
-            public Double apply(Double lhs, Double rhs) {
-                return lhs % rhs;
-            }
-
-            public Float apply(Float lhs, Float rhs) {
-                return lhs % rhs;
-            }
-
-            public Integer apply(Integer lhs, Integer rhs) {
-                return lhs % rhs;
-            }
-
-            public Long apply(Long lhs, Long rhs) {
-                return lhs % rhs;
-            }
-        };
-    }
-
-    private static Object binaryFunction(BinaryCommonExpression be,
-        CriteriaBuilder cb, Root<?> root, BinaryFunction function) {
-        ObjectPair pair = new ObjectPair(be.getLHS(), be.getRHS(), cb, root);
-        binaryNumericPromotion(pair);
-
-        // � Edm.Decimal
-        // � Edm.Double
-        // � Edm.Single
-        // � Edm.Int32
-        // � Edm.Int64
-
-        if (pair.lhs instanceof BigDecimal) {
-            return function.apply((BigDecimal) pair.lhs, (BigDecimal) pair.rhs);
-        }
-        if (pair.lhs instanceof Double) {
-            return function.apply((Double) pair.lhs, (Double) pair.rhs);
-        }
-        if (pair.lhs instanceof Float) {
-            return function.apply((Float) pair.lhs, (Float) pair.rhs);
-        }
-        if (pair.lhs instanceof Integer) {
-            return function.apply((Integer) pair.lhs, (Integer) pair.rhs);
-        }
-        if (pair.lhs instanceof Long) {
-            return function.apply((Long) pair.lhs, (Long) pair.rhs);
-        }
-
-        throw new UnsupportedOperationException("unsupported add type "
-                + pair.lhs);
-    }
-
-    @SuppressWarnings("unchecked")
-    private static void binaryNumericPromotion(ObjectPair pair) {
-
-        // � Edm.Decimal
-        // � Edm.Double
-        // � Edm.Single
-        // � Edm.Byte
-        // � Edm.Int16
-        // � Edm.Int32
-        // � Edm.Int64
-
-        if (pair.lhs == null || pair.rhs == null) {
-            return;
-        }
-        Class<?> lhsClass = pair.lhs.getClass();
-        Class<?> rhsClass = pair.rhs.getClass();
-        if (lhsClass.equals(rhsClass)) {
-            return;
-        }
-        if (!SUPPORTED_CLASSES_FOR_BINARY_PROMOTION.contains(lhsClass)
-                || !SUPPORTED_CLASSES_FOR_BINARY_PROMOTION.contains(rhsClass)) {
-            return;
-        }
-
-        // If supported, binary numeric promotion SHOULD consist of the
-        // application of the following rules in the order specified:
-
-        // � If either operand is of type Edm.Decimal, the other operand is
-        // converted to Edm.Decimal unless it is of type Edm.Single or
-        // Edm.Double.
-        if (lhsClass.equals(BigDecimal.class)
-                && Enumerable
-                        .create(Byte.class, Short.class, Integer.class,
-                                Long.class).cast(Class.class)
-                        .contains(rhsClass)) {
-            pair.rhs = BigDecimal.valueOf(((Number) pair.rhs).longValue());
-        } else if (rhsClass.equals(BigDecimal.class)
-                && Enumerable
-                        .create(Byte.class, Short.class, Integer.class,
-                                Long.class).cast(Class.class)
-                        .contains(lhsClass)) {
-            pair.lhs = BigDecimal.valueOf(((Number) pair.lhs).longValue());
-        } // � Otherwise, if either operand is Edm.Double, the other operand is
-          // converted to type Edm.Double.
-        else if (lhsClass.equals(Double.class)) {
-            pair.rhs = ((Number) pair.rhs).doubleValue();
-        } else if (rhsClass.equals(Double.class)) {
-            pair.lhs = ((Number) pair.lhs).doubleValue();
-        } // � Otherwise, if either operand is Edm.Single, the other operand is
-          // converted to type Edm.Single.
-        else if (lhsClass.equals(Float.class)) {
-            pair.rhs = ((Number) pair.rhs).floatValue();
-        } else if (rhsClass.equals(Float.class)) {
-            pair.lhs = ((Number) pair.lhs).floatValue();
-        } // � Otherwise, if either operand is Edm.Int64, the other operand is
-          // converted to type Edm.Int64.
-        else if (lhsClass.equals(Long.class)) {
-            pair.rhs = ((Number) pair.rhs).longValue();
-        } else if (rhsClass.equals(Long.class)) {
-            pair.lhs = ((Number) pair.lhs).longValue();
-        } // � Otherwise, if either operand is Edm.Int32, the other operand is
-          // converted to type Edm.Int32
-        else if (lhsClass.equals(Integer.class)) {
-            pair.rhs = ((Number) pair.rhs).intValue();
-        } else if (rhsClass.equals(Integer.class)) {
-            pair.lhs = ((Number) pair.lhs).intValue();
-        } // � Otherwise, if either operand is Edm.Int16, the other operand is
-          // converted to type Edm.Int16.
-        else if (lhsClass.equals(Short.class)) {
-            pair.rhs = ((Number) pair.rhs).shortValue();
-        } else if (rhsClass.equals(Short.class)) {
-            pair.lhs = ((Number) pair.lhs).shortValue();
-        }
-
-        // � If binary numeric promotion is supported, a data service SHOULD use
-        // a castExpression to promote an operand to the cb type.
-
     }
 
     private static class ObjectPair {
@@ -512,9 +174,8 @@ public class InJPAEvaluation {
         public Object lhs;
         public Object rhs;
 
-        public ObjectPair(CommonExpression lhs, CommonExpression rhs,
-            CriteriaBuilder cb, Root<?> root) {
-            this(evaluate(lhs, cb, root), evaluate(rhs, cb, root));
+        public ObjectPair(CommonExpression lhs, CommonExpression rhs) {
+            this(evaluate(lhs), evaluate(rhs));
         }
 
         public ObjectPair(Object lhs, Object rhs) {
@@ -523,11 +184,8 @@ public class InJPAEvaluation {
         }
     }
 
-    private static ObjectPair createPair(BinaryCommonExpression be,
-        CriteriaBuilder cb, Root<?> root) {
-        ObjectPair pair = new ObjectPair(be.getLHS(), be.getRHS(), cb, root);
-        binaryNumericPromotion(pair);
-
+    private static ObjectPair createPair(BinaryCommonExpression be) {
+        ObjectPair pair = new ObjectPair(be.getLHS(), be.getRHS());
         return pair;
     }
 }

@@ -182,12 +182,14 @@ public class JPAProducerQueryOptionTest {
     // String uri = "Products?$filter=not endswith(QuantityPerUnit,'bags')";
     // NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
     // }
-    // @Test
-    // public void SystemQueryOptionFilterAdditionTest() {
-    // String inp = "SystemQueryOptionFilterAdditionTest";
-    // String uri = "Products?$filter=(UnitPrice add 5) gt 10";
-    // NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
-    // }
+//
+//    @Test
+//    public void SystemQueryOptionFilterAdditionTest() {
+//        String inp = "SystemQueryOptionFilterAdditionTest";
+//        String uri = "Products?$filter=(UnitPrice add 5) gt 10";
+//        NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
+//    }
+//
     // @Test
     // public void SystemQueryOptionFilterSubtractionTest() {
     // String inp = "SystemQueryOptionFilterSubtractionTest";

@@ -14,12 +14,6 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityNotFoundException;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Attribute.PersistentAttributeType;
 import javax.persistence.metamodel.EntityType;
@@ -61,6 +55,7 @@ import org.odata4j.producer.resources.OptionsQueryParser;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
+import javax.persistence.Query;
 
 public class JPAProducer implements ODataProducer {
 
@@ -369,73 +364,73 @@ public class JPAProducer implements ODataProducer {
         List<OLink> links = new ArrayList<OLink>();
 
         try {
-        	SingularAttribute<?, ?> idAtt = entityType.getId(null); 
-        	boolean hasEmbeddedCompositeKey = idAtt.getPersistentAttributeType() == PersistentAttributeType.EMBEDDED;
-        	//	get properties
+            SingularAttribute<?, ?> idAtt = entityType.getId(null);
+            boolean hasEmbeddedCompositeKey = idAtt.getPersistentAttributeType() == PersistentAttributeType.EMBEDDED;
+            //	get properties
             for (EdmProperty ep : ees.type.properties) {
-            	
-            	//	we have a embedded composite key and we want a property from that key
-            	if (hasEmbeddedCompositeKey && ees.type.keys.contains(ep.name)) {
-            		//	get the composite id
-	                Member member = idAtt.getJavaMember();
-	                Object key = getValue(jpaEntity, member);
-	                
-	                //	get the property from the key
-	                ManagedType<?> keyType = (ManagedType<?>)idAtt.getType();
-	                Attribute<?, ?> att = keyType.getAttribute(ep.name);
-	                member = att.getJavaMember();
-	                if (member == null) { // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_95:_20091017:_Attribute.getJavaMember.28.29_returns_null_for_a_BasicType_on_a_MappedSuperclass_because_of_an_uninitialized_accessor
-	                	member = getJavaMember(key.getClass(), ep.name);
-	                }	
-	                Object value = getValue(key, member);
-                
-                	properties.add(OProperties.simple(ep.name, ep.type, value, true));
-                	
-            	} else {
-            		//	get the simple attribute
-            		Attribute<?, ?> att = entityType.getAttribute(ep.name);
-                	Member member = att.getJavaMember();
+
+                //	we have a embedded composite key and we want a property from that key
+                if (hasEmbeddedCompositeKey && ees.type.keys.contains(ep.name)) {
+                    //	get the composite id
+                    Member member = idAtt.getJavaMember();
+                    Object key = getValue(jpaEntity, member);
+
+                    //	get the property from the key
+                    ManagedType<?> keyType = (ManagedType<?>) idAtt.getType();
+                    Attribute<?, ?> att = keyType.getAttribute(ep.name);
+                    member = att.getJavaMember();
+                    if (member == null) { // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_95:_20091017:_Attribute.getJavaMember.28.29_returns_null_for_a_BasicType_on_a_MappedSuperclass_because_of_an_uninitialized_accessor
+                        member = getJavaMember(key.getClass(), ep.name);
+                    }
+                    Object value = getValue(key, member);
+
+                    properties.add(OProperties.simple(ep.name, ep.type, value, true));
+
+                } else {
+                    //	get the simple attribute
+                    Attribute<?, ?> att = entityType.getAttribute(ep.name);
+                    Member member = att.getJavaMember();
                     Object value = getValue(jpaEntity, member);
-                
-                	properties.add(OProperties.simple(ep.name, ep.type, value, true));
-            	}
+
+                    properties.add(OProperties.simple(ep.name, ep.type, value, true));
+                }
 
             }
-            
+
             //	get the collections if necessary
             if (expand != null && !expand.isEmpty()) {
                 for (final EntitySimpleProperty propPath : expand) {
 
-            		//	split the property path into the first and remaining parts 
-            		String[] props = propPath.getPropertyName().split("/", 2);
-            		String prop = props[0];
-            		List<EntitySimpleProperty> remainingPropPath = props.length > 1 ? Arrays.asList(org.odata4j.expression.Expression.simpleProperty(props[1])) : null;
-            		
-                	Attribute<?, ?> att = entityType.getAttribute(prop);
-                	if (att.getPersistentAttributeType() == PersistentAttributeType.ONE_TO_MANY
-                		|| att.getPersistentAttributeType() == PersistentAttributeType.MANY_TO_MANY) {
-                		
-                		Collection<?> value = getValue(jpaEntity, att.getJavaMember());
+                    //	split the property path into the first and remaining parts
+                    String[] props = propPath.getPropertyName().split("/", 2);
+                    String prop = props[0];
+                    List<EntitySimpleProperty> remainingPropPath = props.length > 1 ? Arrays.asList(org.odata4j.expression.Expression.simpleProperty(props[1])) : null;
 
-                		List<OEntity> relatedEntities = new ArrayList<OEntity>();
-                        for(Object relatedEntity : value) {
-                        	EntityType<?> elementEntityType = (EntityType<?>)((PluralAttribute<?,?,?>)att).getElementType();
-                        	EdmEntitySet elementEntitySet = metadata.getEdmEntitySet(elementEntityType.getName());
-                        	relatedEntities.add(jpaEntityToOEntity(elementEntitySet, elementEntityType, relatedEntity, remainingPropPath));
+                    Attribute<?, ?> att = entityType.getAttribute(prop);
+                    if (att.getPersistentAttributeType() == PersistentAttributeType.ONE_TO_MANY
+                            || att.getPersistentAttributeType() == PersistentAttributeType.MANY_TO_MANY) {
+
+                        Collection<?> value = getValue(jpaEntity, att.getJavaMember());
+
+                        List<OEntity> relatedEntities = new ArrayList<OEntity>();
+                        for (Object relatedEntity : value) {
+                            EntityType<?> elementEntityType = (EntityType<?>) ((PluralAttribute<?, ?, ?>) att).getElementType();
+                            EdmEntitySet elementEntitySet = metadata.getEdmEntitySet(elementEntityType.getName());
+                            relatedEntities.add(jpaEntityToOEntity(elementEntitySet, elementEntityType, relatedEntity, remainingPropPath));
                         }
-                    	links.add(OLinks.relatedEntities(null, prop, null, relatedEntities));
-                	} else if (att.getPersistentAttributeType() == PersistentAttributeType.ONE_TO_ONE
-                				|| att.getPersistentAttributeType() == PersistentAttributeType.MANY_TO_ONE) {
-                    	EntityType<?> relatedEntityType = (EntityType<?>)((SingularAttribute<?,?>)att).getType();
-                    	EdmEntitySet relatedEntitySet = metadata.getEdmEntitySet(relatedEntityType.getName());                		
-                		Object relatedEntity = getValue(jpaEntity, att.getJavaMember());
-                		links.add(OLinks.relatedEntity(null, prop, null, 
-                				  jpaEntityToOEntity(relatedEntitySet, relatedEntityType, relatedEntity, remainingPropPath)));
-                	}
-                	
-                }   
+                        links.add(OLinks.relatedEntities(null, prop, null, relatedEntities));
+                    } else if (att.getPersistentAttributeType() == PersistentAttributeType.ONE_TO_ONE
+                            || att.getPersistentAttributeType() == PersistentAttributeType.MANY_TO_ONE) {
+                        EntityType<?> relatedEntityType = (EntityType<?>) ((SingularAttribute<?, ?>) att).getType();
+                        EdmEntitySet relatedEntitySet = metadata.getEdmEntitySet(relatedEntityType.getName());
+                        Object relatedEntity = getValue(jpaEntity, att.getJavaMember());
+                        links.add(OLinks.relatedEntity(null, prop, null,
+                                jpaEntityToOEntity(relatedEntitySet, relatedEntityType, relatedEntity, remainingPropPath)));
+                    }
+
+                }
             }
-            
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -444,7 +439,7 @@ public class JPAProducer implements ODataProducer {
     }
 
     @SuppressWarnings("unchecked")
-	private <T> T getValue(Object obj, Member member) throws Exception {
+    private <T> T getValue(Object obj, Member member) throws Exception {
         if (member instanceof Method) {
             Method method = (Method) member;
             return (T) method.invoke(obj);
@@ -457,24 +452,26 @@ public class JPAProducer implements ODataProducer {
     }
 
     private static Member getJavaMember(Class<?> type, String name) {
-    	try {
-			Field field = CoreUtils.getField(type, name);
-			field.setAccessible(true);
-			return field;
-		} catch (Exception ignore) { }
-		
-		String methodName = "get" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
-		while (!type.equals(Object.class)) {
-			try {
-				Method method = type.getDeclaredMethod(methodName);
-				method.setAccessible(true);
-				return method;
-			} catch (Exception ignore) { }
-			type = type.getSuperclass();
-		}
-    	return null;
+        try {
+            Field field = CoreUtils.getField(type, name);
+            field.setAccessible(true);
+            return field;
+        } catch (Exception ignore) {
+        }
+
+        String methodName = "get" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
+        while (!type.equals(Object.class)) {
+            try {
+                Method method = type.getDeclaredMethod(methodName);
+                method.setAccessible(true);
+                return method;
+            } catch (Exception ignore) {
+            }
+            type = type.getSuperclass();
+        }
+        return null;
     }
-    
+
     private static EntityType<?> findJPAEntityType(EntityManager em, String jpaEntityTypeName) {
         for (EntityType<?> et : em.getMetamodel().getEntities()) {
             if (et.getName().equals(jpaEntityTypeName)) {
@@ -503,57 +500,50 @@ public class JPAProducer implements ODataProducer {
             final QueryInfo query,
             final int maxResults) {
 
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Object> cq = cb.createQuery();
+        EntityType entityType = em.getMetamodel().entity(clazz);
+        String sql = "SELECT t FROM " + entityType.getName() + " t";
 
-        Root<?> root = cq.from(em.getMetamodel().entity(clazz));
-        cq.select(root);
-
-        Expression<Boolean> predicate = null;
+        String predicate = null;
         if (query.filter != null) {
-
-            predicate = InJPAEvaluation.evaluate(
-                    query.filter,
-                    cb,
-                    root);
+            predicate = InJPAEvaluation.evaluate(query.filter);
         }
 
         if (query.skipToken != null) {
-            Expression<Boolean> skipPredicate = InJPAEvaluation.evaluate(
-                    query.skipToken,
-                    cb,
-                    root);
+            Class<?> primaryKeyType = entityType.getIdType().getJavaType();
+            InJPAEvaluation.primaryKeyName = entityType.getId(
+                    primaryKeyType).getName();
+
+            String skipPredicate = InJPAEvaluation.evaluate(query.skipToken);
 
             if (predicate != null) {
-                predicate = cb.and(predicate, skipPredicate);
+                predicate = String.format("%1 AND %2", predicate, skipPredicate);
+
             } else {
                 predicate = skipPredicate;
             }
         }
 
         if (predicate != null) {
-            cq.where(predicate);
+            sql = sql + " WHERE " + predicate;
         }
 
         if (query.orderBy != null) {
-            List<Order> orders = new LinkedList<Order>();
+            String orders = "";
             for (OrderByExpression orderBy : query.orderBy) {
                 String field = (String) InJPAEvaluation.evaluate(
-                        orderBy.getExpression(),
-                        cb,
-                        root);
+                        orderBy.getExpression());
 
                 if (orderBy.isAscending()) {
-                    orders.add(cb.asc(root.get(field)));
+                    orders = orders + field + ",";
                 } else {
-                    orders.add(cb.desc(root.get(field)));
+                    orders = orders + field + " DESC,";
                 }
             }
 
-            cq.orderBy(orders);
+            sql = sql + " ORDER BY " + orders.substring(0, orders.length() - 1);
         }
 
-        TypedQuery<Object> tq = em.createQuery(cq);
+        Query tq = em.createQuery(sql);
 
         Integer inlineCount = query.inlineCount == InlineCount.ALLPAGES
                 ? tq.getResultList().size()
@@ -572,7 +562,7 @@ public class JPAProducer implements ODataProducer {
                 queryMaxResult = query.top;
             }
         }
-        
+
         tq = tq.setMaxResults(queryMaxResult + 1);
 
         if (query.skip != null) {

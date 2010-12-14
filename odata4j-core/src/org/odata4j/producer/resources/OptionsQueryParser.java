@@ -89,7 +89,8 @@ public class OptionsQueryParser {
                     result = ordExp;
                 } else {
                     result = Expression.and(
-                            Expression.or(ordExp, result),
+                            Expression.boolParen(
+                            Expression.or(ordExp, result)),
                             result);
                 }
             }
@@ -154,14 +155,14 @@ public class OptionsQueryParser {
 
 
         }
-        
+
         return idObject;
     }
-    
+
     public static List<EntitySimpleProperty> parseExpand(String expand) {
-    	if (expand == null) {
-    		return null;
-    	}
-    	return ExpressionParser.parseExpand(expand);
-    }    
+        if (expand == null) {
+            return null;
+        }
+        return ExpressionParser.parseExpand(expand);
+    }
 }
