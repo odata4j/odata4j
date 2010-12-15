@@ -40,7 +40,8 @@ public class Issue15 {
         ODataConsumer.DUMP_RESPONSE_BODY = true;
         ODataConsumer c = ODataConsumer.create("http://localhost:6794/WcfDataService2.svc/");
         
-        OEntity newEntity = c.createEntity("entity1").properties(
+        @SuppressWarnings("unused")
+		OEntity newEntity = c.createEntity("entity1").properties(
                 OProperties.string("name", "name"+System.currentTimeMillis())
                 ).execute();    // throws
         

@@ -25,14 +25,14 @@ public class Products implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "ProductID")
-    private Integer ProductID;
+	private Integer ProductID;
     @Basic(optional = false)
     @Column(name = "ProductName")
     private String ProductName;
     @Column(name = "QuantityPerUnit")
     private String QuantityPerUnit;
     @Column(name = "UnitPrice")
-    private BigDecimal UnitPrice;
+	private BigDecimal UnitPrice;
     @Column(name = "UnitsInStock")
     private Short UnitsInStock;
     @Column(name = "UnitsOnOrder")

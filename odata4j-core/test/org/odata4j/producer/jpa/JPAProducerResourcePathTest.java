@@ -18,82 +18,82 @@ import org.odata4j.producer.server.JerseyServer;
  */
 public class JPAProducerResourcePathTest {
 
-    private static final String endpointUri =
-            "http://localhost:8810/northwind/Northwind.svc/";
-    
-    private static EntityManagerFactory emf;
-    private static JerseyServer server;
+	private static final String endpointUri =
+			"http://localhost:8810/northwind/Northwind.svc/";
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        String persistenceUnitName = "NorthwindService";
-        String namespace = "Northwind";
+	private static EntityManagerFactory emf;
+	private static JerseyServer server;
 
-        emf = Persistence.createEntityManagerFactory(
-                persistenceUnitName);
+	@BeforeClass
+	public static void setUpClass() throws Exception {
+		String persistenceUnitName = "NorthwindService";
+		String namespace = "Northwind";
 
-        JPAProducer producer = new JPAProducer(
-                emf,
-                namespace,
-                50);
+		emf = Persistence.createEntityManagerFactory(
+				persistenceUnitName);
 
-        NorthwindTestUtils.fillDatabase(emf);
+		JPAProducer producer = new JPAProducer(
+				emf,
+				namespace,
+				50);
 
-        ODataProducerProvider.setInstance(producer);
-        server = ProducerUtil.startODataServer(endpointUri);
-    }
+		NorthwindTestUtils.fillDatabase(emf);
 
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-        if (server != null) {
-            server.stop();
-        }
+		ODataProducerProvider.setInstance(producer);
+		server = ProducerUtil.startODataServer(endpointUri);
+	}
 
-        if (emf != null) {
-            emf.close();
-        }
-    }
+	@AfterClass
+	public static void tearDownClass() throws Exception {
+		if (server != null) {
+			server.stop();
+		}
 
-    @Before
-    public void setUp() {
-    }
+		if (emf != null) {
+			emf.close();
+		}
+	}
 
-    @After
-    public void tearDown() {
-    }
+	@Before
+	public void setUp() {
+	}
 
-    @Test
-    public void ResourcePathCollectionTest() {
-        String inp = "ResourcePathCollectionTest";
-        String uri = "Categories";
-        NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
-    }
+	@After
+	public void tearDown() {
+	}
 
-    @Test
-    public void ResourcePathKeyPredicateTest() {
-        String inp = "ResourcePathKeyPredicateTest";
-        String uri = "Categories(1)";
-        NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
-    }
+	@Test
+	public void ResourcePathCollectionTest() {
+		String inp = "ResourcePathCollectionTest";
+		String uri = "Categories";
+		NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
+	}
 
-    @Test
-    public void ResourcePathNavPropSingleTest() {
-        String inp = "ResourcePathNavPropSingleTest";
-        String uri = "Categories(1)/CategoryName";
-        NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
-    }
+	@Test
+	public void ResourcePathKeyPredicateTest() {
+		String inp = "ResourcePathKeyPredicateTest";
+		String uri = "Categories(1)";
+		NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
+	}
 
-    @Test
-    public void ResourcePathNavPropCollectionTest() {
-        String inp = "ResourcePathNavPropCollectionTest";
-        String uri = "Categories(1)/Products?$filter=ProductID gt 0";
-        NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
-    }
+	@Test
+	public void ResourcePathNavPropSingleTest() {
+		String inp = "ResourcePathNavPropSingleTest";
+		String uri = "Categories(1)/CategoryName";
+		NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
+	}
 
-    @Test
-    public void ResourcePathComplexTypeTest() {
-        String inp = "ResourcePathComplexTypeTest";
-        String uri = "Categories(1)/Products(1)/Supplier/Address";
-        NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
-    }
+	@Test
+	public void ResourcePathNavPropCollectionTest() {
+		String inp = "ResourcePathNavPropCollectionTest";
+		String uri = "Categories(1)/Products?$filter=ProductID gt 0";
+		NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
+	}
+
+	@Test
+	public void ResourcePathComplexTypeTest() {
+		String inp = "ResourcePathComplexTypeTest";
+		String uri = "Categories(1)/Products(1)/Supplier/Address";
+		NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
+	}
 }
