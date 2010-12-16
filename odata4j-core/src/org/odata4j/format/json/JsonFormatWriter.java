@@ -2,6 +2,8 @@ package org.odata4j.format.json;
 
 import java.io.Writer;
 
+import org.core4j.Enumerable;
+import org.core4j.Predicate1;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
@@ -9,7 +11,10 @@ import org.joda.time.LocalTime;
 import org.odata4j.core.Guid;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OEntity;
+import org.odata4j.core.OLink;
 import org.odata4j.core.OProperty;
+import org.odata4j.core.ORelatedEntitiesLink;
+import org.odata4j.core.ORelatedEntityLink;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmType;
@@ -135,26 +140,66 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
             if (ees != null) {
                 isFirst = true;
                 jw.writeSeparator();
-                for (EdmNavigationProperty np : ees.type.navigationProperties) {
+                for (final EdmNavigationProperty np : ees.type.navigationProperties) {
                     if (isFirst) {
                         isFirst = false;
                     } else {
                         jw.writeSeparator();
                     }
                     
+                    //	check whether we have to write inlined entities 
+                    OLink linkToInline = oe.getLinks() != null
+                    	? Enumerable.create(oe.getLinks()).firstOrNull(new Predicate1<OLink>() {
+    						@Override
+    						public boolean apply(OLink input) {
+    							return np.name.equals(input.getTitle());
+    						}})
+    					: null;
+                    
                     jw.writeName(np.name);
-                    jw.startObject();
-                    {
-                        jw.writeName("__deferred");
+                    if (linkToInline == null) {
                         jw.startObject();
                         {
-                            String absId = baseUri + InternalUtil.getEntityRelId(ees.type.keys, oe.getProperties(), ees.name);
-                            jw.writeName("uri");
-                            jw.writeString(absId + "/" + np.name);
+                            jw.writeName("__deferred");
+                            jw.startObject();
+                            {
+                                String absId = baseUri + InternalUtil.getEntityRelId(ees.type.keys, oe.getProperties(), ees.name);
+                                jw.writeName("uri");
+                                jw.writeString(absId + "/" + np.name);
+                            }
+                            jw.endObject();
                         }
                         jw.endObject();
-                    }
-                    jw.endObject();
+					} else {
+						if (linkToInline instanceof ORelatedEntitiesLink) {
+	                        jw.startObject();
+	                        {
+        						jw.writeName("results");
+        
+        			            jw.startArray();
+        			            {
+        			                boolean isFirstInlinedEntity = true;
+        			                for (OEntity re : ((ORelatedEntitiesLink)linkToInline).getRelatedEntities()) {
+        
+        			                    if (isFirstInlinedEntity) {
+        			                    	isFirstInlinedEntity = false;
+        			                    } else {
+        			                        jw.writeSeparator();
+        			                    }
+        
+        			                    writeOEntity(uriInfo, jw, re, re.getEntitySet());
+        			                }
+        
+        			            }
+        			            jw.endArray();
+                            }
+                            jw.endObject();
+						} else if (linkToInline instanceof ORelatedEntityLink) {
+							OEntity re = ((ORelatedEntityLink)linkToInline).getRelatedEntity();
+							writeOEntity(uriInfo, jw, re, re.getEntitySet());
+						} else
+							throw new RuntimeException("Unknown OLink type " + linkToInline.getClass());
+					}
                 }
             }
         }

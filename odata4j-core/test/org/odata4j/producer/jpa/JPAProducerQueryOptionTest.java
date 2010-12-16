@@ -404,12 +404,13 @@ public class JPAProducerQueryOptionTest {
 	// String uri = "Orders?$filter=isof(ShipCountry, 'Edm.String')";
 	// NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
 	// }
-	// @Test
-	// public void SystemQueryOptionExpand1Test() {
-	// String inp = "SystemQueryOptionExpand1Test";
-	// String uri = "Categories?$expand=Products";
-	// NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
-	// }
+	@Test
+	public void SystemQueryOptionExpand1Test() {
+		String inp = "SystemQueryOptionExpand1Test";
+		String uri = "Categories?$expand=Products";
+		NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
+	}
+
 	//
 	// @Test
 	// public void SystemQueryOptionExpand2Test() {
@@ -418,12 +419,12 @@ public class JPAProducerQueryOptionTest {
 	// NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
 	// }
 	//
-	// @Test
-	// public void SystemQueryOptionExpand3Test() {
-	// String inp = "SystemQueryOptionExpand3Test";
-	// String uri = "Products?$expand=Category,Supplier";
-	// NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
-	// }
+	@Test
+	public void SystemQueryOptionExpand3Test() {
+		String inp = "SystemQueryOptionExpand3Test";
+		String uri = "Products?$expand=Category,Supplier";
+		NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
+	}
 
 	// @Test
 	// public void SystemQueryOptionFormatAtomTest() {

@@ -179,26 +179,29 @@ public class BeanModel {
 		for(String propertyName : getters.keySet()) {
 			Class<?> getterType = getters.get(propertyName).getReturnType();
 			if (isCollection(getterType)) {
-				Class<?> setterType = setters.get(propertyName).getParameterTypes()[0];
-				
-		        if (!getterType.equals(setterType))
-		            throw new RuntimeException(String.format("Inconsistent types for association %s: getter type %s, setter type %s",
-		                    propertyName,
-		                    getterType.getName(),
-		                    setterType.getName()));
-
-		        Class<?> elementClass;
-		        Type type = getters.get(propertyName).getGenericReturnType();
-		        if (type instanceof ParameterizedType) {
-		        	Type[] actualTypes = ((ParameterizedType)type).getActualTypeArguments();
-		        	elementClass = actualTypes.length > 0
-		        		? (Class<?>)actualTypes[0]
-		        		: Object.class;
-		        }
-		        else
-		        	elementClass = Object.class;
-		        
-		        rt.put(propertyName, elementClass);
+				Class<?> setterType = setters.containsKey(propertyName)
+						? setters.get(propertyName).getParameterTypes()[0]
+						: null;
+				if (setterType != null) {
+    		        if (!getterType.equals(setterType))
+    		            throw new RuntimeException(String.format("Inconsistent types for association %s: getter type %s, setter type %s",
+    		                    propertyName,
+    		                    getterType.getName(),
+    		                    setterType.getName()));
+    
+    		        Class<?> elementClass;
+    		        Type type = getters.get(propertyName).getGenericReturnType();
+    		        if (type instanceof ParameterizedType) {
+    		        	Type[] actualTypes = ((ParameterizedType)type).getActualTypeArguments();
+    		        	elementClass = actualTypes.length > 0
+    		        		? (Class<?>)actualTypes[0]
+    		        		: Object.class;
+    		        }
+    		        else
+    		        	elementClass = Object.class;
+    		        
+    		        rt.put(propertyName, elementClass);
+				}
 			}
 		}
     	
