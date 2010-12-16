@@ -104,4 +104,10 @@ public class EntityRequestResource extends BaseResource {
     public PropertyRequestResource getNavProperty() {
         return new PropertyRequestResource();
     }
+    
+    @Path("{navProp: .+?}{optionalParens: ((\\(\\)))}")
+    public PropertyRequestResource getSimpleNavProperty() {
+        return new PropertyRequestResource();
+    }
+
 }

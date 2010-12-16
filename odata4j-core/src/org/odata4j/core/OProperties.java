@@ -44,8 +44,9 @@ public class OProperties {
             BigDecimal dValue = (BigDecimal) value;
             return OProperties.decimal(name, dValue);
         } else if (type == EdmType.DATETIME) {
-            Date dValue = (Date) value;
-            return OProperties.datetime(name, dValue);
+        	return (value instanceof LocalDateTime)
+        		? OProperties.datetime(name, (LocalDateTime)value)
+        		: OProperties.datetime(name, (Date)value);
         } else if (type == EdmType.BINARY) {
             byte[] bValue = (byte[]) value;
             return OProperties.binary(name, bValue);
