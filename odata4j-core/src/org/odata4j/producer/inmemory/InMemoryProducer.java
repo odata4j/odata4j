@@ -44,7 +44,6 @@ import org.odata4j.internal.InternalUtil;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.InlineCount;
-import org.odata4j.producer.NavPropertyResponse;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.Responses;
@@ -505,9 +504,8 @@ public class InMemoryProducer implements ODataProducer {
     public EntityResponse createEntity(String entitySetName, OEntity entity) {
         throw new UnsupportedOperationException();
     }
-
-    @Override
-    public NavPropertyResponse getNavProperty(String entitySetName, Object entityKey, String navProp, QueryInfo queryInfo) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+	@Override
+	public EntitiesResponse getNavProperty(String entitySetName, Object entityKey, String navProp, QueryInfo queryInfo) {
+        throw new UnsupportedOperationException();
+	}
 }

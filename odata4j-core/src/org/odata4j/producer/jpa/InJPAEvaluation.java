@@ -29,6 +29,7 @@ import org.odata4j.producer.resources.OptionsQueryParser;
 public class InJPAEvaluation {
 
 	public static String primaryKeyName;
+	public static String tableAlias;
 
 	public static Object evaluate(CommonExpression expression) {
 
@@ -40,9 +41,11 @@ public class InJPAEvaluation {
 			String field = ((EntitySimpleProperty) expression)
 					.getPropertyName();
 
-			return "t." + (field.equals(OptionsQueryParser.PRIMARY_KEY_NAME)
+			field = field.equals(OptionsQueryParser.PRIMARY_KEY_NAME)
 					? primaryKeyName
-					: field.replace("/", "."));
+					: field.replace("/", ".");
+
+			return tableAlias + "." + field;
 		}
 
 		if (expression instanceof NullLiteral) {

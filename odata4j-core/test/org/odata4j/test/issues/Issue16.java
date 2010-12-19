@@ -8,7 +8,7 @@ import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.examples.producer.ProducerUtil;
-import org.odata4j.producer.NavPropertyResponse;
+import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.Responses;
 import org.odata4j.producer.inmemory.InMemoryProducer;
@@ -25,10 +25,10 @@ public class Issue16 {
         final String[] actualNavProp = new String[1];
         InMemoryProducer producer = new InMemoryProducer("Issue16"){
           @Override
-          public NavPropertyResponse getNavProperty(String entitySetName, Object entityKey, String navProp, QueryInfo queryInfo) {
+          public EntitiesResponse getNavProperty(String entitySetName, Object entityKey, String navProp, QueryInfo queryInfo) {
               
               actualNavProp[0] = navProp;
-            return Responses.navProperty(Enumerable.<OEntity>create().toList(), new EdmEntitySet("messageLog", null), null, null, null);
+            return Responses.entities(Enumerable.<OEntity>create().toList(), new EdmEntitySet("messageLog", null), null, null);
           } 
         };
 
