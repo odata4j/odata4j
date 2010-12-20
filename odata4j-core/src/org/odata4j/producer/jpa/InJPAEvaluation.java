@@ -7,12 +7,16 @@ import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.BoolParenExpression;
 import org.odata4j.expression.BooleanLiteral;
 import org.odata4j.expression.CommonExpression;
+import org.odata4j.expression.ConcatMethodCallExpression;
 import org.odata4j.expression.DivExpression;
+import org.odata4j.expression.EndsWithMethodCallExpression;
 import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.EqExpression;
 import org.odata4j.expression.GeExpression;
 import org.odata4j.expression.GtExpression;
+import org.odata4j.expression.IndexOfMethodCallExpression;
 import org.odata4j.expression.LeExpression;
+import org.odata4j.expression.LengthMethodCallExpression;
 import org.odata4j.expression.LiteralExpression;
 import org.odata4j.expression.LtExpression;
 import org.odata4j.expression.ModExpression;
@@ -22,8 +26,14 @@ import org.odata4j.expression.NotExpression;
 import org.odata4j.expression.NullLiteral;
 import org.odata4j.expression.OrExpression;
 import org.odata4j.expression.ParenExpression;
+import org.odata4j.expression.ReplaceMethodCallExpression;
+import org.odata4j.expression.StartsWithMethodCallExpression;
 import org.odata4j.expression.SubExpression;
+import org.odata4j.expression.SubstringMethodCallExpression;
 import org.odata4j.expression.SubstringOfMethodCallExpression;
+import org.odata4j.expression.ToLowerMethodCallExpression;
+import org.odata4j.expression.ToUpperMethodCallExpression;
+import org.odata4j.expression.TrimMethodCallExpression;
 import org.odata4j.producer.resources.OptionsQueryParser;
 
 public class InJPAEvaluation {
@@ -48,7 +58,7 @@ public class InJPAEvaluation {
 			return tableAlias + "." + field;
 		}
 
-		if (expression instanceof NullLiteral) {
+		if (expression instanceof NullLiteral || expression == null) {
 			return null;
 		}
 
@@ -67,27 +77,100 @@ public class InJPAEvaluation {
 
 		if (expression instanceof AddExpression) {
 			ObjectPair pair = createPair((BinaryCommonExpression) expression);
-			return String.format("%1s + %2s", pair.lhs, pair.rhs);
+			return String.format("%s + %s", pair.lhs, pair.rhs);
 		}
 
 		if (expression instanceof SubExpression) {
 			ObjectPair pair = createPair((BinaryCommonExpression) expression);
-			return String.format("%1s - %2s", pair.lhs, pair.rhs);
+			return String.format("%s - %s", pair.lhs, pair.rhs);
 		}
 
 		if (expression instanceof MulExpression) {
 			ObjectPair pair = createPair((BinaryCommonExpression) expression);
-			return String.format("%1s * %2s", pair.lhs, pair.rhs);
+			return String.format("%s * %s", pair.lhs, pair.rhs);
 		}
 
 		if (expression instanceof DivExpression) {
 			ObjectPair pair = createPair((BinaryCommonExpression) expression);
-			return String.format("%1s / %2s", pair.lhs, pair.rhs);
+			return String.format("%s / %s", pair.lhs, pair.rhs);
 		}
 
 		if (expression instanceof ModExpression) {
 			ObjectPair pair = createPair((BinaryCommonExpression) expression);
-			return String.format("MOD(%1s, %2s)", pair.lhs, pair.rhs);
+			return String.format("MOD(%s, %s)", pair.lhs, pair.rhs);
+		}
+
+		if (expression instanceof LengthMethodCallExpression) {
+			LengthMethodCallExpression e = (LengthMethodCallExpression) expression;
+
+			return String.format(
+					"LENGTH(%s)",
+					evaluate(e.getTarget()));
+		}
+
+		if (expression instanceof IndexOfMethodCallExpression) {
+			IndexOfMethodCallExpression e = (IndexOfMethodCallExpression) expression;
+
+			return String.format(
+					"(LOCATE(%s, %s) - 1)",
+					evaluate(e.getValue()),
+					evaluate(e.getTarget()));
+		}
+
+		if (expression instanceof ReplaceMethodCallExpression) {
+			ReplaceMethodCallExpression e = (ReplaceMethodCallExpression) expression;
+
+			return String.format(
+					"FUNC('REPLACE', %s, %s, %s)",
+					evaluate(e.getTarget()),
+					evaluate(e.getFind()),
+					evaluate(e.getReplace()));
+		}
+
+		if (expression instanceof SubstringMethodCallExpression) {
+			SubstringMethodCallExpression e = (SubstringMethodCallExpression) expression;
+
+			Object length = evaluate(e.getLength());
+			length = length != null ? ", " + length : "";
+
+			return String.format(
+					"SUBSTRING(%s, %s + 1 %s)",
+					evaluate(e.getTarget()),
+					evaluate(e.getStart()),
+					length);
+		}
+
+		if (expression instanceof ToLowerMethodCallExpression) {
+			ToLowerMethodCallExpression e = (ToLowerMethodCallExpression) expression;
+
+			return String.format(
+					"LOWER(%s)",
+					evaluate(e.getTarget()));
+		}
+
+		if (expression instanceof ToUpperMethodCallExpression) {
+			ToUpperMethodCallExpression e = (ToUpperMethodCallExpression) expression;
+
+			return String.format(
+					"UPPER(%s)",
+					evaluate(e.getTarget()));
+		}
+
+		if (expression instanceof TrimMethodCallExpression) {
+			TrimMethodCallExpression e = (TrimMethodCallExpression) expression;
+
+			return String.format(
+					"TRIM(BOTH FROM %s)",
+					evaluate(e.getTarget()));
+		}
+
+		if (expression instanceof ConcatMethodCallExpression) {
+			ConcatMethodCallExpression e = (ConcatMethodCallExpression) expression;
+
+			return String.format(
+					"CONCAT(%s, %s)",
+					evaluate(e.getLHS()),
+					evaluate(e.getRHS()));
 		}
 
 		if (expression instanceof ParenExpression) {
@@ -105,18 +188,18 @@ public class InJPAEvaluation {
 	public static String evaluate(BoolCommonExpression expression) {
 		if (expression instanceof EqExpression) {
 			ObjectPair pair = createPair((EqExpression) expression);
-			return String.format("%1s = %2s", pair.lhs, pair.rhs);
+			return String.format("%s = %s", pair.lhs, pair.rhs);
 		}
 
 		if (expression instanceof NeExpression) {
 			ObjectPair pair = createPair((NeExpression) expression);
-			return String.format("%1s <> %2s", pair.lhs, pair.rhs);
+			return String.format("%s <> %s", pair.lhs, pair.rhs);
 		}
 
 		if (expression instanceof AndExpression) {
 			AndExpression e = (AndExpression) expression;
 			return String.format(
-					"%1s AND %2s",
+					"%s AND %s",
 					evaluate(e.getLHS()),
 					evaluate(e.getRHS()));
 		}
@@ -124,7 +207,7 @@ public class InJPAEvaluation {
 		if (expression instanceof OrExpression) {
 			OrExpression e = (OrExpression) expression;
 			return String.format(
-					"%1s OR %2s",
+					"%s OR %s",
 					evaluate(e.getLHS()),
 					evaluate(e.getRHS()));
 		}
@@ -135,38 +218,65 @@ public class InJPAEvaluation {
 
 		if (expression instanceof GtExpression) {
 			ObjectPair pair = createPair((GtExpression) expression);
-			return String.format("%1s > %2s", pair.lhs, pair.rhs);
+			return String.format("%s > %s", pair.lhs, pair.rhs);
 		}
 
 		if (expression instanceof LtExpression) {
 			ObjectPair pair = createPair((LtExpression) expression);
-			return String.format("%1s < %2s", pair.lhs, pair.rhs);
+			return String.format("%s < %s", pair.lhs, pair.rhs);
 		}
+
 		if (expression instanceof GeExpression) {
 			ObjectPair pair = createPair((GeExpression) expression);
-			return String.format("%1s >= %2s", pair.lhs, pair.rhs);
+			return String.format("%s >= %s", pair.lhs, pair.rhs);
 		}
+
 		if (expression instanceof LeExpression) {
 			ObjectPair pair = createPair((LeExpression) expression);
-			return String.format("%1s <= %2s", pair.lhs, pair.rhs);
+			return String.format("%s <= %s", pair.lhs, pair.rhs);
 		}
 
 		if (expression instanceof NotExpression) {
 			NotExpression e = (NotExpression) expression;
 			return String.format(
-					"NOT %1s",
+					"NOT (%s = TRUE)",
 					evaluate(e.getExpression()));
 		}
 
 		if (expression instanceof SubstringOfMethodCallExpression) {
-			// SubstringOfMethodCallExpression e
-			// =(SubstringOfMethodCallExpression) expression;
-			// String cbValue = (String) evaluate(e.getTarget());
-			// String searchValue = (String) evaluate(e.getValue());
-			// return cbValue != null && searchValue != null &&
-			// cbValue.contains(searchValue);
-			throw new UnsupportedOperationException(
-					"unsupported/tested expression " + expression);
+			SubstringOfMethodCallExpression e = (SubstringOfMethodCallExpression) expression;
+
+			String value = (String) evaluate(e.getValue());
+			value = value.replace("'", "");
+
+			return String.format(
+					"(CASE WHEN %s LIKE '%%%s%%' THEN TRUE ELSE FALSE END)",
+					evaluate(e.getTarget()),
+					value);
+		}
+
+		if (expression instanceof EndsWithMethodCallExpression) {
+			EndsWithMethodCallExpression e = (EndsWithMethodCallExpression) expression;
+
+			String value = (String) evaluate(e.getValue());
+			value = value.replace("'", "");
+
+			return String.format(
+					"(CASE WHEN %s LIKE '%%%s' THEN TRUE ELSE FALSE END)",
+					evaluate(e.getTarget()),
+					value);
+		}
+
+		if (expression instanceof StartsWithMethodCallExpression) {
+			StartsWithMethodCallExpression e = (StartsWithMethodCallExpression) expression;
+
+			String value = (String) evaluate(e.getValue());
+			value = value.replace("'", "");
+
+			return String.format(
+					"(CASE WHEN %s LIKE '%s%%' THEN TRUE ELSE FALSE END)",
+					evaluate(e.getTarget()),
+					value);
 		}
 
 		if (expression instanceof ParenExpression) {
@@ -180,8 +290,8 @@ public class InJPAEvaluation {
 					+ ")";
 		}
 
-		throw new UnsupportedOperationException("unsupported expression "
-				+ expression);
+		throw new UnsupportedOperationException(
+				"unsupported expression " + expression);
 	}
 
 	private static class ObjectPair {

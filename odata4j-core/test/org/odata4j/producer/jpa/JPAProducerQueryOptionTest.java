@@ -220,104 +220,104 @@ public class JPAProducerQueryOptionTest {
 		NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
 	}
 
-	// @Test
-	// public void SystemQueryOptionFilterLogicalNotTest() {
-	// String inp = "SystemQueryOptionFilterLogicalNotTest";
-	// String uri = "Products?$filter=not endswith(QuantityPerUnit,'bags')";
-	// NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
-	// }
+	@Test
+	public void SystemQueryOptionFilterLogicalNotTest() {
+		String inp = "SystemQueryOptionFilterLogicalNotTest";
+		String uri = "Products?$filter=not endswith(QuantityPerUnit,'bags')";
+		NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
+	}
 
-	// @Test
-	// public void SystemQueryOptionFilterBoolSubstringOfTest() {
-	// String inp = "SystemQueryOptionFilterBoolSubstringOfTest";
-	// String uri =
-	// "Customers?$filter=substringof('Alfreds', CompanyName) eq true";
-	// NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
-	// }
-	//
-	// @Test
-	// public void SystemQueryOptionFilterBoolEndswithTest() {
-	// String inp = "SystemQueryOptionFilterBoolEndswithTest";
-	// String uri =
-	// "Customers?$filter=endswith(CompanyName, 'Futterkiste') eq true";
-	// NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
-	// }
-	//
-	// @Test
-	// public void SystemQueryOptionFilterBoolStartswithTest() {
-	// String inp = "SystemQueryOptionFilterBoolStartswithTest";
-	// String uri = "Customers?$filter=startswith(CompanyName, 'Alfr') eq true";
-	// NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
-	// }
-	//
-	// @Test
-	// public void SystemQueryOptionFilterIntLengthTest() {
-	// String inp = "SystemQueryOptionFilterIntLengthTest";
-	// String uri = "Customers?$filter=length(CompanyName) eq 19";
-	// NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
-	// }
-	//
-	// @Test
-	// public void SystemQueryOptionFilterIntIndexofTest() {
-	// String inp = "SystemQueryOptionFilterIntIndexofTest";
-	// String uri = "Customers?$filter=indexof(CompanyName, 'lfreds') eq 1";
-	// NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
-	// }
-	//
-	// @Test
-	// public void SystemQueryOptionFilterStringReplaceTest() {
-	// String inp = "SystemQueryOptionFilterStringReplaceTest";
-	// String uri =
-	// "Customers?$filter=replace(CompanyName, ' ', '') eq 'AlfredsFutterkiste'";
-	// NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
-	// }
-	//
-	// @Test
-	// public void SystemQueryOptionFilterStringSubstringTest() {
-	// String inp = "SystemQueryOptionFilterStringSubstringTest";
-	// String uri =
-	// "Customers?$filter=substring(CompanyName, 1) eq 'lfreds Futterkiste'";
-	// NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
-	// }
-	//
-	// @Test
-	// public void SystemQueryOptionFilterStringSubstring2Test() {
-	// String inp = "SystemQueryOptionFilterStringSubstring2Test";
-	// String uri = "Customers?$filter=substring(CompanyName, 1, 2) eq 'lf'";
-	// NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
-	// }
-	//
-	// @Test
-	// public void SystemQueryOptionFilterStringToLowerTest() {
-	// String inp = "SystemQueryOptionFilterStringToLowerTest";
-	// String uri =
-	// "Customers?$filter=tolower(CompanyName) eq 'alfreds futterkiste'";
-	// NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
-	// }
-	//
-	// @Test
-	// public void SystemQueryOptionFilterStringToupperTest() {
-	// String inp = "SystemQueryOptionFilterStringToupperTest";
-	// String uri =
-	// "Customers?$filter=toupper(CompanyName) eq 'ALFREDS FUTTERKISTE'";
-	// NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
-	// }
-	//
-	// @Test
-	// public void SystemQueryOptionFilterStringTrimTest() {
-	// String inp = "SystemQueryOptionFilterStringTrimTest";
-	// String uri =
-	// "Customers?$filter=trim(CompanyName) eq 'Alfreds Futterkiste'";
-	// NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
-	// }
-	//
-	// @Test
-	// public void SystemQueryOptionFilterStringConcatTest() {
-	// String inp = "SystemQueryOptionFilterStringConcatTest";
-	// String uri =
-	// "Customers?$filter=concat(concat(City, ', '), Country) eq 'Berlin, Germany'";
-	// NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
-	// }
+	@Test
+	public void SystemQueryOptionFilterBoolSubstringOfTest() {
+		String inp = "SystemQueryOptionFilterBoolSubstringOfTest";
+		String uri =
+				"Customers?$filter=substringof('Alfreds', CompanyName) eq true";
+		NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
+	}
+
+	@Test
+	public void SystemQueryOptionFilterBoolEndswithTest() {
+		String inp = "SystemQueryOptionFilterBoolEndswithTest";
+		String uri =
+				"Customers?$filter=endswith(CompanyName, 'Futterkiste') eq true";
+		NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
+	}
+
+	@Test
+	public void SystemQueryOptionFilterBoolStartswithTest() {
+		String inp = "SystemQueryOptionFilterBoolStartswithTest";
+		String uri = "Customers?$filter=startswith(CompanyName, 'Alfr') eq true";
+		NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
+	}
+
+	@Test
+	public void SystemQueryOptionFilterIntLengthTest() {
+		String inp = "SystemQueryOptionFilterIntLengthTest";
+		String uri = "Customers?$filter=length(CompanyName) eq 19";
+		NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
+	}
+
+	@Test
+	public void SystemQueryOptionFilterIntIndexofTest() {
+		String inp = "SystemQueryOptionFilterIntIndexofTest";
+		String uri = "Customers?$filter=indexof(CompanyName, 'lfreds') eq 1";
+		NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
+	}
+
+	@Test
+	public void SystemQueryOptionFilterStringReplaceTest() {
+		String inp = "SystemQueryOptionFilterStringReplaceTest";
+		String uri =
+				"Customers?$filter=replace(CompanyName, ' ', '') eq 'AlfredsFutterkiste'";
+		NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
+	}
+
+	@Test
+	public void SystemQueryOptionFilterStringSubstringTest() {
+		String inp = "SystemQueryOptionFilterStringSubstringTest";
+		String uri =
+				"Customers?$filter=substring(CompanyName, 1) eq 'lfreds Futterkiste'";
+		NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
+	}
+
+	@Test
+	public void SystemQueryOptionFilterStringSubstring2Test() {
+		String inp = "SystemQueryOptionFilterStringSubstring2Test";
+		String uri = "Customers?$filter=substring(CompanyName, 1, 2) eq 'lf'";
+		NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
+	}
+
+	@Test
+	public void SystemQueryOptionFilterStringToLowerTest() {
+		String inp = "SystemQueryOptionFilterStringToLowerTest";
+		String uri =
+				"Customers?$filter=tolower(CompanyName) eq 'alfreds futterkiste'";
+		NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
+	}
+
+	@Test
+	public void SystemQueryOptionFilterStringToupperTest() {
+		String inp = "SystemQueryOptionFilterStringToupperTest";
+		String uri =
+				"Customers?$filter=toupper(CompanyName) eq 'ALFREDS FUTTERKISTE'";
+		NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
+	}
+
+	@Test
+	public void SystemQueryOptionFilterStringTrimTest() {
+		String inp = "SystemQueryOptionFilterStringTrimTest";
+		String uri =
+				"Customers?$filter=trim(CompanyName) eq 'Alfreds Futterkiste'";
+		NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
+	}
+
+	@Test
+	public void SystemQueryOptionFilterStringConcatTest() {
+		String inp = "SystemQueryOptionFilterStringConcatTest";
+		String uri =
+				"Customers?$filter=concat(concat(City, ', '), Country) eq 'Berlin, Germany'";
+		NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
+	}
 
 	// TODO: datetime
 
@@ -362,7 +362,9 @@ public class JPAProducerQueryOptionTest {
 	// String uri = "Employees?$filter=year(BirthDate) eq 1948";
 	// NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
 	// }
-	//
+	
+	// TODO: numeric
+	
 	// @Test
 	// public void SystemQueryOptionFilterRoundTest() {
 	// String inp = "SystemQueryOptionFilterRoundTest";
@@ -404,6 +406,7 @@ public class JPAProducerQueryOptionTest {
 	// String uri = "Orders?$filter=isof(ShipCountry, 'Edm.String')";
 	// NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
 	// }
+	
 	@Test
 	public void SystemQueryOptionExpand1Test() {
 		String inp = "SystemQueryOptionExpand1Test";
@@ -411,14 +414,14 @@ public class JPAProducerQueryOptionTest {
 		NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
 	}
 
-	//
+	
 	// @Test
 	// public void SystemQueryOptionExpand2Test() {
 	// String inp = "SystemQueryOptionExpand2Test";
 	// String uri = "Categories?$expand=Products/Supplier";
 	// NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
 	// }
-	//
+	
 	@Test
 	public void SystemQueryOptionExpand3Test() {
 		String inp = "SystemQueryOptionExpand3Test";
@@ -440,6 +443,8 @@ public class JPAProducerQueryOptionTest {
 	// NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
 	// }
 
+	// TODO: select
+	
 	// @Test
 	// public void SystemQueryOptionSelect1Test() {
 	// String inp = "SystemQueryOptionSelect1Test";

@@ -33,7 +33,7 @@ import org.odata4j.test.issues.Issue16;
 	JPAProducerQueryOptionTest.class,
 	JPAProducerQueryOptionTest50.class,
 	JPAProducerQueryOptionAtomTest.class,
-	JPAProducerQueryOptionAtomTest50.class,	
+	JPAProducerQueryOptionAtomTest50.class
 })
 
 public class OData4jTestSuite {
