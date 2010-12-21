@@ -14,6 +14,7 @@ import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.odata4j.core.Guid;
+import org.odata4j.internal.InternalUtil;
 import org.odata4j.repack.org.apache.commons.codec.DecoderException;
 import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
 
@@ -45,8 +46,6 @@ public class ExpressionParser {
         public static final String CEILING = "ceiling";
     }
     private static Set<String> METHODS = Enumerable.create(Methods.CAST, Methods.ISOF, Methods.ENDSWITH, Methods.STARTSWITH, Methods.SUBSTRINGOF, Methods.INDEXOF, Methods.REPLACE, Methods.TOLOWER, Methods.TOUPPER, Methods.TRIM, Methods.SUBSTRING, Methods.CONCAT, Methods.LENGTH, Methods.YEAR, Methods.MONTH, Methods.DAY, Methods.HOUR, Methods.MINUTE, Methods.SECOND, Methods.ROUND, Methods.FLOOR, Methods.CEILING).toSet();
-    public static final DateTimeFormatter DATETIMEOFFSET_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ");
-    public static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
     public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormat.forPattern("HH:mm:ss");
     public static boolean DUMP_EXPRESSION_INFO = false;
 
@@ -406,13 +405,13 @@ public class ExpressionParser {
             String word = tokens.get(0).value;
             String value = unquote(tokens.get(1).value);
             if (word.equals("datetime")) {
-                DateTime dt = DATETIME_FORMATTER.parseDateTime(value);
+                DateTime dt = InternalUtil.parseDateTime(value);
                 return Expression.dateTime(new LocalDateTime(dt));
             } else if (word.equals("time")) {
                 DateTime dt = TIME_FORMATTER.parseDateTime(value);
                 return Expression.time(new LocalTime(dt));
             } else if (word.equals("datetimeoffset")) {
-                DateTime dt = DATETIMEOFFSET_FORMATTER.parseDateTime(value);
+                DateTime dt = InternalUtil.parseDateTime(value);
                 return Expression.dateTimeOffset(dt);
             } else if (word.equals("guid")) {
                 // odata: dddddddd-dddd-dddd-dddddddddddd

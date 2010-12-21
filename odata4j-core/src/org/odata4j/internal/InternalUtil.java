@@ -7,12 +7,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.core4j.Enumerable;
 import org.core4j.Func1;
 import org.core4j.Funcs;
 import org.core4j.ThrowingFunc1;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.odata4j.core.Guid;
 import org.odata4j.core.NamedValue;
 import org.odata4j.core.OEntities;
@@ -32,6 +37,96 @@ import org.odata4j.stax2.XMLFactoryProvider2;
 import org.odata4j.stax2.XMLInputFactory2;
 
 public class InternalUtil {
+	
+	// Since not everybody seems to adhere to the spec, we are trying to be
+	// tolerant against different formats
+	// spec says:
+	// Edm.DateTime: 		yyyy-mm-ddThh:mm[:ss[.fffffff]]
+	// Edm.DateTimeOffset:  yyyy-mm-ddThh:mm[:ss[.fffffff]](('+'|'-')hh':'mm)|'Z'
+	private static final Pattern DATETIME_PATTERN = Pattern.compile("(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2})(:\\d{2})?(\\.\\d{3,7})?((?:(?:\\+|\\-)\\d{2}:\\d{2})|Z)?");
+	private static final DateTimeFormatter[] DATETIME_PARSER = new DateTimeFormatter[] {
+		// formatter for parsing of dateTime and dateTimeOffset
+		DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm"),
+		DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss"),
+		null /* illegal format @see parseDateTime */,
+		DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"),
+		DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mmZZ"),
+		DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ"),
+		null /* illegal format @see parseDateTime */,
+		DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ")
+	};
+	private static final DateTimeFormatter[] DATETIME_FORMATTER = new DateTimeFormatter[] {
+		// formatter for formatting of dateTimeOffset
+		DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm"),
+		DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss"),
+		DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS0000"),
+		DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS0000"),
+		DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mmZZ"),
+		DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ"),
+		DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS0000ZZ"),
+		DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS0000ZZ")
+	};
+	
+    public static DateTime parseDateTime(String value) {
+    	Matcher matcher = DATETIME_PATTERN.matcher(value);
+
+		if (matcher.matches()) {
+			String dateTime = matcher.group(1);
+			String seconds = matcher.group(2);
+			String nanoSeconds = matcher.group(3);
+			String timezone = matcher.group(4);
+			
+			int idx = (seconds != null ? 1 : 0)
+					+ (nanoSeconds != null ? 2 : 0)
+					+ (timezone != null ? 4 : 0);
+			
+			
+			StringBuilder valueToParse = new StringBuilder(dateTime);
+			if (seconds != null)
+				valueToParse.append(seconds);
+				
+			//	we know only about milliseconds not nanoseconds
+			if (nanoSeconds != null) {
+				if (nanoSeconds.length() > 4) {
+					valueToParse.append(nanoSeconds.substring(0, Math.min(nanoSeconds.length(), 4)));
+				} else {
+					valueToParse.append(nanoSeconds);
+				}
+			}
+			
+			if (timezone != null) {
+				if ("Z".equals(timezone)) {
+					timezone = "+00:00";
+				}
+				valueToParse.append(timezone);
+			}
+			
+			DateTimeFormatter formatter = DATETIME_PARSER[idx];
+			if (formatter != null) {
+				return formatter.parseDateTime(valueToParse.toString());
+			}
+		}
+		throw new IllegalArgumentException("Illegal datetime format " + value);
+    }
+    
+    public static String formatDateTime(LocalDateTime dateTime) {
+    	if (dateTime == null)
+    		return null;
+    	
+    	int idx = (dateTime.getSecondOfMinute() > 0 ? 1 : 0)
+    			+ (dateTime.getMillisOfSecond() > 0 ? 2 : 0);
+    	return dateTime.toString(DATETIME_FORMATTER[idx]);
+    }
+    
+    public static String formatDateTimeOffset(DateTime dateTime) {
+    	if (dateTime == null)
+    		return null;
+    	
+    	int idx = 4
+    			+ (dateTime.getSecondOfMinute() > 0 ? 1 : 0)
+    			+ (dateTime.getMillisOfSecond() > 0 ? 2 : 0);
+    	return dateTime.toString(DATETIME_FORMATTER[idx]);    	
+    }
 
     public static XMLEventReader2 newXMLEventReader(Reader reader) {
         XMLInputFactory2 f = XMLFactoryProvider2.getInstance().newXMLInputFactory2();
@@ -227,6 +322,4 @@ public class InternalUtil {
     public static String toString(DateTime utc) {
         return utc.toString("yyyy-MM-dd'T'HH:mm:ss'Z'");
     }
-
-
 }

@@ -21,10 +21,9 @@ import java.util.logging.Logger;
 import javax.persistence.EntityManagerFactory;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.joda.time.format.DateTimeFormat;
 import org.junit.Assert;
 import org.odata4j.edm.EdmType;
-import org.odata4j.expression.ExpressionParser;
+import org.odata4j.internal.InternalUtil;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -355,12 +354,8 @@ public class NorthwindTestUtils {
 						&& expectedChildNode.getNodeType() == Node.TEXT_NODE) {
 					String ed = ((Text) expectedChildNode).getData();
 					String rd = ((Text) resultChildNode).getData();
-					Assert.assertEquals(
-							ExpressionParser.DATETIME_FORMATTER
-									.parseDateTime(ed),
-							DateTimeFormat.forPattern(
-									"yyyy-MM-dd'T'HH:mm:ss'Z'").parseDateTime(
-									rd));
+					Assert.assertEquals(InternalUtil.parseDateTime(ed),
+										InternalUtil.parseDateTime(rd));
 				} else {
 					assertEquals(expectedChildNode, resultChildNode, isTopLevel);
 				}

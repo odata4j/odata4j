@@ -1,5 +1,6 @@
 package org.odata4j.expression;
 
+import org.odata4j.internal.InternalUtil;
 import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
 
 public class PrintExpressionVisitor implements ExpressionVisitor {
@@ -69,12 +70,12 @@ public class PrintExpressionVisitor implements ExpressionVisitor {
 
     @Override
     public void visit(DateTimeLiteral expr) {
-        append("datetime(%s)", expr.getValue().toString(ExpressionParser.DATETIME_FORMATTER));
+        append("datetime(%s)", InternalUtil.formatDateTime(expr.getValue()));
     }
 
     @Override
     public void visit(DateTimeOffsetLiteral expr) {
-        append("datetime(%s)", expr.getValue().toString(ExpressionParser.DATETIMEOFFSET_FORMATTER));
+        append("datetime(%s)",  InternalUtil.formatDateTimeOffset(expr.getValue()));
     }
 
     @Override

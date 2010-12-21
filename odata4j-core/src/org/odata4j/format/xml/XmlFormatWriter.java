@@ -7,7 +7,6 @@ import javax.ws.rs.core.MediaType;
 import org.core4j.Enumerable;
 import org.core4j.Predicate1;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OLink;
@@ -104,11 +103,8 @@ public class XmlFormatWriter {
                     }
                 } else if (type == EdmType.DATETIME) {
                     writer.writeAttribute(new QName2(m, "type", "m"), type.toTypeString());
-                    if (value != null) {
-                        LocalDateTime ldt = (LocalDateTime) value;
-                        DateTime dt = ldt.toDateTime(DateTimeZone.UTC);
-                        sValue = InternalUtil.toString(dt);
-                    }
+                    if (value != null)
+                    	sValue = InternalUtil.formatDateTime((LocalDateTime) value);
                 } else if (type == EdmType.BINARY) {
                     writer.writeAttribute(new QName2(m, "type", "m"), type.toTypeString());
                     byte[] bValue = (byte[]) value;
@@ -126,6 +122,7 @@ public class XmlFormatWriter {
                         sValue = value.toString();
                     }
                 } else if (type == EdmType.DATETIMEOFFSET) {
+                	//	Edm.DateTimeOffset  '-'? yyyy '-' mm '-' dd 'T' hh ':' mm ':' ss ('.' s+)? (zzzzzz)?
                     writer.writeAttribute(new QName2(m, "type", "m"), type.toTypeString());
                     if (value != null) {
                         sValue = InternalUtil.toString((DateTime) value);

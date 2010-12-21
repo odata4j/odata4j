@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,6 +87,7 @@ public class InMemoryProducer implements ODataProducer {
         SUPPORTED_TYPES.put(String.class, EdmType.STRING);
         SUPPORTED_TYPES.put(LocalTime.class, EdmType.TIME);
         SUPPORTED_TYPES.put(DateTime.class, EdmType.DATETIMEOFFSET);
+        SUPPORTED_TYPES.put(Date.class, EdmType.DATETIME);
         
         SUPPORTED_TYPES.put(Object.class, EdmType.STRING);
     }

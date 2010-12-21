@@ -3,19 +3,15 @@ package org.odata4j.core;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.odata4j.edm.EdmType;
-import org.odata4j.expression.ExpressionParser;
+import org.odata4j.internal.InternalUtil;
 import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
 import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
 
 public class OProperties {
-
-    private static Pattern longDatePattern = Pattern.compile("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}");
 
     public static <T> OProperty<?> simple(String name, EdmType type, T value) {    	
     	return simple(name, type, value, false);
@@ -106,14 +102,9 @@ public class OProperties {
             byte[] bValue = new Base64().decode(value);
             return OProperties.binary(name, bValue);
         } else if (EdmType.DATETIME.toTypeString().equals(type)) {
-        	LocalDateTime dValue = null;
-        	if (value != null) {
-	            Matcher matcher = longDatePattern.matcher(value);
-	            while (matcher.find()) {
-	                value = matcher.group();
-	            }
-	            dValue = value == null ? null : new LocalDateTime(ExpressionParser.DATETIME_FORMATTER.parseDateTime(value));
-        	}
+        	LocalDateTime dValue = value == null 
+        		? null 
+        		: new LocalDateTime(InternalUtil.parseDateTime(value));
             return OProperties.datetime(name, dValue);
         } else if (EdmType.TIME.toTypeString().equals(type)) {
             LocalTime tValue = value == null ? null : new LocalTime(value);
