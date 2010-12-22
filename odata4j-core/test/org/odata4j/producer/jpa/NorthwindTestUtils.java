@@ -78,7 +78,8 @@ public class NorthwindTestUtils {
 			}
 
 			br.close();
-
+			statement.close();
+			
 		} catch (Exception ex) {
 			Logger.getLogger(NorthwindTestUtils.class.getName()).log(
 					Level.SEVERE,
@@ -139,7 +140,7 @@ public class NorthwindTestUtils {
 		return strBuilder.toString();
 	}
 
-	public static void TestJSONResult(String endpointUri, String uri, String inp) {
+	public static void testJSONResult(String endpointUri, String uri, String inp) {
 		System.out.println("Test: " + inp);
 
 		String RESOURCES_TYPE = "json";
@@ -191,7 +192,7 @@ public class NorthwindTestUtils {
 		Assert.assertArrayEquals(expectParts, resultParts);
 	}
 
-	public static void TestAtomResult(String endpointUri, String uri, String inp) {
+	public static void testAtomResult(String endpointUri, String uri, String inp) {
 		System.out.println("Test: " + inp);
 
 		String RESOURCES_TYPE = "xml";
@@ -568,10 +569,9 @@ public class NorthwindTestUtils {
 		text = text.replace("{\"results\":", "");
 
 		// replace braces for ignore fields sort/order in json
-		text = text.replace("}}]", "");
-		text = text.replace("}}", "}");
-		text = text.replace("}}", "}");
-
+		text = text.replace("}", "");
+		text = text.replace("]", "");
+		
 		return text;
 	}
 }

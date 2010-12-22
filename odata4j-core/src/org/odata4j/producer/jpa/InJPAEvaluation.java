@@ -8,6 +8,7 @@ import org.odata4j.expression.BoolParenExpression;
 import org.odata4j.expression.BooleanLiteral;
 import org.odata4j.expression.CommonExpression;
 import org.odata4j.expression.ConcatMethodCallExpression;
+import org.odata4j.expression.DayMethodCallExpression;
 import org.odata4j.expression.DivExpression;
 import org.odata4j.expression.EndsWithMethodCallExpression;
 import org.odata4j.expression.EntitySimpleProperty;
@@ -15,6 +16,7 @@ import org.odata4j.expression.EqExpression;
 import org.odata4j.expression.GeExpression;
 import org.odata4j.expression.GtExpression;
 import org.odata4j.expression.IndexOfMethodCallExpression;
+import org.odata4j.expression.IsofExpression;
 import org.odata4j.expression.LeExpression;
 import org.odata4j.expression.LengthMethodCallExpression;
 import org.odata4j.expression.LiteralExpression;
@@ -27,6 +29,7 @@ import org.odata4j.expression.NullLiteral;
 import org.odata4j.expression.OrExpression;
 import org.odata4j.expression.ParenExpression;
 import org.odata4j.expression.ReplaceMethodCallExpression;
+import org.odata4j.expression.RoundMethodCallExpression;
 import org.odata4j.expression.StartsWithMethodCallExpression;
 import org.odata4j.expression.SubExpression;
 import org.odata4j.expression.SubstringMethodCallExpression;
@@ -43,6 +46,7 @@ public class InJPAEvaluation {
 
 	public static Object evaluate(CommonExpression expression) {
 
+		
 		if (expression instanceof BoolCommonExpression) {
 			return evaluate((BoolCommonExpression) expression);
 		}
@@ -117,16 +121,6 @@ public class InJPAEvaluation {
 					evaluate(e.getTarget()));
 		}
 
-		if (expression instanceof ReplaceMethodCallExpression) {
-			ReplaceMethodCallExpression e = (ReplaceMethodCallExpression) expression;
-
-			return String.format(
-					"FUNC('REPLACE', %s, %s, %s)",
-					evaluate(e.getTarget()),
-					evaluate(e.getFind()),
-					evaluate(e.getReplace()));
-		}
-
 		if (expression instanceof SubstringMethodCallExpression) {
 			SubstringMethodCallExpression e = (SubstringMethodCallExpression) expression;
 
@@ -171,6 +165,35 @@ public class InJPAEvaluation {
 					"CONCAT(%s, %s)",
 					evaluate(e.getLHS()),
 					evaluate(e.getRHS()));
+		}
+
+		if (expression instanceof ReplaceMethodCallExpression) {
+			ReplaceMethodCallExpression e = (ReplaceMethodCallExpression) expression;
+
+			return String.format(
+					"FUNC('REPLACE', %s, %s, %s)",
+					evaluate(e.getTarget()),
+					evaluate(e.getFind()),
+					evaluate(e.getReplace()));
+		}
+
+		if (expression instanceof RoundMethodCallExpression) {
+			RoundMethodCallExpression e = (RoundMethodCallExpression) expression;
+
+			// TODO: don't work while HSQL implementation expecting ROUND(a ,b)
+			return String.format(
+					"FUNC('ROUND', %s)",
+					evaluate(e.getTarget()));
+		}
+
+		if (expression instanceof DayMethodCallExpression) {
+			DayMethodCallExpression e = (DayMethodCallExpression) expression;
+
+			// TODO: don't work could be trim bug in EclipseLink ... or wrong
+			// syntax here
+			return String.format(
+					"TRIM(LEADING '0' FROM SUBSTRING(%s, 9, 2))",
+					evaluate(e.getTarget()));
 		}
 
 		if (expression instanceof ParenExpression) {
@@ -277,6 +300,21 @@ public class InJPAEvaluation {
 					"(CASE WHEN %s LIKE '%s%%' THEN TRUE ELSE FALSE END)",
 					evaluate(e.getTarget()),
 					value);
+		}
+
+		if (expression instanceof IsofExpression) {
+			IsofExpression e = (IsofExpression) expression;
+
+			Object clazz = evaluate(e.getExpression());
+			if (clazz == null) {
+				clazz = tableAlias;
+			}
+
+			// TODO: don't work, for me its bug in EclipseLink
+			return String.format(
+					"TYPE(%s) = '%s'",
+					clazz,
+					e.getType());
 		}
 
 		if (expression instanceof ParenExpression) {

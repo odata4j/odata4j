@@ -64,7 +64,7 @@ public class AtomEntryFormatWriter extends XmlFormatWriter implements FormatWrit
         writer.writeNamespace("d", d);
         writer.writeAttribute("xml:base", baseUri);
 
-        String absId = writeEntry(writer, target.getEntitySet().type.keys, target.getEntity().getProperties(), target.getEntity().getLinks(), entitySetName, baseUri, updated, ees);
+        String absId = writeEntry(writer, target.getEntity(), target.getEntity().getProperties(), target.getEntity().getLinks(), entitySetName, baseUri, updated, ees);
         writer.endDocument();
         return absId;
     }

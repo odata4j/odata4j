@@ -15,7 +15,7 @@ import com.sun.jersey.api.core.HttpRequestContext;
 
 public abstract class BaseResource {
 
-    public static OEntity ConvertFromString(String requestEntity) {
+    public static OEntity convertFromString(String requestEntity) {
         XMLEventReader2 reader = InternalUtil.newXMLEventReader(new StringReader(requestEntity));
         AtomEntry entry = AtomFeedFormatParser.parseFeed(reader).entries.iterator().next();
         DataServicesAtomEntry dsae = (DataServicesAtomEntry) entry;
@@ -25,7 +25,7 @@ public abstract class BaseResource {
 
     protected OEntity getRequestEntity(HttpRequestContext request) {
         String requestEntity = request.getEntity(String.class);
-        return ConvertFromString(requestEntity);
+        return convertFromString(requestEntity);
     }
 
     protected List<OProperty<?>> getRequestEntityProperties(HttpRequestContext request) {

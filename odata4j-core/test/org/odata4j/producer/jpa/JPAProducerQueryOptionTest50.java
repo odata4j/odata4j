@@ -48,16 +48,16 @@ public class JPAProducerQueryOptionTest50 {
 	}
 
 	@Test
-	public void SystemQueryOptionFilterNotEqualTest() {
+	public void systemQueryOptionFilterNotEqualTest() {
 		String inp = "SystemQueryOptionFilterNotEqualTest";
 		String uri = "Suppliers?$filter=Country ne 'UK'";
-		NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
+		NorthwindTestUtils.testJSONResult(endpointUri, uri, inp);
 	}
 
 	@Test
-	public void ResourcePathComplexFilterEqualTest() {
+	public void resourcePathComplexFilterEqualTest() {
 		String inp = "ResourcePathComplexFilterEqualTest";
 		String uri = "Categories(1)/Products?$filter=Supplier/Address eq '49 Gilbert St.'";
-		NorthwindTestUtils.TestJSONResult(endpointUri, uri, inp);
+		NorthwindTestUtils.testJSONResult(endpointUri, uri, inp);
 	}
 }

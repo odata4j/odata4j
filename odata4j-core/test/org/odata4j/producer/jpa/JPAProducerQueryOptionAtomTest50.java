@@ -62,10 +62,10 @@ public class JPAProducerQueryOptionAtomTest50 {
     
     @Test
     //	http://services.odata.org/northwind/Northwind.svc/ is using maxResult > 20 here?
-    public void SystemQueryOptionFilterNotEqualTest() {
+    public void systemQueryOptionFilterNotEqualTest() {
         String inp = "SystemQueryOptionFilterNotEqualTest";
         String uri = "Suppliers?$filter=Country ne 'UK'";
-        NorthwindTestUtils.TestAtomResult(endpointUri, uri, inp);
+        NorthwindTestUtils.testAtomResult(endpointUri, uri, inp);
     }
     
 }

@@ -39,7 +39,6 @@ import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.OrderByExpression;
-import org.odata4j.internal.InternalUtil;
 import org.odata4j.internal.TypeConverter;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityResponse;
@@ -135,7 +134,7 @@ public class JPAProducer implements ODataProducer {
 				});
 	}
 
-	private class Context {
+	private static class Context {
 
 		EntityManager em;
 		EdmEntitySet ees;
@@ -183,7 +182,8 @@ public class JPAProducer implements ODataProducer {
 				context.ees,
 				context.jpaEntityType,
 				jpaEntity,
-				context.query == null ? null : context.query.expand);
+				context.query == null ? null : context.query.expand,
+				context.query == null ? null : context.query.select);
 	}
 
 	private EntitiesResponse getEntities(final Context context) {
@@ -246,7 +246,8 @@ public class JPAProducer implements ODataProducer {
 			EdmEntitySet ees,
 			EntityType<?> entityType,
 			Object jpaEntity,
-			List<EntitySimpleProperty> expand) {
+			List<EntitySimpleProperty> expand,
+			List<EntitySimpleProperty> select) {
 
 		List<OProperty<?>> properties = new ArrayList<OProperty<?>>();
 		List<OLink> links = new ArrayList<OLink>();
@@ -256,24 +257,19 @@ public class JPAProducer implements ODataProducer {
 			boolean hasEmbeddedCompositeKey =
 					idAtt.getPersistentAttributeType() == PersistentAttributeType.EMBEDDED;
 
+			Object id = getIdValue(jpaEntity, idAtt, null);
+
 			// get properties
 			for (EdmProperty ep : ees.type.properties) {
+
+				if (!isSelected(ep.name, select)) {
+					continue;
+				}
 
 				// we have a embedded composite key and we want a property from
 				// that key
 				if (hasEmbeddedCompositeKey && ees.type.keys.contains(ep.name)) {
-					// get the composite id
-					Member member = idAtt.getJavaMember();
-					Object key = getValue(jpaEntity, member);
-
-					// get the property from the key
-					ManagedType<?> keyType = (ManagedType<?>) idAtt.getType();
-					Attribute<?, ?> att = keyType.getAttribute(ep.name);
-					member = att.getJavaMember();
-					if (member == null) { // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_95:_20091017:_Attribute.getJavaMember.28.29_returns_null_for_a_BasicType_on_a_MappedSuperclass_because_of_an_uninitialized_accessor
-						member = getJavaMember(key.getClass(), ep.name);
-					}
-					Object value = getValue(key, member);
+					Object value = getIdValue(jpaEntity, idAtt, ep.name);
 
 					properties.add(OProperties.simple(
 							ep.name,
@@ -293,7 +289,10 @@ public class JPAProducer implements ODataProducer {
 							value,
 							true));
 				}
+			}
 
+			for (final EdmNavigationProperty ep : ees.type.navigationProperties) {
+				ep.selected = isSelected(ep.name, select);
 			}
 
 			// get the collections if necessary
@@ -312,47 +311,111 @@ public class JPAProducer implements ODataProducer {
 					if (att.getPersistentAttributeType() == PersistentAttributeType.ONE_TO_MANY
 							|| att.getPersistentAttributeType() == PersistentAttributeType.MANY_TO_MANY) {
 
-						Collection<?> value = getValue(jpaEntity,
+						Collection<?> value = getValue(
+								jpaEntity,
 								att.getJavaMember());
 
 						List<OEntity> relatedEntities = new ArrayList<OEntity>();
 						for (Object relatedEntity : value) {
 							EntityType<?> elementEntityType = (EntityType<?>) ((PluralAttribute<?, ?, ?>) att)
-									.getElementType();
+											.getElementType();
 							EdmEntitySet elementEntitySet = metadata
-									.getEdmEntitySet(elementEntityType
-											.getName());
+									.getEdmEntitySet(
+											elementEntityType.getName());
+
 							relatedEntities.add(jpaEntityToOEntity(
-									elementEntitySet, elementEntityType,
-									relatedEntity, remainingPropPath));
+									elementEntitySet,
+									elementEntityType,
+									relatedEntity,
+									remainingPropPath,
+									null));
 						}
-						links.add(OLinks.relatedEntities(null, prop, null,
+
+						links.add(OLinks.relatedEntities(
+								null,
+								prop,
+								null,
 								relatedEntities));
+
 					} else if (att.getPersistentAttributeType() == PersistentAttributeType.ONE_TO_ONE
 							|| att.getPersistentAttributeType() == PersistentAttributeType.MANY_TO_ONE) {
-						EntityType<?> relatedEntityType = (EntityType<?>) ((SingularAttribute<?, ?>) att)
-								.getType();
-						EdmEntitySet relatedEntitySet = metadata
-								.getEdmEntitySet(relatedEntityType.getName());
-						Object relatedEntity = getValue(jpaEntity,
+						EntityType<?> relatedEntityType =
+								(EntityType<?>) ((SingularAttribute<?, ?>) att)
+										.getType();
+
+						EdmEntitySet relatedEntitySet =
+								metadata.getEdmEntitySet(
+										relatedEntityType.getName());
+
+						Object relatedEntity = getValue(
+								jpaEntity,
 								att.getJavaMember());
+
 						links.add(OLinks.relatedEntity(
 								null,
 								prop,
 								null,
-								jpaEntityToOEntity(relatedEntitySet,
-										relatedEntityType, relatedEntity,
-										remainingPropPath)));
+								jpaEntityToOEntity(
+										relatedEntitySet,
+										relatedEntityType,
+										relatedEntity,
+										remainingPropPath,
+										null)));
 					}
 
 				}
 			}
 
+			return OEntities.create(ees, properties, links, id);
+
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
 
-		return OEntities.create(ees, properties, links);
+	private static boolean isSelected(
+			String name,
+			List<EntitySimpleProperty> select) {
+
+		if (select != null && !select.isEmpty()) {
+			for (EntitySimpleProperty prop : select) {
+				String sname = prop.getPropertyName();
+				if (name.equals(sname)) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		return true;
+	}
+
+	private static Object getIdValue(
+			Object jpaEntity,
+			SingularAttribute<?, ?> idAtt,
+			String propName) {
+		try {
+			// get the composite id
+			Member member = idAtt.getJavaMember();
+			Object key = getValue(jpaEntity, member);
+
+			if (propName == null) {
+				return key;
+			}
+
+			// get the property from the key
+			ManagedType<?> keyType = (ManagedType<?>) idAtt.getType();
+			Attribute<?, ?> att = keyType.getAttribute(propName);
+			member = att.getJavaMember();
+			if (member == null) { // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_95:_20091017:_Attribute.getJavaMember.28.29_returns_null_for_a_BasicType_on_a_MappedSuperclass_because_of_an_uninitialized_accessor
+				member = getJavaMember(key.getClass(), propName);
+			}
+
+			return getValue(key, member);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -536,7 +599,7 @@ public class JPAProducer implements ODataProducer {
 				if (orderBy.isAscending()) {
 					orders = orders + field + ",";
 				} else {
-					orders = orders + field + " DESC,";
+					orders = String.format("%s%s DESC,", orders, field);
 				}
 			}
 
@@ -585,7 +648,12 @@ public class JPAProducer implements ODataProducer {
 				List<OProperty<?>> ls = new LinkedList<OProperty<?>>();
 				ls.add(op);
 
-				final OEntity entity = OEntities.create(context.ees, ls, null);
+				final OEntity entity = OEntities.create(
+						context.ees,
+						ls,
+						null,
+						null);
+
 				entities.add(entity);
 			}
 
@@ -636,7 +704,7 @@ public class JPAProducer implements ODataProducer {
 		if (context.query.orderBy != null) {
 			for (OrderByExpression ord : context.query.orderBy) {
 				String field = ((EntitySimpleProperty) ord.getExpression())
-							.getPropertyName();
+								.getPropertyName();
 				Object value = lastEntity.getProperty(field).getValue();
 
 				if (value instanceof String) {
@@ -647,10 +715,7 @@ public class JPAProducer implements ODataProducer {
 			}
 		}
 
-		values.add(InternalUtil.keyString(
-					lastEntity.getProperty(context.keyPropertyName).getValue(),
-					false));
-
+		values.add(lastEntity.getId().toString());
 		return Enumerable.create(values).join(",");
 	}
 
@@ -694,8 +759,9 @@ public class JPAProducer implements ODataProducer {
 				WebResource webResource = httpClient.resource(link.getHref());
 				String requestEntity = webResource.get(String.class);
 
-				OEntity relOEntity = BaseResource
-						.ConvertFromString(requestEntity);
+				OEntity relOEntity = BaseResource.convertFromString(
+								requestEntity);
+
 				String term = ((AtomInfo) relOEntity).getCategoryTerm();
 				EdmEntitySet ees = metadata
 						.getEdmEntitySet(term.split("\\.")[1]);
@@ -767,6 +833,7 @@ public class JPAProducer implements ODataProducer {
 					ees,
 					jpaEntityType,
 					jpaEntity,
+					null,
 					null);
 
 			return new EntityResponse() {

@@ -328,7 +328,7 @@ public class InMemoryProducer implements ODataProducer {
             }
         }
                
-        return OEntities.create(ees, properties, links); 
+        return OEntities.create(ees, properties, links, null); 
     }
 
     private static Predicate1<Object> filterToPredicate(final BoolCommonExpression filter, final PropertyModel properties) {

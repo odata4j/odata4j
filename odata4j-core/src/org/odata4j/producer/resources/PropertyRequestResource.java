@@ -91,7 +91,9 @@ public class PropertyRequestResource extends BaseResource {
 			final @QueryParam("$orderby") String orderBy,
 			final @QueryParam("$format") String format,
 			final @QueryParam("$callback") String callback,
-			final @QueryParam("$skiptoken") String skipToken) {
+			final @QueryParam("$skiptoken") String skipToken,
+			final @QueryParam("$expand") String expand,
+			final @QueryParam("$select") String select) {
 
 		QueryInfo query = new QueryInfo(
 				OptionsQueryParser.parseInlineCount(inlineCount),
@@ -101,7 +103,8 @@ public class PropertyRequestResource extends BaseResource {
 				OptionsQueryParser.parseOrderBy(orderBy),
 				OptionsQueryParser.parseSkipToken(orderBy, skipToken),
 				OptionsQueryParser.parseCustomOptions(context),
-				null /* $expand not supported here */);
+				OptionsQueryParser.parseSelect(expand),
+				OptionsQueryParser.parseSelect(select));
 
 		Object idObject = OptionsQueryParser.parseIdObject(id);
 		final EntitiesResponse response = producer.getNavProperty(

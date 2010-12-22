@@ -165,4 +165,11 @@ public class OptionsQueryParser {
         }
         return ExpressionParser.parseExpand(expand);
     }
+
+	public static List<EntitySimpleProperty> parseSelect(String select) {
+        if (select == null) {
+            return null;
+        }
+        return ExpressionParser.parseExpand(select);
+	}
 }

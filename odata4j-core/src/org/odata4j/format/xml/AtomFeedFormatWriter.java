@@ -58,7 +58,7 @@ public class AtomFeedFormatWriter extends XmlFormatWriter implements FormatWrite
 
         for(OEntity entity : response.getEntities()) {
             writer.startElement("entry");
-            writeEntry(writer, response.getEntitySet().type.keys, entity.getProperties(), entity.getLinks(), entitySetName, baseUri, updated, ees);
+            writeEntry(writer, entity, entity.getProperties(), entity.getLinks(), entitySetName, baseUri, updated, ees);
             writer.endElement("entry");
         }
         

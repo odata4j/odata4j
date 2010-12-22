@@ -14,4 +14,6 @@ public interface OEntity {
     
     public abstract List<OLink> getLinks();
     public abstract <T extends OLink> T getLink(String title, Class<T> linkClass);
+
+    public abstract Object getId(); 
 }

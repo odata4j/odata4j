@@ -8,8 +8,8 @@ import org.odata4j.edm.EdmEntitySet;
 
 public class OEntities {
 
-    public static OEntity create(EdmEntitySet entitySet, List<OProperty<?>> properties, List<OLink> links) {
-        return new OEntityImpl(entitySet, properties, links);
+    public static OEntity create(EdmEntitySet entitySet, List<OProperty<?>> properties, List<OLink> links, Object id) {
+        return new OEntityImpl(entitySet, properties, links, id);
     }
 
     public static OEntity create(List<OProperty<?>> properties, List<OLink> links, String title, String categoryTerm) {
@@ -22,7 +22,7 @@ public class OEntities {
         private final String categoryTerm;
 
         public OEntityAtomImpl(EdmEntitySet entitySet, List<OProperty<?>> properties, List<OLink> links, String title, String categoryTerm) {
-            super(entitySet, properties, links);
+            super(entitySet, properties, links, null);
             this.title = title;
             this.categoryTerm = categoryTerm;
         }
@@ -43,11 +43,13 @@ public class OEntities {
     	private final EdmEntitySet entitySet;
         private final List<OProperty<?>> properties;
         private final List<OLink> links;
+        private final Object id;
 
-        public OEntityImpl(EdmEntitySet entitySet, List<OProperty<?>> properties, List<OLink> links) {
+        public OEntityImpl(EdmEntitySet entitySet, List<OProperty<?>> properties, List<OLink> links, Object id) {
         	this.entitySet = entitySet;
             this.properties = properties;
             this.links = links;
+            this.id = id;
         }
 
         @Override
@@ -95,6 +97,11 @@ public class OEntities {
                    return (T)link;
            throw new IllegalArgumentException("No link with title: " + title);
         }
+
+		@Override
+		public Object getId() {
+			return id;
+		}
 
     }
 }
