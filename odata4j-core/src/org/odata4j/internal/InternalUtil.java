@@ -43,7 +43,7 @@ public class InternalUtil {
 	// spec says:
 	// Edm.DateTime: 		yyyy-mm-ddThh:mm[:ss[.fffffff]]
 	// Edm.DateTimeOffset:  yyyy-mm-ddThh:mm[:ss[.fffffff]](('+'|'-')hh':'mm)|'Z'
-	private static final Pattern DATETIME_PATTERN = Pattern.compile("(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2})(:\\d{2})?(\\.\\d{3,7})?((?:(?:\\+|\\-)\\d{2}:\\d{2})|Z)?");
+	private static final Pattern DATETIME_PATTERN = Pattern.compile("(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2})(:\\d{2})?(\\.\\d{1,7})?((?:(?:\\+|\\-)\\d{2}:\\d{2})|Z)?");
 	private static final DateTimeFormatter[] DATETIME_PARSER = new DateTimeFormatter[] {
 		// formatter for parsing of dateTime and dateTimeOffset
 		DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm"),
