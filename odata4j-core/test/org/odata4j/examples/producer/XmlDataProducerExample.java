@@ -1,6 +1,7 @@
 package org.odata4j.examples.producer;
 
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -176,16 +177,16 @@ public class XmlDataProducerExample {
 		@Override
 		public EntitiesResponse getEntities(String entitySetName,
 				QueryInfo queryInfo) {
+			EdmEntitySet ees = getMetadata().getEdmEntitySet(entitySetName);
+			
+			InputStream is = getClass()
+				.getResourceAsStream("xmlDataProducerExampleTestData.xml");
+			XMLEventReader reader = null;
 			try {
-				EdmEntitySet ees = getMetadata().getEdmEntitySet(entitySetName);
-
 				// transform the xml to OEntities with OProperties.
 				// links are omitted for simplicity
-				InputStream is = getClass().getResourceAsStream(
-						"xmlDataProducerExampleTestData.xml");
-				XMLEventReader reader = xmlInputFactory
-						.createXMLEventReader(is);
-
+				reader = xmlInputFactory .createXMLEventReader(is);
+				
 				List<OEntity> entities = new ArrayList<OEntity>();
 				List<OProperty<?>> properties = new ArrayList<OProperty<?>>();
 				boolean inCustomer = false;
@@ -221,6 +222,17 @@ public class XmlDataProducerExample {
 				return Responses.entities(entities, ees, null, null);
 			} catch (XMLStreamException ex) {
 				throw new RuntimeException(ex);
+			} finally {
+				try {
+					if (reader != null)
+						reader.close();
+				} catch (XMLStreamException ignore) {
+				}
+				
+				try {
+					is.close();
+				} catch (IOException ignore) {
+				}
 			}
 		}
 
