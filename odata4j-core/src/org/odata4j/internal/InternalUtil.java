@@ -28,6 +28,9 @@ import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
 import org.odata4j.core.ORelatedEntitiesLink;
 import org.odata4j.core.ORelatedEntityLink;
+import org.odata4j.edm.EdmDataServices;
+import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmType;
 import org.odata4j.format.xml.AtomFeedFormatParser.AtomLink;
 import org.odata4j.format.xml.AtomFeedFormatParser.DataServicesAtomEntry;
@@ -202,9 +205,12 @@ public class InternalUtil {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> T toEntity(Class<T> entityType,
-			DataServicesAtomEntry dsae, FeedCustomizationMapping fcMapping) {
-		OEntity oe = InternalUtil.toOEntity(dsae, fcMapping);
+	public static <T> T toEntity(Class<T> entityType, EdmDataServices metadata,
+			EdmEntitySet entitySet, DataServicesAtomEntry dsae,
+			FeedCustomizationMapping fcMapping) {
+		OEntity oe = InternalUtil.toOEntity(metadata, entitySet, dsae,
+				fcMapping);
+
 		if (entityType.equals(OEntity.class))
 			return (T) oe;
 		else
@@ -212,12 +218,15 @@ public class InternalUtil {
 	}
 
 	public static OEntity toOEntity(
+			EdmDataServices metadata,
+			EdmEntitySet entitySet,
 			DataServicesAtomEntry dsae,
 			FeedCustomizationMapping mapping) {
 		if (mapping == null)
 			return OEntities.create(
+					entitySet,
 					dsae.properties,
-					toOLinks(dsae.links, mapping), 
+					toOLinks(metadata, entitySet, dsae.links, mapping), 
 					dsae.title,
 					dsae.categoryTerm);
 
@@ -232,22 +241,34 @@ public class InternalUtil {
 					mapping.summaryPropName, 
 					dsae.summary));
 
-		return OEntities.create(properties.toList(),
-				toOLinks(dsae.links, mapping), dsae.title, dsae.categoryTerm);
+		return OEntities.create(entitySet, properties.toList(),
+				toOLinks(metadata, entitySet, dsae.links, mapping), dsae.title, dsae.categoryTerm);
 
 	}
 
 	private static List<OLink> toOLinks(
+			final EdmDataServices metadata,
+			EdmEntitySet fromRoleEntitySet,
 			List<AtomLink> links,
 			final FeedCustomizationMapping mapping) {
 		List<OLink> rt = new ArrayList<OLink>(links.size());
-		for (AtomLink link : links) {
+		for (final AtomLink link : links) {
 
 			if (link.relation.startsWith(XmlFormatWriter.related)) {
 				if (link.type.equals(XmlFormatWriter.atom_feed_content_type)) {
 					List<OEntity> relatedEntities = null;
 					// do we have inlined entities
 					if (link.feed != null && link.feed.entries != null) {
+						
+						//	get the entity set belonging to the from role type
+						EdmNavigationProperty navProperty = fromRoleEntitySet != null
+							? fromRoleEntitySet.type.getNavigationProperty(link.title)
+							: null;
+    					final EdmEntitySet toRoleEntitySet = metadata != null && navProperty != null
+    						? metadata.getEdmEntitySet(navProperty.toRole.type)
+    						: null;
+
+						//	convert the atom feed entries to OEntitys
 						relatedEntities = Enumerable
 								.create(link.feed.entries)
 								.cast(DataServicesAtomEntry.class)
@@ -255,7 +276,7 @@ public class InternalUtil {
 									@Override
 									public OEntity apply(
 											DataServicesAtomEntry input) {
-										return toOEntity(input, mapping);
+										return toOEntity(metadata, toRoleEntitySet, input, mapping);
 									}
 								}).toList();
 					}

@@ -41,7 +41,7 @@ public class Customers implements Serializable {
     private String Phone;
     @Column(name = "Fax")
     private String Fax;
-    @JoinColumn(name = "CustomerID", referencedColumnName = "CustomerID",
+    @JoinColumn(name = "CustomerID",
             insertable = false, updatable = false)
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "Customer")
     private Collection<Orders> Orders;

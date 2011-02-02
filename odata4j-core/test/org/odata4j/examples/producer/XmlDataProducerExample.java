@@ -257,6 +257,12 @@ public class XmlDataProducerExample {
 		}
 
 		@Override
+	    public EntityResponse createEntity(String entitySetName, Object entityKey, 
+	    		String navProp, OEntity entity) {
+			return null;
+		}
+
+		@Override
 		public void deleteEntity(String entitySetName, Object entityKey) {
 		}
 

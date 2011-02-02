@@ -33,11 +33,11 @@ public class EdmxFormatParser extends XmlFormatParser {
     public static EdmDataServices parseMetadata(XMLEventReader2 reader) {
         List<EdmSchema> schemas = new ArrayList<EdmSchema>();
 
+        String version = null;
+        boolean foundDataServices = false;
         while (reader.hasNext()) {
             XMLEvent2 event = reader.nextEvent();
             
-            String version = null;
-            boolean foundDataServices = false;
             boolean shouldReturn = false;
             if (isStartElement(event, EDMX_DATASERVICES)) {
                 foundDataServices = true;

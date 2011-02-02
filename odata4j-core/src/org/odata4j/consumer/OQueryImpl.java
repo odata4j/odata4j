@@ -135,7 +135,7 @@ public class OQueryImpl<T> implements OQuery<T> {
             public T apply(AtomEntry input) {
                 DataServicesAtomEntry dsae = (DataServicesAtomEntry) input;
               
-                return InternalUtil.toEntity(entityType, dsae, fcMapping);
+                return InternalUtil.toEntity(entityType, null, null, dsae, fcMapping);
             }
         }).cast(entityType);
     }

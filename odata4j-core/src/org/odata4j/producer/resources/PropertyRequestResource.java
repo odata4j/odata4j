@@ -1,6 +1,7 @@
 package org.odata4j.producer.resources;
 
 import java.io.StringWriter;
+import java.net.URI;
 import java.util.logging.Logger;
 
 import javax.ws.rs.DELETE;
@@ -11,6 +12,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -19,6 +21,7 @@ import org.odata4j.core.OEntity;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.format.FormatWriter;
 import org.odata4j.format.FormatWriterFactory;
+import org.odata4j.format.xml.AtomEntryFormatWriter;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.ODataProducer;
@@ -48,15 +51,37 @@ public class PropertyRequestResource extends BaseResource {
 	public Response mergeEntity(
 			@Context HttpContext context,
 			@Context ODataProducer producer,
+			@Context HttpHeaders headers,
 			final @PathParam("entitySetName") String entitySetName,
 			final @PathParam("id") String id,
 			final @PathParam("navProp") String navProp) {
 
 		if (!"MERGE".equals(context.getRequest().getHeaderValue(
 				ODataConstants.Headers.X_HTTP_METHOD))) {
-			// throw new RuntimeException("Expected a tunnelled MERGE");
-			log.info("NavProp: mergeEntity Expected a tunnelled MERGE");
-			return Response.ok().build();
+			
+			OEntity entity = getRequestEntity(context.getRequest());
+			Object idObject = OptionsQueryParser.parseIdObject(id);
+			EntityResponse response = producer.createEntity(entitySetName, idObject, navProp, entity);
+
+	        if (response == null) {
+	            return Response.status(Status.NOT_FOUND).build();
+	        }
+	        
+	        //	TODO support JSON too
+	        StringWriter sw = new StringWriter();
+			String entryId = new AtomEntryFormatWriter().writeAndReturnId(
+					context.getUriInfo(), 
+					sw, 
+					response);
+			
+			String responseEntity = sw.toString();
+
+			return Response
+					.ok(responseEntity, ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8)
+					.status(Status.CREATED)
+					.location(URI.create(entryId))
+					.header(ODataConstants.Headers.DATA_SERVICE_VERSION,
+							ODataConstants.DATA_SERVICE_VERSION).build();
 		}
 
 		throw new UnsupportedOperationException("Not supported yet.");

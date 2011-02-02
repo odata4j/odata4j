@@ -2,6 +2,7 @@ package org.odata4j.test;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.odata4j.producer.jpa.JPAProducerCreateTest;
 import org.odata4j.producer.jpa.JPAProducerQueryOptionAtomTest;
 import org.odata4j.producer.jpa.JPAProducerQueryOptionAtomTest50;
 import org.odata4j.producer.jpa.JPAProducerQueryOptionTest;
@@ -35,7 +36,8 @@ import org.odata4j.test.issues.Issue16;
 	JPAProducerQueryOptionTest50.class,
 	JPAProducerQueryOptionAtomTest.class,
 	JPAProducerQueryOptionAtomTest50.class,
-	DateTimeFormatTest.class
+	DateTimeFormatTest.class,
+	JPAProducerCreateTest.class
 })
 
 public class OData4jTestSuite {

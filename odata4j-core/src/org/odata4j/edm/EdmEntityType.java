@@ -3,6 +3,9 @@ package org.odata4j.edm;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.core4j.Enumerable;
+import org.core4j.Predicate1;
+
 public class EdmEntityType {
 
     public final String namespace;
@@ -32,4 +35,13 @@ public class EdmEntityType {
         return alias==null?null:(alias + "." + name);
     }
 
+    public EdmNavigationProperty getNavigationProperty(final String name) {
+    	return Enumerable.create(navigationProperties)
+    		.firstOrNull(new Predicate1<EdmNavigationProperty>() {
+    			@Override
+    			public boolean apply(EdmNavigationProperty input) {
+    				return input.name.equals(name);
+    			}
+    		});
+    }
 }

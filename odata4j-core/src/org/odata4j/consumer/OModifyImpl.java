@@ -7,6 +7,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.core4j.Enumerable;
 import org.core4j.Predicate1;
+import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OModify;
 import org.odata4j.core.OProperty;
@@ -61,7 +62,7 @@ public class OModifyImpl<T> implements OModify<T> {
         String path = Enumerable.create(segments).join("/");
 
         ODataClientRequest request = updateRoot != null ? ODataClientRequest.put(serviceRootUri + path, entry) : ODataClientRequest.merge(serviceRootUri + path, entry);
-        request = request.header("Content-Type", MediaType.APPLICATION_XML);
+        request = request.header(ODataConstants.Headers.CONTENT_TYPE, MediaType.APPLICATION_XML);
         boolean rt = client.updateEntity(request);
         return rt;
     }

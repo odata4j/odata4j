@@ -1,5 +1,6 @@
 package org.odata4j.producer.jpa;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
@@ -11,9 +12,11 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.OneToMany;
 import javax.persistence.Query;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Attribute.PersistentAttributeType;
@@ -25,6 +28,7 @@ import javax.persistence.metamodel.SingularAttribute;
 import org.core4j.CoreUtils;
 import org.core4j.Enumerable;
 import org.core4j.Func1;
+import org.core4j.Predicate1;
 import org.joda.time.LocalDateTime;
 import org.odata4j.core.AtomInfo;
 import org.odata4j.core.OEntities;
@@ -35,6 +39,7 @@ import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.edm.EdmMultiplicity;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.expression.EntitySimpleProperty;
@@ -320,8 +325,7 @@ public class JPAProducer implements ODataProducer {
 							EntityType<?> elementEntityType = (EntityType<?>) ((PluralAttribute<?, ?, ?>) att)
 											.getElementType();
 							EdmEntitySet elementEntitySet = metadata
-									.getEdmEntitySet(
-											elementEntityType.getName());
+									.getEdmEntitySet(elementEntityType.getName());
 
 							relatedEntities.add(jpaEntityToOEntity(
 									elementEntitySet,
@@ -429,6 +433,29 @@ public class JPAProducer implements ODataProducer {
 		} else {
 			throw new UnsupportedOperationException("Implement member" + member);
 		}
+	}
+	
+	private void setValue(Object obj, Member member, Object value) throws Exception {
+		if (member instanceof Method) {
+			throw new UnsupportedOperationException("Implement member"
+					+ member + " as field");
+		} else if (member instanceof Field) {
+			Field field = (Field) member;
+			field.set(obj, value);
+		} else {
+			throw new UnsupportedOperationException("Implement member" + member);
+		}
+	}
+
+	private <T extends Annotation> T getAnnotation(Member member, Class<T> annotationClass) {
+		if (member instanceof Method) {
+			Method method = (Method) member;
+			return method.getAnnotation(annotationClass);
+		} else if (member instanceof Field) {
+			Field field = (Field) member;
+			return field.getAnnotation(annotationClass);
+		} else
+			throw new IllegalArgumentException("only methods and fields are allowed");
 	}
 
 	private static Member getJavaMember(Class<?> type, String name) {
@@ -853,6 +880,109 @@ public class JPAProducer implements ODataProducer {
 			em.close();
 		}
 	}
+	
+	@Override
+	public EntityResponse createEntity(String entitySetName, Object entityKey,
+			final String navProp, OEntity entity) {
+		//	get the EdmEntitySet for the parent (fromRole) entity
+		final EdmEntitySet ees = metadata.getEdmEntitySet(entitySetName);
+
+		//	get the navigation property
+		EdmNavigationProperty edmNavProperty = ees.type
+			.getNavigationProperty(navProp);
+
+		//	check whether the navProperty is valid
+		if (edmNavProperty == null
+			|| edmNavProperty.toRole.multiplicity != EdmMultiplicity.MANY) {
+			throw new IllegalArgumentException("unknown navigation property "
+					+ navProp + " or navigation property toRole Multiplicity is not '*'" );
+		}
+
+		EntityManager em = emf.createEntityManager();
+		try {
+			em.getTransaction().begin();
+			
+			//	get the entity we want the new entity add to
+			EntityType<?> jpaEntityType = findJPAEntityType(em, ees.type.name);
+			Object typeSafeEntityKey = typeSafeEntityKey(em, jpaEntityType,
+					entityKey);
+			Object jpaEntity = em.find(jpaEntityType.getJavaType(),
+					typeSafeEntityKey);
+
+			//	create the new entity
+			EntityType<?> newJpaEntityType = findJPAEntityType(em,
+					edmNavProperty.toRole.type.name);
+			Object newJpaEntity = createNewJPAEntity(em, newJpaEntityType, entity,
+					true);
+			
+			//	get the collection attribute and add the new entity to the parent entity
+			@SuppressWarnings({ "rawtypes", "unchecked" })
+			PluralAttribute attr = Enumerable.create(
+					jpaEntityType.getPluralAttributes())
+					.firstOrNull(new Predicate1() {
+						@Override
+						public boolean apply(Object input) {
+							PluralAttribute<?, ?, ?> pa = (PluralAttribute<?, ?, ?>)input;
+							System.out.println("pa: " + pa.getName());
+							return pa.getName().equals(navProp);
+						}
+					});
+			@SuppressWarnings("unchecked")
+			Collection<Object> collection = (Collection<Object> )getValue(jpaEntity, attr.getJavaMember());
+			collection.add(newJpaEntity);
+			
+			//	TODO handle ManyToMany relationships
+			// set the backreference in bidirectional relationships
+			OneToMany oneToMany = getAnnotation(attr.getJavaMember(),
+					OneToMany.class);
+			if (oneToMany != null
+					&& oneToMany.mappedBy() != null
+					&& !oneToMany.mappedBy().isEmpty()) {
+				setValue(newJpaEntity, newJpaEntityType
+						.getAttribute(oneToMany.mappedBy())
+						.getJavaMember(), jpaEntity);
+			}
+			
+			//	check whether the EntitManager will persist the
+			//	new entity or should we do it
+			if (oneToMany != null
+					&& oneToMany.cascade() != null) {
+				List<CascadeType> cascadeTypes = Arrays.asList(oneToMany.cascade());
+				if (!cascadeTypes.contains(CascadeType.ALL)
+					&& !cascadeTypes.contains(CascadeType.PERSIST)) {
+					em.persist(newJpaEntity);
+				}
+			}
+			
+			em.getTransaction().commit();
+
+			//	prepare the response
+			final EdmEntitySet toRoleees = getMetadata()
+					.getEdmEntitySet(edmNavProperty.toRole.type);
+			final OEntity responseEntity = jpaEntityToOEntity(toRoleees,
+					newJpaEntityType, newJpaEntity, null, null);
+
+			return new EntityResponse() {
+
+				@Override
+				public OEntity getEntity() {
+					return responseEntity;
+				}
+
+				@Override
+				public EdmEntitySet getEntitySet() {
+					return toRoleees;
+				}
+			};
+			
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		} finally {
+			em.close();
+		}
+	}
+	
+	
 
 	@Override
 	public void deleteEntity(String entitySetName, Object entityKey) {

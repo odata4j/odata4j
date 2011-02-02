@@ -36,7 +36,7 @@ public class AzureTableBehavior implements OClientBehavior {
 
             String path = request.getUrl().substring(request.getUrl().indexOf('/', 8) + 1);
             boolean isTableRequest = path.startsWith("Tables(");
-            String contentType = request.getHeaders().get("Content-Type");
+            String contentType = request.getHeaders().get(ODataConstants.Headers.CONTENT_TYPE);
             contentType = contentType == null ? "" : contentType;
             boolean isPut = request.getMethod().equals("PUT");
             boolean isPost = request.getMethod().equals("POST");
@@ -74,7 +74,7 @@ public class AzureTableBehavior implements OClientBehavior {
                 request = request.header("If-Match", "*"); // azure tables require for put,delete,merge
 
             if (isDelete) {
-                request = request.header("Content-Type", MediaType.APPLICATION_ATOM_XML);
+                request = request.header(ODataConstants.Headers.CONTENT_TYPE, MediaType.APPLICATION_ATOM_XML);
                 request = request.header("Content-Length", "0");
             }
 

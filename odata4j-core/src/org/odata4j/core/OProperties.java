@@ -1,6 +1,8 @@
 package org.odata4j.core;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -131,6 +133,10 @@ public class OProperties {
         return new PropertyImpl<String>(name, EdmType.STRING, value);
     }
 
+    public static OProperty<String> string(String name, char value) {
+        return new PropertyImpl<String>(name, EdmType.STRING, Character.toString(value));
+    }
+
     public static OProperty<Guid> guid(String name, String value) {
         return guid(name, Guid.fromString(value));
     }
@@ -159,6 +165,10 @@ public class OProperties {
         return new PropertyImpl<LocalDateTime>(name, EdmType.DATETIME, new LocalDateTime(value));
     }
 
+    public static OProperty<LocalDateTime> datetime(String name, Calendar value) {
+        return new PropertyImpl<LocalDateTime>(name, EdmType.DATETIME, new LocalDateTime(value));
+    }
+
     public static OProperty<LocalTime> time(String name, LocalTime value) {
         return new PropertyImpl<LocalTime>(name, EdmType.TIME, value);
     }
@@ -171,6 +181,10 @@ public class OProperties {
         return new PropertyImpl<BigDecimal>(name, EdmType.DECIMAL, value);
     }
 
+    public static OProperty<BigDecimal> decimal(String name, BigInteger value) {
+        return new PropertyImpl<BigDecimal>(name, EdmType.DECIMAL, BigDecimal.valueOf(value.longValue()));
+    }
+
     public static OProperty<BigDecimal> decimal(String name, long value) {
         return new PropertyImpl<BigDecimal>(name, EdmType.DECIMAL, BigDecimal.valueOf(value));
     }
@@ -181,6 +195,10 @@ public class OProperties {
 
     public static OProperty<byte[]> binary(String name, byte[] value) {
         return new PropertyImpl<byte[]>(name, EdmType.BINARY, value);
+    }
+
+    public static OProperty<Byte[]> binary(String name, Byte[] value) {
+        return new PropertyImpl<Byte[]>(name, EdmType.BINARY, value);
     }
 
     public static OProperty<Byte> byte_(String name, byte value) {

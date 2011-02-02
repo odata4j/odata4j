@@ -145,7 +145,7 @@ public class EntitiesRequestResource extends BaseResource {
 		batchResponse.append(batchBoundary);
 
 		batchResponse
-				.append("\nContent-Type: multipart/mixed; boundary=")
+				.append("\n").append(ODataConstants.Headers.CONTENT_TYPE).append(": multipart/mixed; boundary=")
 				.append(changesetBoundary);
 
 		batchResponse.append('\n');
@@ -179,7 +179,7 @@ public class EntitiesRequestResource extends BaseResource {
 			}
 
 			batchResponse.append("\n--").append(changesetBoundary);
-			batchResponse.append("\nContent-Type: application/http");
+			batchResponse.append("\n").append(ODataConstants.Headers.CONTENT_TYPE).append(": application/http");
 			batchResponse.append("\nContent-Transfer-Encoding: binary\n");
 
 			batchResponse.append(ODataBatchProvider.createResponseBodyPart(

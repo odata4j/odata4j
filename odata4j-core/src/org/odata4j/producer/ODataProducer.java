@@ -21,6 +21,8 @@ public interface ODataProducer {
 
     public abstract EntityResponse createEntity(String entitySetName, OEntity entity);
 
+    public abstract EntityResponse createEntity(String entitySetName, Object entityKey, String navProp, OEntity entity);
+
     public abstract void deleteEntity(String entitySetName, Object entityKey);
 
     public abstract void mergeEntity(String entitySetName, Object entityKey, OEntity entity);

@@ -20,7 +20,7 @@ public abstract class BaseResource {
         AtomEntry entry = AtomFeedFormatParser.parseFeed(reader).entries.iterator().next();
         DataServicesAtomEntry dsae = (DataServicesAtomEntry) entry;
 
-        return InternalUtil.toOEntity(dsae, null);
+        return InternalUtil.toOEntity(null, null, dsae, null);
     }
 
     protected OEntity getRequestEntity(HttpRequestContext request) {

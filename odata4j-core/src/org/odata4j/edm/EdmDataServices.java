@@ -3,6 +3,9 @@ package org.odata4j.edm;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.core4j.Enumerable;
+import org.core4j.Predicate1;
+
 public class EdmDataServices {
 
     public final String version;
@@ -19,6 +22,21 @@ public class EdmDataServices {
             return ees;
         }
         throw new RuntimeException("EdmEntitySet " + entitySetName + " not found");
+    }
+
+    public EdmEntitySet getEdmEntitySet(final EdmEntityType type) {
+    	EdmEntitySet ees = Enumerable.create(getEntitySets())
+    		.firstOrNull(new Predicate1<EdmEntitySet>() {
+    			@Override
+    			public boolean apply(EdmEntitySet input) {
+    				return type == input.type;
+    			}
+    		});
+    	
+    	if (ees != null) {
+    		return ees;
+    	}
+        throw new RuntimeException("EdmEntitySet for type " + type.name + " not found");
     }
 
     public EdmEntitySet findEdmEntitySet(String entitySetName) {

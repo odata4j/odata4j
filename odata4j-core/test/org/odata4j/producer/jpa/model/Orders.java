@@ -12,9 +12,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -28,9 +28,9 @@ public class Orders implements Serializable {
     @Basic(optional = false)
     @Column(name = "OrderID")
     private Integer OrderID;
-    @Column(name = "CustomerID")
+    @Column(name = "CustomerID", insertable = false, updatable = false)
     private String CustomerID;
-    @Column(name = "EmployeeID")
+    @Column(name = "EmployeeID", insertable = false, updatable = false)
     private Integer EmployeeID;
     @Column(name = "OrderDate")
     @Temporal(TemporalType.TIMESTAMP)
@@ -57,11 +57,13 @@ public class Orders implements Serializable {
     private String ShipPostalCode;
     @Column(name = "ShipCountry")
     private String ShipCountry;
+    @JoinColumn(name = "CustomerID")
     @ManyToOne
     private Customers Customer;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "Order")
     private Collection<Order_Details> OrderDetails;
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "Order")
+    @JoinColumn(name = "EmployeeID")
+    @ManyToOne
     private Employees Employee;
 
     public Orders() {

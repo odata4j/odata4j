@@ -292,13 +292,8 @@ public class InMemoryProducer implements ODataProducer {
         	EdmEntityType edmEntityType = ees.type;
         	
             for (final EntitySimpleProperty prop : expand) {
-            	EdmNavigationProperty edmNavProperty = Enumerable.create(edmEntityType.navigationProperties)
-            													 .firstOrNull(new Predicate1<EdmNavigationProperty>() {
-																		@Override
-																		public boolean apply(EdmNavigationProperty input) {
-																			return prop.getPropertyName().equals(input.name);
-																		}});
-            	
+            	EdmNavigationProperty edmNavProperty = edmEntityType
+            		.getNavigationProperty(prop.getPropertyName());
             	if (edmNavProperty.toRole.multiplicity == EdmMultiplicity.MANY) {
 	            	List<OEntity> relatedEntities = new ArrayList<OEntity>();
 	            	Iterable<?> values = ei.properties.getCollectionValue(obj, prop.getPropertyName());
@@ -506,6 +501,13 @@ public class InMemoryProducer implements ODataProducer {
     public EntityResponse createEntity(String entitySetName, OEntity entity) {
         throw new UnsupportedOperationException();
     }
+    
+	@Override
+    public EntityResponse createEntity(String entitySetName, Object entityKey, 
+    		String navProp, OEntity entity) {
+		return null;
+	}
+
 	@Override
 	public EntitiesResponse getNavProperty(String entitySetName, Object entityKey, String navProp, QueryInfo queryInfo) {
         throw new UnsupportedOperationException();

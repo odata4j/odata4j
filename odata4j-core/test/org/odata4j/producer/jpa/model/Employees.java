@@ -1,9 +1,11 @@
 package org.odata4j.producer.jpa.model;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,7 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
-import javax.persistence.OneToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -65,10 +67,10 @@ public class Employees implements Serializable {
     private Integer ReportsTo;
     @Column(name = "PhotoPath")
     private String PhotoPath;
-    @JoinColumn(name = "EmployeeID", referencedColumnName = "EmployeeID",
-            insertable = false, updatable = false)
-    @OneToOne(optional = false)
-    private Orders Order;
+    @JoinColumn(name = "EmployeeID",
+        insertable = false, updatable = false)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "Employee")
+    private Collection<Orders> Order;
 
     public Employees() {
     }
@@ -227,11 +229,11 @@ public class Employees implements Serializable {
         this.PhotoPath = photoPath;
     }
 
-    public Orders getOrders() {
+    public Collection<Orders> getOrders() {
         return Order;
     }
 
-    public void setOrders(Orders orders) {
+    public void setOrders(Collection<Orders> orders) {
         this.Order = orders;
     }
 

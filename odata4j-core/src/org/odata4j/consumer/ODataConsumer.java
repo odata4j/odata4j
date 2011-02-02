@@ -191,32 +191,27 @@ public class ODataConsumer {
     
     public <T> OEntityRef<T> getEntity(Class<T> entityType, String entitySetName, Object... key) {
         FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
-        return new OEntityRefImpl<T>(false, client, entityType, serviceRootUri, entitySetName, key, mapping);
+        return new OEntityRefImpl<T>(false, client, entityType, serviceRootUri, getMetadata(),
+        		entitySetName, key, mapping);
     }
     
-  
-    
-    
-    public OCreate<OEntity> createEntity(String entitySetName) {
-        FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
-        gotMetadata = false;
-        return new OCreateImpl<OEntity>(client, serviceRootUri, entitySetName, mapping);
-    }
+	public OCreate<OEntity> createEntity(String entitySetName) {
+		FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
+		return new OCreateImpl<OEntity>(client, serviceRootUri, getMetadata(),
+				entitySetName, mapping);
+	}
 
     public OModify<OEntity> updateEntity(OEntity entity, String entitySetName, Object... key) {
-        gotMetadata = false;
         return new OModifyImpl<OEntity>(entity, client, serviceRootUri, entitySetName, key);
     }
 
     public OModify<OEntity> mergeEntity(String entitySetName, Object... key) {
-        gotMetadata = false;
         return new OModifyImpl<OEntity>(null, client, serviceRootUri, entitySetName, key);
     }
 
     public OEntityRef<Void> deleteEntity(String entitySetName, Object... key) {
         FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
-        gotMetadata = false;
-        return new OEntityRefImpl<Void>(true, client, null, serviceRootUri, entitySetName, key, mapping);
+        return new OEntityRefImpl<Void>(true, client, null, serviceRootUri, getMetadata(), entitySetName, key, mapping);
     }
 
     

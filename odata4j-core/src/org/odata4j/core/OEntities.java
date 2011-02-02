@@ -12,8 +12,8 @@ public class OEntities {
         return new OEntityImpl(entitySet, properties, links, id);
     }
 
-    public static OEntity create(List<OProperty<?>> properties, List<OLink> links, String title, String categoryTerm) {
-        return new OEntityAtomImpl(null, properties, links, title, categoryTerm);
+    public static OEntity create(EdmEntitySet entitySet, List<OProperty<?>> properties, List<OLink> links, String title, String categoryTerm) {
+        return new OEntityAtomImpl(entitySet, properties, links, title, categoryTerm);
     }
 
     private static class OEntityAtomImpl extends OEntityImpl implements AtomInfo {
