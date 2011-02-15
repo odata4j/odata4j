@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.consumer.behaviors.MethodTunnelingBehavior;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperties;
 
@@ -15,9 +16,21 @@ public class JPAProducerCreateTest extends JPAProducerTestBase {
 	}
 
 	@Test
-	public void InsertEntityToExistingEntityRelation() {
+	public void tunneledInsertEntityToExistingEntityRelation() {
+		ODataConsumer consumer = ODataConsumer.create(endpointUri, new MethodTunnelingBehavior("PUT"));
+		
+		insertEntityToExistingEntityRelationAndTest(consumer);
+	}
+
+	@Test
+	public void insertEntityToExistingEntityRelation() {
 		ODataConsumer consumer = ODataConsumer.create(endpointUri);
 		
+		insertEntityToExistingEntityRelationAndTest(consumer);
+	}
+
+	protected void insertEntityToExistingEntityRelationAndTest(
+			ODataConsumer consumer) {
 		OEntity category = consumer.getEntity("Categories", 1).execute();
 		
 		Assert.assertNotNull(category);

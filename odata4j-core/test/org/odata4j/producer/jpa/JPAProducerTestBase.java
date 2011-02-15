@@ -22,8 +22,6 @@ public abstract class JPAProducerTestBase {
 		emf = Persistence.createEntityManagerFactory(
 				persistenceUnitName);
 
-		System.out.println("maxResults: " + maxResults);
-		
 		JPAProducer producer = new JPAProducer(
 				emf,
 				namespace,

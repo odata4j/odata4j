@@ -37,10 +37,11 @@ import org.odata4j.expression.SubstringOfMethodCallExpression;
 import org.odata4j.expression.ToLowerMethodCallExpression;
 import org.odata4j.expression.ToUpperMethodCallExpression;
 import org.odata4j.expression.TrimMethodCallExpression;
-import org.odata4j.producer.resources.OptionsQueryParser;
 
 public class InJPAEvaluation {
 
+	public static final String PRIMARY_KEY_NAME = "ID";
+	
 	public static String primaryKeyName;
 	public static String tableAlias;
 
@@ -55,7 +56,7 @@ public class InJPAEvaluation {
 			String field = ((EntitySimpleProperty) expression)
 					.getPropertyName();
 
-			field = field.equals(OptionsQueryParser.PRIMARY_KEY_NAME)
+			field = field.equals(PRIMARY_KEY_NAME)
 					? primaryKeyName
 					: field.replace("/", ".");
 

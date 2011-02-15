@@ -17,7 +17,7 @@ public class QueryInfo {
 	public final Integer skip;
 	public final BoolCommonExpression filter;
 	public final List<OrderByExpression> orderBy;
-	public final BoolCommonExpression skipToken;
+	public final String skipToken;
 	public final Map<String, String> customOptions;
 	public final List<EntitySimpleProperty> expand;
 	public final List<EntitySimpleProperty> select;
@@ -28,7 +28,7 @@ public class QueryInfo {
 			Integer skip,
 			BoolCommonExpression filter,
 			List<OrderByExpression> orderBy,
-			BoolCommonExpression skipToken,
+			String skipToken,
 			Map<String, String> customOptions,
 			List<EntitySimpleProperty> expand,
 			List<EntitySimpleProperty> select) {

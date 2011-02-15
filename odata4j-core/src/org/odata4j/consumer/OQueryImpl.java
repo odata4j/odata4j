@@ -1,5 +1,6 @@
 package org.odata4j.consumer;
 
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -196,15 +197,14 @@ public class OQueryImpl<T> implements OQuery<T> {
                 int skipTokenIndex = feed.next.indexOf("$skiptoken=");
                 if( skipTokenIndex > -1) {
                     String skiptoken = feed.next.substring(skipTokenIndex + "$skiptoken=".length());
+                    //	decode the skiptoken first since it gets encoded as a query param
+                    skiptoken = URLDecoder.decode(skiptoken, "UTF-8");
                     request = request.queryParam("$skiptoken", skiptoken);
                 } else if (feed.next.toLowerCase().startsWith("http")){
                     request = ODataClientRequest.get(feed.next);
                 } else {
                     throw new UnsupportedOperationException();
                 }
-                
-                
-                
                
             }
 

@@ -101,7 +101,7 @@ public class EntitiesRequestResource extends BaseResource {
 				OptionsQueryParser.parseSkip(skip),
 				OptionsQueryParser.parseFilter(filter),
 				OptionsQueryParser.parseOrderBy(orderBy),
-				OptionsQueryParser.parseSkipToken(orderBy, skipToken),
+				OptionsQueryParser.parseSkipToken(skipToken),
 				OptionsQueryParser.parseCustomOptions(context),
 				OptionsQueryParser.parseExpand(expand),
 				OptionsQueryParser.parseSelect(select));

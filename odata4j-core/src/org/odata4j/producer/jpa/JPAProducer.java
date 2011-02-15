@@ -42,8 +42,11 @@ import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmMultiplicity;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
+import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.EntitySimpleProperty;
+import org.odata4j.expression.Expression;
 import org.odata4j.expression.OrderByExpression;
+import org.odata4j.expression.StringLiteral;
 import org.odata4j.internal.TypeConverter;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityResponse;
@@ -608,7 +611,8 @@ public class JPAProducer implements ODataProducer {
 
 		if (context.query.skipToken != null) {
 			String skipPredicate = InJPAEvaluation.evaluate(
-							context.query.skipToken);
+					parseSkipToken(context.query.orderBy,
+								   context.query.skipToken));
 
 			where = addWhereExpression(where, skipPredicate, "AND");
 		}
@@ -745,6 +749,52 @@ public class JPAProducer implements ODataProducer {
 		values.add(lastEntity.getId().toString());
 		return Enumerable.create(values).join(",");
 	}
+	
+    private static BoolCommonExpression parseSkipToken(List<OrderByExpression> orderByList, String skipToken) {
+        if (skipToken == null) {
+            return null;
+        }
+
+        skipToken = skipToken.replace("'", "");
+        BoolCommonExpression result = null;
+
+        if (orderByList == null) {
+            result = Expression.gt(
+                    Expression.simpleProperty(InJPAEvaluation.PRIMARY_KEY_NAME),
+                    Expression.string(skipToken));
+        } else {
+            String[] skipTokens = skipToken.split(",");
+            for (int i = 0; i < orderByList.size(); i++) {
+                OrderByExpression exp = orderByList.get(i);
+                StringLiteral value = Expression.string(skipTokens[i]);
+
+                BoolCommonExpression ordExp = null;
+                if (exp.isAscending()) {
+                    ordExp = Expression.ge(exp.getExpression(), value);
+                } else {
+                    ordExp = Expression.le(exp.getExpression(), value);
+                }
+
+                if (result == null) {
+                    result = ordExp;
+                } else {
+                    result = Expression.and(
+                            Expression.boolParen(
+                            Expression.or(ordExp, result)),
+                            result);
+                }
+            }
+
+            result = Expression.and(
+                    Expression.ne(
+                    Expression.simpleProperty(InJPAEvaluation.PRIMARY_KEY_NAME),
+                    Expression.string(skipTokens[skipTokens.length - 1])),
+                    result);
+        }
+
+        return result;
+    }
+
 
 	private Object createNewJPAEntity(
 			EntityManager em,

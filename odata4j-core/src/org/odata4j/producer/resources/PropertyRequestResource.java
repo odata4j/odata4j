@@ -126,7 +126,7 @@ public class PropertyRequestResource extends BaseResource {
 				OptionsQueryParser.parseSkip(skip),
 				OptionsQueryParser.parseFilter(filter),
 				OptionsQueryParser.parseOrderBy(orderBy),
-				OptionsQueryParser.parseSkipToken(orderBy, skipToken),
+				OptionsQueryParser.parseSkipToken(skipToken),
 				OptionsQueryParser.parseCustomOptions(context),
 				OptionsQueryParser.parseSelect(expand),
 				OptionsQueryParser.parseSelect(select));

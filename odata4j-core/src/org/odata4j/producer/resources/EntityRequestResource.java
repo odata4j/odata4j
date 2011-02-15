@@ -49,20 +49,28 @@ public class EntityRequestResource extends BaseResource {
         log.info(String.format("mergeEntity(%s,%s)", entitySetName, id));
         Object idObject = OptionsQueryParser.parseIdObject(id);
 
-        if ("MERGE".equals(context.getRequest().getHeaderValue(ODataConstants.Headers.X_HTTP_METHOD))) {
+        String method = context.getRequest().getHeaderValue(ODataConstants.Headers.X_HTTP_METHOD);
+        if ("MERGE".equals(method)) {
             OEntity entity = this.getRequestEntity(context.getRequest());
             producer.mergeEntity(entitySetName, idObject, entity);
 
             return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION).build();
         }
 
-        if ("DELETE".equals(context.getRequest().getHeaderValue(ODataConstants.Headers.X_HTTP_METHOD))) {
+        if ("DELETE".equals(method)) {
             producer.deleteEntity(entitySetName, idObject);
             
             return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION).build();
         }
+        
+        if ("PUT".equals(method)) {
+            OEntity entity = this.getRequestEntity(context.getRequest());
+            producer.updateEntity(entitySetName, idObject, entity);
 
-        throw new RuntimeException("Expected a tunnelled MERGE or DELETE");
+            return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION).build();
+        }
+
+        throw new RuntimeException("Expected a tunnelled PUT, MERGE or DELETE");
     }
 
     @DELETE

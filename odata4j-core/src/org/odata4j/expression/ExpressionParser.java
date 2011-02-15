@@ -686,7 +686,7 @@ public class ExpressionParser {
     }
 
     // tokenizer
-    private static List<Token> tokenize(String value) {
+    public static List<Token> tokenize(String value) {
         List<Token> rt = new ArrayList<Token>();
         int current = 0;
         int end = 0;
@@ -727,7 +727,7 @@ public class ExpressionParser {
                     rt.add(new Token(TokenType.SYMBOL, Character.toString(c)));
                     current++;
                 }
-            } else if (",.+".indexOf(c) > -1) {
+            } else if (",.+=".indexOf(c) > -1) {
                 rt.add(new Token(TokenType.SYMBOL, Character.toString(c)));
                 current++;
             } else {
@@ -776,12 +776,12 @@ public class ExpressionParser {
         return rt;
     }
 
-    private static enum TokenType {
+    public static enum TokenType {
 
         UNKNOWN, WHITESPACE, QUOTED_STRING, WORD, SYMBOL, NUMBER, OPENPAREN, CLOSEPAREN, EXPRESSION,;
     }
 
-    private static class Token {
+    public static class Token {
 
         public final TokenType type;
         public final String value;

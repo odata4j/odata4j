@@ -44,4 +44,15 @@ public class EdmEntityType {
     			}
     		});
     }
+    
+    public EdmProperty getProperty(final String name) {
+    	return Enumerable.create(properties)
+    		.firstOrNull(new Predicate1<EdmProperty>() {
+    			@Override
+    			public boolean apply(EdmProperty input) {
+    				return input.name.equals(name);
+    			}
+    		});
+    }
+
 }
