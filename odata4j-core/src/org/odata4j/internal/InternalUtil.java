@@ -248,7 +248,7 @@ public class InternalUtil {
 			return OEntities.create(
 					entitySet,
 					dsae.properties,
-					toOLinks(metadata, entitySet, dsae.links, mapping), 
+					toOLinks(metadata, entitySet, dsae.atomLinks, mapping), 
 					dsae.title,
 					dsae.categoryTerm);
 
@@ -264,7 +264,7 @@ public class InternalUtil {
 					dsae.summary));
 
 		return OEntities.create(entitySet, properties.toList(),
-				toOLinks(metadata, entitySet, dsae.links, mapping), dsae.title, dsae.categoryTerm);
+				toOLinks(metadata, entitySet, dsae.atomLinks, mapping), dsae.title, dsae.categoryTerm);
 
 	}
 

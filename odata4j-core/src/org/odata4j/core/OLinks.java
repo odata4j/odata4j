@@ -3,7 +3,28 @@ package org.odata4j.core;
 import java.util.List;
 
 public class OLinks {
+	
+    public static OLink link(final String relation, final String title, final String href){
+    	return new OLink() {
+			
+			@Override
+			public String getTitle() {
+				return title;
+			}
+			
+			@Override
+			public String getRelation() {
+				return relation;
+			}
+			
+			@Override
+			public String getHref() {
+				return href;
+			}
 
+		};
+    }
+	
     public static ORelatedEntitiesLink relatedEntities(final String relation, final String title, final String href, final List<OEntity> relatedEntities){
         return new ORelatedEntitiesLink(){
 

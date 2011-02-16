@@ -31,7 +31,7 @@ public class AtomEntryFormatWriter extends XmlFormatWriter implements FormatWrit
         writer.writeNamespace("d", d);
         writer.writeNamespace("m", m);
 
-        writeEntry(writer, null, request.properties, null, null, null, updated, null);
+        writeEntry(writer, null, request.properties, request.links, null, null, updated, null);
         writer.endDocument();
 
     }

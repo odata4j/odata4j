@@ -7,6 +7,7 @@ import java.util.List;
 import javax.ws.rs.core.MediaType;
 
 import org.core4j.Enumerable;
+import org.odata4j.core.OLink;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmType;
@@ -46,7 +47,7 @@ public class AtomFeedFormatParser extends XmlFormatParser {
         public String categoryScheme;
         public String contentType;
         
-        public List<AtomLink> links;
+        public List<AtomLink> atomLinks;
 
     }
     
@@ -70,6 +71,7 @@ public class AtomFeedFormatParser extends XmlFormatParser {
     public static class DataServicesAtomEntry extends AtomEntry {
         public String etag;
         public List<OProperty<?>> properties;
+        public List<OLink> links;
 
         @Override
         public String toString() {
@@ -204,7 +206,7 @@ public class AtomFeedFormatParser extends XmlFormatParser {
         String summary = null;
         String updated = null;
         String contentType = null;
-        List<AtomLink> links = new ArrayList<AtomLink>();
+        List<AtomLink> atomLinks = new ArrayList<AtomLink>();
         
         String etag = getAttributeValueIfExists(entryElement, M_ETAG);
 
@@ -221,7 +223,7 @@ public class AtomFeedFormatParser extends XmlFormatParser {
                 rt.categoryScheme = categoryScheme;
                 rt.categoryTerm = categoryTerm;
                 rt.contentType = contentType;
-                rt.links = links;
+                rt.atomLinks = atomLinks;
                 return rt;
             }
 
@@ -239,7 +241,7 @@ public class AtomFeedFormatParser extends XmlFormatParser {
 
             } else if  (isStartElement(event, ATOM_LINK)) {
                 AtomLink link = parseAtomLink(reader, event.asStartElement());
-                links.add(link);
+                atomLinks.add(link);
             } else if (isStartElement(event, M_PROPERTIES)) {
                 rt = parseDSAtomEntry(etag, reader, event);
             } else if (isStartElement(event, ATOM_CONTENT)) {

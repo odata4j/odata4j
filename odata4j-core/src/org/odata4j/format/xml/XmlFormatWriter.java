@@ -204,16 +204,12 @@ public class XmlFormatWriter {
 					entitySetName, "href", relid);
 		}
 
+		//	TODO handle inlined entities for insert entity requests
 		if (ees != null) {
 			for (EdmNavigationProperty np : ees.type.navigationProperties) {
 				if (!np.selected) {
 					continue;
 				}
-				
-				// <link
-				// rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Products"
-				// type="application/atom+xml;type=feed" title="Products"
-				// href="Suppliers(1)/Products" />
 
 				String otherEntity = np.name;
 				String rel = related + otherEntity;
@@ -236,18 +232,11 @@ public class XmlFormatWriter {
 						: null;
 
 				if (linkToInline == null) {
-					writeElement(
-							writer,
-							"link",
-							null,
-							"rel",
-							rel,
-							"type",
-							type,
-							"title",
-							title,
-							"href",
-							href);
+					writeElement(writer, "link", null,
+							"rel", rel,
+							"type", type,
+							"title", title,
+							"href", href);
 				} else {
 					writer.startElement("link");
 					writer.writeAttribute("rel", rel);
@@ -265,14 +254,18 @@ public class XmlFormatWriter {
 				}
 			}
 
-			writeElement(
-					writer,
-					"category",
-					null,
-					"term",
-					ees.type.getFQNamespaceName(),
-					"scheme",
-					scheme);
+			writeElement(writer, "category", null,
+					"term", ees.type.getFQNamespaceName(),
+					"scheme", scheme);
+		} else {
+			if (entityLinks != null) {
+				for (OLink olink : entityLinks) {
+					writeElement(writer, "link", null,
+							"rel", olink.getRelation(),
+							"type", atom_entry_content_type,
+							"href", olink.getHref());
+				}
+			}
 		}
 
 		writer.startElement("content");

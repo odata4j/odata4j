@@ -29,6 +29,20 @@ public class JPAProducerCreateTest extends JPAProducerTestBase {
 		insertEntityToExistingEntityRelationAndTest(consumer);
 	}
 
+	@Test
+	public void tunneledInsertEntityUsingLinks() {
+		ODataConsumer consumer = ODataConsumer.create(endpointUri, new MethodTunnelingBehavior("PUT"));
+		
+		insertEntityUsingLinksAndTest(consumer);
+	}
+
+	@Test
+	public void insertEntityUsingLinks() {
+		ODataConsumer consumer = ODataConsumer.create(endpointUri);
+		
+		insertEntityUsingLinksAndTest(consumer);
+	}
+	
 	protected void insertEntityToExistingEntityRelationAndTest(
 			ODataConsumer consumer) {
 		OEntity category = consumer.getEntity("Categories", 1).execute();
@@ -47,4 +61,37 @@ public class JPAProducerCreateTest extends JPAProducerTestBase {
 		Assert.assertEquals(id, products.getProperty("ProductID").getValue());
 		Assert.assertEquals("Healthy Drink", products.getProperty("ProductName").getValue());
 	}
+	
+	public void insertEntityUsingLinksAndTest(
+			ODataConsumer consumer) {
+		
+		OEntity category = consumer.getEntity("Categories", 1).execute();
+		
+		Assert.assertNotNull(category);
+
+		OEntity product = consumer
+    		.createEntity("Products")
+    		.properties(OProperties.string("ProductName", "Healthy Drink"))
+    		.properties(OProperties.boolean_("Discontinued", true))
+    		.link("Category", category)
+    		.execute();
+		
+		Assert.assertNotNull(product);
+		Assert.assertNotNull(product.getProperty("ProductID").getValue());
+		Assert.assertEquals(1, product.getProperty("CategoryID").getValue());
+		Assert.assertEquals("Healthy Drink", product.getProperty("ProductName").getValue());
+		Assert.assertEquals(true, product.getProperty("Discontinued").getValue());
+		
+		Object key = product.getProperty("ProductID").getValue();
+		product = consumer
+			.getEntity("Products", key)
+			.execute();
+
+		Assert.assertNotNull(product);
+		Assert.assertEquals(key, product.getProperty("ProductID").getValue());
+		Assert.assertEquals(1, product.getProperty("CategoryID").getValue());
+		Assert.assertEquals("Healthy Drink", product.getProperty("ProductName").getValue());
+		Assert.assertEquals(true, product.getProperty("Discontinued").getValue());
+	}
+ 
 }

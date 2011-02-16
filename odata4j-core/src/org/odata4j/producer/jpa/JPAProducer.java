@@ -905,6 +905,22 @@ public class JPAProducer implements ODataProducer {
 
 			em.persist(jpaEntity);
 			em.getTransaction().commit();
+			
+			//	reread the entity in case we had links. This should insure
+			//	we get the implicitly set foreign keys. E.g in the Northwind model 
+			//	creating a new Product with a link to the Category should return
+			//	the CategoryID.
+			if (entity.getLinks() != null
+				&& !entity.getLinks().isEmpty()) {
+				em.getTransaction().begin();
+				try {
+					em.refresh(jpaEntity);
+					em.getTransaction().commit();
+				} finally {
+					if (em.getTransaction().isActive())
+						em.getTransaction().rollback();
+				}
+			}
 
 			final OEntity responseEntity = jpaEntityToOEntity(
 					ees,

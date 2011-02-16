@@ -7,9 +7,12 @@ import javax.ws.rs.core.MediaType;
 
 import org.odata4j.core.OCreate;
 import org.odata4j.core.OEntity;
+import org.odata4j.core.OLink;
+import org.odata4j.core.OLinks;
 import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.format.xml.AtomFeedFormatParser.DataServicesAtomEntry;
+import org.odata4j.format.xml.XmlFormatWriter;
 import org.odata4j.internal.FeedCustomizationMapping;
 import org.odata4j.internal.InternalUtil;
 
@@ -23,6 +26,7 @@ public class OCreateImpl<T> implements OCreate<T> {
     private String navProperty;
 
     private final List<OProperty<?>> props = new ArrayList<OProperty<?>>();
+    private final List<OLink> links = new ArrayList<OLink>();
 
     private final FeedCustomizationMapping fcMapping;
     
@@ -41,6 +45,7 @@ public class OCreateImpl<T> implements OCreate<T> {
         DataServicesAtomEntry entry = new DataServicesAtomEntry();
         entry.contentType = MediaType.APPLICATION_XML;
         entry.properties = props;
+        entry.links = links;
         
         StringBuilder url = new StringBuilder(serviceRootUri);
         if (parent != null) {
@@ -68,11 +73,26 @@ public class OCreateImpl<T> implements OCreate<T> {
 
     @Override
     public OCreate<T> addToRelation(OEntity parent, String navProperty) {
-    	if (parent == null || navProperty == null)
+    	if (parent == null || navProperty == null) {
     		throw new IllegalArgumentException("please provide the parent and the navProperty");
-
+    	}
+    	
     	this.parent = parent;
     	this.navProperty = navProperty;
     	return this;
     }
+
+	@Override
+	public OCreate<T> link(String navProperty, OEntity target) {
+		StringBuilder href = new StringBuilder(serviceRootUri);
+		if (!serviceRootUri.endsWith("/")) {
+			href.append("/");
+		}
+		href.append(InternalUtil.getEntityRelId(target));
+		
+		String rel = XmlFormatWriter.related +  navProperty;
+		
+		this.links.add(OLinks.link(rel, navProperty, href.toString()));
+		return this;
+	}
 }
