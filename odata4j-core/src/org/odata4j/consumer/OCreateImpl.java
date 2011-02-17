@@ -1,16 +1,21 @@
 package org.odata4j.consumer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.core.MediaType;
 
 import org.odata4j.core.OCreate;
+import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OLink;
 import org.odata4j.core.OLinks;
 import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmDataServices;
+import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.edm.EdmMultiplicity;
+import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.format.xml.AtomFeedFormatParser.DataServicesAtomEntry;
 import org.odata4j.format.xml.XmlFormatWriter;
 import org.odata4j.internal.FeedCustomizationMapping;
@@ -63,6 +68,13 @@ public class OCreateImpl<T> implements OCreate<T> {
         		metadata.getEdmEntitySet(entitySetName), dsae,fcMapping);
         return (T) rt;
     }
+    
+	@SuppressWarnings("unchecked")
+	@Override
+	public T get() {
+        EdmEntitySet entitySet = metadata.getEdmEntitySet(entitySetName);
+		return (T)OEntities.create(entitySet, props, links, null);
+	}
 
     @Override
     public OCreate<T> properties(OProperty<?>... props) {
@@ -95,4 +107,33 @@ public class OCreateImpl<T> implements OCreate<T> {
 		this.links.add(OLinks.link(rel, navProperty, href.toString()));
 		return this;
 	}
+
+	@Override
+	public OCreate<T> inline(String navProperty, OEntity... entities) {
+        EdmEntitySet entitySet = metadata.getEdmEntitySet(entitySetName);
+		EdmNavigationProperty navProp = entitySet.type
+				.getNavigationProperty(navProperty);
+		if (navProp == null) {
+			throw new IllegalArgumentException("unknown navigation property "
+					+ navProperty);
+		}
+
+		String rel = XmlFormatWriter.related + navProperty;
+		String href = entitySetName + "/" + navProperty;
+		if (navProp.toRole.multiplicity == EdmMultiplicity.MANY) {
+			links.add(OLinks.relatedEntities(rel, navProperty, href,
+					Arrays.asList(entities)));
+		} else {
+			if (entities.length > 1) {
+				throw new IllegalArgumentException(
+						"only one entity is allowed for this navigation property "
+								+ navProperty);
+			}
+			links.add(OLinks.relatedEntity(rel, navProperty, href,
+					entities.length > 0 ? entities[0] : null));
+		}
+
+		return this;
+	}
+
 }

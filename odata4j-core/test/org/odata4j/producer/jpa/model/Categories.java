@@ -1,9 +1,11 @@
 package org.odata4j.producer.jpa.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -31,19 +33,21 @@ public class Categories implements Serializable {
     @Lob
     @Column(name = "Picture")
     private byte[] Picture;
-    @OneToMany(mappedBy = "Category")
+    @OneToMany(mappedBy = "Category", cascade = CascadeType.ALL)
     private Collection<Products> Products;
 
     public Categories() {
+    	this(null, null);
     }
 
     public Categories(Integer categoryID) {
-        this.CategoryID = categoryID;
+        this(categoryID, null);
     }
 
     public Categories(Integer categoryID, String categoryName) {
         this.CategoryID = categoryID;
         this.CategoryName = categoryName;
+        this.Products = new ArrayList<Products>();
     }
 
     public Integer getCategoryID() {

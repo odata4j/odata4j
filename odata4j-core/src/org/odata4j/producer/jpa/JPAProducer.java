@@ -20,6 +20,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Query;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Attribute.PersistentAttributeType;
+import javax.persistence.metamodel.CollectionAttribute;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.PluralAttribute;
@@ -37,6 +38,8 @@ import org.odata4j.core.OLink;
 import org.odata4j.core.OLinks;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
+import org.odata4j.core.ORelatedEntitiesLink;
+import org.odata4j.core.ORelatedEntityLink;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmMultiplicity;
@@ -427,24 +430,27 @@ public class JPAProducer implements ODataProducer {
 
 	@SuppressWarnings("unchecked")
 	private static <T> T getValue(Object obj, Member member) throws Exception {
-		if (member instanceof Method) {
+		if (member instanceof Field) {
+    		Field field = (Field) member;
+    		field.setAccessible(true);
+    		return (T) field.get(obj);
+		} else if (member instanceof Method) {
 			Method method = (Method) member;
+			method.setAccessible(true);
 			return (T) method.invoke(obj);
-		} else if (member instanceof Field) {
-			Field field = (Field) member;
-			return (T) field.get(obj);
 		} else {
 			throw new UnsupportedOperationException("Implement member" + member);
 		}
 	}
 	
-	private void setValue(Object obj, Member member, Object value) throws Exception {
-		if (member instanceof Method) {
+	private static void setValue(Object obj, Member member, Object value) throws Exception {
+		if (member instanceof Field) {
+    		Field field = (Field) member;
+    		field.setAccessible(true);
+    		field.set(obj, value);
+		} else if (member instanceof Method) {
 			throw new UnsupportedOperationException("Implement member"
 					+ member + " as field");
-		} else if (member instanceof Field) {
-			Field field = (Field) member;
-			field.set(obj, value);
 		} else {
 			throw new UnsupportedOperationException("Implement member" + member);
 		}
@@ -825,34 +831,54 @@ public class JPAProducer implements ODataProducer {
 				String[] propNameSplit = link.getRelation().split("/");
 				String propName = propNameSplit[propNameSplit.length - 1];
 
-				Attribute<?, ?> att = jpaEntityType.getAttribute(propName);
-				Member member = att.getJavaMember();
+				if (link instanceof ORelatedEntitiesLink) {
+					CollectionAttribute<?, ?> att = jpaEntityType.getCollection(propName);
+					Member member = att.getJavaMember();
+					
+					EntityType<?> collJpaEntityType = (EntityType<?>)att.getElementType();
 
-				if (!(member instanceof Field)) {
-					throw new UnsupportedOperationException(
-							"Implement member" + member);
+					OneToMany oneToMany = getAnnotation(member, OneToMany.class);
+					Member backRef = null;
+					if (oneToMany != null
+    						&& oneToMany.mappedBy() != null
+    						&& !oneToMany.mappedBy().isEmpty()) {
+						backRef = collJpaEntityType
+								.getAttribute(oneToMany.mappedBy())
+								.getJavaMember();
+					}
+					
+					@SuppressWarnings("unchecked")
+					Collection<Object> coll = (Collection<Object>)getValue(jpaEntity, member);
+					for (OEntity oentity : ((ORelatedEntitiesLink)link).getRelatedEntities()) {
+						Object collJpaEntity = createNewJPAEntity(em, collJpaEntityType, oentity, true);
+						if (backRef != null) {
+							setValue(collJpaEntity, backRef, jpaEntity);
+						}
+						coll.add(collJpaEntity);
+					}
+					
+				} else if (link instanceof ORelatedEntityLink ) {
+					
+				} else {
+
+					Attribute<?, ?> att = jpaEntityType.getAttribute(propName);
+					Member member = att.getJavaMember();
+
+    				WebResource webResource = httpClient.resource(link.getHref());
+    				String requestEntity = webResource.get(String.class);
+    
+    				OEntity relOEntity = BaseResource.convertFromString(
+    								requestEntity);
+    
+    				String term = ((AtomInfo) relOEntity).getCategoryTerm();
+    				EdmEntitySet ees = metadata
+    						.getEdmEntitySet(term.split("\\.")[1]);
+    				EntityType<?> jpaRelType = findJPAEntityType(em, ees.type.name);
+    				Object relEntity = createNewJPAEntity(em,  jpaRelType,
+    						relOEntity, false);
+    
+    				setValue(jpaEntity, member, relEntity);
 				}
-
-				WebResource webResource = httpClient.resource(link.getHref());
-				String requestEntity = webResource.get(String.class);
-
-				OEntity relOEntity = BaseResource.convertFromString(
-								requestEntity);
-
-				String term = ((AtomInfo) relOEntity).getCategoryTerm();
-				EdmEntitySet ees = metadata
-						.getEdmEntitySet(term.split("\\.")[1]);
-				EntityType<?> jpaRelType = findJPAEntityType(em, ees.type.name);
-				Object relEntity = createNewJPAEntity(
-						em,
-						jpaRelType,
-						relOEntity,
-						false);
-
-				Field field = (Field) member;
-				field.setAccessible(true);
-				field.set(jpaEntity, relEntity);
-
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);

@@ -301,19 +301,20 @@ public class InternalUtil {
 										return toOEntity(metadata, toRoleEntitySet, input, mapping);
 									}
 								}).toList();
+						rt.add(OLinks.relatedEntities(
+								link.relation, 
+								link.title,
+								link.href, 
+								relatedEntities));
+					} else {
+						//	no inlined entities
+						rt.add(OLinks.link(link.relation, link.title, 
+								link.href));
 					}
-					rt.add(OLinks.relatedEntities(
-							link.relation, 
-							link.title,
-							link.href, 
-							relatedEntities));
 				} else if (link.type
 						.equals(XmlFormatWriter.atom_entry_content_type))
-					// TODO parse the inlined entity in AtomFeedFormatParser
-					rt.add(OLinks.relatedEntity(
-							link.relation,
-							link.title,
-							link.href, null));
+					//	handle inlined entity
+					rt.add(OLinks.link(link.relation, link.title, link.href));
 			}
 		}
 		return rt;

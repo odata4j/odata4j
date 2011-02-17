@@ -174,19 +174,14 @@ public class XmlFormatWriter {
 		}
 	}
 
-	protected String writeEntry(
-			XMLWriter2 writer,
-			OEntity oe,
-			List<OProperty<?>> entityProperties,
-			List<OLink> entityLinks,
-			String entitySetName,
-			String baseUri,
-			String updated,
-			EdmEntitySet ees) {
+	protected String writeEntry(XMLWriter2 writer, OEntity oe,
+			List<OProperty<?>> entityProperties, List<OLink> entityLinks,
+			String entitySetName, String baseUri, String updated,
+			EdmEntitySet ees, boolean isResponse) {
 
 		String relid = null;
 		String absid = null;
-		if (entitySetName != null) {
+		if (isResponse) {
 			relid = InternalUtil.getEntityRelId(oe);
 			absid = baseUri + relid;
 			writeElement(writer, "id", absid);
@@ -199,13 +194,13 @@ public class XmlFormatWriter {
 		writeElement(writer, "name", null);
 		writer.endElement("author");
 
-		if (entitySetName != null) {
+		if (isResponse) {
 			writeElement(writer, "link", null, "rel", "edit", "title",
 					entitySetName, "href", relid);
 		}
 
-		//	TODO handle inlined entities for insert entity requests
-		if (ees != null) {
+		if (isResponse) {
+			//	for responses we need to include all links whether inlined or not
 			for (EdmNavigationProperty np : ees.type.navigationProperties) {
 				if (!np.selected) {
 					continue;
@@ -244,12 +239,8 @@ public class XmlFormatWriter {
 					writer.writeAttribute("title", title);
 					writer.writeAttribute("href", href);
 					// write the inlined entities inside the link element
-					writeLinkInline(
-							writer,
-							linkToInline,
-							href,
-							baseUri,
-							updated);
+					writeLinkInline(writer, linkToInline,
+							href, baseUri, updated, isResponse);
 					writer.endElement("link");
 				}
 			}
@@ -260,10 +251,24 @@ public class XmlFormatWriter {
 		} else {
 			if (entityLinks != null) {
 				for (OLink olink : entityLinks) {
-					writeElement(writer, "link", null,
-							"rel", olink.getRelation(),
-							"type", atom_entry_content_type,
-							"href", olink.getHref());
+					if (olink instanceof ORelatedEntitiesLink) {
+						writer.startElement("link");
+						writer.writeAttribute("rel", olink.getRelation());
+						writer.writeAttribute("type", atom_feed_content_type);
+						writer.writeAttribute("title", olink.getTitle());
+						writer.writeAttribute("href", olink.getHref());
+						// write the inlined entities inside the link element
+						writeLinkInline(writer, olink, olink.getHref(),
+								baseUri, updated, isResponse);
+						writer.endElement("link");
+	
+					} else if (olink instanceof ORelatedEntityLink) {
+					} else {
+    					writeElement(writer, "link", null,
+    							"rel", olink.getRelation(),
+    							"type", atom_entry_content_type,
+    							"href", olink.getHref());
+					}
 				}
 			}
 		}
@@ -281,12 +286,9 @@ public class XmlFormatWriter {
 
 	}
 
-	protected void writeLinkInline(
-			XMLWriter2 writer,
-			OLink linkToInline,
-			String href,
-			String baseUri,
-			String updated) {
+	protected void writeLinkInline(XMLWriter2 writer, OLink linkToInline,
+			String href, String baseUri, String updated, boolean isResponse) {
+		
 		writer.startElement(new QName2(m, "inline", "m"));
 		if (linkToInline instanceof ORelatedEntitiesLink) {
 			ORelatedEntitiesLink relLink = ((ORelatedEntitiesLink) linkToInline);
@@ -317,15 +319,11 @@ public class XmlFormatWriter {
 				for (OEntity entity : ((ORelatedEntitiesLink) linkToInline)
 						.getRelatedEntities()) {
 					writer.startElement("entry");
-					writeEntry(
-							writer,
-							entity,
-							entity.getProperties(),
-							entity.getLinks(),
+					writeEntry(writer, entity,
+							entity.getProperties(), entity.getLinks(),
 							entity.getEntitySet().name,
-							baseUri,
-							updated,
-							entity.getEntitySet());
+							baseUri, updated,
+							entity.getEntitySet(), isResponse);
 
 					writer.endElement("entry");
 				}
@@ -335,15 +333,11 @@ public class XmlFormatWriter {
 			OEntity entity = ((ORelatedEntityLink) linkToInline)
 					.getRelatedEntity();
 			writer.startElement("entry");
-			writeEntry(
-					writer,
-					entity,
-					entity.getProperties(),
-					entity.getLinks(),
+			writeEntry(writer, entity,
+					entity.getProperties(), entity.getLinks(),
 					entity.getEntitySet().name,
-					baseUri,
-					updated,
-					entity.getEntitySet());
+					baseUri, updated,
+					entity.getEntitySet(), isResponse);
 
 			writer.endElement("entry");
 		} else
