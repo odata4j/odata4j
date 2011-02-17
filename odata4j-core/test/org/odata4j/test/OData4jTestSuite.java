@@ -39,7 +39,7 @@ import org.odata4j.test.issues.Issue16;
 	JPAProducerQueryOptionAtomTest50.class,
 	DateTimeFormatTest.class,
 	JPAProducerCreateTest.class,
-	JPAProducerUpdateTest.class,
+	JPAProducerUpdateTest.class
 })
 
 public class OData4jTestSuite {

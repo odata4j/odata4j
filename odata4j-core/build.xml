@@ -13,8 +13,8 @@
     <property name="source" value="1.6"/>
     <path id="odata4j-core.classpath">
         <pathelement location="bin"/>
-        <pathelement location="lib/eclipselink.jar"/>
-        <pathelement location="lib/javax.persistence_2.0.0.v201002051058.jar"/>
+        <pathelement location="lib/eclipselink-2.1.2.jar"/>
+        <pathelement location="lib/javax.persistence-2.0.3.jar"/>
         <pathelement location="lib/jersey-client-1.1.5.jar"/>
         <pathelement location="lib/jersey-core-1.1.5.jar"/>
         <pathelement location="lib/jsr311-api-1.1.jar"/>

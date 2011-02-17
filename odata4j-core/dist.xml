@@ -36,8 +36,8 @@
 				<include name="core4j-*.jar"/>
 			</fileset>
 			<resources>
-				<file file="lib/eclipselink.jar" />
-				<file file="lib/javax.persistence_2.0.0.v201002051058.jar" />
+				<file file="lib/eclipselink-2.1.2.jar" />
+				<file file="lib/javax.persistence-2.0.3.jar" />
 				<file file="lib/jersey-client-1.1.5.jar" />
 				<file file="lib/jersey-core-1.1.5.jar" />
 				<file file="lib/jsr311-api-1.1.jar" />
