@@ -49,26 +49,27 @@ public class JPAProducerCreateTest extends JPAProducerTestBase {
 	public void insertEntityWithInlinedEntities() {
 		ODataConsumer consumer = ODataConsumer.create(endpointUri);
 		
+		final long now = System.currentTimeMillis();
 		OEntity prod1 = consumer
 			.createEntity("Products")
-    		.properties(OProperties.string("ProductName", "Healthy Drink"))
+    		.properties(OProperties.string("ProductName", "P1" + now))
     		.properties(OProperties.boolean_("Discontinued", true))
 			.get();
 		OEntity prod2 = consumer
     		.createEntity("Products")
-    		.properties(OProperties.string("ProductName", "Tasty Drink"))
+    		.properties(OProperties.string("ProductName", "P2" + now))
     		.properties(OProperties.boolean_("Discontinued", false))
     		.get();
 		
 		OEntity category = consumer
 			.createEntity("Categories")
-			.properties(OProperties.string("CategoryName", "Fancy Beverages"))
+			.properties(OProperties.string("CategoryName", "C" + now))
 			.inline("Products", prod1, prod2)
 			.execute();
 		
 		Assert.assertNotNull(category);
 		Assert.assertNotNull(category.getProperty("CategoryID").getValue());
-		Assert.assertEquals("Fancy Beverages", category.getProperty("CategoryName").getValue());
+		Assert.assertEquals("C" + now, category.getProperty("CategoryName").getValue());
 		
 		Enumerable<OEntity> products = consumer
 			.getEntities("Categories")
@@ -80,7 +81,7 @@ public class JPAProducerCreateTest extends JPAProducerTestBase {
 		prod1 = products.where(new Predicate1<OEntity>() {
 			@Override
 			public boolean apply(OEntity input) {
-				return "Healthy Drink".equals(input.getProperty("ProductName").getValue());
+				return ("P1" + now).equals(input.getProperty("ProductName").getValue());
 			}
 		}).firstOrNull();
 		Assert.assertNotNull(prod1);
@@ -90,7 +91,7 @@ public class JPAProducerCreateTest extends JPAProducerTestBase {
 		prod2 = products.where(new Predicate1<OEntity>() {
 			@Override
 			public boolean apply(OEntity input) {
-				return "Tasty Drink".equals(input.getProperty("ProductName").getValue());
+				return ("P2" + now).equals(input.getProperty("ProductName").getValue());
 			}
 		}).firstOrNull();
 		Assert.assertNotNull(prod2);
@@ -98,15 +99,42 @@ public class JPAProducerCreateTest extends JPAProducerTestBase {
 		Assert.assertEquals(false, prod2.getProperty("Discontinued").getValue());
 	}
 	
-	
+	@Test
+	public void insertEntityWithInlinedEntity() {
+		ODataConsumer consumer = ODataConsumer.create(endpointUri);
+
+		final long now = System.currentTimeMillis();
+		OEntity category = consumer
+    		.createEntity("Categories")
+    		.properties(OProperties.string("CategoryName", "C" + now))
+    		.get();
+
+		OEntity product = consumer.createEntity("Products")
+    		.properties(OProperties.string("ProductName", "P" + now))
+    		.properties(OProperties.boolean_("Discontinued", true))
+    		.inline("Category", category)
+    		.execute();
+		
+		Object id = product.getProperty("ProductID").getValue();
+		Assert.assertNotNull(id);
+		Assert.assertEquals("P" + now, product.getProperty("ProductName").getValue());
+		Assert.assertEquals(true, product.getProperty("Discontinued").getValue());
+		Object categoryId = product.getProperty("CategoryID").getValue();
+		Assert.assertNotNull(categoryId);
+
+		category = consumer.getEntity("Categories", categoryId).execute();
+		Assert.assertEquals("C" + now, category.getProperty("CategoryName").getValue());
+	}
+		
 	protected void insertEntityToExistingEntityRelationAndTest(
 			ODataConsumer consumer) {
 		OEntity category = consumer.getEntity("Categories", 1).execute();
 		
+		final long now = System.currentTimeMillis();
 		Assert.assertNotNull(category);
 		OEntity products = consumer
 			.createEntity("Products")
-			.properties(OProperties.string("ProductName", "Healthy Drink"))
+			.properties(OProperties.string("ProductName", "P" + now))
 			.properties(OProperties.boolean_("Discontinued", false))
 			.addToRelation(category, "Products").execute();
 
@@ -115,7 +143,7 @@ public class JPAProducerCreateTest extends JPAProducerTestBase {
 		
 		products = consumer.getEntity("Products", id).execute();
 		Assert.assertEquals(id, products.getProperty("ProductID").getValue());
-		Assert.assertEquals("Healthy Drink", products.getProperty("ProductName").getValue());
+		Assert.assertEquals("P" + now, products.getProperty("ProductName").getValue());
 	}
 	
 	protected void insertEntityUsingLinksAndTest(
@@ -125,9 +153,10 @@ public class JPAProducerCreateTest extends JPAProducerTestBase {
 		
 		Assert.assertNotNull(category);
 
+		final long now = System.currentTimeMillis();
 		OEntity product = consumer
     		.createEntity("Products")
-    		.properties(OProperties.string("ProductName", "Healthy Drink"))
+    		.properties(OProperties.string("ProductName", "P" + now))
     		.properties(OProperties.boolean_("Discontinued", true))
     		.link("Category", category)
     		.execute();
@@ -135,7 +164,7 @@ public class JPAProducerCreateTest extends JPAProducerTestBase {
 		Assert.assertNotNull(product);
 		Assert.assertNotNull(product.getProperty("ProductID").getValue());
 		Assert.assertEquals(1, product.getProperty("CategoryID").getValue());
-		Assert.assertEquals("Healthy Drink", product.getProperty("ProductName").getValue());
+		Assert.assertEquals("P" + now, product.getProperty("ProductName").getValue());
 		Assert.assertEquals(true, product.getProperty("Discontinued").getValue());
 		
 		Object key = product.getProperty("ProductID").getValue();
@@ -146,7 +175,7 @@ public class JPAProducerCreateTest extends JPAProducerTestBase {
 		Assert.assertNotNull(product);
 		Assert.assertEquals(key, product.getProperty("ProductID").getValue());
 		Assert.assertEquals(1, product.getProperty("CategoryID").getValue());
-		Assert.assertEquals("Healthy Drink", product.getProperty("ProductName").getValue());
+		Assert.assertEquals("P" + now, product.getProperty("ProductName").getValue());
 		Assert.assertEquals(true, product.getProperty("Discontinued").getValue());
 	}
  

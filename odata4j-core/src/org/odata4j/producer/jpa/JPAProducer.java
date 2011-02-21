@@ -5,12 +5,14 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 import javax.persistence.CascadeType;
 import javax.persistence.EntityManager;
@@ -31,7 +33,6 @@ import org.core4j.Enumerable;
 import org.core4j.Func1;
 import org.core4j.Predicate1;
 import org.joda.time.LocalDateTime;
-import org.odata4j.core.AtomInfo;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OLink;
@@ -49,6 +50,9 @@ import org.odata4j.edm.EdmProperty;
 import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.Expression;
+import org.odata4j.expression.ExpressionParser;
+import org.odata4j.expression.ExpressionParser.Token;
+import org.odata4j.expression.ExpressionParser.TokenType;
 import org.odata4j.expression.OrderByExpression;
 import org.odata4j.expression.StringLiteral;
 import org.odata4j.internal.TypeConverter;
@@ -58,17 +62,10 @@ import org.odata4j.producer.InlineCount;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.Responses;
-import org.odata4j.producer.resources.BaseResource;
 import org.odata4j.producer.resources.OptionsQueryParser;
-
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
 
 public class JPAProducer implements ODataProducer {
 
-	private final static Client httpClient =
-			Client.create(new DefaultClientConfig());
 	private final EntityManagerFactory emf;
 	private final EntityManager em;
 	private final String namespace;
@@ -855,30 +852,32 @@ public class JPAProducer implements ODataProducer {
 						if (backRef != null) {
 							setValue(collJpaEntity, backRef, jpaEntity);
 						}
+						em.persist(collJpaEntity);
 						coll.add(collJpaEntity);
 					}
 					
 				} else if (link instanceof ORelatedEntityLinkInline ) {
-					// TODO
-				} else {
-
-					Attribute<?, ?> att = jpaEntityType.getAttribute(propName);
+					SingularAttribute<?, ?> att = jpaEntityType.getSingularAttribute(propName);
 					Member member = att.getJavaMember();
+					
+					EntityType<?> relJpaEntityType = (EntityType<?>)att.getType();
+					Object relJpaEntity = createNewJPAEntity(em, relJpaEntityType, 
+							((ORelatedEntityLinkInline)link).getRelatedEntity(), true);
+					em.persist(relJpaEntity);
 
-    				WebResource webResource = httpClient.resource(link.getHref());
-    				String requestEntity = webResource.get(String.class);
-    
-    				OEntity relOEntity = BaseResource.convertFromString(
-    								requestEntity);
-    
-    				String term = ((AtomInfo) relOEntity).getCategoryTerm();
-    				EdmEntitySet ees = metadata
-    						.getEdmEntitySet(term.split("\\.")[1]);
-    				EntityType<?> jpaRelType = findJPAEntityType(em, ees.type.name);
-    				Object relEntity = createNewJPAEntity(em,  jpaRelType,
-    						relOEntity, false);
-    
-    				setValue(jpaEntity, member, relEntity);
+					setValue(jpaEntity, member, relJpaEntity);
+				} else if (link instanceof ORelatedEntityLink ) {
+					SingularAttribute<?, ?> att = jpaEntityType.getSingularAttribute(propName);
+					Member member = att.getJavaMember();
+					
+					EntityType<?> relJpaEntityType = (EntityType<?>)att.getType();
+					Object key = typeSafeEntityKey(em, relJpaEntityType, link.getHref());
+					Object relEntity = em.find(relJpaEntityType.getJavaType(), key);
+
+					setValue(jpaEntity, member, relEntity);
+
+				} else {
+					throw new UnsupportedOperationException("binding the new entity to many entities is not supported");
 				}
 			}
 		} catch (Exception e) {
@@ -1168,4 +1167,38 @@ public class JPAProducer implements ODataProducer {
 						.getIdType()
 						.getJavaType());
 	}
+	
+	private Object typeSafeEntityKey(EntityManager em,
+			EntityType<?> jpaEntityType, String href) throws Exception {
+		String keyString = href.substring(href.lastIndexOf('(') + 1,
+				href.length() - 1);
+		List<Token> keyToken = ExpressionParser.tokenize(keyString);
+		if (keyToken.size() == 1) {
+			Object key;
+			if (keyToken.get(0).type == TokenType.QUOTED_STRING) {
+				String entityKeyStr = keyToken.get(0).value;
+				if (entityKeyStr.length() < 2) {
+					throw new IllegalArgumentException("invalid entity key "
+							+ keyToken);
+				}
+				// cut off the quotes
+				key = entityKeyStr.substring(1, entityKeyStr.length() - 1);
+			} else if (keyToken.get(0).type == TokenType.NUMBER) {
+				key = NumberFormat.getInstance(Locale.US)
+					.parseObject(keyToken.get(0).value);
+			} else {
+				throw new IllegalArgumentException(
+					"unsupported key type " + keyString);
+			}
+			return TypeConverter.convert(key,
+					em.getMetamodel()
+							.entity(jpaEntityType.getJavaType())
+							.getIdType()
+							.getJavaType());
+		} else {
+			throw new IllegalArgumentException(
+					"only simple entity keys are supported yet");
+		}
+	}
+	
 }

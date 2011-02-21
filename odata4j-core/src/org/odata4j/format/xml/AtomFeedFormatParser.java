@@ -57,6 +57,7 @@ public class AtomFeedFormatParser extends XmlFormatParser {
         public String type;
         public String href;
         public AtomFeed feed;
+		public AtomEntry entry;
     }
 
     public static class BasicAtomEntry extends AtomEntry {
@@ -167,6 +168,8 @@ public class AtomFeedFormatParser extends XmlFormatParser {
         		break;
         	} else if (isStartElement(event, ATOM_FEED)) {
         		rt.feed = parseFeed(reader);
+        	} else if (isStartElement(event, ATOM_ENTRY)) {
+                rt.entry = parseEntry(reader, event.asStartElement());
         	}
         }
         return rt;

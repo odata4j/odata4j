@@ -13,7 +13,6 @@ import org.odata4j.core.OLink;
 import org.odata4j.core.OProperty;
 import org.odata4j.core.ORelatedEntitiesLink;
 import org.odata4j.core.ORelatedEntitiesLinkInline;
-import org.odata4j.core.ORelatedEntityLink;
 import org.odata4j.core.ORelatedEntityLinkInline;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmMultiplicity;
@@ -251,26 +250,25 @@ public class XmlFormatWriter {
 					"term", ees.type.getFQNamespaceName(),
 					"scheme", scheme);
 		} else {
+			//	for requests we include only the provided links
 			if (entityLinks != null) {
 				for (OLink olink : entityLinks) {
-					if (olink instanceof ORelatedEntitiesLink) {
-						writer.startElement("link");
-						writer.writeAttribute("rel", olink.getRelation());
-						writer.writeAttribute("type", atom_feed_content_type);
-						writer.writeAttribute("title", olink.getTitle());
-						writer.writeAttribute("href", olink.getHref());
+					String type = olink instanceof ORelatedEntitiesLink
+						? atom_feed_content_type
+						: atom_entry_content_type;
+					
+					writer.startElement("link");
+					writer.writeAttribute("rel", olink.getRelation());
+					writer.writeAttribute("type", type);
+					writer.writeAttribute("title", olink.getTitle());
+					writer.writeAttribute("href", olink.getHref());
+					if (olink instanceof ORelatedEntitiesLinkInline
+						|| olink instanceof ORelatedEntityLinkInline) {
 						// write the inlined entities inside the link element
 						writeLinkInline(writer, olink, olink.getHref(),
 								baseUri, updated, isResponse);
-						writer.endElement("link");
-	
-					} else if (olink instanceof ORelatedEntityLink) {
-					} else {
-    					writeElement(writer, "link", null,
-    							"rel", olink.getRelation(),
-    							"type", atom_entry_content_type,
-    							"href", olink.getHref());
 					}
+					writer.endElement("link");
 				}
 			}
 		}

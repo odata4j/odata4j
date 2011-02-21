@@ -311,8 +311,23 @@ public class InternalUtil {
 						rt.add(OLinks.relatedEntities(link.relation, link.title, link.href));
 					}
 				} else if (link.type.equals(XmlFormatWriter.atom_entry_content_type))
-					//	TODO handle inlined entity
-					rt.add(OLinks.relatedEntity(link.relation, link.title, link.href));
+					if (link.entry != null) {
+						EdmNavigationProperty navProperty = fromRoleEntitySet != null
+    						? fromRoleEntitySet.type.getNavigationProperty(link.title)
+    						: null;
+    					EdmEntitySet toRoleEntitySet = metadata != null && navProperty != null
+    						? metadata.getEdmEntitySet(navProperty.toRole.type)
+    						: null;
+
+						rt.add(OLinks.relatedEntityInline(link.relation,
+								link.title, link.href,
+								toOEntity(metadata, toRoleEntitySet,
+										(DataServicesAtomEntry) link.entry,
+										mapping)));
+					} else {
+						//	no inlined entity
+						rt.add(OLinks.relatedEntity(link.relation, link.title, link.href));
+					}
 			}
 		}
 		return rt;

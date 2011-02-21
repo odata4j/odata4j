@@ -96,6 +96,17 @@ public class OCreateImpl<T> implements OCreate<T> {
 
 	@Override
 	public OCreate<T> link(String navProperty, OEntity target) {
+        EdmEntitySet entitySet = metadata.getEdmEntitySet(entitySetName);
+		EdmNavigationProperty navProp = entitySet.type
+			.getNavigationProperty(navProperty);
+        if (navProp == null) {
+        	throw new IllegalArgumentException("unknown navigation property "
+        			+ navProperty);
+        }
+		if (navProp.toRole.multiplicity == EdmMultiplicity.MANY) {
+			throw new IllegalArgumentException("many associations are not supported");
+		}
+		
 		StringBuilder href = new StringBuilder(serviceRootUri);
 		if (!serviceRootUri.endsWith("/")) {
 			href.append("/");
@@ -104,7 +115,7 @@ public class OCreateImpl<T> implements OCreate<T> {
 		
 		String rel = XmlFormatWriter.related +  navProperty;
 		
-		this.links.add(OLinks.link(rel, navProperty, href.toString()));
+		this.links.add(OLinks.relatedEntity(rel, navProperty, href.toString()));
 		return this;
 	}
 
