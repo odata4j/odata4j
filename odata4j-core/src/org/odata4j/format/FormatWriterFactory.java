@@ -7,12 +7,15 @@ import javax.ws.rs.core.MediaType;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.format.json.JsonEntryFormatWriter;
 import org.odata4j.format.json.JsonFeedFormatWriter;
+import org.odata4j.format.json.JsonPropertyFormatWriter;
 import org.odata4j.format.json.JsonServiceDocumentFormatWriter;
 import org.odata4j.format.xml.AtomEntryFormatWriter;
 import org.odata4j.format.xml.AtomFeedFormatWriter;
 import org.odata4j.format.xml.AtomServiceDocumentFormatWriter;
+import org.odata4j.format.xml.XmlPropertyFormatWriter;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityResponse;
+import org.odata4j.producer.PropertyResponse;
 
 public class FormatWriterFactory {
 
@@ -32,7 +35,7 @@ public class FormatWriterFactory {
         public FormatWriter<EdmDataServices> getServiceDocumentFormatWriter();
         public FormatWriter<EntitiesResponse> getFeedFormatWriter();
         public FormatWriter<EntityResponse> getEntryFormatWriter();
-        
+        public FormatWriter<PropertyResponse> getPropertyFormatWriter();
     }
     
 
@@ -73,13 +76,12 @@ public class FormatWriterFactory {
         if (targetType.equals(EntityResponse.class)) {
             return (FormatWriter<T>)formatWriters.getEntryFormatWriter();
         } 
-        
+        if (targetType.equals(PropertyResponse.class)) {
+            return (FormatWriter<T>)formatWriters.getPropertyFormatWriter();
+        } 
         throw new IllegalArgumentException("Unable to locate format writer for " + targetType.getName() + " and format " + type);
         
     }
-    
-    
-    
     
     
     public static class JsonWriters implements FormatWriters {
@@ -103,10 +105,14 @@ public class FormatWriterFactory {
             return new JsonEntryFormatWriter(callback);
         }
         
+        @Override
+        public FormatWriter<PropertyResponse> getPropertyFormatWriter() {
+        	return new JsonPropertyFormatWriter(callback);
+        }
+        
     }
     public static class AtomWriters implements FormatWriters {
 
-       
         @Override
         public FormatWriter<EdmDataServices> getServiceDocumentFormatWriter() {
             return new AtomServiceDocumentFormatWriter();
@@ -120,6 +126,11 @@ public class FormatWriterFactory {
         @Override
         public FormatWriter<EntityResponse> getEntryFormatWriter() {
             return new AtomEntryFormatWriter();
+        }
+        
+        @Override
+        public FormatWriter<PropertyResponse> getPropertyFormatWriter() {
+        	 return new XmlPropertyFormatWriter();
         }
         
     }

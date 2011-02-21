@@ -427,37 +427,34 @@ public class InternalUtil {
 					.select(new Func1<String, OProperty<?>>() {
 
 						public OProperty<?> apply(final String input) {
-							for (OProperty<?> entityProperty :
-								oe.getProperties())
+							
+							for (OProperty<?> entityProperty : oe.getProperties()) 
+								if (entityProperty.getName().equals(input)) 
+									return entityProperty;
+									
 
-									if (entityProperty.getName().equals(input)) {
-										return entityProperty;
+							if (oe.getId() != null) {
+								return new OProperty<Object>() {
+
+									@Override
+									public String getName() {
+										return input;
 									}
 
-								if (oe.getId() != null) {
-									return new OProperty<Object>() {
+									@Override
+									public Object getValue() {
+										return oe.getId();
+									}
 
-										@Override
-										public String getName() {
-											return input;
-										}
-
-										@Override
-										public Object getValue() {
-											return oe.getId();
-										}
-
-										@Override
-										public EdmType getType() {
-											return null;
-										}
-									};
-								}
-
-								throw new IllegalArgumentException(
-										"Key property '" + input
-												+ "' is invalid");
+									@Override
+									public EdmType getType() {
+										return null;
+									}
+								};
 							}
+
+							throw new IllegalArgumentException("Key property '" + input + "' is invalid");
+						}
 					}).cast(Object.class).toArray(Object.class);
 
 			key = InternalUtil.keyString(keyProperties);

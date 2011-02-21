@@ -37,142 +37,149 @@ public class XmlFormatWriter {
 	public static final String atom_feed_content_type = "application/atom+xml;type=feed";
 	public static final String atom_entry_content_type = "application/atom+xml;type=entry";
 
-	@SuppressWarnings("unchecked")
-	private void writeProperties(
-			XMLWriter2 writer,
-			List<OProperty<?>> properties) {
+	
+	protected void writeProperties(XMLWriter2 writer, List<OProperty<?>> properties) {
 		for (OProperty<?> prop : properties) {
-			String name = prop.getName();
-			EdmType type = prop.getType();
-			Object value = prop.getValue();
+			writeProperty(writer,prop);
+		}
+	}
+	
+	
+	
+	@SuppressWarnings("unchecked")
+	protected void writeProperty(XMLWriter2 writer, OProperty<?> prop) {
+		
+		String name = prop.getName();
+		EdmType type = prop.getType();
+		Object value = prop.getValue();
 
-			writer.startElement(new QName2(d, name, "d"));
+		writer.startElement(new QName2(d, name, "d"));
 
-			String sValue = null;
+		String sValue = null;
 
-			if (!type.isPrimitive()) {
+		if (!type.isPrimitive()) {
+			writer.writeAttribute(
+					new QName2(m, "type", "m"),
+					type.toTypeString());
+			// complex
+			List<OProperty<?>> complexProperties = (List<OProperty<?>>) value;
+			if (complexProperties != null) {
+				writeProperties(writer, complexProperties);
+			}
+		} else {
+			// simple
+			if (type == EdmType.INT32) {
 				writer.writeAttribute(
 						new QName2(m, "type", "m"),
 						type.toTypeString());
-				// complex
-				List<OProperty<?>> complexProperties = (List<OProperty<?>>) value;
-				if (complexProperties != null) {
-					writeProperties(writer, complexProperties);
+				if (value != null) {
+					sValue = value.toString();
+				}
+			} else if (type == EdmType.INT16) {
+				writer.writeAttribute(
+						new QName2(m, "type", "m"),
+						type.toTypeString());
+				if (value != null) {
+					sValue = value.toString();
+				}
+			} else if (type == EdmType.INT64) {
+				writer.writeAttribute(
+						new QName2(m, "type", "m"),
+						type.toTypeString());
+				if (value != null) {
+					sValue = value.toString();
+				}
+			} else if (type == EdmType.BOOLEAN) {
+				writer.writeAttribute(
+						new QName2(m, "type", "m"),
+						type.toTypeString());
+				if (value != null) {
+					sValue = value.toString();
+				}
+			} else if (type == EdmType.BYTE) {
+				writer.writeAttribute(
+						new QName2(m, "type", "m"),
+						type.toTypeString());
+				if (value != null) {
+					sValue = Hex.encodeHexString(
+							new byte[] { (Byte) value });
+				}
+			} else if (type == EdmType.DECIMAL) {
+				writer.writeAttribute(
+						new QName2(m, "type", "m"),
+						type.toTypeString());
+				if (value != null) {
+					sValue = value.toString();
+				}
+			} else if (type == EdmType.SINGLE) {
+				writer.writeAttribute(
+						new QName2(m, "type", "m"),
+						type.toTypeString());
+				if (value != null) {
+					sValue = value.toString();
+				}
+			} else if (type == EdmType.DOUBLE) {
+				writer.writeAttribute(
+						new QName2(m, "type", "m"),
+						type.toTypeString());
+				if (value != null) {
+					sValue = value.toString();
+				}
+			} else if (type == EdmType.STRING) {
+				if (value != null) {
+					sValue = value.toString();
+				}
+			} else if (type == EdmType.DATETIME) {
+				writer.writeAttribute(
+						new QName2(m, "type", "m"),
+						type.toTypeString());
+				if (value != null)
+					sValue = InternalUtil.formatDateTime(
+									(LocalDateTime) value);
+			} else if (type == EdmType.BINARY) {
+				writer.writeAttribute(
+						new QName2(m, "type", "m"),
+						type.toTypeString());
+				byte[] bValue = (byte[]) value;
+				if (value != null) {
+					sValue = Base64.encodeBase64String(bValue);
+				}
+			} else if (type == EdmType.GUID) {
+				writer.writeAttribute(
+						new QName2(m, "type", "m"),
+						type.toTypeString());
+				if (value != null) {
+					sValue = value.toString();
+				}
+			} else if (type == EdmType.TIME) {
+				writer.writeAttribute(
+						new QName2(m, "type", "m"),
+						type.toTypeString());
+				if (value != null) {
+					sValue = value.toString();
+				}
+			} else if (type == EdmType.DATETIMEOFFSET) {
+				// Edm.DateTimeOffset '-'? yyyy '-' mm '-' dd 'T' hh ':' mm
+				// ':' ss ('.' s+)? (zzzzzz)?
+				writer.writeAttribute(
+						new QName2(m, "type", "m"),
+						type.toTypeString());
+				if (value != null) {
+					sValue = InternalUtil.toString((DateTime) value);
 				}
 			} else {
-				// simple
-				if (type == EdmType.INT32) {
-					writer.writeAttribute(
-							new QName2(m, "type", "m"),
-							type.toTypeString());
-					if (value != null) {
-						sValue = value.toString();
-					}
-				} else if (type == EdmType.INT16) {
-					writer.writeAttribute(
-							new QName2(m, "type", "m"),
-							type.toTypeString());
-					if (value != null) {
-						sValue = value.toString();
-					}
-				} else if (type == EdmType.INT64) {
-					writer.writeAttribute(
-							new QName2(m, "type", "m"),
-							type.toTypeString());
-					if (value != null) {
-						sValue = value.toString();
-					}
-				} else if (type == EdmType.BOOLEAN) {
-					writer.writeAttribute(
-							new QName2(m, "type", "m"),
-							type.toTypeString());
-					if (value != null) {
-						sValue = value.toString();
-					}
-				} else if (type == EdmType.BYTE) {
-					writer.writeAttribute(
-							new QName2(m, "type", "m"),
-							type.toTypeString());
-					if (value != null) {
-						sValue = Hex.encodeHexString(
-								new byte[] { (Byte) value });
-					}
-				} else if (type == EdmType.DECIMAL) {
-					writer.writeAttribute(
-							new QName2(m, "type", "m"),
-							type.toTypeString());
-					if (value != null) {
-						sValue = value.toString();
-					}
-				} else if (type == EdmType.SINGLE) {
-					writer.writeAttribute(
-							new QName2(m, "type", "m"),
-							type.toTypeString());
-					if (value != null) {
-						sValue = value.toString();
-					}
-				} else if (type == EdmType.DOUBLE) {
-					writer.writeAttribute(
-							new QName2(m, "type", "m"),
-							type.toTypeString());
-					if (value != null) {
-						sValue = value.toString();
-					}
-				} else if (type == EdmType.STRING) {
-					if (value != null) {
-						sValue = value.toString();
-					}
-				} else if (type == EdmType.DATETIME) {
-					writer.writeAttribute(
-							new QName2(m, "type", "m"),
-							type.toTypeString());
-					if (value != null)
-						sValue = InternalUtil.formatDateTime(
-										(LocalDateTime) value);
-				} else if (type == EdmType.BINARY) {
-					writer.writeAttribute(
-							new QName2(m, "type", "m"),
-							type.toTypeString());
-					byte[] bValue = (byte[]) value;
-					if (value != null) {
-						sValue = Base64.encodeBase64String(bValue);
-					}
-				} else if (type == EdmType.GUID) {
-					writer.writeAttribute(
-							new QName2(m, "type", "m"),
-							type.toTypeString());
-					if (value != null) {
-						sValue = value.toString();
-					}
-				} else if (type == EdmType.TIME) {
-					writer.writeAttribute(
-							new QName2(m, "type", "m"),
-							type.toTypeString());
-					if (value != null) {
-						sValue = value.toString();
-					}
-				} else if (type == EdmType.DATETIMEOFFSET) {
-					// Edm.DateTimeOffset '-'? yyyy '-' mm '-' dd 'T' hh ':' mm
-					// ':' ss ('.' s+)? (zzzzzz)?
-					writer.writeAttribute(
-							new QName2(m, "type", "m"),
-							type.toTypeString());
-					if (value != null) {
-						sValue = InternalUtil.toString((DateTime) value);
-					}
-				} else {
-					throw new UnsupportedOperationException("Implement " + type);
-				}
+				throw new UnsupportedOperationException("Implement " + type);
 			}
-
-			if (value == null) {
-				writer.writeAttribute(new QName2(m, "null", "m"), "true");
-			} else {
-				writer.writeText(sValue);
-			}
-			writer.endElement(name);
-
 		}
+
+		if (value == null) {
+			writer.writeAttribute(new QName2(m, "null", "m"), "true");
+		} else {
+			writer.writeText(sValue);
+		}
+		writer.endElement(name);
+
+		
 	}
 
 	protected String writeEntry(XMLWriter2 writer, OEntity oe,

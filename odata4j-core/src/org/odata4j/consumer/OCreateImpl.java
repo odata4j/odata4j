@@ -97,8 +97,7 @@ public class OCreateImpl<T> implements OCreate<T> {
 	@Override
 	public OCreate<T> link(String navProperty, OEntity target) {
         EdmEntitySet entitySet = metadata.getEdmEntitySet(entitySetName);
-		EdmNavigationProperty navProp = entitySet.type
-			.getNavigationProperty(navProperty);
+		EdmNavigationProperty navProp = entitySet.type.getNavigationProperty(navProperty);
         if (navProp == null) {
         	throw new IllegalArgumentException("unknown navigation property "
         			+ navProperty);
@@ -122,8 +121,7 @@ public class OCreateImpl<T> implements OCreate<T> {
 	@Override
 	public OCreate<T> inline(String navProperty, OEntity... entities) {
         EdmEntitySet entitySet = metadata.getEdmEntitySet(entitySetName);
-		EdmNavigationProperty navProp = entitySet.type
-				.getNavigationProperty(navProperty);
+		EdmNavigationProperty navProp = entitySet.type.getNavigationProperty(navProperty);
 		if (navProp == null) {
 			throw new IllegalArgumentException("unknown navigation property "
 					+ navProperty);

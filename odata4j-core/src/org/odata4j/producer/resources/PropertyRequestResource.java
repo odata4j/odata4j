@@ -18,13 +18,14 @@ import javax.ws.rs.core.Response.Status;
 
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OEntity;
-import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.format.FormatWriter;
 import org.odata4j.format.FormatWriterFactory;
 import org.odata4j.format.xml.AtomEntryFormatWriter;
+import org.odata4j.producer.BaseResponse;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.ODataProducer;
+import org.odata4j.producer.PropertyResponse;
 import org.odata4j.producer.QueryInfo;
 
 import com.sun.jersey.api.core.HttpContext;
@@ -59,7 +60,7 @@ public class PropertyRequestResource extends BaseResource {
 		if (!"MERGE".equals(context.getRequest().getHeaderValue(
 				ODataConstants.Headers.X_HTTP_METHOD))) {
 			
-			OEntity entity = getRequestEntity(context.getRequest());
+			OEntity entity = getRequestEntity(context.getRequest(),producer.getMetadata(),entitySetName);
 			Object idObject = OptionsQueryParser.parseIdObject(id);
 			EntityResponse response = producer.createEntity(entitySetName, idObject, navProp, entity);
 
@@ -132,7 +133,7 @@ public class PropertyRequestResource extends BaseResource {
 				OptionsQueryParser.parseSelect(select));
 
 		Object idObject = OptionsQueryParser.parseIdObject(id);
-		final EntitiesResponse response = producer.getNavProperty(
+		final BaseResponse response = producer.getNavProperty(
 				entitySetName,
 				idObject,
 				navProp,
@@ -143,11 +144,18 @@ public class PropertyRequestResource extends BaseResource {
 		}
 
 		StringWriter sw = new StringWriter();
-		FormatWriter<?> fwBase = null;
+		FormatWriter<?> fwBase;
+		if (response instanceof PropertyResponse) {
+			FormatWriter<PropertyResponse> fw =
+				FormatWriterFactory.getFormatWriter(
+						PropertyResponse.class,
+						context.getRequest().getAcceptableMediaTypes(),
+						format,
+						callback);
 
-		if (response.getEntitySet() == null
-				&& response.getEntities().size() == 1) {
-
+			fw.write(context.getUriInfo(), sw, (PropertyResponse)response);
+			fwBase = fw;
+		} else if (response instanceof EntityResponse) {
 			FormatWriter<EntityResponse> fw =
 					FormatWriterFactory.getFormatWriter(
 							EntityResponse.class,
@@ -155,22 +163,9 @@ public class PropertyRequestResource extends BaseResource {
 							format,
 							callback);
 
-			fw.write(context.getUriInfo(), sw, new EntityResponse() {
-
-				@Override
-				public OEntity getEntity() {
-					return response.getEntities().get(0);
-				}
-
-				@Override
-				public EdmEntitySet getEntitySet() {
-					return response.getEntitySet();
-				}
-			});
-
+			fw.write(context.getUriInfo(), sw, (EntityResponse)response);
 			fwBase = fw;
-
-		} else {
+		} else if (response instanceof EntitiesResponse){
 			FormatWriter<EntitiesResponse> fw =
 					FormatWriterFactory.getFormatWriter(
 							EntitiesResponse.class,
@@ -178,10 +173,12 @@ public class PropertyRequestResource extends BaseResource {
 							format,
 							callback);
 
-			fw.write(context.getUriInfo(), sw, response);
+			fw.write(context.getUriInfo(), sw, (EntitiesResponse) response);
 			fwBase = fw;
+		} else {
+			throw new UnsupportedOperationException("Unknown BaseResponse type: " + response.getClass().getName());
 		}
-
+		
 		String entity = sw.toString();
 		return Response.ok(
 				entity,

@@ -34,7 +34,7 @@ public class EntityRequestResource extends BaseResource {
 
         log.info(String.format("updateEntity(%s,%s)", entitySetName, id));
 
-        OEntity entity = this.getRequestEntity(context.getRequest());
+        OEntity entity = this.getRequestEntity(context.getRequest(),producer.getMetadata(),entitySetName);
 
         Object idObject = OptionsQueryParser.parseIdObject(id);
 
@@ -51,7 +51,7 @@ public class EntityRequestResource extends BaseResource {
 
         String method = context.getRequest().getHeaderValue(ODataConstants.Headers.X_HTTP_METHOD);
         if ("MERGE".equals(method)) {
-            OEntity entity = this.getRequestEntity(context.getRequest());
+            OEntity entity = this.getRequestEntity(context.getRequest(),producer.getMetadata(),entitySetName);
             producer.mergeEntity(entitySetName, idObject, entity);
 
             return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION).build();
@@ -64,7 +64,7 @@ public class EntityRequestResource extends BaseResource {
         }
         
         if ("PUT".equals(method)) {
-            OEntity entity = this.getRequestEntity(context.getRequest());
+            OEntity entity = this.getRequestEntity(context.getRequest(),producer.getMetadata(),entitySetName);
             producer.updateEntity(entitySetName, idObject, entity);
 
             return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION).build();

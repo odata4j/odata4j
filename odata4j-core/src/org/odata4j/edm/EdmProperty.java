@@ -37,5 +37,10 @@ public class EdmProperty {
         this.fcEpmContentKind = fcEpmContentKind;
         this.fcEpmKeepInContent = fcEpmKeepInContent;
     }
+    
+    @Override
+    public String toString() {
+    	return String.format("EdmProperty[%s,%s]",name,type);
+    }
 
 }

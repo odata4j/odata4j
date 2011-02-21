@@ -13,4 +13,22 @@ public class OPredicates {
 			}
 		};
 	}
+	
+	public static Predicate1<OLink> linkTitleEquals(final String title){
+		return new Predicate1<OLink>() {
+			@Override
+			public boolean apply(OLink input) {
+				String lt = input.getTitle();
+				return (title==null)?lt==null:title.equals(lt);
+			}
+		};
+	}
+	
+	public static Predicate1<OProperty<?>> propertyNameEquals(final String propName){
+		return new Predicate1<OProperty<?>>() {
+            public boolean apply(OProperty<?> input) {
+                return input.getName().equals(propName);
+            }
+        };
+	}
 }

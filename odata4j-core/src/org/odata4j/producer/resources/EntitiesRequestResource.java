@@ -32,8 +32,7 @@ import com.sun.jersey.api.core.HttpContext;
 @Path("{entitySetName}{optionalParens: ((\\(\\))?)}")
 public class EntitiesRequestResource extends BaseResource {
 
-	private static final Logger log = Logger
-			.getLogger(EntitiesRequestResource.class.getName());
+	private static final Logger log = Logger.getLogger(EntitiesRequestResource.class.getName());
 
 	@POST
 	@Produces(ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8)
@@ -44,7 +43,7 @@ public class EntitiesRequestResource extends BaseResource {
 
 		log.info(String.format("createEntity(%s)", entitySetName));
 
-		OEntity entity = this.getRequestEntity(context.getRequest());
+		OEntity entity = this.getRequestEntity(context.getRequest(),producer.getMetadata(),entitySetName);
 
 		EntityResponse response = producer.createEntity(entitySetName, entity);
 
@@ -57,8 +56,7 @@ public class EntitiesRequestResource extends BaseResource {
 		String responseEntity = sw.toString();
 
 		return Response
-				.ok(responseEntity,
-						ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8)
+				.ok(responseEntity,ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8)
 				.status(Status.CREATED)
 				.location(URI.create(entryId))
 				.header(ODataConstants.Headers.DATA_SERVICE_VERSION,

@@ -185,7 +185,7 @@ public class ODataConsumer {
     
     public <T> OQuery<T> getEntities(Class<T> entityType, String entitySetName) {
         FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
-        return new OQueryImpl<T>(client, entityType, serviceRootUri, entitySetName, mapping);
+        return new OQueryImpl<T>(client, entityType, serviceRootUri, getMetadata(), entitySetName, mapping);
     }
 
     

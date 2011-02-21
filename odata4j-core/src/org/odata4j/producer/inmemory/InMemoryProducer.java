@@ -438,20 +438,9 @@ public class InMemoryProducer implements ODataProducer {
 
         //	TODO if we add the QueryInfo to getEntity than call to Entity with QueryInfo.expand
         //	otherwise remove this comment
-        final OEntity oe = toOEntity(ees, rt, null);
+        OEntity oe = toOEntity(ees, rt, null);
 
-        return new EntityResponse() {
-
-            @Override
-            public OEntity getEntity() {
-                return oe;
-            }
-
-            @Override
-            public EdmEntitySet getEntitySet() {
-                return ees;
-            }
-        };
+        return Responses.entity(ees, oe);
     }
 
     private Collection<EdmProperty> toEdmProperties(PropertyModel model) {

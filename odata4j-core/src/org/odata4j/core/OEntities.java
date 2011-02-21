@@ -3,7 +3,6 @@ package org.odata4j.core;
 import java.util.List;
 
 import org.core4j.Enumerable;
-import org.core4j.Predicate1;
 import org.odata4j.edm.EdmEntitySet;
 
 public class OEntities {
@@ -46,6 +45,7 @@ public class OEntities {
         private final Object id;
 
         public OEntityImpl(EdmEntitySet entitySet, List<OProperty<?>> properties, List<OLink> links, Object id) {
+        	if (entitySet==null) throw new IllegalArgumentException("entitySet cannot be null");
         	this.entitySet = entitySet;
             this.properties = properties;
             this.links = links;
@@ -69,12 +69,7 @@ public class OEntities {
 
         @Override
         public OProperty<?> getProperty(final String propName) {
-            return Enumerable.create(properties).first(new Predicate1<OProperty<?>>() {
-
-                public boolean apply(OProperty<?> input) {
-                    return input.getName().equals(propName);
-                }
-            });
+            return Enumerable.create(properties).first(OPredicates.propertyNameEquals(propName));
         }
 
         @SuppressWarnings("unchecked")

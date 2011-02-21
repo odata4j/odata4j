@@ -12,6 +12,7 @@ import org.core4j.Func;
 import org.core4j.Func1;
 import org.core4j.ReadOnlyIterator;
 import org.odata4j.core.OQuery;
+import org.odata4j.edm.EdmDataServices;
 import org.odata4j.format.xml.AtomFeedFormatParser.AtomEntry;
 import org.odata4j.format.xml.AtomFeedFormatParser.AtomFeed;
 import org.odata4j.format.xml.AtomFeedFormatParser.DataServicesAtomEntry;
@@ -24,6 +25,7 @@ public class OQueryImpl<T> implements OQuery<T> {
     private final ODataClient client;
     private final Class<T> entityType;
     private final String serviceRootUri;
+    private final EdmDataServices ees;
     private final List<EntitySegment> segments = new ArrayList<EntitySegment>();
     private final Map<String, String> customs = new HashMap<String, String>();
 
@@ -37,10 +39,11 @@ public class OQueryImpl<T> implements OQuery<T> {
     
     private final FeedCustomizationMapping fcMapping;
 
-    public OQueryImpl(ODataClient client, Class<T> entityType, String serviceRootUri, String entitySetName, FeedCustomizationMapping fcMapping) {
+    public OQueryImpl(ODataClient client, Class<T> entityType, String serviceRootUri, EdmDataServices ees, String entitySetName, FeedCustomizationMapping fcMapping) {
         this.client = client;
         this.entityType = entityType;
         this.serviceRootUri = serviceRootUri;
+        this.ees = ees;
         this.lastSegment = entitySetName;
         
         this.fcMapping = fcMapping;
@@ -136,7 +139,7 @@ public class OQueryImpl<T> implements OQuery<T> {
             public T apply(AtomEntry input) {
                 DataServicesAtomEntry dsae = (DataServicesAtomEntry) input;
               
-                return InternalUtil.toEntity(entityType, null, null, dsae, fcMapping);
+                return InternalUtil.toEntity(entityType, ees, ees.getEdmEntitySet(lastSegment), dsae, fcMapping);
             }
         }).cast(entityType);
     }

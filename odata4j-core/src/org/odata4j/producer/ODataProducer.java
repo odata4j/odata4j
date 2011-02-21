@@ -11,7 +11,7 @@ public interface ODataProducer {
 
     public abstract EntityResponse getEntity(String entitySetName, Object entityKey);
 
-    public abstract EntitiesResponse getNavProperty(
+    public abstract BaseResponse getNavProperty(
             String entitySetName,
             Object entityKey,
             String navProp,

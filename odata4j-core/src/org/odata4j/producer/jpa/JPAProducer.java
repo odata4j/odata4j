@@ -56,10 +56,12 @@ import org.odata4j.expression.ExpressionParser.TokenType;
 import org.odata4j.expression.OrderByExpression;
 import org.odata4j.expression.StringLiteral;
 import org.odata4j.internal.TypeConverter;
+import org.odata4j.producer.BaseResponse;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.InlineCount;
 import org.odata4j.producer.ODataProducer;
+import org.odata4j.producer.PropertyResponse;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.Responses;
 import org.odata4j.producer.resources.OptionsQueryParser;
@@ -98,46 +100,37 @@ public class JPAProducer implements ODataProducer {
 
 	@Override
 	public EntityResponse getEntity(String entitySetName, Object entityKey) {
-
 		return common(entitySetName, entityKey, null,
 				new Func1<Context, EntityResponse>() {
-
 					public EntityResponse apply(Context input) {
 						return getEntity(input);
 					}
 				});
-
 	}
 
 	@Override
-	public EntitiesResponse getEntities(String entitySetName,
-			QueryInfo queryInfo) {
-
+	public EntitiesResponse getEntities(String entitySetName, QueryInfo queryInfo) {
 		return common(entitySetName, null, queryInfo,
 				new Func1<Context, EntitiesResponse>() {
-
 					public EntitiesResponse apply(Context input) {
 						return getEntities(input);
 					}
 				});
-
 	}
 
 	@Override
-	public EntitiesResponse getNavProperty(
+	public BaseResponse getNavProperty(
 			final String entitySetName,
 			final Object entityKey,
 			final String navProp,
 			final QueryInfo queryInfo) {
-
+		
 		return common(
 				entitySetName,
 				entityKey,
 				queryInfo,
-				new Func1<Context, EntitiesResponse>() {
-
-					@Override
-					public EntitiesResponse apply(Context input) {
+				new Func1<Context, BaseResponse>() {
+					public BaseResponse apply(Context input) {
 						return getNavProperty(input, navProp);
 					}
 				});
@@ -165,22 +158,11 @@ public class JPAProducer implements ODataProducer {
 							+ context.typeSafeEntityKey);
 		}
 
-		final OEntity entity = makeEntity(
+		OEntity entity = makeEntity(
 				context,
 				jpaEntity);
 
-		return new EntityResponse() {
-
-			@Override
-			public OEntity getEntity() {
-				return entity;
-			}
-
-			@Override
-			public EdmEntitySet getEntitySet() {
-				return context.ees;
-			}
-		};
+		return Responses.entity(context.ees, entity);
 	}
 
 	private OEntity makeEntity(
@@ -208,19 +190,21 @@ public class JPAProducer implements ODataProducer {
 				response.skipToken);
 	}
 
-	private EntitiesResponse getNavProperty(
-			final Context context,
-			String navProp) {
+	private BaseResponse getNavProperty(final Context context,String navProp) {
 
-		final DynamicEntitiesResponse response = enumJpaEntities(
-				context,
-				navProp);
-
-		return Responses.entities(
-				response.entities,
-				context.ees,
-				response.inlineCount,
-				response.skipToken);
+		DynamicEntitiesResponse response = enumJpaEntities(context,navProp);
+		if (response.responseType.equals(PropertyResponse.class))
+			return Responses.property(response.property);
+		if (response.responseType.equals(EntityResponse.class))
+			return Responses.entity(context.ees, response.entity);
+		if (response.responseType.equals(EntitiesResponse.class))
+			return Responses.entities(
+					response.entities,
+					context.ees,
+					response.inlineCount,
+					response.skipToken);
+		
+		throw new UnsupportedOperationException("Unknown responseType: " + response.responseType.getName());
 	}
 
 	private <T> T common(
@@ -503,24 +487,42 @@ public class JPAProducer implements ODataProducer {
 
 	private static class DynamicEntitiesResponse {
 
+		public final Class<?> responseType;
+		public final OProperty<?> property;
+		public final OEntity entity;
+		public final List<OEntity> entities;
 		public final Integer inlineCount;
 		public final String skipToken;
-		public final List<OEntity> entities;
-
-		public DynamicEntitiesResponse(
+		
+		
+		public static DynamicEntitiesResponse property(OProperty<?> property){
+			return new DynamicEntitiesResponse(PropertyResponse.class,property,null,null,null,null);
+		}
+		
+		@SuppressWarnings("unused")	// TODO when to call?
+		public static DynamicEntitiesResponse entity(OEntity entity){
+			return new DynamicEntitiesResponse(EntityResponse.class,null,entity,null,null,null);
+		}
+		public static DynamicEntitiesResponse entities(List<OEntity> entityList,Integer inlineCount,String skipToken){
+			return new DynamicEntitiesResponse(EntitiesResponse.class,null,null,entityList,inlineCount,skipToken);
+		}
+		private DynamicEntitiesResponse(
+				Class<?> responseType,
+				OProperty<?> property,
+				OEntity entity,
 				List<OEntity> entityList,
 				Integer inlineCount,
 				String skipToken) {
-
+			this.responseType = responseType;
+			this.property = property;
+			this.entity = entity;
 			this.entities = entityList;
 			this.inlineCount = inlineCount;
 			this.skipToken = skipToken;
 		}
 	}
 
-	private DynamicEntitiesResponse enumJpaEntities(
-			final Context context,
-			final String navProp) {
+	private DynamicEntitiesResponse enumJpaEntities(final Context context, final String navProp) {
 
 		String alias = "t0";
 		String from = context.jpaEntityType.getName() + " " + alias;
@@ -560,8 +562,7 @@ public class JPAProducer implements ODataProducer {
 							context.em,
 							propInfo.toRole.type.name);
 
-					context.ees = metadata.findEdmEntitySet(
-							context.jpaEntityType.getName());
+					context.ees = metadata.findEdmEntitySet(context.jpaEntityType.getName());
 
 					prop = alias + "." + prop;
 					alias = "t" + Integer.toString(propCount);
@@ -589,7 +590,8 @@ public class JPAProducer implements ODataProducer {
 					EdmProperty propInfo = (EdmProperty) edmObj;
 
 					alias = alias + "." + propInfo.name;
-					context.ees = metadata.findEdmEntitySet(propInfo.name);
+					// TODO
+					context.ees = null;
 				}
 
 				if (edmObj == null) {
@@ -650,7 +652,7 @@ public class JPAProducer implements ODataProducer {
 		int queryMaxResult = maxResults;
 		if (context.query.top != null) {
 			if (context.query.top.equals(0)) {
-				return new DynamicEntitiesResponse(
+				return DynamicEntitiesResponse.entities(
 						null,
 						inlineCount,
 						null);
@@ -674,24 +676,14 @@ public class JPAProducer implements ODataProducer {
 		if (edmObj instanceof EdmProperty) {
 			EdmProperty propInfo = (EdmProperty) edmObj;
 
-			for (Object item : results) {
-				OProperty<?> op = OProperties.simple(
-						((EdmProperty) propInfo).name,
-						((EdmProperty) propInfo).type,
-						item);
-
-				List<OProperty<?>> ls = new LinkedList<OProperty<?>>();
-				ls.add(op);
-
-				final OEntity entity = OEntities.create(
-						context.ees,
-						ls,
-						null,
-						null);
-
-				entities.add(entity);
-			}
-
+			if (results.size() != 1)
+				throw new RuntimeException("Expected one and only one result for property, found " + results.size());
+			Object value = results.get(0);
+			OProperty<?> op = OProperties.simple(
+					((EdmProperty) propInfo).name,
+					((EdmProperty) propInfo).type,
+					value);
+			return DynamicEntitiesResponse.property(op);
 		} else {
 			entities = Enumerable.create(results)
 					.take(queryMaxResult)
@@ -714,7 +706,7 @@ public class JPAProducer implements ODataProducer {
 			skipToken = createSkipToken(context, last);
 		}
 
-		return new DynamicEntitiesResponse(
+		return DynamicEntitiesResponse.entities(
 				entities,
 				inlineCount,
 				skipToken);
@@ -955,18 +947,7 @@ public class JPAProducer implements ODataProducer {
 					null,
 					null);
 
-			return new EntityResponse() {
-
-				@Override
-				public OEntity getEntity() {
-					return responseEntity;
-				}
-
-				@Override
-				public EdmEntitySet getEntitySet() {
-					return ees;
-				}
-			};
+			return Responses.entity(ees, responseEntity);
 
 		} finally {
 			em.close();
@@ -980,8 +961,7 @@ public class JPAProducer implements ODataProducer {
 		final EdmEntitySet ees = metadata.getEdmEntitySet(entitySetName);
 
 		//	get the navigation property
-		EdmNavigationProperty edmNavProperty = ees.type
-			.getNavigationProperty(navProp);
+		EdmNavigationProperty edmNavProperty = ees.type.getNavigationProperty(navProp);
 
 		//	check whether the navProperty is valid
 		if (edmNavProperty == null
@@ -1054,19 +1034,8 @@ public class JPAProducer implements ODataProducer {
 			final OEntity responseEntity = jpaEntityToOEntity(toRoleees,
 					newJpaEntityType, newJpaEntity, null, null);
 
-			return new EntityResponse() {
+			return Responses.entity(toRoleees, responseEntity);
 
-				@Override
-				public OEntity getEntity() {
-					return responseEntity;
-				}
-
-				@Override
-				public EdmEntitySet getEntitySet() {
-					return toRoleees;
-				}
-			};
-			
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		} finally {

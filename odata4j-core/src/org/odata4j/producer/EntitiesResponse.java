@@ -5,7 +5,7 @@ import java.util.List;
 import org.odata4j.core.OEntity;
 import org.odata4j.edm.EdmEntitySet;
 
-public interface EntitiesResponse {
+public interface EntitiesResponse extends BaseResponse {
 
     public EdmEntitySet getEntitySet();
 

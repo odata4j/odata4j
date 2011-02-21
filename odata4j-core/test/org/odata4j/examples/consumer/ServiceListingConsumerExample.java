@@ -55,27 +55,30 @@ public class ServiceListingConsumerExample extends BaseExample {
         
         
         // print out each entity in every entity-set exposed by small services
-        for(String endpoint : smallServices) {
-            ODataConsumer c = ODataConsumer.create(endpoint);
-            
-            for(String entitySet : c.getEntitySets()){
-                reportEntities(entitySet,c.getEntities(entitySet).execute());
-            }
-           
-        }
-        
+        printOutAllEntities(smallServices);
+
         // print out the first record in each entity set exposed by large services
-        for(String endpoint : largeServices) {
-            ODataConsumer c = ODataConsumer.create(endpoint);
-            
-            for(String entitySet : c.getEntitySets()){
-                reportEntities(entitySet,c.getEntities(entitySet).top(1).execute());
-            }
-            
-        }
-        
+        printOutFirstEntities(largeServices);
         
        
+    }
+    
+    private static void printOutFirstEntities(Iterable<String> services){
+		 for(String endpoint : services) {
+	         ODataConsumer c = ODataConsumer.create(endpoint);
+	         for(String entitySet : c.getEntitySets()){
+	             reportEntities(entitySet,c.getEntities(entitySet).top(1).execute());
+	         }
+	     }
+   }
+    
+    private static void printOutAllEntities(Iterable<String> services){
+    	 for(String endpoint : services) {
+             ODataConsumer c = ODataConsumer.create(endpoint);
+             for(String entitySet : c.getEntitySets()){
+                 reportEntities(entitySet,c.getEntities(entitySet).execute());
+             }
+         }
     }
 
 }
