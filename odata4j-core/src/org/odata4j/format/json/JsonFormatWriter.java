@@ -14,8 +14,8 @@ import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OLink;
 import org.odata4j.core.OProperty;
-import org.odata4j.core.ORelatedEntitiesLink;
-import org.odata4j.core.ORelatedEntityLink;
+import org.odata4j.core.ORelatedEntitiesLinkInline;
+import org.odata4j.core.ORelatedEntityLinkInline;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmType;
@@ -181,7 +181,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
 						}
 						jw.endObject();
 					} else {
-						if (linkToInline instanceof ORelatedEntitiesLink) {
+						if (linkToInline instanceof ORelatedEntitiesLinkInline) {
 							jw.startObject();
 							{
 								jw.writeName("results");
@@ -189,8 +189,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
 								jw.startArray();
 								{
 									boolean isFirstInlinedEntity = true;
-									for (OEntity re : ((ORelatedEntitiesLink) linkToInline)
-											.getRelatedEntities()) {
+									for (OEntity re : ((ORelatedEntitiesLinkInline) linkToInline).getRelatedEntities()) {
 
 										if (isFirstInlinedEntity) {
 											isFirstInlinedEntity = false;
@@ -198,21 +197,18 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
 											jw.writeSeparator();
 										}
 
-										writeOEntity(uriInfo, jw, re,
-												re.getEntitySet());
+										writeOEntity(uriInfo, jw, re, re.getEntitySet());
 									}
 
 								}
 								jw.endArray();
 							}
 							jw.endObject();
-						} else if (linkToInline instanceof ORelatedEntityLink) {
-							OEntity re = ((ORelatedEntityLink) linkToInline)
-									.getRelatedEntity();
+						} else if (linkToInline instanceof ORelatedEntityLinkInline) {
+							OEntity re = ((ORelatedEntityLinkInline) linkToInline).getRelatedEntity();
 							writeOEntity(uriInfo, jw, re, re.getEntitySet());
 						} else
-							throw new RuntimeException("Unknown OLink type "
-									+ linkToInline.getClass());
+							throw new RuntimeException("Unknown OLink type " + linkToInline.getClass());
 					}
 				}
 			}

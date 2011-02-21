@@ -44,7 +44,7 @@ public class Issue15 {
 
 	public void repro() {
 
-		ODataConsumer.DUMP_RESPONSE_BODY = true;
+		ODataConsumer.dump.responseBody(true);
 		ODataConsumer c = ODataConsumer
 				.create("http://localhost:6794/WcfDataService2.svc/");
 

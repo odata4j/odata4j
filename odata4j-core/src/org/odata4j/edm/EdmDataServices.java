@@ -8,13 +8,22 @@ import org.core4j.Predicate1;
 
 public class EdmDataServices {
 
-    public final String version;
-    public final List<EdmSchema> schemas;
+    private final String version;
+    private final List<EdmSchema> schemas;
 
+    public static final EdmDataServices EMPTY = new EdmDataServices(null,new ArrayList<EdmSchema>());
+    
     public EdmDataServices(String version, List<EdmSchema> schemas) {
         this.version = version;
         this.schemas = schemas;
     }
+    
+    public String getVersion(){
+    	return version;
+    }
+    public List<EdmSchema> getSchemas() {
+		return schemas;
+	}
 
     public EdmEntitySet getEdmEntitySet(String entitySetName) {
         EdmEntitySet ees = findEdmEntitySet(entitySetName);
@@ -25,6 +34,8 @@ public class EdmDataServices {
     }
 
     public EdmEntitySet getEdmEntitySet(final EdmEntityType type) {
+    	if (type==null)
+    		throw new IllegalArgumentException("type cannot be null");
     	EdmEntitySet ees = Enumerable.create(getEntitySets())
     		.firstOrNull(new Predicate1<EdmEntitySet>() {
     			@Override

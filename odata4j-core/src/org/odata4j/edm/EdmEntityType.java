@@ -34,6 +34,11 @@ public class EdmEntityType {
     public String getFQAliasName() {
         return alias==null?null:(alias + "." + name);
     }
+    
+    @Override
+    public String toString() {
+    	return String.format("EdmEntityType[%s.%s,alias=%s]",namespace,name,alias);
+    }
 
     public EdmNavigationProperty getNavigationProperty(final String name) {
     	return Enumerable.create(navigationProperties)

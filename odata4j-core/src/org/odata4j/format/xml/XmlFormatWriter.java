@@ -12,7 +12,9 @@ import org.odata4j.core.OEntity;
 import org.odata4j.core.OLink;
 import org.odata4j.core.OProperty;
 import org.odata4j.core.ORelatedEntitiesLink;
+import org.odata4j.core.ORelatedEntitiesLinkInline;
 import org.odata4j.core.ORelatedEntityLink;
+import org.odata4j.core.ORelatedEntityLinkInline;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmMultiplicity;
 import org.odata4j.edm.EdmNavigationProperty;
@@ -290,8 +292,8 @@ public class XmlFormatWriter {
 			String href, String baseUri, String updated, boolean isResponse) {
 		
 		writer.startElement(new QName2(m, "inline", "m"));
-		if (linkToInline instanceof ORelatedEntitiesLink) {
-			ORelatedEntitiesLink relLink = ((ORelatedEntitiesLink) linkToInline);
+		if (linkToInline instanceof ORelatedEntitiesLinkInline) {
+			ORelatedEntitiesLinkInline relLink = ((ORelatedEntitiesLinkInline) linkToInline);
 			List<OEntity> entities = relLink.getRelatedEntities();
 
 			if (entities != null && !entities.isEmpty()) {
@@ -316,8 +318,7 @@ public class XmlFormatWriter {
 						"href",
 						href);
 
-				for (OEntity entity : ((ORelatedEntitiesLink) linkToInline)
-						.getRelatedEntities()) {
+				for (OEntity entity : ((ORelatedEntitiesLinkInline) linkToInline).getRelatedEntities()) {
 					writer.startElement("entry");
 					writeEntry(writer, entity,
 							entity.getProperties(), entity.getLinks(),
@@ -329,9 +330,8 @@ public class XmlFormatWriter {
 				}
 				writer.endElement("feed");
 			}
-		} else if (linkToInline instanceof ORelatedEntityLink) {
-			OEntity entity = ((ORelatedEntityLink) linkToInline)
-					.getRelatedEntity();
+		} else if (linkToInline instanceof ORelatedEntityLinkInline) {
+			OEntity entity = ((ORelatedEntityLinkInline) linkToInline).getRelatedEntity();
 			writer.startElement("entry");
 			writeEntry(writer, entity,
 					entity.getProperties(), entity.getLinks(),

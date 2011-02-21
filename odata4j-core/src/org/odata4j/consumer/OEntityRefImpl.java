@@ -71,8 +71,7 @@ public class OEntityRefImpl<T> implements OEntityRef<T> {
         	//	the first segment contains the entitySetName we start from
         	EdmEntitySet entitySet = metadata.getEdmEntitySet(segments.get(0).segment);
         	for(EntitySegment segment : segments.subList(1, segments.size()) ) {
-        		EdmNavigationProperty navProperty = entitySet.type
-        			.getNavigationProperty(segment.segment);
+        		EdmNavigationProperty navProperty = entitySet.type.getNavigationProperty(segment.segment);
         		entitySet = metadata.getEdmEntitySet(navProperty.toRole.type);
         	}
 

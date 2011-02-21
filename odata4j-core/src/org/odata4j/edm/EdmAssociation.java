@@ -23,4 +23,19 @@ public class EdmAssociation {
     public String getFQAliasName() {
         return alias==null?null:(alias + "." + name);
     }
+    
+    @Override
+    public String toString() {
+    	StringBuilder rt = new StringBuilder();
+    	rt.append("EdmAssociation[");
+    	if (namespace!=null)
+    		rt.append(namespace + ".");
+    	rt.append(name);
+    	if (alias!=null)
+    		rt.append(",alias="+alias);
+    	rt.append(",end1="+end1);
+    	rt.append(",end2="+end2);
+    	rt.append(']');
+    	return rt.toString();
+    }
 }

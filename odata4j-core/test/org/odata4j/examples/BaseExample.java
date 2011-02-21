@@ -82,7 +82,7 @@ public class BaseExample {
     
     protected static void reportMetadata(EdmDataServices services){
         
-        for(EdmSchema schema : services.schemas){
+        for(EdmSchema schema : services.getSchemas()){
             report("Schema Namespace=%s",schema.namespace);
             
             for(EdmEntityType et : schema.entityTypes){

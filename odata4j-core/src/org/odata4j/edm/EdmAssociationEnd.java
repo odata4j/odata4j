@@ -11,4 +11,9 @@ public class EdmAssociationEnd {
         this.type = type;
         this.multiplicity = multiplicity;
     }
+    
+    @Override
+    public String toString() {
+    	return String.format("EdmAssociationEnd[%s,%s,%s]",role,type,multiplicity);
+    }
 }

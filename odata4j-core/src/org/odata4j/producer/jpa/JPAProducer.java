@@ -38,7 +38,7 @@ import org.odata4j.core.OLink;
 import org.odata4j.core.OLinks;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
-import org.odata4j.core.ORelatedEntitiesLink;
+import org.odata4j.core.ORelatedEntitiesLinkInline;
 import org.odata4j.core.ORelatedEntityLink;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
@@ -341,7 +341,7 @@ public class JPAProducer implements ODataProducer {
 									null));
 						}
 
-						links.add(OLinks.relatedEntities(
+						links.add(OLinks.relatedEntitiesInline(
 								null,
 								prop,
 								null,
@@ -361,7 +361,7 @@ public class JPAProducer implements ODataProducer {
 								jpaEntity,
 								att.getJavaMember());
 
-						links.add(OLinks.relatedEntity(
+						links.add(OLinks.relatedEntityInline(
 								null,
 								prop,
 								null,
@@ -831,7 +831,7 @@ public class JPAProducer implements ODataProducer {
 				String[] propNameSplit = link.getRelation().split("/");
 				String propName = propNameSplit[propNameSplit.length - 1];
 
-				if (link instanceof ORelatedEntitiesLink) {
+				if (link instanceof ORelatedEntitiesLinkInline) {
 					CollectionAttribute<?, ?> att = jpaEntityType.getCollection(propName);
 					Member member = att.getJavaMember();
 					
@@ -849,7 +849,7 @@ public class JPAProducer implements ODataProducer {
 					
 					@SuppressWarnings("unchecked")
 					Collection<Object> coll = (Collection<Object>)getValue(jpaEntity, member);
-					for (OEntity oentity : ((ORelatedEntitiesLink)link).getRelatedEntities()) {
+					for (OEntity oentity : ((ORelatedEntitiesLinkInline)link).getRelatedEntities()) {
 						Object collJpaEntity = createNewJPAEntity(em, collJpaEntityType, oentity, true);
 						if (backRef != null) {
 							setValue(collJpaEntity, backRef, jpaEntity);

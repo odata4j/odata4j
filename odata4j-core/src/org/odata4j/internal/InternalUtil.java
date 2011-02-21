@@ -26,7 +26,7 @@ import org.odata4j.core.OLink;
 import org.odata4j.core.OLinks;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
-import org.odata4j.core.ORelatedEntitiesLink;
+import org.odata4j.core.ORelatedEntitiesLinkInline;
 import org.odata4j.core.ORelatedEntityLink;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
@@ -301,20 +301,18 @@ public class InternalUtil {
 										return toOEntity(metadata, toRoleEntitySet, input, mapping);
 									}
 								}).toList();
-						rt.add(OLinks.relatedEntities(
+						rt.add(OLinks.relatedEntitiesInline(
 								link.relation, 
 								link.title,
 								link.href, 
 								relatedEntities));
 					} else {
 						//	no inlined entities
-						rt.add(OLinks.link(link.relation, link.title, 
-								link.href));
+						rt.add(OLinks.relatedEntities(link.relation, link.title, link.href));
 					}
-				} else if (link.type
-						.equals(XmlFormatWriter.atom_entry_content_type))
-					//	handle inlined entity
-					rt.add(OLinks.link(link.relation, link.title, link.href));
+				} else if (link.type.equals(XmlFormatWriter.atom_entry_content_type))
+					//	TODO handle inlined entity
+					rt.add(OLinks.relatedEntity(link.relation, link.title, link.href));
 			}
 		}
 		return rt;
@@ -343,8 +341,8 @@ public class InternalUtil {
 			}
 
 			for (OLink l : oe.getLinks()) {
-				if (l instanceof ORelatedEntitiesLink) {
-					ORelatedEntitiesLink ol = (ORelatedEntitiesLink) l;
+				if (l instanceof ORelatedEntitiesLinkInline) {
+					ORelatedEntitiesLinkInline ol = (ORelatedEntitiesLinkInline) l;
 					final String collectionName = ol.getTitle();
 					if (beanModel.canWrite(ol.getTitle())) {
 						Collection<Object> relatedEntities = ol
@@ -455,5 +453,13 @@ public class InternalUtil {
 
 	public static String toString(DateTime utc) {
 		return utc.toString("yyyy-MM-dd'T'HH:mm:ss'Z'");
+	}
+	
+	public static void sleep(long millis){
+		try {
+			Thread.sleep(millis);
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

@@ -11,11 +11,7 @@ public class DallasConsumerExampleUnescoUIS extends BaseExample {
 
     public static void main(String... args) {
 
-        boolean dump = false;
-        ODataConsumer.DUMP_REQUEST_BODY = dump;
-        ODataConsumer.DUMP_REQUEST_HEADERS = dump;
-        ODataConsumer.DUMP_RESPONSE_BODY = dump;
-        ODataConsumer.DUMP_RESPONSE_HEADERS = dump;
+    	ODataConsumer.dump.all(false);
         
         String[] dallasCreds = args.length>0?args:System.getenv("DALLAS").split(":");
         String accountKey = dallasCreds[0];

@@ -121,7 +121,7 @@ public class OCreateImpl<T> implements OCreate<T> {
 		String rel = XmlFormatWriter.related + navProperty;
 		String href = entitySetName + "/" + navProperty;
 		if (navProp.toRole.multiplicity == EdmMultiplicity.MANY) {
-			links.add(OLinks.relatedEntities(rel, navProperty, href,
+			links.add(OLinks.relatedEntitiesInline(rel, navProperty, href,
 					Arrays.asList(entities)));
 		} else {
 			if (entities.length > 1) {
@@ -129,7 +129,7 @@ public class OCreateImpl<T> implements OCreate<T> {
 						"only one entity is allowed for this navigation property "
 								+ navProperty);
 			}
-			links.add(OLinks.relatedEntity(rel, navProperty, href,
+			links.add(OLinks.relatedEntityInline(rel, navProperty, href,
 					entities.length > 0 ? entities[0] : null));
 		}
 

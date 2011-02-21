@@ -33,7 +33,7 @@ public class EdmxFormatWriter extends XmlFormatWriter {
         writer.startElement(new QName2(edmx, "DataServices", "edmx"));
 
         // Schema
-        for(EdmSchema schema : services.schemas) {
+        for(EdmSchema schema : services.getSchemas()) {
 
             writer.startElement(new QName2("Schema"), edm);
             writer.writeAttribute("Namespace", schema.namespace);

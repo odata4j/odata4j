@@ -116,7 +116,7 @@ public class ODataClient {
             b.header(header, request.getHeaders().get(header));
         }
 
-        if (ODataConsumer.DUMP_REQUEST_HEADERS)
+        if (ODataConsumer.dump.requestHeaders())
             log(request.getMethod() + " " + webResource.toString());
 
         // request body
@@ -127,7 +127,7 @@ public class ODataClient {
             StringWriter sw = new StringWriter();
             new AtomEntryFormatWriter().writeRequestEntry(sw,dsae);
             String entity = sw.toString();
-            if (ODataConsumer.DUMP_REQUEST_BODY)
+            if (ODataConsumer.dump.requestBody())
                 log(entity);
             b.entity(entity, MediaType.APPLICATION_ATOM_XML);
 
@@ -136,7 +136,7 @@ public class ODataClient {
         // execute request
         ClientResponse response = b.method(request.getMethod(), ClientResponse.class);
 
-        if (ODataConsumer.DUMP_RESPONSE_HEADERS)
+        if (ODataConsumer.dump.responseHeaders())
             dumpHeaders(response);
         int status = response.getStatus();
         for(int expStatus : expectedResponseStatus) {
@@ -149,7 +149,7 @@ public class ODataClient {
     }
     private XMLEventReader2 doXmlRequest(ClientResponse response)  {
 
-        if (ODataConsumer.DUMP_RESPONSE_BODY) {
+        if (ODataConsumer.dump.responseBody()) {
             String textEntity = response.getEntity(String.class);
             log(textEntity);
             return InternalUtil.newXMLEventReader(new BOMWorkaroundReader(new StringReader(textEntity)));

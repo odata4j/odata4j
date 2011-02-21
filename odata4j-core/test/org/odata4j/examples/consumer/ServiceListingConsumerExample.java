@@ -10,7 +10,7 @@ public class ServiceListingConsumerExample extends BaseExample {
     @SuppressWarnings("unused")
     public static void main(String[] args) {
 
-        ODataConsumer.DUMP_REQUEST_HEADERS = true;
+        ODataConsumer.dump.requestHeaders(true);
        // ODataConsumer.DUMP_RESPONSE_BODY = true;
        // ODataConsumer.DUMP_RESPONSE_HEADERS = true;
         

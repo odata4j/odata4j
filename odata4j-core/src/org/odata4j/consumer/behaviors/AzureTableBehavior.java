@@ -48,7 +48,7 @@ public class AzureTableBehavior implements OClientBehavior {
             String canonicalizedResource = "/" + account + "/" + path;
             String stringToSign = request.getMethod() + "\n\n" + contentType + "\n" + date + "\n" + canonicalizedResource;
 
-            if (ODataConsumer.DUMP_REQUEST_HEADERS)
+            if (ODataConsumer.dump.requestHeaders())
                 System.out.println("stringToSign: " + stringToSign);
 
             Mac mac = Mac.getInstance("HmacSHA256");
@@ -59,7 +59,7 @@ public class AzureTableBehavior implements OClientBehavior {
             String sig = base64Encode(sigBytes);
             String auth = "SharedKey " + account + ":" + sig;
 
-            if (ODataConsumer.DUMP_REQUEST_HEADERS)
+            if (ODataConsumer.dump.requestHeaders())
                 System.out.println("auth: " + auth);
 
             request = request

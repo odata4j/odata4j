@@ -316,7 +316,7 @@ public class InMemoryProducer implements ODataProducer {
 	            		}
 	            	}
 	        		// relation and href will be filled in later for atom or json
-	        		links.add(OLinks.relatedEntities(null, edmNavProperty.name, null, relatedEntities));
+	        		links.add(OLinks.relatedEntitiesInline(null, edmNavProperty.name, null, relatedEntities));
 	            } else {
 	            	//	TODO handle the toOne or toZero navigation properties as well
 	            }

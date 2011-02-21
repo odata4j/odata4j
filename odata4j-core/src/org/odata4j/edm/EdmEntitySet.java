@@ -9,4 +9,9 @@ public class EdmEntitySet {
         this.name = name;
         this.type = type;
     }
+    
+    @Override
+    public String toString() {
+    	return String.format("EdmEntitySet[%s,%s]",name,type);
+    }
 }

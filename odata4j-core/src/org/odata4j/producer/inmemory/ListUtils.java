@@ -11,7 +11,7 @@ import org.core4j.Predicate1;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OLink;
 import org.odata4j.core.OProperty;
-import org.odata4j.core.ORelatedEntitiesLink;
+import org.odata4j.core.ORelatedEntitiesLinkInline;
 import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.OrderByExpression;
 import org.odata4j.internal.InternalUtil;
@@ -164,8 +164,8 @@ public class ListUtils {
 			@Override
 			public Iterable<?> getCollectionValue(Object target, String collectionName) {
 				OLink link = ((OEntity) target).getLink(collectionName, null);
-				if (link instanceof ORelatedEntitiesLink) {
-					ORelatedEntitiesLink elink = (ORelatedEntitiesLink)link;
+				if (link instanceof ORelatedEntitiesLinkInline) {
+					ORelatedEntitiesLinkInline elink = (ORelatedEntitiesLinkInline)link;
 					return elink.getRelatedEntities();
 				}
 				else

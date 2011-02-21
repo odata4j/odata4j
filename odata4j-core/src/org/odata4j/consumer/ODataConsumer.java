@@ -23,6 +23,7 @@ import org.odata4j.expression.Expression;
 import org.odata4j.expression.ExpressionParser;
 import org.odata4j.expression.LiteralExpression;
 import org.odata4j.format.xml.AtomFeedFormatParser.CollectionInfo;
+import org.odata4j.internal.EdmDataServicesDecorator;
 import org.odata4j.internal.FeedCustomizationMapping;
 
 public class ODataConsumer {
@@ -104,20 +105,32 @@ public class ODataConsumer {
         }
     }
     
+
+    public static enum Dump{
+    	INSTANCE;
+    	private boolean requestHeaders;
+    	private boolean requestBody;
+    	private boolean responseHeaders;
+    	private boolean responseBody;
+    	public void all(boolean dump){ requestHeaders(dump); requestBody(dump); responseHeaders(dump); responseBody(dump); }
+    	public boolean requestHeaders() { return requestHeaders; }
+    	public void requestHeaders(boolean dump){ this.requestHeaders = dump; }
+    	public boolean requestBody() { return requestBody; }
+    	public void requestBody(boolean dump){ this.requestBody = dump; }
+    	public boolean responseHeaders() { return responseHeaders; }
+    	public void responseHeaders(boolean dump){ this.responseHeaders = dump; }
+    	public boolean responseBody() { return responseBody; }
+    	public void responseBody(boolean dump){ this.responseBody = dump; }
+    }
     
-    public static boolean DUMP_REQUEST_HEADERS;
-    public static boolean DUMP_REQUEST_BODY;
-    public static boolean DUMP_RESPONSE_HEADERS;
-    public static boolean DUMP_RESPONSE_BODY;
+    public static final Dump dump = Dump.INSTANCE;
     
     private final Map<String,FeedCustomizationMapping> cachedMappings = new HashMap<String,FeedCustomizationMapping>();
     private final String serviceRootUri;
     private final ODataClient client;
     
     private EdmDataServices cachedMetadata;
-    private boolean gotMetadata;
-    
-    
+  
 
     private ODataConsumer(String serviceRootUri, OClientBehavior... behaviors) {
         if (!serviceRootUri.endsWith("/"))
@@ -154,11 +167,8 @@ public class ODataConsumer {
    
     
     public EdmDataServices getMetadata() {
-        if (!gotMetadata){
-            ODataClientRequest request = ODataClientRequest.get(serviceRootUri + "$metadata");
-            cachedMetadata = client.getMetadata(request);
-            gotMetadata = true;
-        }
+        if (cachedMetadata==null)
+        	cachedMetadata = new CachedEdmDataServices();
         return cachedMetadata;
     }
     
@@ -252,6 +262,34 @@ public class ODataConsumer {
 
    
 
+    private class CachedEdmDataServices extends EdmDataServicesDecorator {
+    	private EdmDataServices delegate;
+		public CachedEdmDataServices() {
+
+		}
+		@Override
+		protected EdmDataServices getDelegate() {
+			if (delegate==null)
+				refreshDelegate();
+			return delegate;
+		}
+		
+		private void refreshDelegate(){
+			 ODataClientRequest request = ODataClientRequest.get(serviceRootUri + "$metadata");
+			 EdmDataServices metadata = client.getMetadata(request);
+			 delegate = metadata==null?EdmDataServices.EMPTY:metadata;
+		}
+	
+		@Override
+		public EdmEntitySet findEdmEntitySet(String entitySetName) {
+			EdmEntitySet rt = super.findEdmEntitySet(entitySetName);
+			if (rt==null) {
+				refreshDelegate();
+				rt = super.findEdmEntitySet(entitySetName);
+			}
+			return rt;
+		}
+    }
   
 
    

@@ -75,7 +75,7 @@ public class EdmxFormatParser extends XmlFormatParser {
                 return input.getFQAliasName()!=null?input.getFQAliasName():input.getFQNamespaceName();
             }});
         
-        for(EdmSchema edmSchema : metadata.schemas){
+        for(EdmSchema edmSchema : metadata.getSchemas()){
             
             // resolve associations
             for(int i = 0; i < edmSchema.associations.size(); i++) {
@@ -87,11 +87,12 @@ public class EdmxFormatParser extends XmlFormatParser {
                         return new EdmAssociationEnd(tempEnd.role, eet, tempEnd.multiplicity);
                     }
                 }).toList();
+                EdmAssociation ea = new EdmAssociation(tmpAssociation.namespace, tmpAssociation.alias, tmpAssociation.name, finalEnds.get(0), finalEnds.get(1));
+                edmSchema.associations.set(i, ea);
+                allEasByFQName.put(ea.getFQAliasName()!=null?ea.getFQAliasName():ea.getFQNamespaceName(),ea);
 
-                edmSchema.associations.set(i,  new EdmAssociation(tmpAssociation.namespace, tmpAssociation.alias, tmpAssociation.name, finalEnds.get(0), finalEnds.get(1)));
             }
-            
-            
+           
             
             // resolve navproperties
             for(EdmEntityType eet : edmSchema.entityTypes) {
@@ -99,7 +100,6 @@ public class EdmxFormatParser extends XmlFormatParser {
                     final TempEdmNavigationProperty tmp = (TempEdmNavigationProperty) eet.navigationProperties.get(i);
                     final EdmAssociation ea = allEasByFQName.get(tmp.relationshipName);
                         
-                      
                     List<EdmAssociationEnd> finalEnds = Enumerable.create(tmp.fromRoleName, tmp.toRoleName).select(new Func1<String, EdmAssociationEnd>() {
                         public EdmAssociationEnd apply(String input) {
                             if (ea.end1.role.equals(input))
@@ -109,7 +109,7 @@ public class EdmxFormatParser extends XmlFormatParser {
                             throw new IllegalArgumentException("Invalid role name " + input);
                         }
                     }).toList();
-
+                    
                     EdmNavigationProperty enp = new EdmNavigationProperty(tmp.name, ea, finalEnds.get(0), finalEnds.get(1));
                     eet.navigationProperties.set(i, enp);
                 }

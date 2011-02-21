@@ -17,8 +17,7 @@ public class AzureTableStorageConsumerExample extends BaseExample {
         String key = azureCreds[1];
         
         ODataConsumer c = ODataConsumers.azureTables(account,key);
-
-       
+        
         report("Create a new temp table to use for the test");
         String tableName = "TempTable" + System.currentTimeMillis();
         c.createEntity("Tables").properties(OProperties.string("TableName", tableName)).execute();
