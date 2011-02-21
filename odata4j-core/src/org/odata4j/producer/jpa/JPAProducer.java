@@ -40,6 +40,7 @@ import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
 import org.odata4j.core.ORelatedEntitiesLinkInline;
 import org.odata4j.core.ORelatedEntityLink;
+import org.odata4j.core.ORelatedEntityLinkInline;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmMultiplicity;
@@ -857,8 +858,8 @@ public class JPAProducer implements ODataProducer {
 						coll.add(collJpaEntity);
 					}
 					
-				} else if (link instanceof ORelatedEntityLink ) {
-					
+				} else if (link instanceof ORelatedEntityLinkInline ) {
+					// TODO
 				} else {
 
 					Attribute<?, ?> att = jpaEntityType.getAttribute(propName);

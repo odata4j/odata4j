@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
-import org.odata4j.core.OLink;
 import org.odata4j.core.OProperty;
 import org.odata4j.examples.BaseExample;
 import org.odata4j.examples.ODataEndpoints;
@@ -15,8 +14,6 @@ public class NetflixConsumerExample extends BaseExample {
 
         ODataConsumer c = ODataConsumer.create(ODataEndpoints.NETFLIX);
 
-        ODataConsumer.dump.all(true);
-        
         // locate the netflix id for Morgan Spurlock
         int morganSpurlockId = c.getEntities("People").filter("substringof('Spurlock',Name)").execute().first().getProperty("Id", Integer.class).getValue();
 
@@ -27,9 +24,6 @@ public class NetflixConsumerExample extends BaseExample {
                 report("%s: %s", p.getName(), p.getValue());
             }
             report("\n");
-            for(OLink link : title.getLinks()){
-            	System.out.println("LINK " + link);
-            }
         }
         report("count: " + titlesActedIn.size());
 

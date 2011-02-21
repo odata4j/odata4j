@@ -15,37 +15,41 @@ public class ServiceListingConsumerExample extends BaseExample {
        // ODataConsumer.DUMP_RESPONSE_HEADERS = true;
         
         Enumerable<String> smallServices = Enumerable.create(
+        		
                 ODataEndpoints.NORTHWIND,   
                 ODataEndpoints.ODATA4JSAMPLE_APPSPOT,
                 ODataEndpoints.ODATA_WEBSITE_DATA, 
                 ODataEndpoints.ODATA_TEST_SERVICE_READONLY,  
-                ODataEndpoints.NERD_DINNER, 
-                ODataEndpoints.MIX10, 
+                ODataEndpoints.NERD_DINNER,
                 ODataEndpoints.TECH_ED, 
                 ODataEndpoints.EU_TECH_ED,
                 ODataEndpoints.PLURALSIGHT, 
                 ODataEndpoints.TELERIK_TV,   
                 ODataEndpoints.AGILITRAIN,
                 ODataEndpoints.PROAGORA_FR,
-                ODataEndpoints.PROAGORA_EN
+                ODataEndpoints.PROAGORA_EN,
+                ODataEndpoints.INETA_LIVE
         );
         
         
         Enumerable<String> brokenServices = Enumerable.create(
-                ODataEndpoints.CITY_OF_EDMONTON,
-               
-                ODataEndpoints.DEVEXPRESS,  // skiptoken not implemented
-                ODataEndpoints.DEVTRANSIT,  // returning 500 for access problems
-                ODataEndpoints.LOGMYTIME   // returning proper 4xx, we should handle better in listing
+        		 ODataEndpoints.CITY_OF_EDMONTON,
+        		 
+        		 ODataEndpoints.DEVEXPRESS,  // skiptoken not implemented
+        		 ODataEndpoints.DEVTRANSIT,  // returning 500 for access problems
+        		 ODataEndpoints.LOGMYTIME,   // returning proper 4xx, we should handle better in listing
+        		 ODataEndpoints.PDC_2010,    // four of the entity types return 404
+        		 ODataEndpoints.MIX10		// down
         );
         
         Enumerable<String> largeServices = Enumerable.create(
+        		
                 ODataEndpoints.BASEBALL_STATS, 
                 ODataEndpoints.NETFLIX,
-                ODataEndpoints.STACK_OVERFLOW,
-                ODataEndpoints.SUPER_USER,
-                ODataEndpoints.SERVER_FAULT,
-                ODataEndpoints.META_STACK_OVERFLOW,
+               // ODataEndpoints.STACK_OVERFLOW,	// Votes entity-sets return 500
+               // ODataEndpoints.SUPER_USER,			
+              //  ODataEndpoints.SERVER_FAULT,		
+               // ODataEndpoints.META_STACK_OVERFLOW,	
                 ODataEndpoints.WORLD_CUP
         );
         
@@ -57,7 +61,7 @@ public class ServiceListingConsumerExample extends BaseExample {
             for(String entitySet : c.getEntitySets()){
                 reportEntities(entitySet,c.getEntities(entitySet).execute());
             }
-            return;
+           
         }
         
         // print out the first record in each entity set exposed by large services

@@ -23,10 +23,14 @@ public class ODataEndpoints {
     public static final String TELERIK_TV = "http://tv.telerik.com/services/odata.svc/";
     public static final String TECH_ED = "http://odata.msteched.com/sessions.svc/";
     public static final String EU_TECH_ED = "http://odata.msteched.com/teeu10/sessions.svc/";
-    public static final String STACK_OVERFLOW = "https://odata.sqlazurelabs.com/OData.svc/v0.1/rp1uiewita/StackOverflow";
-    public static final String SUPER_USER = "https://odata.sqlazurelabs.com/OData.svc/v0.1/rp1uiewita/SuperUser";
-    public static final String SERVER_FAULT = "https://odata.sqlazurelabs.com/OData.svc/v0.1/rp1uiewita/ServerFault";
-    public static final String META_STACK_OVERFLOW = "https://odata.sqlazurelabs.com/OData.svc/v0.1/rp1uiewita/Meta";
+    
+    public static final String STACK_OVERFLOW = "http://data.stackexchange.com/stackoverflow/atom/";
+    public static final String SUPER_USER = "http://data.stackexchange.com/superuser/atom/";
+    public static final String SERVER_FAULT = "http://data.stackexchange.com/serverfault/atom/";
+    public static final String META_STACK_OVERFLOW = "http://data.stackexchange.com/meta/atom/";
+    public static final String ASK_UBUNTU = "http://data.stackexchange.com/ubuntu/atom/";
+    public static final String MATHEMATICS = "http://data.stackexchange.com/mathematics/atom/";
+    // TODO other stackenchange sites: http://data.stackexchange.com/
     
     public static final String DALLAS_CTP2_AP = "https://api.sqlazureservices.com/APService.svc/";
     public static final String DALLAS_CTP2_UNESCO_UIS = "https://api.sqlazureservices.com/UnService.svc/";
@@ -42,4 +46,7 @@ public class ODataEndpoints {
     public static final String PROAGORA_FR = "http://proagora.com/fr/odata/";
     public static final String TWITPIC = "http://odata.twitpic.com/";
     public static final String EBAY = "http://ebayodata.cloudapp.net/";
+    
+    public static final String PDC_2010 = "http://odata.microsoftpdc.com/ODataSchedule.svc/";
+    public static final String INETA_LIVE = "http://live.ineta.org/InetaLiveService.svc/";
 }
