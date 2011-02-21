@@ -180,8 +180,8 @@ public class NorthwindTestUtils {
 				"http://services.odata.org/Northwind",
 				"http://services.odata.org/northwind");
 
-		expect = NormalizeFormat(expect);
-		result = NormalizeFormat(result);
+		expect = normalizeFormat(expect);
+		result = normalizeFormat(result);
 
 		String[] resultParts = result.split(",");
 		Arrays.sort(resultParts);
@@ -216,6 +216,7 @@ public class NorthwindTestUtils {
 								+ "/" + inp + "."
 								+ RESOURCES_TYPE,
 						"utf-8");
+		expect = expect.replace("http://services.odata.org/Northwind", "http://services.odata.org/northwind");
 
 		try {
 			DocumentBuilderFactory factory = DocumentBuilderFactory
@@ -555,7 +556,7 @@ public class NorthwindTestUtils {
 		return bld.toString();
 	}
 
-	private static String NormalizeFormat(String text) {
+	private static String normalizeFormat(String text) {
 		text = text.replace("+", "%20");
 		text = text.replace("%20", " ");
 

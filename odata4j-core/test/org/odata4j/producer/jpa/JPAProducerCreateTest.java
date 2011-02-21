@@ -1,13 +1,13 @@
 package org.odata4j.producer.jpa;
 
 import org.core4j.Enumerable;
-import org.core4j.Predicate1;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.consumer.behaviors.MethodTunnelingBehavior;
 import org.odata4j.core.OEntity;
+import org.odata4j.core.OPredicates;
 import org.odata4j.core.OProperties;
 
 public class JPAProducerCreateTest extends JPAProducerTestBase {
@@ -78,22 +78,12 @@ public class JPAProducerCreateTest extends JPAProducerTestBase {
 		
 		Assert.assertEquals(2, products.count());
 		
-		prod1 = products.where(new Predicate1<OEntity>() {
-			@Override
-			public boolean apply(OEntity input) {
-				return ("P1" + now).equals(input.getProperty("ProductName").getValue());
-			}
-		}).firstOrNull();
+		prod1 = products.where(OPredicates.entityPropertyValueEquals("ProductName", "P1" + now)).firstOrNull();
 		Assert.assertNotNull(prod1);
 		Assert.assertNotNull(prod1.getProperty("ProductID").getValue());
 		Assert.assertEquals(true, prod1.getProperty("Discontinued").getValue());
 		
-		prod2 = products.where(new Predicate1<OEntity>() {
-			@Override
-			public boolean apply(OEntity input) {
-				return ("P2" + now).equals(input.getProperty("ProductName").getValue());
-			}
-		}).firstOrNull();
+		prod2 = products.where(OPredicates.entityPropertyValueEquals("ProductName","P2" + now)).firstOrNull();
 		Assert.assertNotNull(prod2);
 		Assert.assertNotNull(prod2.getProperty("ProductID").getValue());
 		Assert.assertEquals(false, prod2.getProperty("Discontinued").getValue());
@@ -126,28 +116,26 @@ public class JPAProducerCreateTest extends JPAProducerTestBase {
 		Assert.assertEquals("C" + now, category.getProperty("CategoryName").getValue());
 	}
 		
-	protected void insertEntityToExistingEntityRelationAndTest(
-			ODataConsumer consumer) {
+	protected void insertEntityToExistingEntityRelationAndTest(ODataConsumer consumer) {
 		OEntity category = consumer.getEntity("Categories", 1).execute();
 		
 		final long now = System.currentTimeMillis();
 		Assert.assertNotNull(category);
-		OEntity products = consumer
+		OEntity product = consumer
 			.createEntity("Products")
 			.properties(OProperties.string("ProductName", "P" + now))
 			.properties(OProperties.boolean_("Discontinued", false))
 			.addToRelation(category, "Products").execute();
 
-		Object id = products.getProperty("ProductID").getValue();
+		Object id = product.getProperty("ProductID").getValue();
 		Assert.assertNotNull(id);
 		
-		products = consumer.getEntity("Products", id).execute();
-		Assert.assertEquals(id, products.getProperty("ProductID").getValue());
-		Assert.assertEquals("P" + now, products.getProperty("ProductName").getValue());
+		product = consumer.getEntity("Products", id).execute();
+		Assert.assertEquals(id, product.getProperty("ProductID").getValue());
+		Assert.assertEquals("P" + now, product.getProperty("ProductName").getValue());
 	}
 	
-	protected void insertEntityUsingLinksAndTest(
-			ODataConsumer consumer) {
+	protected void insertEntityUsingLinksAndTest(ODataConsumer consumer) {
 		
 		OEntity category = consumer.getEntity("Categories", 1).execute();
 		
