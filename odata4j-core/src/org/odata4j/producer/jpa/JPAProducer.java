@@ -70,21 +70,25 @@ public class JPAProducer implements ODataProducer {
 
 	private final EntityManagerFactory emf;
 	private final EntityManager em;
-	private final String namespace;
 	private final EdmDataServices metadata;
 	private final int maxResults;
 
 	public JPAProducer(
 			EntityManagerFactory emf,
-			String namespace,
+			EdmDataServices metadata,
 			int maxResults) {
 
 		this.emf = emf;
-		this.namespace = namespace;
 		this.maxResults = maxResults;
-
+		this.metadata = metadata;
 		em = emf.createEntityManager(); // necessary for metamodel
-		this.metadata = JPAEdmGenerator.buildEdm(emf, this.namespace);
+	}
+
+	public JPAProducer(
+			EntityManagerFactory emf,
+			String namespace,
+			int maxResults) {
+		this(emf, JPAEdmGenerator.buildEdm(emf, namespace), maxResults);
 	}
 
 	@Override
@@ -246,7 +250,7 @@ public class JPAProducer implements ODataProducer {
 		List<OLink> links = new ArrayList<OLink>();
 
 		try {
-			SingularAttribute<?, ?> idAtt = entityType.getId(null);
+			SingularAttribute<?, ?> idAtt = JPAEdmGenerator.getId(entityType);
 			boolean hasEmbeddedCompositeKey =
 					idAtt.getPersistentAttributeType() == PersistentAttributeType.EMBEDDED;
 
@@ -313,7 +317,7 @@ public class JPAProducer implements ODataProducer {
 							EntityType<?> elementEntityType = (EntityType<?>) ((PluralAttribute<?, ?, ?>) att)
 											.getElementType();
 							EdmEntitySet elementEntitySet = metadata
-									.getEdmEntitySet(elementEntityType.getName());
+									.getEdmEntitySet(JPAEdmGenerator.getEntitySetName(elementEntityType));
 
 							relatedEntities.add(jpaEntityToOEntity(
 									elementEntitySet,
@@ -336,8 +340,8 @@ public class JPAProducer implements ODataProducer {
 										.getType();
 
 						EdmEntitySet relatedEntitySet =
-								metadata.getEdmEntitySet(
-										relatedEntityType.getName());
+								metadata.getEdmEntitySet(JPAEdmGenerator
+										.getEntitySetName(relatedEntityType));
 
 						Object relatedEntity = getValue(
 								jpaEntity,
@@ -476,7 +480,7 @@ public class JPAProducer implements ODataProducer {
 			String jpaEntityTypeName) {
 
 		for (EntityType<?> et : em.getMetamodel().getEntities()) {
-			if (et.getName().equals(jpaEntityTypeName)) {
+			if (JPAEdmGenerator.getEntitySetName(et).equals(jpaEntityTypeName)) {
 				return et;
 			}
 		}
@@ -562,7 +566,7 @@ public class JPAProducer implements ODataProducer {
 							context.em,
 							propInfo.toRole.type.name);
 
-					context.ees = metadata.findEdmEntitySet(context.jpaEntityType.getName());
+					context.ees = metadata.findEdmEntitySet(JPAEdmGenerator.getEntitySetName(context.jpaEntityType));
 
 					prop = alias + "." + prop;
 					alias = "t" + Integer.toString(propCount);
@@ -572,8 +576,8 @@ public class JPAProducer implements ODataProducer {
 						Object entityKey = OptionsQueryParser.parseIdObject(
 										"(" + propSplit[1]);
 
-						context.keyPropertyName =
-								context.jpaEntityType.getId(null).getName();
+						context.keyPropertyName = JPAEdmGenerator
+							.getId(context.jpaEntityType).getName();
 
 						context.typeSafeEntityKey = typeSafeEntityKey(
 								em,

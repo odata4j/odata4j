@@ -38,7 +38,6 @@ import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmType;
-import org.odata4j.producer.jpa.eclipselink.EclipseLink;
 
 public class JPAEdmGenerator {
 
@@ -77,7 +76,7 @@ public class JPAEdmGenerator {
         throw new UnsupportedOperationException(javaType.toString());
     }
 
-    private static EdmProperty toEdmProperty(String modelNamespace, SingularAttribute<?, ?> sa) {
+    protected static EdmProperty toEdmProperty(String modelNamespace, SingularAttribute<?, ?> sa) {
         String name = sa.getName();
         EdmType type;
         if (sa.getPersistentAttributeType() == PersistentAttributeType.EMBEDDED){
@@ -90,16 +89,11 @@ public class JPAEdmGenerator {
             type = toEdmType(sa);
         }
         boolean nullable = sa.isOptional();
-        Integer maxLength = null;
 
-        Map<String, Object> eclipseLinkProps = EclipseLink.getPropertyInfo(sa, type);
-        if (eclipseLinkProps.containsKey("MaxLength"))
-            maxLength = (Integer) eclipseLinkProps.get("MaxLength");
-
-        return new EdmProperty(name, type, nullable, maxLength, null, null, null, null, null, null, null, null);
+        return new EdmProperty(name, type, nullable, null, null, null, null, null, null, null, null, null);
     }
 
-    private static List<EdmProperty> getProperties(String modelNamespace, ManagedType<?> et){
+    protected static List<EdmProperty> getProperties(String modelNamespace, ManagedType<?> et){
         List<EdmProperty> properties = new ArrayList<EdmProperty>();
         for(Attribute<?, ?> att : et.getAttributes()) {
 
@@ -149,22 +143,26 @@ public class JPAEdmGenerator {
         // entities
         for(EntityType<?> et : mm.getEntities()) {
            
-            String name = et.getName();
+            String name = getEntitySetName(et);
 
             List<String> keys = new ArrayList<String>();
-            SingularAttribute<?, ?> idAttribute = et.getId(null);
-            
-            //	handle composite embedded keys (@EmbeddedId)
-            if (idAttribute.getPersistentAttributeType() == PersistentAttributeType.EMBEDDED) {
-            	keys = Enumerable.create(getProperties(modelNamespace, (ManagedType<?>)idAttribute.getType()))
-        				.select(new Func1<EdmProperty, String>() {
-							@Override
-							public String apply(EdmProperty input) {
-								return input.name;
-							}}).toList();
-            } else {
-            	keys = Enumerable.create(idAttribute.getName()).toList();
-            }
+            SingularAttribute<?, ?> idAttribute = null;
+            if (et.hasSingleIdAttribute()) {
+            	idAttribute = getId(et);
+                //	handle composite embedded keys (@EmbeddedId)
+                if (idAttribute.getPersistentAttributeType() == PersistentAttributeType.EMBEDDED) {
+                	keys = Enumerable.create(getProperties(modelNamespace, (ManagedType<?>)idAttribute.getType()))
+            				.select(new Func1<EdmProperty, String>() {
+    							@Override
+    							public String apply(EdmProperty input) {
+    								return input.name;
+    							}}).toList();
+                } else {
+                	keys = Enumerable.create(idAttribute.getName()).toList();
+                } 
+        	} else {
+        		throw new IllegalArgumentException("IdClass not yet supported");
+        	}
 
             List<EdmProperty> properties = getProperties(modelNamespace, et);
             List<EdmNavigationProperty> navigationProperties = new ArrayList<EdmNavigationProperty>();
@@ -205,8 +203,8 @@ public class JPAEdmGenerator {
 
                         EntityType<?> aet = (EntityType<?>) type;
 
-                        EdmEntityType eet1 = eetsByName.get(et2.getName());
-                        EdmEntityType eet2 = eetsByName.get(aet.getName());
+                        EdmEntityType eet1 = eetsByName.get(getEntitySetName(et2));
+                        EdmEntityType eet2 = eetsByName.get(getEntitySetName(aet));
                         EdmMultiplicity m1 = EdmMultiplicity.MANY;
                         EdmMultiplicity m2 = EdmMultiplicity.ZERO_TO_ONE;
 
@@ -250,8 +248,8 @@ public class JPAEdmGenerator {
 
                     EntityType<?> cat = (EntityType<?>) ca.getElementType();
 
-                    final EdmEntityType eet1 = eetsByName.get(cat.getName());
-                    final EdmEntityType eet2 = eetsByName.get(et3.getName());
+                    final EdmEntityType eet1 = eetsByName.get(getEntitySetName(cat));
+                    final EdmEntityType eet2 = eetsByName.get(getEntitySetName(et3));
 
                     EdmAssociation assoc = Enumerable.create(associations).first(new Predicate1<EdmAssociation>() {
                         public boolean apply(EdmAssociation input) {
@@ -277,4 +275,21 @@ public class JPAEdmGenerator {
         return services;
     }
 
+    public static <X> SingularAttribute<? super X, ?> getId(EntityType<X> et) {
+    	return Enumerable.create(et.getSingularAttributes())
+    		.firstOrNull(new Predicate1<SingularAttribute<? super X,?>>() {
+    			@Override
+    			public boolean apply(SingularAttribute<? super X, ?> input) {
+    				return input.isId();
+    			}
+    		});
+    }
+    
+    public static <X> String getEntitySetName(EntityType<X> et) {
+    	String name = et.getName();
+    	int idx = name.lastIndexOf('.');
+    	return idx > 0
+    		? name.substring(idx + 1)
+    		: name;
+    }
 }

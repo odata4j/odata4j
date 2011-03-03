@@ -24,10 +24,10 @@ public class Categories implements Serializable {
     @Basic(optional = false)
     @Column(name = "CategoryID")
     private Integer CategoryID;
-    @Basic(optional = false)
     @Lob
     @Column(name = "Description")
     private String Description;
+    @Basic(optional = false)
     @Column(name = "CategoryName")
     private String CategoryName;
     @Lob

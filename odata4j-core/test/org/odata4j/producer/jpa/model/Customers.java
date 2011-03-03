@@ -8,7 +8,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -41,8 +40,6 @@ public class Customers implements Serializable {
     private String Phone;
     @Column(name = "Fax")
     private String Fax;
-    @JoinColumn(name = "CustomerID",
-            insertable = false, updatable = false)
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "Customer")
     private Collection<Orders> Orders;
 
