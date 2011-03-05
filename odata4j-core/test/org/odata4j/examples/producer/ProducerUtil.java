@@ -27,7 +27,7 @@ public class ProducerUtil {
 
         server.addJerseyRequestFilter(LoggingFilter.class); // log all requests
 
-        server.addHttpServerFilter(new WhitelistFilter("127.0.0.1","0:0:0:0:0:0:0:1%0")); // only allow local requests
+        // server.addHttpServerFilter(new WhitelistFilter("127.0.0.1","0:0:0:0:0:0:0:1%0")); // only allow local requests
         server.start();
         
         return server;

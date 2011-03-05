@@ -26,14 +26,35 @@ import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
 
 import com.sun.jersey.api.core.ExtendedUriInfo;
 
+/** Write content to an HTTP stream in JSON format.
+ * 
+ * This class is abstract because it delegates the strategy pattern of writing
+ * actual content elements to its (various) subclasses.
+ *
+ * Each element in the array to be written can be wrapped in a function call
+ * on the JavaScript side by specifying the name of a function to call to the
+ * constructor.
+ * 
+ * @param <T> the type of the content elements to be written to the stream.
+ */
 public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
 
 	private final String jsonpCallback;
 
+	/** Create a new JSON writer.
+	 * 
+	 * @param jsonpCallback a function to call on the javascript side to act
+	 * on the data provided in the content.
+	 */
 	public JsonFormatWriter(String jsonpCallback) {
 		this.jsonpCallback = jsonpCallback;
 	}
 
+	/** A strategy method to actually write content objects
+	 * @param uriInfo the base URI that indicates where in the schema we are
+	 * @param jw the JSON writer object
+	 * @param target the content value to be written
+	 */
 	abstract protected void writeContent(ExtendedUriInfo uriInfo, JsonWriter jw, T target);
 
 	@Override

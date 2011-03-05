@@ -51,6 +51,9 @@ import org.odata4j.producer.Responses;
 
 import com.sun.jersey.api.NotFoundException;
 
+/** An in-memory implementation of an ODATA Producer.  Uses the standard Java bean
+ * and property model to access information within entities. 
+ */
 public class InMemoryProducer implements ODataProducer {
 
     private static class EntityInfo<TEntity, TKey> {
@@ -99,9 +102,19 @@ public class InMemoryProducer implements ODataProducer {
 
     private static final int DEFAULT_MAX_RESULTS = 100;
     
+    /** Create a new instance of an in-memory POJO/JPA producer
+     * 
+     * @param namespace - the namespace that the schema registrations will be in
+     */
     public InMemoryProducer(String namespace){
         this(namespace,DEFAULT_MAX_RESULTS);
     }
+    
+    /** Create a new instance of an in-memory POJO/JPA producer
+     * 
+     * @param namespace - the names apce that the schema registrations will be in
+     * @param maxResults - the maximum number of entities to return
+     */
     public InMemoryProducer(String namespace, int maxResults) {
         this.namespace = namespace;
         this.maxResults = maxResults;
@@ -225,6 +238,14 @@ public class InMemoryProducer implements ODataProducer {
         });
     }
 
+    /** Register a new ODATA endpoint for an entity set.
+     * 
+     * @param entityClass the class of the entities that are to be stored in the set
+     * @param keyClass the class of the key element of the set
+     * @param entitySetName the alias the set will be known by; this is what is used in the ODATA URL
+     * @param get a function to iterate over the elements in the set
+     * @param id a function to extract the id from any given element in the set
+     */
     public <TEntity, TKey> void register(Class<TEntity> entityClass, Class<TKey> keyClass, String entitySetName, Func<Iterable<TEntity>> get, final Func1<TEntity, TKey> id) {
 
         register(entityClass,new AugmentedBeanBasedPropertyModel(entityClass),keyClass,entitySetName,get,id);
@@ -244,6 +265,9 @@ public class InMemoryProducer implements ODataProducer {
         this.metadata = buildMetadata();
     }
 
+    /** A simple extention of the BeanBasedPropertyModel that treats Enums as their
+     * corresponding strings
+     */
     private static class AugmentedBeanBasedPropertyModel extends BeanBasedPropertyModel {
 
         public AugmentedBeanBasedPropertyModel(Class<?> clazz) {

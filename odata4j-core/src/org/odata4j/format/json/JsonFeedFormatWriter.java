@@ -5,6 +5,9 @@ import org.odata4j.producer.EntitiesResponse;
 
 import com.sun.jersey.api.core.ExtendedUriInfo;
 
+/** Write an RSS Feed in JSON format
+ * 
+ */
 public class JsonFeedFormatWriter extends JsonFormatWriter<EntitiesResponse> {
 
     public JsonFeedFormatWriter(String jsonpCallback) {

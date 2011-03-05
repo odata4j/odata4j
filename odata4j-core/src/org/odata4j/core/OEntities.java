@@ -5,8 +5,23 @@ import java.util.List;
 import org.core4j.Enumerable;
 import org.odata4j.edm.EdmEntitySet;
 
+/** A factory class for creating Entity objects.
+ * 
+ * Entities are described by the schema-defined entity set to which they belong.  That definition is used
+ * here to create an internal object of the "appropriate type".  In fact, all entity objects belong to the same
+ * Java class.
+ *
+ */
 public class OEntities {
 
+	/** Create a new entity in a given set with the identified properties and links
+	 * 
+	 * @param entitySet the set into which the new entity will be "placed"; you still need to specifically add it to a result set
+	 * @param properties the values of all the properties in this entity
+	 * @param links the values of the links/associations to other entities from this entity
+	 * @param id the id value of this entity
+	 * @return a new entity which reflects this entity in the grand scheme of things
+	 */
     public static OEntity create(EdmEntitySet entitySet, List<OProperty<?>> properties, List<OLink> links, Object id) {
         return new OEntityImpl(entitySet, properties, links, id);
     }

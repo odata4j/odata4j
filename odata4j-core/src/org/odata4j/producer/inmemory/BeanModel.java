@@ -14,6 +14,12 @@ import java.util.Set;
 
 import org.core4j.Enumerable;
 
+/** An abstract representation of the "bean" nature of a class.
+ * This class caches up-front analysis of a class to conclude the 
+ * getters and setters it will need in order to operate on instances.
+ * <p>
+ * Instances of this class can then be used in place of reflection.
+ */
 public class BeanModel {
 
     private final Class<?> beanClass;
@@ -22,6 +28,10 @@ public class BeanModel {
     private final Map<String, Class<?>> types;
     private final Map<String, Class<?>> collections;
     
+    /** Construct the abstract bean representation of a class
+     * 
+     * @param beanClass the class to introspect
+     */
     public BeanModel(Class<?> beanClass){
         this.beanClass = beanClass;
         this.getters = getBeanGetters(beanClass);
@@ -30,35 +40,67 @@ public class BeanModel {
         this.collections = computeCollections(getters,setters);
     }
     
+    /** Recoveer the original class on which this metadata is based.
+     * 
+     * @return the original class
+     */
 	public Class<?> getBeanClass() {
         return beanClass;
     }
     
+	/** Return the list of all properties identified on this class.
+	 * A property is any field that has a simple value type (i.e. not a collection type)
+	 * and either has a getter or a setter
+	 * defined on it.
+	 * @return the list of identified properties
+	 */
     public Iterable<String> getPropertyNames() {
         return types.keySet();
     }
 
+    /** Discover the type of a property
+     * @param propertyName the property you are interested in
+     * @return the type of the property
+     */
     public Class<?> getPropertyType(String propertyName) {
         return types.get(propertyName);
     }
 
+    /** Return the list of properties that have collection types
+     * 
+     * @return the list of properties
+     */
     public Iterable<String> getCollectionNames() {
         return collections.keySet();
     }
     
+    /** For any given collection type, identify the type of the elements
+     * of the collection.
+     * @param collectionName the name of the collection
+     * @return the type of the elements of the named collection
+     */
     public Class<?> getCollectionElementType(String collectionName) {
     	return collections.get(collectionName);
     }
 
+    /** Returns true if the property has a getter */
     public boolean canRead(String propertyName){
         return getters.containsKey(propertyName);
     }
     
+    /** Returns true if the property has a setter */
     public boolean canWrite(String propertyName){
         return setters.containsKey(propertyName);
     }
   
   
+    /** Interrogate an instance of the target class and discover the value
+     * of a given property.
+     * This method is only intended to be used for simple properties.
+     * @param target the instance of the class
+     * @param propertyName the name of the property to fetch
+     * @return the value of the property in the given object
+     */
     public Object getPropertyValue(Object target, String propertyName) {
         Method method = getGetter(propertyName);
         if (!method.isAccessible())
@@ -70,6 +112,12 @@ public class BeanModel {
         }
     }
 
+    /** Update an instance to set a property to a given value
+     * This method is only intended to be used for simple properties
+     * @param target the instance to update
+     * @param propertyName the name of the property
+     * @param propertyValue the value to set in the property
+     */
     public void setPropertyValue(Object target, String propertyName, Object propertyValue) {
         Method method = getSetter(propertyName);
         if (!method.isAccessible())
@@ -81,7 +129,12 @@ public class BeanModel {
         }
     }
     
-    
+    /** Return a collection from a property in an instance
+     * 
+     * @param target the instance to look at
+     * @param collectionName the name of the property on the instance which holds the collection
+     * @return an iterable containing the elements of the collection
+     */
     public Iterable<?> getCollectionValue(Object target, String collectionName) {
         Method method = getGetter(collectionName);
         if (!method.isAccessible())
@@ -99,6 +152,12 @@ public class BeanModel {
         }
     }
     
+    /** Update a collection property
+     * 
+     * @param target the instance to look at
+     * @param collectionName the name of the property on the instance which holds the collection
+     * @collectionValue the new collection
+     */
     public <T> void setCollectionValue(Object target, String collectionName, Collection<T> collectionValue) {
         Method method = getSetter(collectionName);
         if (!method.isAccessible())
@@ -134,16 +193,13 @@ public class BeanModel {
             throw new IllegalArgumentException("No getter found for propertyName " + propertyName);
         return method;
     }
+
     private Method getSetter(String propertyName) {
       Method method = setters.get(propertyName);
       if (method == null)
           throw new IllegalArgumentException("No setter found for propertyName " + propertyName);
       return method;
     }
-    
-
-    
-    
     
     private static Map<String, Class<?>> computeTypes(Map<String, Method> getters,Map<String, Method> setters){
         Map<String, Class<?>> rt = new HashMap<String, Class<?>>();
@@ -232,10 +288,6 @@ public class BeanModel {
         return rt;
     }
     
-    
-   
-      
-      
       private static Map<String, Method> getBeanSetters(Class<?> clazz) {
 
           Map<String, Method> rt = new HashMap<String, Method>();
@@ -251,7 +303,4 @@ public class BeanModel {
           }
           return rt;
       }
-      
-      
-
 }

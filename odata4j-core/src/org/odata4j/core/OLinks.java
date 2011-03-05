@@ -2,6 +2,15 @@ package org.odata4j.core;
 
 import java.util.List;
 
+/** Create links between entities.  This static class provides the opportunity to create five different types
+ * of links.
+ *
+ * TODO: WTF is going on here?  What are these different types?
+ * It looks like inline means that the values go back right now, while the alternative is that a link goes back
+ * Is the other dimension multiplicity?
+ * 
+ * And then what's the deal with Link itself?  This just seems to cause the server to cough.
+ */
 public class OLinks {
 	
     public static OLink link(final String relation, final String title, final String href){
