@@ -3,27 +3,25 @@ package org.odata4j.consumer;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ws.rs.core.MediaType;
-
 import org.core4j.Enumerable;
 import org.core4j.Predicate1;
-import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OModify;
 import org.odata4j.core.OProperty;
-import org.odata4j.format.xml.AtomFeedFormatParser.DataServicesAtomEntry;
+import org.odata4j.format.Entry;
+import org.odata4j.format.Feed;
 import org.odata4j.internal.EntitySegment;
 
-public class OModifyImpl<T> implements OModify<T> {
+public class OModifyImpl<T, F extends Feed<E>, E extends Entry> implements OModify<T> {
 
     private final T updateRoot;
-    private final ODataClient client;
+    private final ODataClient<F, E> client;
     private final String serviceRootUri;
     private final List<EntitySegment> segments = new ArrayList<EntitySegment>();
 
     private final List<OProperty<?>> props = new ArrayList<OProperty<?>>();
 
-    public OModifyImpl(T updateRoot, ODataClient client, String serviceRootUri, String entitySetName, Object[] key) {
+    public OModifyImpl(T updateRoot, ODataClient<F, E> client, String serviceRootUri, String entitySetName, Object[] key) {
         this.updateRoot = updateRoot;
         this.client = client;
         this.serviceRootUri = serviceRootUri;
@@ -55,14 +53,11 @@ public class OModifyImpl<T> implements OModify<T> {
             }
         }
 
-        DataServicesAtomEntry entry = new DataServicesAtomEntry();
-        entry.contentType = MediaType.APPLICATION_XML;
-        entry.properties = requestProps;
+        E entry = client.createEntry(requestProps, null);
 
         String path = Enumerable.create(segments).join("/");
 
-        ODataClientRequest request = updateRoot != null ? ODataClientRequest.put(serviceRootUri + path, entry) : ODataClientRequest.merge(serviceRootUri + path, entry);
-        request = request.header(ODataConstants.Headers.CONTENT_TYPE, MediaType.APPLICATION_XML);
+        ODataClientRequest<E> request = updateRoot != null ? ODataClientRequest.put(serviceRootUri + path, entry) : ODataClientRequest.merge(serviceRootUri + path, entry);
         boolean rt = client.updateEntity(request);
         return rt;
     }

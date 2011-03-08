@@ -51,7 +51,8 @@ public class AtomEntryFormatWriter extends XmlFormatWriter implements FormatWrit
 
     public String writeAndReturnId(ExtendedUriInfo uriInfo, Writer w, EntityResponse target) {
         String baseUri = uriInfo.getBaseUri().toString();
-        EdmEntitySet ees = target.getEntitySet();
+        EdmEntitySet ees = target.getEntity().getEntitySet();
+        
         String entitySetName = ees.name;
         DateTime utc = new DateTime().withZone(DateTimeZone.UTC);
         String updated = InternalUtil.toString(utc);

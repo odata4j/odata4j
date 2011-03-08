@@ -1,6 +1,7 @@
 package org.odata4j.format.json;
 
 import java.io.Writer;
+import java.util.List;
 import java.util.Locale;
 
 import org.core4j.Enumerable;
@@ -153,16 +154,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
 				jw.writeSeparator();
 			}
 
-			boolean isFirst = true;
-			for (OProperty<?> prop : oe.getProperties()) {
-				if (isFirst) {
-					isFirst = false;
-				} else {
-					jw.writeSeparator();
-				}
-
-				writeProperty(jw,prop);
-			}
+			writeOProperties(jw, oe.getProperties());
 
 			if (ees != null) {
 				for (final EdmNavigationProperty np : ees.type.navigationProperties) {
@@ -226,5 +218,18 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
 		}
 
 		jw.endObject();
+	}
+
+	protected void writeOProperties(JsonWriter jw, List<OProperty<?>> properties) {
+		boolean isFirst = true;
+		for (OProperty<?> prop : properties) {
+			if (isFirst) {
+				isFirst = false;
+			} else {
+				jw.writeSeparator();
+			}
+
+			writeProperty(jw,prop);
+		}
 	}
 }

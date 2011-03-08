@@ -2,6 +2,7 @@ package org.odata4j.consumer.behaviors;
 
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.core.OClientBehavior;
+import org.odata4j.format.Entry;
 import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
 
 public class BasicAuthenticationBehavior implements OClientBehavior {
@@ -15,7 +16,7 @@ public class BasicAuthenticationBehavior implements OClientBehavior {
     }
 
     @Override
-    public ODataClientRequest transform(ODataClientRequest request) {
+    public <E extends Entry> ODataClientRequest<E> transform(ODataClientRequest<E> request) {
         String userPassword = user + ":" + password;
         String encoded = Base64.encodeBase64String(userPassword.getBytes());
         encoded = encoded.replaceAll("\r\n?", "");

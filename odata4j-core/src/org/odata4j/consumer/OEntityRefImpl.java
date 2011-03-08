@@ -8,16 +8,18 @@ import org.odata4j.core.OEntityRef;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmNavigationProperty;
+import org.odata4j.format.Entry;
+import org.odata4j.format.Feed;
 import org.odata4j.format.xml.AtomFeedFormatParser.AtomEntry;
 import org.odata4j.format.xml.AtomFeedFormatParser.DataServicesAtomEntry;
 import org.odata4j.internal.EntitySegment;
 import org.odata4j.internal.FeedCustomizationMapping;
 import org.odata4j.internal.InternalUtil;
 
-public class OEntityRefImpl<T> implements OEntityRef<T> {
+public class OEntityRefImpl<T, F extends Feed<E>, E extends Entry> implements OEntityRef<T> {
 
     private final boolean isDelete;
-    private final ODataClient client;
+    private final ODataClient<F, E> client;
     private final Class<T> entityType;
     private final EdmDataServices metadata;
     private final String serviceRootUri;
@@ -25,7 +27,7 @@ public class OEntityRefImpl<T> implements OEntityRef<T> {
 
     private final FeedCustomizationMapping fcMapping;
    
-    public OEntityRefImpl(boolean isDelete, ODataClient client, Class<T> entityType, String serviceRootUri, EdmDataServices metadata, String entitySetName, Object[] key, FeedCustomizationMapping fcMapping) {
+    public OEntityRefImpl(boolean isDelete, ODataClient<F, E> client, Class<T> entityType, String serviceRootUri, EdmDataServices metadata, String entitySetName, Object[] key, FeedCustomizationMapping fcMapping) {
         this.isDelete = isDelete;
         this.client = client;
         this.entityType = entityType;
@@ -55,15 +57,16 @@ public class OEntityRefImpl<T> implements OEntityRef<T> {
         String path = Enumerable.create(segments).join("/");
 
         if (isDelete) {
-            ODataClientRequest request = ODataClientRequest.delete(serviceRootUri + path);
+            ODataClientRequest<E> request = ODataClientRequest.delete(serviceRootUri + path);
             client.deleteEntity(request);
             return null;
 
         } else {
 
-            ODataClientRequest request = ODataClientRequest.get(serviceRootUri + path);
+            ODataClientRequest<E> request = ODataClientRequest.get(serviceRootUri + path);
 
-            AtomEntry entry = client.getEntity(request);
+            //	TODO get rid of the Atom dependency
+            AtomEntry entry = (AtomEntry)client.getEntity(request);
             if (entry == null)
                 return null;
             DataServicesAtomEntry dsae = (DataServicesAtomEntry) entry;

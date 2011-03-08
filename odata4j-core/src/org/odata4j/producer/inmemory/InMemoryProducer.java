@@ -464,7 +464,7 @@ public class InMemoryProducer implements ODataProducer {
         //	otherwise remove this comment
         OEntity oe = toOEntity(ees, rt, null);
 
-        return Responses.entity(ees, oe);
+        return Responses.entity(oe);
     }
 
     private Collection<EdmProperty> toEdmProperties(PropertyModel model) {

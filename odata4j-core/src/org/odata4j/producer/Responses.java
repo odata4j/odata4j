@@ -37,14 +37,8 @@ public class Responses {
 		};
 	}
 	
-	public static EntityResponse entity(final EdmEntitySet ees, final OEntity entity){
+	public static EntityResponse entity(final OEntity entity){
 		return new EntityResponse(){
-
-			@Override
-			public EdmEntitySet getEntitySet() {
-				return ees;
-			}
-
 			@Override
 			public OEntity getEntity() {
 				return entity;

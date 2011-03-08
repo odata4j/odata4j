@@ -44,4 +44,24 @@ public class JPAProducerUpdateTest extends JPAProducerTestBase {
 		Assert.assertEquals("Alfreds Futterkiste", customer.getProperty("CompanyName").getValue());
 	}
 	
+	@Test
+	public void mergeEntityTest() {
+		ODataConsumer consumer = ODataConsumer.create(endpointUri);
+
+		final long now = System.currentTimeMillis();
+		boolean res = consumer
+				.mergeEntity("Categories", 1)
+				.properties(OProperties.string("Description", "D" + now))
+				.execute();
+		
+		Assert.assertTrue(res);
+		
+		OEntity category = consumer
+			.getEntity("Categories", 1)
+			.execute();
+		
+		Assert.assertEquals("Beverages", category.getProperty("CategoryName").getValue());
+		Assert.assertEquals("D" + now, category.getProperty("Description").getValue());		
+	}
+
 }

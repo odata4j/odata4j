@@ -6,11 +6,17 @@ import javax.ws.rs.core.MediaType;
 
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.format.json.JsonEntryFormatWriter;
+import org.odata4j.format.json.JsonFeedFormatParser.JsonEntry;
+import org.odata4j.format.json.JsonFeedFormatParser.JsonFeed;
 import org.odata4j.format.json.JsonFeedFormatWriter;
 import org.odata4j.format.json.JsonPropertyFormatWriter;
+import org.odata4j.format.json.JsonRequestEntryFormatWriter;
 import org.odata4j.format.json.JsonServiceDocumentFormatWriter;
 import org.odata4j.format.xml.AtomEntryFormatWriter;
+import org.odata4j.format.xml.AtomFeedFormatParser.AtomEntry;
+import org.odata4j.format.xml.AtomFeedFormatParser.AtomFeed;
 import org.odata4j.format.xml.AtomFeedFormatWriter;
+import org.odata4j.format.xml.AtomRequestEntryFormatWriter;
 import org.odata4j.format.xml.AtomServiceDocumentFormatWriter;
 import org.odata4j.format.xml.XmlPropertyFormatWriter;
 import org.odata4j.producer.EntitiesResponse;
@@ -19,26 +25,14 @@ import org.odata4j.producer.PropertyResponse;
 
 public class FormatWriterFactory {
 
-    private static enum FormatType{
-        ATOM,
-        JSON;
-        
-        public static FormatType parse(String format){
-            if ("json".equalsIgnoreCase(format)) return JSON;
-            if ("atom".equalsIgnoreCase(format)) return ATOM;
-            throw new UnsupportedOperationException("Unsupported format " + format);
-        }
-    }
-    
-    private static interface FormatWriters {
+    private static interface FormatWriters<F extends Feed<E>, E extends Entry> {
         
         public FormatWriter<EdmDataServices> getServiceDocumentFormatWriter();
         public FormatWriter<EntitiesResponse> getFeedFormatWriter();
         public FormatWriter<EntityResponse> getEntryFormatWriter();
         public FormatWriter<PropertyResponse> getPropertyFormatWriter();
+        public FormatWriter<E> getRequestEntryFormatWriter();
     }
-    
-
     
     @SuppressWarnings("unchecked")
     public static <T> FormatWriter<T> getFormatWriter(Class<T> targetType, List<MediaType> acceptTypes, String format, String callback){
@@ -65,7 +59,7 @@ public class FormatWriterFactory {
             type = FormatType.ATOM;
      
         
-        FormatWriters formatWriters = type.equals(FormatType.JSON)?new JsonWriters(callback):new AtomWriters();
+        FormatWriters<?, ?> formatWriters = type.equals(FormatType.JSON)?new JsonWriters(callback):new AtomWriters();
         
         if (targetType.equals(EdmDataServices.class)) {
             return (FormatWriter<T>)formatWriters.getServiceDocumentFormatWriter();
@@ -79,12 +73,15 @@ public class FormatWriterFactory {
         if (targetType.equals(PropertyResponse.class)) {
             return (FormatWriter<T>)formatWriters.getPropertyFormatWriter();
         } 
+        if (Entry.class.isAssignableFrom(targetType)) {
+            return (FormatWriter<T>)formatWriters.getRequestEntryFormatWriter();
+        } 
         throw new IllegalArgumentException("Unable to locate format writer for " + targetType.getName() + " and format " + type);
         
     }
     
     
-    public static class JsonWriters implements FormatWriters {
+    public static class JsonWriters implements FormatWriters<JsonFeed, JsonEntry> {
 
         private final String callback;
         public JsonWriters(String callback){
@@ -109,9 +106,13 @@ public class FormatWriterFactory {
         public FormatWriter<PropertyResponse> getPropertyFormatWriter() {
         	return new JsonPropertyFormatWriter(callback);
         }
+		@Override
+		public FormatWriter<JsonEntry> getRequestEntryFormatWriter() {
+			return new JsonRequestEntryFormatWriter(callback);
+		}
         
     }
-    public static class AtomWriters implements FormatWriters {
+    public static class AtomWriters implements FormatWriters<AtomFeed, AtomEntry> {
 
         @Override
         public FormatWriter<EdmDataServices> getServiceDocumentFormatWriter() {
@@ -132,6 +133,11 @@ public class FormatWriterFactory {
         public FormatWriter<PropertyResponse> getPropertyFormatWriter() {
         	 return new XmlPropertyFormatWriter();
         }
+
+		@Override
+		public FormatWriter<AtomEntry> getRequestEntryFormatWriter() {
+			return new AtomRequestEntryFormatWriter();
+		}
         
     }
 }

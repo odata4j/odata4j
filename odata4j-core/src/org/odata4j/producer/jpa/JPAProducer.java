@@ -166,7 +166,7 @@ public class JPAProducer implements ODataProducer {
 				context,
 				jpaEntity);
 
-		return Responses.entity(context.ees, entity);
+		return Responses.entity(entity);
 	}
 
 	private OEntity makeEntity(
@@ -200,7 +200,7 @@ public class JPAProducer implements ODataProducer {
 		if (response.responseType.equals(PropertyResponse.class))
 			return Responses.property(response.property);
 		if (response.responseType.equals(EntityResponse.class))
-			return Responses.entity(context.ees, response.entity);
+			return Responses.entity(response.entity);
 		if (response.responseType.equals(EntitiesResponse.class))
 			return Responses.entities(
 					response.entities,
@@ -951,7 +951,7 @@ public class JPAProducer implements ODataProducer {
 					null,
 					null);
 
-			return Responses.entity(ees, responseEntity);
+			return Responses.entity(responseEntity);
 
 		} finally {
 			em.close();
@@ -1038,7 +1038,7 @@ public class JPAProducer implements ODataProducer {
 			final OEntity responseEntity = jpaEntityToOEntity(toRoleees,
 					newJpaEntityType, newJpaEntity, null, null);
 
-			return Responses.entity(toRoleees, responseEntity);
+			return Responses.entity(responseEntity);
 
 		} catch (Exception e) {
 			throw new RuntimeException(e);

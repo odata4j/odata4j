@@ -1,5 +1,6 @@
 package org.odata4j.format.xml;
 
+import java.io.Reader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +11,13 @@ import org.core4j.Enumerable;
 import org.odata4j.core.OLink;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
+import org.odata4j.edm.EdmDataServices;
+import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmType;
+import org.odata4j.format.Entry;
+import org.odata4j.format.Feed;
+import org.odata4j.format.FormatParser;
+import org.odata4j.internal.FeedCustomizationMapping;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.stax2.Attribute2;
 import org.odata4j.stax2.QName2;
@@ -20,7 +27,7 @@ import org.odata4j.stax2.XMLEventReader2;
 import org.odata4j.stax2.XMLEventWriter2;
 import org.odata4j.stax2.XMLFactoryProvider2;
 
-public class AtomFeedFormatParser extends XmlFormatParser {
+public class AtomFeedFormatParser extends XmlFormatParser implements FormatParser<AtomFeedFormatParser.AtomFeed> {
 
     public static class CollectionInfo {
         public String url;
@@ -33,12 +40,22 @@ public class AtomFeedFormatParser extends XmlFormatParser {
         }
     }
 
-    public static class AtomFeed {
+    public static class AtomFeed implements Feed<AtomEntry> {
         public String next;
         public Iterable<AtomEntry> entries;
+        
+		@Override
+		public Iterable<AtomEntry> getEntries() {
+			return entries;
+		}
+
+		@Override
+		public String getNext() {
+			return next;
+		}
     }
 
-    public abstract static class AtomEntry {
+    public abstract static class AtomEntry implements Entry {
         public String id;
         public String title;
         public String summary;
@@ -49,6 +66,9 @@ public class AtomFeedFormatParser extends XmlFormatParser {
         
         public List<AtomLink> atomLinks;
 
+        public String getType() {
+        	return MediaType.APPLICATION_ATOM_XML;
+        }
     }
     
     public static class AtomLink{
@@ -80,8 +100,11 @@ public class AtomFeedFormatParser extends XmlFormatParser {
         }
     }
 
+	@Override
+    public AtomFeed parse(Reader reader) {
+    	return parseFeed(InternalUtil.newXMLEventReader(reader));
+    }
     
-
     public static AtomFeed parseFeed(XMLEventReader2 reader) {
 
         AtomFeed feed = new AtomFeed();
@@ -290,8 +313,10 @@ public class AtomFeedFormatParser extends XmlFormatParser {
         throw new RuntimeException();
     }
 
-   
-
-  
-   
+	@Override
+	public <E> E toOEntity(Entry entry, Class<E> entityType,
+			EdmDataServices metadata, EdmEntitySet entitySet,
+			FeedCustomizationMapping fcMapping) {
+		return InternalUtil.toEntity(entityType, metadata, entitySet, (DataServicesAtomEntry)entry, fcMapping);
+	}
 }

@@ -1,28 +1,24 @@
 package org.odata4j.consumer;
 
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.core4j.Enumerable;
-import org.core4j.Func;
 import org.core4j.Func1;
-import org.core4j.ReadOnlyIterator;
 import org.odata4j.core.OQuery;
 import org.odata4j.edm.EdmDataServices;
-import org.odata4j.format.xml.AtomFeedFormatParser.AtomEntry;
-import org.odata4j.format.xml.AtomFeedFormatParser.AtomFeed;
-import org.odata4j.format.xml.AtomFeedFormatParser.DataServicesAtomEntry;
+import org.odata4j.format.Entry;
+import org.odata4j.format.Feed;
+import org.odata4j.format.FormatParser;
+import org.odata4j.format.FormatParserFactory;
 import org.odata4j.internal.EntitySegment;
 import org.odata4j.internal.FeedCustomizationMapping;
-import org.odata4j.internal.InternalUtil;
 
-public class OQueryImpl<T> implements OQuery<T> {
+public class OQueryImpl<T, F extends Feed<E>, E extends Entry> implements OQuery<T> {
 
-    private final ODataClient client;
+    private final ODataClient<F, E> client;
     private final Class<T> entityType;
     private final String serviceRootUri;
     private final EdmDataServices ees;
@@ -39,7 +35,7 @@ public class OQueryImpl<T> implements OQuery<T> {
     
     private final FeedCustomizationMapping fcMapping;
 
-    public OQueryImpl(ODataClient client, Class<T> entityType, String serviceRootUri, EdmDataServices ees, String entitySetName, FeedCustomizationMapping fcMapping) {
+    public OQueryImpl(ODataClient<F, E> client, Class<T> entityType, String serviceRootUri, EdmDataServices ees, String entitySetName, FeedCustomizationMapping fcMapping) {
         this.client = client;
         this.entityType = entityType;
         this.serviceRootUri = serviceRootUri;
@@ -109,7 +105,7 @@ public class OQueryImpl<T> implements OQuery<T> {
         String path = Enumerable.create(segments).join("/");
         path += (path.length() == 0 ? "" : "/") + lastSegment;
 
-        ODataClientRequest request = ODataClientRequest.get(serviceRootUri + path);
+        ODataClientRequest<E> request = ODataClientRequest.get(serviceRootUri + path);
 
         if (top != null) {
             request = request.queryParam("$top", Integer.toString(top));
@@ -133,89 +129,15 @@ public class OQueryImpl<T> implements OQuery<T> {
             request = request.queryParam("$expand", expand);
         }
         
-        Enumerable<AtomEntry> entries = getEntries(request);
-
-        return entries.select(new Func1<AtomEntry, T>() {
-            public T apply(AtomEntry input) {
-                DataServicesAtomEntry dsae = (DataServicesAtomEntry) input;
-              
-                return InternalUtil.toEntity(entityType, ees, ees.getEdmEntitySet(lastSegment), dsae, fcMapping);
+    	final FormatParser<E> parser = FormatParserFactory.getParser(client.entryClass, client.type);        
+        Enumerable<E> entries = client.getEntries(request);        
+        return entries.select(new Func1<E, T>() {
+            public T apply(E input) {
+            	return parser.toOEntity(input, entityType, ees, ees.getEdmEntitySet(lastSegment), fcMapping);
             }
         }).cast(entityType);
     }
 
-    private Enumerable<AtomEntry> getEntries(final ODataClientRequest request) {
 
-        return Enumerable.createFromIterator(new Func<Iterator<AtomEntry>>() {
-            public Iterator<AtomEntry> apply() {
-                return new AtomEntryIterator(request);
-            }
-        });
-
-    }
-
-    private class AtomEntryIterator extends ReadOnlyIterator<AtomEntry> {
-
-        private ODataClientRequest request;
-        private AtomFeed feed;
-        private Iterator<AtomEntry> feedEntries;
-        private int feedEntryCount;
-
-        public AtomEntryIterator(ODataClientRequest request) {
-            this.request = request;
-        }
-
-        @Override
-        protected IterationResult<AtomEntry> advance() throws Exception {
-
-            if (feed == null) {
-                feed = client.getEntities(request);
-                feedEntries = feed.entries.iterator();
-                feedEntryCount = 0;
-            }
-
-            if (feedEntries.hasNext()) {
-                feedEntryCount++;
-                return IterationResult.next(feedEntries.next());
-            }
-
-            // old-style paging: $page and $itemsPerPage
-            if (request.getQueryParams().containsKey("$page") && request.getQueryParams().containsKey("$itemsPerPage")) {
-
-                if (feedEntryCount == 0)
-                    return IterationResult.done();
-
-                int page = Integer.parseInt(request.getQueryParams().get("$page"));
-                // int itemsPerPage = Integer.parseInt(request.getQueryParams().get("$itemsPerPage"));
-
-                request = request.queryParam("$page", Integer.toString(page + 1));
-
-            }
-            // new-style paging: $skiptoken
-            else {
-
-                if (feed.next == null)
-                    return IterationResult.done();
-
-                int skipTokenIndex = feed.next.indexOf("$skiptoken=");
-                if( skipTokenIndex > -1) {
-                    String skiptoken = feed.next.substring(skipTokenIndex + "$skiptoken=".length());
-                    //	decode the skiptoken first since it gets encoded as a query param
-                    skiptoken = URLDecoder.decode(skiptoken, "UTF-8");
-                    request = request.queryParam("$skiptoken", skiptoken);
-                } else if (feed.next.toLowerCase().startsWith("http")){
-                    request = ODataClientRequest.get(feed.next);
-                } else {
-                    throw new UnsupportedOperationException();
-                }
-               
-            }
-
-            feed = null;
-
-            return advance(); // TODO stackoverflow possible here
-        }
-
-    }
 
 }
