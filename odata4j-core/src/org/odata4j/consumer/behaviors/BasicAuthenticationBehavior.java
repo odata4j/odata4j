@@ -5,6 +5,8 @@ import org.odata4j.core.OClientBehavior;
 import org.odata4j.format.Entry;
 import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
 
+import com.sun.jersey.api.client.config.ClientConfig;
+
 public class BasicAuthenticationBehavior implements OClientBehavior {
 
     private final String user;
@@ -14,6 +16,9 @@ public class BasicAuthenticationBehavior implements OClientBehavior {
         this.user = user;
         this.password = password;
     }
+    
+    @Override
+    public void modify(ClientConfig clientConfig) { }
 
     @Override
     public <E extends Entry> ODataClientRequest<E> transform(ODataClientRequest<E> request) {

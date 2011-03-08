@@ -43,13 +43,14 @@ class ODataClient<F extends Feed<E>, E extends Entry> {
 	private final OClientBehavior[] requiredBehaviors = new OClientBehavior[] { new MethodTunnelingBehavior("MERGE") }; // jersey hates MERGE, tunnel through POST
 	private final OClientBehavior[] behaviors;
 
-	private final Client client = ClientUtil.newClient();
+	private final Client client;
 
     public ODataClient(FormatType type, Class<F> feedClass, Class<E> entryClass, OClientBehavior... behaviors) {
     	this.feedClass = feedClass;
     	this.entryClass = entryClass;
         this.behaviors = Enumerable.create(requiredBehaviors).concat(Enumerable.create(behaviors)).toArray(OClientBehavior.class);
         this.type = type;
+        this.client = ClientUtil.newClient(behaviors);
     }
 
     public EdmDataServices getMetadata(ODataClientRequest<E> request){

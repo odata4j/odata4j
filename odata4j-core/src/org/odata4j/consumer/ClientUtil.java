@@ -5,6 +5,7 @@ import java.util.Set;
 
 import javax.ws.rs.ext.RuntimeDelegate;
 
+import org.odata4j.core.OClientBehavior;
 import org.odata4j.internal.PlatformUtil;
 import org.odata4j.internal.StringProvider2;
 
@@ -37,10 +38,13 @@ public class ClientUtil {
         }
     }
 
-    public static Client newClient() {
-
+    public static Client newClient(OClientBehavior[] behaviors) {
         DefaultClientConfig cc = new DefaultClientConfig();
         cc.getSingletons().add(new StringProvider2());
+        if (behaviors != null)
+        	for(OClientBehavior behavior : behaviors)
+        		behavior.modify(cc);
+        
         Client client = Client.create(cc);
         return client;
     }

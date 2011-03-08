@@ -4,6 +4,8 @@ import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.core.OClientBehavior;
 import org.odata4j.format.Entry;
 
+import com.sun.jersey.api.client.config.ClientConfig;
+
 public class DallasCtp2AuthenticationBehavior implements OClientBehavior {
 
     private final String accountKey;
@@ -13,6 +15,9 @@ public class DallasCtp2AuthenticationBehavior implements OClientBehavior {
         this.accountKey = accountKey;
         this.uniqueUserId = uniqueUserId;
     }
+    
+    @Override
+    public void modify(ClientConfig clientConfig) { }
 
     @Override
     public <E extends Entry> ODataClientRequest<E> transform(ODataClientRequest<E> request) {

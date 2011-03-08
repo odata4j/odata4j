@@ -13,6 +13,8 @@ import org.odata4j.core.ODataConstants;
 import org.odata4j.format.Entry;
 import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
 
+import com.sun.jersey.api.client.config.ClientConfig;
+
 public class AzureTableBehavior implements OClientBehavior {
 
     private final String account;
@@ -22,6 +24,9 @@ public class AzureTableBehavior implements OClientBehavior {
         this.account = account;
         this.key = key;
     }
+    
+    @Override
+    public void modify(ClientConfig clientConfig) { }
 
     @Override
     public <E extends Entry> ODataClientRequest<E> transform(ODataClientRequest<E> request) {
