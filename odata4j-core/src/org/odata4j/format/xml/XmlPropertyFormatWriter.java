@@ -21,7 +21,7 @@ public class XmlPropertyFormatWriter extends XmlFormatWriter implements FormatWr
     public void write(ExtendedUriInfo uriInfo, Writer w, PropertyResponse target) {
     	 XMLWriter2 writer = XMLFactoryProvider2.getInstance().newXMLWriterFactory2().createXMLWriter(w);
          writer.startDocument();
-         writeProperty(writer, target.getProperty());
+         writeProperty(writer, target.getProperty(),true);
          writer.endDocument();
     }
 }

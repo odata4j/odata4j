@@ -44,6 +44,7 @@ public class JPAProducerResourcePathTest extends JPAProducerTestBase {
 		String inp = "ResourcePathNavPropSingleTest";
 		String uri = "Categories(1)/CategoryName";
 		NorthwindTestUtils.testJSONResult(endpointUri, uri, inp);
+		NorthwindTestUtils.testAtomResult(endpointUri, uri, inp);
 	}
 
 	@Test

@@ -40,21 +40,24 @@ public class XmlFormatWriter {
 	
 	protected void writeProperties(XMLWriter2 writer, List<OProperty<?>> properties) {
 		for (OProperty<?> prop : properties) {
-			writeProperty(writer,prop);
+			writeProperty(writer,prop,false);
 		}
 	}
 	
 	
 	
 	@SuppressWarnings("unchecked")
-	protected void writeProperty(XMLWriter2 writer, OProperty<?> prop) {
+	protected void writeProperty(XMLWriter2 writer, OProperty<?> prop, boolean isDocumentElement) {
 		
 		String name = prop.getName();
 		EdmType type = prop.getType();
 		Object value = prop.getValue();
-
-		writer.startElement(new QName2(d, name, "d"));
-
+	
+		if (isDocumentElement)
+			writer.startElement(new QName2( name),d);
+		else
+			writer.startElement(new QName2(d, name, "d"));
+		
 		String sValue = null;
 
 		if (!type.isPrimitive()) {
