@@ -230,7 +230,7 @@ public class InternalUtil {
 	public static <T> T toEntity(Class<T> entityType, EdmDataServices metadata,
 			EdmEntitySet entitySet, DataServicesAtomEntry dsae,
 			FeedCustomizationMapping fcMapping) {
-		OEntity oe = InternalUtil.toOEntity(metadata, entitySet, dsae,
+		OEntity oe = InternalUtil.entityFromAtomEntry(metadata, entitySet, dsae,
 				fcMapping);
 
 		if (entityType.equals(OEntity.class))
@@ -239,7 +239,7 @@ public class InternalUtil {
 			return (T) InternalUtil.toPojo(entityType, oe);
 	}
 
-	public static OEntity toOEntity(
+	public static OEntity entityFromAtomEntry(
 			EdmDataServices metadata,
 			EdmEntitySet entitySet,
 			DataServicesAtomEntry dsae,
@@ -252,16 +252,11 @@ public class InternalUtil {
 					dsae.title,
 					dsae.categoryTerm);
 
-		Enumerable<OProperty<?>> properties = Enumerable
-				.create(dsae.properties);
+		Enumerable<OProperty<?>> properties = Enumerable.create(dsae.properties);
 		if (mapping.titlePropName != null)
-			properties = properties.concat(OProperties.string(
-					mapping.titlePropName,
-					dsae.title));
+			properties = properties.concat(OProperties.string(mapping.titlePropName,dsae.title));
 		if (mapping.summaryPropName != null)
-			properties = properties.concat(OProperties.string(
-					mapping.summaryPropName, 
-					dsae.summary));
+			properties = properties.concat(OProperties.string(mapping.summaryPropName, dsae.summary));
 
 		return OEntities.create(entitySet, properties.toList(),
 				toOLinks(metadata, entitySet, dsae.atomLinks, mapping), dsae.title, dsae.categoryTerm);
@@ -280,7 +275,7 @@ public class InternalUtil {
 				if (link.type.equals(XmlFormatWriter.atom_feed_content_type)) {
 					List<OEntity> relatedEntities = null;
 					// do we have inlined entities
-					if (link.feed != null && link.feed.entries != null) {
+					if (link.inlineFeed != null && link.inlineFeed.entries != null) {
 						
 						//	get the entity set belonging to the from role type
 						EdmNavigationProperty navProperty = fromRoleEntitySet != null
@@ -292,13 +287,13 @@ public class InternalUtil {
 
 						//	convert the atom feed entries to OEntitys
 						relatedEntities = Enumerable
-								.create(link.feed.entries)
+								.create(link.inlineFeed.entries)
 								.cast(DataServicesAtomEntry.class)
 								.select(new Func1<DataServicesAtomEntry, OEntity>() {
 									@Override
 									public OEntity apply(
 											DataServicesAtomEntry input) {
-										return toOEntity(metadata, toRoleEntitySet, input, mapping);
+										return entityFromAtomEntry(metadata, toRoleEntitySet, input, mapping);
 									}
 								}).toList();
 						rt.add(OLinks.relatedEntitiesInline(
@@ -311,7 +306,7 @@ public class InternalUtil {
 						rt.add(OLinks.relatedEntities(link.relation, link.title, link.href));
 					}
 				} else if (link.type.equals(XmlFormatWriter.atom_entry_content_type))
-					if (link.entry != null) {
+					if (link.inlineEntry != null) {
 						EdmNavigationProperty navProperty = fromRoleEntitySet != null
     						? fromRoleEntitySet.type.getNavigationProperty(link.title)
     						: null;
@@ -321,8 +316,8 @@ public class InternalUtil {
 
 						rt.add(OLinks.relatedEntityInline(link.relation,
 								link.title, link.href,
-								toOEntity(metadata, toRoleEntitySet,
-										(DataServicesAtomEntry) link.entry,
+								entityFromAtomEntry(metadata, toRoleEntitySet,
+										(DataServicesAtomEntry) link.inlineEntry,
 										mapping)));
 					} else {
 						//	no inlined entity

@@ -58,11 +58,10 @@ public class OCreateImpl<T, F extends Feed<E>, E extends Entry> implements OCrea
         } else {
         	url.append(entitySetName);
         }
-        
+       
         ODataClientRequest<E> request = ODataClientRequest.post(url.toString(), entry);
         
-		final FormatParser<Entry> parser = FormatParserFactory
-				.getParser(Entry.class, client.type);
+		final FormatParser<Entry> parser = FormatParserFactory.getParser(Entry.class, client.type);
 		return (T) parser.toOEntity(client.createEntity(request),
 				OEntity.class, metadata,
 				metadata.getEdmEntitySet(entitySetName), fcMapping);

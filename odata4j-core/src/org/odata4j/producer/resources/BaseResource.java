@@ -25,7 +25,7 @@ public abstract class BaseResource {
         AtomEntry entry = AtomFeedFormatParser.parseFeed(reader).entries.iterator().next();
         DataServicesAtomEntry dsae = (DataServicesAtomEntry) entry;
 
-        return InternalUtil.toOEntity(metadata, metadata.getEdmEntitySet(entitySetName), dsae, null);
+        return InternalUtil.entityFromAtomEntry(metadata, metadata.getEdmEntitySet(entitySetName), dsae, null);
     }
 
 }

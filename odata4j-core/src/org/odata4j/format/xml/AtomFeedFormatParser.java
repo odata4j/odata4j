@@ -76,8 +76,8 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
         public String title;
         public String type;
         public String href;
-        public AtomFeed feed;
-		public AtomEntry entry;
+        public AtomFeed inlineFeed;
+		public AtomEntry inlineEntry;
     }
 
     public static class BasicAtomEntry extends AtomEntry {
@@ -190,9 +190,9 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
         	if (event.isEndElement() && event.asEndElement().getName().equals(linkElement.getName())) {
         		break;
         	} else if (isStartElement(event, ATOM_FEED)) {
-        		rt.feed = parseFeed(reader);
+        		rt.inlineFeed = parseFeed(reader);
         	} else if (isStartElement(event, ATOM_ENTRY)) {
-                rt.entry = parseEntry(reader, event.asStartElement());
+                rt.inlineEntry = parseEntry(reader, event.asStartElement());
         	}
         }
         return rt;
@@ -246,8 +246,8 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
                 rt.title = title;
                 rt.summary = summary;
                 rt.updated = updated;
-                rt.categoryScheme = categoryScheme;
-                rt.categoryTerm = categoryTerm;
+                rt.categoryScheme = categoryScheme;	//http://schemas.microsoft.com/ado/2007/08/dataservices/scheme
+                rt.categoryTerm = categoryTerm;		//NorthwindModel.Customer 
                 rt.contentType = contentType;
                 rt.atomLinks = atomLinks;
                 return rt;
