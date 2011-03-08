@@ -6,15 +6,12 @@
               as the first entry and export the buildfile again. -->
 <project basedir="." default="build" name="odata4j-core">
     <property environment="env"/>
-    <property name="northwind.location" value="../northwind"/>
     <property name="junit.output.dir" value="junit"/>
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.6"/>
     <property name="source" value="1.6"/>
     <path id="odata4j-core.classpath">
         <pathelement location="bin"/>
-        <pathelement location="lib/eclipselink-2.1.2.jar"/>
-        <pathelement location="lib/javax.persistence-2.0.3.jar"/>
         <pathelement location="lib/jersey-client-1.1.5.jar"/>
         <pathelement location="lib/jersey-core-1.1.5.jar"/>
         <pathelement location="lib/jsr311-api-1.1.jar"/>
@@ -24,18 +21,19 @@
         <pathelement location="lib/org.hamcrest.core_1.1.0.v20090501071000.jar"/>
         <pathelement location="lib/core4j-0.3.jar"/>
         <pathelement location="lib/xmlpull_1_1_3_4c.jar"/>
+        <pathelement location="lib/hsqldb-1.8.0.10.jar"/>
+        <pathelement location="lib/eclipselink-2.1.2.jar"/>
+        <pathelement location="lib/javax.persistence-2.0.3.jar"/>
     </path>
     <target name="init">
         <mkdir dir="bin"/>
         <copy includeemptydirs="false" todir="bin">
             <fileset dir="src">
-                <exclude name="**/*.launch"/>
                 <exclude name="**/*.java"/>
             </fileset>
         </copy>
         <copy includeemptydirs="false" todir="bin">
             <fileset dir="test">
-                <exclude name="**/*.launch"/>
                 <exclude name="**/*.java"/>
             </fileset>
         </copy>
@@ -57,9 +55,11 @@
             <classpath refid="odata4j-core.classpath"/>
         </javac>
     </target>
-    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects">
-        <ant antfile="build.xml" dir="${northwind.location}" inheritAll="false" target="clean"/>
-        <ant antfile="build.xml" dir="${northwind.location}" inheritAll="false" target="build"/>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+    <target name="AgilitrainConsumerExample">
+        <java classname="org.odata4j.examples.consumer.AgilitrainConsumerExample" failonerror="true" fork="yes">
+            <classpath refid="odata4j-core.classpath"/>
+        </java>
     </target>
     <target name="AppEngineConsumerExample">
         <java classname="org.odata4j.examples.consumer.AppEngineConsumerExample" failonerror="true" fork="yes">
@@ -81,29 +81,21 @@
             <classpath refid="odata4j-core.classpath"/>
         </java>
     </target>
-    <target name="ExpressionTest (1)">
-        <mkdir dir="${junit.output.dir}"/>
-        <junit fork="yes" printsummary="withOutAndErr">
-            <formatter type="xml"/>
-            <test name="org.odata4j.test.expression.ExpressionTest" todir="${junit.output.dir}"/>
-            <classpath refid="odata4j-core.classpath"/>
-        </junit>
-    </target>
-    <target name="InMemoryProducerExample">
-        <java classname="org.odata4j.examples.producer.InMemoryProducerExample" failonerror="true" fork="yes">
+    <target name="DataMarketConsumerExample">
+        <java classname="org.odata4j.examples.consumer.DataMarketConsumerExample" failonerror="true" fork="yes">
             <classpath refid="odata4j-core.classpath"/>
         </java>
     </target>
-    <target name="JPAProducerExample">
-        <java classname="org.odata4j.examples.producer.JPAProducerExample" failonerror="true" fork="yes">
+    <target name="EBayConsumerExample">
+        <java classname="org.odata4j.examples.consumer.EBayConsumerExample" failonerror="true" fork="yes">
             <classpath refid="odata4j-core.classpath"/>
         </java>
     </target>
-    <target name="JsonTest">
+    <target name="JPAProducerCreateTest">
         <mkdir dir="${junit.output.dir}"/>
         <junit fork="yes" printsummary="withOutAndErr">
             <formatter type="xml"/>
-            <test name="org.odata4j.test.expression.JsonTest" todir="${junit.output.dir}"/>
+            <test name="org.odata4j.producer.jpa.JPAProducerCreateTest" todir="${junit.output.dir}"/>
             <classpath refid="odata4j-core.classpath"/>
         </junit>
     </target>
@@ -112,45 +104,47 @@
             <classpath refid="odata4j-core.classpath"/>
         </java>
     </target>
+    <target name="OData4jTestSuite">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="org.odata4j.test.OData4jTestSuite" todir="${junit.output.dir}"/>
+            <classpath refid="odata4j-core.classpath"/>
+        </junit>
+    </target>
     <target name="ODataTestServiceReadWriteExample">
         <java classname="org.odata4j.examples.consumer.ODataTestServiceReadWriteExample" failonerror="true" fork="yes">
             <classpath refid="odata4j-core.classpath"/>
         </java>
     </target>
-    <target name="org.odata4j.test.expression">
-        <mkdir dir="${junit.output.dir}"/>
-        <junit fork="yes" printsummary="withOutAndErr">
-            <formatter type="xml"/>
-            <test name="org.odata4j.test.expression.ExpressionTest" todir="${junit.output.dir}"/>
-            <test name="org.odata4j.test.expression.JsonTest" todir="${junit.output.dir}"/>
-            <test name="org.odata4j.test.expression.PojoTest" todir="${junit.output.dir}"/>
-            <test name="org.odata4j.test.expression.ScenarioTest" todir="${junit.output.dir}"/>
-            <classpath refid="odata4j-core.classpath"/>
-        </junit>
-    </target>
-    <target name="PojoTest">
-        <mkdir dir="${junit.output.dir}"/>
-        <junit fork="yes" printsummary="withOutAndErr">
-            <formatter type="xml"/>
-            <test name="org.odata4j.test.expression.PojoTest" todir="${junit.output.dir}"/>
-            <classpath refid="odata4j-core.classpath"/>
-        </junit>
-    </target>
-    <target name="RoundtripExample">
-        <java classname="org.odata4j.examples.producer.RoundtripExample" failonerror="true" fork="yes">
+    <target name="ServiceListingConsumerExample">
+        <java classname="org.odata4j.examples.consumer.ServiceListingConsumerExample" failonerror="true" fork="yes">
             <classpath refid="odata4j-core.classpath"/>
         </java>
     </target>
-    <target name="ScenarioTest">
+    <target name="TwitPicConsumerExample">
+        <java classname="org.odata4j.examples.consumer.TwitPicConsumerExample" failonerror="true" fork="yes">
+            <classpath refid="odata4j-core.classpath"/>
+        </java>
+    </target>
+    <target name="DateTimeFormatTest">
         <mkdir dir="${junit.output.dir}"/>
         <junit fork="yes" printsummary="withOutAndErr">
             <formatter type="xml"/>
-            <test name="org.odata4j.test.expression.ScenarioTest" todir="${junit.output.dir}"/>
+            <test name="org.odata4j.test.expression.DateTimeFormatTest" todir="${junit.output.dir}"/>
             <classpath refid="odata4j-core.classpath"/>
         </junit>
     </target>
-    <target name="ServiceListingConsumerExample">
-        <java classname="org.odata4j.examples.consumer.ServiceListingConsumerExample" failonerror="true" fork="yes">
+    <target name="JPAProducerResourcePathTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="org.odata4j.producer.jpa.JPAProducerResourcePathTest" todir="${junit.output.dir}"/>
+            <classpath refid="odata4j-core.classpath"/>
+        </junit>
+    </target>
+    <target name="JPAProducerExample">
+        <java classname="org.odata4j.examples.producer.JPAProducerExample" failonerror="true" fork="yes">
             <classpath refid="odata4j-core.classpath"/>
         </java>
     </target>
