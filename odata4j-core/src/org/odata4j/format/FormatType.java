@@ -25,14 +25,12 @@ public enum FormatType {
     	return mediaTypes;
     }
     
-    @SuppressWarnings("unchecked")
-	public <F extends Feed<E>, E extends Entry> Class<F> getFeedClass() {
-    	return (Class<F>)feedClass;
+	public Class<?> getFeedClass() {
+    	return feedClass;
     }
     
-    @SuppressWarnings("unchecked")
-	public <E extends Entry> Class<E> getEntryClass() {
-    	return (Class<E>)entryClass;
+	public Class<?> getEntryClass() {
+    	return entryClass;
     }
 	
     public static FormatType parse(String format){

@@ -130,7 +130,7 @@ public class ODataConsumer {
     
     private final Map<String,FeedCustomizationMapping> cachedMappings = new HashMap<String,FeedCustomizationMapping>();
     private final String serviceRootUri;
-    private final ODataClient<?, ?> client;
+    private final ODataClient<Feed<Entry>, Entry> client;
     
     private EdmDataServices cachedMetadata;
 
@@ -194,18 +194,12 @@ public class ODataConsumer {
         return getEntities(OEntity.class,entitySetName);
     }
     
-    public <T> OQuery<T> getEntities(Class<T> entityType, String entitySetName) {
-        return createOQueryImpl(entityType, entitySetName);
+	public <T> OQuery<T> getEntities(Class<T> entityType, String entitySetName) {
+        FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
+		return new OQueryImpl<T, Feed<Entry>, Entry>(client, entityType, serviceRootUri, getMetadata(), entitySetName, mapping);
     }
 
-	@SuppressWarnings("unchecked")
-	private <T, F extends Feed<E>, E extends Entry> OQuery<T> createOQueryImpl(Class<T> entityType,
-			String entitySetName) {
-		FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
-        return new OQueryImpl<T, F, E>((ODataClient<F, E>)client, entityType, serviceRootUri, getMetadata(), entitySetName, mapping);
-	}
-
-    public OEntityRef<OEntity> getEntity(String entitySetName, Object... key) {
+	public OEntityRef<OEntity> getEntity(String entitySetName, Object... key) {
         return getEntity(OEntity.class,entitySetName,key);
     }
     public OEntityRef<OEntity> getEntity(ORelatedEntityLink link) {
@@ -214,59 +208,34 @@ public class ODataConsumer {
     }
     
     public <T> OEntityRef<T> getEntity(Class<T> entityType, String entitySetName, Object... key) {
-        return createGetOEntityRefImpl(entityType, entitySetName, key);
-    }
-
-	@SuppressWarnings("unchecked")
-	private <T, F extends Feed<E>, E extends Entry> OEntityRef<T> createGetOEntityRefImpl(
-			Class<T> entityType,
-			String entitySetName, Object... key) {
-		FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
-		return new OEntityRefImpl<T, F, E>(false, (ODataClient<F, E>) client,
+        FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
+		return new OEntityRefImpl<T, Feed<Entry>, Entry>(false,  client,
 				entityType, serviceRootUri, getMetadata(),
 				entitySetName, key, mapping);
-	}
-    
+    }
+
 	public OCreate<OEntity> createEntity(String entitySetName) {
-		return createOCreateImpl(entitySetName);
-	}
-	
-	@SuppressWarnings("unchecked")
-	private <F extends Feed<E>, E extends Entry> OCreate<OEntity> createOCreateImpl(String entitySetName) {
 		FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
-		return new OCreateImpl<OEntity, F, E>((ODataClient<F, E>)client, serviceRootUri, getMetadata(),
+		return new OCreateImpl<OEntity, Feed<Entry>, Entry>(client, serviceRootUri, getMetadata(),
 				entitySetName, mapping);
 	}
-
-    public OModify<OEntity> updateEntity(OEntity entity, String entitySetName, Object... key) {
-        return createOModifyImpl(entity, entitySetName, key);
+	
+	public OModify<OEntity> updateEntity(OEntity entity, String entitySetName, Object... key) {
+        return new OModifyImpl<OEntity, Feed<Entry>, Entry>(entity, client, serviceRootUri, entitySetName, key);
     }
 
     public OModify<OEntity> mergeEntity(String entitySetName, Object... key) {
-    	return createOModifyImpl(null, entitySetName, key);
+    	return new OModifyImpl<OEntity, Feed<Entry>, Entry>(null, client, serviceRootUri, entitySetName, key);
     }
 
-	@SuppressWarnings("unchecked")
-	private <F extends Feed<E>, E extends Entry> OModify<OEntity> createOModifyImpl(OEntity entity,
-			String entitySetName, Object... key) {
-		return new OModifyImpl<OEntity, F, E>(entity, (ODataClient<F, E>)client, serviceRootUri, entitySetName, key);
-	}
-
-    public OEntityRef<Void> deleteEntity(String entitySetName, Object... key) {
-        return createDeleteOEntityRefImpl(entitySetName, key);
-    }
-
-	@SuppressWarnings("unchecked")
-	protected <F extends Feed<E>, E extends Entry> OEntityRef<Void> createDeleteOEntityRefImpl(
-			String entitySetName,
-			Object... key) {
-		FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
-		return new OEntityRefImpl<Void, F, E>(true, (ODataClient<F, E>) client,
+	public OEntityRef<Void> deleteEntity(String entitySetName, Object... key) {
+        FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
+		return new OEntityRefImpl<Void, Feed<Entry>, Entry>(true, client,
 				null, serviceRootUri, getMetadata(), entitySetName, key,
 				mapping);
-	}
-        
-    private FeedCustomizationMapping getFeedCustomizationMapping(String entitySetName){
+    }
+
+	private FeedCustomizationMapping getFeedCustomizationMapping(String entitySetName){
         
         if (!cachedMappings.containsKey(entitySetName)) {
            

@@ -45,9 +45,10 @@ class ODataClient<F extends Feed<E>, E extends Entry> {
 
 	private final Client client;
 
-    public ODataClient(FormatType type, Class<F> feedClass, Class<E> entryClass, OClientBehavior... behaviors) {
-    	this.feedClass = feedClass;
-    	this.entryClass = entryClass;
+    @SuppressWarnings("unchecked")
+	public ODataClient(FormatType type, Class<?> feedClass, Class<?> entryClass, OClientBehavior... behaviors) {
+    	this.feedClass = (Class<F>)feedClass;
+    	this.entryClass = (Class<E>)entryClass;
         this.behaviors = Enumerable.create(requiredBehaviors).concat(Enumerable.create(behaviors)).toArray(OClientBehavior.class);
         this.type = type;
         this.client = ClientUtil.newClient(behaviors);
