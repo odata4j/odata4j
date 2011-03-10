@@ -21,6 +21,7 @@ import org.odata4j.core.Guid;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
+import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OLink;
 import org.odata4j.core.OLinks;
 import org.odata4j.core.OProperties;
@@ -347,7 +348,7 @@ public class InMemoryProducer implements ODataProducer {
             }
         }
                
-        return OEntities.create(ees, properties, links, null); 
+        return OEntities.create(ees, OEntityKey.create(key), properties, links); 
     }
 
     private static Predicate1<Object> filterToPredicate(final BoolCommonExpression filter, final PropertyModel properties) {

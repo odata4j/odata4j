@@ -26,6 +26,7 @@ import org.core4j.Enumerable;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
+import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmDataServices;
@@ -204,8 +205,7 @@ public class XmlDataProducerExample {
 						String name = event.asEndElement().getName()
 								.getLocalPart();
 						if ("customers".equals(name)) {
-							entities.add(OEntities.create(ees, properties,
-									null, id));
+							entities.add(OEntities.create(ees, OEntityKey.create(id), properties, null));
 							properties = new ArrayList<OProperty<?>>();
 							inCustomer = false;
 						} else if (inCustomer) {

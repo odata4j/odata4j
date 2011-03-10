@@ -35,6 +35,7 @@ import org.core4j.Predicate1;
 import org.joda.time.LocalDateTime;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
+import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OLink;
 import org.odata4j.core.OLinks;
 import org.odata4j.core.OProperties;
@@ -362,7 +363,7 @@ public class JPAProducer implements ODataProducer {
 				}
 			}
 
-			return OEntities.create(ees, properties, links, id);
+			return OEntities.create(ees, OEntityKey.create(id), properties, links);
 
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -746,7 +747,7 @@ public class JPAProducer implements ODataProducer {
 			}
 		}
 
-		values.add(lastEntity.getId().toString());
+		values.add(lastEntity.getEntityKey().asSingleValue().toString());
 		return Enumerable.create(values).join(",");
 	}
 	

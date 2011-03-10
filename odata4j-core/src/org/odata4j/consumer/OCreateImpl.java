@@ -7,6 +7,7 @@ import java.util.List;
 import org.odata4j.core.OCreate;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
+import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OLink;
 import org.odata4j.core.OLinks;
 import org.odata4j.core.OProperty;
@@ -71,7 +72,7 @@ public class OCreateImpl<T, F extends Feed<E>, E extends Entry> implements OCrea
 	@Override
 	public T get() {
         EdmEntitySet entitySet = metadata.getEdmEntitySet(entitySetName);
-		return (T)OEntities.create(entitySet, props, links, null);
+		return (T)OEntities.create(entitySet, OEntityKey.infer(entitySet,props), props, links);
 	}
 
     @Override

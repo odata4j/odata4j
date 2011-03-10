@@ -1,5 +1,6 @@
 package org.odata4j.core;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.core4j.Enumerable;
@@ -22,12 +23,12 @@ public class OEntities {
 	 * @param id the id value of this entity
 	 * @return a new entity which reflects this entity in the grand scheme of things
 	 */
-    public static OEntity create(EdmEntitySet entitySet, List<OProperty<?>> properties, List<OLink> links, Object id) {
-        return new OEntityImpl(entitySet, properties, links, id);
+    public static OEntity create(EdmEntitySet entitySet, OEntityKey entityKey, List<OProperty<?>> properties, List<OLink> links) {
+        return new OEntityImpl(entitySet, entityKey, properties, links);
     }
 
-    public static OEntity create(EdmEntitySet entitySet, List<OProperty<?>> properties, List<OLink> links, String title, String categoryTerm) {
-        return new OEntityAtomImpl(entitySet, properties, links, title, categoryTerm);
+    public static OEntity create(EdmEntitySet entitySet, OEntityKey entityKey, List<OProperty<?>> properties, List<OLink> links, String title, String categoryTerm) {
+        return new OEntityAtomImpl(entitySet, entityKey, properties, links, title, categoryTerm);
     }
 
     private static class OEntityAtomImpl extends OEntityImpl implements AtomInfo {
@@ -35,8 +36,8 @@ public class OEntities {
         private final String title;
         private final String categoryTerm;
 
-        public OEntityAtomImpl(EdmEntitySet entitySet, List<OProperty<?>> properties, List<OLink> links, String title, String categoryTerm) {
-            super(entitySet, properties, links, null);
+        public OEntityAtomImpl(EdmEntitySet entitySet, OEntityKey entityKey, List<OProperty<?>> properties, List<OLink> links, String title, String categoryTerm) {
+            super(entitySet, entityKey, properties, links);
             this.title = title;
             this.categoryTerm = categoryTerm;
         }
@@ -55,16 +56,17 @@ public class OEntities {
     private static class OEntityImpl implements OEntity {
 
     	private final EdmEntitySet entitySet;
+    	private final OEntityKey entityKey;
         private final List<OProperty<?>> properties;
         private final List<OLink> links;
-        private final Object id;
 
-        public OEntityImpl(EdmEntitySet entitySet, List<OProperty<?>> properties, List<OLink> links, Object id) {
+        public OEntityImpl(EdmEntitySet entitySet, OEntityKey entityKey, List<OProperty<?>> properties, List<OLink> links) {
         	if (entitySet==null) throw new IllegalArgumentException("entitySet cannot be null");
+        	if (entityKey==null) throw new IllegalArgumentException("entityKey cannot be null");
         	this.entitySet = entitySet;
-            this.properties = properties;
-            this.links = links;
-            this.id = id;
+        	this.entityKey = entityKey;
+            this.properties = Collections.unmodifiableList(properties);
+            this.links = Collections.unmodifiableList(links);
         }
 
         @Override
@@ -76,6 +78,11 @@ public class OEntities {
 		public EdmEntitySet getEntitySet() {
 			return entitySet;
 		}
+		
+		@Override
+		public OEntityKey getEntityKey() {
+			return entityKey;
+		}
 
         @Override
         public List<OProperty<?>> getProperties() {
@@ -83,7 +90,7 @@ public class OEntities {
         }
 
         @Override
-        public OProperty<?> getProperty(final String propName) {
+        public OProperty<?> getProperty(String propName) {
             return Enumerable.create(properties).first(OPredicates.propertyNameEquals(propName));
         }
 
@@ -108,10 +115,7 @@ public class OEntities {
            throw new IllegalArgumentException("No link with title: " + title);
         }
 
-		@Override
-		public Object getId() {
-			return id;
-		}
+	
 
     }
 }

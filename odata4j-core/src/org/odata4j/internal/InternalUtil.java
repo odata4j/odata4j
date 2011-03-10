@@ -22,6 +22,7 @@ import org.odata4j.core.Guid;
 import org.odata4j.core.NamedValue;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
+import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OLink;
 import org.odata4j.core.OLinks;
 import org.odata4j.core.OProperties;
@@ -247,6 +248,7 @@ public class InternalUtil {
 		if (mapping == null)
 			return OEntities.create(
 					entitySet,
+					OEntityKey.infer(entitySet,dsae.properties),
 					dsae.properties,
 					toOLinks(metadata, entitySet, dsae.atomLinks, mapping), 
 					dsae.title,
@@ -258,8 +260,14 @@ public class InternalUtil {
 		if (mapping.summaryPropName != null)
 			properties = properties.concat(OProperties.string(mapping.summaryPropName, dsae.summary));
 
-		return OEntities.create(entitySet, properties.toList(),
-				toOLinks(metadata, entitySet, dsae.atomLinks, mapping), dsae.title, dsae.categoryTerm);
+		List<OProperty<?>> props = properties.toList();
+		return OEntities.create(
+				entitySet,
+				OEntityKey.infer(entitySet, props),
+				props,
+				toOLinks(metadata, entitySet, dsae.atomLinks, mapping), 
+				dsae.title, 
+				dsae.categoryTerm);
 
 	}
 
@@ -428,7 +436,7 @@ public class InternalUtil {
 									return entityProperty;
 									
 
-							if (oe.getId() != null) {
+							if (oe.getEntityKey() != null && oe.getEntityKey().isSingleValued()) {
 								return new OProperty<Object>() {
 
 									@Override
@@ -438,7 +446,7 @@ public class InternalUtil {
 
 									@Override
 									public Object getValue() {
-										return oe.getId();
+										return oe.getEntityKey().asSingleValue();
 									}
 
 									@Override
