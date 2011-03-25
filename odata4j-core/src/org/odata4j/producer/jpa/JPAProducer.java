@@ -1147,7 +1147,9 @@ public class JPAProducer implements ODataProducer {
 		String keyString = href.substring(href.lastIndexOf('(') + 1,
 				href.length() - 1);
 		List<Token> keyToken = ExpressionParser.tokenize(keyString);
-		if (keyToken.size() == 1) {
+		if( keyToken.size() !=0 && 
+				( keyToken.get(0).type == TokenType.QUOTED_STRING  || 
+						keyToken.get(0).type == TokenType.NUMBER )  ) {
 			Object key;
 			if (keyToken.get(0).type == TokenType.QUOTED_STRING) {
 				String entityKeyStr = keyToken.get(0).value;
