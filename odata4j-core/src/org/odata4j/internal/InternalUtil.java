@@ -15,9 +15,13 @@ import org.core4j.Func1;
 import org.core4j.Funcs;
 import org.core4j.ThrowingFunc1;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
+import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISOPeriodFormat;
 import org.odata4j.core.Guid;
 import org.odata4j.core.NamedValue;
 import org.odata4j.core.OEntities;
@@ -120,8 +124,7 @@ public class InternalUtil {
 		if (dateTime == null)
 			return null;
 
-		int idx = (dateTime.getSecondOfMinute() > 0 ? 1 : 0)
-				+ (dateTime.getMillisOfSecond() > 0 ? 2 : 0);
+		int idx = dateTime.getMillisOfSecond() > 0 ? 2 : 1;
 		return dateTime.toString(DATETIME_FORMATTER[idx]);
 	}
 
@@ -129,9 +132,7 @@ public class InternalUtil {
 		if (dateTime == null)
 			return null;
 
-		int idx = 4
-				+ (dateTime.getSecondOfMinute() > 0 ? 1 : 0)
-				+ (dateTime.getMillisOfSecond() > 0 ? 2 : 0);
+		int idx = 4	+ (dateTime.getMillisOfSecond() > 0 ? 2 : 1);
 		return dateTime.toString(DATETIME_FORMATTER[idx]);
 	}
 
@@ -468,6 +469,15 @@ public class InternalUtil {
 
 	public static String toString(DateTime utc) {
 		return utc.toString("yyyy-MM-dd'T'HH:mm:ss'Z'");
+	}
+	
+	public static LocalTime parseTime(String value) {
+		Period period = ISOPeriodFormat.standard().parsePeriod(value);
+		return new LocalTime(period.toStandardDuration().getMillis(), DateTimeZone.UTC);
+	}
+	
+	public static String toString(LocalTime time) {
+		return ISOPeriodFormat.standard().print(new Period(time.getMillisOfDay()));
 	}
 	
 	public static void sleep(long millis){

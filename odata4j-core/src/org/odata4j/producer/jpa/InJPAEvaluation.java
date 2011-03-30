@@ -1,5 +1,10 @@
 package org.odata4j.producer.jpa;
 
+import java.sql.Timestamp;
+
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
 import org.odata4j.expression.AddExpression;
 import org.odata4j.expression.AndExpression;
 import org.odata4j.expression.BinaryCommonExpression;
@@ -75,6 +80,14 @@ public class InJPAEvaluation {
 				result = "'" + result + "'";
 			} else if (result instanceof Long) {
 				result = result + "L";
+			} else if (result instanceof LocalTime) {
+				result = "'" + new java.sql.Time(new LocalDateTime(
+							((LocalTime) result).getMillisOfDay(), DateTimeZone.UTC)
+							.toDateTime().getMillis()).toString() + "'";
+			} else if (result instanceof LocalDateTime) {
+				java.sql.Timestamp d = new Timestamp(((LocalDateTime) result).toDateTime().getMillis());
+				
+				result = "'" + d + "'";
 			}
 
 			return result;

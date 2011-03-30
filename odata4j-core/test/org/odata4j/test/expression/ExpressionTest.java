@@ -101,7 +101,7 @@ public class ExpressionTest {
         t(Expression.double_(-2.1E-1), "-2.1E-1");
         t(Expression.dateTime(new LocalDateTime("2008-10-13")), "datetime'2008-10-13T00:00:00'");
         t(Expression.dateTimeOffset(new DateTime("2008-10-13T00:00:00-04:00")), "datetimeoffset'2008-10-13T00:00:00-04:00'");
-        t(Expression.time(new LocalTime("13:20:00")), "time'13:20:00'");
+        t(Expression.time(new LocalTime("13:20:00")), "time'PT13H20M'");
         t(Expression.guid(Guid.fromString("12345678-aaaa-bbbb-ccccddddffff")), "guid'12345678-aaaa-bbbb-ccccddddffff'");
         t(Expression.guid(Guid.fromString("bf4eeb4d-2ded-4aa6-a167-0571e1057e3b")), "guid'bf4eeb4d-2ded-4aa6-a167-0571e1057e3b'");
                                                                                

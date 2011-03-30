@@ -8,8 +8,8 @@ import org.odata4j.edm.EdmProperty;
 import org.odata4j.producer.jpa.JPAEdmGenerator;
 
 public class EclipseLinkJPAEdmGenerator extends JPAEdmGenerator {
-    protected static EdmProperty toEdmProperty(String modelNamespace, SingularAttribute<?, ?> sa) {
-    	EdmProperty p = JPAEdmGenerator.toEdmProperty(modelNamespace, sa);
+    protected EdmProperty toEdmProperty(String modelNamespace, SingularAttribute<?, ?> sa) {
+    	EdmProperty p = super.toEdmProperty(modelNamespace, sa);
     	
     	Integer maxLength = null;
         Map<String, Object> eclipseLinkProps = EclipseLink.getPropertyInfo(sa, p.type);

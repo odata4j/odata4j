@@ -1,13 +1,20 @@
 package org.odata4j.producer.jpa;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Attribute.PersistentAttributeType;
 import javax.persistence.metamodel.EmbeddableType;
@@ -41,7 +48,7 @@ import org.odata4j.edm.EdmType;
 
 public class JPAEdmGenerator {
 
-    public static EdmType toEdmType(SingularAttribute<?, ?> sa) {
+    protected EdmType toEdmType(SingularAttribute<?, ?> sa) {
 
         Class<?> javaType = sa.getType().getJavaType();
 
@@ -63,8 +70,22 @@ public class JPAEdmGenerator {
             return EdmType.DOUBLE;
         if (javaType.equals(Float.class) || javaType.equals(Float.TYPE))
             return EdmType.SINGLE;
-        if (javaType.equals(Date.class))
-            return EdmType.DATETIME;
+        if (javaType.equals(Date.class) || javaType.equals(Calendar.class)) {
+        	TemporalType temporal = getTemporalType(sa);
+        	if (temporal == null) {
+        		return EdmType.DATETIME;
+        	} else {
+        		switch (temporal) {
+					case DATE:
+					case TIMESTAMP:
+		        		return EdmType.DATETIME;
+					case TIME:
+		        		return EdmType.TIME;
+				}
+        	}
+        }
+        if (javaType.equals(Time.class)) 
+        	return EdmType.TIME;
         if (javaType.equals(Instant.class))
             return EdmType.DATETIME;
         if (javaType.equals(Timestamp.class))
@@ -76,7 +97,7 @@ public class JPAEdmGenerator {
         throw new UnsupportedOperationException(javaType.toString());
     }
 
-    protected static EdmProperty toEdmProperty(String modelNamespace, SingularAttribute<?, ?> sa) {
+    protected EdmProperty toEdmProperty(String modelNamespace, SingularAttribute<?, ?> sa) {
         String name = sa.getName();
         EdmType type;
         if (sa.getPersistentAttributeType() == PersistentAttributeType.EMBEDDED){
@@ -93,7 +114,7 @@ public class JPAEdmGenerator {
         return new EdmProperty(name, type, nullable, null, null, null, null, null, null, null, null, null);
     }
 
-    protected static List<EdmProperty> getProperties(String modelNamespace, ManagedType<?> et){
+    protected List<EdmProperty> getProperties(String modelNamespace, ManagedType<?> et){
         List<EdmProperty> properties = new ArrayList<EdmProperty>();
         for(Attribute<?, ?> att : et.getAttributes()) {
 
@@ -116,7 +137,7 @@ public class JPAEdmGenerator {
         return properties;
     }
     
-    public static EdmDataServices buildEdm(EntityManagerFactory emf, String namespace) {
+    public EdmDataServices buildEdm(EntityManagerFactory emf, String namespace) {
 
         String modelNamespace = namespace + "Model";
 
@@ -208,7 +229,8 @@ public class JPAEdmGenerator {
                         EdmMultiplicity m1 = EdmMultiplicity.MANY;
                         EdmMultiplicity m2 = EdmMultiplicity.ZERO_TO_ONE;
 
-                        String assocName = String.format("FK_%s_%s", eet1.name, eet2.name);
+                        String assocName = getAssociationName(associations, eet1, eet2);
+                        
                         EdmAssociationEnd assocEnd1 = new EdmAssociationEnd(eet1.name, eet1, m1);
                         String assocEnd2Name = eet2.name;
                         if (assocEnd2Name.equals(eet1.name))
@@ -291,5 +313,37 @@ public class JPAEdmGenerator {
     	return idx > 0
     		? name.substring(idx + 1)
     		: name;
+    }
+    
+    protected String getAssociationName(List<EdmAssociation>associations, EdmEntityType eet1, EdmEntityType eet2) {
+		for(int i = 0;; i++) {
+	    	final String assocName = i == 0
+	    		? String.format("FK_%s_%s", eet1.name, eet2.name)
+	    		: String.format("FK_%s_%s_%d", eet1.name, eet2.name, i);
+	    		
+	        boolean exists = Enumerable.create(associations).where(new Predicate1<EdmAssociation>() {
+				@Override
+				public boolean apply(EdmAssociation input) {
+					return assocName.equals(input.name);
+				}
+			}).count() > 0;
+
+			if (!exists) {
+				return assocName;
+			}
+		}
+    }
+    
+    protected TemporalType getTemporalType(SingularAttribute<?, ?> sa) {
+    	Member member = sa.getJavaMember();
+
+    	Temporal temporal = null;
+    	if (member instanceof Field) {
+    		temporal = ((Field)member).getAnnotation(Temporal.class);
+    	} else if (member instanceof Method) {
+    		temporal = ((Method)member).getAnnotation(Temporal.class);
+    	}
+    	
+    	return temporal.value();
     }
 }

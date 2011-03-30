@@ -408,8 +408,8 @@ public class ExpressionParser {
                 DateTime dt = InternalUtil.parseDateTime(value);
                 return Expression.dateTime(new LocalDateTime(dt));
             } else if (word.equals("time")) {
-                DateTime dt = TIME_FORMATTER.parseDateTime(value);
-                return Expression.time(new LocalTime(dt));
+                LocalTime t = InternalUtil.parseTime(value);
+                return Expression.time(t);
             } else if (word.equals("datetimeoffset")) {
                 DateTime dt = InternalUtil.parseDateTime(value);
                 return Expression.dateTimeOffset(dt);

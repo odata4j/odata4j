@@ -9,6 +9,9 @@ import org.odata4j.producer.jpa.JPAProducerQueryOptionTest;
 import org.odata4j.producer.jpa.JPAProducerQueryOptionTest50;
 import org.odata4j.producer.jpa.JPAProducerResourcePathTest;
 import org.odata4j.producer.jpa.JPAProducerUpdateTest;
+import org.odata4j.producer.jpa.airline.test.EdmDateTimeTemporalTest;
+import org.odata4j.producer.jpa.airline.test.EdmTimeTemporalTest;
+import org.odata4j.producer.jpa.airline.test.CreateWithLinkTest;
 import org.odata4j.test.expression.DateTimeFormatTest;
 import org.odata4j.test.expression.ExpressionTest;
 import org.odata4j.test.expression.JsonTest;
@@ -39,7 +42,10 @@ import org.odata4j.test.issues.Issue16;
 	JPAProducerQueryOptionAtomTest50.class,
 	DateTimeFormatTest.class,
 	JPAProducerCreateTest.class,
-	JPAProducerUpdateTest.class
+	JPAProducerUpdateTest.class,
+	EdmTimeTemporalTest.class,
+	EdmDateTimeTemporalTest.class,
+	CreateWithLinkTest.class
 })
 
 public class OData4jTestSuite {

@@ -8,6 +8,7 @@ import org.core4j.Enumerable;
 import org.core4j.Predicate1;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OLink;
 import org.odata4j.core.OProperty;
@@ -159,7 +160,7 @@ public class XmlFormatWriter {
 						new QName2(m, "type", "m"),
 						type.toTypeString());
 				if (value != null) {
-					sValue = value.toString();
+					sValue = InternalUtil.toString((LocalTime)value);
 				}
 			} else if (type == EdmType.DATETIMEOFFSET) {
 				// Edm.DateTimeOffset '-'? yyyy '-' mm '-' dd 'T' hh ':' mm

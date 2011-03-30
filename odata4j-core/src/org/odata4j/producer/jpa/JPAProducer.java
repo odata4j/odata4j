@@ -9,7 +9,6 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -32,7 +31,6 @@ import org.core4j.CoreUtils;
 import org.core4j.Enumerable;
 import org.core4j.Func1;
 import org.core4j.Predicate1;
-import org.joda.time.LocalDateTime;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
@@ -89,7 +87,7 @@ public class JPAProducer implements ODataProducer {
 			EntityManagerFactory emf,
 			String namespace,
 			int maxResults) {
-		this(emf, JPAEdmGenerator.buildEdm(emf, namespace), maxResults);
+		this(emf, new JPAEdmGenerator().buildEdm(emf, namespace), maxResults);
 	}
 
 	@Override
@@ -898,12 +896,7 @@ public class JPAProducer implements ODataProducer {
 				Field field = (Field) member;
 				field.setAccessible(true);
 
-				Object value = prop.getValue();
-				if (value instanceof LocalDateTime
-						&& field.getType() == Date.class) {
-					value = ((LocalDateTime) value).toDateTime().toDate();
-				}
-
+				Object value = getPropertyValue(prop, field);
 				field.set(jpaEntity, value);
 
 			}
@@ -1177,4 +1170,13 @@ public class JPAProducer implements ODataProducer {
 		}
 	}
 	
+	protected static Object getPropertyValue(OProperty<?> prop, Field field) {
+		Object value = prop.getValue();
+		try {
+			return TypeConverter.convert(value, field.getType());
+		} catch (UnsupportedOperationException ex) {
+			// let java complain
+			return value;
+		}
+	}
 }

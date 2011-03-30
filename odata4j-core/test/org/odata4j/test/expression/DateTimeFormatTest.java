@@ -211,7 +211,7 @@ public class DateTimeFormatTest {
 	@Test
 	public void testFormatDateTimeyyyyMMddHHmm() {
 		LocalDateTime dt = new LocalDateTime(2010, 12, 20, 17, 34);
-		Assert.assertEquals("2010-12-20T17:34", InternalUtil.formatDateTime(dt));
+		Assert.assertEquals("2010-12-20T17:34:00", InternalUtil.formatDateTime(dt));
 	}
 	
 	@Test
@@ -230,7 +230,7 @@ public class DateTimeFormatTest {
 	public void testFormatDateTimeOffsetyyyyMMddHHmm() {
 		Chronology c = ISOChronology.getInstance(DateTimeZone.forOffsetHours(1));
 		DateTime dt = new DateTime(2010, 12, 20, 17, 34, 0, 0, c);
-		Assert.assertEquals("2010-12-20T17:34+01:00", InternalUtil.formatDateTimeOffset(dt));
+		Assert.assertEquals("2010-12-20T17:34:00+01:00", InternalUtil.formatDateTimeOffset(dt));
 	}
 	
 	@Test

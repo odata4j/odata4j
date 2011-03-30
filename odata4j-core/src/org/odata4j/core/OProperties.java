@@ -42,9 +42,19 @@ public class OProperties {
             BigDecimal dValue = (BigDecimal) value;
             return OProperties.decimal(name, dValue);
         } else if (type == EdmType.DATETIME) {
-        	return (value instanceof LocalDateTime)
-        		? OProperties.datetime(name, (LocalDateTime)value)
-        		: OProperties.datetime(name, (Date)value);
+        	if (value instanceof LocalDateTime)
+        		return OProperties.datetime(name, (LocalDateTime)value);
+        	else if (value instanceof Calendar)
+        		return OProperties.datetime(name, (Date)((Calendar)value).getTime());
+        	else 
+        		return OProperties.datetime(name, (Date)value);
+        } else if (type == EdmType.TIME) {
+        	if (value instanceof LocalTime)
+        		return OProperties.time(name, (LocalTime)value);
+    		else if (value instanceof Calendar)
+        		return OProperties.time(name, (Date)((Calendar)value).getTime());        		
+    		else 
+        		return OProperties.time(name, (Date)value);        		
         } else if (type == EdmType.BINARY) {
             byte[] bValue = (byte[]) value;
             return OProperties.binary(name, bValue);
@@ -109,7 +119,9 @@ public class OProperties {
         		: new LocalDateTime(InternalUtil.parseDateTime(value));
             return OProperties.datetime(name, dValue);
         } else if (EdmType.TIME.toTypeString().equals(type)) {
-            LocalTime tValue = value == null ? null : new LocalTime(value);
+            LocalTime tValue = value == null 
+            	? null 
+            	: InternalUtil.parseTime(value);
             return OProperties.time(name, tValue);
         } else if (EdmType.STRING.toTypeString().equals(type) || type == null) {
             return OProperties.string(name, value);
@@ -172,6 +184,10 @@ public class OProperties {
     public static OProperty<LocalTime> time(String name, LocalTime value) {
         return new PropertyImpl<LocalTime>(name, EdmType.TIME, value);
     }
+    
+    public static OProperty<LocalTime> time(String name, Date value) {
+        return new PropertyImpl<LocalTime>(name, EdmType.TIME, new LocalTime(value));
+    }    
 
     public static OProperty<Short> short_(String name, Short value) {
         return new PropertyImpl<Short>(name, EdmType.INT16, value);

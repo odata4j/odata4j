@@ -20,4 +20,20 @@
       <property name="eclipselink.logging.exceptions" value="true"/>
     </properties>
   </persistence-unit>
+    <persistence-unit name="AirlineService" transaction-type="RESOURCE_LOCAL">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <class>org.odata4j.producer.jpa.airline.FlightSchedule</class>
+    <class>org.odata4j.producer.jpa.airline.Airport</class>
+    <class>org.odata4j.producer.jpa.airline.Flight</class>
+    <properties>
+      <property name="eclipselink.target-database" value="HSQL"/>
+      <property name="eclipselink.jdbc.driver" value="org.hsqldb.jdbcDriver"/>
+      <property name="eclipselink.jdbc.url" value="jdbc:hsqldb:mem:airline;shutdown=true;ifxeists=true"/>
+      <property name="eclipselink.jdbc.user" value="sa"/>
+      <property name="eclipselink.jdbc.password" value=""/>
+      <property name="eclipselink.ddl-generation" value="create-tables"/>
+      <property name="eclipselink.logging.level" value="FINER"/>
+      <property name="eclipselink.logging.exceptions" value="true"/>
+    </properties>
+  </persistence-unit>
 </persistence>
