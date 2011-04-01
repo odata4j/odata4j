@@ -51,7 +51,7 @@ import org.odata4j.producer.resources.ODataProducerProvider;
  */
 public class XmlDataProducerExample {
 
-	public static final String endpointUri = "http://localhost:8010/XmlDataProducerExample.svc/";
+	public static final String endpointUri = "http://localhost:8010/XmlDataProducerExample.svc";
 
 	public static void main(String[] args) throws Exception {
 
@@ -152,8 +152,7 @@ public class XmlDataProducerExample {
 			EdmEntityContainer container = new EdmEntityContainer(namespace
 					+ "Entities", true, null, entitySets, null, null);
 			EdmSchema modelSchema = new EdmSchema(namespace + "Model", null,
-					entityTypes, null, null, Enumerable.create(container)
-							.toList());
+					entityTypes, null, null, null);
 			EdmSchema containerSchema = new EdmSchema(namespace + "Container",
 					null, null, null, null, Enumerable.create(container)
 							.toList());
