@@ -1,5 +1,6 @@
 package org.odata4j.producer.jpa;
 
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
@@ -14,6 +15,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.persistence.Column;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -130,8 +132,15 @@ public class JPAEdmGenerator {
             type = toEdmType(sa);
         }
         boolean nullable = sa.isOptional();
+        
+		Integer maxLength = null;
+		if (sa.getJavaMember() instanceof AnnotatedElement) {
+			Column col = ((AnnotatedElement) sa.getJavaMember()).getAnnotation(Column.class);
+			if (col != null)
+				maxLength = col.length();
+		}
 
-        return new EdmProperty(name, type, nullable, null, null, null, null, null, null, null, null, null);
+		return new EdmProperty(name, type, nullable, maxLength, null, null, null, null, null, null, null, null);
     }
 
     protected List<EdmProperty> getProperties(String modelNamespace, ManagedType<?> et) {
