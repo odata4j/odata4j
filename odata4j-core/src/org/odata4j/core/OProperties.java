@@ -64,6 +64,8 @@ public class OProperties {
         } else if (type == EdmType.SINGLE) {
         	Float fValue = (Float) value;
             return OProperties.single(name, fValue);
+        } else if (type == EdmType.CHARACTER) {
+            return OProperties.character(name, (Character)value);
         } else {
         	if (exceptionOnUnknownType) {
         		throw new UnsupportedOperationException("Implement " + type);
@@ -147,6 +149,10 @@ public class OProperties {
 
     public static OProperty<String> string(String name, char value) {
         return new PropertyImpl<String>(name, EdmType.STRING, Character.toString(value));
+    }
+
+    public static OProperty<Character> character(String name, Character value) {
+        return new PropertyImpl<Character>(name, EdmType.STRING, value);
     }
 
     public static OProperty<Guid> guid(String name, String value) {
