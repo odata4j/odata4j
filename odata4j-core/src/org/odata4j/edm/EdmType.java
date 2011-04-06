@@ -22,6 +22,7 @@ public class EdmType {
     public static final EdmType BYTE = get(true, "Edm.Byte");
     public static final EdmType STRING = get(true, "Edm.String");
     public static final EdmType FACETS = get(true, "Edm.Facets");
+    public static final EdmType CHARACTER = get(true, "Edm.Character");
 
     private final boolean isPrimitive;
     private final String typeString;
