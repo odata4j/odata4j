@@ -46,7 +46,7 @@ public class ODataTestServiceReadWriteExample extends BaseExample {
         OEntity newProduct = c.createEntity("Products")
                 .properties(OProperties.int32("ID", 10))
                 .properties(OProperties.string("Name","Josta"))
-                .properties(OProperties.string("Description","With guaran·"))
+                .properties(OProperties.string("Description","With guaran√°"))
                 .properties(OProperties.datetime("ReleaseDate",new LocalDateTime()))
                 .properties(OProperties.int32("Rating", 1))
                 .properties(OProperties.decimal("Price", 1.23))

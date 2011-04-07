@@ -62,7 +62,7 @@ public class CreateWithLinkTest extends AirlineJPAProducerTestBase {
 		muc = consumer.getEntity("FlightSchedule", flightSchedule.getProperty("flightScheduleID").getValue())
 			.nav("departureAirport")
 			.execute();
-		Assert.assertEquals("Franz Josef Strauﬂ", muc.getProperty("name").getValue());
+		Assert.assertEquals("Franz Josef Strau√ü", muc.getProperty("name").getValue());
 
 		sfo = consumer.getEntity("FlightSchedule", flightSchedule.getProperty("flightScheduleID").getValue())
 			.nav("arrivalAirport")
