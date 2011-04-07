@@ -2,25 +2,54 @@ package org.odata4j.format.json;
 
 import java.io.Reader;
 
-import org.odata4j.edm.EdmDataServices;
-import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.core.ODataVersion;
 import org.odata4j.format.Entry;
 import org.odata4j.format.FormatParser;
-import org.odata4j.format.json.JsonFeedFormatParser.JsonEntry;
-import org.odata4j.internal.FeedCustomizationMapping;
+import org.odata4j.format.Settings;
+import org.odata4j.format.json.JsonStreamReaderFactory.JsonStreamReader;
 
-public class JsonEntryFormatParser implements FormatParser<JsonEntry> {
+public class JsonEntryFormatParser extends JsonFormatParser implements FormatParser<Entry> {
 
-	@Override
-	public JsonEntry parse(Reader reader) {
-		return null;
+	public JsonEntryFormatParser(Settings settings) {
+		super(settings);
 	}
 
 	@Override
-	public <E> E toOEntity(Entry entry, Class<E> entityType,
-			EdmDataServices metadata, EdmEntitySet entitySet,
-			FeedCustomizationMapping fcMapping) {
-		return null;
+	public Entry parse(Reader reader) {
+		JsonStreamReader jsr = JsonStreamReaderFactory.createJsonStreamReader(reader);
+		try {
+			ensureNext(jsr);
+
+			//	skip the StartObject event
+			ensureStartObject(jsr.nextEvent());
+
+			if (isResponse) {
+    			// "d" property
+    			ensureNext(jsr);
+    			ensureStartProperty(jsr.nextEvent(), DATA_PROPERTY);
+
+    			//	skip the StartObject event
+    			ensureStartObject(jsr.nextEvent());
+			}
+			
+			//	"result" for DataServiceVersion > 1.0
+			if (version.compareTo(ODataVersion.V1) > 0) {
+				ensureNext(jsr);
+				ensureStartObject(jsr.nextEvent());
+				ensureNext(jsr);
+				ensureStartProperty(jsr.nextEvent(), RESULTS_PROPERTY);
+				
+				//	skip the StartObject event
+				ensureStartObject(jsr.nextEvent());
+			}
+
+			//	parse the entry
+			return parseEntry(metadata.getEdmEntitySet(entitySetName), jsr);
+
+			// no interest in the closing events
+		} finally {
+			jsr.close();
+		}
 	}
 
 }

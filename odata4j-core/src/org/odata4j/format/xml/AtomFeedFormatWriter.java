@@ -20,7 +20,7 @@ public class AtomFeedFormatWriter extends XmlFormatWriter implements FormatWrite
 
     @Override
     public String getContentType() {
-        return ODataConstants.APPLICATION_XML_CHARSET_UTF8;
+        return ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8;
     }
     
     

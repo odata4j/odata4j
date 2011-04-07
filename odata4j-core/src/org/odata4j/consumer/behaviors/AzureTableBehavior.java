@@ -29,7 +29,7 @@ public class AzureTableBehavior implements OClientBehavior {
     public void modify(ClientConfig clientConfig) { }
 
     @Override
-    public <E extends Entry> ODataClientRequest<E> transform(ODataClientRequest<E> request) {
+    public <E extends Entry> ODataClientRequest transform(ODataClientRequest request) {
         try {
             String utc = new DateTime(DateTimeZone.UTC).toString("EEE, dd MMM yyyy HH:mm:ss zzz");
             String date = utc.substring(0, utc.lastIndexOf(' ') + 1) + "GMT";

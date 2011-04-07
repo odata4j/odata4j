@@ -9,6 +9,7 @@ import org.odata4j.consumer.behaviors.MethodTunnelingBehavior;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OPredicates;
 import org.odata4j.core.OProperties;
+import org.odata4j.format.FormatType;
 
 public class JPAProducerCreateTest extends JPAProducerTestBase {
 	
@@ -18,37 +19,67 @@ public class JPAProducerCreateTest extends JPAProducerTestBase {
 	}
 
 	@Test
-	public void tunneledInsertEntityToExistingEntityRelation() {
-		ODataConsumer consumer = ODataConsumer.create(endpointUri, new MethodTunnelingBehavior("PUT"));
-		
+	public void tunneledInsertEntityToExistingEntityRelationAtom() {
+		ODataConsumer consumer = ODataConsumer.create(endpointUri, new MethodTunnelingBehavior("PUT"));		
 		insertEntityToExistingEntityRelationAndTest(consumer);
 	}
 
 	@Test
-	public void insertEntityToExistingEntityRelation() {
+	public void tunneledInsertEntityToExistingEntityRelationJson() {
+		ODataConsumer consumer = ODataConsumer.create(FormatType.JSON, endpointUri, new MethodTunnelingBehavior("PUT"));
+		insertEntityToExistingEntityRelationAndTest(consumer);
+	}
+
+	@Test
+	public void insertEntityToExistingEntityRelationAtom() {
 		ODataConsumer consumer = ODataConsumer.create(endpointUri);
-		
 		insertEntityToExistingEntityRelationAndTest(consumer);
 	}
 
 	@Test
-	public void tunneledInsertEntityUsingLinks() {
+	public void insertEntityToExistingEntityRelationJson() {
+		ODataConsumer consumer = ODataConsumer.create(FormatType.JSON, endpointUri);
+		insertEntityToExistingEntityRelationAndTest(consumer);
+	}
+
+	@Test
+	public void tunneledInsertEntityUsingLinksAtom() {
 		ODataConsumer consumer = ODataConsumer.create(endpointUri, new MethodTunnelingBehavior("PUT"));
-		
 		insertEntityUsingLinksAndTest(consumer);
 	}
 
 	@Test
-	public void insertEntityUsingLinks() {
+	public void tunneledInsertEntityUsingLinksJson() {
+		ODataConsumer consumer = ODataConsumer.create(FormatType.JSON, endpointUri, new MethodTunnelingBehavior("PUT"));
+		insertEntityUsingLinksAndTest(consumer);
+	}
+
+	@Test
+	public void insertEntityUsingLinksAtom() {
 		ODataConsumer consumer = ODataConsumer.create(endpointUri);
-		
 		insertEntityUsingLinksAndTest(consumer);
 	}
 	
 	@Test
-	public void insertEntityWithInlinedEntities() {
+	public void insertEntityUsingLinksJson() {
+		ODataConsumer consumer = ODataConsumer.create(FormatType.JSON, endpointUri);
+		insertEntityUsingLinksAndTest(consumer);
+	}
+
+	@Test
+	public void insertEntityWithInlinedEntitiesAtom() {
 		ODataConsumer consumer = ODataConsumer.create(endpointUri);
-		
+		insertEntityWithInlinedEntities(consumer);
+	}
+	
+	@Test
+	public void insertEntityWithInlinedEntitiesJson() {
+		ODataConsumer consumer = ODataConsumer.create(FormatType.JSON, endpointUri);
+		insertEntityWithInlinedEntities(consumer);
+	}
+
+	protected void insertEntityWithInlinedEntities(ODataConsumer consumer) {
+
 		final long now = System.currentTimeMillis();
 		OEntity prod1 = consumer
 			.createEntity("Products")
@@ -88,10 +119,19 @@ public class JPAProducerCreateTest extends JPAProducerTestBase {
 		Assert.assertNotNull(prod2.getProperty("ProductID").getValue());
 		Assert.assertEquals(false, prod2.getProperty("Discontinued").getValue());
 	}
-	
+
 	@Test
-	public void insertEntityWithInlinedEntity() {
-		ODataConsumer consumer = ODataConsumer.create(endpointUri);
+	public void insertEntityWithInlinedEntityAtom() {
+		insertEntityWithInlinedEntity(ODataConsumer.create(endpointUri));
+	}
+	
+//	@Test
+	public void insertEntityWithInlinedEntityJson() {
+		insertEntityWithInlinedEntity(ODataConsumer.create(FormatType.JSON, endpointUri));
+	}
+
+	public void insertEntityWithInlinedEntity(ODataConsumer consumer) {
+		ODataConsumer.dump.all(true);
 
 		final long now = System.currentTimeMillis();
 		OEntity category = consumer

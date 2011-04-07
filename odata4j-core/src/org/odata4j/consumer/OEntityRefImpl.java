@@ -4,22 +4,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.core4j.Enumerable;
+import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OEntityRef;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.format.Entry;
 import org.odata4j.format.Feed;
-import org.odata4j.format.xml.AtomFeedFormatParser.AtomEntry;
-import org.odata4j.format.xml.AtomFeedFormatParser.DataServicesAtomEntry;
+import org.odata4j.format.FormatParser;
+import org.odata4j.format.FormatParserFactory;
+import org.odata4j.format.Settings;
 import org.odata4j.internal.EntitySegment;
 import org.odata4j.internal.FeedCustomizationMapping;
 import org.odata4j.internal.InternalUtil;
 
-public class OEntityRefImpl<T, F extends Feed<E>, E extends Entry> implements OEntityRef<T> {
+import com.sun.jersey.api.client.ClientResponse;
+
+public class OEntityRefImpl<T> implements OEntityRef<T> {
 
     private final boolean isDelete;
-    private final ODataClient<F, E> client;
+    private final ODataClient client;
     private final Class<T> entityType;
     private final EdmDataServices metadata;
     private final String serviceRootUri;
@@ -27,7 +31,7 @@ public class OEntityRefImpl<T, F extends Feed<E>, E extends Entry> implements OE
 
     private final FeedCustomizationMapping fcMapping;
    
-    public OEntityRefImpl(boolean isDelete, ODataClient<F, E> client, Class<T> entityType, String serviceRootUri, EdmDataServices metadata, String entitySetName, Object[] key, FeedCustomizationMapping fcMapping) {
+    public OEntityRefImpl(boolean isDelete, ODataClient client, Class<T> entityType, String serviceRootUri, EdmDataServices metadata, String entitySetName, Object[] key, FeedCustomizationMapping fcMapping) {
         this.isDelete = isDelete;
         this.client = client;
         this.entityType = entityType;
@@ -57,20 +61,18 @@ public class OEntityRefImpl<T, F extends Feed<E>, E extends Entry> implements OE
         String path = Enumerable.create(segments).join("/");
 
         if (isDelete) {
-            ODataClientRequest<E> request = ODataClientRequest.delete(serviceRootUri + path);
+            ODataClientRequest request = ODataClientRequest.delete(serviceRootUri + path);
             client.deleteEntity(request);
             return null;
 
         } else {
 
-            ODataClientRequest<E> request = ODataClientRequest.get(serviceRootUri + path);
+            ODataClientRequest request = ODataClientRequest.get(serviceRootUri + path);
 
-            //	TODO get rid of the Atom dependency
-            AtomEntry entry = (AtomEntry)client.getEntity(request);
-            if (entry == null)
-                return null;
-            DataServicesAtomEntry dsae = (DataServicesAtomEntry) entry;
-            
+            ClientResponse response = client.getEntity(request);
+            if (response == null)
+            	return null;
+
         	//	the first segment contains the entitySetName we start from
         	EdmEntitySet entitySet = metadata.getEdmEntitySet(segments.get(0).segment);
         	for(EntitySegment segment : segments.subList(1, segments.size()) ) {
@@ -78,7 +80,16 @@ public class OEntityRefImpl<T, F extends Feed<E>, E extends Entry> implements OE
         		entitySet = metadata.getEdmEntitySet(navProperty.toRole.type);
         	}
 
-            return (T) InternalUtil.toEntity(entityType, metadata, entitySet, dsae,fcMapping);
+        	// TODO determine the service version from header (and metadata?) 
+    		final FormatParser<Feed> parser = FormatParserFactory
+    			.getParser(Feed.class, client.type, 
+    					new Settings(ODataConstants.DATA_SERVICE_VERSION, metadata, entitySet.name, fcMapping));
+            
+    		Entry entry  = Enumerable.create(parser.parse(client.getFeedReader(response))
+    				.getEntries())
+    				.firstOrNull();
+
+            return (T) InternalUtil.toEntity(entityType, entry.getEntity());
         }
     }
 

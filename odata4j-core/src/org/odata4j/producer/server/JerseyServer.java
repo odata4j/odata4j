@@ -122,6 +122,9 @@ public class JerseyServer {
         paf.put("com.sun.jersey.spi.container.ContainerRequestFilters", Enumerable.create(jerseyRequestFilters).toArray(String.class));
         paf.put("com.sun.jersey.spi.container.ContainerResponseFilters", Enumerable.create(jerseyResponseFilters).toArray(String.class));
         paf.put("com.sun.jersey.spi.container.ResourceFilters", Enumerable.create(jerseyResourceFilters).toArray(String.class));
+        //	Enabling this feature can be useful in tracking down issues
+        //	related to selecting the resource class
+//        paf.put("com.sun.jersey.config.feature.Trace", Boolean.TRUE);
         c.setPropertiesAndFeatures(paf);
         return c;
     }

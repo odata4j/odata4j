@@ -32,7 +32,7 @@ public class JsonFeedFormatWriter extends JsonFormatWriter<EntitiesResponse> {
                         jw.writeSeparator();
                     }
 
-                    writeOEntity(uriInfo, jw, oe, target.getEntitySet());
+                    writeOEntity(uriInfo, jw, oe, target.getEntitySet(), true);
                 }
 
             }

@@ -5,21 +5,22 @@ import java.util.List;
 
 import org.core4j.Enumerable;
 import org.core4j.Predicate1;
+import org.odata4j.core.ODataVersion;
 
 public class EdmDataServices {
 
-    private final String version;
+    private final ODataVersion version;
     private final List<EdmSchema> schemas;
 
     public static final EdmDataServices EMPTY = new EdmDataServices(null,new ArrayList<EdmSchema>());
     
-    public EdmDataServices(String version, List<EdmSchema> schemas) {
+    public EdmDataServices(ODataVersion version, List<EdmSchema> schemas) {
         this.version = version;
         this.schemas = schemas;
     }
     
     public String getVersion(){
-    	return version;
+    	return version != null ? version.asString : null;
     }
     public List<EdmSchema> getSchemas() {
 		return schemas;

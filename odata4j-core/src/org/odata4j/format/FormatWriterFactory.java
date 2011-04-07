@@ -6,15 +6,11 @@ import javax.ws.rs.core.MediaType;
 
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.format.json.JsonEntryFormatWriter;
-import org.odata4j.format.json.JsonFeedFormatParser.JsonEntry;
-import org.odata4j.format.json.JsonFeedFormatParser.JsonFeed;
 import org.odata4j.format.json.JsonFeedFormatWriter;
 import org.odata4j.format.json.JsonPropertyFormatWriter;
 import org.odata4j.format.json.JsonRequestEntryFormatWriter;
 import org.odata4j.format.json.JsonServiceDocumentFormatWriter;
 import org.odata4j.format.xml.AtomEntryFormatWriter;
-import org.odata4j.format.xml.AtomFeedFormatParser.AtomEntry;
-import org.odata4j.format.xml.AtomFeedFormatParser.AtomFeed;
 import org.odata4j.format.xml.AtomFeedFormatWriter;
 import org.odata4j.format.xml.AtomRequestEntryFormatWriter;
 import org.odata4j.format.xml.AtomServiceDocumentFormatWriter;
@@ -24,14 +20,14 @@ import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.PropertyResponse;
 
 public class FormatWriterFactory {
-
-    private static interface FormatWriters<F extends Feed<E>, E extends Entry> {
+	
+    private static interface FormatWriters {
         
         public FormatWriter<EdmDataServices> getServiceDocumentFormatWriter();
         public FormatWriter<EntitiesResponse> getFeedFormatWriter();
         public FormatWriter<EntityResponse> getEntryFormatWriter();
         public FormatWriter<PropertyResponse> getPropertyFormatWriter();
-        public FormatWriter<E> getRequestEntryFormatWriter();
+        public FormatWriter<Entry> getRequestEntryFormatWriter();
     }
     
     @SuppressWarnings("unchecked")
@@ -59,7 +55,7 @@ public class FormatWriterFactory {
             type = FormatType.ATOM;
      
         
-        FormatWriters<?, ?> formatWriters = type.equals(FormatType.JSON)?new JsonWriters(callback):new AtomWriters();
+        FormatWriters formatWriters = type.equals(FormatType.JSON)?new JsonWriters(callback):new AtomWriters();
         
         if (targetType.equals(EdmDataServices.class)) {
             return (FormatWriter<T>)formatWriters.getServiceDocumentFormatWriter();
@@ -81,7 +77,7 @@ public class FormatWriterFactory {
     }
     
     
-    public static class JsonWriters implements FormatWriters<JsonFeed, JsonEntry> {
+    public static class JsonWriters implements FormatWriters {
 
         private final String callback;
         public JsonWriters(String callback){
@@ -107,12 +103,12 @@ public class FormatWriterFactory {
         	return new JsonPropertyFormatWriter(callback);
         }
 		@Override
-		public FormatWriter<JsonEntry> getRequestEntryFormatWriter() {
+		public FormatWriter<Entry> getRequestEntryFormatWriter() {
 			return new JsonRequestEntryFormatWriter(callback);
 		}
         
     }
-    public static class AtomWriters implements FormatWriters<AtomFeed, AtomEntry> {
+    public static class AtomWriters implements FormatWriters {
 
         @Override
         public FormatWriter<EdmDataServices> getServiceDocumentFormatWriter() {
@@ -135,7 +131,7 @@ public class FormatWriterFactory {
         }
 
 		@Override
-		public FormatWriter<AtomEntry> getRequestEntryFormatWriter() {
+		public FormatWriter<Entry> getRequestEntryFormatWriter() {
 			return new AtomRequestEntryFormatWriter();
 		}
         

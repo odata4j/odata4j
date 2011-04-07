@@ -21,11 +21,13 @@ public class OProperties {
     	
     public static <T> OProperty<?> simple(String name, EdmType type, T value, boolean exceptionOnUnknownType) {    	
         if (type == EdmType.STRING) {
-        	String sValue = "";
-        	if (value instanceof String) {
-        		sValue = (String) value;
-        	} else if (value instanceof Character) {
-        		sValue = ((Character)value).toString();
+        	String sValue = null;
+        	if (value != null) {
+        		if (value instanceof Character) {
+        			sValue = ((Character)value).toString();
+        		} else {
+        			sValue = (String) value;
+        		}
         	}
             return OProperties.string(name, sValue);
         } else if (type == EdmType.BOOLEAN) {

@@ -3,9 +3,6 @@ package org.odata4j.format;
 import java.io.Reader;
 
 import org.odata4j.core.OEntity;
-import org.odata4j.edm.EdmDataServices;
-import org.odata4j.edm.EdmEntitySet;
-import org.odata4j.internal.FeedCustomizationMapping;
 
 /**
  * Deals with parsing the resulting stream into a <code>Entry</code> or
@@ -21,8 +18,4 @@ public interface FormatParser<T> {
 
 	public T parse(Reader reader);
 
-	public <E> E toOEntity(Entry entry, Class<E> entityType,
-			EdmDataServices metadata,
-			EdmEntitySet entitySet,
-			FeedCustomizationMapping fcMapping);
 }

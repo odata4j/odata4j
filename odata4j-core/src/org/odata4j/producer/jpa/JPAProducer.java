@@ -21,7 +21,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Query;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Attribute.PersistentAttributeType;
-import javax.persistence.metamodel.CollectionAttribute;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.PluralAttribute;
@@ -825,7 +824,7 @@ public class JPAProducer implements ODataProducer {
 				String propName = propNameSplit[propNameSplit.length - 1];
 
 				if (link instanceof ORelatedEntitiesLinkInline) {
-					CollectionAttribute<?, ?> att = jpaEntityType.getCollection(propName);
+					PluralAttribute<?, ?, ?> att = (PluralAttribute<?, ?, ?>)jpaEntityType.getAttribute(propName);
 					Member member = att.getJavaMember();
 					
 					EntityType<?> collJpaEntityType = (EntityType<?>)att.getElementType();

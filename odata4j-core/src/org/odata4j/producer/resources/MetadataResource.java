@@ -25,6 +25,6 @@ public class MetadataResource {
         StringWriter w = new StringWriter();
         EdmxFormatWriter.write(s, w);
 
-        return Response.ok(w.toString(), ODataConstants.APPLICATION_XML_CHARSET_UTF8).header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION).build();
+        return Response.ok(w.toString(), ODataConstants.APPLICATION_XML_CHARSET_UTF8).header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
     }
 }

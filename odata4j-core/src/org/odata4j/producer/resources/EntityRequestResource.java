@@ -40,7 +40,7 @@ public class EntityRequestResource extends BaseResource {
 
         producer.updateEntity(entitySetName, idObject, entity);
 
-        return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION).build();
+        return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
     }
 
     @POST
@@ -54,20 +54,20 @@ public class EntityRequestResource extends BaseResource {
             OEntity entity = this.getRequestEntity(context.getRequest(),producer.getMetadata(),entitySetName);
             producer.mergeEntity(entitySetName, idObject, entity);
 
-            return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION).build();
+            return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
         }
 
         if ("DELETE".equals(method)) {
             producer.deleteEntity(entitySetName, idObject);
             
-            return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION).build();
+            return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
         }
         
         if ("PUT".equals(method)) {
             OEntity entity = this.getRequestEntity(context.getRequest(),producer.getMetadata(),entitySetName);
             producer.updateEntity(entitySetName, idObject, entity);
 
-            return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION).build();
+            return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
         }
 
         throw new RuntimeException("Expected a tunnelled PUT, MERGE or DELETE");
@@ -82,7 +82,7 @@ public class EntityRequestResource extends BaseResource {
 
         producer.deleteEntity(entitySetName, idObject);
 
-        return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION).build();
+        return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
     }
 
     @GET
@@ -104,8 +104,13 @@ public class EntityRequestResource extends BaseResource {
         fw.write(context.getUriInfo(), sw, response);
         String entity = sw.toString();
 
-        return Response.ok(entity, fw.getContentType()).header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION).build();
+        return Response.ok(entity, fw.getContentType()).header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
 
+    }
+    
+    @Path("{first: \\$}links/{navProp:.+}") 
+    public LinksRequestResource getLinks() {
+    	return new LinksRequestResource();
     }
 
     @Path("{navProp:.+}")

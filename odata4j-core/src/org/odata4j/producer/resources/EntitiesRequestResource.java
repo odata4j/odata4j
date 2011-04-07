@@ -13,15 +13,19 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.MediaType;
 
 import org.odata4j.core.Guid;
 import org.odata4j.core.ODataConstants;
+import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OEntity;
 import org.odata4j.format.FormatWriter;
 import org.odata4j.format.FormatWriterFactory;
-import org.odata4j.format.xml.AtomEntryFormatWriter;
+import org.odata4j.internal.InternalUtil;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.ODataProducer;
@@ -35,32 +39,40 @@ public class EntitiesRequestResource extends BaseResource {
 	private static final Logger log = Logger.getLogger(EntitiesRequestResource.class.getName());
 
 	@POST
-	@Produces(ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8)
+	@Produces({ ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8, ODataConstants.TEXT_JAVASCRIPT_CHARSET_UTF8, ODataConstants.APPLICATION_JAVASCRIPT_CHARSET_UTF8})
 	public Response createEntity(
 			@Context HttpContext context,
+			@Context HttpHeaders headers,
 			@Context ODataProducer producer,
 			final @PathParam("entitySetName") String entitySetName) {
+		
+		// TODO get rid of the jersey dependency
+		// - add @Context Request request, @Context UriInfo uriInfo, @Context HttpHeaders headers
+		// - add a String parameter for the requestEntity
+		// - get the MediaType from headers.getMediaType()
 
 		log.info(String.format("createEntity(%s)", entitySetName));
-
-		OEntity entity = this.getRequestEntity(context.getRequest(),producer.getMetadata(),entitySetName);
+		
+		OEntity entity = this.getRequestEntity(context.getRequest(), producer.getMetadata(), entitySetName);
 
 		EntityResponse response = producer.createEntity(entitySetName, entity);
 
+		FormatWriter<EntityResponse> writer = FormatWriterFactory
+			.getFormatWriter(EntityResponse.class, headers.getAcceptableMediaTypes(), null, null);
 		StringWriter sw = new StringWriter();
-		String entryId = new AtomEntryFormatWriter().writeAndReturnId(
-				context.getUriInfo(), 
-				sw, 
-				response);
+		writer.write(context.getUriInfo(), sw, response);
+			
+		String relid = InternalUtil.getEntityRelId(response.getEntity());
+		String entryId = context.getUriInfo().getBaseUri().toString() + relid;		
 		
 		String responseEntity = sw.toString();
 
 		return Response
-				.ok(responseEntity,ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8)
+				.ok(responseEntity,writer.getContentType())
 				.status(Status.CREATED)
 				.location(URI.create(entryId))
 				.header(ODataConstants.Headers.DATA_SERVICE_VERSION,
-						ODataConstants.DATA_SERVICE_VERSION).build();
+						ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
 
 	}
 
@@ -118,10 +130,14 @@ public class EntitiesRequestResource extends BaseResource {
 		fw.write(context.getUriInfo(), sw, response);
 		String entity = sw.toString();
 
+		// TODO remove this hack, check whether we are Version 2.0 compatible anyway
+		ODataVersion version = MediaType.valueOf(fw.getContentType()).isCompatible(MediaType.APPLICATION_JSON_TYPE)
+			? ODataVersion.V2 : ODataVersion.V2;
+
 		return Response
 				.ok(entity, fw.getContentType())
 				.header(ODataConstants.Headers.DATA_SERVICE_VERSION,
-						ODataConstants.DATA_SERVICE_VERSION).build();
+						version.asString).build();
 
 	}
 
@@ -130,6 +146,8 @@ public class EntitiesRequestResource extends BaseResource {
 	@Produces(ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8)
 	public Response processBatch(
 			@Context ODataProducer producer,
+			@Context HttpHeaders headers,
+			@Context Request request,
 			final List<BatchBodyPart> bodyParts) {
 
 		log.info(String.format("processBatch(%s)", ""));
@@ -156,7 +174,7 @@ public class EntitiesRequestResource extends BaseResource {
 
 			switch (bodyPart.getHttpMethod()) {
 				case POST:
-					response = this.createEntity(context, producer,
+					response = this.createEntity(context, headers, producer,
 							entitySetName);
 					break;
 				case PUT:
@@ -193,7 +211,7 @@ public class EntitiesRequestResource extends BaseResource {
 				.type(ODataBatchProvider.MULTIPART_MIXED + ";boundary="
 								+ batchBoundary).header(
 						ODataConstants.Headers.DATA_SERVICE_VERSION,
-						ODataConstants.DATA_SERVICE_VERSION)
+						ODataConstants.DATA_SERVICE_VERSION_HEADER)
 				.entity(batchResponse.toString()).build();
 	}
 }

@@ -3,7 +3,6 @@ package org.odata4j.internal;
 import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -24,22 +23,14 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISOPeriodFormat;
 import org.odata4j.core.Guid;
 import org.odata4j.core.NamedValue;
-import org.odata4j.core.OEntities;
+import org.odata4j.core.ODataConstants;
+import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OEntity;
-import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OLink;
-import org.odata4j.core.OLinks;
-import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
 import org.odata4j.core.ORelatedEntitiesLinkInline;
 import org.odata4j.core.ORelatedEntityLink;
-import org.odata4j.edm.EdmDataServices;
-import org.odata4j.edm.EdmEntitySet;
-import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmType;
-import org.odata4j.format.xml.AtomFeedFormatParser.AtomLink;
-import org.odata4j.format.xml.AtomFeedFormatParser.DataServicesAtomEntry;
-import org.odata4j.format.xml.XmlFormatWriter;
 import org.odata4j.producer.inmemory.BeanModel;
 import org.odata4j.stax2.XMLEventReader2;
 import org.odata4j.stax2.XMLFactoryProvider2;
@@ -229,112 +220,11 @@ public class InternalUtil {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> T toEntity(Class<T> entityType, EdmDataServices metadata,
-			EdmEntitySet entitySet, DataServicesAtomEntry dsae,
-			FeedCustomizationMapping fcMapping) {
-		OEntity oe = InternalUtil.entityFromAtomEntry(metadata, entitySet, dsae,
-				fcMapping);
-
+	public static <T> T toEntity(Class<T> entityType, OEntity oe) {
 		if (entityType.equals(OEntity.class))
 			return (T) oe;
 		else
 			return (T) InternalUtil.toPojo(entityType, oe);
-	}
-
-	public static OEntity entityFromAtomEntry(
-			EdmDataServices metadata,
-			EdmEntitySet entitySet,
-			DataServicesAtomEntry dsae,
-			FeedCustomizationMapping mapping) {
-		if (mapping == null)
-			return OEntities.create(
-					entitySet,
-					OEntityKey.infer(entitySet,dsae.properties),
-					dsae.properties,
-					toOLinks(metadata, entitySet, dsae.atomLinks, mapping), 
-					dsae.title,
-					dsae.categoryTerm);
-
-		Enumerable<OProperty<?>> properties = Enumerable.create(dsae.properties);
-		if (mapping.titlePropName != null)
-			properties = properties.concat(OProperties.string(mapping.titlePropName,dsae.title));
-		if (mapping.summaryPropName != null)
-			properties = properties.concat(OProperties.string(mapping.summaryPropName, dsae.summary));
-
-		List<OProperty<?>> props = properties.toList();
-		return OEntities.create(
-				entitySet,
-				OEntityKey.infer(entitySet, props),
-				props,
-				toOLinks(metadata, entitySet, dsae.atomLinks, mapping), 
-				dsae.title, 
-				dsae.categoryTerm);
-
-	}
-
-	private static List<OLink> toOLinks(
-			final EdmDataServices metadata,
-			EdmEntitySet fromRoleEntitySet,
-			List<AtomLink> links,
-			final FeedCustomizationMapping mapping) {
-		List<OLink> rt = new ArrayList<OLink>(links.size());
-		for (final AtomLink link : links) {
-
-			if (link.relation.startsWith(XmlFormatWriter.related)) {
-				if (link.type.equals(XmlFormatWriter.atom_feed_content_type)) {
-					List<OEntity> relatedEntities = null;
-					// do we have inlined entities
-					if (link.inlineFeed != null && link.inlineFeed.entries != null) {
-						
-						//	get the entity set belonging to the from role type
-						EdmNavigationProperty navProperty = fromRoleEntitySet != null
-							? fromRoleEntitySet.type.getNavigationProperty(link.title)
-							: null;
-    					final EdmEntitySet toRoleEntitySet = metadata != null && navProperty != null
-    						? metadata.getEdmEntitySet(navProperty.toRole.type)
-    						: null;
-
-						//	convert the atom feed entries to OEntitys
-						relatedEntities = Enumerable
-								.create(link.inlineFeed.entries)
-								.cast(DataServicesAtomEntry.class)
-								.select(new Func1<DataServicesAtomEntry, OEntity>() {
-									@Override
-									public OEntity apply(
-											DataServicesAtomEntry input) {
-										return entityFromAtomEntry(metadata, toRoleEntitySet, input, mapping);
-									}
-								}).toList();
-						rt.add(OLinks.relatedEntitiesInline(
-								link.relation, 
-								link.title,
-								link.href, 
-								relatedEntities));
-					} else {
-						//	no inlined entities
-						rt.add(OLinks.relatedEntities(link.relation, link.title, link.href));
-					}
-				} else if (link.type.equals(XmlFormatWriter.atom_entry_content_type))
-					if (link.inlineEntry != null) {
-						EdmNavigationProperty navProperty = fromRoleEntitySet != null
-    						? fromRoleEntitySet.type.getNavigationProperty(link.title)
-    						: null;
-    					EdmEntitySet toRoleEntitySet = metadata != null && navProperty != null
-    						? metadata.getEdmEntitySet(navProperty.toRole.type)
-    						: null;
-
-						rt.add(OLinks.relatedEntityInline(link.relation,
-								link.title, link.href,
-								entityFromAtomEntry(metadata, toRoleEntitySet,
-										(DataServicesAtomEntry) link.inlineEntry,
-										mapping)));
-					} else {
-						//	no inlined entity
-						rt.add(OLinks.relatedEntity(link.relation, link.title, link.href));
-					}
-			}
-		}
-		return rt;
 	}
 
 	public static <T> T toPojo(Class<T> pojoClass, OEntity oe) {
@@ -486,5 +376,14 @@ public class InternalUtil {
 		} catch (InterruptedException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	public static ODataVersion getDataServiceVersion(String headerValue) {
+        ODataVersion version = ODataConstants.DATA_SERVICE_VERSION;
+        if (headerValue != null) {
+        	String[] str = headerValue.split(";");
+        	version = ODataVersion.parse(str[0]);
+        }
+        return version;
 	}
 }

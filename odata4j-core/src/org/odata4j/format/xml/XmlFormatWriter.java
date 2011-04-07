@@ -341,14 +341,16 @@ public class XmlFormatWriter {
 			}
 		} else if (linkToInline instanceof ORelatedEntityLinkInline) {
 			OEntity entity = ((ORelatedEntityLinkInline) linkToInline).getRelatedEntity();
-			writer.startElement("entry");
-			writeEntry(writer, entity,
-					entity.getProperties(), entity.getLinks(),
-					entity.getEntitySet().name,
-					baseUri, updated,
-					entity.getEntitySet(), isResponse);
-
-			writer.endElement("entry");
+			if (entity != null) {
+    			writer.startElement("entry");
+    			writeEntry(writer, entity,
+    					entity.getProperties(), entity.getLinks(),
+    					entity.getEntitySet().name,
+    					baseUri, updated,
+    					entity.getEntitySet(), isResponse);
+    
+    			writer.endElement("entry");
+			}
 		} else
 			throw new RuntimeException(
 					"Unknown OLink type " + linkToInline.getClass());

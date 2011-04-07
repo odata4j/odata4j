@@ -28,7 +28,7 @@ public class OldStylePagingBehavior implements OClientBehavior {
     }
 
     @Override
-    public <E extends Entry> ODataClientRequest<E> transform(ODataClientRequest<E> request) {
+    public <E extends Entry> ODataClientRequest transform(ODataClientRequest request) {
         if (request.getQueryParams().containsKey("$page"))
             return request;
         return request.queryParam("$page", Integer.toString(startPage)).queryParam("$itemsPerPage", Integer.toString(itemsPerPage));

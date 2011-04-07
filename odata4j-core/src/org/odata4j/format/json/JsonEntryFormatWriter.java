@@ -13,6 +13,6 @@ public class JsonEntryFormatWriter extends JsonFormatWriter<EntityResponse> {
 
     @Override
     protected void writeContent(ExtendedUriInfo uriInfo, JsonWriter jw, EntityResponse target) {    		
-        writeOEntity(uriInfo, jw, target.getEntity(), target.getEntity().getEntitySet());
+        writeOEntity(uriInfo, jw, target.getEntity(), target.getEntity().getEntitySet(), true);
     }
 }

@@ -22,8 +22,6 @@ import org.odata4j.expression.CommonExpression;
 import org.odata4j.expression.Expression;
 import org.odata4j.expression.ExpressionParser;
 import org.odata4j.expression.LiteralExpression;
-import org.odata4j.format.Entry;
-import org.odata4j.format.Feed;
 import org.odata4j.format.FormatType;
 import org.odata4j.format.xml.AtomFeedFormatParser.CollectionInfo;
 import org.odata4j.internal.EdmDataServicesDecorator;
@@ -130,17 +128,16 @@ public class ODataConsumer {
     
     private final Map<String,FeedCustomizationMapping> cachedMappings = new HashMap<String,FeedCustomizationMapping>();
     private final String serviceRootUri;
-    private final ODataClient<Feed<Entry>, Entry> client;
+    private final ODataClient client;
     
     private EdmDataServices cachedMetadata;
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
 	private ODataConsumer(FormatType type, String serviceRootUri, OClientBehavior... behaviors) {
         if (!serviceRootUri.endsWith("/"))
             serviceRootUri = serviceRootUri+"/";
         
         this.serviceRootUri = serviceRootUri;        
-        this.client = new ODataClient(type, type.getFeedClass(), type.getEntryClass(), behaviors);
+        this.client = new ODataClient(type, behaviors);
     }
 
     public String getServiceRootUri() {
@@ -155,17 +152,14 @@ public class ODataConsumer {
         return new ODataConsumer(FormatType.ATOM, serviceRootUri, behaviors);
     }
 
-    public static ODataConsumer create(FormatType type, String serviceRootUri) {
-        return new ODataConsumer(type, serviceRootUri);
+    public static ODataConsumer create(FormatType preferredType, String serviceRootUri) {
+        return new ODataConsumer(preferredType, serviceRootUri);
     }
 
-    public static ODataConsumer create(FormatType type, String serviceRootUri, OClientBehavior... behaviors) {
-        return new ODataConsumer(type, serviceRootUri, behaviors);
+    public static ODataConsumer create(FormatType preferredType, String serviceRootUri, OClientBehavior... behaviors) {
+        return new ODataConsumer(preferredType, serviceRootUri, behaviors);
     }
     
-    
-    
-    @SuppressWarnings({ "rawtypes", "unchecked" })
 	public Enumerable<String> getEntitySets() {
         ODataClientRequest request = ODataClientRequest.get(serviceRootUri);
         return Enumerable.create(client.getCollections(request)).select(new Func1<CollectionInfo, String>() {
@@ -196,7 +190,7 @@ public class ODataConsumer {
     
 	public <T> OQuery<T> getEntities(Class<T> entityType, String entitySetName) {
         FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
-		return new OQueryImpl<T, Feed<Entry>, Entry>(client, entityType, serviceRootUri, getMetadata(), entitySetName, mapping);
+		return new OQueryImpl<T>(client, entityType, serviceRootUri, getMetadata(), entitySetName, mapping);
     }
 
 	public OEntityRef<OEntity> getEntity(String entitySetName, Object... key) {
@@ -209,28 +203,30 @@ public class ODataConsumer {
     
     public <T> OEntityRef<T> getEntity(Class<T> entityType, String entitySetName, Object... key) {
         FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
-		return new OEntityRefImpl<T, Feed<Entry>, Entry>(false,  client,
+		return new OEntityRefImpl<T>(false,  client,
 				entityType, serviceRootUri, getMetadata(),
 				entitySetName, key, mapping);
     }
 
 	public OCreate<OEntity> createEntity(String entitySetName) {
 		FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
-		return new OCreateImpl<OEntity, Feed<Entry>, Entry>(client, serviceRootUri, getMetadata(),
+		return new OCreateImpl<OEntity>(client, serviceRootUri, getMetadata(),
 				entitySetName, mapping);
 	}
 	
 	public OModify<OEntity> updateEntity(OEntity entity, String entitySetName, Object... key) {
-        return new OModifyImpl<OEntity, Feed<Entry>, Entry>(entity, client, serviceRootUri, entitySetName, key);
+        return new OModifyImpl<OEntity>(entity, client, serviceRootUri, getMetadata(),
+        		entitySetName, key);
     }
 
     public OModify<OEntity> mergeEntity(String entitySetName, Object... key) {
-    	return new OModifyImpl<OEntity, Feed<Entry>, Entry>(null, client, serviceRootUri, entitySetName, key);
+    	return new OModifyImpl<OEntity>(null, client, serviceRootUri, 
+    			getMetadata(), entitySetName, key);
     }
 
 	public OEntityRef<Void> deleteEntity(String entitySetName, Object... key) {
         FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
-		return new OEntityRefImpl<Void, Feed<Entry>, Entry>(true, client,
+		return new OEntityRefImpl<Void>(true, client,
 				null, serviceRootUri, getMetadata(), entitySetName, key,
 				mapping);
     }
@@ -276,8 +272,6 @@ public class ODataConsumer {
 			return delegate;
 		}
 		
-		
-		@SuppressWarnings({ "rawtypes", "unchecked" })
 		private void refreshDelegate() {
 			ODataClientRequest request = ODataClientRequest.get(serviceRootUri + "$metadata");
 			EdmDataServices metadata = client.getMetadata(request);

@@ -10,8 +10,8 @@ public class ODataConstants {
     public static final String APPLICATION_JAVASCRIPT_CHARSET_UTF8 = APPLICATION_JAVASCRIPT + ";charset=utf-8";
     
     
-
-    public static final String DATA_SERVICE_VERSION = "1.0";
+    public static final ODataVersion DATA_SERVICE_VERSION = ODataVersion.V1;
+    public static final String DATA_SERVICE_VERSION_HEADER = DATA_SERVICE_VERSION.asString;
 
     public static class Headers {
         public static final String X_HTTP_METHOD = "X-HTTP-METHOD";

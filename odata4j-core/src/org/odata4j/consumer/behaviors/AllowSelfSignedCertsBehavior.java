@@ -22,7 +22,7 @@ public enum AllowSelfSignedCertsBehavior implements OClientBehavior {
 	INSTANCE;
 
 	@Override
-	public <E extends Entry> ODataClientRequest<E> transform(ODataClientRequest<E> request) {
+	public <E extends Entry> ODataClientRequest transform(ODataClientRequest request) {
 		return request;
 	}
 	

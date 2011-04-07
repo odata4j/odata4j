@@ -13,14 +13,18 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.odata4j.core.ODataConstants;
+import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OEntity;
+import org.odata4j.edm.EdmDataServices;
+import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.format.FormatWriter;
 import org.odata4j.format.FormatWriterFactory;
-import org.odata4j.format.xml.AtomEntryFormatWriter;
+import org.odata4j.internal.InternalUtil;
 import org.odata4j.producer.BaseResponse;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityResponse;
@@ -60,29 +64,41 @@ public class PropertyRequestResource extends BaseResource {
 		if (!"MERGE".equals(context.getRequest().getHeaderValue(
 				ODataConstants.Headers.X_HTTP_METHOD))) {
 			
-			OEntity entity = getRequestEntity(context.getRequest(),producer.getMetadata(),entitySetName);
+			//	determine the expected entity set
+			EdmDataServices metadata = producer.getMetadata();
+			EdmEntitySet ees = metadata
+					.getEdmEntitySet(metadata.getEdmEntitySet(entitySetName).type
+							.getNavigationProperty(navProp).toRole.type);
+			
+			//	parse the request entity 
+			OEntity entity = getRequestEntity(context.getRequest(), metadata, ees.name);
 			Object idObject = OptionsQueryParser.parseIdObject(id);
+			
+			//	execute the create
 			EntityResponse response = producer.createEntity(entitySetName, idObject, navProp, entity);
 
 	        if (response == null) {
 	            return Response.status(Status.NOT_FOUND).build();
 	        }
 	        
-	        //	TODO support JSON too
+	        //	get the FormatWriter for the accepted media types requested by client
 	        StringWriter sw = new StringWriter();
-			String entryId = new AtomEntryFormatWriter().writeAndReturnId(
-					context.getUriInfo(), 
-					sw, 
-					response);
-			
-			String responseEntity = sw.toString();
+			FormatWriter<EntityResponse> fw = FormatWriterFactory
+					.getFormatWriter(EntityResponse.class, headers.getAcceptableMediaTypes(), null, null);
+			fw.write(context.getUriInfo(), sw, response);
+	        
+			//	calculate the uri for the location header
+			String relid = InternalUtil.getEntityRelId(response.getEntity());
+			String entryId = context.getUriInfo().getBaseUri().toString() + relid;		
 
-			return Response
-					.ok(responseEntity, ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8)
+			//	create the response
+			String responseEntity = sw.toString();
+			return Response                            
+					.ok(responseEntity, fw.getContentType())
 					.status(Status.CREATED)
 					.location(URI.create(entryId))
 					.header(ODataConstants.Headers.DATA_SERVICE_VERSION,
-							ODataConstants.DATA_SERVICE_VERSION).build();
+							ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
 		}
 
 		throw new UnsupportedOperationException("Not supported yet.");
@@ -143,6 +159,8 @@ public class PropertyRequestResource extends BaseResource {
 			return Response.status(Status.NOT_FOUND).build();
 		}
 
+		ODataVersion version = ODataConstants.DATA_SERVICE_VERSION;
+		
 		StringWriter sw = new StringWriter();
 		FormatWriter<?> fwBase;
 		if (response instanceof PropertyResponse) {
@@ -175,6 +193,12 @@ public class PropertyRequestResource extends BaseResource {
 
 			fw.write(context.getUriInfo(), sw, (EntitiesResponse) response);
 			fwBase = fw;
+			
+			// TODO remove this hack, check whether we are Version 2.0 compatible anyway
+			// the JsonWriter writes feed currently always as Version 2.0
+			version = MediaType.valueOf(fw.getContentType()).isCompatible(MediaType.APPLICATION_JSON_TYPE)
+				? ODataVersion.V2 : ODataVersion.V2;
+
 		} else {
 			throw new UnsupportedOperationException("Unknown BaseResponse type: " + response.getClass().getName());
 		}
@@ -184,6 +208,6 @@ public class PropertyRequestResource extends BaseResource {
 				entity,
 				fwBase.getContentType()).header(
 				ODataConstants.Headers.DATA_SERVICE_VERSION,
-				ODataConstants.DATA_SERVICE_VERSION).build();
+				version.asString).build();
 	}
 }

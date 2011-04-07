@@ -19,7 +19,7 @@ public class MethodTunnelingBehavior implements OClientBehavior {
     public void modify(ClientConfig clientConfig) { }
 
     @Override
-    public <E extends Entry> ODataClientRequest<E> transform(ODataClientRequest<E> request) {
+    public <E extends Entry> ODataClientRequest transform(ODataClientRequest request) {
         String method = request.getMethod();
         for(String methodToTunnel : methodsToTunnel) {
             if (method.equals(methodToTunnel)) {

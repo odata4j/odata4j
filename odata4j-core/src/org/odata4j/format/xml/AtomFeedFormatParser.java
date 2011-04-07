@@ -8,11 +8,17 @@ import java.util.List;
 import javax.ws.rs.core.MediaType;
 
 import org.core4j.Enumerable;
+import org.core4j.Func1;
+import org.odata4j.core.OEntities;
+import org.odata4j.core.OEntity;
+import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OLink;
+import org.odata4j.core.OLinks;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmType;
 import org.odata4j.format.Entry;
 import org.odata4j.format.Feed;
@@ -27,8 +33,17 @@ import org.odata4j.stax2.XMLEventReader2;
 import org.odata4j.stax2.XMLEventWriter2;
 import org.odata4j.stax2.XMLFactoryProvider2;
 
-public class AtomFeedFormatParser extends XmlFormatParser implements FormatParser<AtomFeedFormatParser.AtomFeed> {
+public class AtomFeedFormatParser extends XmlFormatParser implements FormatParser<Feed> {
 
+	protected EdmDataServices metadata;
+	protected String entitySetName;
+	
+	public AtomFeedFormatParser(EdmDataServices metadata, String entitySetName) {
+		this.metadata = metadata;
+		this.entitySetName = entitySetName;
+	}
+	
+	
     public static class CollectionInfo {
         public String url;
         public String title;
@@ -40,12 +55,12 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
         }
     }
 
-    public static class AtomFeed implements Feed<AtomEntry> {
+    static class AtomFeed implements Feed {
         public String next;
-        public Iterable<AtomEntry> entries;
+        public Iterable<Entry> entries;
         
 		@Override
-		public Iterable<AtomEntry> getEntries() {
+		public Iterable<Entry> getEntries() {
 			return entries;
 		}
 
@@ -55,7 +70,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
 		}
     }
 
-    public abstract static class AtomEntry implements Entry {
+    abstract static class AtomEntry implements Entry {
         public String id;
         public String title;
         public String summary;
@@ -65,13 +80,21 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
         public String contentType;
         
         public List<AtomLink> atomLinks;
+        
+        public String getUri() {
+        	return null;
+        }
+        
+        public String getETag() {
+        	return null;
+        }
 
         public String getType() {
         	return MediaType.APPLICATION_ATOM_XML;
         }
     }
     
-    public static class AtomLink{
+    static class AtomLink{
         public String relation;
         public String title;
         public String type;
@@ -80,24 +103,41 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
 		public AtomEntry inlineEntry;
     }
 
-    public static class BasicAtomEntry extends AtomEntry {
+    static class BasicAtomEntry extends AtomEntry {
         public String content;
 
         @Override
         public String toString() {
             return InternalUtil.reflectionToString(this);
         }
+
+		@Override
+		public OEntity getEntity() {
+			return null;
+		}
     }
 
     public static class DataServicesAtomEntry extends AtomEntry {
         public String etag;
+        // remove properties and links because they are already in the oentity
         public List<OProperty<?>> properties;
         public List<OLink> links;
-
+        
+        private OEntity oentity;
+        
         @Override
         public String toString() {
             return InternalUtil.reflectionToString(this);
         }
+
+		@Override
+		public OEntity getEntity() {
+			return this.oentity;
+		}
+		
+		void setOEntity(OEntity oentity) {
+			this.oentity = oentity;
+		}
     }
 
 	@Override
@@ -105,7 +145,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
     	return parseFeed(InternalUtil.newXMLEventReader(reader));
     }
     
-    public static AtomFeed parseFeed(XMLEventReader2 reader) {
+    AtomFeed parseFeed(XMLEventReader2 reader) {
 
         AtomFeed feed = new AtomFeed();
         List<AtomEntry> rt = new ArrayList<AtomEntry>();
@@ -114,7 +154,6 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
             XMLEvent2 event = reader.nextEvent();
 
             if (isStartElement(event, ATOM_ENTRY)) {
-
                 rt.add(parseEntry(reader, event.asStartElement()));
             } else if (isStartElement(event, ATOM_LINK)) {
                 if ("next".equals(event.asStartElement().getAttributeByName(new QName2("rel")).getValue())) {
@@ -126,7 +165,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
             }
 
         }
-        feed.entries = rt;
+        feed.entries = Enumerable.create(rt).cast(Entry.class);
 
         return feed;
 
@@ -177,7 +216,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
 
    
 
-    private static AtomLink parseAtomLink(XMLEventReader2 reader, StartElement2 linkElement){
+    private AtomLink parseAtomLink(XMLEventReader2 reader, StartElement2 linkElement){
         AtomLink rt = new AtomLink();
         rt.relation = getAttributeValueIfExists(linkElement, "rel");
         rt.type =  getAttributeValueIfExists(linkElement, "type");
@@ -199,7 +238,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
     }
     
     
-    private static DataServicesAtomEntry parseDSAtomEntry(String etag, XMLEventReader2 reader, XMLEvent2 event) {
+    private DataServicesAtomEntry parseDSAtomEntry(String etag, XMLEventReader2 reader, XMLEvent2 event) {
         DataServicesAtomEntry dsae = new DataServicesAtomEntry();
         dsae.etag = etag;
         dsae.properties = Enumerable.create(parseProperties(reader, event.asStartElement())).toList();
@@ -223,7 +262,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
         throw new RuntimeException();
     }
 
-    private static AtomEntry parseEntry(XMLEventReader2 reader, StartElement2 entryElement) {
+    private AtomEntry parseEntry(XMLEventReader2 reader, StartElement2 entryElement) {
 
         String id = null;
         String categoryTerm = null;
@@ -250,6 +289,12 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
                 rt.categoryTerm = categoryTerm;		//NorthwindModel.Customer 
                 rt.contentType = contentType;
                 rt.atomLinks = atomLinks;
+                
+                
+                if (rt instanceof DataServicesAtomEntry) {
+                	DataServicesAtomEntry dsae = (DataServicesAtomEntry)rt;
+        			dsae.setOEntity(entityFromAtomEntry(metadata, metadata.getEdmEntitySet(entitySetName), dsae, null));
+                }
                 return rt;
             }
 
@@ -313,10 +358,100 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
         throw new RuntimeException();
     }
 
-	@Override
-	public <E> E toOEntity(Entry entry, Class<E> entityType,
-			EdmDataServices metadata, EdmEntitySet entitySet,
-			FeedCustomizationMapping fcMapping) {
-		return InternalUtil.toEntity(entityType, metadata, entitySet, (DataServicesAtomEntry)entry, fcMapping);
+	public static OEntity entityFromAtomEntry(
+			EdmDataServices metadata,
+			EdmEntitySet entitySet,
+			DataServicesAtomEntry dsae,
+			FeedCustomizationMapping mapping) {
+		if (mapping == null)
+			return OEntities.create(
+					entitySet,
+					OEntityKey.infer(entitySet,dsae.properties),
+					dsae.properties,
+					toOLinks(metadata, entitySet, dsae.atomLinks, mapping), 
+					dsae.title,
+					dsae.categoryTerm);
+
+		Enumerable<OProperty<?>> properties = Enumerable.create(dsae.properties);
+		if (mapping.titlePropName != null)
+			properties = properties.concat(OProperties.string(mapping.titlePropName,dsae.title));
+		if (mapping.summaryPropName != null)
+			properties = properties.concat(OProperties.string(mapping.summaryPropName, dsae.summary));
+
+		List<OProperty<?>> props = properties.toList();
+		return OEntities.create(
+				entitySet,
+				OEntityKey.infer(entitySet, props),
+				props,
+				toOLinks(metadata, entitySet, dsae.atomLinks, mapping), 
+				dsae.title, 
+				dsae.categoryTerm);
+
 	}
+
+	private static List<OLink> toOLinks(
+			final EdmDataServices metadata,
+			EdmEntitySet fromRoleEntitySet,
+			List<AtomLink> links,
+			final FeedCustomizationMapping mapping) {
+		List<OLink> rt = new ArrayList<OLink>(links.size());
+		for (final AtomLink link : links) {
+
+			if (link.relation.startsWith(XmlFormatWriter.related)) {
+				if (link.type.equals(XmlFormatWriter.atom_feed_content_type)) {
+					List<OEntity> relatedEntities = null;
+					// do we have inlined entities
+					if (link.inlineFeed != null && link.inlineFeed.entries != null) {
+						
+						//	get the entity set belonging to the from role type
+						EdmNavigationProperty navProperty = fromRoleEntitySet != null
+							? fromRoleEntitySet.type.getNavigationProperty(link.title)
+							: null;
+    					final EdmEntitySet toRoleEntitySet = metadata != null && navProperty != null
+    						? metadata.getEdmEntitySet(navProperty.toRole.type)
+    						: null;
+
+						//	convert the atom feed entries to OEntitys
+						relatedEntities = Enumerable
+								.create(link.inlineFeed.entries)
+								.cast(DataServicesAtomEntry.class)
+								.select(new Func1<DataServicesAtomEntry, OEntity>() {
+									@Override
+									public OEntity apply(
+											DataServicesAtomEntry input) {
+										return entityFromAtomEntry(metadata, toRoleEntitySet, input, mapping);
+									}
+								}).toList();
+						rt.add(OLinks.relatedEntitiesInline(
+								link.relation, 
+								link.title,
+								link.href, 
+								relatedEntities));
+					} else {
+						//	no inlined entities
+						rt.add(OLinks.relatedEntities(link.relation, link.title, link.href));
+					}
+				} else if (link.type.equals(XmlFormatWriter.atom_entry_content_type))
+					if (link.inlineEntry != null) {
+						EdmNavigationProperty navProperty = fromRoleEntitySet != null
+    						? fromRoleEntitySet.type.getNavigationProperty(link.title)
+    						: null;
+    					EdmEntitySet toRoleEntitySet = metadata != null && navProperty != null
+    						? metadata.getEdmEntitySet(navProperty.toRole.type)
+    						: null;
+
+						rt.add(OLinks.relatedEntityInline(link.relation,
+								link.title, link.href,
+								entityFromAtomEntry(metadata, toRoleEntitySet,
+										(DataServicesAtomEntry) link.inlineEntry,
+										mapping)));
+					} else {
+						//	no inlined entity
+						rt.add(OLinks.relatedEntity(link.relation, link.title, link.href));
+					}
+			}
+		}
+		return rt;
+	}
+
 }

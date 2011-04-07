@@ -7,7 +7,7 @@ package org.odata4j.format;
  * 
  * @param <E>
  */
-public interface Feed<E extends Entry> {
+public interface Feed {
 	public String getNext();
-	public Iterable<E> getEntries();
+	public Iterable<Entry> getEntries();
 }

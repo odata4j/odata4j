@@ -6,8 +6,8 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.format.Entry;
 import org.odata4j.format.FormatWriter;
-import org.odata4j.format.xml.AtomFeedFormatParser.DataServicesAtomEntry;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.stax2.QName2;
@@ -18,8 +18,9 @@ import com.sun.jersey.api.core.ExtendedUriInfo;
 
 public class AtomEntryFormatWriter extends XmlFormatWriter implements FormatWriter<EntityResponse> {
 
+	protected String baseUri;
    
-    public void writeRequestEntry( Writer w, DataServicesAtomEntry request) {
+    public void writeRequestEntry( Writer w, Entry entry) {
 
         DateTime utc = new DateTime().withZone(DateTimeZone.UTC);
         String updated = InternalUtil.toString(utc);
@@ -31,7 +32,9 @@ public class AtomEntryFormatWriter extends XmlFormatWriter implements FormatWrit
         writer.writeNamespace("d", d);
         writer.writeNamespace("m", m);
 
-        writeEntry(writer, null, request.properties, request.links, null, null, updated, null, false);
+		writeEntry(writer, null, entry.getEntity().getProperties(), 
+				entry.getEntity().getLinks(),
+				null, null, updated, null, false);
         writer.endDocument();
 
     }
@@ -46,10 +49,6 @@ public class AtomEntryFormatWriter extends XmlFormatWriter implements FormatWrit
 
     @Override
     public void write(ExtendedUriInfo uriInfo, Writer w, EntityResponse target) {
-        writeAndReturnId(uriInfo,w,target);
-    }
-
-    public String writeAndReturnId(ExtendedUriInfo uriInfo, Writer w, EntityResponse target) {
         String baseUri = uriInfo.getBaseUri().toString();
         EdmEntitySet ees = target.getEntity().getEntitySet();
         
@@ -65,8 +64,7 @@ public class AtomEntryFormatWriter extends XmlFormatWriter implements FormatWrit
         writer.writeNamespace("d", d);
         writer.writeAttribute("xml:base", baseUri);
 
-        String absId = writeEntry(writer, target.getEntity(), target.getEntity().getProperties(), target.getEntity().getLinks(), entitySetName, baseUri, updated, ees, true);
+        writeEntry(writer, target.getEntity(), target.getEntity().getProperties(), target.getEntity().getLinks(), entitySetName, baseUri, updated, ees, true);
         writer.endDocument();
-        return absId;
     }
 }

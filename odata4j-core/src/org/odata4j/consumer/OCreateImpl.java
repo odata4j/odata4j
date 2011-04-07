@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.odata4j.core.OCreate;
+import org.odata4j.core.ODataConstants;
+import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
@@ -16,16 +18,18 @@ import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmMultiplicity;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.format.Entry;
-import org.odata4j.format.Feed;
 import org.odata4j.format.FormatParser;
 import org.odata4j.format.FormatParserFactory;
+import org.odata4j.format.Settings;
 import org.odata4j.format.xml.XmlFormatWriter;
 import org.odata4j.internal.FeedCustomizationMapping;
 import org.odata4j.internal.InternalUtil;
 
-public class OCreateImpl<T, F extends Feed<E>, E extends Entry> implements OCreate<T> {
+import com.sun.jersey.api.client.ClientResponse;
 
-    private final ODataClient<F, E> client;
+public class OCreateImpl<T> implements OCreate<T> {
+
+    private final ODataClient client;
     private final EdmDataServices metadata;
     private final String serviceRootUri;
     private final String entitySetName;
@@ -37,7 +41,7 @@ public class OCreateImpl<T, F extends Feed<E>, E extends Entry> implements OCrea
 
     private final FeedCustomizationMapping fcMapping;
     
-    public OCreateImpl(ODataClient<F, E> client, String serviceRootUri, EdmDataServices metadata, String entitySetName, FeedCustomizationMapping fcMapping) {
+    public OCreateImpl(ODataClient client, String serviceRootUri, EdmDataServices metadata, String entitySetName, FeedCustomizationMapping fcMapping) {
         this.client = client;
         this.serviceRootUri = serviceRootUri;
         this.metadata = metadata;
@@ -49,7 +53,7 @@ public class OCreateImpl<T, F extends Feed<E>, E extends Entry> implements OCrea
     @Override
     public T execute() {
 
-        E entry = client.createEntry(props, links);
+        Entry entry = client.createRequestEntry(metadata.getEdmEntitySet(entitySetName), props, links);
         	
         StringBuilder url = new StringBuilder(serviceRootUri);
         if (parent != null) {
@@ -60,12 +64,17 @@ public class OCreateImpl<T, F extends Feed<E>, E extends Entry> implements OCrea
         	url.append(entitySetName);
         }
        
-        ODataClientRequest<E> request = ODataClientRequest.post(url.toString(), entry);
+        ODataClientRequest request = ODataClientRequest.post(url.toString(), entry);
+		ClientResponse response = client.createEntityResponse(request);
         
-		final FormatParser<Entry> parser = FormatParserFactory.getParser(Entry.class, client.type);
-		return (T) parser.toOEntity(client.createEntity(request),
-				OEntity.class, metadata,
-				metadata.getEdmEntitySet(entitySetName), fcMapping);
+		ODataVersion version = InternalUtil.getDataServiceVersion(response.getHeaders()
+				.getFirst(ODataConstants.Headers.DATA_SERVICE_VERSION));
+		
+		final FormatParser<Entry> parser = FormatParserFactory.getParser(Entry.class,
+				client.type, new Settings(version, metadata, entitySetName, fcMapping));
+		entry = parser.parse(client.getFeedReader(response));
+
+        return (T) entry.getEntity();
     }
     
 	@SuppressWarnings("unchecked")
@@ -112,6 +121,10 @@ public class OCreateImpl<T, F extends Feed<E>, E extends Entry> implements OCrea
 		href.append(InternalUtil.getEntityRelId(target));
 		
 		//	TODO get rid of XmlFormatWriter
+		//  We may need to rethink the rel property on a link
+		//	since it adds no new information. The title is
+		//	already there and rel has only a fixed prefix valid for
+		//	the atom format.
 		String rel = XmlFormatWriter.related +  navProperty;
 		
 		this.links.add(OLinks.relatedEntity(rel, navProperty, href.toString()));

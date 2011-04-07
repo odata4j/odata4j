@@ -7,6 +7,7 @@ import java.util.Map;
 import org.core4j.Enumerable;
 import org.core4j.Func1;
 import org.core4j.Predicate1;
+import org.odata4j.core.ODataVersion;
 import org.odata4j.edm.EdmAssociation;
 import org.odata4j.edm.EdmAssociationEnd;
 import org.odata4j.edm.EdmAssociationSet;
@@ -33,7 +34,7 @@ public class EdmxFormatParser extends XmlFormatParser {
     public static EdmDataServices parseMetadata(XMLEventReader2 reader) {
         List<EdmSchema> schemas = new ArrayList<EdmSchema>();
 
-        String version = null;
+        ODataVersion version = null;
         boolean foundDataServices = false;
         while (reader.hasNext()) {
             XMLEvent2 event = reader.nextEvent();
@@ -41,7 +42,10 @@ public class EdmxFormatParser extends XmlFormatParser {
             boolean shouldReturn = false;
             if (isStartElement(event, EDMX_DATASERVICES)) {
                 foundDataServices = true;
-                version = getAttributeValueIfExists( event.asStartElement(), new QName2(NS_METADATA,"DataServiceVersion"));
+                String str = getAttributeValueIfExists( event.asStartElement(), new QName2(NS_METADATA,"DataServiceVersion"));
+                version = str != null
+                	? ODataVersion.valueOf(str)
+                	: null;
             }
             
             if (isStartElement(event, EDM2006_SCHEMA, EDM2007_SCHEMA, EDM2008_SCHEMA, EDM2009_SCHEMA)) {

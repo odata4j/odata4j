@@ -33,7 +33,7 @@ public class ServiceDocumentResource {
         fw.write( context.getUriInfo(), w, metadata);
 
         return Response.ok(w.toString(), fw.getContentType())
-                    .header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION)
+                    .header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER)
                     .build();
     }
 }

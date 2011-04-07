@@ -7,6 +7,6 @@ import com.sun.jersey.api.client.config.ClientConfig;
 
 public interface OClientBehavior {
 
-    public abstract <E extends Entry> ODataClientRequest<E> transform(ODataClientRequest<E> request);
+    public abstract <E extends Entry> ODataClientRequest transform(ODataClientRequest request);
     public abstract void modify(ClientConfig clientConfig);
 }

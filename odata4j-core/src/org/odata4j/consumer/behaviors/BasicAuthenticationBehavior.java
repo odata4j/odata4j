@@ -21,7 +21,7 @@ public class BasicAuthenticationBehavior implements OClientBehavior {
     public void modify(ClientConfig clientConfig) { }
 
     @Override
-    public <E extends Entry> ODataClientRequest<E> transform(ODataClientRequest<E> request) {
+    public <E extends Entry> ODataClientRequest transform(ODataClientRequest request) {
         String userPassword = user + ":" + password;
         String encoded = Base64.encodeBase64String(userPassword.getBytes());
         encoded = encoded.replaceAll("\r\n?", "");

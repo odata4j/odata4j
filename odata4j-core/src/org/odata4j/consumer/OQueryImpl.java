@@ -1,27 +1,37 @@
 package org.odata4j.consumer;
 
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.core4j.Enumerable;
+import org.core4j.Func;
 import org.core4j.Func1;
+import org.core4j.ReadOnlyIterator;
+import org.odata4j.core.ODataConstants;
+import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OQuery;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.format.Entry;
 import org.odata4j.format.Feed;
 import org.odata4j.format.FormatParser;
 import org.odata4j.format.FormatParserFactory;
+import org.odata4j.format.Settings;
 import org.odata4j.internal.EntitySegment;
 import org.odata4j.internal.FeedCustomizationMapping;
+import org.odata4j.internal.InternalUtil;
 
-public class OQueryImpl<T, F extends Feed<E>, E extends Entry> implements OQuery<T> {
+import com.sun.jersey.api.client.ClientResponse;
 
-    private final ODataClient<F, E> client;
+public class OQueryImpl<T> implements OQuery<T> {
+
+    private final ODataClient client;
     private final Class<T> entityType;
     private final String serviceRootUri;
-    private final EdmDataServices ees;
+    private final EdmDataServices metadata;
     private final List<EntitySegment> segments = new ArrayList<EntitySegment>();
     private final Map<String, String> customs = new HashMap<String, String>();
 
@@ -35,11 +45,11 @@ public class OQueryImpl<T, F extends Feed<E>, E extends Entry> implements OQuery
     
     private final FeedCustomizationMapping fcMapping;
 
-    public OQueryImpl(ODataClient<F, E> client, Class<T> entityType, String serviceRootUri, EdmDataServices ees, String entitySetName, FeedCustomizationMapping fcMapping) {
+    public OQueryImpl(ODataClient client, Class<T> entityType, String serviceRootUri, EdmDataServices metadata, String entitySetName, FeedCustomizationMapping fcMapping) {
         this.client = client;
         this.entityType = entityType;
         this.serviceRootUri = serviceRootUri;
-        this.ees = ees;
+        this.metadata = metadata;
         this.lastSegment = entitySetName;
         
         this.fcMapping = fcMapping;
@@ -105,7 +115,7 @@ public class OQueryImpl<T, F extends Feed<E>, E extends Entry> implements OQuery
         String path = Enumerable.create(segments).join("/");
         path += (path.length() == 0 ? "" : "/") + lastSegment;
 
-        ODataClientRequest<E> request = ODataClientRequest.get(serviceRootUri + path);
+        ODataClientRequest request = ODataClientRequest.get(serviceRootUri + path);
 
         if (top != null) {
             request = request.queryParam("$top", Integer.toString(top));
@@ -129,15 +139,98 @@ public class OQueryImpl<T, F extends Feed<E>, E extends Entry> implements OQuery
             request = request.queryParam("$expand", expand);
         }
         
-    	final FormatParser<E> parser = FormatParserFactory.getParser(client.entryClass, client.type);        
-        Enumerable<E> entries = client.getEntries(request);        
-        return entries.select(new Func1<E, T>() {
-            public T apply(E input) {
-            	return parser.toOEntity(input, entityType, ees, ees.getEdmEntitySet(lastSegment), fcMapping);
+        Enumerable<Entry> entries = getEntries(request);    
+        
+        return entries.select(new Func1<Entry, T>() {
+            public T apply(Entry input) {
+            	return InternalUtil.toEntity(entityType, input.getEntity());
             }
         }).cast(entityType);
     }
+    
+    Enumerable<Entry> getEntries(final ODataClientRequest request) {
 
+        return Enumerable.createFromIterator(new Func<Iterator<Entry>>() {
+            public Iterator<Entry> apply() {
+                return new EntryIterator(client, request);
+            }
+        });
+
+    }
+    
+    private class EntryIterator extends ReadOnlyIterator<Entry> {
+
+    	private ODataClient client;
+        private ODataClientRequest request;
+        private FormatParser<Feed> parser;
+        private Feed feed;
+        private Iterator<Entry> feedEntries;
+        private int feedEntryCount;
+
+        public EntryIterator(ODataClient client, ODataClientRequest request) {
+        	this.client = client;
+            this.request = request;
+        }
+
+        @Override
+        protected IterationResult<Entry> advance() throws Exception {
+
+            if (feed == null) {
+            	ClientResponse response = client.getEntities(request);
+            	
+            	InternalUtil.getDataServiceVersion(response.getHeaders()
+            			.getFirst(ODataConstants.Headers.DATA_SERVICE_VERSION));
+                parser = FormatParserFactory.getParser(Feed.class, client.type, 
+                		new Settings(ODataVersion.V2, metadata, lastSegment, fcMapping)); 
+
+            	feed = parser.parse(client.getFeedReader(response));
+                feedEntries = feed.getEntries().iterator();
+                feedEntryCount = 0;
+            }
+
+            if (feedEntries.hasNext()) {
+                feedEntryCount++;
+                return IterationResult.next(feedEntries.next());
+            }
+
+            // old-style paging: $page and $itemsPerPage
+            if (request.getQueryParams().containsKey("$page") && request.getQueryParams().containsKey("$itemsPerPage")) {
+
+                if (feedEntryCount == 0)
+                    return IterationResult.done();
+
+                int page = Integer.parseInt(request.getQueryParams().get("$page"));
+                // int itemsPerPage = Integer.parseInt(request.getQueryParams().get("$itemsPerPage"));
+
+                request = request.queryParam("$page", Integer.toString(page + 1));
+
+            }
+            // new-style paging: $skiptoken
+            else {
+
+                if (feed.getNext() == null)
+                    return IterationResult.done();
+
+                int skipTokenIndex = feed.getNext().indexOf("$skiptoken=");
+                if( skipTokenIndex > -1) {
+                    String skiptoken = feed.getNext().substring(skipTokenIndex + "$skiptoken=".length());
+                    //	decode the skiptoken first since it gets encoded as a query param
+                    skiptoken = URLDecoder.decode(skiptoken, "UTF-8");
+                    request = request.queryParam("$skiptoken", skiptoken);
+                } else if (feed.getNext().toLowerCase().startsWith("http")){
+                    request = ODataClientRequest.get(feed.getNext());
+                } else {
+                    throw new UnsupportedOperationException();
+                }
+               
+            }
+
+            feed = null;
+
+            return advance(); // TODO stackoverflow possible here
+        }
+
+    }
 
 
 }

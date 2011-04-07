@@ -20,7 +20,7 @@ public class DallasCtp2AuthenticationBehavior implements OClientBehavior {
     public void modify(ClientConfig clientConfig) { }
 
     @Override
-    public <E extends Entry> ODataClientRequest<E> transform(ODataClientRequest<E> request) {
+    public <E extends Entry> ODataClientRequest transform(ODataClientRequest request) {
         return request.header("$uniqueUserID", uniqueUserId).header("$accountKey", accountKey).header("DataServiceVersion", "2.0").queryParam("$format", "atom10");
 
     }
