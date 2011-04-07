@@ -21,7 +21,12 @@ public class OProperties {
     	
     public static <T> OProperty<?> simple(String name, EdmType type, T value, boolean exceptionOnUnknownType) {    	
         if (type == EdmType.STRING) {
-            String sValue = (String) value;
+        	String sValue = "";
+        	if (value instanceof String) {
+        		sValue = (String) value;
+        	} else if (value instanceof Character) {
+        		sValue = ((Character)value).toString();
+        	}
             return OProperties.string(name, sValue);
         } else if (type == EdmType.BOOLEAN) {
             Boolean bValue = (Boolean) value;
@@ -64,8 +69,6 @@ public class OProperties {
         } else if (type == EdmType.SINGLE) {
         	Float fValue = (Float) value;
             return OProperties.single(name, fValue);
-        } else if (type == EdmType.CHARACTER) {
-            return OProperties.character(name, (Character)value);
         } else {
         	if (exceptionOnUnknownType) {
         		throw new UnsupportedOperationException("Implement " + type);
