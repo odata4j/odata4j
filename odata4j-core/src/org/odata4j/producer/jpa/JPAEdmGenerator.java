@@ -58,12 +58,10 @@ public class JPAEdmGenerator {
 
         Class<?> javaType = sa.getType().getJavaType();
 
-        if (javaType.equals(String.class)) {
-            return EdmType.STRING;
-        }
-        if (javaType.equals(Character.class) || "char".equals(javaType.toString())) {
-            return EdmType.CHARACTER;
-        }
+		if (javaType.equals(String.class) || javaType.equals(Character.class)
+				|| "char".equals(javaType.toString())) {
+			return EdmType.STRING;
+		}
         if (javaType.equals(BigDecimal.class)) {
             return EdmType.DECIMAL;
         }
