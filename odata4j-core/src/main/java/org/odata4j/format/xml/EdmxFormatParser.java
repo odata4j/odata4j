@@ -44,7 +44,7 @@ public class EdmxFormatParser extends XmlFormatParser {
                 foundDataServices = true;
                 String str = getAttributeValueIfExists( event.asStartElement(), new QName2(NS_METADATA,"DataServiceVersion"));
                 version = str != null
-                	? ODataVersion.valueOf(str)
+                	? ODataVersion.parse(str)
                 	: null;
             }
             
