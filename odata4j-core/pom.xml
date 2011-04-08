@@ -65,6 +65,39 @@
                     <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
                 <executions>
+                	
+                    
+					<!-- clientbundle: minimum to run on a constrained client (android) -->                    
+                    <execution>
+                        <id>clientbundle</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>${project.name}-clientbundle-${project.version}</finalName>
+                            <descriptors>
+					            <descriptor>src/main/assembly/clientbundle.xml</descriptor>
+					          </descriptors>
+                        </configuration>
+                    </execution>
+                    
+                    <!-- nojpabundle: minimum to run on a constrained server (appengine) -->                    
+                    <execution>
+                        <id>nojpabundle</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>${project.name}-nojpabundle-${project.version}</finalName>
+                            <descriptors>
+					            <descriptor>src/main/assembly/nojpabundle.xml</descriptor>
+					          </descriptors>
+                        </configuration>
+                    </execution>                  
+
+					<!-- bundle: everything (including jpa)  -->
                     <execution>
                         <id>bundle</id>
                         <phase>package</phase>
@@ -78,20 +111,8 @@
                             </descriptorRefs>
                         </configuration>
                     </execution>
-                    
-                    <execution>
-                        <id>clientbundle</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <finalName>${project.name}-clientbundle-${project.version}</finalName>
-                            <descriptorRefs>
-                                <descriptorRef>jar-with-dependencies</descriptorRef>
-                            </descriptorRefs>
-                        </configuration>
-                    </execution>
+                
+
                 </executions>
             </plugin>
             <plugin>
@@ -154,7 +175,6 @@
                 <enabled>true</enabled>	 <!-- for javax.persistence -->
             </snapshots>
         </repository>
-
         <repository>
             <id>org.core4j</id>
             <name>org.core4j</name>
@@ -168,19 +188,16 @@
             <artifactId>core4j</artifactId>
             <version>0.4</version>
         </dependency>
-
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>eclipselink</artifactId>
             <version>2.1.2</version>
         </dependency>
-
         <dependency>
             <groupId>javax.persistence</groupId>
             <artifactId>javax.persistence</artifactId>
             <version>2.0-SNAPSHOT</version>
         </dependency>
-
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-core</artifactId>
@@ -196,7 +213,6 @@
             <artifactId>jersey-server</artifactId>
             <version>1.1.5</version>
         </dependency>
-
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
