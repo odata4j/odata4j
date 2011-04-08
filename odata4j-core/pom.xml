@@ -62,16 +62,31 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.2.1</version>
                 <configuration>
-                    <finalName>${project.name}-bundle-${project.version}</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
                 <executions>
                     <execution>
+                        <id>bundle</id>
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
                         <configuration>
+                            <finalName>${project.name}-bundle-${project.version}</finalName>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                        </configuration>
+                    </execution>
+                    
+                    <execution>
+                        <id>clientbundle</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>${project.name}-clientbundle-${project.version}</finalName>
                             <descriptorRefs>
                                 <descriptorRef>jar-with-dependencies</descriptorRef>
                             </descriptorRefs>
