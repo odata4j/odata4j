@@ -11,7 +11,9 @@ public class AppEngineConsumerExample extends BaseExample {
     
     public static void main(String... args) {
         
-        ODataConsumer c = ODataConsumer.create(ODataEndpoints.ODATA4JSAMPLE_APPSPOT);
+        ODataConsumer c = 
+        	ODataConsumer.create(ODataEndpoints.ODATA4JSAMPLE_APPSPOT);
+        	//ODataConsumer.create("http://localhost:8888/datastore.svc");
         
         String newCategoryName = "NewCategory" + System.currentTimeMillis();
         

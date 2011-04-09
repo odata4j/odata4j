@@ -605,35 +605,28 @@ public class JPAProducer implements ODataProducer {
 			}
 		}
 
-		String sql = String.format("SELECT %s FROM %s", alias, from);
+		String jpql = String.format("SELECT %s FROM %s", alias, from);
 
-		InJPAEvaluation.tableAlias = alias;
-		InJPAEvaluation.primaryKeyName = context.keyPropertyName;
+		JPQLGenerator jpqlGen = new JPQLGenerator(context.keyPropertyName, alias);
 
 		if (context.query.filter != null) {
-			String filterPredicate = InJPAEvaluation.evaluate(
-							context.query.filter);
-
+			String filterPredicate = jpqlGen.toJpql(context.query.filter);
 			where = addWhereExpression(where, filterPredicate, "AND");
 		}
 
 		if (context.query.skipToken != null) {
-			String skipPredicate = InJPAEvaluation.evaluate(
-					parseSkipToken(context.query.orderBy,
-								   context.query.skipToken));
-
+			String skipPredicate = jpqlGen.toJpql(parseSkipToken(jpqlGen, context.query.orderBy, context.query.skipToken));
 			where = addWhereExpression(where, skipPredicate, "AND");
 		}
 
 		if (where != null) {
-			sql = String.format("%s WHERE %s", sql, where);
+			jpql = String.format("%s WHERE %s", jpql, where);
 		}
 
 		if (context.query.orderBy != null) {
 			String orders = "";
 			for (OrderByExpression orderBy : context.query.orderBy) {
-				String field = (String) InJPAEvaluation.evaluate(
-						orderBy.getExpression());
+				String field = jpqlGen.toJpql(orderBy.getExpression());
 
 				if (orderBy.isAscending()) {
 					orders = orders + field + ",";
@@ -642,10 +635,10 @@ public class JPAProducer implements ODataProducer {
 				}
 			}
 
-			sql = sql + " ORDER BY " + orders.substring(0, orders.length() - 1);
+			jpql = jpql + " ORDER BY " + orders.substring(0, orders.length() - 1);
 		}
 
-		Query tq = em.createQuery(sql);
+		Query tq = em.createQuery(jpql);
 
 		Integer inlineCount = context.query.inlineCount == InlineCount.ALLPAGES
 				? tq.getResultList().size()
@@ -748,7 +741,7 @@ public class JPAProducer implements ODataProducer {
 		return Enumerable.create(values).join(",");
 	}
 	
-    private static BoolCommonExpression parseSkipToken(List<OrderByExpression> orderByList, String skipToken) {
+    private static BoolCommonExpression parseSkipToken(JPQLGenerator jpqlGen, List<OrderByExpression> orderByList, String skipToken) {
         if (skipToken == null) {
             return null;
         }
@@ -758,7 +751,7 @@ public class JPAProducer implements ODataProducer {
 
         if (orderByList == null) {
             result = Expression.gt(
-                    Expression.simpleProperty(InJPAEvaluation.PRIMARY_KEY_NAME),
+                    Expression.simpleProperty(jpqlGen.getPrimaryKeyName()),
                     Expression.string(skipToken));
         } else {
             String[] skipTokens = skipToken.split(",");
@@ -785,7 +778,7 @@ public class JPAProducer implements ODataProducer {
 
             result = Expression.and(
                     Expression.ne(
-                    Expression.simpleProperty(InJPAEvaluation.PRIMARY_KEY_NAME),
+                    Expression.simpleProperty(jpqlGen.getPrimaryKeyName()),
                     Expression.string(skipTokens[skipTokens.length - 1])),
                     result);
         }

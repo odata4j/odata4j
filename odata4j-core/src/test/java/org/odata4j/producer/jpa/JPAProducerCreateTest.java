@@ -5,7 +5,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
-import org.odata4j.consumer.behaviors.MethodTunnelingBehavior;
+import org.odata4j.core.OClientBehaviors;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OPredicates;
 import org.odata4j.core.OProperties;
@@ -20,13 +20,13 @@ public class JPAProducerCreateTest extends JPAProducerTestBase {
 
 	@Test
 	public void tunneledInsertEntityToExistingEntityRelationAtom() {
-		ODataConsumer consumer = ODataConsumer.create(endpointUri, new MethodTunnelingBehavior("PUT"));		
+		ODataConsumer consumer = ODataConsumer.create(endpointUri, OClientBehaviors.methodTunneling("PUT"));		
 		insertEntityToExistingEntityRelationAndTest(consumer);
 	}
 
 	@Test
 	public void tunneledInsertEntityToExistingEntityRelationJson() {
-		ODataConsumer consumer = ODataConsumer.create(FormatType.JSON, endpointUri, new MethodTunnelingBehavior("PUT"));
+		ODataConsumer consumer = ODataConsumer.create(FormatType.JSON, endpointUri, OClientBehaviors.methodTunneling("PUT"));
 		insertEntityToExistingEntityRelationAndTest(consumer);
 	}
 
@@ -44,13 +44,13 @@ public class JPAProducerCreateTest extends JPAProducerTestBase {
 
 	@Test
 	public void tunneledInsertEntityUsingLinksAtom() {
-		ODataConsumer consumer = ODataConsumer.create(endpointUri, new MethodTunnelingBehavior("PUT"));
+		ODataConsumer consumer = ODataConsumer.create(endpointUri, OClientBehaviors.methodTunneling("PUT"));
 		insertEntityUsingLinksAndTest(consumer);
 	}
 
 	@Test
 	public void tunneledInsertEntityUsingLinksJson() {
-		ODataConsumer consumer = ODataConsumer.create(FormatType.JSON, endpointUri, new MethodTunnelingBehavior("PUT"));
+		ODataConsumer consumer = ODataConsumer.create(FormatType.JSON, endpointUri, OClientBehaviors.methodTunneling("PUT"));
 		insertEntityUsingLinksAndTest(consumer);
 	}
 

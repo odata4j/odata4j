@@ -5,7 +5,7 @@ import junit.framework.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
-import org.odata4j.consumer.behaviors.MethodTunnelingBehavior;
+import org.odata4j.core.OClientBehaviors;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperties;
 
@@ -18,7 +18,7 @@ public class JPAProducerUpdateTest extends JPAProducerTestBase {
 
 	@Test
 	public void tunneledUpdateEntity() {
-		ODataConsumer consumer = ODataConsumer.create(endpointUri, new MethodTunnelingBehavior("PUT"));
+		ODataConsumer consumer = ODataConsumer.create(endpointUri, OClientBehaviors.methodTunneling("PUT"));
 		
 		updateEntityAndTest(consumer);
 	}

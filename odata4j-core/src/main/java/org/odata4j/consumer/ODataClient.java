@@ -8,8 +8,8 @@ import java.io.StringWriter;
 import java.util.List;
 
 import org.core4j.Enumerable;
-import org.odata4j.consumer.behaviors.MethodTunnelingBehavior;
 import org.odata4j.core.OClientBehavior;
+import org.odata4j.core.OClientBehaviors;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
@@ -36,7 +36,7 @@ class ODataClient {
 	
 	final FormatType type; 
 
-	private final OClientBehavior[] requiredBehaviors = new OClientBehavior[] { new MethodTunnelingBehavior("MERGE") }; // jersey hates MERGE, tunnel through POST
+	private final OClientBehavior[] requiredBehaviors = new OClientBehavior[] { OClientBehaviors.methodTunneling("MERGE") }; // jersey hates MERGE, tunnel through POST
 	private final OClientBehavior[] behaviors;
 
 	private final Client client;
