@@ -650,7 +650,7 @@ public class JPAProducer implements ODataProducer {
 			jpql = jpql + " ORDER BY " + orders.substring(0, orders.length() - 1);
 		}
 
-		Query tq = em.createQuery(jpql);
+		Query tq = context.em.createQuery(jpql);
 
 		Integer inlineCount = context.query.inlineCount == InlineCount.ALLPAGES
 				? tq.getResultList().size()
