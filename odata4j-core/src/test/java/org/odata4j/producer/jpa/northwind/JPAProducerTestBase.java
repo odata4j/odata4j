@@ -1,10 +1,11 @@
-package org.odata4j.producer.jpa;
+package org.odata4j.producer.jpa.northwind;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import org.junit.AfterClass;
 import org.odata4j.examples.producer.ProducerUtil;
+import org.odata4j.producer.jpa.JPAProducer;
 import org.odata4j.producer.resources.ODataProducerProvider;
 import org.odata4j.producer.server.JerseyServer;
 

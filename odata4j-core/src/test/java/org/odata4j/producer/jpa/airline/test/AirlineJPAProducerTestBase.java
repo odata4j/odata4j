@@ -18,7 +18,7 @@ import org.core4j.ThrowingFunc1;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
-import org.odata4j.producer.jpa.NorthwindTestUtils;
+import org.odata4j.producer.jpa.northwind.NorthwindTestUtils;
 import org.odata4j.producer.server.JerseyServer;
 
 public abstract class AirlineJPAProducerTestBase {
