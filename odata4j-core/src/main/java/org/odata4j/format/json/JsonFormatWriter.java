@@ -174,7 +174,12 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
     							: null;
     
     					jw.writeName(np.name);
-    					if (linkToInline == null) {
+    					if (linkToInline == null 
+    							|| ( (linkToInline instanceof ORelatedEntitiesLinkInline) && 
+    									((ORelatedEntitiesLinkInline) linkToInline).getRelatedEntities() == null ) 
+    							|| ( (linkToInline instanceof ORelatedEntityLinkInline) &&
+    									((ORelatedEntityLinkInline) linkToInline).getRelatedEntity() == null )
+    						)  {
     						jw.startObject();
     						{
     							jw.writeName("__deferred");

@@ -345,16 +345,28 @@ public class JPAProducer implements ODataProducer {
 								jpaEntity,
 								att.getJavaMember());
 
-						links.add(OLinks.relatedEntityInline(
-								null,
-								prop,
-								null,
-								jpaEntityToOEntity(
-										relatedEntitySet,
-										relatedEntityType,
-										relatedEntity,
-										remainingPropPath,
-										null)));
+						if( relatedEntity == null )
+						{
+							links.add(OLinks.relatedEntityInline(
+									null,
+									prop,
+									null,
+									null));		
+							
+						}else
+						{
+							links.add(OLinks.relatedEntityInline(
+									null,
+									prop,
+									null,
+									jpaEntityToOEntity(
+											relatedEntitySet,
+											relatedEntityType,
+											relatedEntity,
+											remainingPropPath,
+											null)));
+						}
+	
 					}
 
 				}
