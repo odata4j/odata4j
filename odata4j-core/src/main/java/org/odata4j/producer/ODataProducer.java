@@ -1,6 +1,7 @@
 package org.odata4j.producer;
 
 import org.odata4j.core.OEntity;
+import org.odata4j.core.OEntityKey;
 import org.odata4j.edm.EdmDataServices;
 
 /** ODataProducer is an interface to be implemented by any data source which can return
@@ -32,7 +33,7 @@ public interface ODataProducer {
      * @return the matching Entity if any
      * @throws NotFoundException if the requested entity could not be found.
      */
-    public abstract EntityResponse getEntity(String entitySetName, Object entityKey);
+    public abstract EntityResponse getEntity(String entitySetName, OEntityKey entityKey);
 
     /** Given a specific entity, follow one of its navigation properties, applying constraints
      * as appropriate.
@@ -44,7 +45,7 @@ public interface ODataProducer {
      */
     public abstract BaseResponse getNavProperty(
             String entitySetName,
-            Object entityKey,
+            OEntityKey entityKey,
             String navProp,
             QueryInfo queryInfo);
 
@@ -52,11 +53,11 @@ public interface ODataProducer {
 
     public abstract EntityResponse createEntity(String entitySetName, OEntity entity);
 
-    public abstract EntityResponse createEntity(String entitySetName, Object entityKey, String navProp, OEntity entity);
+    public abstract EntityResponse createEntity(String entitySetName, OEntityKey entityKey, String navProp, OEntity entity);
 
-    public abstract void deleteEntity(String entitySetName, Object entityKey);
+    public abstract void deleteEntity(String entitySetName, OEntityKey entityKey);
 
-    public abstract void mergeEntity(String entitySetName, Object entityKey, OEntity entity);
+    public abstract void mergeEntity(String entitySetName, OEntity entity);
 
-    public abstract void updateEntity(String entitySetName, Object entityKey, OEntity entity);
+    public abstract void updateEntity(String entitySetName, OEntity entity);
 }

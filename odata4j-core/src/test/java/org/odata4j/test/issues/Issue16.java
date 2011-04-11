@@ -2,6 +2,7 @@ package org.odata4j.test.issues;
 
 import junit.framework.Assert;
 
+
 import org.core4j.Enumerable;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
@@ -14,6 +15,7 @@ import org.odata4j.producer.Responses;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.resources.ODataProducerProvider;
 import org.odata4j.producer.server.JerseyServer;
+import org.odata4j.core.OEntityKey;
 
 public class Issue16 {
 
@@ -25,7 +27,7 @@ public class Issue16 {
         final String[] actualNavProp = new String[1];
         InMemoryProducer producer = new InMemoryProducer("Issue16"){
           @Override
-          public EntitiesResponse getNavProperty(String entitySetName, Object entityKey, String navProp, QueryInfo queryInfo) {
+          public EntitiesResponse getNavProperty(String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
               
               actualNavProp[0] = navProp;
             return Responses.entities(Enumerable.<OEntity>create().toList(), new EdmEntitySet("messageLog", null), null, null);

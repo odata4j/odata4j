@@ -236,13 +236,13 @@ public class XmlDataProducerExample {
 		}
 
 		@Override
-		public EntityResponse getEntity(String entitySetName, Object entityKey) {
+		public EntityResponse getEntity(String entitySetName, OEntityKey entityKey) {
 			return null;
 		}
 
 		@Override
 		public EntitiesResponse getNavProperty(String entitySetName,
-				Object entityKey, String navProp, QueryInfo queryInfo) {
+				OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
 			return null;
 		}
 
@@ -256,23 +256,20 @@ public class XmlDataProducerExample {
 		}
 
 		@Override
-	    public EntityResponse createEntity(String entitySetName, Object entityKey, 
-	    		String navProp, OEntity entity) {
+	    public EntityResponse createEntity(String entitySetName, OEntityKey entityKey, String navProp, OEntity entity) {
 			return null;
 		}
 
 		@Override
-		public void deleteEntity(String entitySetName, Object entityKey) {
+		public void deleteEntity(String entitySetName, OEntityKey entityKey) {
 		}
 
 		@Override
-		public void mergeEntity(String entitySetName, Object entityKey,
-				OEntity entity) {
+		public void mergeEntity(String entitySetName, OEntity entity) {
 		}
 
 		@Override
-		public void updateEntity(String entitySetName, Object entityKey,
-				OEntity entity) {
+		public void updateEntity(String entitySetName, OEntity entity) {
 		}
 
 	}

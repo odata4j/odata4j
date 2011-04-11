@@ -102,7 +102,7 @@ public class JPAProducer implements ODataProducer {
 	}
 
 	@Override
-	public EntityResponse getEntity(String entitySetName, Object entityKey) {
+	public EntityResponse getEntity(String entitySetName, OEntityKey entityKey) {
 		return common(entitySetName, entityKey, null,
 				new Func1<Context, EntityResponse>() {
 					public EntityResponse apply(Context input) {
@@ -124,7 +124,7 @@ public class JPAProducer implements ODataProducer {
 	@Override
 	public BaseResponse getNavProperty(
 			final String entitySetName,
-			final Object entityKey,
+			final OEntityKey entityKey,
 			final String navProp,
 			final QueryInfo queryInfo) {
 		
@@ -212,7 +212,7 @@ public class JPAProducer implements ODataProducer {
 
 	private <T> T common(
 			final String entitySetName,
-			Object entityKey,
+			OEntityKey entityKey,
 			QueryInfo query,
 			Func1<Context, T> fn) {
 		Context context = new Context();
@@ -228,7 +228,7 @@ public class JPAProducer implements ODataProducer {
 			context.typeSafeEntityKey = typeSafeEntityKey(
 					context.em,
 					context.jpaEntityType,
-					entityKey);
+					entityKey==null?null:entityKey.asSingleValue());
 
 			context.query = query;
 			return fn.apply(context);
@@ -974,8 +974,7 @@ public class JPAProducer implements ODataProducer {
 	}
 	
 	@Override
-	public EntityResponse createEntity(String entitySetName, Object entityKey,
-			final String navProp, OEntity entity) {
+	public EntityResponse createEntity(String entitySetName, OEntityKey entityKey, final String navProp, OEntity entity) {
 		//	get the EdmEntitySet for the parent (fromRole) entity
 		final EdmEntitySet ees = metadata.getEdmEntitySet(entitySetName);
 
@@ -995,10 +994,8 @@ public class JPAProducer implements ODataProducer {
 			
 			//	get the entity we want the new entity add to
 			EntityType<?> jpaEntityType = findJPAEntityType(em, ees.type.name);
-			Object typeSafeEntityKey = typeSafeEntityKey(em, jpaEntityType,
-					entityKey);
-			Object jpaEntity = em.find(jpaEntityType.getJavaType(),
-					typeSafeEntityKey);
+			Object typeSafeEntityKey = typeSafeEntityKey(em, jpaEntityType, entityKey.asSingleValue());
+			Object jpaEntity = em.find(jpaEntityType.getJavaType(), typeSafeEntityKey);
 
 			//	create the new entity
 			EntityType<?> newJpaEntityType = findJPAEntityType(em,
@@ -1065,7 +1062,7 @@ public class JPAProducer implements ODataProducer {
 	
 
 	@Override
-	public void deleteEntity(String entitySetName, Object entityKey) {
+	public void deleteEntity(String entitySetName, OEntityKey entityKey) {
 		final EdmEntitySet ees = metadata.getEdmEntitySet(entitySetName);
 
 		EntityManager em = emf.createEntityManager();
@@ -1075,7 +1072,7 @@ public class JPAProducer implements ODataProducer {
 			Object typeSafeEntityKey = typeSafeEntityKey(
 					em,
 					jpaEntityType,
-					entityKey);
+					entityKey.asSingleValue());
 
 			Object jpaEntity = em.find(
 					jpaEntityType.getJavaType(),
@@ -1091,8 +1088,7 @@ public class JPAProducer implements ODataProducer {
 	}
 
 	@Override
-	public void mergeEntity(String entitySetName, Object entityKey,
-			OEntity entity) {
+	public void mergeEntity(String entitySetName, OEntity entity) {
 		final EdmEntitySet ees = metadata.getEdmEntitySet(entitySetName);
 
 		EntityManager em = emf.createEntityManager();
@@ -1102,7 +1098,7 @@ public class JPAProducer implements ODataProducer {
 			Object typeSafeEntityKey = typeSafeEntityKey(
 					em,
 					jpaEntityType,
-					entityKey);
+					entity.getEntityKey().asSingleValue());
 
 			Object jpaEntity = em.find(
 					jpaEntityType.getJavaType(),
@@ -1121,7 +1117,6 @@ public class JPAProducer implements ODataProducer {
 	@Override
 	public void updateEntity(
 			String entitySetName,
-			Object entityKey,
 			OEntity entity) {
 		final EdmEntitySet ees = metadata.getEdmEntitySet(entitySetName);
 

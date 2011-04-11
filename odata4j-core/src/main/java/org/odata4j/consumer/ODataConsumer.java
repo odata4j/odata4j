@@ -31,7 +31,7 @@ import org.odata4j.internal.FeedCustomizationMapping;
 public class ODataConsumer {
 
     
-    private static class ParsedHref{
+    private static class ParsedHref{	// TODO OEK
         public String entitySetName;
         public Object[] key;
         public String navProperty;

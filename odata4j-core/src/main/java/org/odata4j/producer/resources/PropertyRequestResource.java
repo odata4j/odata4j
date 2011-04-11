@@ -73,10 +73,9 @@ public class PropertyRequestResource extends BaseResource {
 			
 			//	parse the request entity 
 			OEntity entity = getRequestEntity(context.getRequest(), metadata, ees.name, OEntityKey.parse(id));
-			Object idObject = OEntityKey.parse(id).asSingleValue();
 			
 			//	execute the create
-			EntityResponse response = producer.createEntity(entitySetName, idObject, navProp, entity);
+			EntityResponse response = producer.createEntity(entitySetName, OEntityKey.parse(id), navProp, entity);
 
 	        if (response == null) {
 	            return Response.status(Status.NOT_FOUND).build();
@@ -149,10 +148,9 @@ public class PropertyRequestResource extends BaseResource {
 				OptionsQueryParser.parseSelect(expand),
 				OptionsQueryParser.parseSelect(select));
 
-		Object idObject = OEntityKey.parse(id).asSingleValue();
 		final BaseResponse response = producer.getNavProperty(
 				entitySetName,
-				idObject,
+				OEntityKey.parse(id),
 				navProp,
 				query);
 

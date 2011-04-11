@@ -12,6 +12,7 @@ import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.resources.ODataProducerProvider;
 import org.odata4j.producer.server.JerseyServer;
+import org.odata4j.core.OEntityKey;
 
 public class Issue13 {
 
@@ -20,10 +21,10 @@ public class Issue13 {
         
         String endpointUri = "http://localhost:8813/Issue13.svc/";
         
-        final Object[] lastEntityKey = new Object[1];
+        final OEntityKey[] lastEntityKey = new OEntityKey[1];
         InMemoryProducer producer = new InMemoryProducer("Issue13"){
             @Override
-            public EntityResponse getEntity(String entitySetName, Object entityKey) {
+            public EntityResponse getEntity(String entitySetName, OEntityKey entityKey) {
                 lastEntityKey[0] = entityKey;
                 return super.getEntity(entitySetName, entityKey);
             }
@@ -43,7 +44,7 @@ public class Issue13 {
         lastEntityKey[0] = null;
         Assert.assertNotNull( c.getEntity("Entity", 2L).execute());
         Assert.assertNotNull(lastEntityKey[0]);
-        Assert.assertEquals(2L, lastEntityKey[0]);
+        Assert.assertEquals(OEntityKey.create(2L), lastEntityKey[0]);
        
         server.stop();
         

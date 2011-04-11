@@ -437,20 +437,18 @@ public class InMemoryProducer implements ODataProducer {
 
     @SuppressWarnings("unchecked")
     @Override
-    public EntityResponse getEntity(String entitySetName, Object entityKey) {
+    public EntityResponse getEntity(String entitySetName, OEntityKey entityKey) {
         final EdmEntitySet ees = metadata.getEdmEntitySet(entitySetName);
         final EntityInfo<?, ?> ei = eis.get(entitySetName);
 
-        entityKey = InMemoryEvaluation.cast(entityKey, ei.keyClass);
+        final Object idValue = InMemoryEvaluation.cast(entityKey.asSingleValue(), ei.keyClass);
 
         Iterable<Object> iter = (Iterable<Object>) ei.get.apply();
 
-        final Object finalKey = entityKey;
         final Object rt = Enumerable.create(iter).firstOrNull(new Predicate1<Object>() {
             public boolean apply(Object input) {
                 Object id = ei.id.apply(input);
-
-                return finalKey.equals(id);
+                return idValue.equals(id);
             }
         });
         if (rt == null)
@@ -492,17 +490,17 @@ public class InMemoryProducer implements ODataProducer {
     }
 
     @Override
-    public void mergeEntity(String entitySetName, Object entityKey, OEntity entity) {
+    public void mergeEntity(String entitySetName, OEntity entity) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateEntity(String entitySetName, Object entityKey, OEntity entity) {
+    public void updateEntity(String entitySetName, OEntity entity) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void deleteEntity(String entitySetName, Object entityKey) {
+    public void deleteEntity(String entitySetName, OEntityKey entityKey) {
         throw new UnsupportedOperationException();
     }
 
@@ -512,13 +510,12 @@ public class InMemoryProducer implements ODataProducer {
     }
     
 	@Override
-    public EntityResponse createEntity(String entitySetName, Object entityKey, 
-    		String navProp, OEntity entity) {
+    public EntityResponse createEntity(String entitySetName, OEntityKey entityKey, String navProp, OEntity entity) {
 		return null;
 	}
 
 	@Override
-	public EntitiesResponse getNavProperty(String entitySetName, Object entityKey, String navProp, QueryInfo queryInfo) {
+	public EntitiesResponse getNavProperty(String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
         throw new UnsupportedOperationException();
 	}
 }
