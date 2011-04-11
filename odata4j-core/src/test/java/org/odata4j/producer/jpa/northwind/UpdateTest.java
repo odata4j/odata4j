@@ -9,7 +9,7 @@ import org.odata4j.core.OClientBehaviors;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperties;
 
-public class JPAProducerUpdateTest extends JPAProducerTestBase {
+public class UpdateTest extends JPAProducerTestBase {
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {

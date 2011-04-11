@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.core4j.Enumerable;
 import org.odata4j.core.ODataConstants;
+import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OEntityRef;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
@@ -31,7 +32,7 @@ public class OEntityRefImpl<T> implements OEntityRef<T> {
 
     private final FeedCustomizationMapping fcMapping;
    
-    public OEntityRefImpl(boolean isDelete, ODataClient client, Class<T> entityType, String serviceRootUri, EdmDataServices metadata, String entitySetName, Object[] key, FeedCustomizationMapping fcMapping) {
+    public OEntityRefImpl(boolean isDelete, ODataClient client, Class<T> entityType, String serviceRootUri, EdmDataServices metadata, String entitySetName, OEntityKey key, FeedCustomizationMapping fcMapping) {
         this.isDelete = isDelete;
         this.client = client;
         this.entityType = entityType;
@@ -45,7 +46,7 @@ public class OEntityRefImpl<T> implements OEntityRef<T> {
 
     @Override
     public OEntityRef<T> nav(String navProperty, Object... key) {
-        segments.add(new EntitySegment(navProperty, key));
+        segments.add(EntitySegment.temp(navProperty, key));
         return this;
     }
     
@@ -80,10 +81,12 @@ public class OEntityRefImpl<T> implements OEntityRef<T> {
         		entitySet = metadata.getEdmEntitySet(navProperty.toRole.type);
         	}
 
+        	OEntityKey key = Enumerable.create(segments).last().key;
+        	
         	// TODO determine the service version from header (and metadata?) 
     		final FormatParser<Feed> parser = FormatParserFactory
     			.getParser(Feed.class, client.type, 
-    					new Settings(ODataConstants.DATA_SERVICE_VERSION, metadata, entitySet.name, fcMapping));
+    					new Settings(ODataConstants.DATA_SERVICE_VERSION, metadata, entitySet.name, key, fcMapping));
             
     		Entry entry  = Enumerable.create(parser.parse(client.getFeedReader(response))
     				.getEntries())

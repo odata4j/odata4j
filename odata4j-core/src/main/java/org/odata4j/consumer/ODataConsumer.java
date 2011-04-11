@@ -9,6 +9,7 @@ import org.odata4j.core.NamedValue;
 import org.odata4j.core.OClientBehavior;
 import org.odata4j.core.OCreate;
 import org.odata4j.core.OEntity;
+import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OEntityRef;
 import org.odata4j.core.OModify;
 import org.odata4j.core.OQuery;
@@ -205,7 +206,7 @@ public class ODataConsumer {
         FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
 		return new OEntityRefImpl<T>(false,  client,
 				entityType, serviceRootUri, getMetadata(),
-				entitySetName, key, mapping);
+				entitySetName, OEntityKey.create(key), mapping);
     }
 
 	public OCreate<OEntity> createEntity(String entitySetName) {
@@ -224,7 +225,10 @@ public class ODataConsumer {
     			getMetadata(), entitySetName, key);
     }
 
-	public OEntityRef<Void> deleteEntity(String entitySetName, Object... key) {
+    public OEntityRef<Void> deleteEntity(String entitySetName, Object key) {
+    	return deleteEntity(entitySetName,OEntityKey.create(key));
+    }
+	public OEntityRef<Void> deleteEntity(String entitySetName, OEntityKey key) {
         FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
 		return new OEntityRefImpl<Void>(true, client,
 				null, serviceRootUri, getMetadata(), entitySetName, key,

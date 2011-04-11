@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class JPAProducerQueryOptionTest extends JPAProducerTestBase {
+public class QueryOptionTest extends JPAProducerTestBase {
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {

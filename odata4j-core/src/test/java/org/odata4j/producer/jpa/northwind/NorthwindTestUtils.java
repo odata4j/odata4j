@@ -123,7 +123,7 @@ public class NorthwindTestUtils {
 
 			} catch (IOException ex) {
 				Logger.getLogger(
-						JPAProducerQueryOptionTest.class.getName()).log(
+						QueryOptionTest.class.getName()).log(
 								Level.SEVERE,
 								null,
 								ex);
@@ -131,7 +131,7 @@ public class NorthwindTestUtils {
 
 		} catch (Exception ex) {
 			Logger.getLogger(
-					JPAProducerQueryOptionTest.class.getName()).log(
+					QueryOptionTest.class.getName()).log(
 							Level.SEVERE,
 							null,
 							ex);
@@ -208,7 +208,7 @@ public class NorthwindTestUtils {
 				"http://localhost:8810/northwind",
 				"http://services.odata.org/northwind");
 		result = result.replace("OrderDetails", "Order_Details");
-
+		
 		String expect =
 				NorthwindTestUtils.readFileToString(
 						RESOURCES_ROOT
@@ -218,6 +218,8 @@ public class NorthwindTestUtils {
 						"utf-8");
 		expect = expect.replace("http://services.odata.org/Northwind", "http://services.odata.org/northwind");
 
+		//System.out.println("result: " + result);
+		
 		try {
 			DocumentBuilderFactory factory = DocumentBuilderFactory
 					.newInstance();

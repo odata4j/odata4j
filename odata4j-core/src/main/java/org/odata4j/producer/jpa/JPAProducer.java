@@ -9,9 +9,11 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.persistence.CascadeType;
 import javax.persistence.EntityManager;
@@ -62,7 +64,6 @@ import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.PropertyResponse;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.Responses;
-import org.odata4j.producer.resources.OptionsQueryParser;
 
 public class JPAProducer implements ODataProducer {
 
@@ -252,8 +253,6 @@ public class JPAProducer implements ODataProducer {
 			boolean hasEmbeddedCompositeKey =
 					idAtt.getPersistentAttributeType() == PersistentAttributeType.EMBEDDED;
 
-			Object id = getIdValue(jpaEntity, idAtt, null);
-
 			// get properties
 			for (EdmProperty ep : ees.type.properties) {
 
@@ -372,12 +371,30 @@ public class JPAProducer implements ODataProducer {
 				}
 			}
 
-			return OEntities.create(ees, OEntityKey.create(id), properties, links);
+
+			return OEntities.create(ees, toOEntityKey(jpaEntity,idAtt), properties, links);
 
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
+	
+	private OEntityKey toOEntityKey(Object jpaEntity, SingularAttribute<?, ?> idAtt ){
+		boolean hasEmbeddedCompositeKey =
+			idAtt.getPersistentAttributeType() == PersistentAttributeType.EMBEDDED;
+		if (!hasEmbeddedCompositeKey){
+			Object id = getIdValue(jpaEntity, idAtt, null);
+			return OEntityKey.create(id);
+		}
+		ManagedType<?> keyType = (ManagedType<?>) idAtt.getType();
+		
+		Map<String,Object> nameValues = new HashMap<String,Object>();
+		for(Attribute<?,?> att : keyType.getAttributes())
+			nameValues.put(att.getName(), getIdValue(jpaEntity, idAtt, att.getName()));
+		return OEntityKey.create(nameValues);
+	}
+	
+	
 
 	private static boolean isSelected(
 			String name,
@@ -583,8 +600,8 @@ public class JPAProducer implements ODataProducer {
 					from = String.format("%s JOIN %s %s", from, prop, alias);
 
 					if (propSplit.length > 1) {
-						Object entityKey = OptionsQueryParser.parseIdObject(
-										"(" + propSplit[1]);
+						Object entityKey = OEntityKey.parse("(" + propSplit[1]).asSingleValue();
+							
 
 						context.keyPropertyName = JPAEdmGenerator
 							.getId(context.jpaEntityType).getName();

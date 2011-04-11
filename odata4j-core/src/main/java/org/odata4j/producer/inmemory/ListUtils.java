@@ -14,7 +14,6 @@ import org.odata4j.core.OProperty;
 import org.odata4j.core.ORelatedEntitiesLinkInline;
 import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.OrderByExpression;
-import org.odata4j.internal.InternalUtil;
 import org.odata4j.producer.InlineCount;
 import org.odata4j.producer.QueryInfo;
 
@@ -23,8 +22,6 @@ import org.odata4j.producer.QueryInfo;
  * @author sergei.grizenok
  */
 public class ListUtils {
-
-    private static final String ID_PROPNAME = "EntityId";
 
     public static List<OEntity> applyQuery(
             final List<OEntity> entities,
@@ -55,7 +52,7 @@ public class ListUtils {
 
                 public boolean apply(OEntity input) {
                     if (skipping[0]) {
-                        String inputKey = keyString(input);
+                        String inputKey = input.getEntityKey().toKeyString();
                         if (query.skipToken.equals(inputKey)) {
                             skipping[0] = false;
                         }
@@ -89,7 +86,7 @@ public class ListUtils {
         if (entities.size() > limit) {
             skipToken = entities.isEmpty()
                     ? null
-                    : ListUtils.keyString(Enumerable.create(entities).last());
+                    : Enumerable.create(entities).last().getEntityKey().toKeyString();
         }
 
         return skipToken;
@@ -123,10 +120,6 @@ public class ListUtils {
         return query.inlineCount == InlineCount.ALLPAGES
                 ? entities.size()
                 : null;
-    }
-
-    private static String keyString(OEntity entity) {
-        return InternalUtil.keyString(entity.getProperty(ID_PROPNAME).getValue(), false);
     }
 
     private static int computeLimit(Integer top, int maxResults) {

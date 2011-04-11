@@ -98,7 +98,7 @@ public class OQueryImpl<T> implements OQuery<T> {
 
     @Override
     public OQuery<T> nav(Object[] key, String navProperty) {
-        segments.add(new EntitySegment(lastSegment, key));
+        segments.add(EntitySegment.temp(lastSegment, key));
         lastSegment = navProperty;
         return this;
     }
@@ -180,8 +180,9 @@ public class OQueryImpl<T> implements OQuery<T> {
             	
             	InternalUtil.getDataServiceVersion(response.getHeaders()
             			.getFirst(ODataConstants.Headers.DATA_SERVICE_VERSION));
+            	
                 parser = FormatParserFactory.getParser(Feed.class, client.type, 
-                		new Settings(ODataVersion.V2, metadata, lastSegment, fcMapping)); 
+                		new Settings(ODataVersion.V2, metadata, lastSegment, null, fcMapping)); 
 
             	feed = parser.parse(client.getFeedReader(response));
                 feedEntries = feed.getEntries().iterator();

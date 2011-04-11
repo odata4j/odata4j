@@ -4,6 +4,7 @@ import org.core4j.Enumerable;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.consumer.ODataConsumers;
 import org.odata4j.core.OEntity;
+import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
 import org.odata4j.examples.BaseExample;
@@ -29,7 +30,7 @@ public class AzureTableStorageConsumerExample extends BaseExample {
         Object[] entityKeyObjects = Enumerable.create(entityKey).cast(Object.class).toArray(Object.class);  // to prevent compiler warnings below
         
         report("Ensure the new entity does not exist");
-        c.deleteEntity(tableName, entityKeyObjects).execute();
+        c.deleteEntity(tableName, OEntityKey.create(entityKeyObjects)).execute();
         reportEntities(c,tableName,100);
         
         report("Create a new entity");
@@ -49,7 +50,7 @@ public class AzureTableStorageConsumerExample extends BaseExample {
         reportEntities(c,tableName,100);
         
         report("Delete the new entity");
-        c.deleteEntity(tableName, entityKeyObjects).execute();
+        c.deleteEntity(tableName, OEntityKey.create(entityKeyObjects)).execute();
         reportEntities(c,tableName,100);
         
         

@@ -5,11 +5,15 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.lang.reflect.Field;
 import java.util.List;
+
+import javax.ws.rs.core.MultivaluedMap;
 
 import org.core4j.Enumerable;
 import org.odata4j.core.OClientBehavior;
 import org.odata4j.core.OClientBehaviors;
+import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
@@ -30,6 +34,7 @@ import org.odata4j.stax2.XMLEventReader2;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.PartialRequestBuilder;
 import com.sun.jersey.api.client.WebResource;
 
 class ODataClient {
@@ -95,9 +100,8 @@ class ODataClient {
         return true;
     }
     
-	Entry createRequestEntry(EdmEntitySet entitySet, List<OProperty<?>> props, List<OLink> links) {
-    	final OEntity oentity = OEntities.create(entitySet, 
-    			OEntityKey.infer(entitySet, props), props, links);
+	Entry createRequestEntry(EdmEntitySet entitySet, OEntityKey entityKey, List<OProperty<?>> props, List<OLink> links) {
+    	final OEntity oentity = OEntities.create(entitySet, entityKey, props, links);
     	
     	return new Entry() {
 			
@@ -142,7 +146,8 @@ class ODataClient {
         }
 
         if (ODataConsumer.dump.requestHeaders())
-            log(request.getMethod() + " " + webResource.toString());
+        	dumpHeaders(request, webResource, b);
+           
 
         // request body
         if (request.getEntry() != null) {
@@ -157,7 +162,12 @@ class ODataClient {
             if (ODataConsumer.dump.requestBody())
                 log(entity);
             
-            b.entity(entity, fw.getContentType());
+            // allow the client to override the default format writer content-type
+            String contentType = request.getHeaders().containsKey(ODataConstants.Headers.CONTENT_TYPE)
+            							?request.getHeaders().get(ODataConstants.Headers.CONTENT_TYPE)
+            							: fw.getContentType();
+            							
+            b.entity(entity, contentType);
         }
 
         // execute request
@@ -209,10 +219,39 @@ class ODataClient {
    
     private void dumpHeaders(ClientResponse response) {
         log("Status: " + response.getStatus());
-        for(String key : response.getHeaders().keySet()) {
-            log(key + ": " + response.getHeaders().getFirst(key));
-        }
+        dump(response.getHeaders());
     }
+    
+    private static boolean dontTryRequestHeaders;
+    
+    @SuppressWarnings("unchecked")
+	private MultivaluedMap<String, Object> getRequestHeaders(WebResource.Builder b){
+    	if (dontTryRequestHeaders) 
+    		return null;
+    	 
+    	//  protected MultivaluedMap<String, Object> metadata;
+    	try {
+    		Field f = PartialRequestBuilder.class.getDeclaredField("metadata");
+    		f.setAccessible(true);
+    		return (MultivaluedMap<String, Object>)f.get(b);
+    	} catch (Exception e) {dontTryRequestHeaders = true; return null; }
+    	
+    }
+    private void dumpHeaders(ODataClientRequest request, WebResource webResource, WebResource.Builder b) {
+    	 log(request.getMethod() + " " + webResource);
+    	 dump(getRequestHeaders(b));
+    }
+    
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	private void dump( MultivaluedMap headers){
+    	 if (headers==null)
+    		 return;
+
+        for(Object key : headers.keySet()) 
+            log(key + ": " + headers.getFirst(key));
+    }
+    
+   
 
     private static void log(String message) {
         System.out.println(message);

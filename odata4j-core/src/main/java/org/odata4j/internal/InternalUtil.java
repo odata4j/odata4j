@@ -5,7 +5,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,16 +20,14 @@ import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISOPeriodFormat;
-import org.odata4j.core.Guid;
-import org.odata4j.core.NamedValue;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OEntity;
+import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OLink;
 import org.odata4j.core.OProperty;
 import org.odata4j.core.ORelatedEntitiesLinkInline;
 import org.odata4j.core.ORelatedEntityLink;
-import org.odata4j.edm.EdmType;
 import org.odata4j.producer.inmemory.BeanModel;
 import org.odata4j.stax2.XMLEventReader2;
 import org.odata4j.stax2.XMLFactoryProvider2;
@@ -153,22 +150,7 @@ public class InternalUtil {
 		return rt.toString();
 	}
 
-	public static String keyString(Object[] key) {
-
-		String keyValue;
-		if (key.length == 1) {
-			keyValue = keyString(key[0], false);
-		} else {
-			keyValue = Enumerable.create(key)
-					.select(new Func1<Object, String>() {
-						public String apply(Object input) {
-							return keyString(input, true);
-						}
-					}).join(",");
-		}
-
-		return "(" + keyValue + ")";
-	}
+	
 	
 	public static Object[] keyValues(String keyString, Class<?>[] types) {
 		if (keyString == null
@@ -192,32 +174,9 @@ public class InternalUtil {
 		return keys;
 	}
 
-	@SuppressWarnings("unchecked")
-	private static final Set<Object> INTEGRAL_TYPES = Enumerable
-			.create(Integer.class, Integer.TYPE, Long.class, Long.TYPE,
-					Short.class, Short.TYPE).cast(Object.class).toSet();
+	
 
-	public static String keyString(Object key, boolean includePropName) {
-		if (key instanceof Guid) {
-			return "guid'" + key + "'";
-		} else if (key instanceof String) {
-			return "'" + ((String) key).replace("'", "''") + "'";
-		} else if (key instanceof Long) {
-			return key.toString() + "L";
-		} else if (INTEGRAL_TYPES.contains(key.getClass())) {
-			return key.toString();
-		} else if (key instanceof NamedValue<?>) {
-			NamedValue<?> namedValue = (NamedValue<?>) key;
-			String value = keyString(namedValue.getValue(), false);
-
-			if (includePropName)
-				return namedValue.getName() + "=" + value;
-			else
-				return value;
-		} else {
-			return key.toString();
-		}
-	}
+	
 
 	@SuppressWarnings("unchecked")
 	public static <T> T toEntity(Class<T> entityType, OEntity oe) {
@@ -306,7 +265,7 @@ public class InternalUtil {
 									+ input + "' is invalid");
 						}
 					}).cast(Object.class).toArray(Object.class);
-			key = InternalUtil.keyString(keyProperties);
+			key = OEntityKey.create(keyProperties).toKeyString();
 		}
 
 		return entitySetName + key;
@@ -314,46 +273,7 @@ public class InternalUtil {
 	}
 
 	public static String getEntityRelId(final OEntity oe) {
-		String key = null;
-		if (oe.getEntitySet().type.keys != null) {
-			Object[] keyProperties = Enumerable
-					.create(oe.getEntitySet().type.keys)
-					.select(new Func1<String, OProperty<?>>() {
-
-						public OProperty<?> apply(final String input) {
-							
-							for (OProperty<?> entityProperty : oe.getProperties()) 
-								if (entityProperty.getName().equals(input)) 
-									return entityProperty;
-									
-
-							if (oe.getEntityKey() != null && oe.getEntityKey().isSingleValued()) {
-								return new OProperty<Object>() {
-
-									@Override
-									public String getName() {
-										return input;
-									}
-
-									@Override
-									public Object getValue() {
-										return oe.getEntityKey().asSingleValue();
-									}
-
-									@Override
-									public EdmType getType() {
-										return null;
-									}
-								};
-							}
-
-							throw new IllegalArgumentException("Key property '" + input + "' is invalid");
-						}
-					}).cast(Object.class).toArray(Object.class);
-
-			key = InternalUtil.keyString(keyProperties);
-		}
-
+		String key = oe.getEntityKey().toKeyString();
 		return oe.getEntitySet().name + key;
 	}
 

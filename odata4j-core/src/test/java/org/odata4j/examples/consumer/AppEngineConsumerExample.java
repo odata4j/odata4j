@@ -39,7 +39,7 @@ public class AppEngineConsumerExample extends BaseExample {
         
         
         report("Delete the new category");
-        c.deleteEntity("Category", newCategory.getProperty("id")).execute();
+        c.deleteEntity("Category", newCategory.getEntityKey()).execute();
         reportEntities(c,"Category",100);
         
         

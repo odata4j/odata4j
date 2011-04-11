@@ -75,43 +75,7 @@ public class OptionsQueryParser {
 
     }
 
-    public static Object parseIdObject(String id) {
-        String cleanid = null;
-
-
-        if (id != null && id.length() > 0) {
-            if (id.startsWith("(") && id.endsWith(")")) {
-                cleanid = id.substring(1, id.length() - 1);
-                // log.info("cleanid!: " + cleanid);
-
-
-            }
-        }
-        if (cleanid == null) {
-            throw new RuntimeException("unable to parse id");
-
-
-        }
-
-        Object idObject;
-
-
-        if (cleanid.startsWith("'") && cleanid.endsWith("'")) {
-            idObject = cleanid.substring(1, cleanid.length() - 1);
-
-
-        } else if (cleanid.endsWith("L")) {
-            idObject = Long.parseLong(cleanid.substring(0, cleanid.length() - 1));
-
-
-        } else {
-            idObject = Integer.parseInt(cleanid);
-
-
-        }
-
-        return idObject;
-    }
+   
 
     public static List<EntitySimpleProperty> parseExpand(String expand) {
         if (expand == null) {

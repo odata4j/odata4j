@@ -5,13 +5,15 @@ import org.junit.runners.Suite;
 import org.odata4j.producer.jpa.airline.test.CreateWithLinkTest;
 import org.odata4j.producer.jpa.airline.test.EdmDateTimeTemporalTest;
 import org.odata4j.producer.jpa.airline.test.EdmTimeTemporalTest;
-import org.odata4j.producer.jpa.northwind.JPAProducerCreateTest;
-import org.odata4j.producer.jpa.northwind.JPAProducerQueryOptionAtomTest;
-import org.odata4j.producer.jpa.northwind.JPAProducerQueryOptionAtomTest50;
-import org.odata4j.producer.jpa.northwind.JPAProducerQueryOptionTest;
-import org.odata4j.producer.jpa.northwind.JPAProducerQueryOptionTest50;
-import org.odata4j.producer.jpa.northwind.JPAProducerResourcePathTest;
-import org.odata4j.producer.jpa.northwind.JPAProducerUpdateTest;
+import org.odata4j.producer.jpa.northwind.CreateTest;
+import org.odata4j.producer.jpa.northwind.DeleteTest;
+import org.odata4j.producer.jpa.northwind.QueryOptionAtomTest;
+import org.odata4j.producer.jpa.northwind.QueryOptionAtomTest50;
+import org.odata4j.producer.jpa.northwind.QueryOptionTest;
+import org.odata4j.producer.jpa.northwind.QueryOptionTest50;
+import org.odata4j.producer.jpa.northwind.ResourcePathTest;
+import org.odata4j.producer.jpa.northwind.UpdateTest;
+import org.odata4j.test.core.OEntityKeyTest;
 import org.odata4j.test.expression.DateTimeFormatTest;
 import org.odata4j.test.expression.ExpressionTest;
 import org.odata4j.test.expression.JsonTest;
@@ -35,17 +37,19 @@ import org.odata4j.test.issues.Issue16;
 	Issue13.class,
 	Issue15.class,
 	Issue16.class,
-	JPAProducerResourcePathTest.class,
-	JPAProducerQueryOptionTest.class,
-	JPAProducerQueryOptionTest50.class,
-	JPAProducerQueryOptionAtomTest.class,
-	JPAProducerQueryOptionAtomTest50.class,
+	ResourcePathTest.class,
+	QueryOptionTest.class,
+	QueryOptionTest50.class,
+	QueryOptionAtomTest.class,
+	QueryOptionAtomTest50.class,
 	DateTimeFormatTest.class,
-	JPAProducerCreateTest.class,
-	JPAProducerUpdateTest.class,
+	CreateTest.class,
+	UpdateTest.class,
+	DeleteTest.class,
 	EdmTimeTemporalTest.class,
 	EdmDateTimeTemporalTest.class,
-	CreateWithLinkTest.class
+	CreateWithLinkTest.class,
+	OEntityKeyTest.class,
 })
 
 public class OData4jTestSuite {

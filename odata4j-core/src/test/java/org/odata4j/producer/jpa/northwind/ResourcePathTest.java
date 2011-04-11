@@ -9,7 +9,7 @@ import org.junit.Test;
  * 
  * @author sergei.grizenok
  */
-public class JPAProducerResourcePathTest extends JPAProducerTestBase {
+public class ResourcePathTest extends JPAProducerTestBase {
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {

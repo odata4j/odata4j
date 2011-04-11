@@ -3,7 +3,7 @@ package org.odata4j.producer.jpa.northwind;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class JPAProducerQueryOptionTest50 extends JPAProducerTestBase {
+public class QueryOptionTest50 extends JPAProducerTestBase {
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {

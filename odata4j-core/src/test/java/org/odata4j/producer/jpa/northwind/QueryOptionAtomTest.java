@@ -4,8 +4,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.odata4j.consumer.ODataConsumer;
 
-public class JPAProducerQueryOptionAtomTest extends JPAProducerTestBase {
+public class QueryOptionAtomTest extends JPAProducerTestBase {
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {
@@ -169,6 +170,7 @@ public class JPAProducerQueryOptionAtomTest extends JPAProducerTestBase {
 
 	@Test
 	public void SystemQueryOptionExpand4Test() {
+		ODataConsumer.dump.all(true);
 		String inp = "SystemQueryOptionExpand4Test";
 		String uri = "Orders?$top=10&$orderby=OrderID&$expand=OrderDetails/Product";
 		NorthwindTestUtils.testAtomResult(endpointUri, uri, inp);

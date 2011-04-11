@@ -7,6 +7,7 @@ import javax.ws.rs.core.MediaType;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OEntity;
+import org.odata4j.core.OEntityKey;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.format.Entry;
 import org.odata4j.format.FormatParser;
@@ -19,7 +20,7 @@ import com.sun.jersey.api.core.HttpRequestContext;
 public abstract class BaseResource {
 
    
-    protected OEntity getRequestEntity(HttpRequestContext request, EdmDataServices metadata, String entitySetName) {
+    protected OEntity getRequestEntity(HttpRequestContext request, EdmDataServices metadata, String entitySetName, OEntityKey entityKey) {
         String requestEntity = request.getEntity(String.class);
         
         //	TODO validation of MaxDataServiceVersion against DataServiceVersion
@@ -27,13 +28,12 @@ public abstract class BaseResource {
         
 		ODataVersion version = InternalUtil.getDataServiceVersion(request
 				.getHeaderValue(ODataConstants.Headers.DATA_SERVICE_VERSION));
-		return convertFromString(requestEntity, request.getMediaType(),
-				version, metadata, entitySetName);
+		return convertFromString(requestEntity, request.getMediaType(), version, metadata, entitySetName, entityKey);
     }
     
-    private static OEntity convertFromString(String requestEntity, MediaType type, ODataVersion version, EdmDataServices metadata, String entitySetName) {
+    private static OEntity convertFromString(String requestEntity, MediaType type, ODataVersion version, EdmDataServices metadata, String entitySetName, OEntityKey entityKey) {
     	FormatParser<Entry> parser = FormatParserFactory.getParser(Entry.class, type, 
-    			new Settings(version, metadata, entitySetName, null, false));
+    			new Settings(version, metadata, entitySetName, entityKey, null, false));
     	Entry entry = parser.parse(new StringReader(requestEntity));
     	return entry.getEntity();
     }

@@ -8,12 +8,10 @@ import org.odata4j.format.FormatWriter;
 
 import com.sun.jersey.api.core.ExtendedUriInfo;
 
-public class AtomRequestEntryFormatWriter implements
-		FormatWriter<Entry> {
+public class AtomRequestEntryFormatWriter implements FormatWriter<Entry> {
 
 	@Override
-	public void write(ExtendedUriInfo uriInfo, Writer w,
-			Entry target) {
+	public void write(ExtendedUriInfo uriInfo, Writer w, Entry target) {
 		new AtomEntryFormatWriter().writeRequestEntry(w, target);
 	}
 

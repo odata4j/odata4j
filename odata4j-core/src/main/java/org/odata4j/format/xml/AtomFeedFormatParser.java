@@ -37,10 +37,12 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
 
 	protected EdmDataServices metadata;
 	protected String entitySetName;
+	protected OEntityKey entityKey;
 	
-	public AtomFeedFormatParser(EdmDataServices metadata, String entitySetName) {
+	public AtomFeedFormatParser(EdmDataServices metadata, String entitySetName, OEntityKey entityKey) {
 		this.metadata = metadata;
 		this.entitySetName = entitySetName;
+		this.entityKey = entityKey;
 	}
 	
 	
@@ -358,7 +360,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
         throw new RuntimeException();
     }
 
-	public static OEntity entityFromAtomEntry(
+	public OEntity entityFromAtomEntry(
 			EdmDataServices metadata,
 			EdmEntitySet entitySet,
 			DataServicesAtomEntry dsae,
@@ -366,7 +368,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
 		if (mapping == null)
 			return OEntities.create(
 					entitySet,
-					OEntityKey.infer(entitySet,dsae.properties),
+					entityKey!=null?entityKey:OEntityKey.infer(entitySet,dsae.properties),
 					dsae.properties,
 					toOLinks(metadata, entitySet, dsae.atomLinks, mapping), 
 					dsae.title,
@@ -389,7 +391,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
 
 	}
 
-	private static List<OLink> toOLinks(
+	private List<OLink> toOLinks(
 			final EdmDataServices metadata,
 			EdmEntitySet fromRoleEntitySet,
 			List<AtomLink> links,

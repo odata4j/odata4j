@@ -42,7 +42,6 @@ import org.odata4j.edm.EdmType;
 import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.OrderByExpression;
-import org.odata4j.internal.InternalUtil;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.InlineCount;
@@ -390,7 +389,7 @@ public class InMemoryProducer implements ODataProducer {
             entities = entities.skipWhile(new Predicate1<OEntity>(){
                 public boolean apply(OEntity input) {
                     if (skipping[0]) {
-                        String inputKey = keyString(input);
+                        String inputKey = input.getEntityKey().toKeyString();
                         if (queryInfo.skipToken.equals(inputKey))
                             skipping[0] = false;
                         return true;
@@ -416,17 +415,13 @@ public class InMemoryProducer implements ODataProducer {
         String skipToken = null;
         if (entitiesList.size() > limit){
             entitiesList = Enumerable.create(entitiesList).take(limit).toList();
-            skipToken = entitiesList.size()==0?null:InternalUtil.keyString(Enumerable.create(entitiesList).last().getProperty(ID_PROPNAME).getValue(),false);
+            skipToken = entitiesList.size()==0?null:Enumerable.create(entitiesList).last().getEntityKey().toKeyString();
         }
         
         return Responses.entities(entitiesList, ees, inlineCount, skipToken);
       
     }
-    
-    private static String keyString(OEntity entity){
-        return InternalUtil.keyString(entity.getProperty(ID_PROPNAME).getValue(),false);
-    }
-
+  
     private Enumerable<Object> orderBy(Enumerable<Object> iter, List<OrderByExpression> orderBys, final PropertyModel properties) {
         for(final OrderByExpression orderBy : Enumerable.create(orderBys).reverse())
             iter = iter.orderBy(new Comparator<Object>() {

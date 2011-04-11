@@ -20,6 +20,7 @@ import javax.ws.rs.core.Response.Status;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OEntity;
+import org.odata4j.core.OEntityKey;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.format.FormatWriter;
@@ -71,8 +72,8 @@ public class PropertyRequestResource extends BaseResource {
 							.getNavigationProperty(navProp).toRole.type);
 			
 			//	parse the request entity 
-			OEntity entity = getRequestEntity(context.getRequest(), metadata, ees.name);
-			Object idObject = OptionsQueryParser.parseIdObject(id);
+			OEntity entity = getRequestEntity(context.getRequest(), metadata, ees.name, OEntityKey.parse(id));
+			Object idObject = OEntityKey.parse(id).asSingleValue();
 			
 			//	execute the create
 			EntityResponse response = producer.createEntity(entitySetName, idObject, navProp, entity);
@@ -148,7 +149,7 @@ public class PropertyRequestResource extends BaseResource {
 				OptionsQueryParser.parseSelect(expand),
 				OptionsQueryParser.parseSelect(select));
 
-		Object idObject = OptionsQueryParser.parseIdObject(id);
+		Object idObject = OEntityKey.parse(id).asSingleValue();
 		final BaseResponse response = producer.getNavProperty(
 				entitySetName,
 				idObject,

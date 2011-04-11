@@ -17,6 +17,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OEntity;
+import org.odata4j.core.OEntityKey;
 import org.odata4j.format.FormatWriter;
 import org.odata4j.format.FormatWriterFactory;
 import org.odata4j.producer.EntityResponse;
@@ -34,9 +35,9 @@ public class EntityRequestResource extends BaseResource {
 
         log.info(String.format("updateEntity(%s,%s)", entitySetName, id));
 
-        OEntity entity = this.getRequestEntity(context.getRequest(),producer.getMetadata(),entitySetName);
+        OEntity entity = this.getRequestEntity(context.getRequest(),producer.getMetadata(),entitySetName,OEntityKey.parse(id));
 
-        Object idObject = OptionsQueryParser.parseIdObject(id);
+        Object idObject = OEntityKey.parse(id).asSingleValue();
 
         producer.updateEntity(entitySetName, idObject, entity);
 
@@ -47,11 +48,11 @@ public class EntityRequestResource extends BaseResource {
     public Response mergeEntity(@Context HttpContext context, @Context ODataProducer producer, final @PathParam("entitySetName") String entitySetName, @PathParam("id") String id) {
 
         log.info(String.format("mergeEntity(%s,%s)", entitySetName, id));
-        Object idObject = OptionsQueryParser.parseIdObject(id);
+        Object idObject = OEntityKey.parse(id).asSingleValue();
 
         String method = context.getRequest().getHeaderValue(ODataConstants.Headers.X_HTTP_METHOD);
         if ("MERGE".equals(method)) {
-            OEntity entity = this.getRequestEntity(context.getRequest(),producer.getMetadata(),entitySetName);
+            OEntity entity = this.getRequestEntity(context.getRequest(),producer.getMetadata(),entitySetName,OEntityKey.parse(id));
             producer.mergeEntity(entitySetName, idObject, entity);
 
             return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
@@ -64,7 +65,7 @@ public class EntityRequestResource extends BaseResource {
         }
         
         if ("PUT".equals(method)) {
-            OEntity entity = this.getRequestEntity(context.getRequest(),producer.getMetadata(),entitySetName);
+            OEntity entity = this.getRequestEntity(context.getRequest(),producer.getMetadata(),entitySetName,OEntityKey.parse(id));
             producer.updateEntity(entitySetName, idObject, entity);
 
             return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
@@ -78,7 +79,7 @@ public class EntityRequestResource extends BaseResource {
 
         log.info(String.format("getEntity(%s,%s)", entitySetName, id));
 
-        Object idObject = OptionsQueryParser.parseIdObject(id);
+        Object idObject = OEntityKey.parse(id).asSingleValue();
 
         producer.deleteEntity(entitySetName, idObject);
 
@@ -91,7 +92,7 @@ public class EntityRequestResource extends BaseResource {
 
         log.info(String.format("getEntity(%s,%s)", entitySetName, id));
 
-        Object idObject = OptionsQueryParser.parseIdObject(id);
+        Object idObject = OEntityKey.parse(id).asSingleValue();
 
         EntityResponse response = producer.getEntity(entitySetName, idObject);
 

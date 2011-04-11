@@ -11,7 +11,7 @@ import org.odata4j.core.OPredicates;
 import org.odata4j.core.OProperties;
 import org.odata4j.format.FormatType;
 
-public class JPAProducerCreateTest extends JPAProducerTestBase {
+public class CreateTest extends JPAProducerTestBase {
 	
 	@BeforeClass
 	public static void setUpClass() throws Exception {

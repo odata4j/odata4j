@@ -7,6 +7,7 @@ import java.util.List;
 import org.core4j.Enumerable;
 import org.core4j.Predicate1;
 import org.odata4j.core.OEntity;
+import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OLink;
 import org.odata4j.core.OModify;
 import org.odata4j.core.OProperty;
@@ -33,13 +34,13 @@ public class OModifyImpl<T> implements OModify<T> {
         this.serviceRootUri = serviceRootUri;
         this.metadata = metadata;
 
-        segments.add(new EntitySegment(entitySetName, key));
+        segments.add(EntitySegment.temp(entitySetName, key));
         this.entitySet = metadata.getEdmEntitySet(entitySetName);
     }
 
     @Override
     public OModify<T> nav(String navProperty, Object... key) {
-        segments.add(new EntitySegment(navProperty, key));
+        segments.add(EntitySegment.temp(navProperty, key));
         entitySet = metadata.getEdmEntitySet(entitySet.type.getNavigationProperty(navProperty).toRole.type);
         return this;
     }
@@ -63,7 +64,8 @@ public class OModifyImpl<T> implements OModify<T> {
         }
 
         List<OLink> links = Collections.emptyList();
-        Entry entry = client.createRequestEntry(entitySet, requestProps, links);
+        OEntityKey entityKey =  Enumerable.create(segments).last().key;
+        Entry entry = client.createRequestEntry(entitySet, entityKey, requestProps, links);
 
         String path = Enumerable.create(segments).join("/");
 

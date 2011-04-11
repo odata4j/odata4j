@@ -49,6 +49,7 @@ public class AzureTableBehavior implements OClientBehavior {
             boolean isDelete = request.getMethod().equals("DELETE");
             if (isPut || isPost || isDelete) {
                 contentType = MediaType.APPLICATION_ATOM_XML;
+                request = request.header(ODataConstants.Headers.CONTENT_TYPE, MediaType.APPLICATION_ATOM_XML);
             }
 
             String canonicalizedResource = "/" + account + "/" + path;
@@ -70,7 +71,8 @@ public class AzureTableBehavior implements OClientBehavior {
 
             request = request
                     .header("x-ms-version", "2009-09-19")
-                    .header("x-ms-date", date).header("Authorization", auth)
+                    .header("x-ms-date", date)
+                    .header("Authorization", auth)
                     .header("DataServiceVersion", "1.0;NetFx")
                     .header("MaxDataServiceVersion", "1.0;NetFx");
 
@@ -80,7 +82,6 @@ public class AzureTableBehavior implements OClientBehavior {
                 request = request.header("If-Match", "*"); // azure tables require for put,delete,merge
 
             if (isDelete) {
-                request = request.header(ODataConstants.Headers.CONTENT_TYPE, MediaType.APPLICATION_ATOM_XML);
                 request = request.header("Content-Length", "0");
             }
 

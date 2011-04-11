@@ -53,7 +53,9 @@ public class OCreateImpl<T> implements OCreate<T> {
     @Override
     public T execute() {
 
-        Entry entry = client.createRequestEntry(metadata.getEdmEntitySet(entitySetName), props, links);
+    	EdmEntitySet ees = metadata.getEdmEntitySet(entitySetName);
+    	OEntityKey key = OEntityKey.noValue();
+        Entry entry = client.createRequestEntry(ees, key, props, links);
         	
         StringBuilder url = new StringBuilder(serviceRootUri);
         if (parent != null) {
@@ -71,7 +73,7 @@ public class OCreateImpl<T> implements OCreate<T> {
 				.getFirst(ODataConstants.Headers.DATA_SERVICE_VERSION));
 		
 		final FormatParser<Entry> parser = FormatParserFactory.getParser(Entry.class,
-				client.type, new Settings(version, metadata, entitySetName, fcMapping));
+				client.type, new Settings(version, metadata, entitySetName, key, fcMapping));
 		entry = parser.parse(client.getFeedReader(response));
 
         return (T) entry.getEntity();
@@ -81,7 +83,7 @@ public class OCreateImpl<T> implements OCreate<T> {
 	@Override
 	public T get() {
         EdmEntitySet entitySet = metadata.getEdmEntitySet(entitySetName);
-		return (T)OEntities.create(entitySet, OEntityKey.infer(entitySet,props), props, links);
+		return (T)OEntities.create(entitySet, OEntityKey.noValue(), props, links);
 	}
 
     @Override

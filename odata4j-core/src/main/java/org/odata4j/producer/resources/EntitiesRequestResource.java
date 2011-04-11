@@ -23,6 +23,7 @@ import org.odata4j.core.Guid;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OEntity;
+import org.odata4j.core.OEntityKey;
 import org.odata4j.format.FormatWriter;
 import org.odata4j.format.FormatWriterFactory;
 import org.odata4j.internal.InternalUtil;
@@ -53,7 +54,7 @@ public class EntitiesRequestResource extends BaseResource {
 
 		log.info(String.format("createEntity(%s)", entitySetName));
 		
-		OEntity entity = this.getRequestEntity(context.getRequest(), producer.getMetadata(), entitySetName);
+		OEntity entity = this.getRequestEntity(context.getRequest(), producer.getMetadata(), entitySetName,OEntityKey.noValue());	// TODO
 
 		EntityResponse response = producer.createEntity(entitySetName, entity);
 

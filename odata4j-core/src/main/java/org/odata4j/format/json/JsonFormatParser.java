@@ -52,12 +52,14 @@ public class JsonFormatParser {
 	protected ODataVersion version;
 	protected EdmDataServices metadata;
 	protected String entitySetName;
+	protected OEntityKey entityKey;
 	protected boolean isResponse;
 	
 	protected JsonFormatParser(Settings settings) {
 		this.version = settings.version;
 		this.metadata = settings.metadata;
 		this.entitySetName = settings.entitySetName;
+		this.entityKey = settings.entityKey;
 		this.isResponse = settings.isResponse;
 	}
 
@@ -92,7 +94,8 @@ public class JsonFormatParser {
 			}
 		}
 		List<OLink> links = Collections.emptyList();
-		entry.oentity = OEntities.create(ees, OEntityKey.infer(ees, entry.properties), entry.properties, links);
+		OEntityKey entityKey = this.entityKey!=null?this.entityKey:OEntityKey.infer(ees, entry.properties);
+		entry.oentity = OEntities.create(ees, entityKey, entry.properties, links);
 		
 		return entry;
 	}
@@ -112,7 +115,7 @@ public class JsonFormatParser {
 			}
 		}
 		entry.oentity = OEntities.create(ees,
-				OEntityKey.infer(ees, entry.properties),
+				entityKey!=null?entityKey:OEntityKey.infer(ees, entry.properties),
 				entry.properties, entry.links);
 		
 		return entry;
