@@ -6,7 +6,9 @@ import java.util.Set;
 
 public class NamedValues {
 
-	
+	public static <T> NamedValue<T> create(String name, T value){
+		return new NamedValueImpl<T>(name,value);
+	}
 	public static Set<NamedValue<Object>> fromMap(Map<String,Object> values){
 		Set<NamedValue<Object>> rt = new HashSet<NamedValue<Object>>();
 		for(Map.Entry<String,Object> entry : values.entrySet())

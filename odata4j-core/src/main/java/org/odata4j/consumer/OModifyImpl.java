@@ -27,8 +27,7 @@ public class OModifyImpl<T> implements OModify<T> {
     private final List<OProperty<?>> props = new ArrayList<OProperty<?>>();
     private EdmEntitySet entitySet;
 
-    public OModifyImpl(T updateRoot, ODataClient client, String serviceRootUri, EdmDataServices metadata,
-    		String entitySetName, Object[] key) {
+    public OModifyImpl(T updateRoot, ODataClient client, String serviceRootUri, EdmDataServices metadata, String entitySetName, Object[] key) {
         this.updateRoot = updateRoot;
         this.client = client;
         this.serviceRootUri = serviceRootUri;

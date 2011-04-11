@@ -20,6 +20,7 @@ public class OEntityKeyTest {
 		Assert.assertEquals(k(1),OEntityKey.parse("1"));
 		Assert.assertEquals(k(1L),OEntityKey.parse("(1L)"));
 		Assert.assertEquals(k("a"),OEntityKey.parse("('a')"));
+		//Assert.assertEquals(k("a"),OEntityKey.parse("(s='a')"));	// TODO OEK
 	}
 	
 	

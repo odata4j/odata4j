@@ -29,9 +29,11 @@ public class OEntityKey {
 		
 	@SuppressWarnings("unchecked")
 	public static OEntityKey create(Object... values) {
-		if (values!=null&&values.length==1&&values[0] instanceof Iterable<?>){
+		if (values!=null&&values.length==1&&values[0] instanceof Iterable<?>)
 			return create(Enumerable.create((Iterable<Object>)values[0]).toArray(Object.class));
-		}
+		if (values!=null&&values.length==1&&values[0] instanceof OEntityKey)
+			return (OEntityKey)values[0];
+		
 		Object[] v = validate(values);
 		return new OEntityKey(v);
 	}

@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.core4j.Enumerable;
 import org.core4j.Func1;
-import org.odata4j.core.NamedValue;
+import org.odata4j.core.NamedValues;
 import org.odata4j.core.OClientBehavior;
 import org.odata4j.core.OCreate;
 import org.odata4j.core.OEntity;
@@ -31,7 +31,7 @@ import org.odata4j.internal.FeedCustomizationMapping;
 public class ODataConsumer {
 
     
-    private static class ParsedHref{	// TODO OEK
+    private static class ParsedHref{	// TODO OEK move and parse complex, test , and () in values
         public String entitySetName;
         public Object[] key;
         public String navProperty;
@@ -82,29 +82,10 @@ public class ODataConsumer {
             CommonExpression expr = ExpressionParser.parse(keyValue);
             LiteralExpression literal = (LiteralExpression)expr;
             Object rt = Expression.literalValue(literal);
-            return expectName?new NamedValueImpl<Object>(name,rt):rt;
+            return expectName?NamedValues.create(name,rt):rt;
         }
         
-        private static class NamedValueImpl<T> implements NamedValue<T> {
-
-            private final String name;
-            private final T value;
-            
-            public NamedValueImpl(String name, T value){
-                this.name = name;
-                this.value = value;
-            }
-            @Override
-            public String getName() {
-               return name;
-            }
-
-            @Override
-            public T getValue() {
-               return value;
-            }
-            
-        }
+        
     }
     
 
