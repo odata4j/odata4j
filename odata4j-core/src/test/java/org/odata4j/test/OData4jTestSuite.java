@@ -49,7 +49,7 @@ import org.odata4j.test.issues.Issue16;
 	EdmTimeTemporalTest.class,
 	EdmDateTimeTemporalTest.class,
 	CreateWithLinkTest.class,
-	OEntityKeyTest.class,
+	OEntityKeyTest.class
 })
 
 public class OData4jTestSuite {
