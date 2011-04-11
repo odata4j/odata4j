@@ -129,6 +129,16 @@ public class CreateTest extends JPAProducerTestBase {
 	public void insertEntityWithInlinedEntityJson() {
 		insertEntityWithInlinedEntity(ODataConsumer.create(FormatType.JSON, endpointUri));
 	}
+	
+	@Test
+	public void expandEntitiesWithNullReferenceAtom() {
+		expandEntitiesWithNullReference(ODataConsumer.create(endpointUri));
+	}
+	
+	@Test
+	public void expandEntitiesWithNullReferenceJson() {
+		expandEntitiesWithNullReference(ODataConsumer.create(FormatType.JSON, endpointUri));
+	}
 
 	public void insertEntityWithInlinedEntity(ODataConsumer consumer) {
 		ODataConsumer.dump.all(true);
@@ -205,6 +215,22 @@ public class CreateTest extends JPAProducerTestBase {
 		Assert.assertEquals(1, product.getProperty("CategoryID").getValue());
 		Assert.assertEquals("P" + now, product.getProperty("ProductName").getValue());
 		Assert.assertEquals(true, product.getProperty("Discontinued").getValue());
+	}
+	
+	protected void expandEntitiesWithNullReference(ODataConsumer consumer) {
+		
+		final long now = System.currentTimeMillis();
+		
+		//Add product with null Category
+		OEntity product = consumer.createEntity("Products")
+		.properties(OProperties.string("ProductName", "P" + now))
+		.execute();	
+		
+		//Get all products expanding on Category
+		Enumerable<OEntity> products = consumer.getEntities("Products")
+												.expand("Category").execute();
+		
+		Assert.assertNotNull(products);		
 	}
  
 }
