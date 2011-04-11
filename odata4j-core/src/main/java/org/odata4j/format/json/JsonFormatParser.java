@@ -200,9 +200,6 @@ public class JsonFormatParser {
 				throw new IllegalArgumentException("arrays of primitive types not supported! property " + ees.name + "." + name);
 			} else if (event.isStartObject()) {
 				EdmNavigationProperty navProp = ees.type.getNavigationProperty(name);
-				if (navProp == null) {
-					System.out.println("STOP");
-				}
 				ees = metadata.getEdmEntitySet(navProp.toRole.type);
 				List<OEntity> entities = new ArrayList<OEntity>();
 				do {
@@ -307,8 +304,7 @@ public class JsonFormatParser {
 				addProperty(refentry, ees, event.asStartProperty().getName(), jsr);
 				event = jsr.nextEvent();
 			} while (!event.isEndObject());
-			rt.entity = refentry.getEntity();
-			
+			rt.entity = toOEntity(ees, refentry.properties, refentry.links);
 		} else {
 			throw new IllegalArgumentException("What's that?");
 		}

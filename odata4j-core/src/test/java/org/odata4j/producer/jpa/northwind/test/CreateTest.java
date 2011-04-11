@@ -125,7 +125,7 @@ public class CreateTest extends JPAProducerTestBase {
 		insertEntityWithInlinedEntity(ODataConsumer.create(endpointUri));
 	}
 	
-//	@Test
+	@Test
 	public void insertEntityWithInlinedEntityJson() {
 		insertEntityWithInlinedEntity(ODataConsumer.create(FormatType.JSON, endpointUri));
 	}
