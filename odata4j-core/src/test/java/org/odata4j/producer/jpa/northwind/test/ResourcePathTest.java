@@ -1,4 +1,4 @@
-package org.odata4j.producer.jpa.northwind;
+package org.odata4j.producer.jpa.northwind.test;
 
 import org.junit.After;
 import org.junit.Before;

@@ -1,4 +1,4 @@
-package org.odata4j.producer.jpa.northwind;
+package org.odata4j.producer.jpa.northwind.test;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package org.odata4j.producer.jpa.northwind;
+package org.odata4j.producer.jpa.northwind.test;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;

@@ -14,16 +14,15 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.MediaType;
 
 import org.odata4j.core.Guid;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OEntity;
-import org.odata4j.core.OEntityKey;
 import org.odata4j.format.FormatWriter;
 import org.odata4j.format.FormatWriterFactory;
 import org.odata4j.internal.InternalUtil;
@@ -54,7 +53,7 @@ public class EntitiesRequestResource extends BaseResource {
 
 		log.info(String.format("createEntity(%s)", entitySetName));
 		
-		OEntity entity = this.getRequestEntity(context.getRequest(), producer.getMetadata(), entitySetName,OEntityKey.noValue());	// TODO
+		OEntity entity = this.getRequestEntity(context.getRequest(), producer.getMetadata(), entitySetName,null);
 
 		EntityResponse response = producer.createEntity(entitySetName, entity);
 

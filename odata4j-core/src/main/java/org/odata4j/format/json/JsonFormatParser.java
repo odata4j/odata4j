@@ -94,9 +94,7 @@ public class JsonFormatParser {
 			}
 		}
 		List<OLink> links = Collections.emptyList();
-		OEntityKey entityKey = this.entityKey!=null?this.entityKey:OEntityKey.infer(ees, entry.properties);
-		entry.oentity = OEntities.create(ees, entityKey, entry.properties, links);
-		
+		entry.oentity = toOEntity(ees,entry.properties, links);
 		return entry;
 	}
 	
@@ -114,11 +112,16 @@ public class JsonFormatParser {
 				break;
 			}
 		}
-		entry.oentity = OEntities.create(ees,
-				entityKey!=null?entityKey:OEntityKey.infer(ees, entry.properties),
-				entry.properties, entry.links);
 		
+		entry.oentity = toOEntity(ees,entry.properties,entry.links);
 		return entry;
+	}
+	
+	private OEntity toOEntity(EdmEntitySet ees, List<OProperty<?>> properties, List<OLink> links){
+		if (entityKey==null)
+			return OEntities.createRequest(ees,properties,links);
+		else
+			return OEntities.create(ees,entityKey,properties, links);
 	}
 
 	protected JsonEntryMetaData parseMetadata(JsonStreamReader jsr) {

@@ -12,27 +12,28 @@ import org.joda.time.LocalTime;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmEntityType;
 
-public abstract class OEntityKey {
+public class OEntityKey {
 
 	public enum KeyType{
 		SINGLE,
-		COMPLEX,
-		NOVALUE
+		COMPLEX
 	}
 	
-	
-	
-	public static OEntityKey noValue(){
-		return new OEntityKeyWithoutValue();
+	private final Object[] values;
+	private final String keyString;
+
+	private OEntityKey(Object[] values) {
+		this.values = values;
+		this.keyString = keyString(values);
 	}
-	
+		
 	@SuppressWarnings("unchecked")
 	public static OEntityKey create(Object... values) {
 		if (values!=null&&values.length==1&&values[0] instanceof Iterable<?>){
 			return create(Enumerable.create((Iterable<Object>)values[0]).toArray(Object.class));
 		}
 		Object[] v = validate(values);
-		return new OEntityKeyWithValue(v);
+		return new OEntityKey(v);
 	}
 	
 	public static OEntityKey create(Map<String,Object> values) {
@@ -51,7 +52,7 @@ public abstract class OEntityKey {
 			v[i] = getProp(props,keyPropertyName);
 		}
 		v = validate(v);
-		return new OEntityKeyWithValue(v);
+		return new OEntityKey(v);
 	}
 	
 	 public static OEntityKey parse(String keyString) {
@@ -79,52 +80,13 @@ public abstract class OEntityKey {
 	        return OEntityKey.create(idObject);
 	    }
 	
-
-		abstract public String toKeyString();
-		abstract public Object asSingleValue();
-		abstract public Set<NamedValue<?>> asComplexValue();
-		abstract public KeyType getKeyType();
-
-	private static class OEntityKeyWithoutValue extends OEntityKey{
-		@Override
-		public String toKeyString() {
-			throw new UnsupportedOperationException();
-		}
-		@Override
-		public Set<NamedValue<?>> asComplexValue() {
-			throw new UnsupportedOperationException();
-		}
-		@Override
-		public Object asSingleValue() {
-			throw new UnsupportedOperationException();
-		}
-		@Override
-		public KeyType getKeyType() {
-			return KeyType.NOVALUE;
-		}
-		
-		@Override
-		public String toString() {
-			return KeyType.NOVALUE.name();
-		}
-		
-	}
 	
-	private static class OEntityKeyWithValue extends OEntityKey {
-		private final Object[] values;
-		private final String keyString;
-		
-		private OEntityKeyWithValue(Object[] values){
-			this.values = values;
-			this.keyString = keyString(values);
-		}
 		
 		@Override
 		public String toString() {
 			return toKeyString();
 		}
 		
-		@Override
 		public String toKeyString() {
 			return keyString;
 		}
@@ -136,32 +98,25 @@ public abstract class OEntityKey {
 		
 		@Override
 		public boolean equals(Object obj) {
-			return (obj instanceof OEntityKeyWithValue) && ((OEntityKeyWithValue)obj).keyString.equals(keyString);
+			return (obj instanceof OEntityKey) && ((OEntityKey)obj).keyString.equals(keyString);
 		}
 		
-		@Override
 		public Object asSingleValue() {
 			if (values.length>1)
 				throw new RuntimeException("Complex key cannot be represented as a single value");
 			return values[0];
 		}
 
-		@Override
 		@SuppressWarnings("unchecked")
 		public Set<NamedValue<?>> asComplexValue(){
+			if (values.length==1)
+				throw new RuntimeException("Single-valued key cannot be represented as a complex value");
 			return (Set<NamedValue<?>>)(Object)Enumerable.create(values).toSet();
 		}
 		
-		@Override
 		public KeyType getKeyType() {
 			return values.length==1?KeyType.SINGLE:KeyType.COMPLEX;
 		}
-		
-
-	}
-		
-		
-	
 
 	
 	

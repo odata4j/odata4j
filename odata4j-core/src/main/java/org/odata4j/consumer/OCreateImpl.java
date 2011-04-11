@@ -9,7 +9,6 @@ import org.odata4j.core.ODataConstants;
 import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
-import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OLink;
 import org.odata4j.core.OLinks;
 import org.odata4j.core.OProperty;
@@ -54,8 +53,7 @@ public class OCreateImpl<T> implements OCreate<T> {
     public T execute() {
 
     	EdmEntitySet ees = metadata.getEdmEntitySet(entitySetName);
-    	OEntityKey key = OEntityKey.noValue();
-        Entry entry = client.createRequestEntry(ees, key, props, links);
+        Entry entry = client.createRequestEntry(ees, null, props, links);
         	
         StringBuilder url = new StringBuilder(serviceRootUri);
         if (parent != null) {
@@ -73,7 +71,7 @@ public class OCreateImpl<T> implements OCreate<T> {
 				.getFirst(ODataConstants.Headers.DATA_SERVICE_VERSION));
 		
 		final FormatParser<Entry> parser = FormatParserFactory.getParser(Entry.class,
-				client.type, new Settings(version, metadata, entitySetName, key, fcMapping));
+				client.type, new Settings(version, metadata, entitySetName, null, fcMapping));
 		entry = parser.parse(client.getFeedReader(response));
 
         return (T) entry.getEntity();
@@ -83,7 +81,7 @@ public class OCreateImpl<T> implements OCreate<T> {
 	@Override
 	public T get() {
         EdmEntitySet entitySet = metadata.getEdmEntitySet(entitySetName);
-		return (T)OEntities.create(entitySet, OEntityKey.noValue(), props, links);
+		return (T)OEntities.createRequest(entitySet, props, links);
 	}
 
     @Override

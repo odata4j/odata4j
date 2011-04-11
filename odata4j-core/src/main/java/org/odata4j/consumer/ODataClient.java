@@ -101,7 +101,9 @@ class ODataClient {
     }
     
 	Entry createRequestEntry(EdmEntitySet entitySet, OEntityKey entityKey, List<OProperty<?>> props, List<OLink> links) {
-    	final OEntity oentity = OEntities.create(entitySet, entityKey, props, links);
+    	final OEntity oentity = entityKey==null
+    			?OEntities.createRequest(entitySet, props, links)
+    			:OEntities.create(entitySet, entityKey, props, links);
     	
     	return new Entry() {
 			

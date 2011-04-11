@@ -1,4 +1,4 @@
-package org.odata4j.producer.jpa.northwind.model;
+package org.odata4j.producer.jpa.northwind;
 
 import java.io.Serializable;
 import java.util.Collection;

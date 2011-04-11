@@ -41,8 +41,8 @@ import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.Responses;
-import org.odata4j.producer.jpa.northwind.NorthwindTestUtils;
-import org.odata4j.producer.jpa.northwind.model.Customers;
+import org.odata4j.producer.jpa.northwind.Customers;
+import org.odata4j.producer.jpa.northwind.test.NorthwindTestUtils;
 import org.odata4j.producer.resources.ODataProducerProvider;
 
 /**

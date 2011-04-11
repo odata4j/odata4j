@@ -1,24 +1,28 @@
-package org.odata4j.producer.jpa.northwind.model;
+package org.odata4j.producer.jpa.northwind;
 
 import java.io.Serializable;
 import java.util.Collection;
 
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "Customers")
-public class Customers implements Serializable {
+@Table(name = "Suppliers")
+public class Suppliers implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "CustomerID")
-    private String CustomerID;
+    @Column(name = "SupplierID")
+    private Integer SupplierID;
     @Basic(optional = false)
     @Column(name = "CompanyName")
     private String CompanyName;
@@ -40,27 +44,30 @@ public class Customers implements Serializable {
     private String Phone;
     @Column(name = "Fax")
     private String Fax;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "Customer")
-    private Collection<Orders> Orders;
+    @Lob
+    @Column(name = "HomePage")
+    private String HomePage;
+    @OneToMany(mappedBy = "Supplier")
+    private Collection<Products> Products;
 
-    public Customers() {
+    public Suppliers() {
     }
 
-    public Customers(String customerID) {
-        this.CustomerID = customerID;
+    public Suppliers(Integer supplierID) {
+        this.SupplierID = supplierID;
     }
 
-    public Customers(String customerID, String companyName) {
-        this.CustomerID = customerID;
+    public Suppliers(Integer supplierID, String companyName) {
+        this.SupplierID = supplierID;
         this.CompanyName = companyName;
     }
 
-    public String getCustomerID() {
-        return CustomerID;
+    public Integer getSupplierID() {
+        return SupplierID;
     }
 
-    public void setCustomerID(String customerID) {
-        this.CustomerID = customerID;
+    public void setSupplierID(Integer supplierID) {
+        this.SupplierID = supplierID;
     }
 
     public String getCompanyName() {
@@ -143,31 +150,39 @@ public class Customers implements Serializable {
         this.Fax = fax;
     }
 
-    public Collection<Orders> getOrders() {
-        return Orders;
+    public String getHomePage() {
+        return HomePage;
     }
 
-    public void setOrders(Collection<Orders> orders) {
-        this.Orders = orders;
+    public void setHomePage(String homePage) {
+        this.HomePage = homePage;
+    }
+
+    public Collection<Products> getProductsCollection() {
+        return Products;
+    }
+
+    public void setProductsCollection(Collection<Products> productsCollection) {
+        this.Products = productsCollection;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (CustomerID != null
-                ? CustomerID.hashCode() : 0);
+        hash += (SupplierID != null
+                ? SupplierID.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof Customers)) {
+        if (!(object instanceof Suppliers)) {
             return false;
         }
-        Customers other = (Customers) object;
-        if ((this.CustomerID == null && other.CustomerID != null)
-                || (this.CustomerID != null && !this.CustomerID
-                        .equals(other.CustomerID))) {
+        Suppliers other = (Suppliers) object;
+        if ((this.SupplierID == null && other.SupplierID != null)
+                || (this.SupplierID != null && !this.SupplierID
+                        .equals(other.SupplierID))) {
             return false;
         }
         return true;
@@ -175,8 +190,7 @@ public class Customers implements Serializable {
 
     @Override
     public String toString() {
-        return "org.odata4j.examples.producer.model.Customers[customerID="
-                + CustomerID + "]";
+        return "org.odata4j.examples.producer.model.Suppliers[supplierID="
+                + SupplierID + "]";
     }
-
 }

@@ -360,35 +360,44 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
         throw new RuntimeException();
     }
 
-	public OEntity entityFromAtomEntry(
+	private OEntity entityFromAtomEntry(
 			EdmDataServices metadata,
 			EdmEntitySet entitySet,
 			DataServicesAtomEntry dsae,
 			FeedCustomizationMapping mapping) {
-		if (mapping == null)
-			return OEntities.create(
+		
+		List<OProperty<?>> props = dsae.properties;
+		if (mapping != null){
+			Enumerable<OProperty<?>> properties = Enumerable.create(dsae.properties);
+			if (mapping.titlePropName != null)
+				properties = properties.concat(OProperties.string(mapping.titlePropName,dsae.title));
+			if (mapping.summaryPropName != null)
+				properties = properties.concat(OProperties.string(mapping.summaryPropName, dsae.summary));
+
+			props = properties.toList();
+		}
+		
+		OEntityKey key = entityKey!=null?entityKey:dsae.id!=null?parseAtomEntryId(dsae.id):null;
+		if (key==null)
+			return OEntities.createRequest(
 					entitySet,
-					entityKey!=null?entityKey:OEntityKey.infer(entitySet,dsae.properties),
-					dsae.properties,
+					props,
 					toOLinks(metadata, entitySet, dsae.atomLinks, mapping), 
-					dsae.title,
+					dsae.title, 
 					dsae.categoryTerm);
-
-		Enumerable<OProperty<?>> properties = Enumerable.create(dsae.properties);
-		if (mapping.titlePropName != null)
-			properties = properties.concat(OProperties.string(mapping.titlePropName,dsae.title));
-		if (mapping.summaryPropName != null)
-			properties = properties.concat(OProperties.string(mapping.summaryPropName, dsae.summary));
-
-		List<OProperty<?>> props = properties.toList();
+		
 		return OEntities.create(
 				entitySet,
-				OEntityKey.infer(entitySet, props),
+				key,
 				props,
 				toOLinks(metadata, entitySet, dsae.atomLinks, mapping), 
 				dsae.title, 
 				dsae.categoryTerm);
-
+	}
+	
+	private OEntityKey parseAtomEntryId(String atomEntryId){
+		int i = atomEntryId.indexOf('(');
+		return OEntityKey.parse(atomEntryId.substring(i));
 	}
 
 	private List<OLink> toOLinks(
