@@ -11,11 +11,6 @@ public class EntitySegment {
         this.key = key;
     }
     
-    // TODO OEK
-    public static EntitySegment temp(String segment, Object...key){
-    	return new EntitySegment(segment,OEntityKey.create(key));
-    }
-
     @Override
     public String toString() {
         return this.segment + (key==null?"":key.toKeyString());

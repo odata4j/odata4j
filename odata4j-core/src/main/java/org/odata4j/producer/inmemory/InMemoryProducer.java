@@ -298,8 +298,8 @@ public class InMemoryProducer implements ODataProducer {
     	final List<OLink> links = new ArrayList<OLink>();
         final List<OProperty<?>> properties = new ArrayList<OProperty<?>>();
 
-        Object key = ei.id.apply(obj);
-        properties.add(OProperties.simple(ID_PROPNAME, getEdmType(ei.keyClass), key));
+        Object keyValue = ei.id.apply(obj);
+        properties.add(OProperties.simple(ID_PROPNAME, getEdmType(ei.keyClass), keyValue));
 
         for(String propName : ei.properties.getPropertyNames()) {
             EdmType type;
@@ -347,7 +347,7 @@ public class InMemoryProducer implements ODataProducer {
             }
         }
                
-        return OEntities.create(ees, OEntityKey.create(key), properties, links); 
+        return OEntities.create(ees, OEntityKey.create(keyValue), properties, links); 
     }
 
     private static Predicate1<Object> filterToPredicate(final BoolCommonExpression filter, final PropertyModel properties) {

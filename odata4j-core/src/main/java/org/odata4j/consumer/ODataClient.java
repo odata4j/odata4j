@@ -249,8 +249,8 @@ class ODataClient {
     	 if (headers==null)
     		 return;
 
-        for(Object key : headers.keySet()) 
-            log(key + ": " + headers.getFirst(key));
+        for(Object header : headers.keySet()) 
+            log(header + ": " + headers.getFirst(header));
     }
     
    

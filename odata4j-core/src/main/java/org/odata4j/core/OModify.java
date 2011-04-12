@@ -6,6 +6,6 @@ public interface OModify<T> {
 
     public abstract boolean execute();
 
-    public abstract OModify<T> nav(String navProperty, Object... key);
+    public abstract OModify<T> nav(String navProperty, OEntityKey key);
 
 }

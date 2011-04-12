@@ -90,6 +90,13 @@ public class OCreateImpl<T> implements OCreate<T> {
             this.props.add(prop);
         return this;
     }
+    
+    @Override
+    public OCreate<T> properties(Iterable<OProperty<?>> props) {
+        for(OProperty<?> prop : props)
+            this.props.add(prop);
+        return this;
+    }
 
     @Override
     public OCreate<T> addToRelation(OEntity parent, String navProperty) {

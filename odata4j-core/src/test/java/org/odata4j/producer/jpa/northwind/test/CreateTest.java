@@ -206,13 +206,13 @@ public class CreateTest extends JPAProducerTestBase {
 		Assert.assertEquals("P" + now, product.getProperty("ProductName").getValue());
 		Assert.assertEquals(true, product.getProperty("Discontinued").getValue());
 		
-		Object key = product.getProperty("ProductID").getValue();
+		Object keyValue = product.getProperty("ProductID").getValue();
 		product = consumer
-			.getEntity("Products", key)
+			.getEntity("Products", keyValue)
 			.execute();
 
 		Assert.assertNotNull(product);
-		Assert.assertEquals(key, product.getProperty("ProductID").getValue());
+		Assert.assertEquals(keyValue, product.getProperty("ProductID").getValue());
 		Assert.assertEquals(1, product.getProperty("CategoryID").getValue());
 		Assert.assertEquals("P" + now, product.getProperty("ProductName").getValue());
 		Assert.assertEquals(true, product.getProperty("Discontinued").getValue());
@@ -223,7 +223,7 @@ public class CreateTest extends JPAProducerTestBase {
 		final long now = System.currentTimeMillis();
 		
 		//Add product with null Category
-		OEntity product = consumer.createEntity("Products")
+		consumer.createEntity("Products")
 		.properties(OProperties.string("ProductName", "P" + now))
 		.execute();	
 		

@@ -61,7 +61,7 @@ public class XmlFormatWriter {
 		
 		String sValue = null;
 
-		if (!type.isPrimitive()) {
+		if (!type.isSimple()) {
 			writer.writeAttribute(
 					new QName2(m, "type", "m"),
 					type.toTypeString());

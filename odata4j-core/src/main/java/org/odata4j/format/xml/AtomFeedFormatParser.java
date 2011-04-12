@@ -199,7 +199,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
                 if (typeAttribute != null) {
                     type = typeAttribute.getValue();
                     EdmType et = EdmType.get(type);
-                    isComplexType = !et.isPrimitive();
+                    isComplexType = !et.isSimple();
                 }
 
                 if (isComplexType) {

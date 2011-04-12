@@ -140,15 +140,25 @@ public class ODataConsumer {
 		return new OQueryImpl<T>(client, entityType, serviceRootUri, getMetadata(), entitySetName, mapping);
     }
 
-	public OEntityRef<OEntity> getEntity(String entitySetName, Object... key) {
-        return getEntity(OEntity.class,entitySetName,key);
-    }
+	
+	
     public OEntityRef<OEntity> getEntity(ORelatedEntityLink link) {
         ParsedHref parsed = ParsedHref.parse(link.getHref());
         return getEntity(parsed.entitySetName,parsed.entityKey).nav(parsed.navProperty) ;
     }
     
-    public <T> OEntityRef<T> getEntity(Class<T> entityType, String entitySetName, Object... key) {
+    public OEntityRef<OEntity> getEntity(String entitySetName, Object keyValue) {
+    	return getEntity(entitySetName,OEntityKey.create(keyValue));
+    }
+    
+    public OEntityRef<OEntity> getEntity(String entitySetName, OEntityKey key) {
+        return getEntity(OEntity.class,entitySetName,key);
+    }
+    
+    public <T> OEntityRef<T> getEntity(Class<T> entityType, String entitySetName, Object keyValue) {
+    	return getEntity(entityType,entitySetName,OEntityKey.create(keyValue));
+    }
+    public <T> OEntityRef<T> getEntity(Class<T> entityType, String entitySetName, OEntityKey key) {
         FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
 		return new OEntityRefImpl<T>(false,  client,
 				entityType, serviceRootUri, getMetadata(),
@@ -161,19 +171,28 @@ public class ODataConsumer {
 				entitySetName, mapping);
 	}
 	
-	public OModify<OEntity> updateEntity(OEntity entity, String entitySetName, Object... key) {
+	public OModify<OEntity> updateEntity(OEntity entity, String entitySetName, Object keyValue) {
+		return updateEntity(entity,entitySetName,OEntityKey.create(keyValue));
+	}
+	
+	public OModify<OEntity> updateEntity(OEntity entity, String entitySetName, OEntityKey key) {
         return new OModifyImpl<OEntity>(entity, client, serviceRootUri, getMetadata(),
         		entitySetName, key);
     }
 
-    public OModify<OEntity> mergeEntity(String entitySetName, Object... key) {
-    	return new OModifyImpl<OEntity>(null, client, serviceRootUri, 
-    			getMetadata(), entitySetName, key);
-    }
+	public OModify<OEntity> mergeEntity(String entitySetName, Object keyValue) {
+		return mergeEntity(entitySetName, OEntityKey.create(keyValue));
+	}
 
-    public OEntityRef<Void> deleteEntity(String entitySetName, Object key) {
-    	return deleteEntity(entitySetName,OEntityKey.create(key));
+	public OModify<OEntity> mergeEntity(String entitySetName, OEntityKey key) {
+		return new OModifyImpl<OEntity>(null, client, serviceRootUri,
+				getMetadata(), entitySetName, key);
+	}
+
+    public OEntityRef<Void> deleteEntity(String entitySetName, Object keyValue) {
+    	return deleteEntity(entitySetName,OEntityKey.create(keyValue));
     }
+    
 	public OEntityRef<Void> deleteEntity(String entitySetName, OEntityKey key) {
         FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
 		return new OEntityRefImpl<Void>(true, client,

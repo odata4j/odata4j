@@ -421,10 +421,10 @@ public class JPAProducer implements ODataProducer {
 		try {
 			// get the composite id
 			Member member = idAtt.getJavaMember();
-			Object key = getValue(jpaEntity, member);
+			Object keyValue = getValue(jpaEntity, member);
 
 			if (propName == null) {
-				return key;
+				return keyValue;
 			}
 
 			// get the property from the key
@@ -432,10 +432,10 @@ public class JPAProducer implements ODataProducer {
 			Attribute<?, ?> att = keyType.getAttribute(propName);
 			member = att.getJavaMember();
 			if (member == null) { // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_95:_20091017:_Attribute.getJavaMember.28.29_returns_null_for_a_BasicType_on_a_MappedSuperclass_because_of_an_uninitialized_accessor
-				member = getJavaMember(key.getClass(), propName);
+				member = getJavaMember(keyValue.getClass(), propName);
 			}
 
-			return getValue(key, member);
+			return getValue(keyValue, member);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -1159,7 +1159,7 @@ public class JPAProducer implements ODataProducer {
 		if( keyToken.size() !=0 && 
 				( keyToken.get(0).type == TokenType.QUOTED_STRING  || 
 						keyToken.get(0).type == TokenType.NUMBER )  ) {
-			Object key;
+			Object keyValue;
 			if (keyToken.get(0).type == TokenType.QUOTED_STRING) {
 				String entityKeyStr = keyToken.get(0).value;
 				if (entityKeyStr.length() < 2) {
@@ -1167,15 +1167,15 @@ public class JPAProducer implements ODataProducer {
 							+ keyToken);
 				}
 				// cut off the quotes
-				key = entityKeyStr.substring(1, entityKeyStr.length() - 1);
+				keyValue = entityKeyStr.substring(1, entityKeyStr.length() - 1);
 			} else if (keyToken.get(0).type == TokenType.NUMBER) {
-				key = NumberFormat.getInstance(Locale.US)
+				keyValue = NumberFormat.getInstance(Locale.US)
 					.parseObject(keyToken.get(0).value);
 			} else {
 				throw new IllegalArgumentException(
 					"unsupported key type " + keyString);
 			}
-			return TypeConverter.convert(key,
+			return TypeConverter.convert(keyValue,
 					em.getMetamodel()
 							.entity(jpaEntityType.getJavaType())
 							.getIdType()

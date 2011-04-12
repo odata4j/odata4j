@@ -45,8 +45,8 @@ public class OEntityRefImpl<T> implements OEntityRef<T> {
     }
 
     @Override
-    public OEntityRef<T> nav(String navProperty, Object... key) {
-        segments.add(EntitySegment.temp(navProperty, key));
+    public OEntityRef<T> nav(String navProperty, OEntityKey key) {
+        segments.add(new EntitySegment(navProperty, key));
         return this;
     }
     

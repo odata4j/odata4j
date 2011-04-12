@@ -1,66 +1,83 @@
 package org.odata4j.edm;
 
+import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+
+import org.core4j.Enumerable;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
+import org.odata4j.core.Guid;
 
 public class EdmType {
 
     private static Map<String, EdmType> POOL = new HashMap<String, EdmType>();
 
-    public static final EdmType BINARY = get(true, "Edm.Binary");
-    public static final EdmType BOOLEAN = get(true, "Edm.Boolean");
-    public static final EdmType DATETIME = get(true, "Edm.DateTime");
-    public static final EdmType DATETIMEOFFSET = get(true, "Edm.DateTimeOffset");
-    public static final EdmType TIME = get(true, "Edm.Time");
-    public static final EdmType DECIMAL = get(true, "Edm.Decimal");
-    public static final EdmType SINGLE = get(true, "Edm.Single");
-    public static final EdmType DOUBLE = get(true, "Edm.Double");
-    public static final EdmType GUID = get(true, "Edm.Guid");
-    public static final EdmType INT16 = get(true, "Edm.Int16");
-    public static final EdmType INT32 = get(true, "Edm.Int32");
-    public static final EdmType INT64 = get(true, "Edm.Int64");
-    public static final EdmType BYTE = get(true, "Edm.Byte");
-    public static final EdmType STRING = get(true, "Edm.String");
-    public static final EdmType FACETS = get(true, "Edm.Facets");
-
-    private final boolean isPrimitive;
+    // http://msdn.microsoft.com/en-us/library/bb399213.aspx
+    public static final EdmType BINARY = getInternal("Edm.Binary",byte[].class,Byte[].class);
+    public static final EdmType BOOLEAN = getInternal("Edm.Boolean",boolean.class,Boolean.class);
+    public static final EdmType BYTE = getInternal("Edm.Byte",byte.class,Byte.class);
+    public static final EdmType DATETIME = getInternal("Edm.DateTime",LocalDateTime.class);
+    public static final EdmType DATETIMEOFFSET = getInternal("Edm.DateTimeOffset",DateTime.class);
+    public static final EdmType DECIMAL = getInternal("Edm.Decimal",BigDecimal.class);
+    public static final EdmType DOUBLE = getInternal("Edm.Double",double.class,Double.class);
+    public static final EdmType GUID = getInternal("Edm.Guid",Guid.class);
+    public static final EdmType INT16 = getInternal("Edm.Int16",short.class,Short.class);
+    public static final EdmType INT32 = getInternal("Edm.Int32",int.class,Integer.class);
+    public static final EdmType INT64 = getInternal("Edm.Int64",long.class,Long.class);
+    public static final EdmType SINGLE = getInternal("Edm.Single",float.class,Float.class);
+    public static final EdmType STRING = getInternal("Edm.String",char.class,Character.class,String.class);
+    public static final EdmType TIME = getInternal("Edm.Time",LocalTime.class);
+    
+    public static Set<EdmType> SIMPLE = Collections.unmodifiableSet(Enumerable.create(POOL.values()).toSet());
+    
     private final String typeString;
+    private final Set<Class<?>> javaTypes;
 
-    private EdmType(boolean isPrimitive, String typeString) {
-        this.isPrimitive = isPrimitive;
-        this.typeString = typeString;
+    private EdmType(String typeString,Set<Class<?>> javaTypes) {
+    	this.typeString = typeString;
+        this.javaTypes = Collections.unmodifiableSet(javaTypes);
     }
 
     public static EdmType get(String typeString) {
-        return get(false, typeString);
+        return getInternal(typeString);
     }
 
-    private static EdmType get(boolean isPrimitive, String typeString) {
+    private static EdmType getInternal(String typeString,Class<?>... javaTypes) {
         if (typeString == null)
             return null;
-
+        Set<Class<?>> javaTypeSet = Enumerable.create(javaTypes).toSet();
         if (!POOL.containsKey(typeString))
-            POOL.put(typeString, new EdmType(isPrimitive, typeString));
+            POOL.put(typeString, new EdmType(typeString,javaTypeSet));
         return POOL.get(typeString);
     }
 
-    public boolean isPrimitive() {
-        return isPrimitive;
+    public boolean isSimple() {
+        return javaTypes.size()>0;
     }
 
     public String toTypeString() {
         return typeString;
     }
+    
+    public Set<Class<?>> getJavaTypes() {
+		return javaTypes;
+	}
 
     @Override
     public String toString() {
         return toTypeString();
     }
-    // public static EdmType fromTypeString(String value){
-    // for(EdmType et : values()){
-    // if (et.toTypeString().equals(value))
-    // return et;
-    // }
-    // return null;
-    // }
+
+	public static EdmType forJavaType(Class<?> javaType) {
+		for(EdmType simple : SIMPLE)
+			if (simple.getJavaTypes().contains(javaType))
+				return simple;
+		return null;
+	}
+	
 }
+	

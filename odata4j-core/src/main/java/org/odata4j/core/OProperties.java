@@ -15,11 +15,21 @@ import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
 
 public class OProperties {
 
-    public static <T> OProperty<?> simple(String name, EdmType type, T value) {    	
+	public static <T> OProperty<T> simple(String name, T value) {
+		if (value==null)
+			throw new IllegalArgumentException("Cannot infer EdmType if value is null");
+		EdmType type =EdmType.forJavaType(value.getClass());
+		if (type==null)
+			throw new IllegalArgumentException("Cannot infer EdmType for java type: " + value.getClass().getName());
+	    return simple(name, type, value, false);
+	}
+	 
+    public static <T> OProperty<T> simple(String name, EdmType type, T value) {    	
     	return simple(name, type, value, false);
     }	
     	
-    public static <T> OProperty<?> simple(String name, EdmType type, T value, boolean exceptionOnUnknownType) {    	
+    @SuppressWarnings("unchecked")
+	public static <T> OProperty<T> simple(String name, EdmType type, T value, boolean exceptionOnUnknownType) {    	
         if (type == EdmType.STRING) {
         	String sValue = null;
         	if (value != null) {
@@ -29,48 +39,48 @@ public class OProperties {
         			sValue = (String) value;
         		}
         	}
-            return OProperties.string(name, sValue);
+            return (OProperty<T>)OProperties.string(name, sValue);
         } else if (type == EdmType.BOOLEAN) {
             Boolean bValue = (Boolean) value;
-            return OProperties.boolean_(name, bValue);
+            return (OProperty<T>)OProperties.boolean_(name, bValue);
         } else if (type == EdmType.INT16) {
             Short sValue = (Short) value;
-            return OProperties.short_(name, sValue);
+            return (OProperty<T>)OProperties.short_(name, sValue);
         } else if (type == EdmType.INT32) {
             Integer iValue = (Integer) value;
-            return OProperties.int32(name, iValue);
+            return (OProperty<T>)OProperties.int32(name, iValue);
         } else if (type == EdmType.INT64) {
             Long iValue = (Long) value;
-            return OProperties.int64(name, iValue);
+            return (OProperty<T>)OProperties.int64(name, iValue);
         } else if (type == EdmType.BYTE) {
             Byte bValue = (Byte) value;
-            return OProperties.byte_(name, bValue);
+            return (OProperty<T>)OProperties.byte_(name, bValue);
         }  else if (type == EdmType.DECIMAL) {
             BigDecimal dValue = (BigDecimal) value;
-            return OProperties.decimal(name, dValue);
+            return (OProperty<T>)OProperties.decimal(name, dValue);
         } else if (type == EdmType.DATETIME) {
         	if (value instanceof LocalDateTime)
-        		return OProperties.datetime(name, (LocalDateTime)value);
+        		return (OProperty<T>)OProperties.datetime(name, (LocalDateTime)value);
         	else if (value instanceof Calendar)
-        		return OProperties.datetime(name, (Date)((Calendar)value).getTime());
+        		return (OProperty<T>)OProperties.datetime(name, (Date)((Calendar)value).getTime());
         	else 
-        		return OProperties.datetime(name, (Date)value);
+        		return (OProperty<T>)OProperties.datetime(name, (Date)value);
         } else if (type == EdmType.TIME) {
         	if (value instanceof LocalTime)
-        		return OProperties.time(name, (LocalTime)value);
+        		return (OProperty<T>)OProperties.time(name, (LocalTime)value);
     		else if (value instanceof Calendar)
-        		return OProperties.time(name, (Date)((Calendar)value).getTime());        		
+        		return (OProperty<T>)OProperties.time(name, (Date)((Calendar)value).getTime());        		
     		else 
-        		return OProperties.time(name, (Date)value);        		
+        		return (OProperty<T>)OProperties.time(name, (Date)value);        		
         } else if (type == EdmType.BINARY) {
             byte[] bValue = (byte[]) value;
-            return OProperties.binary(name, bValue);
+            return (OProperty<T>)OProperties.binary(name, bValue);
         } else if (type == EdmType.DOUBLE) {
         	Double dValue = (Double) value;
-            return OProperties.double_(name, dValue);
+            return (OProperty<T>)OProperties.double_(name, dValue);
         } else if (type == EdmType.SINGLE) {
         	Float fValue = (Float) value;
-            return OProperties.single(name, fValue);
+            return (OProperty<T>)OProperties.single(name, fValue);
         } else {
         	if (exceptionOnUnknownType) {
         		throw new UnsupportedOperationException("Implement " + type);

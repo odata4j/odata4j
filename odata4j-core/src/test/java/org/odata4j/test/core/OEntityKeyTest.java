@@ -21,6 +21,7 @@ public class OEntityKeyTest {
 		Assert.assertEquals(k(1L),OEntityKey.parse("(1L)"));
 		Assert.assertEquals(k("a"),OEntityKey.parse("('a')"));
 		Assert.assertEquals(k("a"),OEntityKey.parse("(s='a')"));
+		Assert.assertEquals(k("PartitionKey","","RowKey","1"),OEntityKey.parse("(PartitionKey='',RowKey='1')"));
 	}
 	
 	

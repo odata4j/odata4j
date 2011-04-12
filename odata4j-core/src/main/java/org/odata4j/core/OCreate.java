@@ -16,6 +16,7 @@ public interface OCreate<T> {
      */
     public abstract OCreate<T> properties(OProperty<?>... props);
     
+    public abstract OCreate<T> properties(Iterable<OProperty<?>> props);
     
     /**
      * Use a related parent entity's relationship collection to define an implicit link. 

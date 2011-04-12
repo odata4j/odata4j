@@ -1,17 +1,16 @@
 package org.odata4j.core;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.core4j.Enumerable;
 import org.core4j.Func1;
-import org.joda.time.LocalDateTime;
-import org.joda.time.LocalTime;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmEntityType;
+import org.odata4j.edm.EdmType;
 import org.odata4j.expression.CommonExpression;
 import org.odata4j.expression.Expression;
 import org.odata4j.expression.ExpressionParser;
@@ -38,7 +37,15 @@ public class OEntityKey {
 			return create(Enumerable.create((Iterable<Object>)values[0]).toArray(Object.class));
 		if (values!=null&&values.length==1&&values[0] instanceof OEntityKey)
 			return (OEntityKey)values[0];
-		
+		if (values!=null&&values.length>1&&values.length%2==0&&values[0] instanceof String){
+			Map<String,Object> rt = new HashMap<String,Object>();
+			for(int i=0;i<values.length;i+=2){
+				String name = (String)values[i];
+				Object value = values[i+1];
+				rt.put(name,value);
+			}
+			return create(rt);
+		}
 		Object[] v = validate(values);
 		return new OEntityKey(v);
 	}
@@ -84,10 +91,14 @@ public class OEntityKey {
 	    	if (nv.length!=1&&nv.length!=2)
 	    		throw new IllegalArgumentException("bad keyString: " + keyString);
 	    	String valueString = nv.length==1?nv[0]:nv[1];
-	    	CommonExpression expr = ExpressionParser.parse(valueString);
-            LiteralExpression literal = (LiteralExpression)expr;
-            Object value = Expression.literalValue(literal);
-            values.add(nv.length==1?value:NamedValues.create(nv[0], value));
+	    	try {
+		    	CommonExpression expr = ExpressionParser.parse(valueString);
+	            LiteralExpression literal = (LiteralExpression)expr;
+	            Object value = Expression.literalValue(literal);
+	            values.add(nv.length==1?value:NamedValues.create(nv[0], value));
+	    	} catch (Exception e){
+	    		throw new IllegalArgumentException("bad keyString: " + keyString,e);
+	    	}
 	    }
 	    return OEntityKey.create(values);		
 	}
@@ -104,20 +115,20 @@ public class OEntityKey {
 				continue;
 			}
 			if (c=='\''){
-				if (inString){
-					if (i<ks.length()-1){
-						char next = ks.charAt(i+1);
-						if (next=='\''){
-							i++;
-							continue;
-						}
-						
-					} else {
-						inString = false;
-					}
-				} else {
+				if (!inString) {
 					inString=true;
+					continue;
 				}
+				
+				if (i<ks.length()-1){
+					char next = ks.charAt(i+1);
+					if (next=='\''){
+						i++;
+						continue;
+					}
+					
+				}
+				inString = false;
 			}
 		}
 		rt.add(ks.substring(start,ks.length()));
@@ -155,12 +166,20 @@ public class OEntityKey {
 
 	@SuppressWarnings("unchecked")
 	public Set<NamedValue<?>> asComplexValue() {
-		if (values.length == 1)
-			throw new RuntimeException(
-					"Single-valued key cannot be represented as a complex value");
+		assertComplex();
 		return (Set<NamedValue<?>>) (Object) Enumerable.create(values).toSet();
 	}
+	
+	public Set<OProperty<?>> asComplexProperties() {
+		assertComplex();
+		return Enumerable.create(values).cast(NamedValue.class).select(OFuncs.namedValueToPropertyRaw()).toSet();
+	}
 
+	private void assertComplex(){
+		if (values.length == 1)
+			throw new RuntimeException("Single-valued key cannot be represented as a complex value");
+	}
+	
 	public KeyType getKeyType() {
 		return values.length == 1 ? KeyType.SINGLE : KeyType.COMPLEX;
 	}
@@ -211,7 +230,7 @@ public class OEntityKey {
 
 	}
 	private static void assertSimple(Object o){
-		if (!EDM_SIMPLE_TYPES.contains(o.getClass()))
+		if (!EDM_SIMPLE_JAVA_TYPES.contains(o.getClass()))
 			throw new IllegalArgumentException("Key value must be a simple type, found: " + o.getClass().getName());
 	}
 	
@@ -224,25 +243,12 @@ public class OEntityKey {
 	private static final Set<Object> CHAR_TYPES = 
 			Enumerable.create(Character.class,Character.TYPE).cast(Object.class).toSet();
 	
-	@SuppressWarnings("unchecked")
-	private static final Set<Object> EDM_SIMPLE_TYPES = 
-			Enumerable.create(
-					Guid.class,
-					Boolean.class,Boolean.TYPE,
-					Byte.class,Byte.TYPE,
-					Short.class,Short.TYPE,
-					Integer.class,Integer.TYPE,
-					Long.class,Long.TYPE,
-					Float.class,Float.TYPE,
-					Double.class,Double.TYPE,
-					BigDecimal.class,
-					Byte[].class,byte[].class,
-					LocalDateTime.class,
-					LocalTime.class,
-					Character.class,Character.TYPE,
-					String.class
-					).cast(Object.class).toSet();
-	
+	private static final Set<Class<?>> EDM_SIMPLE_JAVA_TYPES = 
+		Enumerable.create(EdmType.SIMPLE).selectMany(new Func1<EdmType,Enumerable<Class<?>>>(){
+			public Enumerable<Class<?>> apply(EdmType input) {
+				return Enumerable.create(input.getJavaTypes());
+			}}).toSet();
+		
 	private static String keyString(Object[] values) {
 
 		String keyValue;
@@ -261,25 +267,26 @@ public class OEntityKey {
 	}
 	
 	
-	private static String keyString(Object key, boolean includePropName) {
-		if (key instanceof Guid) {
-			return "guid'" + key + "'";
-		} else if (key instanceof String || CHAR_TYPES.contains(key.getClass())) {
-			return "'" + key.toString().replace("'", "''") + "'";
-		} else if (key instanceof Long) {
-			return key.toString() + "L";
-		} else if (INTEGRAL_TYPES.contains(key.getClass())) {
-			return key.toString();
-		} else if (key instanceof NamedValue<?>) {
-			NamedValue<?> namedValue = (NamedValue<?>) key;
+	private static String keyString(Object keyValue, boolean includePropName) {
+		if (keyValue instanceof Guid) {
+			return "guid'" + keyValue + "'";
+		} else if (keyValue instanceof String || CHAR_TYPES.contains(keyValue.getClass())) {
+			return "'" + keyValue.toString().replace("'", "''") + "'";
+		} else if (keyValue instanceof Long) {
+			return keyValue.toString() + "L";
+		} else if (INTEGRAL_TYPES.contains(keyValue.getClass())) {
+			return keyValue.toString();
+		} else if (keyValue instanceof NamedValue<?>) {
+			NamedValue<?> namedValue = (NamedValue<?>) keyValue;
 			String value = keyString(namedValue.getValue(), false);
-
 			if (includePropName)
 				return namedValue.getName() + "=" + value;
 			else
 				return value;
 		} else {
-			return key.toString();
+			return keyValue.toString();
 		}
 	}
+
+	
 }

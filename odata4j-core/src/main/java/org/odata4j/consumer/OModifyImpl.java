@@ -27,19 +27,19 @@ public class OModifyImpl<T> implements OModify<T> {
     private final List<OProperty<?>> props = new ArrayList<OProperty<?>>();
     private EdmEntitySet entitySet;
 
-    public OModifyImpl(T updateRoot, ODataClient client, String serviceRootUri, EdmDataServices metadata, String entitySetName, Object[] key) {
+    public OModifyImpl(T updateRoot, ODataClient client, String serviceRootUri, EdmDataServices metadata, String entitySetName, OEntityKey key) {
         this.updateRoot = updateRoot;
         this.client = client;
         this.serviceRootUri = serviceRootUri;
         this.metadata = metadata;
 
-        segments.add(EntitySegment.temp(entitySetName, key));
+        segments.add(new EntitySegment(entitySetName, key));
         this.entitySet = metadata.getEdmEntitySet(entitySetName);
     }
 
     @Override
-    public OModify<T> nav(String navProperty, Object... key) {
-        segments.add(EntitySegment.temp(navProperty, key));
+    public OModify<T> nav(String navProperty, OEntityKey key) {
+        segments.add(new EntitySegment(navProperty, key));
         entitySet = metadata.getEdmEntitySet(entitySet.type.getNavigationProperty(navProperty).toRole.type);
         return this;
     }
