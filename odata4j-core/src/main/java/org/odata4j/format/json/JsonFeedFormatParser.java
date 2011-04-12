@@ -8,6 +8,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OEntity;
+import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OLink;
 import org.odata4j.core.OProperty;
 import org.odata4j.format.Entry;
@@ -43,7 +44,7 @@ public class JsonFeedFormatParser extends JsonFormatParser implements FormatPars
 	    List<OLink> links;
 	    OEntity oentity;
 
-		public String getType() {
+		public String getContentType() {
 	    	return MediaType.APPLICATION_JSON;
 	    }
 
@@ -60,6 +61,12 @@ public class JsonFeedFormatParser extends JsonFormatParser implements FormatPars
 		@Override
 		public OEntity getEntity() {
 			return oentity;
+		}
+
+		public OEntityKey getEntityKey() {
+			if (uri==null)
+				return null;
+			return OEntityKey.parse(uri.substring(uri.lastIndexOf('(')));
 		}
 		
 	}

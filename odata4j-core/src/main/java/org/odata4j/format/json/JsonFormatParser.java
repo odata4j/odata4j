@@ -94,11 +94,11 @@ public class JsonFormatParser {
 			}
 		}
 		List<OLink> links = Collections.emptyList();
-		entry.oentity = toOEntity(ees,entry.properties, links);
+		entry.oentity = toOEntity(ees,entry.getEntityKey(),entry.properties, links);
 		return entry;
 	}
 	
-	protected JsonEntry parseEntry(EdmEntitySet ees, JsonStreamReader jsr) {
+	protected JsonEntry parseEntry( EdmEntitySet ees, JsonStreamReader jsr) {
 		JsonEntry entry = new JsonEntry();
 		entry.properties = new ArrayList<OProperty<?>>();
 		entry.links = new ArrayList<OLink>();
@@ -113,16 +113,19 @@ public class JsonFormatParser {
 			}
 		}
 		
-		entry.oentity = toOEntity(ees,entry.properties,entry.links);
+		entry.oentity = toOEntity(ees,entry.getEntityKey(),entry.properties,entry.links);
 		return entry;
 	}
 	
-	private OEntity toOEntity(EdmEntitySet ees, List<OProperty<?>> properties, List<OLink> links){
-		if (entityKey==null)
-			return OEntities.createRequest(ees,properties,links);
-		else
-			return OEntities.create(ees,entityKey,properties, links);
+	private OEntity toOEntity(EdmEntitySet entitySet, OEntityKey key, List<OProperty<?>> properties, List<OLink> links){
+		if (entityKey!=null)
+			return OEntities.create(entitySet,entityKey,properties, links);
+		if(key!=null)
+			return OEntities.create(entitySet,key,properties, links);
+		return OEntities.createRequest(entitySet,properties,links);
 	}
+	
+	
 
 	protected JsonEntryMetaData parseMetadata(JsonStreamReader jsr) {
 		JsonEntryMetaData jemd = new JsonEntryMetaData();
@@ -164,6 +167,7 @@ public class JsonFormatParser {
 		if (METADATA_PROPERTY.equals(name)) {
 			JsonEntryMetaData jemd = parseMetadata(jsr);
 			entry.etag = jemd.etag;
+			entry.uri = jemd.uri;
 			JsonEvent event = jsr.nextEvent();
 			ensureStartProperty(event);
 			name = event.asStartProperty().getName();
@@ -304,7 +308,7 @@ public class JsonFormatParser {
 				addProperty(refentry, ees, event.asStartProperty().getName(), jsr);
 				event = jsr.nextEvent();
 			} while (!event.isEndObject());
-			rt.entity = toOEntity(ees, refentry.properties, refentry.links);
+			rt.entity = toOEntity(ees,refentry.getEntityKey(), refentry.properties, refentry.links);
 		} else {
 			throw new IllegalArgumentException("What's that?");
 		}

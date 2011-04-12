@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.core4j.Enumerable;
 import org.core4j.Func1;
-import org.odata4j.core.NamedValues;
 import org.odata4j.core.OClientBehavior;
 import org.odata4j.core.OCreate;
 import org.odata4j.core.OEntity;
@@ -19,10 +18,6 @@ import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmEntityType;
 import org.odata4j.edm.EdmProperty;
-import org.odata4j.expression.CommonExpression;
-import org.odata4j.expression.Expression;
-import org.odata4j.expression.ExpressionParser;
-import org.odata4j.expression.LiteralExpression;
 import org.odata4j.format.FormatType;
 import org.odata4j.format.xml.AtomFeedFormatParser.CollectionInfo;
 import org.odata4j.internal.EdmDataServicesDecorator;
@@ -31,9 +26,9 @@ import org.odata4j.internal.FeedCustomizationMapping;
 public class ODataConsumer {
 
     
-    private static class ParsedHref{	// TODO OEK move and parse complex, test , and () in values
+    private static class ParsedHref{
         public String entitySetName;
-        public Object[] key;
+        public OEntityKey entityKey;
         public String navProperty;
         
         private ParsedHref(){}
@@ -49,43 +44,13 @@ public class ODataConsumer {
             String entitySetName = head.substring(0,pIndex);
             
             String keyString = head.substring(pIndex+1,head.length()-1);  // keyvalue[,keyvalue]
-            String[] keyValues = keyString.split(",");
-            Object[] key;
-            if (keyValues.length==1){
-                // segments with one key value should not include the name
-                key = new Object[]{parseKeyValue(keyValues[0],false)};
-            } else {
-                // segments with multiple key values should include the name (ie they should be NamedValue)
-                key = Enumerable.create(keyValues).select(new Func1<String,Object>(){
-                    public Object apply(String keyValue) {
-                       return parseKeyValue(keyValue,true);
-                    }}).toArray(Object.class);
-            }
-      
+           
             ParsedHref rt = new ParsedHref();
             rt.entitySetName= entitySetName;
-            rt.key = key;
+            rt.entityKey = OEntityKey.parse(keyString);
             rt.navProperty = navProperty;
             return rt;
-        }
-        
-        private static Object parseKeyValue(String keyValue, boolean expectName){
-           
-            String name = null;
-            if (expectName){
-                int equalsIndex = keyValue.indexOf('=');
-                if (equalsIndex<0)
-                    throw new IllegalArgumentException("Expected name for key value: " + keyValue);
-                name = keyValue.substring(0,equalsIndex);
-                keyValue = keyValue.substring(equalsIndex+1);
-            }
-            CommonExpression expr = ExpressionParser.parse(keyValue);
-            LiteralExpression literal = (LiteralExpression)expr;
-            Object rt = Expression.literalValue(literal);
-            return expectName?NamedValues.create(name,rt):rt;
-        }
-        
-        
+        }        
     }
     
 
@@ -163,7 +128,7 @@ public class ODataConsumer {
     
     public OQuery<OEntity> getEntities(ORelatedEntitiesLink link) {
         ParsedHref parsed = ParsedHref.parse(link.getHref());
-        return getEntities(parsed.entitySetName).nav(parsed.key, parsed.navProperty);
+        return getEntities(parsed.entitySetName).nav(parsed.entityKey, parsed.navProperty);
     }
     
     public OQuery<OEntity> getEntities(String entitySetName) {
@@ -180,7 +145,7 @@ public class ODataConsumer {
     }
     public OEntityRef<OEntity> getEntity(ORelatedEntityLink link) {
         ParsedHref parsed = ParsedHref.parse(link.getHref());
-        return getEntity(parsed.entitySetName,parsed.key).nav(parsed.navProperty) ;
+        return getEntity(parsed.entitySetName,parsed.entityKey).nav(parsed.navProperty) ;
     }
     
     public <T> OEntityRef<T> getEntity(Class<T> entityType, String entitySetName, Object... key) {

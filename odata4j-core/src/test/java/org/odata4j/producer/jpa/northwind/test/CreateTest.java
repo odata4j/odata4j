@@ -99,12 +99,13 @@ public class CreateTest extends JPAProducerTestBase {
 			.execute();
 		
 		Assert.assertNotNull(category);
+		Assert.assertNotNull(category.getEntityKey());
 		Assert.assertNotNull(category.getProperty("CategoryID").getValue());
 		Assert.assertEquals("C" + now, category.getProperty("CategoryName").getValue());
 		
 		Enumerable<OEntity> products = consumer
 			.getEntities("Categories")
-			.nav(category.getProperty("CategoryID").getValue(), "Products")
+			.nav(category.getEntityKey(), "Products")
 			.execute();
 		
 		Assert.assertEquals(2, products.count());

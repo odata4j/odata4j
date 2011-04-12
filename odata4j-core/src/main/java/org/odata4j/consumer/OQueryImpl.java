@@ -13,6 +13,7 @@ import org.core4j.Func1;
 import org.core4j.ReadOnlyIterator;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.ODataVersion;
+import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OQuery;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.format.Entry;
@@ -92,13 +93,12 @@ public class OQueryImpl<T> implements OQuery<T> {
     }
 
     @Override
-    public OQuery<T> nav(Object key, String navProperty) {
-        return nav(new Object[] { key }, navProperty);
+    public OQuery<T> nav(Object keyValue, String navProperty) {
+    	return nav(OEntityKey.create(keyValue),navProperty);
     }
-
     @Override
-    public OQuery<T> nav(Object[] key, String navProperty) {
-        segments.add(EntitySegment.temp(lastSegment, key));
+    public OQuery<T> nav(OEntityKey key, String navProperty) {
+        segments.add(new EntitySegment(lastSegment, key));
         lastSegment = navProperty;
         return this;
     }
