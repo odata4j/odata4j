@@ -23,6 +23,20 @@ public class IssuesPassingTest extends JPAProducerTestBase{
 	}
 	
 	@Test
+	public void mergeCompositeKeyEntity() {
+		ODataConsumer consumer = ODataConsumer.create(endpointUri);
+		
+		OEntity orderDetails = consumer.getEntities("Order_Details").top(1).execute().first();
+		Assert.assertNotNull(orderDetails);	
+		
+		Assert.assertNotSame(123, orderDetails.getProperty("Quantity",short.class).getValue());
+		consumer.mergeEntity("Order_Details", orderDetails.getEntityKey()).properties(OProperties.short_("Quantity", (short)123)).execute();
+		
+		OEntity orderDetailsNew = consumer.getEntity("Order_Details",orderDetails.getEntityKey()).execute();
+		Assert.assertEquals((short)123, (short)orderDetailsNew.getProperty("Quantity",short.class).getValue());
+	}
+	
+	@Test
 	public void createCompositeKeyEntityUsingLinks() {
 		final long now = System.currentTimeMillis();
 		ODataConsumer consumer = ODataConsumer.create(endpointUri);

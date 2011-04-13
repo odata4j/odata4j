@@ -227,7 +227,7 @@ public class JPAProducer implements ODataProducer {
 			context.typeSafeEntityKey = typeSafeEntityKey(
 					context.em,
 					context.jpaEntityType,
-					entityKey==null?null:entityKey.asSingleValue());
+					entityKey);
 
 			context.query = query;
 			return fn.apply(context);
@@ -528,7 +528,7 @@ public class JPAProducer implements ODataProducer {
 					from = String.format("%s JOIN %s %s", from, prop, alias);
 
 					if (propSplit.length > 1) {
-						Object entityKey = OEntityKey.parse("(" + propSplit[1]).asSingleValue();
+						OEntityKey entityKey = OEntityKey.parse("(" + propSplit[1]);
 							
 
 						context.keyPropertyName = JPAEdmGenerator
@@ -850,28 +850,31 @@ public class JPAProducer implements ODataProducer {
 		}
 	}
 
-	private static void applyOProperties(EntityManager em, EntityType<?> jpaEntityType, List<OProperty<?>> properties, Object jpaEntity) {
+	private static void applyOProperties(EntityManager em, ManagedType<?> jpaManagedType, Collection<OProperty<?>> properties, Object jpaEntity) {
 
 		for (OProperty<?> prop : properties) {
 			boolean found = false;
-			if (jpaEntityType.getIdType().getPersistenceType()==PersistenceType.EMBEDDABLE){
-				EmbeddableType<?> et =(EmbeddableType<?>)jpaEntityType.getIdType();
-				
-				for(Attribute<?, ?> idAtt : et.getAttributes()){
+			if (jpaManagedType instanceof EntityType) {
+			EntityType<?> jpaEntityType  = (EntityType<?>)jpaManagedType;
+				if (jpaEntityType.getIdType().getPersistenceType()==PersistenceType.EMBEDDABLE){
+					EmbeddableType<?> et =(EmbeddableType<?>)jpaEntityType.getIdType();
 					
-					if (idAtt.getName().equals(prop.getName())){
-
-						Object idValue = JPAMember.create(jpaEntityType.getId(et.getJavaType()),jpaEntity).get();
+					for(Attribute<?, ?> idAtt : et.getAttributes()){
 						
-						setAttribute(idAtt,prop,idValue);
-						found = true;
-						break;
+						if (idAtt.getName().equals(prop.getName())){
+	
+							Object idValue = JPAMember.create(jpaEntityType.getId(et.getJavaType()),jpaEntity).get();
+							
+							setAttribute(idAtt,prop,idValue);
+							found = true;
+							break;
+						}
 					}
 				}
 			}
 			if (found)
 				continue;
-			Attribute<?, ?> att = jpaEntityType.getAttribute(prop.getName());
+			Attribute<?, ?> att = jpaManagedType.getAttribute(prop.getName());
 			setAttribute(att,prop,jpaEntity);
 		}
 	}
@@ -951,7 +954,7 @@ public class JPAProducer implements ODataProducer {
 			
 			//	get the entity we want the new entity add to
 			EntityType<?> jpaEntityType = findJPAEntityType(em, ees.type.name);
-			Object typeSafeEntityKey = typeSafeEntityKey(em, jpaEntityType, entityKey.asSingleValue());
+			Object typeSafeEntityKey = typeSafeEntityKey(em, jpaEntityType, entityKey);
 			Object jpaEntity = em.find(jpaEntityType.getJavaType(), typeSafeEntityKey);
 
 			//	create the new entity
@@ -1028,7 +1031,7 @@ public class JPAProducer implements ODataProducer {
 			Object typeSafeEntityKey = typeSafeEntityKey(
 					em,
 					jpaEntityType,
-					entityKey.asSingleValue());
+					entityKey);
 
 			Object jpaEntity = em.find(
 					jpaEntityType.getJavaType(),
@@ -1054,7 +1057,7 @@ public class JPAProducer implements ODataProducer {
 			Object typeSafeEntityKey = typeSafeEntityKey(
 					em,
 					jpaEntityType,
-					entity.getEntityKey().asSingleValue());
+					entity.getEntityKey());
 
 			Object jpaEntity = em.find(
 					jpaEntityType.getJavaType(),
@@ -1097,14 +1100,17 @@ public class JPAProducer implements ODataProducer {
 	private static Object typeSafeEntityKey(
 			EntityManager em,
 			EntityType<?> jpaEntityType,
-			Object entityKey) {
-
-		return TypeConverter.convert(
-				entityKey,
-				em.getMetamodel()
-						.entity(jpaEntityType.getJavaType())
-						.getIdType()
-						.getJavaType());
+			OEntityKey entityKey) {
+		
+		if (entityKey!=null&&jpaEntityType.getIdType().getPersistenceType() == PersistenceType.EMBEDDABLE){
+			Object id = newInstance(jpaEntityType.getIdType().getJavaType());
+			applyOProperties(em, em.getMetamodel().embeddable(jpaEntityType.getIdType().getJavaType()), entityKey.asComplexProperties(), id);
+			return id;
+		}
+		
+		Class<?> javaType = jpaEntityType.getIdType().getJavaType();
+		
+		return TypeConverter.convert(entityKey==null?null:entityKey.asSingleValue(),javaType);
 	}
 	
 	private Object typeSafeEntityKey(EntityManager em,

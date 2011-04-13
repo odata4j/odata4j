@@ -18,6 +18,8 @@ public class IssuesFailingTest extends JPAProducerTestBase{
 		
 		setUpClass(20);		
 	}
+	
+	
 		
 	//@Test
 	public void createManyToMany()
