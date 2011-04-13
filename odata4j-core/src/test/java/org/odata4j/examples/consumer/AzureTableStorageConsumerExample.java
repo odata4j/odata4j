@@ -37,7 +37,7 @@ public class AzureTableStorageConsumerExample extends BaseExample {
         reportEntities(c,tableName,100);
         
         report("Update the new entity");
-        c.updateEntity(newEntity, tableName,rowKey1)
+        c.updateEntity(newEntity)
             .properties(OProperties.string("Value", "Sortof Large")).execute();
         reportEntities(c,tableName,100);
         

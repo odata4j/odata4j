@@ -8,11 +8,8 @@ import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OProperties;
-import org.odata4j.core.ORelatedEntityLink;
 
-
-
-public class IssuesPassingTest extends JPAProducerTestBase{
+public class CompositeKeyEntityTest extends JPAProducerTestBase{
 
 	protected static final String endpointUri = "http://localhost:8810/northwind/Northwind.svc/";
 
@@ -21,6 +18,21 @@ public class IssuesPassingTest extends JPAProducerTestBase{
 		
 		setUpClass(20);		
 	}
+	
+	@Test
+	public void updateCompositeKeyEntity() {
+		ODataConsumer consumer = ODataConsumer.create(endpointUri);
+		
+		OEntity orderDetails = consumer.getEntities("Order_Details").top(1).execute().first();
+		Assert.assertNotNull(orderDetails);	
+		
+		Assert.assertNotSame(123, orderDetails.getProperty("Quantity",short.class).getValue());
+		consumer.updateEntity(orderDetails).properties(OProperties.short_("Quantity", (short)123)).execute();
+		
+		OEntity orderDetailsNew = consumer.getEntity("Order_Details",orderDetails.getEntityKey()).execute();
+		Assert.assertEquals((short)123, (short)orderDetailsNew.getProperty("Quantity",short.class).getValue());
+	}
+	
 	
 	@Test
 	public void mergeCompositeKeyEntity() {
@@ -105,39 +117,6 @@ public class IssuesPassingTest extends JPAProducerTestBase{
 	}
 	
 	
-	@Test
-	public void passEntityRefFromFilter() {
-		final long now = System.currentTimeMillis();
-		ODataConsumer consumer = ODataConsumer.create(endpointUri);
-		
-	
-		OEntity customer = consumer
-		.createEntity("Customers")
-		.properties(OProperties.string("CustomerID", "ID" + now))
-		.properties(OProperties.string("CompanyName", "Company" + now))
-		.execute();
-		Assert.assertNotNull(customer);
-		
-		String filterQuery="CompanyName eq 'Company"+now+"'";
-		OEntity customerRet= consumer.getEntities("Customers").top(1).filter(filterQuery).execute().first();		
-		
-		Assert.assertNotNull(customerRet);
-		
-		OEntity order = consumer
-		.createEntity("Orders")
-		.properties(OProperties.string("ShipName", "Ship" + now))
-		.link("Customer", customerRet)
-		.execute();
-		
-		Assert.assertNotNull(order);
-		
-		ORelatedEntityLink link=order.getLink("Customer", ORelatedEntityLink.class);
-		OEntity customerValid = consumer.getEntity(link).execute();
-
-		Assert.assertNotNull(customerValid);		
-		Assert.assertEquals("Company" + now, customerValid.getProperty("CompanyName").getValue());	
-				
-	}
 	
 	
 

@@ -56,7 +56,7 @@ public class ODataTestServiceReadWriteExample extends BaseExample {
         
         
         // update the newly created product
-        c.updateEntity(newProduct, "Products", 10)
+        c.updateEntity(newProduct)
             .properties(OProperties.int32("Rating", 5))
             .execute();
         

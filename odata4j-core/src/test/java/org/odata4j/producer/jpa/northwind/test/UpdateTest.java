@@ -34,7 +34,7 @@ public class UpdateTest extends JPAProducerTestBase {
 		OEntity customer = consumer.getEntity("Customers", "ALFKI").execute();
 		
 		boolean ret = consumer
-				.updateEntity(customer, "Customers", "ALFKI")
+				.updateEntity(customer)
 				.properties(OProperties.string("ContactName", "Maria Gleich"))
 				.execute();
 		Assert.assertTrue(ret);

@@ -170,14 +170,10 @@ public class ODataConsumer {
 		return new OCreateImpl<OEntity>(client, serviceRootUri, getMetadata(),
 				entitySetName, mapping);
 	}
-	
-	public OModify<OEntity> updateEntity(OEntity entity, String entitySetName, Object keyValue) {
-		return updateEntity(entity,entitySetName,OEntityKey.create(keyValue));
-	}
-	
-	public OModify<OEntity> updateEntity(OEntity entity, String entitySetName, OEntityKey key) {
+
+	public OModify<OEntity> updateEntity(OEntity entity) {
         return new OModifyImpl<OEntity>(entity, client, serviceRootUri, getMetadata(),
-        		entitySetName, key);
+        		entity.getEntitySet().name,entity.getEntityKey());
     }
 
 	public OModify<OEntity> mergeEntity(String entitySetName, Object keyValue) {

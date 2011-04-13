@@ -26,7 +26,7 @@ public class AppEngineConsumerExample extends BaseExample {
         reportEntities(c,"Category",100);
         
         report("Update the new category");
-        c.updateEntity(newCategory, "Category", newCategory.getProperty("id"))
+        c.updateEntity(newCategory)
             .properties(OProperties.string("description", "Updated"))
             .execute();
         reportEntities(c,"Category",100);
