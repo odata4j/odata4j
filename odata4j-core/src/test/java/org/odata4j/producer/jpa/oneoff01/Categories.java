@@ -1,4 +1,4 @@
-package org.odata4j.producer.jpa.oneoff;
+package org.odata4j.producer.jpa.oneoff01;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "Categories")
-public class Categories01 implements Serializable {
+public class Categories implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,20 +35,20 @@ public class Categories01 implements Serializable {
     private byte[] Picture;
     
     @OneToMany( cascade = CascadeType.ALL)
-    private Collection<Products01> Products;
+    private Collection<Products> Products;
 
-    public Categories01() {
+    public Categories() {
     	this(null, null);
     }
 
-    public Categories01(Integer categoryID) {
+    public Categories(Integer categoryID) {
         this(categoryID, null);
     }
 
-    public Categories01(Integer categoryID, String categoryName) {
+    public Categories(Integer categoryID, String categoryName) {
         this.CategoryID = categoryID;
         this.CategoryName = categoryName;
-        this.Products = new ArrayList<Products01>();
+        this.Products = new ArrayList<Products>();
     }
 
     public Integer getCategoryID() {
@@ -83,11 +83,11 @@ public class Categories01 implements Serializable {
         this.Picture = picture;
     }
 
-    public Collection<Products01> getProducts() {
+    public Collection<Products> getProducts() {
         return Products;
     }
 
-    public void setProducts(Collection<Products01> productsCollection) {
+    public void setProducts(Collection<Products> productsCollection) {
         this.Products = productsCollection;
     }
 
@@ -101,10 +101,10 @@ public class Categories01 implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof Categories01)) {
+        if (!(object instanceof Categories)) {
             return false;
         }
-        Categories01 other = (Categories01) object;
+        Categories other = (Categories) object;
         if ((this.CategoryID == null && other.CategoryID != null)
                 || (this.CategoryID != null && !this.CategoryID
                         .equals(other.CategoryID))) {

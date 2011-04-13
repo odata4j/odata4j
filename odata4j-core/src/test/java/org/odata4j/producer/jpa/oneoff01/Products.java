@@ -1,4 +1,4 @@
-package org.odata4j.producer.jpa.oneoff;
+package org.odata4j.producer.jpa.oneoff01;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -13,7 +13,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "Products")
-public class Products01 implements Serializable {
+public class Products implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -45,14 +45,14 @@ public class Products01 implements Serializable {
     private Integer CategoryID;
    
 
-    public Products01() {
+    public Products() {
     }
 
-    public Products01(Integer productID) {
+    public Products(Integer productID) {
         this.ProductID = productID;
     }
 
-    public Products01(Integer productID, String productName, boolean discontinued) {
+    public Products(Integer productID, String productName, boolean discontinued) {
         this.ProductID = productID;
         this.ProductName = productName;
         this.Discontinued = discontinued;
@@ -149,10 +149,10 @@ public class Products01 implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof Products01)) {
+        if (!(object instanceof Products)) {
             return false;
         }
-        Products01 other = (Products01) object;
+        Products other = (Products) object;
         if ((this.ProductID == null && other.ProductID != null)
                 || (this.ProductID != null && !this.ProductID
                         .equals(other.ProductID))) {

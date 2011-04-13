@@ -31,10 +31,10 @@ import javax.persistence.metamodel.Type;
 import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.core4j.Enumerable;
-import org.core4j.Func1;
 import org.core4j.Predicate1;
 import org.joda.time.Instant;
 import org.odata4j.core.ODataConstants;
+import org.odata4j.core.OFuncs;
 import org.odata4j.edm.EdmAssociation;
 import org.odata4j.edm.EdmAssociationEnd;
 import org.odata4j.edm.EdmAssociationSet;
@@ -198,13 +198,8 @@ public class JPAEdmGenerator {
                 idAttribute = getId(et);
                 //	handle composite embedded keys (@EmbeddedId)
                 if (idAttribute.getPersistentAttributeType() == PersistentAttributeType.EMBEDDED) {
-                    keys = Enumerable.create(getProperties(modelNamespace, (ManagedType<?>) idAttribute.getType())).select(new Func1<EdmProperty, String>() {
-
-                        @Override
-                        public String apply(EdmProperty input) {
-                            return input.name;
-                        }
-                    }).toList();
+                    keys = Enumerable.create(getProperties(modelNamespace, (ManagedType<?>) idAttribute.getType()))
+                    			.select(OFuncs.edmPropertyName()).toList();
                 } else {
                     keys = Enumerable.create(idAttribute.getName()).toList();
                 }
@@ -222,18 +217,8 @@ public class JPAEdmGenerator {
             entitySets.add(ees);
         }
 
-        Map<String, EdmEntityType> eetsByName = Enumerable.create(edmEntityTypes).toMap(new Func1<EdmEntityType, String>() {
-
-            public String apply(EdmEntityType input) {
-                return input.name;
-            }
-        });
-        Map<String, EdmEntitySet> eesByName = Enumerable.create(entitySets).toMap(new Func1<EdmEntitySet, String>() {
-
-            public String apply(EdmEntitySet input) {
-                return input.name;
-            }
-        });
+        Map<String, EdmEntityType> eetsByName = Enumerable.create(edmEntityTypes).toMap(OFuncs.edmEntityTypeName());
+        Map<String, EdmEntitySet> eesByName = Enumerable.create(entitySets).toMap(OFuncs.edmEntitySetName());
 
         // associations + navigationproperties on one side
 
@@ -305,19 +290,21 @@ public class JPAEdmGenerator {
 
                     EdmNavigationProperty np = null;
                     try {
-                        EdmAssociation assoc = Enumerable.create(associations).first(new Predicate1<EdmAssociation>() {
+                        EdmAssociation assoc = Enumerable.create(associations).firstOrNull(new Predicate1<EdmAssociation>() {
 
                             @Override
                             public boolean apply(EdmAssociation input) {
                                 return input.end1.type.equals(eet1) && input.end2.type.equals(eet2);
                             }
                         });
+                        if (assoc==null)
+                        	throw new RuntimeException(String.format("No assoc found where eet1 = %s and eet2 = %s",eet1,eet2));
                         np = new EdmNavigationProperty(ca.getName(), assoc, assoc.end2, assoc.end1);
 
                         eet2.navigationProperties.add(np);
 
                     } catch (Exception e) {
-                        log.log(Level.WARNING, "Exception building Edm {0}", e.getMessage());
+                        log.log(Level.WARNING, "Exception building Edm associations: " + e.getMessage(),e);
                     }
                 }
 

@@ -11,6 +11,8 @@ import java.util.List;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.core4j.Enumerable;
+import org.core4j.xml.XDocument;
+import org.core4j.xml.XmlFormat;
 import org.odata4j.core.OClientBehavior;
 import org.odata4j.core.OClientBehaviors;
 import org.odata4j.core.ODataConstants;
@@ -206,7 +208,11 @@ class ODataClient {
 
         if (ODataConsumer.dump.responseBody()) {
             String textEntity = response.getEntity(String.class);
-            log(textEntity);
+            String logXml = textEntity;
+            try {
+            	logXml = XDocument.parse(logXml).toString(XmlFormat.INDENTED);
+            } catch (Exception ignore){}
+            log(logXml);
             return InternalUtil.newXMLEventReader(new BOMWorkaroundReader(new StringReader(textEntity)));
         }
         

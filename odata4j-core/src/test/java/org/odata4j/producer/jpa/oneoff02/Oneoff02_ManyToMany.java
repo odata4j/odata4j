@@ -1,29 +1,26 @@
-package org.odata4j.producer.jpa.northwind.test;
+package org.odata4j.producer.jpa.oneoff02;
 
 import junit.framework.Assert;
 
 import org.junit.BeforeClass;
+import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperties;
+import org.odata4j.producer.jpa.oneoff.OneoffTestBase;
 
+public class Oneoff02_ManyToMany extends OneoffTestBase {
 
-
-public class IssuesFailingTest extends JPAProducerTestBase{
-
-	protected static final String endpointUri = "http://localhost:8810/northwind/Northwind.svc/";
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {
-		
-		setUpClass(20);		
+		setUpClass(Oneoff02_ManyToMany.class,20);		
 	}
 	
-	
-	
-	//@Test
+	@Test
 	public void createManyToMany()
 	{
+		ODataConsumer.dump.all(true);
 		final long now = System.currentTimeMillis();
 		ODataConsumer consumer = ODataConsumer.create(endpointUri);
 		
@@ -45,6 +42,8 @@ public class IssuesFailingTest extends JPAProducerTestBase{
 		
 		Assert.assertNotNull(student);	
 	}
+	
+
 	
 
 }

@@ -15,7 +15,7 @@ import org.odata4j.producer.jpa.northwind.test.QueryOptionTest;
 import org.odata4j.producer.jpa.northwind.test.QueryOptionTest50;
 import org.odata4j.producer.jpa.northwind.test.ResourcePathTest;
 import org.odata4j.producer.jpa.northwind.test.UpdateTest;
-import org.odata4j.producer.jpa.oneoff.test.Oneoff01_Unidirectional;
+import org.odata4j.producer.jpa.oneoff01.Oneoff01_Unidirectional;
 import org.odata4j.test.core.OEntityKeyTest;
 import org.odata4j.test.expression.DateTimeFormatTest;
 import org.odata4j.test.expression.ExpressionTest;

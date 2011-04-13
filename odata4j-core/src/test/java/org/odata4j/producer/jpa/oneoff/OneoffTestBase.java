@@ -1,4 +1,4 @@
-package org.odata4j.producer.jpa.oneoff.test;
+package org.odata4j.producer.jpa.oneoff;
 
 import java.util.HashMap;
 import java.util.Map;
