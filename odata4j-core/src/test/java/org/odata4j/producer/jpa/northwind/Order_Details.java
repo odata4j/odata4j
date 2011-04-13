@@ -26,10 +26,12 @@ public class Order_Details implements Serializable {
     @Basic(optional = false)
     @Column(name = "Discount")
     private Float Discount;
+    
     @JoinColumn(name = "ProductID", referencedColumnName = "ProductID",
             insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private Products Product;
+    
     @JoinColumn(name = "OrderID", referencedColumnName = "OrderID",
             insertable = false, updatable = false)
     @ManyToOne(optional = false)

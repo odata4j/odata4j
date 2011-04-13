@@ -15,6 +15,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Query;
 import javax.persistence.metamodel.Attribute;
@@ -271,8 +273,8 @@ public class JPAProducer implements ODataProducer {
 				} else {
 					// get the simple attribute
 					Attribute<?, ?> att = entityType.getAttribute(ep.name);
-					JPAMember member = JPAMember.create(att);
-					Object value = member.get(jpaEntity);
+					JPAMember member = JPAMember.create(att,jpaEntity);
+					Object value = member.get();
 
 					properties.add(OProperties.simple(
 							ep.name,
@@ -302,7 +304,7 @@ public class JPAProducer implements ODataProducer {
 					if (att.getPersistentAttributeType() == PersistentAttributeType.ONE_TO_MANY
 							|| att.getPersistentAttributeType() == PersistentAttributeType.MANY_TO_MANY) {
 
-						Collection<?> value = JPAMember.create(att).get(jpaEntity);
+						Collection<?> value = JPAMember.create(att,jpaEntity).get();
 		
 						List<OEntity> relatedEntities = new ArrayList<OEntity>();
 						for (Object relatedEntity : value) {
@@ -335,7 +337,7 @@ public class JPAProducer implements ODataProducer {
 								metadata.getEdmEntitySet(JPAEdmGenerator
 										.getEntitySetName(relatedEntityType));
 
-						Object relatedEntity = JPAMember.create(att).get(jpaEntity);
+						Object relatedEntity = JPAMember.create(att,jpaEntity).get();
 				
 						if( relatedEntity == null )
 						{
@@ -413,8 +415,7 @@ public class JPAProducer implements ODataProducer {
 			String propName) {
 		try {
 			// get the composite id
-			JPAMember idMember = JPAMember.create(idAtt);
-			Object keyValue = idMember.get(jpaEntity);
+			Object keyValue = JPAMember.create(idAtt,jpaEntity).get();
 
 			if (propName == null) 
 				return keyValue;
@@ -422,9 +423,7 @@ public class JPAProducer implements ODataProducer {
 			// get the property from the key
 			ManagedType<?> keyType = (ManagedType<?>) idAtt.getType();
 			Attribute<?, ?> att = keyType.getAttribute(propName);
-			JPAMember propMember = JPAMember.create(att);
-			
-			return propMember.get(keyValue);
+			return JPAMember.create(att,keyValue).get();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -754,6 +753,15 @@ public class JPAProducer implements ODataProducer {
 		
 		Object jpaEntity = newInstance(jpaEntityType.getJavaType());
 
+		if (jpaEntityType.getIdType().getPersistenceType()==PersistenceType.EMBEDDABLE){
+			EmbeddableType<?> et =(EmbeddableType<?>)jpaEntityType.getIdType();
+			
+			JPAMember idMember = JPAMember.create(jpaEntityType.getId(et.getJavaType()),jpaEntity);
+			Object idValue = newInstance(et.getJavaType());
+			idMember.set(idValue);
+		}
+		
+		
 		applyOProperties(em, jpaEntityType, oEntity.getProperties(), jpaEntity);
 		if (withLinks) {
 			applyOLinks(em, jpaEntityType, oEntity.getLinks(), jpaEntity);
@@ -772,8 +780,7 @@ public class JPAProducer implements ODataProducer {
 		}
 	}
 	
-	private void applyOLinks(EntityManager em, EntityType<?> jpaEntityType,
-			List<OLink> links, Object jpaEntity) {
+	private void applyOLinks(EntityManager em, EntityType<?> jpaEntityType, List<OLink> links, Object jpaEntity) {
 		try {
 			for (final OLink link : links) {
 				String[] propNameSplit = link.getRelation().split("/");
@@ -781,23 +788,21 @@ public class JPAProducer implements ODataProducer {
 
 				if (link instanceof ORelatedEntitiesLinkInline) {
 					PluralAttribute<?, ?, ?> att = (PluralAttribute<?, ?, ?>)jpaEntityType.getAttribute(propName);
-					JPAMember member = JPAMember.create(att);
+					JPAMember member = JPAMember.create(att,jpaEntity);
 					
 					EntityType<?> collJpaEntityType = (EntityType<?>)att.getElementType();
 
 					OneToMany oneToMany = member.getAnnotation(OneToMany.class);
-					JPAMember backRef = null;
-					if (oneToMany != null
-    						&& oneToMany.mappedBy() != null
-    						&& !oneToMany.mappedBy().isEmpty()) {
-						backRef = JPAMember.create(collJpaEntityType.getAttribute(oneToMany.mappedBy()));
-					}
-					
-					Collection<Object> coll = member.get(jpaEntity);
+					boolean hasBackRef = oneToMany != null
+						&& oneToMany.mappedBy() != null
+						&& !oneToMany.mappedBy().isEmpty();
+
+					Collection<Object> coll = member.get();
 					for (OEntity oentity : ((ORelatedEntitiesLinkInline)link).getRelatedEntities()) {
 						Object collJpaEntity = createNewJPAEntity(em, collJpaEntityType, oentity, true);
-						if (backRef != null) {
-							backRef.set(collJpaEntity, jpaEntity);
+						if (hasBackRef) {
+							JPAMember backRef = JPAMember.create(collJpaEntityType.getAttribute(oneToMany.mappedBy()),collJpaEntity);
+							backRef.set(jpaEntity);
 						}
 						em.persist(collJpaEntity);
 						coll.add(collJpaEntity);
@@ -805,23 +810,36 @@ public class JPAProducer implements ODataProducer {
 					
 				} else if (link instanceof ORelatedEntityLinkInline ) {
 					SingularAttribute<?, ?> att = jpaEntityType.getSingularAttribute(propName);
-					JPAMember member = JPAMember.create(att);
+					JPAMember member = JPAMember.create(att,jpaEntity);
 					
 					EntityType<?> relJpaEntityType = (EntityType<?>)att.getType();
 					Object relJpaEntity = createNewJPAEntity(em, relJpaEntityType, 
 							((ORelatedEntityLinkInline)link).getRelatedEntity(), true);
 					em.persist(relJpaEntity);
 
-					member.set(jpaEntity, relJpaEntity);
+					member.set(relJpaEntity);
 				} else if (link instanceof ORelatedEntityLink ) {
+					
+					// look up the linked entity, and set the member value
 					SingularAttribute<?, ?> att = jpaEntityType.getSingularAttribute(propName);
-					JPAMember member = JPAMember.create(att);
+					JPAMember member = JPAMember.create(att,jpaEntity);
 					
 					EntityType<?> relJpaEntityType = (EntityType<?>)att.getType();
 					Object key = typeSafeEntityKey(em, relJpaEntityType, link.getHref());
 					Object relEntity = em.find(relJpaEntityType.getJavaType(), key);
 
-					member.set(jpaEntity, relEntity);
+					member.set(relEntity);
+					
+					// set corresponding property (if there is one)
+					JoinColumn joinColumn = member.getAnnotation(JoinColumn.class);
+					ManyToOne manyToOne =  member.getAnnotation(ManyToOne.class);
+					if (joinColumn!=null && manyToOne !=null){
+						String columnName = joinColumn.name();
+						JPAMember m = JPAMember.findByColumn(jpaEntityType, columnName, jpaEntity);
+						if (m!=null)
+							m.set(key);
+						
+					}
 
 				} else {
 					throw new UnsupportedOperationException("binding the new entity to many entities is not supported");
@@ -842,13 +860,8 @@ public class JPAProducer implements ODataProducer {
 				for(Attribute<?, ?> idAtt : et.getAttributes()){
 					
 					if (idAtt.getName().equals(prop.getName())){
-					
-						JPAMember idMember = JPAMember.create(jpaEntityType.getId(et.getJavaType()));
-						Object idValue = idMember.get(jpaEntity);
-						if (idValue==null){
-							idValue = newInstance(et.getJavaType());
-							idMember.set(jpaEntity,idValue);
-						}
+
+						Object idValue = JPAMember.create(jpaEntityType.getId(et.getJavaType()),jpaEntity).get();
 						
 						setAttribute(idAtt,prop,idValue);
 						found = true;
@@ -864,9 +877,9 @@ public class JPAProducer implements ODataProducer {
 	}
 	
 	private static void setAttribute(Attribute<?, ?> att, OProperty<?> prop, Object target){
-		JPAMember attMember = JPAMember.create(att);
+		JPAMember attMember = JPAMember.create(att,target);
 		Object value = coercePropertyValue(prop, attMember.getJavaType());
-		attMember.set(target, value);
+		attMember.set(value);
 	}
 	
 	
@@ -959,8 +972,8 @@ public class JPAProducer implements ODataProducer {
 							return pa.getName().equals(navProp);
 						}
 					});
-			JPAMember member = JPAMember.create(attr);
-			Collection<Object> collection = member.get(jpaEntity);
+			JPAMember member = JPAMember.create(attr,jpaEntity);
+			Collection<Object> collection = member.get();
 			collection.add(newJpaEntity);
 			
 			//	TODO handle ManyToMany relationships
@@ -969,8 +982,8 @@ public class JPAProducer implements ODataProducer {
 			if (oneToMany != null
 					&& oneToMany.mappedBy() != null
 					&& !oneToMany.mappedBy().isEmpty()) {
-				JPAMember.create(newJpaEntityType.getAttribute(oneToMany.mappedBy()))
-					.set(newJpaEntity, jpaEntity);
+				JPAMember.create(newJpaEntityType.getAttribute(oneToMany.mappedBy()),newJpaEntity)
+					.set(jpaEntity);
 
 			}
 			

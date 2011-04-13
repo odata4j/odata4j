@@ -7,7 +7,7 @@ import org.odata4j.producer.jpa.airline.test.EdmDateTimeTemporalTest;
 import org.odata4j.producer.jpa.airline.test.EdmTimeTemporalTest;
 import org.odata4j.producer.jpa.northwind.test.CreateTest;
 import org.odata4j.producer.jpa.northwind.test.DeleteTest;
-import org.odata4j.producer.jpa.northwind.test.IssuesTest;
+import org.odata4j.producer.jpa.northwind.test.IssuesPassingTest;
 import org.odata4j.producer.jpa.northwind.test.QueryOptionAtomTest;
 import org.odata4j.producer.jpa.northwind.test.QueryOptionAtomTest50;
 import org.odata4j.producer.jpa.northwind.test.QueryOptionTest;
@@ -51,7 +51,7 @@ import org.odata4j.test.issues.Issue16;
 	EdmDateTimeTemporalTest.class,
 	CreateWithLinkTest.class,
 	OEntityKeyTest.class,
-	IssuesTest.class
+	IssuesPassingTest.class
 })
 
 public class OData4jTestSuite {
