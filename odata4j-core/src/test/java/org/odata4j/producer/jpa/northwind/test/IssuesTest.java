@@ -57,7 +57,7 @@ public class IssuesTest extends JPAProducerTestBase{
 	}
 	
 	
-	//@Test
+	@Test
 	public void PassEntityRefFromFilter() {
 		final long now = System.currentTimeMillis();
 		ODataConsumer consumer = ODataConsumer.create(endpointUri);
