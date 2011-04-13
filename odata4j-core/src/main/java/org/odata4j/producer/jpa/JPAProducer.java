@@ -23,6 +23,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.Query;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Attribute.PersistentAttributeType;
+import javax.persistence.metamodel.EmbeddableType;
+import javax.persistence.metamodel.Metamodel;
+import javax.persistence.metamodel.Type.PersistenceType;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.PluralAttribute;
@@ -819,25 +822,29 @@ public class JPAProducer implements ODataProducer {
 	private Object createNewJPAEntity(
 			EntityManager em,
 			EntityType<?> jpaEntityType,
-			OEntity oentity,
+			OEntity oEntity,
 			boolean withLinks) {
+		
+		Object jpaEntity = newInstance(jpaEntityType.getJavaType());
+
+		applyOProperties(em, jpaEntityType, oEntity.getProperties(), jpaEntity);
+		if (withLinks) {
+			applyOLinks(em, jpaEntityType, oEntity.getLinks(), jpaEntity);
+		}
+
+		return jpaEntity;
+	}
+
+	private static Object newInstance(Class<?> javaType){
 		try {
-			Constructor<?> ctor = jpaEntityType.getJavaType()
-					.getDeclaredConstructor();
+			Constructor<?> ctor = javaType.getDeclaredConstructor();
 			ctor.setAccessible(true);
-			Object jpaEntity = ctor.newInstance();
-
-			applyOProperties(jpaEntityType, oentity.getProperties(), jpaEntity);
-			if (withLinks) {
-				applyOLinks(em, jpaEntityType, oentity.getLinks(), jpaEntity);
-			}
-
-			return jpaEntity;
+			return ctor.newInstance();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
-
+	
 	private void applyOLinks(EntityManager em, EntityType<?> jpaEntityType,
 			List<OLink> links, Object jpaEntity) {
 		try {
@@ -901,30 +908,88 @@ public class JPAProducer implements ODataProducer {
 		}
 	}
 
-	private static void applyOProperties(EntityType<?> jpaEntityType,
-			List<OProperty<?>> properties, Object jpaEntity) {
-		try {
-			for (OProperty<?> prop : properties) {
-				// EdmProperty ep = findProperty(ees,prop.getName());
-				Attribute<?, ?> att = jpaEntityType
-						.getAttribute(prop.getName());
-				Member member = att.getJavaMember();
+	private static void applyOProperties(EntityManager em, EntityType<?> jpaEntityType, List<OProperty<?>> properties, Object jpaEntity) {
 
-				if (!(member instanceof Field)) {
-					throw new UnsupportedOperationException("Implement member"
-							+ member);
+		for (OProperty<?> prop : properties) {
+			boolean found = false;
+			if (jpaEntityType.getIdType().getPersistenceType()==PersistenceType.EMBEDDABLE){
+				EmbeddableType<?> et =(EmbeddableType<?>)jpaEntityType.getIdType();
+				Metamodel mm = em.getMetamodel();
+				
+				for(Attribute<?, ?> idAtt : et.getAttributes()){
+					
+					if (idAtt.getName().equals(prop.getName())){
+					
+						MemberHelper idMember = new MemberHelper(idAtt.getJavaMember());
+						Object idValue = idMember.get(jpaEntity);
+						if (idValue==null){
+							idValue = newInstance(et.getJavaType());
+							idMember.set(jpaEntity,idValue);
+						}
+						
+						setAttribute(idAtt,prop,idValue);
+						found = true;
+						break;
+					}
 				}
-				Field field = (Field) member;
-				field.setAccessible(true);
-
-				Object value = getPropertyValue(prop, field);
-				field.set(jpaEntity, value);
-
 			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+			if (found)
+				continue;
+			Attribute<?, ?> att = jpaEntityType.getAttribute(prop.getName());
+			setAttribute(att,prop,jpaEntity);
 		}
 	}
+	
+	private static void setAttribute(Attribute<?, ?> att, OProperty<?> prop, Object target){
+		
+		MemberHelper attMember = new MemberHelper(att.getJavaMember());
+		Object value = getPropertyValue(prop, attMember.getType());
+		attMember.set(target, value);
+	}
+	
+	
+	private static class MemberHelper {
+		
+		private final Member member;
+		public MemberHelper(Member member){
+			if (member==null)
+				throw new IllegalArgumentException("member cannot be null");
+			this.member = member;
+		}
+		public Class<?> getType(){
+			Field field = asField();
+			return field.getType();
+		}
+		
+		public void set(Object target, Object value){
+			Field field = asField();
+			field.setAccessible(true);
+
+			try {
+				field.set(target, value);
+			} catch (Exception e){
+				throw new RuntimeException(e);
+			}
+		}
+		
+		public Object get(Object target){
+			Field field = asField();
+			field.setAccessible(true);
+			try {
+				return field.get(target);
+			} catch (Exception e){
+				throw new RuntimeException(e);
+			}
+		}
+		
+		private Field asField(){
+			if (!(member instanceof Field)) 
+				throw new UnsupportedOperationException("Implement member" + member);
+		
+			return (Field) member;
+		}
+	}
+	
 
 	@Override
 	public EntityResponse createEntity(String entitySetName, OEntity entity) {
@@ -1104,7 +1169,7 @@ public class JPAProducer implements ODataProducer {
 					jpaEntityType.getJavaType(),
 					typeSafeEntityKey);
 
-			applyOProperties(jpaEntityType, entity.getProperties(), jpaEntity);
+			applyOProperties(em, jpaEntityType, entity.getProperties(), jpaEntity);
 
 			em.getTransaction().commit();
 
@@ -1186,10 +1251,10 @@ public class JPAProducer implements ODataProducer {
 		}
 	}
 	
-	protected static Object getPropertyValue(OProperty<?> prop, Field field) {
+	protected static Object getPropertyValue(OProperty<?> prop, Class<?> javaType) {
 		Object value = prop.getValue();
 		try {
-			return TypeConverter.convert(value, field.getType());
+			return TypeConverter.convert(value, javaType);
 		} catch (UnsupportedOperationException ex) {
 			// let java complain
 			return value;
