@@ -843,7 +843,7 @@ public class JPAProducer implements ODataProducer {
 					
 					if (idAtt.getName().equals(prop.getName())){
 					
-						JPAMember idMember = JPAMember.create(idAtt);
+						JPAMember idMember = JPAMember.create(jpaEntityType.getId(et.getJavaType()));
 						Object idValue = idMember.get(jpaEntity);
 						if (idValue==null){
 							idValue = newInstance(et.getJavaType());
@@ -865,7 +865,7 @@ public class JPAProducer implements ODataProducer {
 	
 	private static void setAttribute(Attribute<?, ?> att, OProperty<?> prop, Object target){
 		JPAMember attMember = JPAMember.create(att);
-		Object value = coercePropertyValue(prop, attMember.getType());
+		Object value = coercePropertyValue(prop, attMember.getJavaType());
 		attMember.set(target, value);
 	}
 	

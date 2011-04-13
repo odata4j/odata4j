@@ -6,6 +6,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
+import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.ORelatedEntityLink;
 
@@ -22,7 +23,7 @@ public class IssuesTest extends JPAProducerTestBase{
 	}
 	
 	
-	//@Test
+	@Test
 	public void createCompositeKeyEntity() {
 		final long now = System.currentTimeMillis();
 		ODataConsumer consumer = ODataConsumer.create(endpointUri);
@@ -54,6 +55,9 @@ public class IssuesTest extends JPAProducerTestBase{
 			.execute();
 		
 		Assert.assertNotNull(orderDetails);
+		Assert.assertEquals(
+				OEntityKey.create("OrderID",order.getEntityKey().asSingleValue(),"ProductID",product.getEntityKey().asSingleValue()),
+				orderDetails.getEntityKey());
 	}
 	
 	

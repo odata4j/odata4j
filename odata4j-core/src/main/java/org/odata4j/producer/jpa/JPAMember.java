@@ -9,105 +9,162 @@ import javax.persistence.metamodel.Attribute;
 
 import org.core4j.CoreUtils;
 
-public class JPAMember {
-	
-	private final Member member;
-	private JPAMember(Member member){
-		if (member==null)
-			throw new IllegalArgumentException("member cannot be null");
-		this.member = member;
-	}
-	
-	public static JPAMember create(Attribute<?,?> jpaAttribute){
-		Member member = jpaAttribute.getJavaMember();
-		
-		if (member == null) { // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_95:_20091017:_Attribute.getJavaMember.28.29_returns_null_for_a_BasicType_on_a_MappedSuperclass_because_of_an_uninitialized_accessor
-			member = getJavaMember(jpaAttribute.getDeclaringType().getJavaType(), jpaAttribute.getName());
-		}
-		
-		return new JPAMember(member);
-	}
-	
-	
-	public Class<?> getType(){
-		Field field = asField();
-		return field.getType();
-	}
-	
-	public void set(Object target, Object value){
-		try {
-			if (member instanceof Field) {
-	    		Field field = (Field) member;
-	    		field.setAccessible(true);
-	    		field.set(target, value);
-			} else if (member instanceof Method) {
-				throw new UnsupportedOperationException("Implement member"
-						+ member + " as field");
-			} else {
-				throw new UnsupportedOperationException("Implement member" + member);
-			}
-		} catch (Exception e){
-			throw new RuntimeException(e);
-		}
-	}
-	
-	@SuppressWarnings("unchecked")
-	public <T> T get(Object target){
-		try {
-			if (member instanceof Field) {
-	    		Field field = (Field) member;
-	    		field.setAccessible(true);
-	    		return (T) field.get(target);
-			} else if (member instanceof Method) {
-				Method method = (Method) member;
-				method.setAccessible(true);
-				return (T) method.invoke(target);
-			} else {
-				throw new UnsupportedOperationException("Implement member" + member);
-			}
-		} catch (Exception e){
-			throw new RuntimeException(e);
-		}
-	}
-	
-	private Field asField(){
-		if (!(member instanceof Field)) 
-			throw new UnsupportedOperationException("Implement member" + member);
-	
-		return (Field) member;
-	}
-	
-	public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-		if (member instanceof Method) {
-			Method method = (Method) member;
-			return method.getAnnotation(annotationClass);
-		} else if (member instanceof Field) {
-			Field field = (Field) member;
-			return field.getAnnotation(annotationClass);
-		} else
-			throw new IllegalArgumentException("only methods and fields are allowed");
-	}
+public abstract class JPAMember {
 
-	private static Member getJavaMember(Class<?> type, String name) {
+	public abstract Class<?> getJavaType();
+	public abstract boolean isReadable();
+	public abstract boolean isWriteable();
+	public abstract <T> T get(Object target);
+	public abstract <T> void set(Object target, T value);
+	public abstract <T extends Annotation> T getAnnotation(Class<T> annotationClass);
+
+	public static JPAMember create(Attribute<?,?> jpaAttribute){
+		Member javaMember = jpaAttribute.getJavaMember();
+		if (javaMember instanceof Field)
+			return new FieldMember((Field)javaMember);
+		if (javaMember instanceof Method)
+			return new GetterSetterMember((Method)javaMember,null);
+		
+		// http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_95:_20091017:_Attribute.getJavaMember.28.29_returns_null_for_a_BasicType_on_a_MappedSuperclass_because_of_an_uninitialized_accessor
+		JPAMember rt = reverseEngineerJPAMember(jpaAttribute.getDeclaringType().getJavaType(), jpaAttribute.getName());
+		
+		if (rt==null)
+			throw new IllegalArgumentException("Could not find java member for: " + jpaAttribute);
+		return rt;
+	}
+	
+	
+	
+
+	private static JPAMember reverseEngineerJPAMember(Class<?> type, String name) {
 		try {
 			Field field = CoreUtils.getField(type, name);
-			field.setAccessible(true);
-			return field;
+			return new FieldMember(field);
 		} catch (Exception ignore) {
 		}
 
-		String methodName = "get" + Character.toUpperCase(name.charAt(0))
-				+ name.substring(1);
+		// TODO handle setters, overloads
+		String methodName = "get" + Character.toUpperCase(name.charAt(0))+ name.substring(1);
 		while (!type.equals(Object.class)) {
 			try {
 				Method method = type.getDeclaredMethod(methodName);
-				method.setAccessible(true);
-				return method;
+				return new GetterSetterMember(method,null);
 			} catch (Exception ignore) {
 			}
 			type = type.getSuperclass();
 		}
 		return null;
 	}
+	
+	
+	private static class FieldMember extends JPAMember{
+
+		private final Field field;
+		public FieldMember(Field field){
+			this.field = field;
+			this.field.setAccessible(true);
+		}
+	
+
+		@Override
+		public Class<?> getJavaType() {
+			return field.getType();
+		}
+
+		@Override
+		public boolean isReadable() {
+			return true;
+		}
+
+		@Override
+		public boolean isWriteable() {
+			return true;
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T> T get(Object target) {
+			try {
+				return (T)field.get(target);
+			} catch (Exception e){
+				throw new RuntimeException(e);
+			}
+		}
+
+		@Override
+		public <T> void set(Object target, T value) {
+			try {
+				field.set(target,value);
+			} catch (Exception e){
+				throw new RuntimeException(e);
+			}
+		}
+		
+		@Override
+		public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+			return field.getAnnotation(annotationClass);
+		}
+	}
+	
+	private static class GetterSetterMember extends JPAMember {
+
+		private final Method getter;
+		private final Method setter;
+		
+		public GetterSetterMember( Method getter, Method setter){
+			this.getter = getter;
+			this.setter = setter;
+			
+			if (getter!=null)
+				getter.setAccessible(true);
+			if (setter!=null)
+				setter.setAccessible(true);
+		}
+		
+
+		@Override
+		public Class<?> getJavaType() {
+			return getter.getReturnType();
+		}
+
+		@Override
+		public boolean isReadable() {
+			return getter!=null;
+		}
+
+		@Override
+		public boolean isWriteable() {
+			return setter!=null;
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T> T get(Object target) {
+			if (getter==null)
+				throw new RuntimeException("Member is not readable");
+			try {
+				return (T)getter.invoke(target);
+			} catch (Exception e){
+				throw new RuntimeException(e);
+			}
+		}
+
+		@Override
+		public <T> void set(Object target, T value) {
+			if (setter==null)
+				throw new RuntimeException("Member is not writeable");
+			try {
+				setter.invoke(target, value);
+			} catch (Exception e){
+				throw new RuntimeException(e);
+			}
+		}
+		
+		@Override
+		public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+			return getter.getAnnotation(annotationClass);
+		}
+	}
+	
 
 }
