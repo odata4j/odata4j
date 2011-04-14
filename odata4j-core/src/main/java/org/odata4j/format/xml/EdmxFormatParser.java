@@ -24,6 +24,7 @@ import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmType;
+import org.odata4j.stax2.Attribute2;
 import org.odata4j.stax2.QName2;
 import org.odata4j.stax2.StartElement2;
 import org.odata4j.stax2.XMLEvent2;
@@ -265,7 +266,8 @@ public class EdmxFormatParser extends XmlFormatParser {
     private static EdmFunctionImport parseEdmFunctionImport(XMLEventReader2 reader, String schemaNamespace, StartElement2 functionImportElement) {
         String name = functionImportElement.getAttributeByName("Name").getValue();
         String entitySet = getAttributeValueIfExists(functionImportElement,"EntitySet");
-        String returnType = functionImportElement.getAttributeByName("ReturnType").getValue();
+        Attribute2 returnTypeAttr = functionImportElement.getAttributeByName("ReturnType"); 
+        String returnType = returnTypeAttr != null ? returnTypeAttr.getValue() : null;
         String httpMethod = getAttributeValueIfExists(functionImportElement, new QName2(NS_METADATA,"HttpMethod"));
 
         List<EdmFunctionParameter> parameters = new ArrayList<EdmFunctionParameter>();

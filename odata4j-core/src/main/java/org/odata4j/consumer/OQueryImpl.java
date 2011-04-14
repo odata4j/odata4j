@@ -178,11 +178,11 @@ public class OQueryImpl<T> implements OQuery<T> {
             if (feed == null) {
             	ClientResponse response = client.getEntities(request);
             	
-            	InternalUtil.getDataServiceVersion(response.getHeaders()
+            	ODataVersion version = InternalUtil.getDataServiceVersion(response.getHeaders()
             			.getFirst(ODataConstants.Headers.DATA_SERVICE_VERSION));
             	
                 parser = FormatParserFactory.getParser(Feed.class, client.type, 
-                		new Settings(ODataVersion.V2, metadata, lastSegment, null, fcMapping)); 
+                		new Settings(version, metadata, lastSegment, null, fcMapping)); 
 
             	feed = parser.parse(client.getFeedReader(response));
                 feedEntries = feed.getEntries().iterator();
