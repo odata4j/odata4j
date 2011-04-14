@@ -49,4 +49,5 @@ public class ODataEndpoints {
     
     public static final String PDC_2010 = "http://odata.microsoftpdc.com/ODataSchedule.svc/";
     public static final String INETA_LIVE = "http://live.ineta.org/InetaLiveService.svc/";
+    public static final String NUGET = "http://packages.nuget.org/v1/FeedService.svc/";
 }
