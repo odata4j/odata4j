@@ -283,7 +283,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
             XMLEvent2 event = reader.nextEvent();
 
             if (event.isEndElement() && event.asEndElement().getName().equals(entryElement.getName())) {
-                rt.id = id;
+                rt.id = id;							//http://localhost:8810/Oneoff01.svc/Comment(1)
                 rt.title = title;
                 rt.summary = summary;
                 rt.updated = updated;
@@ -295,6 +295,11 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
                 
                 if (rt instanceof DataServicesAtomEntry) {
                 	DataServicesAtomEntry dsae = (DataServicesAtomEntry)rt;
+                	String entitySetName = this.entitySetName;
+                	if (rt.id!=null) {
+                		String entitySetAndKey = Enumerable.create(rt.id.split("/")).last();
+                		entitySetName = entitySetAndKey.substring(0,entitySetAndKey.indexOf('('));
+                	}
         			dsae.setOEntity(entityFromAtomEntry(metadata, metadata.getEdmEntitySet(entitySetName), dsae, null));
                 }
                 return rt;

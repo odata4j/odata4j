@@ -8,6 +8,7 @@ import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.core4j.Enumerable;
@@ -192,7 +193,7 @@ class ODataClient {
     Reader getFeedReader(ClientResponse response) {
         if (ODataConsumer.dump.responseBody()) {
             String textEntity = response.getEntity(String.class);
-            log(textEntity);
+            dumpResponseBody(textEntity,response.getType());
             return new BOMWorkaroundReader(new StringReader(textEntity));
         }
         
@@ -203,16 +204,12 @@ class ODataClient {
             throw new RuntimeException(e);
         }
     }
-    
+   
     private XMLEventReader2 doXmlRequest(ClientResponse response)  {
 
         if (ODataConsumer.dump.responseBody()) {
             String textEntity = response.getEntity(String.class);
-            String logXml = textEntity;
-            try {
-            	logXml = XDocument.parse(logXml).toString(XmlFormat.INDENTED);
-            } catch (Exception ignore){}
-            log(logXml);
+            dumpResponseBody(textEntity,response.getType());
             return InternalUtil.newXMLEventReader(new BOMWorkaroundReader(new StringReader(textEntity)));
         }
         
@@ -224,7 +221,15 @@ class ODataClient {
         }
     }
     
-   
+    private void dumpResponseBody(String textEntity, MediaType type){
+    	String logXml = textEntity;
+    	if (type.toString().contains("xml"))
+	        try {
+	        	logXml = XDocument.parse(logXml).toString(XmlFormat.INDENTED);
+	        } catch (Exception ignore){}
+        log(logXml);
+    }
+    
     private void dumpHeaders(ClientResponse response) {
         log("Status: " + response.getStatus());
         dump(response.getHeaders());

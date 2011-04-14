@@ -44,8 +44,8 @@
 
 	<persistence-unit name="Oneoff01" transaction-type="RESOURCE_LOCAL">
 		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-		<class>org.odata4j.producer.jpa.oneoff01.Categories</class>
-		<class>org.odata4j.producer.jpa.oneoff01.Products</class>
+		<class>org.odata4j.producer.jpa.oneoff01.Comment</class>
+		<class>org.odata4j.producer.jpa.oneoff01.Ticket</class>
 	</persistence-unit>
 	
 	<persistence-unit name="Oneoff02" transaction-type="RESOURCE_LOCAL">
