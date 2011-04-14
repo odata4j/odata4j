@@ -54,7 +54,11 @@
 		<class>org.odata4j.producer.jpa.oneoff02.Student</class>
 	</persistence-unit>
 	
-	
+	<persistence-unit name="Oneoff03" transaction-type="RESOURCE_LOCAL">
+		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+		<class>org.odata4j.producer.jpa.oneoff03.Course</class>
+		<class>org.odata4j.producer.jpa.oneoff03.Student</class>
+	</persistence-unit>
 	
 	
 </persistence>

@@ -1,4 +1,4 @@
-package org.odata4j.producer.jpa.oneoff02;
+package org.odata4j.producer.jpa.oneoff03;
 
 import java.util.List;
 
@@ -12,12 +12,12 @@ import org.odata4j.core.OProperties;
 import org.odata4j.core.ORelatedEntitiesLink;
 import org.odata4j.producer.jpa.oneoff.OneoffTestBase;
 
-public class Oneoff02_ManyToMany extends OneoffTestBase {
+public class Oneoff03_ManyToMany extends OneoffTestBase {
 
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {
-		setUpClass(Oneoff02_ManyToMany.class,20);		
+		setUpClass(Oneoff03_ManyToMany.class,20);		
 	}
 	
 	@Test
