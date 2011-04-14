@@ -9,6 +9,7 @@ import org.odata4j.core.ODataConstants;
 import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
+import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OLink;
 import org.odata4j.core.OLinks;
 import org.odata4j.core.OProperty;
@@ -111,31 +112,41 @@ public class OCreateImpl<T> implements OCreate<T> {
 
 	@Override
 	public OCreate<T> link(String navProperty, OEntity target) {
-        EdmEntitySet entitySet = metadata.getEdmEntitySet(entitySetName);
-		EdmNavigationProperty navProp = entitySet.type.getNavigationProperty(navProperty);
-        if (navProp == null) {
-        	throw new IllegalArgumentException("unknown navigation property "
-        			+ navProperty);
-        }
-		if (navProp.toRole.multiplicity == EdmMultiplicity.MANY) {
-			throw new IllegalArgumentException("many associations are not supported");
-		}
-		
-		StringBuilder href = new StringBuilder(serviceRootUri);
-		if (!serviceRootUri.endsWith("/")) {
-			href.append("/");
-		}
-		href.append(InternalUtil.getEntityRelId(target));
-		
-		//	TODO get rid of XmlFormatWriter
-		//  We may need to rethink the rel property on a link
-		//	since it adds no new information. The title is
-		//	already there and rel has only a fixed prefix valid for
-		//	the atom format.
-		String rel = XmlFormatWriter.related +  navProperty;
-		
-		this.links.add(OLinks.relatedEntity(rel, navProperty, href.toString()));
-		return this;
+       return link(navProperty,target.getEntitySet(),target.getEntityKey());
+	}
+	
+	@Override
+	public OCreate<T> link(String navProperty, OEntityKey targetKey) {
+		 return link(navProperty,null,targetKey);
+	}
+	
+	private OCreate<T> link(String navProperty, EdmEntitySet targetEntitySet, OEntityKey targetKey){
+		 EdmEntitySet entitySet = metadata.getEdmEntitySet(entitySetName);
+			EdmNavigationProperty navProp = entitySet.type.getNavigationProperty(navProperty);
+	        if (navProp == null) 
+	        	throw new IllegalArgumentException("unknown navigation property " + navProperty);
+	        
+			if (navProp.toRole.multiplicity == EdmMultiplicity.MANY) 
+				throw new IllegalArgumentException("many associations are not supported");
+			
+			StringBuilder href = new StringBuilder(serviceRootUri);
+			if (!serviceRootUri.endsWith("/")) 
+				href.append("/");
+			
+			if (targetEntitySet==null)
+				targetEntitySet = metadata.getEdmEntitySet(navProp.toRole.type);
+			
+			href.append(InternalUtil.getEntityRelId(targetEntitySet, targetKey));
+			
+			//	TODO get rid of XmlFormatWriter
+			//  We may need to rethink the rel property on a link
+			//	since it adds no new information. The title is
+			//	already there and rel has only a fixed prefix valid for
+			//	the atom format.
+			String rel = XmlFormatWriter.related +  navProperty;
+			
+			this.links.add(OLinks.relatedEntity(rel, navProperty, href.toString()));
+			return this;
 	}
 
 	@Override
@@ -154,11 +165,9 @@ public class OCreateImpl<T> implements OCreate<T> {
 			links.add(OLinks.relatedEntitiesInline(rel, navProperty, href,
 					Arrays.asList(entities)));
 		} else {
-			if (entities.length > 1) {
-				throw new IllegalArgumentException(
-						"only one entity is allowed for this navigation property "
-								+ navProperty);
-			}
+			if (entities.length > 1) 
+				throw new IllegalArgumentException("only one entity is allowed for this navigation property " + navProperty);
+			
 			links.add(OLinks.relatedEntityInline(rel, navProperty, href,
 					entities.length > 0 ? entities[0] : null));
 		}

@@ -93,4 +93,27 @@ public class CreateWithLinkTest extends AirlineJPAProducerTestBase {
 			.execute();
 		Assert.assertEquals("LH410", flightSchedule.getProperty("flightNo").getValue());		
 	}
+	
+	@Test
+	/**
+	 * Linking to entities with long key (use only the entity-key)
+	 */
+	public void linkToLongIdUsingKey() {
+		ODataConsumer consumer = ODataConsumer.create(endpointUri);
+		
+		OEntity flightSchedule = consumer.getEntities("FlightSchedule")
+			.filter("flightNo eq 'LH410'")
+			.execute()
+			.firstOrNull();
+
+		OEntity flight = consumer.createEntity("Flight")
+			.properties(OProperties.datetime("takeoffTime", new LocalDateTime(2011, 03, 28, 11, 38, 15)))
+			.link("flightSchedule", flightSchedule.getEntityKey())
+			.execute();
+		
+		flightSchedule = consumer.getEntity("Flight", flight.getEntityKey())
+			.nav("flightSchedule")
+			.execute();
+		Assert.assertEquals("LH410", flightSchedule.getProperty("flightNo").getValue());		
+	}
 }

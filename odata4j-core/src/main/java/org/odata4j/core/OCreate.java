@@ -44,6 +44,18 @@ public interface OCreate<T> {
 	 */
 	public abstract OCreate<T> link(String navProperty, OEntity target);
 	
+	/**
+	 * Define an explicit link to another related entity.
+	 * 
+	 * @param navProperty  the new entity's relationship navigation property
+	 * @param targetKey  the key of the link target entity
+	 * @return the create request builder
+	 * 
+	 * @see #addToRelation(OEntity, String)
+     * @see <a href="http://www.odata.org/developers/protocols/operations#CreatingnewEntries">http://www.odata.org/developers/protocols/operations#CreatingnewEntries</a>
+	 */
+	public abstract OCreate<T> link(String navProperty, OEntityKey targetKey);
+	
 	
 	/**
 	 * Create related entities inline as part of a single request.

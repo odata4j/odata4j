@@ -28,6 +28,7 @@ import org.odata4j.core.OLink;
 import org.odata4j.core.OProperty;
 import org.odata4j.core.ORelatedEntitiesLinkInline;
 import org.odata4j.core.ORelatedEntityLink;
+import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.producer.inmemory.BeanModel;
 import org.odata4j.stax2.XMLEventReader2;
 import org.odata4j.stax2.XMLFactoryProvider2;
@@ -272,9 +273,12 @@ public class InternalUtil {
 
 	}
 
-	public static String getEntityRelId(final OEntity oe) {
-		String key = oe.getEntityKey().toKeyString();
-		return oe.getEntitySet().name + key;
+	public static String getEntityRelId(OEntity oe) {
+		return getEntityRelId(oe.getEntitySet(), oe.getEntityKey());
+	}
+	public static String getEntityRelId(EdmEntitySet entitySet, OEntityKey entityKey) {
+		String key = entityKey.toKeyString();
+		return entitySet.name + key;
 	}
 
 	public static String toString(DateTime utc) {
