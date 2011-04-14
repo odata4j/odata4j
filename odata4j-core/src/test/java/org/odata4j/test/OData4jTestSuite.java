@@ -16,6 +16,7 @@ import org.odata4j.producer.jpa.northwind.test.QueryOptionTest50;
 import org.odata4j.producer.jpa.northwind.test.ResourcePathTest;
 import org.odata4j.producer.jpa.northwind.test.UpdateTest;
 import org.odata4j.producer.jpa.oneoff01.Oneoff01_Unidirectional;
+import org.odata4j.producer.jpa.oneoff02.Oneoff02_ManyToMany;
 import org.odata4j.test.core.OEntityKeyTest;
 import org.odata4j.test.expression.DateTimeFormatTest;
 import org.odata4j.test.expression.ExpressionTest;
@@ -55,7 +56,8 @@ import org.odata4j.test.issues.Issue16;
 	CreateWithLink2Test.class,
 	OEntityKeyTest.class,
 	CompositeKeyEntityTest.class,
-	Oneoff01_Unidirectional.class
+	Oneoff01_Unidirectional.class,
+	Oneoff02_ManyToMany.class
 })
 
 public class OData4jTestSuite {

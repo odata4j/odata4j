@@ -21,7 +21,6 @@ public class Oneoff01_Unidirectional extends OneoffTestBase {
 	@Test
     public void createOnetoManyUniDirectional() {
           final long now = System.currentTimeMillis();
-          
           ODataConsumer consumer = ODataConsumer.create(endpointUri);
          
           OEntity comment = consumer

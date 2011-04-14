@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -16,11 +17,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Query;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Attribute.PersistentAttributeType;
+import javax.persistence.metamodel.CollectionAttribute;
 import javax.persistence.metamodel.EmbeddableType;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.ManagedType;
@@ -31,6 +34,7 @@ import javax.persistence.metamodel.Type.PersistenceType;
 import org.core4j.Enumerable;
 import org.core4j.Func1;
 import org.core4j.Predicate1;
+
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
@@ -514,9 +518,10 @@ public class JPAProducer implements ODataProducer {
 				}
 
 				edmObj = metadata.findEdmProperty(prop);
-
+				
 				if (edmObj instanceof EdmNavigationProperty) {
 					EdmNavigationProperty propInfo = (EdmNavigationProperty) edmObj;
+					
 					context.jpaEntityType = findJPAEntityType(
 							context.em,
 							propInfo.toRole.type.name);
@@ -770,16 +775,20 @@ public class JPAProducer implements ODataProducer {
 		return jpaEntity;
 	}
 
-	private static Object newInstance(Class<?> javaType){
+	@SuppressWarnings("unchecked")
+	private static <T> T newInstance(Class<?> javaType){
 		try {
+			if (javaType.equals(Collection.class))
+				javaType = HashSet.class;
 			Constructor<?> ctor = javaType.getDeclaredConstructor();
 			ctor.setAccessible(true);
-			return ctor.newInstance();
+			return (T)ctor.newInstance();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void applyOLinks(EntityManager em, EntityType<?> jpaEntityType, List<OLink> links, Object jpaEntity) {
 		try {
 			for (final OLink link : links) {
@@ -793,17 +802,51 @@ public class JPAProducer implements ODataProducer {
 					EntityType<?> collJpaEntityType = (EntityType<?>)att.getElementType();
 
 					OneToMany oneToMany = member.getAnnotation(OneToMany.class);
-					boolean hasBackRef = oneToMany != null
+					boolean hasSingularBackRef = oneToMany != null
 						&& oneToMany.mappedBy() != null
 						&& !oneToMany.mappedBy().isEmpty();
-
+					
+					ManyToMany manyToMany = member.getAnnotation(ManyToMany.class);
+					
 					Collection<Object> coll = member.get();
+					if (coll==null){
+						coll = (Collection<Object>)newInstance(member.getJavaType());
+						member.set(coll);
+					}
 					for (OEntity oentity : ((ORelatedEntitiesLinkInline)link).getRelatedEntities()) {
 						Object collJpaEntity = createNewJPAEntity(em, collJpaEntityType, oentity, true);
-						if (hasBackRef) {
+						if (hasSingularBackRef) {
 							JPAMember backRef = JPAMember.create(collJpaEntityType.getAttribute(oneToMany.mappedBy()),collJpaEntity);
 							backRef.set(jpaEntity);
 						}
+						if (manyToMany!=null) {
+							Attribute<?,?> other = null;
+							if (manyToMany.mappedBy()!=null&&!manyToMany.mappedBy().isEmpty())
+								other = collJpaEntityType.getAttribute(manyToMany.mappedBy());
+							else {
+								for(Attribute<?,?> att2 : collJpaEntityType.getAttributes()){
+									if (att2.isCollection() && JPAMember.create(att2, null).getAnnotation(ManyToMany.class)!=null){
+										CollectionAttribute<?, ?> ca = (CollectionAttribute<?, ?>)att2;
+										if (ca.getElementType().equals(jpaEntityType)){
+											other = ca;
+											break;
+										}
+									}
+								}
+							}
+							
+							if (other==null)
+								throw new RuntimeException("Could not find other side of many-to-many relationship");
+							
+							JPAMember backRef = JPAMember.create(other,collJpaEntity);
+							Collection<Object> coll2 = backRef.get();
+							if (coll2==null){
+								coll2 = newInstance(backRef.getJavaType());
+								backRef.set(coll2);
+							}
+							coll2.add(jpaEntity);
+						}
+						
 						em.persist(collJpaEntity);
 						coll.add(collJpaEntity);
 					}

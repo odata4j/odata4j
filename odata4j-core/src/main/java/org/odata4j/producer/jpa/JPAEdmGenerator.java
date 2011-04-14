@@ -4,7 +4,6 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
-import java.math.BigDecimal;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -17,6 +16,7 @@ import java.util.logging.Logger;
 
 import javax.persistence.Column;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.ManyToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.metamodel.Attribute;
@@ -58,34 +58,6 @@ public class JPAEdmGenerator {
 
         Class<?> javaType = sa.getType().getJavaType();
 
-		if (javaType.equals(String.class) || javaType.equals(Character.class)
-				|| "char".equals(javaType.toString())) {
-			return EdmType.STRING;
-		}
-        if (javaType.equals(BigDecimal.class)) {
-            return EdmType.DECIMAL;
-        }
-        if (javaType.equals(new byte[0].getClass())) {
-            return EdmType.BINARY;
-        }
-        if (javaType.equals(Short.class) || javaType.equals(Short.TYPE)) {
-            return EdmType.INT16;
-        }
-        if (javaType.equals(Integer.class) || javaType.equals(Integer.TYPE)) {
-            return EdmType.INT32;
-        }
-        if (javaType.equals(Long.class) || javaType.equals(Long.TYPE)) {
-            return EdmType.INT64;
-        }
-        if (javaType.equals(Boolean.class) || javaType.equals(Boolean.TYPE)) {
-            return EdmType.BOOLEAN;
-        }
-        if (javaType.equals(Double.class) || javaType.equals(Double.TYPE)) {
-            return EdmType.DOUBLE;
-        }
-        if (javaType.equals(Float.class) || javaType.equals(Float.TYPE)) {
-            return EdmType.SINGLE;
-        }
         if (javaType.equals(Date.class) || javaType.equals(Calendar.class)) {
             TemporalType temporal = getTemporalType(sa);
             if (temporal == null) {
@@ -109,10 +81,10 @@ public class JPAEdmGenerator {
         if (javaType.equals(Timestamp.class)) {
             return EdmType.DATETIME;
         }
-        if (javaType.equals(Byte.TYPE)) {
-            return EdmType.BYTE;
-        }
-
+        
+        EdmType rt = EdmType.forJavaType(javaType);
+        if (rt!=null)
+        	return rt;
 
         throw new UnsupportedOperationException(javaType.toString());
     }
@@ -241,7 +213,7 @@ public class JPAEdmGenerator {
                         EdmEntityType toEntityType = eetsByName.get(getEntitySetName(singularAttEntityType));
                         
                         // add EdmAssociation, EdmAssociationSet
-                        EdmAssociation association = defineManyToOne(associations,fromEntityType,toEntityType,modelNamespace,eesByName,associationSets);
+                        EdmAssociation association = defineManyTo(EdmMultiplicity.ZERO_TO_ONE,associations,fromEntityType,toEntityType,modelNamespace,eesByName,associationSets);
                        
                         // add EdmNavigationProperty
                         EdmNavigationProperty navigationProperty = new EdmNavigationProperty(
@@ -264,7 +236,9 @@ public class JPAEdmGenerator {
 
                 	// one-to-many
                     PluralAttribute<?, ?, ?> pluralAtt = (PluralAttribute<?, ?, ?>) att;
-
+                    JPAMember m = JPAMember.create(pluralAtt, null);
+                    ManyToMany manyToMany = m.getAnnotation(ManyToMany.class);
+                    
                     EntityType<?> pluralAttEntityType = (EntityType<?>) pluralAtt.getElementType();
 
                     final EdmEntityType fromEntityType = eetsByName.get(getEntitySetName(et));
@@ -277,20 +251,33 @@ public class JPAEdmGenerator {
                             }
                         });
                         
+                        EdmAssociationEnd fromRole, toRole;
+                        
                         if (association == null){
-         
                         	// no EdmAssociation, EdmAssociationSet defined, backfill!
                         	
                         	// add EdmAssociation, EdmAssociationSet
-                            association = defineManyToOne(associations,toEntityType,fromEntityType,modelNamespace,eesByName,associationSets);
+                        	if (manyToMany!=null) {
+                        		association = defineManyTo(EdmMultiplicity.MANY, associations,fromEntityType,toEntityType,modelNamespace,eesByName,associationSets);
+                        		fromRole = association.end1;
+                            	toRole = association.end2;
+                        	}else {
+                        		association = defineManyTo(EdmMultiplicity.ZERO_TO_ONE, associations,toEntityType,fromEntityType,modelNamespace,eesByName,associationSets);
+                        		fromRole = association.end2;
+                            	toRole = association.end1;
+                        	}
+                        	
+                        } else {
+                        	fromRole = association.end2;
+                        	toRole = association.end1;
                         }
                         
                     	// add EdmNavigationProperty
                         EdmNavigationProperty navigationProperty = new EdmNavigationProperty(
                         		pluralAtt.getName(), 
                         		association, 
-                        		association.end2, 
-                        		association.end1);
+                        		fromRole, 
+                        		toRole);
                         fromEntityType.navigationProperties.add(navigationProperty);
                        
                     } catch (Exception e) {
@@ -311,10 +298,9 @@ public class JPAEdmGenerator {
         return services;
     }
 
-    private static EdmAssociation defineManyToOne(List<EdmAssociation> associations, EdmEntityType fromEntityType, EdmEntityType toEntityType
+    private static EdmAssociation defineManyTo(EdmMultiplicity toMult, List<EdmAssociation> associations, EdmEntityType fromEntityType, EdmEntityType toEntityType
     		, String modelNamespace, Map<String, EdmEntitySet> eesByName, List<EdmAssociationSet> associationSets){
     	 EdmMultiplicity fromMult = EdmMultiplicity.MANY;
-         EdmMultiplicity toMult = EdmMultiplicity.ZERO_TO_ONE;
 
          String assocName = getAssociationName(associations, fromEntityType, toEntityType);
 
