@@ -1,8 +1,10 @@
 package org.odata4j.examples.producer;
 
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import org.odata4j.producer.jpa.JPAProducer;
+import org.odata4j.producer.jpa.northwind.test.NorthwindTestUtils;
 import org.odata4j.producer.resources.ODataProducerProvider;
 
 public class JPAProducerExample {
@@ -17,8 +19,11 @@ public class JPAProducerExample {
         // create a JPAProducer by giving it a EntityManagerFactory
         String persistenceUnitName = "NorthwindService";
         String namespace = "Northwind";
-        JPAProducer producer = new JPAProducer(Persistence.createEntityManagerFactory(persistenceUnitName), namespace,50);
-
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceUnitName);
+        
+        JPAProducer producer = new JPAProducer(emf, namespace,50);
+        NorthwindTestUtils.fillDatabase(emf);
+        
         // register the producer as the static instance, then launch the http server
         ODataProducerProvider.setInstance(producer);
         ProducerUtil.hostODataServer(endpointUri);

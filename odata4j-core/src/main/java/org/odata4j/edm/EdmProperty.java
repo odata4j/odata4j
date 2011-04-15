@@ -1,8 +1,7 @@
 package org.odata4j.edm;
 
-public class EdmProperty {
+public class EdmProperty extends EdmPropertyBase {
 
-    public final String name;
     public final EdmType type;
     public final boolean nullable;
     public final Integer maxLength;
@@ -23,7 +22,7 @@ public class EdmProperty {
     public EdmProperty(String name, EdmType type, boolean nullable, Integer maxLength, Boolean unicode, Boolean fixedLength,
             String storeGeneratedPattern,
             String fcTargetPath,String fcContentKind,String fcKeepInContent, String fcEpmContentKind, String fcEpmKeepInContent) {
-        this.name = name;
+        super(name);
         this.type = type;
         this.nullable = nullable;
         this.maxLength = maxLength;

@@ -7,6 +7,7 @@ import org.odata4j.edm.EdmComplexType;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmEntityType;
+import org.odata4j.edm.EdmPropertyBase;
 import org.odata4j.edm.EdmSchema;
 
 public abstract class EdmDataServicesDecorator extends EdmDataServices {
@@ -42,7 +43,7 @@ public abstract class EdmDataServicesDecorator extends EdmDataServices {
 		return getDelegate().findEdmComplexType(complexTypeFQName);
 	}
 	@Override
-	public Object findEdmProperty(String propName) {
+	public EdmPropertyBase findEdmProperty(String propName) {
 		return getDelegate().findEdmProperty(propName);
 	}
 	@Override

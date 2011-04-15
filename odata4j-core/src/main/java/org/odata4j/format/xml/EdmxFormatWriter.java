@@ -29,16 +29,19 @@ public class EdmxFormatWriter extends XmlFormatWriter {
         writer.startElement(new QName2(edmx, "Edmx", "edmx"));
         writer.writeAttribute("Version", "1.0");
         writer.writeNamespace("edmx", edmx);
-
+        writer.writeNamespace("d", d);
+        writer.writeNamespace("m", m);
+        
         writer.startElement(new QName2(edmx, "DataServices", "edmx"));
-
+        writer.writeAttribute(new QName2(m,"DataServiceVersion","m"), "1.0");
+       
+        
         // Schema
         for(EdmSchema schema : services.getSchemas()) {
 
             writer.startElement(new QName2("Schema"), edm);
             writer.writeAttribute("Namespace", schema.namespace);
-            writer.writeNamespace("d", d);
-            writer.writeNamespace("m", m);
+          
 
             // ComplexType
             for(EdmComplexType ect : schema.complexTypes) {

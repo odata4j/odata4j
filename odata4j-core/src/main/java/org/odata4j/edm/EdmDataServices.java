@@ -75,7 +75,7 @@ public class EdmDataServices {
         return null;
     }
 
-    public Object findEdmProperty(String propName) {
+    public EdmPropertyBase findEdmProperty(String propName) {
         for (EdmSchema schema : this.schemas) {
             for (EdmEntityContainer eec : schema.entityContainers) {
                 for (EdmEntitySet ees : eec.entitySets) {

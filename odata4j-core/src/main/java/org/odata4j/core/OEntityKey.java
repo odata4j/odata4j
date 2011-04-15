@@ -1,10 +1,13 @@
 package org.odata4j.core;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.core4j.Enumerable;
 import org.core4j.Func1;
@@ -167,12 +170,18 @@ public class OEntityKey {
 	@SuppressWarnings("unchecked")
 	public Set<NamedValue<?>> asComplexValue() {
 		assertComplex();
-		return (Set<NamedValue<?>>) (Object) Enumerable.create(values).toSet();
+		return (Set<NamedValue<?>>)(Object)toSortedSet( Enumerable.create(values).cast(NamedValue.class),OComparators.namedValueByNameRaw());
 	}
 	
 	public Set<OProperty<?>> asComplexProperties() {
 		assertComplex();
-		return Enumerable.create(values).cast(NamedValue.class).select(OFuncs.namedValueToPropertyRaw()).toSet();
+		return toSortedSet(Enumerable.create(values).cast(NamedValue.class).select(OFuncs.namedValueToPropertyRaw()),OComparators.propertyByName());
+	}
+	
+	private static <T> SortedSet<T> toSortedSet(Enumerable<T> enumerable, Comparator<T> comparator){
+		TreeSet<T> rt = new TreeSet<T>(comparator);
+		rt.addAll(enumerable.toSet());
+		return rt;
 	}
 
 	private void assertComplex(){

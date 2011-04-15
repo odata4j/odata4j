@@ -62,8 +62,20 @@ public class JPQLGenerator {
 	}
 	
 	
-	private String bceToJpql(String format, BinaryCommonExpression bce){
-		return String.format(format,toJpql(bce.getLHS()),toJpql(bce.getRHS()));
+	public static String toJpqlLiteral(Object value){
+		if (value instanceof String) 
+			return "'" + value + "'";
+		if (value instanceof Long) 
+			return value + "L";
+		if (value instanceof LocalTime) 
+			return "'" + new java.sql.Time(new LocalDateTime(
+						((LocalTime) value).getMillisOfDay(), DateTimeZone.UTC)
+						.toDateTime().getMillis()).toString() + "'";
+		if (value instanceof LocalDateTime) {
+			java.sql.Timestamp d = new Timestamp(((LocalDateTime) value).toDateTime().getMillis());
+			return "'" + d + "'";
+		}
+		return value.toString();
 	}
 	
 	public String toJpql(CommonExpression expression) {
@@ -86,20 +98,7 @@ public class JPQLGenerator {
 		
 		if (expression instanceof LiteralExpression) {
 			Object lValue = org.odata4j.expression.Expression.literalValue((LiteralExpression) expression);
-
-			if (lValue instanceof String) 
-				return "'" + lValue + "'";
-			if (lValue instanceof Long) 
-				return lValue + "L";
-			if (lValue instanceof LocalTime) 
-				return "'" + new java.sql.Time(new LocalDateTime(
-							((LocalTime) lValue).getMillisOfDay(), DateTimeZone.UTC)
-							.toDateTime().getMillis()).toString() + "'";
-			if (lValue instanceof LocalDateTime) {
-				java.sql.Timestamp d = new Timestamp(((LocalDateTime) lValue).toDateTime().getMillis());
-				return "'" + d + "'";
-			}
-			return lValue.toString();
+			return toJpqlLiteral(lValue);
 		}
 
 		if (expression instanceof AddExpression) 
@@ -137,7 +136,7 @@ public class JPQLGenerator {
 		if (expression instanceof SubstringMethodCallExpression) {
 			SubstringMethodCallExpression e = (SubstringMethodCallExpression) expression;
 
-			Object length = toJpql(e.getLength());
+			String length = toJpql(e.getLength());
 			length = length != null ? ", " + length : "";
 
 			return String.format(
@@ -217,8 +216,7 @@ public class JPQLGenerator {
 			return toJpql(((BoolParenExpression) expression).getExpression());
 		}
 
-		throw new UnsupportedOperationException(
-				"unsupported expression " + expression);
+		throw new UnsupportedOperationException("unsupported expression " + expression);
 	}
 
 	public String toJpql(BoolCommonExpression expression) {
@@ -307,7 +305,7 @@ public class JPQLGenerator {
 		if (expression instanceof IsofExpression) {
 			IsofExpression e = (IsofExpression) expression;
 
-			Object clazz = toJpql(e.getExpression());
+			String clazz = toJpql(e.getExpression());
 			if (clazz == null) {
 				clazz = tableAlias;
 			}
@@ -326,10 +324,13 @@ public class JPQLGenerator {
 
 		if (expression instanceof BoolParenExpression) {
 			BoolParenExpression e = (BoolParenExpression) expression;
-			return "(" + toJpql((BoolCommonExpression) e.getExpression())
-					+ ")";
+			return "(" + toJpql((BoolCommonExpression) e.getExpression()) + ")";
 		}
 
 		throw new UnsupportedOperationException("unsupported expression " + expression);
+	}
+	
+	private String bceToJpql(String format, BinaryCommonExpression bce){
+		return String.format(format,toJpql(bce.getLHS()),toJpql(bce.getRHS()));
 	}
 }
