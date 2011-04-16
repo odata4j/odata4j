@@ -89,6 +89,18 @@ public class JsonWriter {
             throw new RuntimeException(e);
         }
     }
+    public void writeNumber(float value) {
+        try {
+        	String fvalue = Float.toString(value);
+			while (fvalue.contains(".")&&fvalue.endsWith("0"))
+				fvalue = fvalue.substring(0,fvalue.length()-1);
+			if (fvalue.endsWith("."))
+				fvalue = fvalue.substring(0,fvalue.length()-1);
+			 writer.write(fvalue);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
     public void writeBoolean(boolean value) {
         try {
             writer.write(value?"true":"false");

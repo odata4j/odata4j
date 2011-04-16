@@ -222,7 +222,7 @@ public class JPAProducer implements ODataProducer {
 					context.em,
 					context.ees.type.name);
 
-			context.keyPropertyName = context.ees.type.keys.get(0);
+			context.keyPropertyName = JPAEdmGenerator.getId(context.jpaEntityType).getName();
 			context.typeSafeEntityKey = typeSafeEntityKey(
 					context.em,
 					context.jpaEntityType,
@@ -601,8 +601,7 @@ public class JPAProducer implements ODataProducer {
 					if (propSplit.length > 1) {
 						OEntityKey entityKey = OEntityKey.parse("(" + propSplit[1]);
 							
-						context.keyPropertyName = JPAEdmGenerator
-							.getId(context.jpaEntityType).getName();
+						context.keyPropertyName = JPAEdmGenerator.getId(context.jpaEntityType).getName();
 
 						context.typeSafeEntityKey = typeSafeEntityKey(
 								em,
@@ -724,20 +723,47 @@ public class JPAProducer implements ODataProducer {
 	        }
         }
        
+        
+    	//  k > kvalue
         OEntityKey entityKey = OEntityKey.parse(skipToken.substring(start)); 
+        String primaryKeyName = jpqlGen.getPrimaryKeyName();
     	if (entityKey.getKeyType() == KeyType.SINGLE){
     	
     		LiteralExpression entityKeyValue = Expression.literal(entityKey.asSingleValue());
-    		//  k > keyvalue
+    		
     		BoolCommonExpression keyPredicate = Expression.gt(
-                     Expression.simpleProperty(jpqlGen.getPrimaryKeyName()),
+                     Expression.simpleProperty(primaryKeyName),
                      entityKeyValue);
     		
     		predicates.add(keyPredicate);
     	} else {
-    		// complex key-based skiptoken
-        	// TODO ???
-    		throw new UnsupportedOperationException("Complex skip tokens not supported");
+    		// complex key predicate
+    		
+    		// k > keyvalue actually means (k.a > kvalue.a) or (k.a = kvalue.a and k.b > kvalue.b) ...
+    		List<OProperty<?>> keyProperties = new ArrayList<OProperty<?>>(entityKey.asComplexProperties());
+    		BoolCommonExpression keyPredicate = null;
+    		for(int i=0;i<keyProperties.size();i++){
+    			OProperty<?> keyProperty = keyProperties.get(i);
+    			// k.x > kvalue.x
+    			BoolCommonExpression subPredicate = Expression.gt(
+    					Expression.simpleProperty(primaryKeyName + "." + keyProperty.getName()),
+    					Expression.literal(keyProperty.getValue()));
+    			
+    			for(int j=0;j<i;j++){
+    				OProperty<?> earlierKeyProperty = keyProperties.get(j);
+    				// k.x = kvalue.x
+    				BoolCommonExpression eq = Expression.eq(
+        					Expression.simpleProperty(primaryKeyName + "." + earlierKeyProperty.getName()),
+        					Expression.literal(earlierKeyProperty.getValue()));
+    				subPredicate = Expression.and(eq, subPredicate);
+    			}
+    			if (keyPredicate==null)
+    				keyPredicate = subPredicate;
+    			else
+    				keyPredicate = Expression.or(keyPredicate, subPredicate);
+    		}
+    		
+    		predicates.add(keyPredicate);
     	}
     	
         // PASS2  (a > avalue), (a = avalue and b > bvalue), ... (a = avalue and b = bvalue ... and k > kvalue)

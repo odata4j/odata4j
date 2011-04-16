@@ -88,7 +88,14 @@ public class QueryOptionTest extends JPAProducerTestBase {
 		String uri = "Customers?$top=5&$skiptoken='ANATR'";
 		NorthwindTestUtils.testJSONResult(endpointUri, uri, inp);
 	}
-
+	
+	@Test
+	public void SystemQueryOptionSkipTokenComplexKeyTest() {
+		String inp = "SystemQueryOptionSkipTokenComplexKeyTest";
+		String uri = "Order_Details?$top=5&$skiptoken=OrderID=10248,ProductID=11";
+		NorthwindTestUtils.testJSONResult(endpointUri, uri, inp);
+	}
+	
 	@Test
 	public void SystemQueryOptionSkipTokenWithOrderByTest() {
 		String inp = "SystemQueryOptionSkipTokenWithOrderByTest";

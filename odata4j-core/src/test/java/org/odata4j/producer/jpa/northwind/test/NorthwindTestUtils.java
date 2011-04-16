@@ -166,6 +166,9 @@ public class NorthwindTestUtils {
 				"NorthwindModel.Customers",
 				"NorthwindModel.Customer");
 		result = result.replace(
+				"NorthwindModel.Order_Details",
+				"NorthwindModel.Order_Detail");
+		result = result.replace(
 				"http://localhost:8810/northwind",
 				"http://services.odata.org/northwind");
 

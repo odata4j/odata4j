@@ -122,7 +122,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
 		} else if (prop.getType().equals(EdmType.INT64)) {
 			jw.writeString(pvalue.toString());
 		} else if (prop.getType().equals(EdmType.SINGLE)) {
-			jw.writeString(pvalue.toString() + "f");
+			jw.writeNumber((Float) pvalue);
 		} else if (prop.getType().equals(EdmType.TIME)) {
 			LocalTime ldt = (LocalTime) pvalue;
 			jw.writeString("time'" + ldt + "'");
