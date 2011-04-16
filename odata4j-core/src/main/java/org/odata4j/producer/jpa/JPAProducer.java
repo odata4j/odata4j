@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -669,76 +670,93 @@ public class JPAProducer implements ODataProducer {
 
 	private static String createSkipToken(Context context, OEntity lastEntity) {
 		
-		// skip token = <orderby1,orderby2,>keystring
+		// skip token = <orderbyvalue1,orderbyvalue2,>keystringwithoutparens
 		
-		// TODO revisit
-//		List<String> values = new LinkedList<String>();
-//		if (context.query.orderBy != null) {
-//			for (OrderByExpression ord : context.query.orderBy) {
-//				String field = ((EntitySimpleProperty) ord.getExpression())
-//								.getPropertyName();
-//				Object value = lastEntity.getProperty(field).getValue();
-//
-//				if (value instanceof String) {
-//					value = "'" + value + "'";
-//				}
-//
-//				values.add(value.toString());
-//			}
-//		}
+		List<String> values = new LinkedList<String>();
+		if (context.query.orderBy != null) {
+			for (OrderByExpression ord : context.query.orderBy) {
+				String orderByPropName = ((EntitySimpleProperty) ord.getExpression()).getPropertyName();
+				Object orderByPropValue = lastEntity.getProperty(orderByPropName).getValue();
+				String valueFilterString = Expression.asFilterString(Expression.literal(orderByPropValue));
+				values.add(valueFilterString);
+			}
+		}
 
-		return lastEntity.getEntityKey().toKeyStringWithoutParentheses();
+		values.add( lastEntity.getEntityKey().toKeyStringWithoutParentheses());
+		return Enumerable.create(values).join(",");
 	}
 	
     private static BoolCommonExpression parseSkipToken(JPQLGenerator jpqlGen, List<OrderByExpression> orderByList, String skipToken) {
         if (skipToken == null) 
             return null;
-
-        BoolCommonExpression result = null;
-
-        if (orderByList == null) {
-        	OEntityKey skipTokenEntityKey = OEntityKey.parse(skipToken);
-        	if (skipTokenEntityKey.getKeyType() == KeyType.SINGLE){
-        		LiteralExpression skipTokenEntityKeyLiteral = Expression.literal(skipTokenEntityKey.asSingleValue());
-        		result = Expression.gt(
-                         Expression.simpleProperty(jpqlGen.getPrimaryKeyName()),
-                         skipTokenEntityKeyLiteral);
-        	} else
-        		throw new UnsupportedOperationException("Complex skip tokens not supported");
-           
-        } else {
-        	// TODO revisit
-        	throw new UnsupportedOperationException();
-//            String[] skipTokens = skipToken.split(",");
-//            for (int i = 0; i < orderByList.size(); i++) {
-//                OrderByExpression exp = orderByList.get(i);
-//                StringLiteral value = Expression.string(skipTokens[i]);
-//
-//                BoolCommonExpression ordExp = null;
-//                if (exp.isAscending()) {
-//                    ordExp = Expression.ge(exp.getExpression(), value);
-//                } else {
-//                    ordExp = Expression.le(exp.getExpression(), value);
-//                }
-//
-//                if (result == null) {
-//                    result = ordExp;
-//                } else {
-//                    result = Expression.and(
-//                            Expression.boolParen(
-//                            Expression.or(ordExp, result)),
-//                            result);
-//                }
-//            }
-//
-//            result = Expression.and(
-//                    Expression.ne(
-//                    Expression.simpleProperty(jpqlGen.getPrimaryKeyName()),
-//                    Expression.string(skipTokens[skipTokens.length - 1])),
-//                    result);
+        
+        // kvalue
+        // k > kvalue
+        
+        // avalue, kvalue
+        // (a > avalue) or (a = avalue and k > kvalue)
+        
+        // avalue, bvalue, kvalue
+        // (a > avalue) or (a = avalue and b > bvalue) or (a = avalue and b = bvalue and k > kvalue)
+        
+        // etc.
+        
+        List<BoolCommonExpression> predicates = new ArrayList<BoolCommonExpression>();
+        List<LiteralExpression> orderByValues = new ArrayList<LiteralExpression>();
+        
+        // PASS1  (a > avalue), (b > bvalue), ... (k > kvalue)
+        int start=0;
+        int end=0;
+        if (orderByList!=null) {
+	        for(int i=0;i<orderByList.size();i++){
+	        	OrderByExpression orderBy = orderByList.get(i);
+	        	end = skipToken.indexOf(',',start);
+	        	String orderByValueString = skipToken.substring(start,end);
+	        	LiteralExpression orderByValue = (LiteralExpression)Expression.parse(orderByValueString);
+	        	orderByValues.add(orderByValue);
+	        	// a > avalue
+	        	BoolCommonExpression ordExp = orderBy.isAscending()
+	        			? Expression.gt(orderBy.getExpression(), orderByValue)
+	        			: Expression.lt(orderBy.getExpression(), orderByValue);
+	        			
+	        	predicates.add(ordExp);
+	        	start = end+1;
+	        }
         }
-
-        return result;
+       
+        OEntityKey entityKey = OEntityKey.parse(skipToken.substring(start)); 
+    	if (entityKey.getKeyType() == KeyType.SINGLE){
+    	
+    		LiteralExpression entityKeyValue = Expression.literal(entityKey.asSingleValue());
+    		//  k > keyvalue
+    		BoolCommonExpression keyPredicate = Expression.gt(
+                     Expression.simpleProperty(jpqlGen.getPrimaryKeyName()),
+                     entityKeyValue);
+    		
+    		predicates.add(keyPredicate);
+    	} else {
+    		// complex key-based skiptoken
+        	// TODO ???
+    		throw new UnsupportedOperationException("Complex skip tokens not supported");
+    	}
+    	
+        // PASS2  (a > avalue), (a = avalue and b > bvalue), ... (a = avalue and b = bvalue ... and k > kvalue)
+    	for(int i=1;i<predicates.size();i++){
+    		BoolCommonExpression predicate = predicates.get(i);
+    		for(int j=0;j<i;j++){
+    			OrderByExpression orderBy = orderByList.get(j);
+    			BoolCommonExpression eq = Expression.eq(orderBy.getExpression(), orderByValues.get(j));
+    			predicate = Expression.and(eq, predicate);
+    		}
+    		predicates.set(i,predicate);
+    	}
+    	
+    	// return all predicates OR'ed together
+    	BoolCommonExpression rt = predicates.get(0);
+    	for(int i=1;i<predicates.size();i++)
+    		rt = Expression.or(rt, predicates.get(i));
+    	return rt;
+    	
     }
 
 
