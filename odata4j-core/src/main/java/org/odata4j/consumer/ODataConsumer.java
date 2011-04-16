@@ -6,12 +6,12 @@ import java.util.Map;
 import org.core4j.Enumerable;
 import org.core4j.Func1;
 import org.odata4j.core.OClientBehavior;
-import org.odata4j.core.OCreate;
+import org.odata4j.core.OCreateRequest;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
-import org.odata4j.core.OEntityRef;
-import org.odata4j.core.OModify;
-import org.odata4j.core.OQuery;
+import org.odata4j.core.OEntityRequest;
+import org.odata4j.core.OModifyRequest;
+import org.odata4j.core.OQueryRequest;
 import org.odata4j.core.ORelatedEntitiesLink;
 import org.odata4j.core.ORelatedEntityLink;
 import org.odata4j.edm.EdmDataServices;
@@ -126,76 +126,76 @@ public class ODataConsumer {
     
     
     
-    public OQuery<OEntity> getEntities(ORelatedEntitiesLink link) {
+    public OQueryRequest<OEntity> getEntities(ORelatedEntitiesLink link) {
         ParsedHref parsed = ParsedHref.parse(link.getHref());
         return getEntities(parsed.entitySetName).nav(parsed.entityKey, parsed.navProperty);
     }
     
-    public OQuery<OEntity> getEntities(String entitySetName) {
+    public OQueryRequest<OEntity> getEntities(String entitySetName) {
         return getEntities(OEntity.class,entitySetName);
     }
     
-	public <T> OQuery<T> getEntities(Class<T> entityType, String entitySetName) {
+	public <T> OQueryRequest<T> getEntities(Class<T> entityType, String entitySetName) {
         FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
-		return new OQueryImpl<T>(client, entityType, serviceRootUri, getMetadata(), entitySetName, mapping);
+		return new OQueryRequestImpl<T>(client, entityType, serviceRootUri, getMetadata(), entitySetName, mapping);
     }
 
 	
 	
-    public OEntityRef<OEntity> getEntity(ORelatedEntityLink link) {
+    public OEntityRequest<OEntity> getEntity(ORelatedEntityLink link) {
         ParsedHref parsed = ParsedHref.parse(link.getHref());
         return getEntity(parsed.entitySetName,parsed.entityKey).nav(parsed.navProperty) ;
     }
     
-    public OEntityRef<OEntity> getEntity(String entitySetName, Object keyValue) {
+    public OEntityRequest<OEntity> getEntity(String entitySetName, Object keyValue) {
     	return getEntity(entitySetName,OEntityKey.create(keyValue));
     }
     
-    public OEntityRef<OEntity> getEntity(String entitySetName, OEntityKey key) {
+    public OEntityRequest<OEntity> getEntity(String entitySetName, OEntityKey key) {
         return getEntity(OEntity.class,entitySetName,key);
     }
     
-    public <T> OEntityRef<T> getEntity(Class<T> entityType, String entitySetName, Object keyValue) {
+    public <T> OEntityRequest<T> getEntity(Class<T> entityType, String entitySetName, Object keyValue) {
     	return getEntity(entityType,entitySetName,OEntityKey.create(keyValue));
     }
-    public <T> OEntityRef<T> getEntity(Class<T> entityType, String entitySetName, OEntityKey key) {
+    public <T> OEntityRequest<T> getEntity(Class<T> entityType, String entitySetName, OEntityKey key) {
         FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
-		return new OEntityRefImpl<T>(false,  client,
+		return new OEntityRequestImpl<T>(false,  client,
 				entityType, serviceRootUri, getMetadata(),
 				entitySetName, OEntityKey.create(key), mapping);
     }
 
-	public OCreate<OEntity> createEntity(String entitySetName) {
+	public OCreateRequest<OEntity> createEntity(String entitySetName) {
 		FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
-		return new OCreateImpl<OEntity>(client, serviceRootUri, getMetadata(),
+		return new OCreateRequestImpl<OEntity>(client, serviceRootUri, getMetadata(),
 				entitySetName, mapping);
 	}
 
-	public OModify<OEntity> updateEntity(OEntity entity) {
-        return new OModifyImpl<OEntity>(entity, client, serviceRootUri, getMetadata(),
+	public OModifyRequest<OEntity> updateEntity(OEntity entity) {
+        return new OModifyRequestImpl<OEntity>(entity, client, serviceRootUri, getMetadata(),
         		entity.getEntitySet().name,entity.getEntityKey());
     }
 
-	public OModify<OEntity> mergeEntity(String entitySetName, Object keyValue) {
+	public OModifyRequest<OEntity> mergeEntity(String entitySetName, Object keyValue) {
 		return mergeEntity(entitySetName, OEntityKey.create(keyValue));
 	}
 
-	public OModify<OEntity> mergeEntity(String entitySetName, OEntityKey key) {
-		return new OModifyImpl<OEntity>(null, client, serviceRootUri,
+	public OModifyRequest<OEntity> mergeEntity(String entitySetName, OEntityKey key) {
+		return new OModifyRequestImpl<OEntity>(null, client, serviceRootUri,
 				getMetadata(), entitySetName, key);
 	}
 
-	public OEntityRef<Void> deleteEntity(OEntity entity) {
+	public OEntityRequest<Void> deleteEntity(OEntity entity) {
 		return deleteEntity(entity.getEntitySet().name,entity.getEntityKey());
 	}
 	
-    public OEntityRef<Void> deleteEntity(String entitySetName, Object keyValue) {
+    public OEntityRequest<Void> deleteEntity(String entitySetName, Object keyValue) {
     	return deleteEntity(entitySetName,OEntityKey.create(keyValue));
     }
     
-	public OEntityRef<Void> deleteEntity(String entitySetName, OEntityKey key) {
+	public OEntityRequest<Void> deleteEntity(String entitySetName, OEntityKey key) {
         FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
-		return new OEntityRefImpl<Void>(true, client,
+		return new OEntityRequestImpl<Void>(true, client,
 				null, serviceRootUri, getMetadata(), entitySetName, key,
 				mapping);
     }

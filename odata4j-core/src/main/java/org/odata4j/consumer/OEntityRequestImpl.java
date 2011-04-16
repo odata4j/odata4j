@@ -6,7 +6,7 @@ import java.util.List;
 import org.core4j.Enumerable;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OEntityKey;
-import org.odata4j.core.OEntityRef;
+import org.odata4j.core.OEntityRequest;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmNavigationProperty;
@@ -21,7 +21,7 @@ import org.odata4j.internal.InternalUtil;
 
 import com.sun.jersey.api.client.ClientResponse;
 
-public class OEntityRefImpl<T> implements OEntityRef<T> {
+public class OEntityRequestImpl<T> implements OEntityRequest<T> {
 
     private final boolean isDelete;
     private final ODataClient client;
@@ -32,7 +32,7 @@ public class OEntityRefImpl<T> implements OEntityRef<T> {
 
     private final FeedCustomizationMapping fcMapping;
    
-    public OEntityRefImpl(boolean isDelete, ODataClient client, Class<T> entityType, String serviceRootUri, EdmDataServices metadata, String entitySetName, OEntityKey key, FeedCustomizationMapping fcMapping) {
+    public OEntityRequestImpl(boolean isDelete, ODataClient client, Class<T> entityType, String serviceRootUri, EdmDataServices metadata, String entitySetName, OEntityKey key, FeedCustomizationMapping fcMapping) {
         this.isDelete = isDelete;
         this.client = client;
         this.entityType = entityType;
@@ -45,13 +45,13 @@ public class OEntityRefImpl<T> implements OEntityRef<T> {
     }
 
     @Override
-    public OEntityRef<T> nav(String navProperty, OEntityKey key) {
+    public OEntityRequest<T> nav(String navProperty, OEntityKey key) {
         segments.add(new EntitySegment(navProperty, key));
         return this;
     }
     
     @Override
-    public OEntityRef<T> nav(String navProperty) {
+    public OEntityRequest<T> nav(String navProperty) {
         segments.add(new EntitySegment(navProperty, null));
         return this;
     }

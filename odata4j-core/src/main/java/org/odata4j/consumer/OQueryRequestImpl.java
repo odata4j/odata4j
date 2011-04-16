@@ -14,7 +14,7 @@ import org.core4j.ReadOnlyIterator;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OEntityKey;
-import org.odata4j.core.OQuery;
+import org.odata4j.core.OQueryRequest;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.format.Entry;
 import org.odata4j.format.Feed;
@@ -27,7 +27,7 @@ import org.odata4j.internal.InternalUtil;
 
 import com.sun.jersey.api.client.ClientResponse;
 
-public class OQueryImpl<T> implements OQuery<T> {
+public class OQueryRequestImpl<T> implements OQueryRequest<T> {
 
     private final ODataClient client;
     private final Class<T> entityType;
@@ -46,7 +46,7 @@ public class OQueryImpl<T> implements OQuery<T> {
     
     private final FeedCustomizationMapping fcMapping;
 
-    public OQueryImpl(ODataClient client, Class<T> entityType, String serviceRootUri, EdmDataServices metadata, String entitySetName, FeedCustomizationMapping fcMapping) {
+    public OQueryRequestImpl(ODataClient client, Class<T> entityType, String serviceRootUri, EdmDataServices metadata, String entitySetName, FeedCustomizationMapping fcMapping) {
         this.client = client;
         this.entityType = entityType;
         this.serviceRootUri = serviceRootUri;
@@ -62,54 +62,54 @@ public class OQueryImpl<T> implements OQuery<T> {
     }
     
     @Override
-    public OQuery<T> top(int top) {
+    public OQueryRequest<T> top(int top) {
         this.top = top;
         return this;
     }
 
     @Override
-    public OQuery<T> skip(int skip) {
+    public OQueryRequest<T> skip(int skip) {
         this.skip = skip;
         return this;
     }
 
     @Override
-    public OQuery<T> orderBy(String orderBy) {
+    public OQueryRequest<T> orderBy(String orderBy) {
         this.orderBy = orderBy;
         return this;
     }
 
     @Override
-    public OQuery<T> filter(String filter) {
+    public OQueryRequest<T> filter(String filter) {
         this.filter = filter;
         return this;
     }
 
     @Override
-    public OQuery<T> select(String select) {
+    public OQueryRequest<T> select(String select) {
         this.select = select;
         return this;
     }
 
     @Override
-    public OQuery<T> expand(String expand) {
+    public OQueryRequest<T> expand(String expand) {
         this.expand = expand;
         return this;
     }
 
     @Override
-    public OQuery<T> nav(Object keyValue, String navProperty) {
+    public OQueryRequest<T> nav(Object keyValue, String navProperty) {
     	return nav(OEntityKey.create(keyValue),navProperty);
     }
     @Override
-    public OQuery<T> nav(OEntityKey key, String navProperty) {
+    public OQueryRequest<T> nav(OEntityKey key, String navProperty) {
         segments.add(new EntitySegment(lastSegment, key));
         lastSegment = navProperty;
         return this;
     }
 
     @Override
-    public OQuery<T> custom(String name, String value) {
+    public OQueryRequest<T> custom(String name, String value) {
         customs.put(name, value);
         return this;
     }

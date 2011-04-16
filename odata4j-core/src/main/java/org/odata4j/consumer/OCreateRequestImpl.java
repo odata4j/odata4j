@@ -1,16 +1,13 @@
 package org.odata4j.consumer;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
-import org.odata4j.core.OCreate;
+import org.odata4j.core.OCreateRequest;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
-import org.odata4j.core.OLink;
 import org.odata4j.core.OLinks;
 import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmDataServices;
@@ -27,25 +24,17 @@ import org.odata4j.internal.InternalUtil;
 
 import com.sun.jersey.api.client.ClientResponse;
 
-public class OCreateImpl<T> implements OCreate<T> {
+public class OCreateRequestImpl<T> extends OConsumerRequestBase implements OCreateRequest<T> {
 
     private final ODataClient client;
-    private final EdmDataServices metadata;
-    private final String serviceRootUri;
-    private final String entitySetName;
     private OEntity parent;
     private String navProperty;
 
-    private final List<OProperty<?>> props = new ArrayList<OProperty<?>>();
-    private final List<OLink> links = new ArrayList<OLink>();
-
     private final FeedCustomizationMapping fcMapping;
     
-    public OCreateImpl(ODataClient client, String serviceRootUri, EdmDataServices metadata, String entitySetName, FeedCustomizationMapping fcMapping) {
+    public OCreateRequestImpl(ODataClient client, String serviceRootUri, EdmDataServices metadata, String entitySetName, FeedCustomizationMapping fcMapping) {
+    	super(entitySetName, serviceRootUri, metadata);
         this.client = client;
-        this.serviceRootUri = serviceRootUri;
-        this.metadata = metadata;
-        this.entitySetName = entitySetName;
         this.fcMapping = fcMapping;
     }
 
@@ -86,21 +75,28 @@ public class OCreateImpl<T> implements OCreate<T> {
 	}
 
     @Override
-    public OCreate<T> properties(OProperty<?>... props) {
-        for(OProperty<?> prop : props)
-            this.props.add(prop);
-        return this;
+    public OCreateRequest<T> properties(OProperty<?>... props) {
+    	return super.properties(this,props);
     }
     
     @Override
-    public OCreate<T> properties(Iterable<OProperty<?>> props) {
-        for(OProperty<?> prop : props)
-            this.props.add(prop);
-        return this;
+    public OCreateRequest<T> properties(Iterable<OProperty<?>> props) {
+    	return super.properties(this,props);
     }
+    
+    @Override
+	public OCreateRequest<T> link(String navProperty, OEntity target) {
+       return super.link(this,navProperty,target);
+	}
+	
+	@Override
+	public OCreateRequest<T> link(String navProperty, OEntityKey targetKey) {
+		 return super.link(this,navProperty,targetKey);
+	}
+
 
     @Override
-    public OCreate<T> addToRelation(OEntity parent, String navProperty) {
+    public OCreateRequest<T> addToRelation(OEntity parent, String navProperty) {
     	if (parent == null || navProperty == null) {
     		throw new IllegalArgumentException("please provide the parent and the navProperty");
     	}
@@ -110,47 +106,9 @@ public class OCreateImpl<T> implements OCreate<T> {
     	return this;
     }
 
-	@Override
-	public OCreate<T> link(String navProperty, OEntity target) {
-       return link(navProperty,target.getEntitySet(),target.getEntityKey());
-	}
 	
 	@Override
-	public OCreate<T> link(String navProperty, OEntityKey targetKey) {
-		 return link(navProperty,null,targetKey);
-	}
-	
-	private OCreate<T> link(String navProperty, EdmEntitySet targetEntitySet, OEntityKey targetKey){
-		 EdmEntitySet entitySet = metadata.getEdmEntitySet(entitySetName);
-			EdmNavigationProperty navProp = entitySet.type.getNavigationProperty(navProperty);
-	        if (navProp == null) 
-	        	throw new IllegalArgumentException("unknown navigation property " + navProperty);
-	        
-			if (navProp.toRole.multiplicity == EdmMultiplicity.MANY) 
-				throw new IllegalArgumentException("many associations are not supported");
-			
-			StringBuilder href = new StringBuilder(serviceRootUri);
-			if (!serviceRootUri.endsWith("/")) 
-				href.append("/");
-			
-			if (targetEntitySet==null)
-				targetEntitySet = metadata.getEdmEntitySet(navProp.toRole.type);
-			
-			href.append(InternalUtil.getEntityRelId(targetEntitySet, targetKey));
-			
-			//	TODO get rid of XmlFormatWriter
-			//  We may need to rethink the rel property on a link
-			//	since it adds no new information. The title is
-			//	already there and rel has only a fixed prefix valid for
-			//	the atom format.
-			String rel = XmlFormatWriter.related +  navProperty;
-			
-			this.links.add(OLinks.relatedEntity(rel, navProperty, href.toString()));
-			return this;
-	}
-
-	@Override
-	public OCreate<T> inline(String navProperty, OEntity... entities) {
+	public OCreateRequest<T> inline(String navProperty, OEntity... entities) {
         EdmEntitySet entitySet = metadata.getEdmEntitySet(entitySetName);
 		EdmNavigationProperty navProp = entitySet.type.getNavigationProperty(navProperty);
 		if (navProp == null) {
