@@ -69,6 +69,34 @@ public class CreateWithLinkTest extends AirlineJPAProducerTestBase {
 			.execute();
 		Assert.assertEquals("San Francisco International", sfo.getProperty("name").getValue());	
 		
+		OEntity jfk = consumer.getEntities("Airport")
+			.filter("code eq 'JFK'")
+			.execute()
+			.firstOrNull();
+		
+		consumer.mergeEntity(flightSchedule)
+			.link("departureAirport", jfk)
+			.execute();
+		
+		jfk = consumer.getEntity("FlightSchedule", flightSchedule.getEntityKey())
+			.nav("departureAirport")
+			.execute();
+		Assert.assertEquals("John F Kennedy International", jfk.getProperty("name").getValue());
+		
+		OEntity mia = consumer.getEntities("Airport")
+			.filter("code eq 'MIA'")
+			.execute()
+			.firstOrNull();
+		
+		consumer.updateEntity(flightSchedule)
+			.link("departureAirport", mia)
+			.execute();
+		
+		mia = consumer.getEntity("FlightSchedule", flightSchedule.getEntityKey())
+			.nav("departureAirport")
+			.execute();
+		Assert.assertEquals("Miami International Airport", mia.getProperty("name").getValue());
+		
 	}
 	
 	@Test

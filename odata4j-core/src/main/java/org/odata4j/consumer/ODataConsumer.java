@@ -151,6 +151,10 @@ public class ODataConsumer {
     	return getEntity(entitySetName,OEntityKey.create(keyValue));
     }
     
+    public OEntityRequest<OEntity> getEntity(OEntity entity) {
+        return getEntity(entity.getEntitySet().name,entity.getEntityKey());
+    }
+    
     public OEntityRequest<OEntity> getEntity(String entitySetName, OEntityKey key) {
         return getEntity(OEntity.class,entitySetName,key);
     }
@@ -176,6 +180,10 @@ public class ODataConsumer {
         		entity.getEntitySet().name,entity.getEntityKey());
     }
 
+	public OModifyRequest<OEntity> mergeEntity(OEntity entity) {
+		return mergeEntity(entity.getEntitySet().name,entity.getEntityKey());
+	}
+	
 	public OModifyRequest<OEntity> mergeEntity(String entitySetName, Object keyValue) {
 		return mergeEntity(entitySetName, OEntityKey.create(keyValue));
 	}

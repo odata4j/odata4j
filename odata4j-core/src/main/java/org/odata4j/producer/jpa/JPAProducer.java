@@ -803,11 +803,10 @@ public class JPAProducer implements ODataProducer {
 			idMember.set(idValue);
 		}
 		
-		
 		applyOProperties(em, jpaEntityType, oEntity.getProperties(), jpaEntity);
-		if (withLinks) {
+		if (withLinks) 
 			applyOLinks(em, jpaEntityType, oEntity.getLinks(), jpaEntity);
-		}
+		
 
 		return jpaEntity;
 	}
@@ -827,6 +826,9 @@ public class JPAProducer implements ODataProducer {
 	
 	@SuppressWarnings("unchecked")
 	private void applyOLinks(EntityManager em, EntityType<?> jpaEntityType, List<OLink> links, Object jpaEntity) {
+		if (links==null)
+			return;
+		
 		try {
 			for (final OLink link : links) {
 				String[] propNameSplit = link.getRelation().split("/");
@@ -1139,7 +1141,8 @@ public class JPAProducer implements ODataProducer {
 					typeSafeEntityKey);
 
 			applyOProperties(em, jpaEntityType, entity.getProperties(), jpaEntity);
-
+			applyOLinks(em, jpaEntityType, entity.getLinks(), jpaEntity);
+            	
 			em.getTransaction().commit();
 
 		} finally {
@@ -1148,10 +1151,9 @@ public class JPAProducer implements ODataProducer {
 
 	}
 
+	
 	@Override
-	public void updateEntity(
-			String entitySetName,
-			OEntity entity) {
+	public void updateEntity(String entitySetName, OEntity entity) {
 		final EdmEntitySet ees = metadata.getEdmEntitySet(entitySetName);
 
 		EntityManager em = emf.createEntityManager();
@@ -1165,6 +1167,8 @@ public class JPAProducer implements ODataProducer {
 					true);
 
 			em.merge(jpaEntity);
+			applyOLinks(em, jpaEntityType, entity.getLinks(), jpaEntity);
+			
 			em.getTransaction().commit();
 
 		} finally {
