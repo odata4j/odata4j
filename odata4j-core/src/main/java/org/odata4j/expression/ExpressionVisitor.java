@@ -43,6 +43,8 @@ public interface ExpressionVisitor {
     public void visit(GuidLiteral expr);
 
     public void visit(BinaryLiteral expr);
+    
+    public void visit(ByteLiteral expr);
 
     public void visit(IndexOfMethodCallExpression expr);
 

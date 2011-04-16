@@ -2,7 +2,7 @@ package org.odata4j.core;
 
 import org.core4j.Enumerable;
 
-public interface OQuery<T> {
+public interface OQuery<T> extends Iterable<T> {
 
     public abstract Enumerable<T> execute();
 

@@ -30,7 +30,7 @@ public class OEntityKeyTest {
 		sk("1",1);
 		sk("1L",1L);
 		sk("1",(short)1);
-		sk("1",(byte)1);
+		sk("01",(byte)1);
 		sk("true",true);
 		sk("'1'","1");
 		sk("'1'",'1');

@@ -87,9 +87,8 @@ public class ExpressionParser {
         String msg = "[" + value + "] -> " + Enumerable.create(tokens).join("");
         if (expressions != null) {
             msg = msg + " -> " + Enumerable.create(expressions).select(new Func1<CommonExpression, String>() {
-
                 public String apply(CommonExpression input) {
-                    return dump(input);
+                    return Expression.asPrintString(input);
                 }
             }).join(",");
         }
@@ -114,13 +113,6 @@ public class ExpressionParser {
     }
 
 
-    private static String dump(CommonExpression expr) {
-
-        PrintExpressionVisitor v = new PrintExpressionVisitor();
-        Expression.visit(expr, v);
-        return v.toString();
-
-    }
 
     private static CommonExpression processBinaryExpression(List<Token> tokens, String op, Func2<CommonExpression, CommonExpression, CommonExpression> fn) {
 

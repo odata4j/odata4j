@@ -57,6 +57,11 @@ public class OQueryImpl<T> implements OQuery<T> {
     }
 
     @Override
+    public Iterator<T> iterator() {
+    	return execute().iterator();
+    }
+    
+    @Override
     public OQuery<T> top(int top) {
         this.top = top;
         return this;

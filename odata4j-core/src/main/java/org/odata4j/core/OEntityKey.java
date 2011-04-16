@@ -148,6 +148,13 @@ public class OEntityKey {
 	public String toKeyString() {
 		return keyString;
 	}
+	
+	public String toKeyStringWithoutParentheses() {
+		String keyString = this.keyString;
+		if (keyString.startsWith("(") && keyString.endsWith(")"))
+			keyString = keyString.substring(1, keyString.length() - 1);
+		return keyString;
+	}
 
 	@Override
 	public int hashCode() {
@@ -244,13 +251,6 @@ public class OEntityKey {
 	}
 	
 	
-	@SuppressWarnings("unchecked")
-	private static final Set<Object> INTEGRAL_TYPES = 
-			Enumerable.create(Integer.class, Integer.TYPE, Long.class, Long.TYPE,Short.class, Short.TYPE).cast(Object.class).toSet();
-	
-	@SuppressWarnings("unchecked")
-	private static final Set<Object> CHAR_TYPES = 
-			Enumerable.create(Character.class,Character.TYPE).cast(Object.class).toSet();
 	
 	private static final Set<Class<?>> EDM_SIMPLE_JAVA_TYPES = 
 		Enumerable.create(EdmType.SIMPLE).selectMany(new Func1<EdmType,Enumerable<Class<?>>>(){
@@ -277,24 +277,17 @@ public class OEntityKey {
 	
 	
 	private static String keyString(Object keyValue, boolean includePropName) {
-		if (keyValue instanceof Guid) {
-			return "guid'" + keyValue + "'";
-		} else if (keyValue instanceof String || CHAR_TYPES.contains(keyValue.getClass())) {
-			return "'" + keyValue.toString().replace("'", "''") + "'";
-		} else if (keyValue instanceof Long) {
-			return keyValue.toString() + "L";
-		} else if (INTEGRAL_TYPES.contains(keyValue.getClass())) {
-			return keyValue.toString();
-		} else if (keyValue instanceof NamedValue<?>) {
+		if (keyValue instanceof NamedValue<?>) {
 			NamedValue<?> namedValue = (NamedValue<?>) keyValue;
 			String value = keyString(namedValue.getValue(), false);
 			if (includePropName)
 				return namedValue.getName() + "=" + value;
 			else
 				return value;
-		} else {
-			return keyValue.toString();
 		}
+		
+		LiteralExpression expr = Expression.literal(keyValue);
+		return Expression.asFilterString(expr);
 	}
 
 	

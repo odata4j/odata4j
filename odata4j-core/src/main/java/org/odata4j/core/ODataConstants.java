@@ -17,6 +17,7 @@ public class ODataConstants {
         public static final String X_HTTP_METHOD = "X-HTTP-METHOD";
         public static final String DATA_SERVICE_VERSION = "DataServiceVersion";
         public static final String CONTENT_TYPE = "Content-Type";
+        public static final String USER_AGENT = "User-Agent";
     }
 
 }

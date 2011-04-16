@@ -312,5 +312,10 @@ public class PrintExpressionVisitor implements ExpressionVisitor {
     public void visit(BinaryLiteral expr) {
         append("binary(%s)", Hex.encodeHexString(expr.getValue()));
     }
+    
+    @Override
+    public void visit(ByteLiteral expr) {
+    	 append("byte(%s)", expr.getValue());
+    }
 
 }

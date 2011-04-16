@@ -6,9 +6,31 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.odata4j.core.Guid;
+import org.odata4j.core.OProperties;
+import org.odata4j.core.OProperty;
+import org.odata4j.edm.EdmType;
 
 public class Expression {
 
+	
+	public static CommonExpression parse(String value) {
+		return ExpressionParser.parse(value);
+	}
+	
+
+    public static String asPrintString(CommonExpression expr) {
+        PrintExpressionVisitor v = new PrintExpressionVisitor();
+        Expression.visit(expr, v);
+        return v.toString();
+    }
+    
+    public static String asFilterString(CommonExpression expr) {
+        FilterExpressionVisitor v = new FilterExpressionVisitor();
+        Expression.visit(expr, v);
+        return v.toString();
+    }
+    
+    
     public static NullLiteral null_() {
         return new NullLiteral() {
             @Override
@@ -139,6 +161,20 @@ public class Expression {
 
             @Override
             public byte[] getValue() {
+                return value;
+            }
+        };
+    }
+    
+    public static ByteLiteral byte_(final byte value) {
+        return new ByteLiteral() {
+            @Override
+            public String toString() {
+                return ByteLiteral.class.getSimpleName();
+            }
+
+            @Override
+            public byte getValue() {
                 return value;
             }
         };
@@ -905,9 +941,53 @@ public class Expression {
         };
     }
 
+    
+    public static LiteralExpression literal(Object value){
+    	if (value==null)
+    		throw new IllegalArgumentException("Cannot infer literal expression type for a null value");
+    	
+    	EdmType edmType = EdmType.forJavaType(value.getClass());
+    	if (edmType==null)
+    		throw new IllegalArgumentException("Cannot infer literal expression type for java type: " + value.getClass().getName());
+    	
+    	// use OProperties for java type normalization
+    	boolean throwOnException=true;
+    	OProperty<?> prop = OProperties.simple("temp", edmType, value, throwOnException);
+    	
+    	if (edmType.equals(EdmType.BINARY))
+    		return binary((byte[])prop.getValue());
+    	if (edmType.equals(EdmType.BOOLEAN))
+    		return boolean_((Boolean)prop.getValue());
+    	if (edmType.equals(EdmType.DATETIME))
+    		return dateTime((LocalDateTime)prop.getValue());
+    	if (edmType.equals(EdmType.DATETIMEOFFSET))
+    		return dateTimeOffset((DateTime)prop.getValue());
+    	if (edmType.equals(EdmType.DECIMAL))
+    		return decimal((BigDecimal)prop.getValue());
+    	if (edmType.equals(EdmType.DOUBLE))
+    		return double_((Double)prop.getValue());
+    	if (edmType.equals(EdmType.STRING))
+    		return string((String)prop.getValue());
+    	if (edmType.equals(EdmType.GUID))
+    		return guid((Guid)prop.getValue());
+    	if (edmType.equals(EdmType.INT64))
+    		return int64((Long)prop.getValue());
+    	if (edmType.equals(EdmType.INT32) || edmType.equals(EdmType.INT16))
+    		return integral(Integer.parseInt(prop.getValue().toString()));
+    	if (edmType.equals(EdmType.SINGLE))
+    		return single((Float)prop.getValue());
+    	if (edmType.equals(EdmType.TIME))
+    		return time((LocalTime)prop.getValue());
+    	if (edmType.equals(EdmType.BYTE))
+    		return byte_((Byte)prop.getValue());
+    	
+    	throw new UnsupportedOperationException("Cannot infer literal expression type for edm type: " + edmType);
+    }
     public static Object literalValue(LiteralExpression expression) {
         if (expression instanceof BinaryLiteral)
             return ((BinaryLiteral) expression).getValue();
+        if (expression instanceof ByteLiteral)
+            return ((ByteLiteral) expression).getValue();
         if (expression instanceof BooleanLiteral)
             return ((BooleanLiteral) expression).getValue();
         if (expression instanceof DateTimeLiteral)
@@ -1039,7 +1119,9 @@ public class Expression {
             visitor.visit((SingleLiteral) expr);
         } else if (expr instanceof BinaryLiteral) {
             visitor.visit((BinaryLiteral) expr);
-        } else if (expr instanceof DoubleLiteral) {
+        } else if (expr instanceof ByteLiteral) {
+            visitor.visit((ByteLiteral) expr);
+        }  else if (expr instanceof DoubleLiteral) {
             visitor.visit((DoubleLiteral) expr);
         } else if (expr instanceof IntegralLiteral) {
             visitor.visit((IntegralLiteral) expr);

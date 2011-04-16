@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -34,11 +33,10 @@ import javax.persistence.metamodel.Type.PersistenceType;
 import org.core4j.Enumerable;
 import org.core4j.Func1;
 import org.core4j.Predicate1;
-
-import org.odata4j.core.NamedValue;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
+import org.odata4j.core.OEntityKey.KeyType;
 import org.odata4j.core.OLink;
 import org.odata4j.core.OLinks;
 import org.odata4j.core.OProperties;
@@ -46,7 +44,6 @@ import org.odata4j.core.OProperty;
 import org.odata4j.core.ORelatedEntitiesLinkInline;
 import org.odata4j.core.ORelatedEntityLink;
 import org.odata4j.core.ORelatedEntityLinkInline;
-import org.odata4j.core.OEntityKey.KeyType;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmMultiplicity;
@@ -59,8 +56,8 @@ import org.odata4j.expression.Expression;
 import org.odata4j.expression.ExpressionParser;
 import org.odata4j.expression.ExpressionParser.Token;
 import org.odata4j.expression.ExpressionParser.TokenType;
+import org.odata4j.expression.LiteralExpression;
 import org.odata4j.expression.OrderByExpression;
-import org.odata4j.expression.StringLiteral;
 import org.odata4j.internal.TypeConverter;
 import org.odata4j.producer.BaseResponse;
 import org.odata4j.producer.EntitiesResponse;
@@ -432,9 +429,7 @@ public class JPAProducer implements ODataProducer {
 
 	
 	
-	private static EntityType<?> findJPAEntityType(
-			EntityManager em,
-			String jpaEntityTypeName) {
+	private static EntityType<?> findJPAEntityType(EntityManager em, String jpaEntityTypeName) {
 
 		for (EntityType<?> et : em.getMetamodel().getEntities()) {
 			if (JPAEdmGenerator.getEntitySetName(et).equals(jpaEntityTypeName)) {
@@ -504,7 +499,7 @@ public class JPAProducer implements ODataProducer {
 				? tq.getResultList().size()
 				: null;
 
-		int queryMaxResult = maxResults;
+		int queryMaxResults = maxResults;
 		if (context.query.top != null) {
 			
 			// top=0: don't even hit jpa, return a response with zero entities
@@ -512,11 +507,11 @@ public class JPAProducer implements ODataProducer {
 				return DynamicEntitiesResponse.entities(null,inlineCount,null);
 			
 			if (context.query.top < maxResults) 
-				queryMaxResult = context.query.top;
+				queryMaxResults = context.query.top;
 		}
 
 		// jpa query for one more than specified to determine whether or not to return a skip token
-		tq = tq.setMaxResults(queryMaxResult + 1);
+		tq = tq.setMaxResults(queryMaxResults + 1);
 
 		if (context.query.skip != null) 
 			tq = tq.setFirstResult(context.query.skip);
@@ -541,7 +536,7 @@ public class JPAProducer implements ODataProducer {
 		
 		// entities response
 		List<OEntity> entities = Enumerable.create(results)
-			.take(queryMaxResult)
+			.take(queryMaxResults)
 			.select(new Func1<Object, OEntity>() {
 				public OEntity apply(final Object jpaEntity) {
 					return makeEntity(context, jpaEntity);
@@ -550,10 +545,10 @@ public class JPAProducer implements ODataProducer {
 
 		// compute skip token if necessary
 		String skipToken = null;
-		boolean useSkipToken = context.query.top != null
-				? context.query.top > maxResults && results.size() > queryMaxResult
-				: results.size() > queryMaxResult;
-		if (useSkipToken) {
+		boolean hasMoreResults = context.query.top != null
+				? context.query.top > maxResults && results.size() > queryMaxResults
+				: results.size() > queryMaxResults;
+		if (hasMoreResults) {
 			OEntity last = Enumerable.create(entities).last();
 			skipToken = createSkipToken(context, last);
 		}
@@ -649,19 +644,13 @@ public class JPAProducer implements ODataProducer {
 		if (where != null) 
 			jpql = String.format("%s WHERE %s", jpql, where);
 		
-		if (context.query.orderBy != null) {
-			String orders = "";
+		if (context.query.orderBy != null && !context.query.orderBy.isEmpty()) {
+			List<String> orderBys = new ArrayList<String>();
 			for (OrderByExpression orderBy : context.query.orderBy) {
 				String field = jpqlGen.toJpql(orderBy.getExpression());
-
-				if (orderBy.isAscending()) {
-					orders = orders + field + ",";
-				} else {
-					orders = String.format("%s%s DESC,", orders, field);
-				}
+				orderBys.add(field + (orderBy.isAscending()?"":" DESC"));				
 			}
-
-			jpql = jpql + " ORDER BY " + orders.substring(0, orders.length() - 1);
+			jpql = jpql + " ORDER BY " + Enumerable.create(orderBys).join(",");
 		}
 		
 		return jpql;
@@ -679,69 +668,74 @@ public class JPAProducer implements ODataProducer {
 	}
 
 	private static String createSkipToken(Context context, OEntity lastEntity) {
-		List<String> values = new LinkedList<String>();
-		if (context.query.orderBy != null) {
-			for (OrderByExpression ord : context.query.orderBy) {
-				String field = ((EntitySimpleProperty) ord.getExpression())
-								.getPropertyName();
-				Object value = lastEntity.getProperty(field).getValue();
+		
+		// skip token = <orderby1,orderby2,>keystring
+		
+		// TODO revisit
+//		List<String> values = new LinkedList<String>();
+//		if (context.query.orderBy != null) {
+//			for (OrderByExpression ord : context.query.orderBy) {
+//				String field = ((EntitySimpleProperty) ord.getExpression())
+//								.getPropertyName();
+//				Object value = lastEntity.getProperty(field).getValue();
+//
+//				if (value instanceof String) {
+//					value = "'" + value + "'";
+//				}
+//
+//				values.add(value.toString());
+//			}
+//		}
 
-				if (value instanceof String) {
-					value = "'" + value + "'";
-				}
-
-				values.add(value.toString());
-			}
-		}
-
-		if (lastEntity.getEntityKey().getKeyType()==KeyType.SINGLE)
-			values.add(lastEntity.getEntityKey().asSingleValue().toString());
-		else
-			for(NamedValue<?> nv : lastEntity.getEntityKey().asComplexValue())
-				values.add(nv.getValue().toString());
-				
-		return Enumerable.create(values).join(",");
+		return lastEntity.getEntityKey().toKeyStringWithoutParentheses();
 	}
 	
     private static BoolCommonExpression parseSkipToken(JPQLGenerator jpqlGen, List<OrderByExpression> orderByList, String skipToken) {
         if (skipToken == null) 
             return null;
 
-        skipToken = skipToken.replace("'", "");
         BoolCommonExpression result = null;
 
         if (orderByList == null) {
-            result = Expression.gt(
-                    Expression.simpleProperty(jpqlGen.getPrimaryKeyName()),
-                    Expression.string(skipToken));
+        	OEntityKey skipTokenEntityKey = OEntityKey.parse(skipToken);
+        	if (skipTokenEntityKey.getKeyType() == KeyType.SINGLE){
+        		LiteralExpression skipTokenEntityKeyLiteral = Expression.literal(skipTokenEntityKey.asSingleValue());
+        		result = Expression.gt(
+                         Expression.simpleProperty(jpqlGen.getPrimaryKeyName()),
+                         skipTokenEntityKeyLiteral);
+        	} else
+        		throw new UnsupportedOperationException("Complex skip tokens not supported");
+           
         } else {
-            String[] skipTokens = skipToken.split(",");
-            for (int i = 0; i < orderByList.size(); i++) {
-                OrderByExpression exp = orderByList.get(i);
-                StringLiteral value = Expression.string(skipTokens[i]);
-
-                BoolCommonExpression ordExp = null;
-                if (exp.isAscending()) {
-                    ordExp = Expression.ge(exp.getExpression(), value);
-                } else {
-                    ordExp = Expression.le(exp.getExpression(), value);
-                }
-
-                if (result == null) {
-                    result = ordExp;
-                } else {
-                    result = Expression.and(
-                            Expression.boolParen(
-                            Expression.or(ordExp, result)),
-                            result);
-                }
-            }
-
-            result = Expression.and(
-                    Expression.ne(
-                    Expression.simpleProperty(jpqlGen.getPrimaryKeyName()),
-                    Expression.string(skipTokens[skipTokens.length - 1])),
-                    result);
+        	// TODO revisit
+        	throw new UnsupportedOperationException();
+//            String[] skipTokens = skipToken.split(",");
+//            for (int i = 0; i < orderByList.size(); i++) {
+//                OrderByExpression exp = orderByList.get(i);
+//                StringLiteral value = Expression.string(skipTokens[i]);
+//
+//                BoolCommonExpression ordExp = null;
+//                if (exp.isAscending()) {
+//                    ordExp = Expression.ge(exp.getExpression(), value);
+//                } else {
+//                    ordExp = Expression.le(exp.getExpression(), value);
+//                }
+//
+//                if (result == null) {
+//                    result = ordExp;
+//                } else {
+//                    result = Expression.and(
+//                            Expression.boolParen(
+//                            Expression.or(ordExp, result)),
+//                            result);
+//                }
+//            }
+//
+//            result = Expression.and(
+//                    Expression.ne(
+//                    Expression.simpleProperty(jpqlGen.getPrimaryKeyName()),
+//                    Expression.string(skipTokens[skipTokens.length - 1])),
+//                    result);
         }
 
         return result;
@@ -1150,8 +1144,10 @@ public class JPAProducer implements ODataProducer {
 		return TypeConverter.convert(entityKey==null?null:entityKey.asSingleValue(),javaType);
 	}
 	
-	private Object typeSafeEntityKey(EntityManager em,
-			EntityType<?> jpaEntityType, String href) throws Exception {
+	private Object typeSafeEntityKey(EntityManager em, EntityType<?> jpaEntityType, String href) throws Exception {
+		
+		// TODO revisit, Token should not be public
+		
 		String keyString = href.substring(href.lastIndexOf('(') + 1,
 				href.length() - 1);
 		List<Token> keyToken = ExpressionParser.tokenize(keyString);
@@ -1162,8 +1158,7 @@ public class JPAProducer implements ODataProducer {
 			if (keyToken.get(0).type == TokenType.QUOTED_STRING) {
 				String entityKeyStr = keyToken.get(0).value;
 				if (entityKeyStr.length() < 2) {
-					throw new IllegalArgumentException("invalid entity key "
-							+ keyToken);
+					throw new IllegalArgumentException("invalid entity key " + keyToken);
 				}
 				// cut off the quotes
 				keyValue = entityKeyStr.substring(1, entityKeyStr.length() - 1);
@@ -1171,8 +1166,7 @@ public class JPAProducer implements ODataProducer {
 				keyValue = NumberFormat.getInstance(Locale.US)
 					.parseObject(keyToken.get(0).value);
 			} else {
-				throw new IllegalArgumentException(
-					"unsupported key type " + keyString);
+				throw new IllegalArgumentException("Unsupported key type: " + keyString);
 			}
 			return TypeConverter.convert(keyValue,
 					em.getMetamodel()
@@ -1180,8 +1174,7 @@ public class JPAProducer implements ODataProducer {
 							.getIdType()
 							.getJavaType());
 		} else {
-			throw new IllegalArgumentException(
-					"only simple entity keys are supported yet");
+			throw new IllegalArgumentException("Only simple entity keys are supported");
 		}
 	}
 	

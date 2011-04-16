@@ -185,6 +185,10 @@ public class ODataConsumer {
 				getMetadata(), entitySetName, key);
 	}
 
+	public OEntityRef<Void> deleteEntity(OEntity entity) {
+		return deleteEntity(entity.getEntitySet().name,entity.getEntityKey());
+	}
+	
     public OEntityRef<Void> deleteEntity(String entitySetName, Object keyValue) {
     	return deleteEntity(entitySetName,OEntityKey.create(keyValue));
     }

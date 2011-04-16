@@ -149,7 +149,9 @@ class ODataClient {
         for(String header : request.getHeaders().keySet()) {
             b.header(header, request.getHeaders().get(header));
         }
-
+        if (!request.getHeaders().containsKey(ODataConstants.Headers.USER_AGENT))
+        	b.header(ODataConstants.Headers.USER_AGENT, "odata4j.org");
+        
         if (ODataConsumer.dump.requestHeaders())
         	dumpHeaders(request, webResource, b);
            

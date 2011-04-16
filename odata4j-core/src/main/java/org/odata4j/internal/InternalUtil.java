@@ -152,32 +152,6 @@ public class InternalUtil {
 	}
 
 	
-	
-	public static Object[] keyValues(String keyString, Class<?>[] types) {
-		if (keyString == null
-			|| !keyString.startsWith("(")
-			|| !keyString.endsWith(")")) {
-			throw new IllegalArgumentException("Illegal key string");
-		}
-			
-		String str = keyString.substring(1, keyString.length() - 1);
-		String[] key = str.split(",");
-		Object[] keys = new Object[key.length];
-		for (int i = 0, len = key.length; i < len; i++) {
-			if (key[i].startsWith("'") && key[i].endsWith("'")) {
-				key[i] = key[i].substring(1, key[i].length() - 1);
-				key[i] = key[i].replace("''", "'");
-				
-				keys[i] = TypeConverter.convert(key[i], types[i]);
-			}
-		}
-		
-		return keys;
-	}
-
-	
-
-	
 
 	@SuppressWarnings("unchecked")
 	public static <T> T toEntity(Class<T> entityType, OEntity oe) {

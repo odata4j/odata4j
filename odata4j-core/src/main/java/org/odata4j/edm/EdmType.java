@@ -79,5 +79,15 @@ public class EdmType {
 		return null;
 	}
 	
+	@Override
+	public int hashCode() {
+		return typeString.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object other) {
+		return other instanceof EdmType && ((EdmType)other).typeString.equals(typeString);
+	}
+	
 }
 	

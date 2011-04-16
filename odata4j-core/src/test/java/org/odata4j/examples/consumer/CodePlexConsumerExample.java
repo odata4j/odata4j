@@ -11,7 +11,7 @@ public class CodePlexConsumerExample extends BaseExample {
 
 	// for more info: https://codeplexodata.cloudapp.net/
 	
-    private static final int MAX_LISTING = 2;
+    private static final int MAX_LISTING = 5;
     
     public static void main(String... args) {
     	

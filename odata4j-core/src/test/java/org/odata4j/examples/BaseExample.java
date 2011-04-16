@@ -18,6 +18,7 @@ import org.odata4j.edm.EdmFunctionParameter;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSchema;
+import org.odata4j.edm.EdmType;
 
 public class BaseExample {
 
@@ -32,7 +33,10 @@ public class BaseExample {
     protected static void reportEntity(String caption, OEntity entity){
         report(caption);
         for(OProperty<?> p : entity.getProperties()){
-            report("  %s: %s",p.getName(),p.getValue());
+        	Object v = p.getValue();
+        	if (p.getType().equals(EdmType.BINARY))
+        		v = org.odata4j.repack.org.apache.commons.codec.binary.Base64.encodeBase64String((byte[])v).trim();
+            report("  %s: %s",p.getName(),v);
         }
     }
     protected static int reportEntities(ODataConsumer c, String entitySet, int limit){
