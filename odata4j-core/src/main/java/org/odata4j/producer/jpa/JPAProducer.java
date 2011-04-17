@@ -1,15 +1,12 @@
 package org.odata4j.producer.jpa;
 
 import java.lang.reflect.Constructor;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.persistence.CascadeType;
@@ -37,7 +34,6 @@ import org.core4j.Predicate1;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
-import org.odata4j.core.OEntityKey.KeyType;
 import org.odata4j.core.OLink;
 import org.odata4j.core.OLinks;
 import org.odata4j.core.OProperties;
@@ -53,11 +49,6 @@ import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmPropertyBase;
 import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.EntitySimpleProperty;
-import org.odata4j.expression.Expression;
-import org.odata4j.expression.ExpressionParser;
-import org.odata4j.expression.ExpressionParser.Token;
-import org.odata4j.expression.ExpressionParser.TokenType;
-import org.odata4j.expression.LiteralExpression;
 import org.odata4j.expression.OrderByExpression;
 import org.odata4j.internal.TypeConverter;
 import org.odata4j.producer.BaseResponse;
@@ -209,7 +200,7 @@ public class JPAProducer implements ODataProducer {
 	}
 
 	private <T> T common(
-			final String entitySetName,
+			String entitySetName,
 			OEntityKey entityKey,
 			QueryInfo query,
 			Func1<Context, T> fn) {
@@ -218,7 +209,7 @@ public class JPAProducer implements ODataProducer {
 		context.em = emf.createEntityManager();
 		try {
 			context.ees = metadata.getEdmEntitySet(entitySetName);
-			context.jpaEntityType = findJPAEntityType(
+			context.jpaEntityType = getJPAEntityType(
 					context.em,
 					context.ees.type.name);
 
@@ -390,9 +381,7 @@ public class JPAProducer implements ODataProducer {
 	
 	
 
-	private static boolean isSelected(
-			String name,
-			List<EntitySimpleProperty> select) {
+	private static boolean isSelected(String name, List<EntitySimpleProperty> select) {
 
 		if (select != null && !select.isEmpty()) {
 			for (EntitySimpleProperty prop : select) {
@@ -430,7 +419,7 @@ public class JPAProducer implements ODataProducer {
 
 	
 	
-	private static EntityType<?> findJPAEntityType(EntityManager em, String jpaEntityTypeName) {
+	private static EntityType<?> getJPAEntityType(EntityManager em, String jpaEntityTypeName) {
 
 		for (EntityType<?> et : em.getMetamodel().getEntities()) {
 			if (JPAEdmGenerator.getEntitySetName(et).equals(jpaEntityTypeName)) {
@@ -549,11 +538,10 @@ public class JPAProducer implements ODataProducer {
 		boolean hasMoreResults = context.query.top != null
 				? context.query.top > maxResults && results.size() > queryMaxResults
 				: results.size() > queryMaxResults;
-		if (hasMoreResults) {
-			OEntity last = Enumerable.create(entities).last();
-			skipToken = createSkipToken(context, last);
-		}
-
+				
+		if (hasMoreResults) 
+			skipToken = JPASkipToken.create(context.query.orderBy, Enumerable.create(entities).last());
+		
 		return DynamicEntitiesResponse.entities(entities, inlineCount, skipToken);
 	}
 	
@@ -588,7 +576,7 @@ public class JPAProducer implements ODataProducer {
 				if (context.edmPropertyBase instanceof EdmNavigationProperty) {
 					EdmNavigationProperty propInfo = (EdmNavigationProperty) context.edmPropertyBase;
 					
-					context.jpaEntityType = findJPAEntityType(
+					context.jpaEntityType = getJPAEntityType(
 							context.em,
 							propInfo.toRole.type.name);
 
@@ -637,8 +625,9 @@ public class JPAProducer implements ODataProducer {
 		}
 
 		if (context.query.skipToken != null) {
-			String skipPredicate = jpqlGen.toJpql(parseSkipToken(jpqlGen, context.query.orderBy, context.query.skipToken));
-			where = addWhereExpression(where, skipPredicate, "AND");
+			BoolCommonExpression skipTokenPredicateExpr = JPASkipToken.parse(jpqlGen.getPrimaryKeyName(), context.query.orderBy, context.query.skipToken);
+			String skipTokenPredicate = jpqlGen.toJpql(skipTokenPredicateExpr);
+			where = addWhereExpression(where, skipTokenPredicate, "AND");
 		}
 
 		if (where != null) 
@@ -667,125 +656,7 @@ public class JPAProducer implements ODataProducer {
 						nextExpression);
 	}
 
-	private static String createSkipToken(Context context, OEntity lastEntity) {
-		
-		// skip token = <orderbyvalue1,orderbyvalue2,>keystringwithoutparens
-		
-		List<String> values = new LinkedList<String>();
-		if (context.query.orderBy != null) {
-			for (OrderByExpression ord : context.query.orderBy) {
-				String orderByPropName = ((EntitySimpleProperty) ord.getExpression()).getPropertyName();
-				Object orderByPropValue = lastEntity.getProperty(orderByPropName).getValue();
-				String valueFilterString = Expression.asFilterString(Expression.literal(orderByPropValue));
-				values.add(valueFilterString);
-			}
-		}
-
-		values.add( lastEntity.getEntityKey().toKeyStringWithoutParentheses());
-		return Enumerable.create(values).join(",");
-	}
 	
-    private static BoolCommonExpression parseSkipToken(JPQLGenerator jpqlGen, List<OrderByExpression> orderByList, String skipToken) {
-        if (skipToken == null) 
-            return null;
-        
-        // kvalue
-        // k > kvalue
-        
-        // avalue, kvalue
-        // (a > avalue) or (a = avalue and k > kvalue)
-        
-        // avalue, bvalue, kvalue
-        // (a > avalue) or (a = avalue and b > bvalue) or (a = avalue and b = bvalue and k > kvalue)
-        
-        // etc.
-        
-        List<BoolCommonExpression> predicates = new ArrayList<BoolCommonExpression>();
-        List<LiteralExpression> orderByValues = new ArrayList<LiteralExpression>();
-        
-        // PASS1  (a > avalue), (b > bvalue), ... (k > kvalue)
-        int start=0;
-        int end=0;
-        if (orderByList!=null) {
-	        for(int i=0;i<orderByList.size();i++){
-	        	OrderByExpression orderBy = orderByList.get(i);
-	        	end = skipToken.indexOf(',',start);
-	        	String orderByValueString = skipToken.substring(start,end);
-	        	LiteralExpression orderByValue = (LiteralExpression)Expression.parse(orderByValueString);
-	        	orderByValues.add(orderByValue);
-	        	// a > avalue
-	        	BoolCommonExpression ordExp = orderBy.isAscending()
-	        			? Expression.gt(orderBy.getExpression(), orderByValue)
-	        			: Expression.lt(orderBy.getExpression(), orderByValue);
-	        			
-	        	predicates.add(ordExp);
-	        	start = end+1;
-	        }
-        }
-       
-        
-    	//  k > kvalue
-        OEntityKey entityKey = OEntityKey.parse(skipToken.substring(start)); 
-        String primaryKeyName = jpqlGen.getPrimaryKeyName();
-    	if (entityKey.getKeyType() == KeyType.SINGLE){
-    	
-    		LiteralExpression entityKeyValue = Expression.literal(entityKey.asSingleValue());
-    		
-    		BoolCommonExpression keyPredicate = Expression.gt(
-                     Expression.simpleProperty(primaryKeyName),
-                     entityKeyValue);
-    		
-    		predicates.add(keyPredicate);
-    	} else {
-    		// complex key predicate
-    		
-    		// k > keyvalue actually means (k.a > kvalue.a) or (k.a = kvalue.a and k.b > kvalue.b) ...
-    		List<OProperty<?>> keyProperties = new ArrayList<OProperty<?>>(entityKey.asComplexProperties());
-    		BoolCommonExpression keyPredicate = null;
-    		for(int i=0;i<keyProperties.size();i++){
-    			OProperty<?> keyProperty = keyProperties.get(i);
-    			// k.x > kvalue.x
-    			BoolCommonExpression subPredicate = Expression.gt(
-    					Expression.simpleProperty(primaryKeyName + "." + keyProperty.getName()),
-    					Expression.literal(keyProperty.getValue()));
-    			
-    			for(int j=0;j<i;j++){
-    				OProperty<?> earlierKeyProperty = keyProperties.get(j);
-    				// k.x = kvalue.x
-    				BoolCommonExpression eq = Expression.eq(
-        					Expression.simpleProperty(primaryKeyName + "." + earlierKeyProperty.getName()),
-        					Expression.literal(earlierKeyProperty.getValue()));
-    				subPredicate = Expression.and(eq, subPredicate);
-    			}
-    			if (keyPredicate==null)
-    				keyPredicate = subPredicate;
-    			else
-    				keyPredicate = Expression.or(keyPredicate, subPredicate);
-    		}
-    		
-    		predicates.add(keyPredicate);
-    	}
-    	
-        // PASS2  (a > avalue), (a = avalue and b > bvalue), ... (a = avalue and b = bvalue ... and k > kvalue)
-    	for(int i=1;i<predicates.size();i++){
-    		BoolCommonExpression predicate = predicates.get(i);
-    		for(int j=0;j<i;j++){
-    			OrderByExpression orderBy = orderByList.get(j);
-    			BoolCommonExpression eq = Expression.eq(orderBy.getExpression(), orderByValues.get(j));
-    			predicate = Expression.and(eq, predicate);
-    		}
-    		predicates.set(i,predicate);
-    	}
-    	
-    	// return all predicates OR'ed together
-    	BoolCommonExpression rt = predicates.get(0);
-    	for(int i=1;i<predicates.size();i++)
-    		rt = Expression.or(rt, predicates.get(i));
-    	return rt;
-    	
-    }
-
-
 	private Object createNewJPAEntity(
 			EntityManager em,
 			EntityType<?> jpaEntityType,
@@ -907,7 +778,7 @@ public class JPAProducer implements ODataProducer {
 					JPAMember member = JPAMember.create(att,jpaEntity);
 					
 					EntityType<?> relJpaEntityType = (EntityType<?>)att.getType();
-					Object key = typeSafeEntityKey(em, relJpaEntityType, link.getHref());
+					Object key = typeSafeEntityKey(em, relJpaEntityType, OEntityKey.parse(link.getHref().substring(link.getHref().indexOf('('))));
 					Object relEntity = em.find(relJpaEntityType.getJavaType(), key);
 
 					member.set(relEntity);
@@ -975,7 +846,7 @@ public class JPAProducer implements ODataProducer {
 		EntityManager em = emf.createEntityManager();
 		try {
 			em.getTransaction().begin();
-			EntityType<?> jpaEntityType = findJPAEntityType(em, ees.type.name);
+			EntityType<?> jpaEntityType = getJPAEntityType(em, ees.type.name);
 			Object jpaEntity = createNewJPAEntity(
 					em,
 					jpaEntityType,
@@ -1036,12 +907,12 @@ public class JPAProducer implements ODataProducer {
 			em.getTransaction().begin();
 			
 			//	get the entity we want the new entity add to
-			EntityType<?> jpaEntityType = findJPAEntityType(em, ees.type.name);
+			EntityType<?> jpaEntityType = getJPAEntityType(em, ees.type.name);
 			Object typeSafeEntityKey = typeSafeEntityKey(em, jpaEntityType, entityKey);
 			Object jpaEntity = em.find(jpaEntityType.getJavaType(), typeSafeEntityKey);
 
 			//	create the new entity
-			EntityType<?> newJpaEntityType = findJPAEntityType(em, edmNavProperty.toRole.type.name);
+			EntityType<?> newJpaEntityType = getJPAEntityType(em, edmNavProperty.toRole.type.name);
 			Object newJpaEntity = createNewJPAEntity(em, newJpaEntityType, entity, true);
 			
 			//	get the collection attribute and add the new entity to the parent entity
@@ -1104,7 +975,7 @@ public class JPAProducer implements ODataProducer {
 		EntityManager em = emf.createEntityManager();
 		try {
 			em.getTransaction().begin();
-			EntityType<?> jpaEntityType = findJPAEntityType(em, ees.type.name);
+			EntityType<?> jpaEntityType = getJPAEntityType(em, ees.type.name);
 			Object typeSafeEntityKey = typeSafeEntityKey(
 					em,
 					jpaEntityType,
@@ -1130,7 +1001,7 @@ public class JPAProducer implements ODataProducer {
 		EntityManager em = emf.createEntityManager();
 		try {
 			em.getTransaction().begin();
-			EntityType<?> jpaEntityType = findJPAEntityType(em, ees.type.name);
+			EntityType<?> jpaEntityType = getJPAEntityType(em, ees.type.name);
 			Object typeSafeEntityKey = typeSafeEntityKey(
 					em,
 					jpaEntityType,
@@ -1159,7 +1030,7 @@ public class JPAProducer implements ODataProducer {
 		EntityManager em = emf.createEntityManager();
 		try {
 			em.getTransaction().begin();
-			EntityType<?> jpaEntityType = findJPAEntityType(em, ees.type.name);
+			EntityType<?> jpaEntityType = getJPAEntityType(em, ees.type.name);
 			Object jpaEntity = createNewJPAEntity(
 					em,
 					jpaEntityType,
@@ -1190,40 +1061,6 @@ public class JPAProducer implements ODataProducer {
 		Class<?> javaType = jpaEntityType.getIdType().getJavaType();
 		
 		return TypeConverter.convert(entityKey==null?null:entityKey.asSingleValue(),javaType);
-	}
-	
-	private Object typeSafeEntityKey(EntityManager em, EntityType<?> jpaEntityType, String href) throws Exception {
-		
-		// TODO revisit, Token should not be public
-		
-		String keyString = href.substring(href.lastIndexOf('(') + 1,
-				href.length() - 1);
-		List<Token> keyToken = ExpressionParser.tokenize(keyString);
-		if( keyToken.size() !=0 && 
-				( keyToken.get(0).type == TokenType.QUOTED_STRING  || 
-						keyToken.get(0).type == TokenType.NUMBER )  ) {
-			Object keyValue;
-			if (keyToken.get(0).type == TokenType.QUOTED_STRING) {
-				String entityKeyStr = keyToken.get(0).value;
-				if (entityKeyStr.length() < 2) {
-					throw new IllegalArgumentException("invalid entity key " + keyToken);
-				}
-				// cut off the quotes
-				keyValue = entityKeyStr.substring(1, entityKeyStr.length() - 1);
-			} else if (keyToken.get(0).type == TokenType.NUMBER) {
-				keyValue = NumberFormat.getInstance(Locale.US)
-					.parseObject(keyToken.get(0).value);
-			} else {
-				throw new IllegalArgumentException("Unsupported key type: " + keyString);
-			}
-			return TypeConverter.convert(keyValue,
-					em.getMetamodel()
-							.entity(jpaEntityType.getJavaType())
-							.getIdType()
-							.getJavaType());
-		} else {
-			throw new IllegalArgumentException("Only simple entity keys are supported");
-		}
 	}
 	
 	protected static Object coercePropertyValue(OProperty<?> prop, Class<?> javaType) {

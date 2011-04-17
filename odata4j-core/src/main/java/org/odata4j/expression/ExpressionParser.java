@@ -678,7 +678,7 @@ public class ExpressionParser {
     }
 
     // tokenizer
-    public static List<Token> tokenize(String value) {
+    private static List<Token> tokenize(String value) {
         List<Token> rt = new ArrayList<Token>();
         int current = 0;
         int end = 0;
@@ -768,12 +768,12 @@ public class ExpressionParser {
         return rt;
     }
 
-    public static enum TokenType {
+    private static enum TokenType {
 
         UNKNOWN, WHITESPACE, QUOTED_STRING, WORD, SYMBOL, NUMBER, OPENPAREN, CLOSEPAREN, EXPRESSION,;
     }
 
-    public static class Token {
+    private static class Token {
 
         public final TokenType type;
         public final String value;
