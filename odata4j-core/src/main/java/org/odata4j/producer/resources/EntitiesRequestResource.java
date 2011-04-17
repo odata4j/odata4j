@@ -46,6 +46,10 @@ public class EntitiesRequestResource extends BaseResource {
 			@Context ODataProducer producer,
 			final @PathParam("entitySetName") String entitySetName) {
 		
+		// visual studio will send a soap mex request
+		if (entitySetName.equals("mex") && headers.getMediaType() !=null && headers.getMediaType().toString().startsWith("application/soap+xml"))
+			return Response.status(405).build();
+		
 		// TODO get rid of the jersey dependency
 		// - add @Context Request request, @Context UriInfo uriInfo, @Context HttpHeaders headers
 		// - add a String parameter for the requestEntity

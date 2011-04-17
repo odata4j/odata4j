@@ -4,7 +4,9 @@ import java.util.Map;
 
 import javax.persistence.metamodel.SingularAttribute;
 
+import org.core4j.Enumerable;
 import org.odata4j.edm.EdmProperty;
+import org.odata4j.edm.EdmType;
 import org.odata4j.producer.jpa.JPAEdmGenerator;
 
 public class EclipseLinkJPAEdmGenerator extends JPAEdmGenerator {
@@ -13,7 +15,7 @@ public class EclipseLinkJPAEdmGenerator extends JPAEdmGenerator {
     	
     	Integer maxLength = null;
         Map<String, Object> eclipseLinkProps = EclipseLink.getPropertyInfo(sa, p.type);
-        if (eclipseLinkProps.containsKey("MaxLength"))
+        if (Enumerable.create(EdmType.STRING,EdmType.BINARY).contains(p.type) && eclipseLinkProps.containsKey("MaxLength"))
             maxLength = (Integer) eclipseLinkProps.get("MaxLength");
 
         return new EdmProperty(p.name, p.type, p.nullable, maxLength, null, null, null, null, null, null, null, null);

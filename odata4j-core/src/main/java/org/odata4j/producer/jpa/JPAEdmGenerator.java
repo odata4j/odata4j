@@ -106,7 +106,7 @@ public class JPAEdmGenerator {
 		Integer maxLength = null;
 		if (sa.getJavaMember() instanceof AnnotatedElement) {
 			Column col = ((AnnotatedElement) sa.getJavaMember()).getAnnotation(Column.class);
-			if (col != null)
+			if (col != null && Enumerable.create(EdmType.BINARY,EdmType.STRING).contains(type))
 				maxLength = col.length();
 		}
 
