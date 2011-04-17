@@ -180,6 +180,11 @@
             <name>org.core4j</name>
             <url>https://core4j.googlecode.com/svn/maven/2</url>
         </repository>
+        <repository>
+            <id>jboss</id>
+            <name>jboss</name>
+            <url>http://repository.jboss.org/nexus/content/groups/public/</url>        
+        </repository>
     </repositories>
 
     <dependencies>
@@ -237,5 +242,19 @@
             <version>1.8.0.10</version>
             <scope>test</scope>
         </dependency>
+
+		<!--  for hibernate testing -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>3.5.5-Final</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-jdk14</artifactId>
+			<version>1.5.8</version>
+			<scope>test</scope>
+		</dependency>
     </dependencies>
 </project>

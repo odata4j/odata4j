@@ -13,12 +13,13 @@ import org.odata4j.core.OProperties;
 import org.odata4j.examples.producer.ProducerUtil;
 import org.odata4j.producer.jpa.JPAProducer;
 import org.odata4j.producer.resources.ODataProducerProvider;
+import org.odata4j.test.OData4jTestSuite;
 
 public class CreateWithLinkTest extends AirlineJPAProducerTestBase {
 	
 	@BeforeClass
 	public static void setUp() throws Exception {
-		String persistenceUnitName = "AirlineService";
+		String persistenceUnitName = "AirlineService"+OData4jTestSuite.JPA_PROVIDER.caption;
 		String namespace = "Airline";
 
 		emf = Persistence.createEntityManagerFactory(persistenceUnitName);

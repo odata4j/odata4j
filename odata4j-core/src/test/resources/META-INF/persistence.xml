@@ -3,7 +3,8 @@
 	xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence     http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd">
 
-	<persistence-unit name="NorthwindService"
+	<!--  NORTHWIND -->
+	<persistence-unit name="NorthwindServiceEclipseLink"
 		transaction-type="RESOURCE_LOCAL">
 		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
 		<class>org.odata4j.producer.jpa.northwind.Suppliers</class>
@@ -24,40 +25,108 @@
 			<property name="eclipselink.logging.exceptions" value="true" />
 		</properties>
 	</persistence-unit>
+	
+	<persistence-unit name="NorthwindServiceHibernate" transaction-type="RESOURCE_LOCAL">
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+		<class>org.odata4j.producer.jpa.northwind.Suppliers</class>
+		<class>org.odata4j.producer.jpa.northwind.Order_Details</class>
+		<class>org.odata4j.producer.jpa.northwind.Categories</class>
+		<class>org.odata4j.producer.jpa.northwind.Customers</class>
+		<class>org.odata4j.producer.jpa.northwind.Products</class>
+		<class>org.odata4j.producer.jpa.northwind.Employees</class>
+		<class>org.odata4j.producer.jpa.northwind.Orders</class>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		<properties>
+			<property name="javax.persistence.jdbc.driver" value="org.hsqldb.jdbcDriver" />
+			<property name="javax.persistence.jdbc.user" value="sa" />
+			<property name="javax.persistence.jdbc.password" value="" />
+			<property name="javax.persistence.jdbc.url" value="jdbc:hsqldb:mem:northwind;shutdown=true;ifxeists=true" />
+			<property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect" />
+			<property name="hibernate.max_fetch_depth" value="3" />
+			<property name="hibernate.hbm2ddl.auto" value="create-drop" />
+		</properties>
+	</persistence-unit>
 
-	 <persistence-unit name="AirlineService" transaction-type="RESOURCE_LOCAL">
-	    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-	    <class>org.odata4j.producer.jpa.airline.FlightSchedule</class>
-	    <class>org.odata4j.producer.jpa.airline.Airport</class>
-	    <class>org.odata4j.producer.jpa.airline.Flight</class>
-	    <properties>
-	      <property name="eclipselink.target-database" value="HSQL"/>
-	      <property name="eclipselink.jdbc.driver" value="org.hsqldb.jdbcDriver"/>
-	      <property name="eclipselink.jdbc.url" value="jdbc:hsqldb:mem:airline;shutdown=true;ifxeists=true"/>
-	      <property name="eclipselink.jdbc.user" value="sa"/>
-	      <property name="eclipselink.jdbc.password" value=""/>
-	      <property name="eclipselink.ddl-generation" value="create-tables"/>
-	      <property name="eclipselink.logging.level" value="SEVERE"/>
-	      <property name="eclipselink.logging.exceptions" value="true"/>
-	    </properties>
-	  </persistence-unit>
 
-	<persistence-unit name="Oneoff01" transaction-type="RESOURCE_LOCAL">
+	<!--  AIRLINE -->
+	<persistence-unit name="AirlineServiceEclipseLink"
+		transaction-type="RESOURCE_LOCAL">
+		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+		<class>org.odata4j.producer.jpa.airline.FlightSchedule</class>
+		<class>org.odata4j.producer.jpa.airline.Airport</class>
+		<class>org.odata4j.producer.jpa.airline.Flight</class>
+		<properties>
+			<property name="eclipselink.target-database" value="HSQL" />
+			<property name="eclipselink.jdbc.driver" value="org.hsqldb.jdbcDriver" />
+			<property name="eclipselink.jdbc.url"
+				value="jdbc:hsqldb:mem:airline;shutdown=true;ifxeists=true" />
+			<property name="eclipselink.jdbc.user" value="sa" />
+			<property name="eclipselink.jdbc.password" value="" />
+			<property name="eclipselink.ddl-generation" value="create-tables" />
+			<property name="eclipselink.logging.level" value="SEVERE" />
+			<property name="eclipselink.logging.exceptions" value="true" />
+		</properties>
+	</persistence-unit>
+
+	<persistence-unit name="AirlineServiceHibernate"
+		transaction-type="RESOURCE_LOCAL">
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+		<class>org.odata4j.producer.jpa.airline.FlightSchedule</class>
+		<class>org.odata4j.producer.jpa.airline.Airport</class>
+		<class>org.odata4j.producer.jpa.airline.Flight</class>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		<properties>
+			<property name="javax.persistence.jdbc.driver" value="org.hsqldb.jdbcDriver" />
+			<property name="javax.persistence.jdbc.user" value="sa" />
+			<property name="javax.persistence.jdbc.password" value="" />
+			<property name="javax.persistence.jdbc.url"
+				value="jdbc:hsqldb:mem:airline;shutdown=true;ifxeists=true" />
+			<property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect" />
+			<property name="hibernate.max_fetch_depth" value="3" />
+			<property name="hibernate.hbm2ddl.auto" value="create-drop" />
+		</properties>
+	</persistence-unit>
+
+	<!--  ONEOFF01 -->
+	<persistence-unit name="Oneoff01EclipseLink" transaction-type="RESOURCE_LOCAL">
 		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
 		<class>org.odata4j.producer.jpa.oneoff01.Comment</class>
 		<class>org.odata4j.producer.jpa.oneoff01.Ticket</class>
 	</persistence-unit>
 	
-	<persistence-unit name="Oneoff02" transaction-type="RESOURCE_LOCAL">
+	<persistence-unit name="Oneoff01Hibernate" transaction-type="RESOURCE_LOCAL">
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+		<class>org.odata4j.producer.jpa.oneoff01.Comment</class>
+		<class>org.odata4j.producer.jpa.oneoff01.Ticket</class>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+	</persistence-unit>
+	
+	<!--  ONEOFF02 -->
+	<persistence-unit name="Oneoff02EclipseLink" transaction-type="RESOURCE_LOCAL">
 		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
 		<class>org.odata4j.producer.jpa.oneoff02.Course</class>
 		<class>org.odata4j.producer.jpa.oneoff02.Student</class>
 	</persistence-unit>
 	
-	<persistence-unit name="Oneoff03" transaction-type="RESOURCE_LOCAL">
+	<persistence-unit name="Oneoff02Hibernate" transaction-type="RESOURCE_LOCAL">
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+		<class>org.odata4j.producer.jpa.oneoff02.Course</class>
+		<class>org.odata4j.producer.jpa.oneoff02.Student</class>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+	</persistence-unit>
+	
+	<!--  ONEOFF03 -->
+	<persistence-unit name="Oneoff03EclipseLink" transaction-type="RESOURCE_LOCAL">
 		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
 		<class>org.odata4j.producer.jpa.oneoff03.Course</class>
 		<class>org.odata4j.producer.jpa.oneoff03.Student</class>
+	</persistence-unit>
+	
+	<persistence-unit name="Oneoff03Hibernate" transaction-type="RESOURCE_LOCAL">
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+		<class>org.odata4j.producer.jpa.oneoff03.Course</class>
+		<class>org.odata4j.producer.jpa.oneoff03.Student</class>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 	</persistence-unit>
 	
 	

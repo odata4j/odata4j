@@ -74,7 +74,7 @@ public class XmlDataProducerExample {
 
 	public static void generateXmlTestData() throws Exception {
 		EntityManagerFactory emf;
-		String persistenceUnitName = "NorthwindService";
+		String persistenceUnitName = "NorthwindServiceEclipseLink";
 
 		// create an fill temporary database
 		emf = Persistence.createEntityManagerFactory(persistenceUnitName);

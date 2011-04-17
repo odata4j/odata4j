@@ -19,12 +19,13 @@ import org.odata4j.edm.EdmType;
 import org.odata4j.examples.producer.ProducerUtil;
 import org.odata4j.producer.jpa.JPAProducer;
 import org.odata4j.producer.resources.ODataProducerProvider;
+import org.odata4j.test.OData4jTestSuite;
 
 public class EdmTimeTemporalTest extends AirlineJPAProducerTestBase {
 	
 	@BeforeClass
 	public static void setUpClass() throws Exception {
-		String persistenceUnitName = "AirlineService";
+		String persistenceUnitName = "AirlineService"+OData4jTestSuite.JPA_PROVIDER.caption;
 		String namespace = "Airline";
 
 		emf = Persistence.createEntityManagerFactory(persistenceUnitName);
