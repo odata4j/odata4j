@@ -142,8 +142,6 @@ public class CreateTest extends JPAProducerTestBase {
 	}
 
 	public void insertEntityWithInlinedEntity(ODataConsumer consumer) {
-		ODataConsumer.dump.all(true);
-
 		final long now = System.currentTimeMillis();
 		OEntity category = consumer
     		.createEntity("Categories")

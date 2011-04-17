@@ -25,7 +25,6 @@ public class DeleteTest extends JPAProducerTestBase {
 	
 	@Test
 	public void deleteEntity() {
-		ODataConsumer.dump.all(true);
 		ODataConsumer consumer = ODataConsumer.create(endpointUri);
 		
 		deleteEntityAndTest(consumer,"ALFKI");

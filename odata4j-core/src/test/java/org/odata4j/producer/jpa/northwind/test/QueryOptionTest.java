@@ -462,4 +462,11 @@ public class QueryOptionTest extends JPAProducerTestBase {
 		String uri = "Products?$top=5&$inlinecount=allpages&Price gt 200";
 		NorthwindTestUtils.testJSONResult(endpointUri, uri, inp);
 	}
+	
+	@Test
+	public void SystemQueryOptionComplexKeyNavTest() {
+		String inp = "SystemQueryOptionComplexKeyNavTest";
+		String uri = "Order_Details(OrderID=10248,ProductID=11)/Product";
+		NorthwindTestUtils.testJSONResult(endpointUri, uri, inp);
+	}
 }

@@ -139,7 +139,7 @@ public class JPAProducer implements ODataProducer {
 		EntityManager em;
 		EdmEntitySet ees;
 		EntityType<?> jpaEntityType;
-		String keyPropertyName;
+		String keyAttributeName;
 		Object typeSafeEntityKey;
 		QueryInfo query;
 		EdmPropertyBase edmPropertyBase;
@@ -213,7 +213,7 @@ public class JPAProducer implements ODataProducer {
 					context.em,
 					context.ees.type.name);
 
-			context.keyPropertyName = JPAEdmGenerator.getId(context.jpaEntityType).getName();
+			context.keyAttributeName = JPAEdmGenerator.getIdAttribute(context.jpaEntityType).getName();
 			context.typeSafeEntityKey = typeSafeEntityKey(
 					context.em,
 					context.jpaEntityType,
@@ -238,7 +238,7 @@ public class JPAProducer implements ODataProducer {
 		List<OLink> links = new ArrayList<OLink>();
 
 		try {
-			SingularAttribute<?, ?> idAtt = JPAEdmGenerator.getId(entityType);
+			SingularAttribute<?, ?> idAtt = JPAEdmGenerator.getIdAttribute(entityType);
 			boolean hasEmbeddedCompositeKey =
 					idAtt.getPersistentAttributeType() == PersistentAttributeType.EMBEDDED;
 
@@ -444,7 +444,6 @@ public class JPAProducer implements ODataProducer {
 			return new DynamicEntitiesResponse(PropertyResponse.class,property,null,null,null,null);
 		}
 		
-		@SuppressWarnings("unused")	// TODO when to call?
 		public static DynamicEntitiesResponse entity(OEntity entity){
 			return new DynamicEntitiesResponse(EntityResponse.class,null,entity,null,null,null);
 		}
@@ -468,11 +467,30 @@ public class JPAProducer implements ODataProducer {
 	}
 
 	private String whereKeyEquals(Context context, String alias){
+		SingularAttribute<?,?> idAtt = context.jpaEntityType.getSingularAttribute(context.keyAttributeName);
+		if (idAtt.getPersistentAttributeType()==PersistentAttributeType.EMBEDDED){
+			List<String> predicates = new ArrayList<String>();
+			EmbeddableType<?> et = (EmbeddableType<?>)idAtt.getType();
+			for(Attribute<?,?> subAtt : et.getAttributes()){
+				Object subAttValue = JPAMember.create(subAtt, context.typeSafeEntityKey).get();
+				String jpqlLiteral = JPQLGenerator.toJpqlLiteral(subAttValue);
+				String predicate = String.format(
+						"(%s.%s.%s = %s)",
+						alias,
+						context.keyAttributeName,
+						subAtt.getName(),
+						jpqlLiteral);
+				predicates.add(predicate);
+			}
+			
+			return "("+Enumerable.create(predicates).join(" AND ")+")";
+		}
+		
 		String jpqlLiteral = JPQLGenerator.toJpqlLiteral(context.typeSafeEntityKey);
 		return String.format(
 				"(%s.%s = %s)",
 				alias,
-				context.keyPropertyName,
+				context.keyAttributeName,
 				jpqlLiteral);
 	}
 	
@@ -542,6 +560,15 @@ public class JPAProducer implements ODataProducer {
 		if (hasMoreResults) 
 			skipToken = JPASkipToken.create(context.query.orderBy, Enumerable.create(entities).last());
 		
+		if (context.edmPropertyBase instanceof EdmNavigationProperty){
+			EdmNavigationProperty edmNavProp = (EdmNavigationProperty)context.edmPropertyBase;
+			if (edmNavProp.toRole.multiplicity == EdmMultiplicity.ONE || edmNavProp.toRole.multiplicity == EdmMultiplicity.ZERO_TO_ONE){
+				if (entities.size()!=1)
+					throw new RuntimeException("Expected only one entity, found " + entities.size());
+				return DynamicEntitiesResponse.entity(entities.get(0));
+			}
+		}
+		
 		return DynamicEntitiesResponse.entities(entities, inlineCount, skipToken);
 	}
 	
@@ -589,7 +616,7 @@ public class JPAProducer implements ODataProducer {
 					if (propSplit.length > 1) {
 						OEntityKey entityKey = OEntityKey.parse("(" + propSplit[1]);
 							
-						context.keyPropertyName = JPAEdmGenerator.getId(context.jpaEntityType).getName();
+						context.keyAttributeName = JPAEdmGenerator.getIdAttribute(context.jpaEntityType).getName();
 
 						context.typeSafeEntityKey = typeSafeEntityKey(
 								em,
@@ -617,7 +644,7 @@ public class JPAProducer implements ODataProducer {
 
 		String jpql = String.format("SELECT %s FROM %s", alias, from);
 
-		JPQLGenerator jpqlGen = new JPQLGenerator(context.keyPropertyName, alias);
+		JPQLGenerator jpqlGen = new JPQLGenerator(context.keyAttributeName, alias);
 
 		if (context.query.filter != null) {
 			String filterPredicate = jpqlGen.toJpql(context.query.filter);

@@ -167,7 +167,7 @@ public class JPAEdmGenerator {
             List<String> keys = new ArrayList<String>();
             SingularAttribute<?, ?> idAttribute = null;
             if (et.hasSingleIdAttribute()) {
-                idAttribute = getId(et);
+                idAttribute = getIdAttribute(et);
                 //	handle composite embedded keys (@EmbeddedId)
                 if (idAttribute.getPersistentAttributeType() == PersistentAttributeType.EMBEDDED) {
                     keys = Enumerable.create(getProperties(modelNamespace, (ManagedType<?>) idAttribute.getType()))
@@ -327,7 +327,7 @@ public class JPAEdmGenerator {
          return association;
     }
     
-    public static <X> SingularAttribute<? super X, ?> getId(EntityType<X> et) {
+    public static <X> SingularAttribute<? super X, ?> getIdAttribute(EntityType<X> et) {
         return Enumerable.create(et.getSingularAttributes()).firstOrNull(new Predicate1<SingularAttribute<? super X, ?>>() {
             public boolean apply(SingularAttribute<? super X, ?> input) {
                 return input.isId();
