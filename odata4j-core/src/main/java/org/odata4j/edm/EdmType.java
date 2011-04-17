@@ -12,6 +12,12 @@ import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.odata4j.core.Guid;
 
+/**
+ * Representation of a type in the EDM type system.  
+ * Simple types are exposed as constants, and associated with one or more java-types.
+ *
+ * @see http://msdn.microsoft.com/en-us/library/bb399213.aspx
+ */
 public class EdmType {
 
     private static Map<String, EdmType> POOL = new HashMap<String, EdmType>();
@@ -32,6 +38,9 @@ public class EdmType {
     public static final EdmType STRING = getInternal("Edm.String",char.class,Character.class,String.class);
     public static final EdmType TIME = getInternal("Edm.Time",LocalTime.class);
     
+    /**
+     * Set of all edm simple types.
+     */
     public static Set<EdmType> SIMPLE = Collections.unmodifiableSet(Enumerable.create(POOL.values()).toSet());
     
     private final String typeString;
@@ -42,6 +51,12 @@ public class EdmType {
         this.javaTypes = Collections.unmodifiableSet(javaTypes);
     }
 
+    /**
+     * Gets the edm-type for a given type name.
+     * 
+     * @param typeString  the fully-qualified type name
+     * @return the edm-type
+     */
     public static EdmType get(String typeString) {
         return getInternal(typeString);
     }
@@ -55,14 +70,29 @@ public class EdmType {
         return POOL.get(typeString);
     }
 
+    /**
+     * Whether or not this is an edm simple type.
+     * 
+     * @return true or false
+     */
     public boolean isSimple() {
         return javaTypes.size()>0;
     }
 
+    /**
+     * Gets the fully-qualified type name for this edm-type.
+     * 
+     * @return the fully-qualified type name
+     */
     public String toTypeString() {
         return typeString;
     }
     
+    /**
+     * Gets the java-types associated with this edm-type.  Only valid for simple types.
+     * 
+     * @return the associated java-types.
+     */
     public Set<Class<?>> getJavaTypes() {
 		return javaTypes;
 	}
@@ -72,6 +102,12 @@ public class EdmType {
         return toTypeString();
     }
 
+	/**
+	 * Finds the edm simple type for a given java-type.
+	 * 
+	 * @param javaType  the java-type
+	 * @return the associated edm simple type, else null
+	 */
 	public static EdmType forJavaType(Class<?> javaType) {
 		for(EdmType simple : SIMPLE)
 			if (simple.getJavaTypes().contains(javaType))

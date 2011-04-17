@@ -7,6 +7,11 @@ import org.core4j.Enumerable;
 import org.core4j.Predicate1;
 import org.odata4j.core.ODataVersion;
 
+/**
+ * The <edmx:DataServices> element contains the service metadata of a Data Service. This service metadata contains zero or more EDM conceptual schemas.
+ * <p>Since this is the root of a large metadata tree, convenience methods are included to help locate child metadata elements.</p>
+ * @see http://msdn.microsoft.com/en-us/library/dd541087(v=prot.10).aspx
+ */
 public class EdmDataServices {
 
     private final ODataVersion version;
@@ -22,6 +27,7 @@ public class EdmDataServices {
     public String getVersion(){
     	return version != null ? version.asString : null;
     }
+
     public List<EdmSchema> getSchemas() {
 		return schemas;
 	}

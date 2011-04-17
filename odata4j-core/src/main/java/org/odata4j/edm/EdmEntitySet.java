@@ -1,18 +1,27 @@
 package org.odata4j.edm;
 
-/** Metadata describing a set of entities.
- *  This is a simple struct giving the user-facing "name" of the set,
- *  along with an internal schema definition of the entity type
+/**
+ * The EntitySet element in conceptual schema definition language is a logical container for instances of an entity type and instances of any type that is derived from that entity type. 
+ *
+ * @see http://msdn.microsoft.com/en-us/library/bb386874.aspx
  */
 public class EdmEntitySet {
 
+    /**
+     * The name of the entity set.
+     */
     public final String name;
+    
+    /**
+     * The entity type for which the entity set contains instances.
+     */
     public final EdmEntityType type;
 
-    /** Create an EdmEntitySet with a given name and type
+    /**
+     * Creates a new EdmEntitySet.
      * 
-     * @param name the user-facing name of the set
-     * @param type the schema entry for this type
+     * @param name  the name of the entity set
+     * @param type  the entity type for which the entity set contains instances
      */
     public EdmEntitySet(String name, EdmEntityType type) {
         this.name = name;

@@ -83,9 +83,9 @@ public interface OCreateRequest<T> {
     public abstract T execute();
     
     /**
-     * Gives the locally built entity and does not send the create request
-     * to the service. The result of this method can be used to create
-     * entities to inline them in a create request.
+     * Returns a locally-built entity and does not send the create request
+     * to the service. The locally-built entity can be used inline as part of
+     * other create requests.
      * 
      * @return new locally built entity
      * @see #inline(String, OEntity...)

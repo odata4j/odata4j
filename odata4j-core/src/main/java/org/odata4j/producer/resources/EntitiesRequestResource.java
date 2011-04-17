@@ -50,11 +50,6 @@ public class EntitiesRequestResource extends BaseResource {
 		if (entitySetName.equals("mex") && headers.getMediaType() !=null && headers.getMediaType().toString().startsWith("application/soap+xml"))
 			return Response.status(405).build();
 		
-		// TODO get rid of the jersey dependency
-		// - add @Context Request request, @Context UriInfo uriInfo, @Context HttpHeaders headers
-		// - add a String parameter for the requestEntity
-		// - get the MediaType from headers.getMediaType()
-
 		log.info(String.format("createEntity(%s)", entitySetName));
 		
 		OEntity entity = this.getRequestEntity(context.getRequest(), producer.getMetadata(), entitySetName,null);
