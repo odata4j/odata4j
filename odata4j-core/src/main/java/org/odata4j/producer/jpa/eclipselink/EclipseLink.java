@@ -13,6 +13,8 @@ import org.odata4j.edm.EdmType;
 
 public class EclipseLink {
 
+	private EclipseLink(){}
+	
     public static Map<String, Object> getPropertyInfo(SingularAttribute<?, ?> sa, EdmType type) {
 
         Map<String, Object> rt = new HashMap<String, Object>();

@@ -15,7 +15,7 @@ import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.format.xml.XmlFormatWriter;
 import org.odata4j.internal.InternalUtil;
 
-public abstract class OConsumerRequestBase {
+abstract class OConsumerRequestBase {
 
 	 protected final List<OProperty<?>> props = new ArrayList<OProperty<?>>();
 	 protected final List<OLink> links = new ArrayList<OLink>();

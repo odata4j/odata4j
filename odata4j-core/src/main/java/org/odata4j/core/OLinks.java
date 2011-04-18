@@ -2,24 +2,44 @@ package org.odata4j.core;
 
 import java.util.List;
 
+/**
+ * A static factory to create immutable {@link OLink} instances.
+ */
 public class OLinks {
 	
-    public static OLink link(final String relation, final String title, final String href){
+	private OLinks(){}
+	
+    /**
+     * Creates a new {@link OLink} where the link sub-type is unknown or undefined.
+     */
+    public static OLink link(String relation, String title, String href){
     	return new OLinkImpl(OLink.class,relation,title,href);
     }
     
+    /**
+     * Creates a new {@link OLink} of sub-type {@link ORelatedEntitiesLink}.
+     */
     public static ORelatedEntitiesLink relatedEntities(final String relation, final String title, final String href){
     	return new ORelatedEntitiesLinkImpl(relation,title,href);
     }
     
+    /**
+     * Creates a new {@link OLink} of sub-type {@link ORelatedEntitiesLinkInline}.
+     */
     public static ORelatedEntitiesLinkInline relatedEntitiesInline(final String relation, final String title, final String href, final List<OEntity> relatedEntities){
     	return new ORelatedEntitiesLinkInlineImpl(relation,title,href,relatedEntities);
     }
     
+    /**
+     * Creates a new {@link OLink} of sub-type {@link ORelatedEntityLink}.
+     */
     public static ORelatedEntityLink relatedEntity(final String relation, final String title, final String href){
     	return new ORelatedEntityLinkImpl(relation,title,href);
     }
     
+    /**
+     * Creates a new {@link OLink} of sub-type {@link ORelatedEntityLinkInline}.
+     */
     public static ORelatedEntityLinkInline relatedEntityInline(final String relation, final String title, final String href, final OEntity relatedEntity){
        return new ORelatedEntityLinkInlineImpl(relation,title,href,relatedEntity);
     }

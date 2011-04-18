@@ -7,6 +7,8 @@ import org.odata4j.consumer.behaviors.MethodTunnelingBehavior;
 
 public class OClientBehaviors {
 
+	private OClientBehaviors() {}
+	
 	public static OClientBehavior basicAuth(String user, String password){
 		return new BasicAuthenticationBehavior(user, password);
 	}

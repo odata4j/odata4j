@@ -27,7 +27,7 @@ public class CompositeKeyEntityTest extends JPAProducerTestBase{
 		Assert.assertNotNull(orderDetails);	
 		
 		Assert.assertNotSame(123, orderDetails.getProperty("Quantity",short.class).getValue());
-		consumer.updateEntity(orderDetails).properties(OProperties.short_("Quantity", (short)123)).execute();
+		consumer.updateEntity(orderDetails).properties(OProperties.int16("Quantity", (short)123)).execute();
 		
 		OEntity orderDetailsNew = consumer.getEntity("Order_Details",orderDetails.getEntityKey()).execute();
 		Assert.assertEquals((short)123, (short)orderDetailsNew.getProperty("Quantity",short.class).getValue());
@@ -42,7 +42,7 @@ public class CompositeKeyEntityTest extends JPAProducerTestBase{
 		Assert.assertNotNull(orderDetails);	
 		
 		Assert.assertNotSame(123, orderDetails.getProperty("Quantity",short.class).getValue());
-		consumer.mergeEntity("Order_Details", orderDetails.getEntityKey()).properties(OProperties.short_("Quantity", (short)123)).execute();
+		consumer.mergeEntity("Order_Details", orderDetails.getEntityKey()).properties(OProperties.int16("Quantity", (short)123)).execute();
 		
 		OEntity orderDetailsNew = consumer.getEntity("Order_Details",orderDetails.getEntityKey()).execute();
 		Assert.assertEquals((short)123, (short)orderDetailsNew.getProperty("Quantity",short.class).getValue());
@@ -72,7 +72,7 @@ public class CompositeKeyEntityTest extends JPAProducerTestBase{
 			.link("Order",order)
 			.link("Product", product)
 			.properties(OProperties.decimal("UnitPrice", 1.0))
-			.properties(OProperties.short_("Quantity", quantity ))
+			.properties(OProperties.int16("Quantity", quantity ))
 			.properties(OProperties.decimal("Discount", 1.0))
 			.execute();
 		
@@ -104,7 +104,7 @@ public class CompositeKeyEntityTest extends JPAProducerTestBase{
 		OEntity orderDetails = consumer
 			.createEntity("Order_Details")		
 			.properties(OProperties.decimal("UnitPrice", 1.0))
-			.properties(OProperties.short_("Quantity", quantity ))
+			.properties(OProperties.int16("Quantity", quantity ))
 			.properties(OProperties.decimal("Discount", 1.0))
 			.properties(OProperties.simple("OrderID", order.getEntityKey().asSingleValue()))
 			.properties(OProperties.simple("ProductID", product.getEntityKey().asSingleValue()))

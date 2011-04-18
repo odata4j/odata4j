@@ -9,6 +9,8 @@ import java.util.Set;
  */
 public class NamedValues {
 
+	private NamedValues(){}
+	
 	/**
 	 * Create an named-value from a name and a value.
 	 *

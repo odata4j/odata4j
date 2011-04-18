@@ -4,6 +4,8 @@ import java.util.Comparator;
 
 public class OComparators {
 
+	private OComparators() {}
+	
 	@SuppressWarnings("rawtypes")
 	public static Comparator<NamedValue> namedValueByNameRaw(){
 		return new Comparator<NamedValue>(){

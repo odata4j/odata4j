@@ -23,6 +23,8 @@ import org.odata4j.producer.QueryInfo;
  */
 public class ListUtils {
 
+	private ListUtils(){}
+	
     public static List<OEntity> applyQuery(
             final List<OEntity> entities,
             final QueryInfo query,

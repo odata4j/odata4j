@@ -6,12 +6,7 @@ import org.odata4j.edm.EdmEntitySet;
 
 
 /**
- * An immutable OData entity instance, consisting of:
- * <ul>
- *   <li>An identity: an entity-set and a unique entity-key within that set</li>
- *   <li>Properties: typed, named values</li>
- *   <li>Links: references to other entities</li>
- * </ul>
+ * An immutable OData entity instance, consisting of an identity (an entity-set and a unique entity-key within that set), properties (typed, named values), and links (references to other entities).
  * <p>The {@link OEntities} static factory class can be used to create <code>OEntity</code> instances.</p>
  * @see OEntities
  */

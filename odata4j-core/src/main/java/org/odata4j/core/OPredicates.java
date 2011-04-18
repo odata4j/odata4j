@@ -4,6 +4,8 @@ import org.core4j.Predicate1;
 
 public class OPredicates {
 
+	private OPredicates(){}
+	
 	public static Predicate1<OEntity> entityPropertyValueEquals(final String propName, final Object value){
 		return new Predicate1<OEntity>() {
 			@Override

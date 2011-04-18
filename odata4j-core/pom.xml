@@ -165,6 +165,7 @@
                          	<links>
 								<link>http://jersey.java.net/nonav/apidocs/1.1.5/jersey</link>
 								<link>http://joda-time.sourceforge.net/api-release</link>
+								<link>http://download.oracle.com/javase/6/docs/api</link>
 								<link>http://download.oracle.com/javaee/6/api</link>
 								<link>http://core4j.googlecode.com/svn/tags/0.4/core4j/doc/apidocs</link>
 								<link>http://www.xmlpull.org/v1/doc/api</link>

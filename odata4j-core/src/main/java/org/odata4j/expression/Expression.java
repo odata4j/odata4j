@@ -12,6 +12,7 @@ import org.odata4j.edm.EdmType;
 
 public class Expression {
 
+	private Expression(){}
 	
 	public static CommonExpression parse(String value) {
 		return ExpressionParser.parse(value);

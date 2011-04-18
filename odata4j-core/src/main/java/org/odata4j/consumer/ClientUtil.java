@@ -15,7 +15,7 @@ import com.sun.jersey.core.impl.provider.header.MediaTypeProvider;
 import com.sun.jersey.core.spi.factory.AbstractRuntimeDelegate;
 import com.sun.jersey.spi.HeaderDelegateProvider;
 
-public class ClientUtil {
+class ClientUtil {
 
     static {
         if (PlatformUtil.runningOnAndroid())

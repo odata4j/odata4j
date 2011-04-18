@@ -13,8 +13,21 @@ import org.odata4j.internal.InternalUtil;
 import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
 import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
 
+/**
+ * A static factory to create immutable {@link OProperty} instances.
+ */
 public class OProperties {
 
+	private OProperties() {}
+	
+	/**
+	 * Creates a new OData property, inferring the edm-type from the value provided, which cannot be null.
+	 * 
+	 * @param <T>  the property value's java-type
+	 * @param name  the property name
+	 * @param value  the property value
+	 * @return a new OData property instance
+	 */
 	public static <T> OProperty<T> simple(String name, T value) {
 		if (value==null)
 			throw new IllegalArgumentException("Cannot infer EdmType if value is null");
@@ -24,10 +37,29 @@ public class OProperties {
 	    return simple(name, type, value, false);
 	}
 	 
+    /**
+     * Creates a new OData property of the given edm-type.
+     * 
+     * @param <T>  the property value's java-type
+     * @param name  the property name
+     * @param type  the property edm-type
+     * @param value  the property value
+     * @return a new OData property instance
+     */
     public static <T> OProperty<T> simple(String name, EdmType type, T value) {    	
     	return simple(name, type, value, false);
     }	
     	
+    /**
+     * Creates a new OData property of the given edm-type.
+     * 
+     * @param <T>  the property value's java-type
+     * @param name  the property name
+     * @param type  the property edm-type
+     * @param value  the property value
+     * @param exceptionOnUnknownType  if true, throw if the edm-type is unknown
+     * @return a new OData property instance
+     */
     @SuppressWarnings("unchecked")
 	public static <T> OProperty<T> simple(String name, EdmType type, T value, boolean exceptionOnUnknownType) {    	
         if (type == EdmType.STRING) {
@@ -45,7 +77,7 @@ public class OProperties {
             return (OProperty<T>)OProperties.boolean_(name, bValue);
         } else if (type == EdmType.INT16) {
             Short sValue = (Short) value;
-            return (OProperty<T>)OProperties.short_(name, sValue);
+            return (OProperty<T>)OProperties.int16(name, sValue);
         } else if (type == EdmType.INT32) {
             Integer iValue = (Integer) value;
             return (OProperty<T>)OProperties.int32(name, iValue);
@@ -90,14 +122,37 @@ public class OProperties {
         }
     }
 
+    /**
+     * Creates a new OData property of the given edm-type with a null value.
+     * 
+     * @param name  the property name
+     * @param type  the property edm-type
+     * @return a new OData property instance
+     */
     public static OProperty<?> null_(String name, String type) {
         return new PropertyImpl<Object>(name, EdmType.get(type), null);
     }
 
+    /**
+     * Creates a new complex-valued OData property of the given edm-type.
+     * 
+     * @param name  the property name
+     * @param type  the property edm-type
+     * @param value  the property values
+     * @return a new OData property instance
+     */
     public static OProperty<List<OProperty<?>>> complex(String name, String type, List<OProperty<?>> value) {
         return new PropertyImpl<List<OProperty<?>>>(name, EdmType.get(type), value);
     }
 
+    /**
+     * Creates a new OData property of the given edm-type with a value parsed from a string.
+     * 
+     * @param name  the property name
+     * @param type  the property edm-type
+     * @param value  the property value
+     * @return a new OData property instance
+     */
     public static OProperty<?> parse(String name, String type, String value) {
 
         if (EdmType.GUID.toTypeString().equals(type)) {
@@ -146,98 +201,255 @@ public class OProperties {
         throw new UnsupportedOperationException("type:" + type);
     }
 
+    /**
+     * Creates a new short-valued OData property with {@link EdmType#INT16}
+     * 
+     * @param name  the property name
+     * @param value  the property value
+     * @return a new OData property instance
+     */
     public static OProperty<Short> int16(String name, Short value) {
         return new PropertyImpl<Short>(name, EdmType.INT16, value);
     }
 
+    /**
+     * Creates a new integer-valued OData property with {@link EdmType#INT32}
+     * 
+     * @param name  the property name
+     * @param value  the property value
+     * @return a new OData property instance
+     */
     public static OProperty<Integer> int32(String name, Integer value) {
         return new PropertyImpl<Integer>(name, EdmType.INT32, value);
     }
 
+    /**
+     * Creates a new long-valued OData property with {@link EdmType#INT64}
+     * 
+     * @param name  the property name
+     * @param value  the property value
+     * @return a new OData property instance
+     */
     public static OProperty<Long> int64(String name, Long value) {
         return new PropertyImpl<Long>(name, EdmType.INT64, value);
     }
 
+    /**
+     * Creates a new String-valued OData property with {@link EdmType#STRING}
+     * 
+     * @param name  the property name
+     * @param value  the property value
+     * @return a new OData property instance
+     */
     public static OProperty<String> string(String name, String value) {
         return new PropertyImpl<String>(name, EdmType.STRING, value);
     }
 
+    /**
+     * Creates a new String-valued OData property with {@link EdmType#STRING}
+     * 
+     * @param name  the property name
+     * @param value  the property value
+     * @return a new OData property instance
+     */
     public static OProperty<String> string(String name, char value) {
         return new PropertyImpl<String>(name, EdmType.STRING, Character.toString(value));
     }
 
+    /**
+     * Creates a new String-valued OData property with {@link EdmType#STRING}
+     * 
+     * @param name  the property name
+     * @param value  the property value
+     * @return a new OData property instance
+     */
     public static OProperty<Character> character(String name, Character value) {
         return new PropertyImpl<Character>(name, EdmType.STRING, value);
     }
 
+    /**
+     * Creates a new Guid-valued OData property with {@link EdmType#GUID}
+     * 
+     * @param name  the property name
+     * @param value  the property value
+     * @return a new OData property instance
+     */
     public static OProperty<Guid> guid(String name, String value) {
         return guid(name, Guid.fromString(value));
     }
 
+    /**
+     * Creates a new Guid-valued OData property with {@link EdmType#GUID}
+     * 
+     * @param name  the property name
+     * @param value  the property value
+     * @return a new OData property instance
+     */
     public static OProperty<Guid> guid(String name, Guid value) {
         return new PropertyImpl<Guid>(name, EdmType.GUID, value);
     }
 
+    /**
+     * Creates a new boolean-valued OData property with {@link EdmType#BOOLEAN}
+     * 
+     * @param name  the property name
+     * @param value  the property value
+     * @return a new OData property instance
+     */
     public static OProperty<Boolean> boolean_(String name, Boolean value) {
         return new PropertyImpl<Boolean>(name, EdmType.BOOLEAN, value);
     }
 
+    /**
+     * Creates a new single-precision-valued OData property with {@link EdmType#SINGLE}
+     * 
+     * @param name  the property name
+     * @param value  the property value
+     * @return a new OData property instance
+     */
     public static OProperty<Float> single(String name, Float value) {
         return new PropertyImpl<Float>(name, EdmType.SINGLE, value);
     }
 
+    /**
+     * Creates a new double-precision-valued OData property with {@link EdmType#DOUBLE}
+     * 
+     * @param name  the property name
+     * @param value  the property value
+     * @return a new OData property instance
+     */
     public static OProperty<Double> double_(String name, Double value) {
         return new PropertyImpl<Double>(name, EdmType.DOUBLE, value);
     }
 
+    /**
+     * Creates a new LocalDateTime-valued OData property with {@link EdmType#DATETIME}
+     * 
+     * @param name  the property name
+     * @param value  the property value
+     * @return a new OData property instance
+     */
     public static OProperty<LocalDateTime> datetime(String name, LocalDateTime value) {
         return new PropertyImpl<LocalDateTime>(name, EdmType.DATETIME, value);
     }
 
+    /**
+     * Creates a new LocalDateTime-valued OData property with {@link EdmType#DATETIME}
+     * 
+     * @param name  the property name
+     * @param value  the property value
+     * @return a new OData property instance
+     */
     public static OProperty<LocalDateTime> datetime(String name, Date value) {
         return new PropertyImpl<LocalDateTime>(name, EdmType.DATETIME, new LocalDateTime(value));
     }
 
+    /**
+     * Creates a new LocalDateTime-valued OData property with {@link EdmType#DATETIME}
+     * 
+     * @param name  the property name
+     * @param value  the property value
+     * @return a new OData property instance
+     */
     public static OProperty<LocalDateTime> datetime(String name, Calendar value) {
         return new PropertyImpl<LocalDateTime>(name, EdmType.DATETIME, new LocalDateTime(value));
     }
 
+    /**
+     * Creates a new LocalTime-valued OData property with {@link EdmType#TIME}
+     * 
+     * @param name  the property name
+     * @param value  the property value
+     * @return a new OData property instance
+     */
     public static OProperty<LocalTime> time(String name, LocalTime value) {
         return new PropertyImpl<LocalTime>(name, EdmType.TIME, value);
     }
     
+    /**
+     * Creates a new LocalTime-valued OData property with {@link EdmType#TIME}
+     * 
+     * @param name  the property name
+     * @param value  the property value
+     * @return a new OData property instance
+     */
     public static OProperty<LocalTime> time(String name, Date value) {
         return new PropertyImpl<LocalTime>(name, EdmType.TIME, new LocalTime(value));
     }    
 
-    public static OProperty<Short> short_(String name, Short value) {
-        return new PropertyImpl<Short>(name, EdmType.INT16, value);
-    }
-
+    /**
+     * Creates a new BigDecimal-valued OData property with {@link EdmType#DECIMAL}
+     * 
+     * @param name  the property name
+     * @param value  the property value
+     * @return a new OData property instance
+     */
     public static OProperty<BigDecimal> decimal(String name, BigDecimal value) {
         return new PropertyImpl<BigDecimal>(name, EdmType.DECIMAL, value);
     }
 
+    /**
+     * Creates a new BigDecimal-valued OData property with {@link EdmType#DECIMAL}
+     * 
+     * @param name  the property name
+     * @param value  the property value
+     * @return a new OData property instance
+     */
     public static OProperty<BigDecimal> decimal(String name, BigInteger value) {
         return new PropertyImpl<BigDecimal>(name, EdmType.DECIMAL, BigDecimal.valueOf(value.longValue()));
     }
 
+    /**
+     * Creates a new BigDecimal-valued OData property with {@link EdmType#DECIMAL}
+     * 
+     * @param name  the property name
+     * @param value  the property value
+     * @return a new OData property instance
+     */
     public static OProperty<BigDecimal> decimal(String name, long value) {
         return new PropertyImpl<BigDecimal>(name, EdmType.DECIMAL, BigDecimal.valueOf(value));
     }
 
+    /**
+     * Creates a new BigDecimal-valued OData property with {@link EdmType#DECIMAL}
+     * 
+     * @param name  the property name
+     * @param value  the property value
+     * @return a new OData property instance
+     */
     public static OProperty<BigDecimal> decimal(String name, double value) {
         return new PropertyImpl<BigDecimal>(name, EdmType.DECIMAL, BigDecimal.valueOf(value));
     }
 
+    /**
+     * Creates a new byte-array-valued OData property with {@link EdmType#BINARY}
+     * 
+     * @param name  the property name
+     * @param value  the property value
+     * @return a new OData property instance
+     */
     public static OProperty<byte[]> binary(String name, byte[] value) {
         return new PropertyImpl<byte[]>(name, EdmType.BINARY, value);
     }
 
+    /**
+     * Creates a new byte-array-valued OData property with {@link EdmType#BINARY}
+     * 
+     * @param name  the property name
+     * @param value  the property value
+     * @return a new OData property instance
+     */
     public static OProperty<Byte[]> binary(String name, Byte[] value) {
         return new PropertyImpl<Byte[]>(name, EdmType.BINARY, value);
     }
 
+    /**
+     * Creates a new byte-valued OData property with {@link EdmType#BYTE}
+     * 
+     * @param name  the property name
+     * @param value  the property value
+     * @return a new OData property instance
+     */
     public static OProperty<Byte> byte_(String name, byte value) {
         return new PropertyImpl<Byte>(name, EdmType.BYTE, value);
     }

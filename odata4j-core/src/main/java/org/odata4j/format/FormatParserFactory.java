@@ -9,6 +9,8 @@ import org.odata4j.format.xml.AtomFeedFormatParser;
 
 public class FormatParserFactory {
 
+	private FormatParserFactory() {}
+	
     private static interface FormatParsers {
         public FormatParser<Feed> getFeedFormatParser(Settings settings);
         public FormatParser<Entry> getEntryFormatParser(Settings settings);

@@ -2,6 +2,8 @@ package org.odata4j.core;
 
 public class ODataConstants {
 
+	private ODataConstants() {}
+	
 	public static final String APPLICATION_ATOM_XML = "application/atom+xml";
     public static final String APPLICATION_ATOM_XML_CHARSET_UTF8 = APPLICATION_ATOM_XML + ";charset=utf-8";
     public static final String APPLICATION_XML_CHARSET_UTF8 = "application/xml;charset=utf-8";

@@ -21,7 +21,7 @@ import org.odata4j.internal.InternalUtil;
 
 import com.sun.jersey.api.client.ClientResponse;
 
-public class OEntityRequestImpl<T> implements OEntityRequest<T> {
+class OEntityRequestImpl<T> implements OEntityRequest<T> {
 
     private final boolean isDelete;
     private final ODataClient client;

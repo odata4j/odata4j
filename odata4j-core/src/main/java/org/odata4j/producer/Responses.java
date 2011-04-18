@@ -11,6 +11,8 @@ import org.odata4j.edm.EdmEntitySet;
  */
 public class Responses {
 
+	private Responses(){}
+	
 	/**
 	 * Create a new <code>EntitiesResponse</code> instance.
 	 * 

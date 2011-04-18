@@ -11,6 +11,7 @@ import org.odata4j.edm.EdmEntitySet;
  */
 public class OEntities {
 
+	private OEntities(){}
 	
     /**
      * Creates a new entity.

@@ -20,7 +20,7 @@ import org.odata4j.expression.ExpressionParser;
 import org.odata4j.expression.LiteralExpression;
 
 /**
- * Represents an immutable entity-key, made up of either a single unnamed-value or multiple named-values.
+ * An immutable entity-key, made up of either a single unnamed-value or multiple named-values.
  * Every entity must have an entity-key.  The entity-key must be unique within the entity-set, and thus defines an entity's identity.
  * <p>An entity-key made up a a single unnamed-value is called a single key.  An entity-key made up of multiple named-values is called a complex key.</p>
  * <p>The string representation of an entity-key is wrapped with parentheses, such as <code>(2)</code>, <code>('foo')</code>  or <code>(a=1,foo='bar')</code>.</p>

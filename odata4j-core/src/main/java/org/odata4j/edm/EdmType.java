@@ -13,8 +13,8 @@ import org.joda.time.LocalTime;
 import org.odata4j.core.Guid;
 
 /**
- * Representation of a type in the EDM type system.  
- * Simple types are exposed as constants, and associated with one or more java-types.
+ * A type in the EDM type system.  
+ * Simple types are exposed as constants and associated with one or more java-types.
  *
  * @see <a href="http://msdn.microsoft.com/en-us/library/bb399213.aspx">[msdn] Simple Types (EDM)</a>
  */

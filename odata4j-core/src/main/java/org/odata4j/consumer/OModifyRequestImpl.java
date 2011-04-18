@@ -14,7 +14,7 @@ import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.format.Entry;
 import org.odata4j.internal.EntitySegment;
 
-public class OModifyRequestImpl<T> extends OConsumerRequestBase implements OModifyRequest<T> {
+class OModifyRequestImpl<T> extends OConsumerRequestBase implements OModifyRequest<T> {
 
     private final T updateRoot;
     private final ODataClient client;

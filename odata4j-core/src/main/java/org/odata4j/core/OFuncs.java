@@ -7,6 +7,8 @@ import org.odata4j.edm.EdmProperty;
 
 public class OFuncs {
 
+	private OFuncs(){} 
+	
 	public static Func1<EdmProperty, String> edmPropertyName(){
 		return new Func1<EdmProperty, String>() {
             public String apply(EdmProperty input) {

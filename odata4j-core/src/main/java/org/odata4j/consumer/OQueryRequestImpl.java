@@ -27,7 +27,7 @@ import org.odata4j.internal.InternalUtil;
 
 import com.sun.jersey.api.client.ClientResponse;
 
-public class OQueryRequestImpl<T> implements OQueryRequest<T> {
+class OQueryRequestImpl<T> implements OQueryRequest<T> {
 
     private final ODataClient client;
     private final Class<T> entityType;

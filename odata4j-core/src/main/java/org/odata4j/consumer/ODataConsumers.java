@@ -5,8 +5,7 @@ import org.odata4j.core.OClientBehaviors;
 
 public class ODataConsumers {
 
-    private ODataConsumers() {
-    }
+    private ODataConsumers() {}
 
     public static ODataConsumer azureTables(String account, String key) {
         String url = "http://" + account + ".table.core.windows.net/";

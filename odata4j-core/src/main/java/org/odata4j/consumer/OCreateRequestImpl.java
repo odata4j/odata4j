@@ -24,7 +24,7 @@ import org.odata4j.internal.InternalUtil;
 
 import com.sun.jersey.api.client.ClientResponse;
 
-public class OCreateRequestImpl<T> extends OConsumerRequestBase implements OCreateRequest<T> {
+class OCreateRequestImpl<T> extends OConsumerRequestBase implements OCreateRequest<T> {
 
     private final ODataClient client;
     private OEntity parent;
