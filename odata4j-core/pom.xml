@@ -4,7 +4,7 @@
 
     <groupId>org.odata4j</groupId>
     <artifactId>odata4j</artifactId>
-    <version>0.4-SNAPSHOT</version>
+    <version>0.4</version>
     <packaging>jar</packaging>
 
     <name>odata4j</name>
@@ -46,7 +46,6 @@
 			<name>Sergej.T</name>
 			<email>sergei.inbox@gmail.com</email>
 		</developer>
-		<!-- TODO get oks from other committers -->
 	</developers>
     
     <properties>
