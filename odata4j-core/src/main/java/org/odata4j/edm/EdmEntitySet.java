@@ -3,7 +3,7 @@ package org.odata4j.edm;
 /**
  * The EntitySet element in conceptual schema definition language is a logical container for instances of an entity type and instances of any type that is derived from that entity type. 
  *
- * @see http://msdn.microsoft.com/en-us/library/bb386874.aspx
+ * @see <a href="http://msdn.microsoft.com/en-us/library/bb386874.aspx">[msdn] Entity Sets (EDM)</a>
  */
 public class EdmEntitySet {
 
@@ -18,7 +18,7 @@ public class EdmEntitySet {
     public final EdmEntityType type;
 
     /**
-     * Creates a new EdmEntitySet.
+     * Creates a new <code>EdmEntitySet</code>.
      * 
      * @param name  the name of the entity set
      * @param type  the entity type for which the entity set contains instances

@@ -5,7 +5,6 @@ package org.odata4j.format;
  * There are differences between the Atom and Json format. These interfaces are used
  * where we can handle both formats the same way.
  * 
- * @param <E>
  */
 public interface Feed {
 	public String getNext();

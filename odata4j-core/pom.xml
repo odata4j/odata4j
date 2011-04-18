@@ -24,15 +24,30 @@
         <developerConnection>scm:svn:https://odata4j.googlecode.com/svn/trunk/</developerConnection>
         <url>http://odata4j.googlecode.com/svn/trunk/</url>
     </scm>
-    
-    <developers>
-        <developer>
-            <id>john.spurlock</id>
-            <name>John Spurlock</name>
-            <email>john.spurlock@gmail.com</email>
-        </developer>
-        <!-- TODO get oks from other committers  -->
-    </developers>
+
+	<developers>
+		<developer>
+			<id>carljmosca</id>
+			<name>Carl J. Mosca</name>
+			<email>carljmosca@gmail.com</email>
+		</developer>
+		<developer>
+			<id>john.spurlock</id>
+			<name>John Spurlock</name>
+			<email>john.spurlock@gmail.com</email>
+		</developer>
+		<developer>
+			<id>karthik.tnt</id>
+			<name>Karthik S Kalahasthi</name>
+			<email>karthik.tnt@gmail.com</email>
+		</developer>
+		<developer>
+			<id>sergei.inbox</id>
+			<name>Sergej.T</name>
+			<email>sergei.inbox@gmail.com</email>
+		</developer>
+		<!-- TODO get oks from other committers -->
+	</developers>
     
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

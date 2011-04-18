@@ -11,7 +11,9 @@ import org.odata4j.edm.EdmEntitySet;
  *   <li>An identity: an entity-set and a unique entity-key within that set</li>
  *   <li>Properties: typed, named values</li>
  *   <li>Links: references to other entities</li>
- * <ul>
+ * </ul>
+ * <p>The {@link OEntities} static factory class can be used to create <code>OEntity</code> instances.</p>
+ * @see OEntities
  */
 public interface OEntity { 
 	

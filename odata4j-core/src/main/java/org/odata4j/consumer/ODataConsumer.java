@@ -24,7 +24,7 @@ import org.odata4j.internal.EdmDataServicesDecorator;
 import org.odata4j.internal.FeedCustomizationMapping;
 
 /**
- * ODataConsumer is the client-side interface to an OData service.
+ * <code>ODataConsumer</code> is the client-side interface to an OData service.
  * 
  * <p>Use {@link #create(String)} or one of the other static factory methods to create instances.</p>
  */
@@ -76,7 +76,7 @@ public class ODataConsumer {
     }
     
     /**
-     * Send http request and/or response information to standard out.  Useful for debugging.
+     * Sends http request and/or response information to standard out.  Useful for debugging.
      */
     public static final Dump dump = Dump.INSTANCE;
     
@@ -105,7 +105,7 @@ public class ODataConsumer {
     }
 
     /**
-     * Create a new consumer for the given OData service uri.
+     * Creates a new consumer for the given OData service uri.
      * 
      * @param serviceRootUri  the service uri <p>e.g. <code>http://services.odata.org/Northwind/Northwind.svc/</code></p>
      * @return a new OData consumer
@@ -115,7 +115,7 @@ public class ODataConsumer {
     }
 
     /**
-     * Create a new consumer for the given OData service uri, adding one or more client behaviors.  
+     * Creates a new consumer for the given OData service uri, adding one or more client behaviors.  
      * Client behaviors transform http requests to interact with services that require custom extensions.
      * 
      * @param serviceRootUri  the service uri <p>e.g. <code>http://services.odata.org/Northwind/Northwind.svc/</code></p>
@@ -135,7 +135,7 @@ public class ODataConsumer {
     }
     
 	/**
-	 * List the names of all top-level entity-sets for the OData service.
+	 * Lists the names of all top-level entity-sets for the OData service.
 	 * 
 	 * @return the entity-set names
 	 */
@@ -153,7 +153,7 @@ public class ODataConsumer {
      * Gets the OData service metadata.
      * 
      * @return the service metadata
-     * @see http://msdn.microsoft.com/en-us/library/dd541087(v=prot.10).aspx
+     * @see <a href="http://msdn.microsoft.com/en-us/library/dd541087(v=prot.10).aspx">[msdn] 2.2 &lt;edmx:DataServices&gt;</a>
      */
     public EdmDataServices getMetadata() {
         if (cachedMetadata==null)
@@ -164,11 +164,11 @@ public class ODataConsumer {
     
     
     /**
-     * Get entities referred to by a given related entities link.
-     * <p>The query request builder returned can be used for further server-side filtering.  Call {@link OQueryRequest#execute()} or simply iterate to issue request.</p>
+     * Gets entities referred to by the given related-entities link.
+     * <p>The query-request builder returned can be used for further server-side filtering.  Call {@link OQueryRequest#execute()} or simply iterate to issue request.</p>
      * 
      * @param link  the link
-     * @return a new query request builder
+     * @return a new query-request builder
      */
     public OQueryRequest<OEntity> getEntities(ORelatedEntitiesLink link) {
         ParsedHref parsed = ParsedHref.parse(link.getHref());
@@ -176,21 +176,24 @@ public class ODataConsumer {
     }
     
     /**
-     * Get entities from a given entity-set.
-     * <p>The query request builder returned can be used for further server-side filtering.  Call {@link OQueryRequest#execute()} or simply iterate to issue request.</p>
+     * Gets entities from the given entity-set.
+     * <p>The query-request builder returned can be used for further server-side filtering.  Call {@link OQueryRequest#execute()} or simply iterate to issue request.</p>
      * 
      * @param entitySetName  the entity-set name
-     * @return a new query request builder
+     * @return a new query-request builder
      */
     public OQueryRequest<OEntity> getEntities(String entitySetName) {
         return getEntities(OEntity.class,entitySetName);
     }
     
 	/**
-	 * @param <T>
-	 * @param entityType
-	 * @param entitySetName
-	 * @return
+	 * Gets entities from the given entity-set.  The entities will be represented as the given java-type.
+	 * <p>The query-request builder returned can be used for further server-side filtering.  Call {@link OQueryRequest#execute()} or simply iterate to issue request.</p>
+	 *  
+	 * @param <T>  the entity representation as a java type
+	 * @param entityType  the entity representation as a java type
+	 * @param entitySetName  the entity-set name
+	 * @return  a new query-request builder
 	 */
 	public <T> OQueryRequest<T> getEntities(Class<T> entityType, String entitySetName) {
         FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
@@ -200,8 +203,11 @@ public class ODataConsumer {
 	
 	
     /**
-     * @param link
-     * @return
+     * Gets the entity referred to by the given related entity link.
+     * <p>The entity-request builder returned can be used for further navigation.  Call {@link OEntityRequest#execute()} to issue request.</p>
+     * 
+     * @param link  the link
+     * @return a new entity-request builder
      */
     public OEntityRequest<OEntity> getEntity(ORelatedEntityLink link) {
         ParsedHref parsed = ParsedHref.parse(link.getHref());
@@ -209,47 +215,63 @@ public class ODataConsumer {
     }
     
     /**
-     * @param entitySetName
-     * @param keyValue
-     * @return
+     * Gets the entity by entity-set name and entity-key value.
+     * <p>The entity-request builder returned can be used for further navigation.  Call {@link OEntityRequest#execute()} to issue request.</p>
+     * 
+     * @param entitySetName  the name of the entity-set
+     * @param keyValue  the entity-key value
+     * @return a new entity-request builder
      */
     public OEntityRequest<OEntity> getEntity(String entitySetName, Object keyValue) {
     	return getEntity(entitySetName,OEntityKey.create(keyValue));
     }
     
     /**
-     * @param entity
-     * @return
+     * Gets the latest version of an entity using the given entity as a template.
+     * <p>The entity-request builder returned can be used for further navigation.  Call {@link OEntityRequest#execute()} to issue request.</p>
+     *  
+     * @param entity  an existing entity to use as a template, using its entity-set and entity-key
+     * @return a new entity-request builder
      */
     public OEntityRequest<OEntity> getEntity(OEntity entity) {
         return getEntity(entity.getEntitySet().name,entity.getEntityKey());
     }
     
     /**
-     * @param entitySetName
-     * @param key
-     * @return
+     * Gets the entity by entity-set name and entity-key.
+     * <p>The entity-request builder returned can be used for further navigation.  Call {@link OEntityRequest#execute()} to issue request.</p>
+     * 
+     * @param entitySetName  the name of the entity-set
+     * @param key  the entity-key
+     * @return a new entity-request builder
      */
     public OEntityRequest<OEntity> getEntity(String entitySetName, OEntityKey key) {
         return getEntity(OEntity.class,entitySetName,key);
     }
     
     /**
-     * @param <T>
-     * @param entityType
-     * @param entitySetName
-     * @param keyValue
-     * @return
+     * Gets the entity by entity-set name and entity-key value.  The entity will be represented as the given java-type.
+     * <p>The entity-request builder returned can be used for further navigation.  Call {@link OEntityRequest#execute()} to issue request.</p>
+     * 
+     * @param <T>  the entity representation as a java type
+     * @param entityType  the entity representation as a java type
+     * @param entitySetName  the name of the entity-set
+     * @param keyValue  the entity-key value
+     * @return a new entity-request builder
      */
     public <T> OEntityRequest<T> getEntity(Class<T> entityType, String entitySetName, Object keyValue) {
     	return getEntity(entityType,entitySetName,OEntityKey.create(keyValue));
     }
+    
     /**
-     * @param <T>
-     * @param entityType
-     * @param entitySetName
-     * @param key
-     * @return
+     * Gets the entity by entity-set name and entity-key.  The entity will be represented as the given java-type.
+     * <p>The entity-request builder returned can be used for further navigation.  Call {@link OEntityRequest#execute()} to issue request.</p>
+     * 
+     * @param <T>  the entity representation as a java type
+     * @param entityType   the entity representation as a java type
+     * @param entitySetName  the name of the entity-set
+     * @param key  the entity-key
+     * @return a new entity-request builder
      */
     public <T> OEntityRequest<T> getEntity(Class<T> entityType, String entitySetName, OEntityKey key) {
         FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
@@ -259,8 +281,11 @@ public class ODataConsumer {
     }
 
 	/**
-	 * @param entitySetName
-	 * @return
+	 * Creates a new entity in the given entity-set.
+	 * <p>The create-request builder returned can be used to construct the new entity.  Call {@link OCreateRequest#execute()} to issue request.</p>
+	 * 
+	 * @param entitySetName  the name of the entity-set
+	 * @return a new create-request builder
 	 */
 	public OCreateRequest<OEntity> createEntity(String entitySetName) {
 		FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
@@ -269,8 +294,11 @@ public class ODataConsumer {
 	}
 
 	/**
-	 * @param entity
-	 * @return
+	 * Modifies an existing entity using update semantics.
+	 * <p>The modification-request builder returned can be used to redefine the new entity.  Call {@link OModifyRequest#execute()} to issue request.</p>
+	 * 
+	 * @param entity  the entity identity
+	 * @return a new modification-request builder
 	 */
 	public OModifyRequest<OEntity> updateEntity(OEntity entity) {
         return new OModifyRequestImpl<OEntity>(entity, client, serviceRootUri, getMetadata(),
@@ -278,26 +306,35 @@ public class ODataConsumer {
     }
 
 	/**
-	 * @param entity
-	 * @return
+	 * Modifies an existing entity using merge semantics.
+	 * <p>The modification-request builder returned can be used to modify the new entity.  Call {@link OModifyRequest#execute()} to issue request.</p>
+	 * 
+	 * @param entity  the entity identity
+	 * @return a new modification-request builder
 	 */
 	public OModifyRequest<OEntity> mergeEntity(OEntity entity) {
 		return mergeEntity(entity.getEntitySet().name,entity.getEntityKey());
 	}
 	
 	/**
-	 * @param entitySetName
-	 * @param keyValue
-	 * @return
+	 * Modifies an existing entity using merge semantics.
+	 * <p>The modification-request builder returned can be used to modify the new entity.  Call {@link OModifyRequest#execute()} to issue request.</p>
+	 *  
+	 * @param entitySetName  the entity identity entity-set name
+	 * @param keyValue  the entity identity key value
+	 * @return a new modification-request builder
 	 */
 	public OModifyRequest<OEntity> mergeEntity(String entitySetName, Object keyValue) {
 		return mergeEntity(entitySetName, OEntityKey.create(keyValue));
 	}
 
 	/**
-	 * @param entitySetName
-	 * @param key
-	 * @return
+	 * Modifies an existing entity using merge semantics.
+	 * <p>The modification-request builder returned can be used to modify the new entity.  Call {@link OModifyRequest#execute()} to issue request.</p>
+	 * 
+	 * @param entitySetName  the entity identity entity-set name
+	 * @param key  the entity identity key
+	 * @return a new modification-request builder
 	 */
 	public OModifyRequest<OEntity> mergeEntity(String entitySetName, OEntityKey key) {
 		return new OModifyRequestImpl<OEntity>(null, client, serviceRootUri,
@@ -305,26 +342,35 @@ public class ODataConsumer {
 	}
 
 	/**
-	 * @param entity
-	 * @return
+	 * Deletes an existing entity.
+	 * <p>The entity-request builder returned can be used for further navigation.  Call {@link OEntityRequest#execute()} to issue request.</p>
+	 * 
+	 * @param entity  the entity identity
+	 * @return a new entity-request builder
 	 */
 	public OEntityRequest<Void> deleteEntity(OEntity entity) {
 		return deleteEntity(entity.getEntitySet().name,entity.getEntityKey());
 	}
 	
     /**
-     * @param entitySetName
-     * @param keyValue
-     * @return
+     * Deletes an existing entity.
+     * <p>The entity-request builder returned can be used for further navigation.  Call {@link OEntityRequest#execute()} to issue request.</p>
+     * 
+     * @param entitySetName  the entity identity entity-set name
+     * @param keyValue  the entity identity key value
+     * @return a new entity-request builder
      */
     public OEntityRequest<Void> deleteEntity(String entitySetName, Object keyValue) {
     	return deleteEntity(entitySetName,OEntityKey.create(keyValue));
     }
     
 	/**
-	 * @param entitySetName
-	 * @param key
-	 * @return
+	 * Deletes an existing entity.
+	 * <p>The entity-request builder returned can be used for further navigation.  Call {@link OEntityRequest#execute()} to issue request.</p>
+	 * 
+	 * @param entitySetName  the entity identity entity-set name
+	 * @param key  the entity identity key
+	 * @return a new entity-request builder
 	 */
 	public OEntityRequest<Void> deleteEntity(String entitySetName, OEntityKey key) {
         FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);

@@ -19,6 +19,13 @@ import org.odata4j.expression.Expression;
 import org.odata4j.expression.ExpressionParser;
 import org.odata4j.expression.LiteralExpression;
 
+/**
+ * Represents an immutable entity-key, made up of either a single unnamed-value or multiple named-values.
+ * Every entity must have an entity-key.  The entity-key must be unique within the entity-set, and thus defines an entity's identity.
+ * <p>An entity-key made up a a single unnamed-value is called a single key.  An entity-key made up of multiple named-values is called a complex key.</p>
+ * <p>The string representation of an entity-key is wrapped with parentheses, such as <code>(2)</code>, <code>('foo')</code>  or <code>(a=1,foo='bar')</code>.</p>
+ * <p>Entity-keys are equal if their string representations are equal.</p>
+ */
 public class OEntityKey {
 
 	public enum KeyType{
@@ -34,6 +41,18 @@ public class OEntityKey {
 		this.keyString = keyString(values);
 	}
 		
+	/**
+	 * Creates an entity-key.
+	 * <ul>
+	 *   <li><code>OEntityKey.create(2)</code></li>,
+	 *   <li><code>OEntityKey.create("foo")</code></li>
+	 *   <li><code>OEntityKey.create("a",1,"foo","bar")</code></li>
+	 *   <li><code>OEntityKey.create(NamedValues.create("a",1),NamedValues.create("foo","bar"))</code></li>
+	 * </ul></p>
+	 * 
+	 * @param values  the key values
+	 * @return a newly-created entity-key
+	 */
 	@SuppressWarnings("unchecked")
 	public static OEntityKey create(Object... values) {
 		if (values!=null&&values.length==1&&values[0] instanceof Iterable<?>)
@@ -53,10 +72,23 @@ public class OEntityKey {
 		return new OEntityKey(v);
 	}
 	
+	/**
+	 * Creates an entity-key from a map of names and values.
+	 * 
+	 * @param values  the map of names and values
+	 * @return a newly-created entity-key
+	 */
 	public static OEntityKey create(Map<String,Object> values) {
 		return create(NamedValues.fromMap(values));
 	}
 
+	/**
+	 * Creates an entity-key using key information from the given entity-set and values from the given property list.
+	 * 
+	 * @param entitySet  an entity-set to provide key information
+	 * @param props  a list of properties to provide key values
+	 * @return a newly-created entity-key
+	 */
 	public static OEntityKey infer(EdmEntitySet entitySet, List<OProperty<?>> props) {
 		if (entitySet==null) throw new IllegalArgumentException("EdmEntitySet cannot be null");
 		if (props==null) throw new IllegalArgumentException("props cannot be null");
@@ -72,6 +104,12 @@ public class OEntityKey {
 		return new OEntityKey(v);
 	}
 	
+	/**
+	 * Creates an entity-key from its standard string representation.
+	 * 
+	 * @param keyString  a standard key-string
+	 * @return a newly-created entity-key
+	 */
 	public static OEntityKey parse(String keyString) {
 
 		if (keyString==null)
@@ -145,10 +183,20 @@ public class OEntityKey {
 		return toKeyString();
 	}
 
+	/**
+	 * Gets the standard string representation of this entity-key, including parentheses.
+	 * 
+	 * @return the standard key-string
+	 */
 	public String toKeyString() {
 		return keyString;
 	}
 	
+	/**
+	 * Gets the standard string representation of this entity-key, excluding parentheses.
+	 * 
+	 * @return the standard key-string, without parentheses
+	 */
 	public String toKeyStringWithoutParentheses() {
 		String keyString = this.keyString;
 		if (keyString.startsWith("(") && keyString.endsWith(")"))
@@ -167,19 +215,33 @@ public class OEntityKey {
 				&& ((OEntityKey) obj).keyString.equals(keyString);
 	}
 
+	/**
+	 * Gets a the value of a single-valued entity-key.
+	 * 
+	 * @return the key value
+	 */
 	public Object asSingleValue() {
 		if (values.length > 1)
-			throw new RuntimeException(
-					"Complex key cannot be represented as a single value");
+			throw new RuntimeException("Complex key cannot be represented as a single value");
 		return values[0];
 	}
 
+	/**
+	 * Gets the values of a complex entity-key.
+	 * 
+	 * @return the key values as a set of named-values
+	 */
 	@SuppressWarnings("unchecked")
 	public Set<NamedValue<?>> asComplexValue() {
 		assertComplex();
 		return (Set<NamedValue<?>>)(Object)toSortedSet( Enumerable.create(values).cast(NamedValue.class),OComparators.namedValueByNameRaw());
 	}
 	
+	/**
+	 * Gets the values of complex entity-key.
+	 * 
+	 * @return the key values as a set of properties
+	 */
 	public Set<OProperty<?>> asComplexProperties() {
 		assertComplex();
 		return toSortedSet(Enumerable.create(values).cast(NamedValue.class).select(OFuncs.namedValueToPropertyRaw()),OComparators.propertyByName());
@@ -196,6 +258,11 @@ public class OEntityKey {
 			throw new RuntimeException("Single-valued key cannot be represented as a complex value");
 	}
 	
+	/**
+	 * Gets the entity-key type: SINGLE or COMPLEX.
+	 * 
+	 * @return SINGLE or COMPLEX
+	 */
 	public KeyType getKeyType() {
 		return values.length == 1 ? KeyType.SINGLE : KeyType.COMPLEX;
 	}

@@ -16,7 +16,7 @@ import org.odata4j.core.Guid;
  * Representation of a type in the EDM type system.  
  * Simple types are exposed as constants, and associated with one or more java-types.
  *
- * @see http://msdn.microsoft.com/en-us/library/bb399213.aspx
+ * @see <a href="http://msdn.microsoft.com/en-us/library/bb399213.aspx">[msdn] Simple Types (EDM)</a>
  */
 public class EdmType {
 

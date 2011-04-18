@@ -6,7 +6,6 @@ import java.util.Set;
 
 /**
  * A static factory to create immutable {@link NamedValue} instances.
- * 
  */
 public class NamedValues {
 

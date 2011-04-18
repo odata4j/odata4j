@@ -10,7 +10,7 @@ import org.odata4j.core.ODataVersion;
 /**
  * The <edmx:DataServices> element contains the service metadata of a Data Service. This service metadata contains zero or more EDM conceptual schemas.
  * <p>Since this is the root of a large metadata tree, convenience methods are included to help locate child metadata elements.</p>
- * @see http://msdn.microsoft.com/en-us/library/dd541087(v=prot.10).aspx
+ * @see <a href="http://msdn.microsoft.com/en-us/library/dd541087(v=prot.10).aspx">[msdn] 2.2 &lt;edmx:DataServices&gt;</a>
  */
 public class EdmDataServices {
 

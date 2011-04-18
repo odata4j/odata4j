@@ -1,7 +1,7 @@
 package org.odata4j.core;
 
 /**
- * A consumer-side create request builder.  Call {@link #execute()} to issue the request.
+ * A consumer-side create-request builder.  Call {@link #execute()} to issue the request.
  *
  * @param <T>  the entity representation as a java type
  */
@@ -12,7 +12,7 @@ public interface OCreateRequest<T> {
      * Set properties on the new entity.
      * 
      * @param props  the properties
-     * @return the create request builder 
+     * @return the create-request builder 
      */
     public abstract OCreateRequest<T> properties(OProperty<?>... props);
     
@@ -20,7 +20,7 @@ public interface OCreateRequest<T> {
      * Set properties on the new entity.
      * 
      * @param props  the properties
-     * @return the create request builder 
+     * @return the create-request builder 
      */
     public abstract OCreateRequest<T> properties(Iterable<OProperty<?>> props);
     
@@ -29,7 +29,7 @@ public interface OCreateRequest<T> {
 	 * 
 	 * @param navProperty  the new entity's relationship navigation property
 	 * @param target  the link target entity
-	 * @return the create request builder
+	 * @return the create-request builder
 	 * 
 	 * @see #addToRelation(OEntity, String)
      * @see <a href="http://www.odata.org/developers/protocols/operations#CreatingnewEntries">http://www.odata.org/developers/protocols/operations#CreatingnewEntries</a>
@@ -41,7 +41,7 @@ public interface OCreateRequest<T> {
 	 * 
 	 * @param navProperty  the new entity's relationship navigation property
 	 * @param targetKey  the key of the link target entity
-	 * @return the create request builder
+	 * @return the create-request builder
 	 * 
 	 * @see #addToRelation(OEntity, String)
      * @see <a href="http://www.odata.org/developers/protocols/operations#CreatingnewEntries">http://www.odata.org/developers/protocols/operations#CreatingnewEntries</a>
@@ -55,7 +55,7 @@ public interface OCreateRequest<T> {
      * 
      * @param parent  the parent entity
      * @param navProperty  the parent entity's relationship collection navigation property
-     * @return the create request builder
+     * @return the create-request builder
      * 
      * @see #link(String, OEntity)
      * @see <a href="http://www.odata.org/developers/protocols/operations#CreatingnewEntries">http://www.odata.org/developers/protocols/operations#CreatingnewEntries</a>
@@ -68,14 +68,14 @@ public interface OCreateRequest<T> {
 	 *  
 	 * @param navProperty  the new entity's relationship navigation property
 	 * @param entities  related entities, returned by {@link #get()}
-	 * @return  the create request builder
+	 * @return  the create-request builder
 	 * 
 	 * @see #get()
 	 */
 	public abstract OCreateRequest<T> inline(String navProperty, OEntity... entities);
 
 	/**
-	 * Sends the create request to the OData service and returns the newly 
+	 * Sends the create-request to the OData service and returns the newly 
 	 * created entity.
 	 * 
 	 * @return newly created entity
@@ -83,9 +83,9 @@ public interface OCreateRequest<T> {
     public abstract T execute();
     
     /**
-     * Returns a locally-built entity and does not send the create request
+     * Returns a locally-built entity and does not send the create-request
      * to the service. The locally-built entity can be used inline as part of
-     * other create requests.
+     * other create-requests.
      * 
      * @return new locally built entity
      * @see #inline(String, OEntity...)
