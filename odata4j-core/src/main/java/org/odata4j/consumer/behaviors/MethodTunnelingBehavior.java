@@ -3,7 +3,6 @@ package org.odata4j.consumer.behaviors;
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.core.OClientBehavior;
 import org.odata4j.core.ODataConstants;
-import org.odata4j.format.Entry;
 
 import com.sun.jersey.api.client.config.ClientConfig;
 
@@ -19,7 +18,7 @@ public class MethodTunnelingBehavior implements OClientBehavior {
     public void modify(ClientConfig clientConfig) { }
 
     @Override
-    public <E extends Entry> ODataClientRequest transform(ODataClientRequest request) {
+    public ODataClientRequest transform(ODataClientRequest request) {
         String method = request.getMethod();
         for(String methodToTunnel : methodsToTunnel) {
             if (method.equals(methodToTunnel)) {

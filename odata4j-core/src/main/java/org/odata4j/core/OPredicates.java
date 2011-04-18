@@ -2,6 +2,9 @@ package org.odata4j.core;
 
 import org.core4j.Predicate1;
 
+/**
+ * A static factory to create useful generic predicate instances.
+ */
 public class OPredicates {
 
 	private OPredicates(){}

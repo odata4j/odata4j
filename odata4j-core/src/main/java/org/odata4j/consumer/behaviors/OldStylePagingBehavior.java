@@ -2,7 +2,6 @@ package org.odata4j.consumer.behaviors;
 
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.core.OClientBehavior;
-import org.odata4j.format.Entry;
 
 import com.sun.jersey.api.client.config.ClientConfig;
 
@@ -28,7 +27,7 @@ public class OldStylePagingBehavior implements OClientBehavior {
     }
 
     @Override
-    public <E extends Entry> ODataClientRequest transform(ODataClientRequest request) {
+    public ODataClientRequest transform(ODataClientRequest request) {
         if (request.getQueryParams().containsKey("$page"))
             return request;
         return request.queryParam("$page", Integer.toString(startPage)).queryParam("$itemsPerPage", Integer.toString(itemsPerPage));

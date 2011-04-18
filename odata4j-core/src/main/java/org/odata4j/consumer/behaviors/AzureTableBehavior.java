@@ -10,7 +10,6 @@ import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OClientBehavior;
 import org.odata4j.core.ODataConstants;
-import org.odata4j.format.Entry;
 import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
 
 import com.sun.jersey.api.client.config.ClientConfig;
@@ -29,7 +28,7 @@ public class AzureTableBehavior implements OClientBehavior {
     public void modify(ClientConfig clientConfig) { }
 
     @Override
-    public <E extends Entry> ODataClientRequest transform(ODataClientRequest request) {
+    public ODataClientRequest transform(ODataClientRequest request) {
         try {
             String utc = new DateTime(DateTimeZone.UTC).toString("EEE, dd MMM yyyy HH:mm:ss zzz");
             String date = utc.substring(0, utc.lastIndexOf(' ') + 1) + "GMT";

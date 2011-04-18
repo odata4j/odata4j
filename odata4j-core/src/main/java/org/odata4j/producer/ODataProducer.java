@@ -5,11 +5,10 @@ import org.odata4j.core.OEntityKey;
 import org.odata4j.edm.EdmDataServices;
 
 /** 
- * <code>ODataProducer</code> is the server-side interface to be implemented by an OData data-source.  
- * <p>The interface consists of two portions: the first portion consists
- * of the methods clients use to retrieve/query entities and to introspect service metadata; 
- * the second half consists of methods to create/modify/delete entities.  Not all
- * OData producers will support this second half of the interface.</p>
+ * Implement <code>ODataProducer</code> on the server-side to create a new java-based OData producer.
+ * <p>The interface contains methods for clients to retrieve/query entities and to introspect service metadata (for read-only services);
+ * as well as methods to create/modify/delete entities (for read-write services).</p>
+ * <p>Note that all client requests/responses are normalized - all details involving the OData http protocol, query expression model, EDM structure are handled by odata4j at a higher level.</p>
  */
 public interface ODataProducer {
 

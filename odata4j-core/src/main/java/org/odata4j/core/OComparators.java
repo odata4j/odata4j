@@ -2,6 +2,9 @@ package org.odata4j.core;
 
 import java.util.Comparator;
 
+/**
+ * A static factory to create useful {@link Comparator} instances.
+ */
 public class OComparators {
 
 	private OComparators() {}

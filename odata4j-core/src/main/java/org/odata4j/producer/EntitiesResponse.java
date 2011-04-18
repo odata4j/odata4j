@@ -6,7 +6,7 @@ import org.odata4j.core.OEntity;
 import org.odata4j.edm.EdmEntitySet;
 
 /**
- * An <code>EntitiesResponse</code> represents a response to a client request expecting multiple OData entities.
+ * An <code>EntitiesResponse</code> is a response to a client request expecting multiple OData entities.
  * <p>The {@link Responses} static factory class can be used to create <code>EntitiesResponse</code> instances.</p>
  */
 public interface EntitiesResponse extends BaseResponse {
@@ -26,16 +26,16 @@ public interface EntitiesResponse extends BaseResponse {
     public List<OEntity> getEntities();
 
     /**
-     * Gets the inline-count value, if necessary.
+     * Gets the inline-count value, if applicable.
      * 
-     * @return the inline-count value, if necessary
+     * @return the inline-count value, if applicable
      */
     public Integer getInlineCount();
     
     /**
-     * Gets the continuation token to use on a subsequent request, if necessary.
+     * Gets the continuation token to use on a subsequent request, if applicable.
      * 
-     * @return a continuation token, if necessary
+     * @return a continuation token, if applicable
      */
     public String getSkipToken();
 }

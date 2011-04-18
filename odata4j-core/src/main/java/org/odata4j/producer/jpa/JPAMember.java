@@ -16,6 +16,8 @@ import org.core4j.CoreUtils;
 
 public abstract class JPAMember {
 
+	private JPAMember() {}
+	
 	public abstract Class<?> getJavaType();
 	public abstract boolean isReadable();
 	public abstract boolean isWriteable();

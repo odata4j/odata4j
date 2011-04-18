@@ -26,7 +26,7 @@ import org.odata4j.internal.FeedCustomizationMapping;
 /**
  * <code>ODataConsumer</code> is the client-side interface to an OData service.
  * 
- * <p>Use {@link #create(String)} or one of the other static factory methods to create instances.</p>
+ * <p>Use {@link #create(String)} or one of the other static factory methods to connect to an existing OData service.</p>
  */
 public class ODataConsumer {
 
@@ -58,20 +58,54 @@ public class ODataConsumer {
     }
     
 
+    /**
+     * Sends http request and/or response information to standard out.  Useful for debugging.
+     */
     public static enum Dump{
+    	/**
+    	 * enum-as-singleton pattern
+    	 */
     	INSTANCE;
     	private boolean requestHeaders;
     	private boolean requestBody;
     	private boolean responseHeaders;
     	private boolean responseBody;
+    	
+    	/**
+    	 * Sets whether or not to dump all http request and response information.
+    	 */
     	public void all(boolean dump){ requestHeaders(dump); requestBody(dump); responseHeaders(dump); responseBody(dump); }
+    	/**
+    	 * Are http request headers currently dumped?
+    	 */
     	public boolean requestHeaders() { return requestHeaders; }
+    	/**
+    	 * Sets whether or not to dump http request headers.
+    	 */
     	public void requestHeaders(boolean dump){ this.requestHeaders = dump; }
+    	/**
+    	 * Are http request bodies currently dumped?
+    	 */
     	public boolean requestBody() { return requestBody; }
+    	/**
+    	 * Sets whether or not to dump http request bodies.
+    	 */
     	public void requestBody(boolean dump){ this.requestBody = dump; }
+    	/**
+    	 * Are http response headers currently dumped?
+    	 */
     	public boolean responseHeaders() { return responseHeaders; }
+    	/**
+    	 * Sets whether or not to dump http response headers.
+    	 */
     	public void responseHeaders(boolean dump){ this.responseHeaders = dump; }
+    	/**
+    	 * Are http response bodies currently dumped?
+    	 */
     	public boolean responseBody() { return responseBody; }
+    	/**
+    	 * Sets whether or not to dump http response bodies.
+    	 */
     	public void responseBody(boolean dump){ this.responseBody = dump; }
     }
     

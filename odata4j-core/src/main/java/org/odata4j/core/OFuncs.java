@@ -5,6 +5,9 @@ import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmEntityType;
 import org.odata4j.edm.EdmProperty;
 
+/**
+ * A static factory to create useful generic function instances.
+ */
 public class OFuncs {
 
 	private OFuncs(){} 

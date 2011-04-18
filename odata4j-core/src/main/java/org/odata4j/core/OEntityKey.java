@@ -28,6 +28,9 @@ import org.odata4j.expression.LiteralExpression;
  */
 public class OEntityKey {
 
+	/**
+	 * SINGLE or COMPLEX
+	 */
 	public enum KeyType{
 		SINGLE,
 		COMPLEX
