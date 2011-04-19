@@ -15,6 +15,7 @@ public class Oneoff05_createEntityElementCollection extends OneoffTestBase {
 		setUpClass(Oneoff05_createEntityElementCollection.class,20);		
 	}
 	
+	@SuppressWarnings("unused")
 	@Ignore
 	@Test
 	public void createEntityElementCollection()	

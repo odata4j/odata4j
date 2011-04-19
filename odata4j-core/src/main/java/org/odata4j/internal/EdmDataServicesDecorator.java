@@ -7,6 +7,7 @@ import org.odata4j.edm.EdmComplexType;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmEntityType;
+import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.edm.EdmPropertyBase;
 import org.odata4j.edm.EdmSchema;
 
@@ -37,6 +38,10 @@ public abstract class EdmDataServicesDecorator extends EdmDataServices {
 	@Override
 	public EdmEntitySet findEdmEntitySet(String entitySetName) {
 		return getDelegate().findEdmEntitySet(entitySetName);
+	}
+	@Override
+	public EdmFunctionImport findEdmFunctionImport(String functionImportName) {
+		return getDelegate().findEdmFunctionImport(functionImportName);
 	}
 	@Override
 	public EdmComplexType findEdmComplexType(String complexTypeFQName) {

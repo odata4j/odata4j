@@ -467,7 +467,11 @@ public class ExpressionParser {
                 return Expression.double_(doubleValue);
             }
         }
-
+        // decimal literal: 2.0m
+        if (tokens.size() == 4 && tokens.get(0).type == TokenType.NUMBER && tokens.get(1).type == TokenType.SYMBOL && tokens.get(1).value.equals(".") && tokens.get(2).type == TokenType.NUMBER && tokens.get(3).value.equalsIgnoreCase("m")) {
+        	BigDecimal decimalValue = new BigDecimal(tokens.get(0).value + "." + tokens.get(2).value);
+            return Expression.decimal(decimalValue);
+        }
         // TODO literals: byteLiteral, sbyteliteral
 
         // single token expression
@@ -656,7 +660,7 @@ public class ExpressionParser {
             return rt;
         }
 
-        throw new RuntimeException("Unexpected");
+        throw new RuntimeException("Unable to read expression with tokens: " + tokens);
 
     }
 

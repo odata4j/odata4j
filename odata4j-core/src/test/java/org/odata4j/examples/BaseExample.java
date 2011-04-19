@@ -34,7 +34,7 @@ public class BaseExample {
         report(caption);
         for(OProperty<?> p : entity.getProperties()){
         	Object v = p.getValue();
-        	if (p.getType().equals(EdmType.BINARY))
+        	if (p.getType().equals(EdmType.BINARY) && v != null)
         		v = org.odata4j.repack.org.apache.commons.codec.binary.Base64.encodeBase64String((byte[])v).trim();
             report("  %s: %s",p.getName(),v);
         }

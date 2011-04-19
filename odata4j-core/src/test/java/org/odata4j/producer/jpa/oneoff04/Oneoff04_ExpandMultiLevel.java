@@ -1,7 +1,5 @@
 package org.odata4j.producer.jpa.oneoff04;
 
-import java.util.List;
-
 import junit.framework.Assert;
 
 import org.junit.BeforeClass;
@@ -10,8 +8,6 @@ import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperties;
-import org.odata4j.core.ORelatedEntitiesLink;
-import org.odata4j.producer.jpa.northwind.test.NorthwindTestUtils;
 import org.odata4j.producer.jpa.oneoff.OneoffTestBase;
 
 public class Oneoff04_ExpandMultiLevel extends OneoffTestBase {
@@ -21,6 +17,7 @@ public class Oneoff04_ExpandMultiLevel extends OneoffTestBase {
 		setUpClass(Oneoff04_ExpandMultiLevel.class,20);		
 	}
 	
+	@SuppressWarnings("unused")
 	@Ignore
 	@Test
 	public void ExpandMultiLevel()

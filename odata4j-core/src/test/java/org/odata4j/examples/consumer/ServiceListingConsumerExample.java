@@ -11,8 +11,8 @@ public class ServiceListingConsumerExample extends BaseExample {
     public static void main(String[] args) {
 
         ODataConsumer.dump.requestHeaders(true);
-       // ODataConsumer.DUMP_RESPONSE_BODY = true;
-       // ODataConsumer.DUMP_RESPONSE_HEADERS = true;
+        //ODataConsumer.dump.responseBody(true);
+        //ODataConsumer.dump.responseHeaders(true);
         
         Enumerable<String> smallServices = Enumerable.create(
         		
@@ -28,7 +28,8 @@ public class ServiceListingConsumerExample extends BaseExample {
                 ODataEndpoints.AGILITRAIN,
                 ODataEndpoints.PROAGORA_FR,
                 ODataEndpoints.PROAGORA_EN,
-                ODataEndpoints.INETA_LIVE
+                ODataEndpoints.INETA_LIVE,
+                ODataEndpoints.NUGET
         );
         
         
@@ -48,7 +49,7 @@ public class ServiceListingConsumerExample extends BaseExample {
                 ODataEndpoints.NETFLIX,
                // ODataEndpoints.STACK_OVERFLOW,	// Votes entity-sets return 500
                // ODataEndpoints.SUPER_USER,			
-              //  ODataEndpoints.SERVER_FAULT,		
+               // ODataEndpoints.SERVER_FAULT,		
                // ODataEndpoints.META_STACK_OVERFLOW,	
                 ODataEndpoints.WORLD_CUP
         );

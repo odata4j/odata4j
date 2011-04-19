@@ -225,7 +225,7 @@ class ODataClient {
     
     private void dumpResponseBody(String textEntity, MediaType type){
     	String logXml = textEntity;
-    	if (type.toString().contains("xml"))
+    	if (type.toString().contains("xml")||logXml!=null&&logXml.startsWith("<feed"))
 	        try {
 	        	logXml = XDocument.parse(logXml).toString(XmlFormat.INDENTED);
 	        } catch (Exception ignore){}

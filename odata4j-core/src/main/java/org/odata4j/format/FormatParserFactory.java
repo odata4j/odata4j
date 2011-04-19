@@ -64,12 +64,12 @@ public class FormatParserFactory {
 
         @Override
         public FormatParser<Feed> getFeedFormatParser(Settings settings) {
-            return new AtomFeedFormatParser(settings.metadata, settings.entitySetName, settings.entityKey);
+            return new AtomFeedFormatParser(settings.metadata, settings.entitySetName, settings.entityKey, settings.fcMapping);
         }
 
         @Override
         public FormatParser<Entry> getEntryFormatParser(Settings settings) {
-            return new AtomEntryFormatParser(settings.metadata, settings.entitySetName, settings.entityKey);
+            return new AtomEntryFormatParser(settings.metadata, settings.entitySetName, settings.entityKey, settings.fcMapping);
         }
         
     }

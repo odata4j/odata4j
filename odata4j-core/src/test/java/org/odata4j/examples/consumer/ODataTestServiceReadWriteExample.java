@@ -17,10 +17,7 @@ public class ODataTestServiceReadWriteExample extends BaseExample {
         // create a new odata consumer pointing to the odata test read-write service
         ODataConsumer c = ODataConsumer.create(ODATA_TEST_SERVICE_READWRITE2);
         
-//        ODataConsumer.DUMP_REQUEST_HEADERS = true;
-//        ODataConsumer.DUMP_REQUEST_BODY = true;
-//        ODataConsumer.DUMP_RESPONSE_HEADERS = true;
-//        ODataConsumer.DUMP_RESPONSE_BODY = true;
+        //ODataConsumer.dump.all(true);
         
         // take a look at the service edm
         reportMetadata(c.getMetadata());

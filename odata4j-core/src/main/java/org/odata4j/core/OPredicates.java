@@ -36,4 +36,12 @@ public class OPredicates {
             }
         };
 	}
+
+	public static Predicate1<String> equalsIgnoreCase(final String value) {
+		return new Predicate1<String>() {
+            public boolean apply(String input) {
+                return input.equalsIgnoreCase(value);
+            }
+        };
+	}
 }

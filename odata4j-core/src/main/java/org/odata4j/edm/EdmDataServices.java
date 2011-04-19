@@ -69,6 +69,19 @@ public class EdmDataServices {
         }
         return null;
     }
+    
+    public EdmFunctionImport findEdmFunctionImport(String functionImportName){
+    	 for (EdmSchema schema : this.schemas) {
+             for (EdmEntityContainer eec : schema.entityContainers) {
+                 for(EdmFunctionImport efi : eec.functionImports){
+                	 if (efi.name.equals(functionImportName)){
+                		 return efi;
+                	 }
+                 }
+             }
+         }
+         return null;
+    }
 
     public EdmComplexType findEdmComplexType(String complexTypeFQName) {
         for (EdmSchema schema : this.schemas) {

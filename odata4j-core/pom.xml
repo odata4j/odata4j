@@ -62,6 +62,20 @@
       </resource>
     </resources>
         <plugins>
+         <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.2</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -89,6 +103,7 @@
                             <goal>single</goal>
                         </goals>
                         <configuration>
+                      		<skipAssembly>true</skipAssembly>
                             <finalName>${project.name}-clientbundle-${project.version}</finalName>
                             <descriptors>
 					            <descriptor>src/main/assembly/clientbundle.xml</descriptor>
@@ -104,6 +119,7 @@
                             <goal>single</goal>
                         </goals>
                         <configuration>
+                        	<skipAssembly>true</skipAssembly>
                             <finalName>${project.name}-nojpabundle-${project.version}</finalName>
                             <descriptors>
 					            <descriptor>src/main/assembly/nojpabundle.xml</descriptor>
@@ -119,6 +135,7 @@
                             <goal>single</goal>
                         </goals>
                         <configuration>
+                        	<skipAssembly>true</skipAssembly>
                             <finalName>${project.name}-bundle-${project.version}</finalName>
                             <descriptorRefs>
                                 <descriptorRef>jar-with-dependencies</descriptorRef>
@@ -186,6 +203,7 @@
             <id>eclipselink</id>
             <name>eclipselink</name>
             <url>http://www.gtlib.gatech.edu/pub/eclipse/rt/eclipselink/maven.repo/</url>
+            <!-- <url>http://eclipse.ialto.org/rt/eclipselink/maven.repo/</url> -->
             <snapshots>
                 <enabled>true</enabled>	 <!-- for javax.persistence -->
             </snapshots>

@@ -97,10 +97,15 @@ public class OEntityKey {
 		if (props==null) throw new IllegalArgumentException("props cannot be null");
 		EdmEntityType eet = entitySet.type;
 		if (eet==null) throw new IllegalArgumentException("EdmEntityType cannot be null");
-		
-		Object[] v = new Object[eet.keys.size()];
+		List<String> keys = eet.keys;
+		if (keys.size()==0) {
+			String idProp = Enumerable.create(eet.properties).select(OFuncs.edmPropertyName()).firstOrNull(OPredicates.equalsIgnoreCase("id"));
+			if (idProp!=null)
+				keys.add(idProp);
+		}
+		Object[] v = new Object[keys.size()];
 		for(int i=0;i<v.length;i++){
-			String keyPropertyName = eet.keys.get(i);
+			String keyPropertyName = keys.get(i);
 			v[i] = getProp(props,keyPropertyName);
 		}
 		v = validate(v);
@@ -141,7 +146,7 @@ public class OEntityKey {
 	            Object value = Expression.literalValue(literal);
 	            values.add(nv.length==1?value:NamedValues.create(nv[0], value));
 	    	} catch (Exception e){
-	    		throw new IllegalArgumentException("bad keyString: " + keyString,e);
+	    		throw new IllegalArgumentException(String.format("bad valueString [%s] as part of keyString [%s]", valueString, keyString),e);
 	    	}
 	    }
 	    return OEntityKey.create(values);		

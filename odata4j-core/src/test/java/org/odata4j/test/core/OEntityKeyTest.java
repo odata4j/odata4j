@@ -1,5 +1,6 @@
 package org.odata4j.test.core;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +23,7 @@ public class OEntityKeyTest {
 		Assert.assertEquals(k("a"),OEntityKey.parse("('a')"));
 		Assert.assertEquals(k("a"),OEntityKey.parse("(s='a')"));
 		Assert.assertEquals(k("PartitionKey","","RowKey","1"),OEntityKey.parse("(PartitionKey='',RowKey='1')"));
+		Assert.assertEquals(k(new BigDecimal("43.9000")),OEntityKey.parse("(43.9000M)"));
 	}
 	
 	

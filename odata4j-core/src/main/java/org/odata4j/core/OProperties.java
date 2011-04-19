@@ -113,6 +113,9 @@ public class OProperties {
         } else if (type == EdmType.SINGLE) {
         	Float fValue = (Float) value;
             return (OProperty<T>)OProperties.single(name, fValue);
+        } else if (type == EdmType.GUID) {
+        	Guid gValue = (Guid) value;
+            return (OProperty<T>)OProperties.guid(name, gValue);
         } else {
         	if (exceptionOnUnknownType) {
         		throw new UnsupportedOperationException("Implement " + type);

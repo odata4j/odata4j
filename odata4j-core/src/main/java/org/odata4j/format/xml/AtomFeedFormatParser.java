@@ -4,6 +4,8 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.ws.rs.core.MediaType;
 
@@ -18,6 +20,7 @@ import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmType;
 import org.odata4j.format.Entry;
@@ -38,11 +41,13 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
 	protected EdmDataServices metadata;
 	protected String entitySetName;
 	protected OEntityKey entityKey;
+	protected FeedCustomizationMapping fcMapping;
 	
-	public AtomFeedFormatParser(EdmDataServices metadata, String entitySetName, OEntityKey entityKey) {
+	public AtomFeedFormatParser(EdmDataServices metadata, String entitySetName, OEntityKey entityKey, FeedCustomizationMapping fcMapping) {
 		this.metadata = metadata;
 		this.entitySetName = entitySetName;
 		this.entityKey = entityKey;
+		this.fcMapping = fcMapping;
 	}
 	
 	
@@ -264,6 +269,23 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
         throw new RuntimeException();
     }
 
+    private static final Pattern ENTITY_SET_NAME = Pattern.compile("\\/([^\\/\\(]+)\\(");
+    
+    public static String parseEntitySetName(String atomEntryId){
+    	Matcher m = ENTITY_SET_NAME.matcher(atomEntryId);
+    	if (!m.find())
+    		throw new RuntimeException("Unable to parse the entity-set name from atom entry id: " + atomEntryId);
+    	return m.group(1);
+ 
+    }
+    
+    public static OEntityKey parseEntityKey(String atomEntryId){
+    	Matcher m = ENTITY_SET_NAME.matcher(atomEntryId);
+    	if (!m.find())
+    		throw new RuntimeException("Unable to parse the entity-key from atom entry id: " + atomEntryId);
+		return OEntityKey.parse(atomEntryId.substring(m.end()-1));
+	}
+    
     private AtomEntry parseEntry(XMLEventReader2 reader, StartElement2 entryElement) {
 
         String id = null;
@@ -296,11 +318,18 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
                 if (rt instanceof DataServicesAtomEntry) {
                 	DataServicesAtomEntry dsae = (DataServicesAtomEntry)rt;
                 	String entitySetName = this.entitySetName;
-                	if (rt.id!=null) {
-                		String entitySetAndKey = Enumerable.create(rt.id.split("/")).last();
-                		entitySetName = entitySetAndKey.substring(0,entitySetAndKey.indexOf('('));
+                	if (rt.id!=null&&rt.id.endsWith(")"))
+                		entitySetName = parseEntitySetName(rt.id);
+                	EdmEntitySet ees =  metadata.findEdmEntitySet(entitySetName);
+                	if (ees==null){
+                		// panic! could not determine the entity-set, is it a function?
+                		EdmFunctionImport efi = metadata.findEdmFunctionImport(entitySetName);
+                		if (efi!=null)
+                			ees = efi.entitySet;
                 	}
-        			dsae.setOEntity(entityFromAtomEntry(metadata, metadata.getEdmEntitySet(entitySetName), dsae, null));
+                	if (ees==null)
+                		throw new RuntimeException("Could not derive the entity-set for entry: " + rt.id);
+        			dsae.setOEntity(entityFromAtomEntry(metadata,ees, dsae, fcMapping));
                 }
                 return rt;
             }
@@ -382,7 +411,14 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
 			props = properties.toList();
 		}
 		
-		OEntityKey key = entityKey!=null?entityKey:dsae.id!=null?parseAtomEntryId(dsae.id):null;
+		OEntityKey key = entityKey!=null
+			?entityKey
+			:dsae.id!=null
+				?dsae.id.endsWith(")")
+					?parseEntityKey(dsae.id)
+					:OEntityKey.infer(entitySet, props)
+				:null;
+				
 		if (key==null)
 			return OEntities.createRequest(
 					entitySet,
@@ -400,10 +436,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
 				dsae.categoryTerm);
 	}
 	
-	private OEntityKey parseAtomEntryId(String atomEntryId){
-		int i = atomEntryId.indexOf('(');
-		return OEntityKey.parse(atomEntryId.substring(i));
-	}
+	
 
 	private List<OLink> toOLinks(
 			final EdmDataServices metadata,
