@@ -3,6 +3,7 @@ package org.odata4j.producer.jpa.oneoff02;
 import java.io.Serializable;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -28,7 +29,7 @@ public class Student implements Serializable {
 	@Column(name = "StudentName")
 	private String StudentName;
 		
-	@ManyToMany(targetEntity=Course.class)
+	@ManyToMany(targetEntity=Course.class, cascade=CascadeType.ALL)
 	@JoinTable(name="Student_Course",joinColumns = @JoinColumn(name="StudentID"), inverseJoinColumns = @JoinColumn(name = "CourseID")) 
     private java.util.Collection<Course> courses;
 	

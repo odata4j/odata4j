@@ -13,6 +13,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import javax.persistence.CascadeType;
+
 @Entity
 @Table(name = "Ticket")
 public class Ticket implements Serializable {
@@ -28,7 +30,7 @@ public class Ticket implements Serializable {
     @Column(name = "Description")
     private String Description;
 
-    @OneToMany  
+    @OneToMany(cascade=CascadeType.ALL)
     private Collection<Comment> Comments= new ArrayList<Comment>();   	
 
 	public Collection<Comment> getComments() {

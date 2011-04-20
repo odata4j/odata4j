@@ -110,6 +110,7 @@ public class CompositeKeyEntityTest extends JPAProducerTestBase{
 			.properties(OProperties.simple("ProductID", product.getEntityKey().asSingleValue()))
 			.execute();
 		
+		
 		Assert.assertNotNull(orderDetails);
 		Assert.assertEquals(
 				OEntityKey.create("OrderID",order.getEntityKey().asSingleValue(),"ProductID",product.getEntityKey().asSingleValue()),
@@ -117,6 +118,42 @@ public class CompositeKeyEntityTest extends JPAProducerTestBase{
 	}
 	
 	
+	@Test
+	public void deleteCompositeKeyEntityUsingLinks() {
+		final long now = System.currentTimeMillis();
+		ODataConsumer consumer = ODataConsumer.create(endpointUri);
+		
+		OEntity product = consumer
+			.createEntity("Products")
+			.properties(OProperties.string("ProductName", "Product"+now))
+			.execute();
+		
+		Assert.assertNotNull(product);	
+		
+		OEntity order = consumer
+			.createEntity("Orders")		
+			.execute();
+		
+		Assert.assertNotNull(order);
+		
+		Short quantity=1;
+		OEntity orderDetails = consumer
+			.createEntity("Order_Details")		
+			.link("Order",order)
+			.link("Product", product)
+			.properties(OProperties.decimal("UnitPrice", 1.0))
+			.properties(OProperties.int16("Quantity", quantity ))
+			.properties(OProperties.decimal("Discount", 1.0))
+			.execute();
+		
+		Assert.assertNotNull(orderDetails);
+		
+		int beforeCount=consumer.getEntities("Order_Details").execute().count();
+		
+		consumer.deleteEntity(orderDetails).execute();			
+
+		Assert.assertTrue(beforeCount>consumer.getEntities("Order_Details").execute().count()?true:false);
+	}
 	
 	
 

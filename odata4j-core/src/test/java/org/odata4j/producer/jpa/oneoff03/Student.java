@@ -15,7 +15,7 @@ public class Student implements Serializable {
 	@Column(name = "StudentID")
 	private Integer StudentID;
 	
-	@ManyToMany(targetEntity=Course.class)
+	@ManyToMany(targetEntity=Course.class, cascade=CascadeType.ALL)
 	@JoinTable(name="Student_Course",joinColumns = @JoinColumn(name="StudentID"), inverseJoinColumns = @JoinColumn(name = "CourseID")) 
     private java.util.Collection<Course> courses = new HashSet<Course>();
 	
