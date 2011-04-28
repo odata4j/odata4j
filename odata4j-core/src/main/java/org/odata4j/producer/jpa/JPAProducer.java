@@ -97,8 +97,9 @@ public class JPAProducer implements ODataProducer {
 	}
 
 	@Override
-	public EntityResponse getEntity(String entitySetName, OEntityKey entityKey) {
-		return common(entitySetName, entityKey, null,
+	public EntityResponse getEntity(String entitySetName, OEntityKey entityKey,
+			QueryInfo queryInfo) {
+		return common(entitySetName, entityKey, queryInfo,
 				new Func1<Context, EntityResponse>() {
 					public EntityResponse apply(Context input) {
 						return getEntity(input);
@@ -1099,4 +1100,6 @@ public class JPAProducer implements ODataProducer {
 			return value;
 		}
 	}
+
+
 }

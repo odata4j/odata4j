@@ -469,4 +469,32 @@ public class QueryOptionTest extends JPAProducerTestBase {
 		String uri = "Order_Details(OrderID=10248,ProductID=11)/Product";
 		NorthwindTestUtils.testJSONResult(endpointUri, uri, inp);
 	}
+	
+	@Test
+	public void SelectOnSingleEntityTest() {
+		String inp = "SelectOnSingleEntityTest";		
+		String uri = "Products(1)?$select=ProductName";
+		NorthwindTestUtils.testJSONResult(endpointUri, uri, inp);
+	}
+		
+	@Test
+	public void MultiSelectOnSingleEntityTest() {
+		String inp = "MultiSelectOnSingleEntityTest";		
+		String uri = "Products(1)?$select=ProductName,UnitPrice";
+		NorthwindTestUtils.testJSONResult(endpointUri, uri, inp);
+	}
+	
+	@Test
+	public void ExpandOnSingleEntityTest() {
+		String inp = "ExpandOnSingleEntityTest";		
+		String uri = "Products(1)?$expand=Category";
+		NorthwindTestUtils.testJSONResult(endpointUri, uri, inp);
+	}
+	
+	@Test
+	public void SelectExpandOnSingleEntityTest() {
+		String inp = "SelectExpandOnSingleEntityTest";		
+		String uri = "Products(1)?$select=ProductName,Category&$expand=Category";
+		NorthwindTestUtils.testJSONResult(endpointUri, uri, inp);
+	}
 }

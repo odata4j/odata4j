@@ -30,4 +30,10 @@ public interface OEntityRequest<T> {
      * @return the entity-request builder
      */
     OEntityRequest<T> nav(String navProperty);
+    
+    
+    OEntityRequest<T> select(String select);
+    
+    OEntityRequest<T> expand(String expand);
+    
 }

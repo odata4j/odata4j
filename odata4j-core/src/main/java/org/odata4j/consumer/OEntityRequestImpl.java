@@ -31,6 +31,9 @@ class OEntityRequestImpl<T> implements OEntityRequest<T> {
     private final List<EntitySegment> segments = new ArrayList<EntitySegment>();
 
     private final FeedCustomizationMapping fcMapping;
+    
+    private String select;
+    private String expand;
    
     public OEntityRequestImpl(boolean isDelete, ODataClient client, Class<T> entityType, String serviceRootUri, EdmDataServices metadata, String entitySetName, OEntityKey key, FeedCustomizationMapping fcMapping) {
         this.isDelete = isDelete;
@@ -67,9 +70,16 @@ class OEntityRequestImpl<T> implements OEntityRequest<T> {
             return null;
 
         } else {
-
             ODataClientRequest request = ODataClientRequest.get(serviceRootUri + path);
 
+            if (select != null) {
+                request = request.queryParam("$select", select);
+            }
+            
+            if (expand != null) {
+                request = request.queryParam("$expand", expand);
+            }
+            
             ClientResponse response = client.getEntity(request);
             if (response == null)
             	return null;
@@ -95,5 +105,17 @@ class OEntityRequestImpl<T> implements OEntityRequest<T> {
             return (T) InternalUtil.toEntity(entityType, entry.getEntity());
         }
     }
+
+	@Override
+	public OEntityRequest<T> select(String select) {
+		this.select=select;
+		return this;
+	}
+
+	@Override
+	public OEntityRequest<T> expand(String expand) {
+		this.expand=expand;
+		return this;
+	}
 
 }

@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.examples.producer.ProducerUtil;
 import org.odata4j.producer.EntityResponse;
+import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.resources.ODataProducerProvider;
 import org.odata4j.producer.server.JerseyServer;
@@ -24,9 +25,9 @@ public class Issue13 {
         final OEntityKey[] lastEntityKey = new OEntityKey[1];
         InMemoryProducer producer = new InMemoryProducer("Issue13"){
             @Override
-            public EntityResponse getEntity(String entitySetName, OEntityKey entityKey) {
+            public EntityResponse getEntity(String entitySetName, OEntityKey entityKey,QueryInfo queryInfo) {
                 lastEntityKey[0] = entityKey;
-                return super.getEntity(entitySetName, entityKey);
+                return super.getEntity(entitySetName, entityKey, queryInfo);
             }
         };
         producer.register(Long.class, Long.class,"Entity" , new Func<Iterable<Long>>(){

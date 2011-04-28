@@ -28,14 +28,15 @@ public interface ODataProducer {
      */
     public abstract EntitiesResponse getEntities(String entitySetName, QueryInfo queryInfo);
 
-    /** 
-     * Obtains a single entity based on its type and key.
-     * 
-     * @param entitySetName  the entity-set name for the entity to return
-     * @param entityKey  the unique entity-key within the set
-     * @return the matching entity
+    
+    /**
+     * Obtains a single entity based on its type and key. Also honors $select and $expand in queryInfo
+     * @param entitySetName the entity-set name for entities to return
+     * @param entityKey the unique entity-key of the entity to start with
+     * @param queryInfo the additional constraints to apply to the entities
+     * @return the resulting entity
      */
-    public abstract EntityResponse getEntity(String entitySetName, OEntityKey entityKey);
+    public abstract EntityResponse getEntity(String entitySetName, OEntityKey entityKey, QueryInfo queryInfo);
 
     /** 
      * Given a specific entity, follow one of its navigation properties, applying constraints as appropriate.

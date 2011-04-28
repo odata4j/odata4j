@@ -22,6 +22,7 @@ import org.odata4j.format.FormatWriter;
 import org.odata4j.format.FormatWriterFactory;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.ODataProducer;
+import org.odata4j.producer.QueryInfo;
 
 import com.sun.jersey.api.core.HttpContext;
 
@@ -86,11 +87,27 @@ public class EntityRequestResource extends BaseResource {
 
     @GET
     @Produces({ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8, ODataConstants.TEXT_JAVASCRIPT_CHARSET_UTF8, ODataConstants.APPLICATION_JAVASCRIPT_CHARSET_UTF8})
-    public Response getEntity(@Context HttpContext context, @Context ODataProducer producer, final @PathParam("entitySetName") String entitySetName, @PathParam("id") String id, @QueryParam("$format") String format, @QueryParam("$callback") String callback) {
+    public Response getEntity(@Context HttpContext context, @Context ODataProducer producer, final @PathParam("entitySetName") String entitySetName, @PathParam("id") String id, 
+    		@QueryParam("$format") String format,
+			@QueryParam("$callback") String callback,
+			@QueryParam("$expand") String expand,
+			@QueryParam("$select") String select) {
 
-        log.info(String.format("getEntity(%s,%s)", entitySetName, id));
+    	QueryInfo query = new QueryInfo(
+				null,null,null,null,null,null,null,
+				OptionsQueryParser.parseExpand(expand),
+				OptionsQueryParser.parseSelect(select));
+    	    	
+    	log.info(String.format(
+				"getEntity(%s,%s,%s,%s)",
+				entitySetName,
+				id,				
+				expand,
+				select));
+    	
 
-        EntityResponse response = producer.getEntity(entitySetName, OEntityKey.parse(id));
+    	
+        EntityResponse response = producer.getEntity(entitySetName, OEntityKey.parse(id),query);
 
         if (response == null) {
             return Response.status(Status.NOT_FOUND).build();

@@ -434,11 +434,12 @@ public class InMemoryProducer implements ODataProducer {
             });
         return iter;
     }
-
+    
     @SuppressWarnings("unchecked")
-    @Override
-    public EntityResponse getEntity(String entitySetName, OEntityKey entityKey) {
-        final EdmEntitySet ees = metadata.getEdmEntitySet(entitySetName);
+	@Override
+	public EntityResponse getEntity(String entitySetName, OEntityKey entityKey,
+			QueryInfo queryInfo) {
+		final EdmEntitySet ees = metadata.getEdmEntitySet(entitySetName);
         final EntityInfo<?, ?> ei = eis.get(entitySetName);
 
         final Object idValue = InMemoryEvaluation.cast(entityKey.asSingleValue(), ei.keyClass);
@@ -454,9 +455,7 @@ public class InMemoryProducer implements ODataProducer {
         if (rt == null)
             throw new NotFoundException();
 
-        //	TODO if we add the QueryInfo to getEntity than call to Entity with QueryInfo.expand
-        //	otherwise remove this comment
-        OEntity oe = toOEntity(ees, rt, null);
+        OEntity oe = toOEntity(ees, rt, queryInfo.expand);
 
         return Responses.entity(oe);
     }

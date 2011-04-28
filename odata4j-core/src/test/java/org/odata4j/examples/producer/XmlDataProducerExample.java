@@ -234,12 +234,7 @@ public class XmlDataProducerExample {
 				}
 			}
 		}
-
-		@Override
-		public EntityResponse getEntity(String entitySetName, OEntityKey entityKey) {
-			return null;
-		}
-
+		
 		@Override
 		public EntitiesResponse getNavProperty(String entitySetName,
 				OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
@@ -270,6 +265,13 @@ public class XmlDataProducerExample {
 
 		@Override
 		public void updateEntity(String entitySetName, OEntity entity) {
+		}
+
+		@Override
+		public EntityResponse getEntity(String entitySetName,
+				OEntityKey entityKey, QueryInfo queryInfo) {
+			// TODO Auto-generated method stub
+			return null;
 		}
 
 	}
