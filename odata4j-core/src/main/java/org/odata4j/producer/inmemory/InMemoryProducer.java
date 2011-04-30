@@ -2,6 +2,7 @@ package org.odata4j.producer.inmemory;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
@@ -315,12 +316,19 @@ public class InMemoryProducer implements ODataProducer {
         if (expand != null && !expand.isEmpty()) {
         	EdmEntityType edmEntityType = ees.type;
         	
-            for (final EntitySimpleProperty prop : expand) {
+            for (final EntitySimpleProperty propPath : expand) {
+            	
+            	String[] props = propPath.getPropertyName().split("/", 2);
+				String prop = props[0];
+				List<EntitySimpleProperty> remainingPropPath = props.length > 1
+						? Arrays.asList(org.odata4j.expression.Expression
+								.simpleProperty(props[1])) : null;
+						
             	EdmNavigationProperty edmNavProperty = edmEntityType
-            		.getNavigationProperty(prop.getPropertyName());
+            		.getNavigationProperty(prop);
             	if (edmNavProperty.toRole.multiplicity == EdmMultiplicity.MANY) {
 	            	List<OEntity> relatedEntities = new ArrayList<OEntity>();
-	            	Iterable<?> values = ei.properties.getCollectionValue(obj, prop.getPropertyName());
+	            	Iterable<?> values = ei.properties.getCollectionValue(obj, prop);
 	            	if (values != null) {
 	            		EdmEntitySet relEntitySet = null;
 	            		
@@ -334,9 +342,8 @@ public class InMemoryProducer implements ODataProducer {
 	    				        							}});
 	            				relEntitySet = metadata.getEdmEntitySet(oei.entitySetName);
 	            			}        	
-	            			// because we support simple properties only at the moment we do not
-	            			// navigate along the property path
-	            			relatedEntities.add(toOEntity(relEntitySet, entity, null)); 
+	            			
+	            			relatedEntities.add(toOEntity(relEntitySet, entity, remainingPropPath)); 
 	            		}
 	            	}
 	        		// relation and href will be filled in later for atom or json
