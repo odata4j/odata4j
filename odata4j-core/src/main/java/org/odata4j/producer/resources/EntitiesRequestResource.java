@@ -30,6 +30,7 @@ import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
+import org.odata4j.producer.exceptions.ExceptionHandler;
 
 import com.sun.jersey.api.core.HttpContext;
 
@@ -44,7 +45,7 @@ public class EntitiesRequestResource extends BaseResource {
 			@Context HttpContext context,
 			@Context HttpHeaders headers,
 			@Context ODataProducer producer,
-			final @PathParam("entitySetName") String entitySetName) {
+			final @PathParam("entitySetName") String entitySetName) throws Exception {
 		
 		// visual studio will send a soap mex request
 		if (entitySetName.equals("mex") && headers.getMediaType() !=null && headers.getMediaType().toString().startsWith("application/soap+xml"))
@@ -91,7 +92,7 @@ public class EntitiesRequestResource extends BaseResource {
 			@QueryParam("$callback") String callback,
 			@QueryParam("$skiptoken") String skipToken,
 			@QueryParam("$expand") String expand,
-			@QueryParam("$select") String select) {
+			@QueryParam("$select") String select) throws Exception {
 
 		log.info(String.format(
 				"getEntities(%s,%s,%s,%s,%s,%s,%s,%s)",
@@ -115,7 +116,13 @@ public class EntitiesRequestResource extends BaseResource {
 				OptionsQueryParser.parseExpand(expand),
 				OptionsQueryParser.parseSelect(select));
 
-		EntitiesResponse response = producer.getEntities(entitySetName, query);
+		EntitiesResponse response=null;
+		
+		try {
+			response = producer.getEntities(entitySetName, query);
+		} catch(Exception e) {
+        	return ExceptionHandler.Handle(e);
+        }
 
 		StringWriter sw = new StringWriter();
 		FormatWriter<EntitiesResponse> fw =
@@ -147,7 +154,7 @@ public class EntitiesRequestResource extends BaseResource {
 			@Context ODataProducer producer,
 			@Context HttpHeaders headers,
 			@Context Request request,
-			final List<BatchBodyPart> bodyParts) {
+			final List<BatchBodyPart> bodyParts) throws Exception {
 
 		log.info(String.format("processBatch(%s)", ""));
 

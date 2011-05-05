@@ -49,8 +49,10 @@ import org.odata4j.producer.InlineCount;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.Responses;
+import org.odata4j.producer.exceptions.NotFoundException;
+import org.odata4j.producer.exceptions.NotImplementedException;
 
-import com.sun.jersey.api.NotFoundException;
+
 
 /** An in-memory implementation of an ODATA Producer.  Uses the standard Java bean
  * and property model to access information within entities. 
@@ -445,7 +447,7 @@ public class InMemoryProducer implements ODataProducer {
     @SuppressWarnings("unchecked")
 	@Override
 	public EntityResponse getEntity(String entitySetName, OEntityKey entityKey,
-			QueryInfo queryInfo) {
+			QueryInfo queryInfo) throws Exception {
 		final EdmEntitySet ees = metadata.getEdmEntitySet(entitySetName);
         final EntityInfo<?, ?> ei = eis.get(entitySetName);
 
@@ -496,32 +498,32 @@ public class InMemoryProducer implements ODataProducer {
     }
 
     @Override
-    public void mergeEntity(String entitySetName, OEntity entity) {
-        throw new UnsupportedOperationException();
+    public void mergeEntity(String entitySetName, OEntity entity) throws Exception {
+        throw new NotImplementedException();
     }
 
     @Override
-    public void updateEntity(String entitySetName, OEntity entity) {
-        throw new UnsupportedOperationException();
+    public void updateEntity(String entitySetName, OEntity entity) throws Exception {
+        throw new NotImplementedException();
     }
 
     @Override
-    public void deleteEntity(String entitySetName, OEntityKey entityKey) {
-        throw new UnsupportedOperationException();
+    public void deleteEntity(String entitySetName, OEntityKey entityKey) throws Exception {
+        throw new NotImplementedException();
     }
 
     @Override
-    public EntityResponse createEntity(String entitySetName, OEntity entity) {
-        throw new UnsupportedOperationException();
+    public EntityResponse createEntity(String entitySetName, OEntity entity) throws Exception {
+        throw new NotImplementedException();
     }
     
 	@Override
-    public EntityResponse createEntity(String entitySetName, OEntityKey entityKey, String navProp, OEntity entity) {
-		return null;
+    public EntityResponse createEntity(String entitySetName, OEntityKey entityKey, String navProp, OEntity entity) throws Exception {
+		throw new NotImplementedException();
 	}
 
 	@Override
-	public EntitiesResponse getNavProperty(String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
-        throw new UnsupportedOperationException();
+	public EntitiesResponse getNavProperty(String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) throws Exception {
+        throw new NotImplementedException();
 	}
 }

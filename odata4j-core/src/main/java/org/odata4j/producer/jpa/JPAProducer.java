@@ -31,6 +31,7 @@ import javax.persistence.metamodel.Type.PersistenceType;
 import org.core4j.Enumerable;
 import org.core4j.Func1;
 import org.core4j.Predicate1;
+import org.core4j.ThrowingFunc1;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
@@ -59,6 +60,7 @@ import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.PropertyResponse;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.Responses;
+import org.odata4j.producer.exceptions.NotFoundException;
 
 public class JPAProducer implements ODataProducer {
 
@@ -92,25 +94,25 @@ public class JPAProducer implements ODataProducer {
 	}
 
 	@Override
-	public EdmDataServices getMetadata() {
+	public EdmDataServices getMetadata() throws Exception{
 		return metadata;
 	}
 
 	@Override
 	public EntityResponse getEntity(String entitySetName, OEntityKey entityKey,
-			QueryInfo queryInfo) {
+			QueryInfo queryInfo) throws Exception {
 		return common(entitySetName, entityKey, queryInfo,
-				new Func1<Context, EntityResponse>() {
-					public EntityResponse apply(Context input) {
+				new ThrowingFunc1<Context, EntityResponse>() {
+					public EntityResponse apply(Context input) throws Exception {
 						return getEntity(input);
 					}
 				});
 	}
 
 	@Override
-	public EntitiesResponse getEntities(String entitySetName, QueryInfo queryInfo) {
+	public EntitiesResponse getEntities(String entitySetName, QueryInfo queryInfo) throws Exception {
 		return common(entitySetName, null, queryInfo,
-				new Func1<Context, EntitiesResponse>() {
+				new ThrowingFunc1<Context, EntitiesResponse>() {
 					public EntitiesResponse apply(Context input) {
 						return getEntities(input);
 					}
@@ -122,14 +124,14 @@ public class JPAProducer implements ODataProducer {
 			final String entitySetName,
 			final OEntityKey entityKey,
 			final String navProp,
-			final QueryInfo queryInfo) {
+			final QueryInfo queryInfo) throws Exception {
 		
 		return common(
 				entitySetName,
 				entityKey,
 				queryInfo,
-				new Func1<Context, BaseResponse>() {
-					public BaseResponse apply(Context input) {
+				new ThrowingFunc1<Context, BaseResponse>() {
+					public BaseResponse apply(Context input) throws Exception {
 						return getNavProperty(input, navProp);
 					}
 				});
@@ -146,16 +148,15 @@ public class JPAProducer implements ODataProducer {
 		EdmPropertyBase edmPropertyBase;
 	}
 
-	private EntityResponse getEntity(final Context context) {
+	private EntityResponse getEntity(final Context context) throws NotFoundException {
 		Object jpaEntity = context.em.find(
 				context.jpaEntityType.getJavaType(),
 				context.typeSafeEntityKey);
 
 		if (jpaEntity == null) {
-			throw new EntityNotFoundException(
-					context.jpaEntityType.getJavaType()
-							+ " not found with key "
-							+ context.typeSafeEntityKey);
+			throw new NotFoundException(context.jpaEntityType.getJavaType()
+					+ " not found with key "
+					+ context.typeSafeEntityKey);
 		}
 
 		OEntity entity = makeEntity(context, jpaEntity);
@@ -204,7 +205,7 @@ public class JPAProducer implements ODataProducer {
 			String entitySetName,
 			OEntityKey entityKey,
 			QueryInfo query,
-			Func1<Context, T> fn) {
+			ThrowingFunc1<Context, T> fn) throws Exception{
 		Context context = new Context();
 
 		context.em = emf.createEntityManager();

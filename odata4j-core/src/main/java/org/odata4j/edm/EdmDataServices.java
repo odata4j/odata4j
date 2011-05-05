@@ -37,7 +37,7 @@ public class EdmDataServices {
         if (ees != null) {
             return ees;
         }
-        throw new RuntimeException("EdmEntitySet " + entitySetName + " not found");
+        throw new TypeNotPresentException(entitySetName,null);
     }
 
     public EdmEntitySet getEdmEntitySet(final EdmEntityType type) {
@@ -54,7 +54,7 @@ public class EdmDataServices {
     	if (ees != null) {
     		return ees;
     	}
-        throw new RuntimeException("EdmEntitySet for type " + type.name + " not found");
+        throw new TypeNotPresentException(type.name,null);
     }
 
     public EdmEntitySet findEdmEntitySet(String entitySetName) {

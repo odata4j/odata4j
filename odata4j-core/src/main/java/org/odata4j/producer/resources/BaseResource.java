@@ -14,13 +14,15 @@ import org.odata4j.format.FormatParser;
 import org.odata4j.format.FormatParserFactory;
 import org.odata4j.format.Settings;
 import org.odata4j.internal.InternalUtil;
+import org.odata4j.producer.exceptions.BadRequestException;
+import org.odata4j.producer.exceptions.ODataException;
 
 import com.sun.jersey.api.core.HttpRequestContext;
 
 public abstract class BaseResource {
 
    
-    protected OEntity getRequestEntity(HttpRequestContext request, EdmDataServices metadata, String entitySetName, OEntityKey entityKey) {
+    protected OEntity getRequestEntity(HttpRequestContext request, EdmDataServices metadata, String entitySetName, OEntityKey entityKey) throws ODataException {
         String requestEntity = request.getEntity(String.class);
         
         //	TODO validation of MaxDataServiceVersion against DataServiceVersion
@@ -31,7 +33,7 @@ public abstract class BaseResource {
 		return convertFromString(requestEntity, request.getMediaType(), version, metadata, entitySetName, entityKey);
     }
     
-    private static OEntity convertFromString(String requestEntity, MediaType type, ODataVersion version, EdmDataServices metadata, String entitySetName, OEntityKey entityKey) {
+    private static OEntity convertFromString(String requestEntity, MediaType type, ODataVersion version, EdmDataServices metadata, String entitySetName, OEntityKey entityKey) throws BadRequestException {
     	FormatParser<Entry> parser = FormatParserFactory.getParser(Entry.class, type, 
     			new Settings(version, metadata, entitySetName, entityKey, null, false));
     	Entry entry = parser.parse(new StringReader(requestEntity));

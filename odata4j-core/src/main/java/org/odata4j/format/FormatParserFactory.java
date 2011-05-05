@@ -6,6 +6,7 @@ import org.odata4j.format.json.JsonEntryFormatParser;
 import org.odata4j.format.json.JsonFeedFormatParser;
 import org.odata4j.format.xml.AtomEntryFormatParser;
 import org.odata4j.format.xml.AtomFeedFormatParser;
+import org.odata4j.producer.exceptions.BadRequestException;
 
 public class FormatParserFactory {
 
@@ -32,7 +33,7 @@ public class FormatParserFactory {
         throw new IllegalArgumentException("Unable to locate format parser for " + targetType.getName() + " and format " + type);
 	}
 
-    public static <T> FormatParser<T> getParser(Class<T> targetType, MediaType contentType, Settings settings) {
+    public static <T> FormatParser<T> getParser(Class<T> targetType, MediaType contentType, Settings settings) throws BadRequestException {
 
     	FormatType type;
     	if (contentType.isCompatible(MediaType.APPLICATION_JSON_TYPE)) {
@@ -40,7 +41,7 @@ public class FormatParserFactory {
     	} else if (contentType.isCompatible(MediaType.APPLICATION_ATOM_XML_TYPE)) {
     		type = FormatType.ATOM;
     	} else {
-    		throw new IllegalArgumentException("Unknown content type " + contentType);
+    		throw new BadRequestException("Unknown content type " + contentType);
     	}
 
         return getParser(targetType, type, settings);

@@ -41,6 +41,7 @@ import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.Responses;
+import org.odata4j.producer.exceptions.NotImplementedException;
 import org.odata4j.producer.jpa.northwind.Customers;
 import org.odata4j.producer.jpa.northwind.test.NorthwindTestUtils;
 import org.odata4j.producer.resources.ODataProducerProvider;
@@ -164,7 +165,7 @@ public class XmlDataProducerExample {
 		}
 
 		@Override
-		public EdmDataServices getMetadata() {
+		public EdmDataServices getMetadata() throws Exception{
 			return this.metadata;
 		}
 
@@ -176,7 +177,7 @@ public class XmlDataProducerExample {
 		 */
 		@Override
 		public EntitiesResponse getEntities(String entitySetName,
-				QueryInfo queryInfo) {
+				QueryInfo queryInfo) throws Exception{
 			EdmEntitySet ees = getMetadata().getEdmEntitySet(entitySetName);
 			
 			InputStream is = getClass()
@@ -237,8 +238,8 @@ public class XmlDataProducerExample {
 		
 		@Override
 		public EntitiesResponse getNavProperty(String entitySetName,
-				OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
-			return null;
+				OEntityKey entityKey, String navProp, QueryInfo queryInfo) throws Exception{
+			 throw new NotImplementedException();
 		}
 
 		@Override
@@ -246,32 +247,34 @@ public class XmlDataProducerExample {
 		}
 
 		@Override
-		public EntityResponse createEntity(String entitySetName, OEntity entity) {
-			return null;
+		public EntityResponse createEntity(String entitySetName, OEntity entity) throws Exception{
+			 throw new NotImplementedException();
 		}
 
 		@Override
-	    public EntityResponse createEntity(String entitySetName, OEntityKey entityKey, String navProp, OEntity entity) {
-			return null;
+	    public EntityResponse createEntity(String entitySetName, OEntityKey entityKey, String navProp, OEntity entity) throws Exception{
+			 throw new NotImplementedException();
 		}
 
 		@Override
-		public void deleteEntity(String entitySetName, OEntityKey entityKey) {
+		public void deleteEntity(String entitySetName, OEntityKey entityKey) throws Exception{
+			 throw new NotImplementedException();
 		}
 
 		@Override
-		public void mergeEntity(String entitySetName, OEntity entity) {
+		public void mergeEntity(String entitySetName, OEntity entity) throws Exception{
+			 throw new NotImplementedException();
 		}
 
 		@Override
-		public void updateEntity(String entitySetName, OEntity entity) {
+		public void updateEntity(String entitySetName, OEntity entity) throws Exception{
+			 throw new NotImplementedException();
 		}
 
 		@Override
 		public EntityResponse getEntity(String entitySetName,
-				OEntityKey entityKey, QueryInfo queryInfo) {
-			// TODO Auto-generated method stub
-			return null;
+				OEntityKey entityKey, QueryInfo queryInfo) throws Exception {
+			 throw new NotImplementedException();
 		}
 
 	}

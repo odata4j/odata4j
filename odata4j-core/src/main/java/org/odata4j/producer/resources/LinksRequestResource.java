@@ -7,6 +7,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
 import org.odata4j.producer.ODataProducer;
+import org.odata4j.producer.exceptions.ExceptionHandler;
+import org.odata4j.producer.exceptions.NotImplementedException;
 
 import com.sun.jersey.api.core.HttpContext;
 
@@ -21,9 +23,12 @@ public class LinksRequestResource extends BaseResource {
 			final @PathParam("id") String id,
 			final @PathParam("navProp") String navProp) {
 
-		// throw new UnsupportedOperationException("Not supported yet.");
-//		log.info("NavProp: updateEntityNot supported yet.");
-		return Response.ok().build();
+		try {
+			throw new NotImplementedException("NavProp: updateEntity not supported yet.");
+		}
+		catch(Exception e) {
+			return ExceptionHandler.Handle(e);
+		}
 	}
 
 }

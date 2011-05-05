@@ -16,8 +16,9 @@ public interface ODataProducer {
 	 * Obtains the service metadata for this producer.
 	 * 
 	 * @return a fully-constructed metadata object
+	 * @throws Exception 
 	 */
-    public abstract EdmDataServices getMetadata();
+    public abstract EdmDataServices getMetadata() throws Exception;
 
     /** 
      * Gets all the entities for a given set matching the query information.
@@ -25,8 +26,9 @@ public interface ODataProducer {
      * @param entitySetName  the entity-set name for entities to return
      * @param queryInfo  the additional constraints to apply to the entities
      * @return a packaged collection of entities to pass back to the client
+     * @throws Exception
      */
-    public abstract EntitiesResponse getEntities(String entitySetName, QueryInfo queryInfo);
+    public abstract EntitiesResponse getEntities(String entitySetName, QueryInfo queryInfo) throws Exception;
 
     
     /**
@@ -35,8 +37,9 @@ public interface ODataProducer {
      * @param entityKey the unique entity-key of the entity to start with
      * @param queryInfo the additional constraints to apply to the entities
      * @return the resulting entity
+     * @throws Exception
      */
-    public abstract EntityResponse getEntity(String entitySetName, OEntityKey entityKey, QueryInfo queryInfo);
+    public abstract EntityResponse getEntity(String entitySetName, OEntityKey entityKey, QueryInfo queryInfo) throws Exception;
 
     /** 
      * Given a specific entity, follow one of its navigation properties, applying constraints as appropriate.
@@ -47,12 +50,13 @@ public interface ODataProducer {
      * @param navProp  the navigation property to follow
      * @param queryInfo  additional constraints to apply to the result
      * @return the resulting entity, entities, or property value
+     * @throws Exception
      */
     public abstract BaseResponse getNavProperty(
             String entitySetName,
             OEntityKey entityKey,
             String navProp,
-            QueryInfo queryInfo);
+            QueryInfo queryInfo) throws Exception;
 
     /**
      * Releases any resources managed by this producer.
@@ -66,9 +70,10 @@ public interface ODataProducer {
      * @param entitySetName  the entity-set name
      * @param entity  the request entity sent from the client
      * @return the newly-created entity, fully populated with the key and default properties
+     * @throws Exception
      * @see <a href="http://www.odata.org/developers/protocols/operations#CreatingnewEntries">[odata.org] Creating new Entries</a>
      */
-    public abstract EntityResponse createEntity(String entitySetName, OEntity entity);
+    public abstract EntityResponse createEntity(String entitySetName, OEntity entity) throws Exception;
 
     /**
      * Creates a new OData entity as a reference of an existing entity, implicitly linked to the existing entity by a navigation property.
@@ -78,34 +83,39 @@ public interface ODataProducer {
      * @param navProp  the navigation property off of the existing entity
      * @param entity  the request entity sent from the client
      * @return the newly-created entity, fully populated with the key and default properties, and linked to the existing entity
+     * @throws Exception
      * @see <a href="http://www.odata.org/developers/protocols/operations#CreatingnewEntries">[odata.org] Creating new Entries</a>
      */
-    public abstract EntityResponse createEntity(String entitySetName, OEntityKey entityKey, String navProp, OEntity entity);
+    public abstract EntityResponse createEntity(String entitySetName, OEntityKey entityKey, String navProp, OEntity entity) throws Exception;
 
     /**
      * Deletes an existing entity.
      * 
      * @param entitySetName  the entity-set name of the entity
      * @param entityKey  the entity-key of the entity
+     * @throws Exception
      * @see <a href="http://www.odata.org/developers/protocols/operations#DeletingEntries">[odata.org] Deleting Entries</a>
      */
-    public abstract void deleteEntity(String entitySetName, OEntityKey entityKey);
+    public abstract void deleteEntity(String entitySetName, OEntityKey entityKey) throws Exception;
 
     /**
      * Modifies an existing entity using merge semantics.
      * 
      * @param entitySetName  the entity-set name
      * @param entity  the entity modifications sent from the client
+     * @throws Exception
      * @see <a href="http://www.odata.org/developers/protocols/operations#UpdatingEntries">[odata.org] Updating Entries</a>
      */
-    public abstract void mergeEntity(String entitySetName, OEntity entity);
+    public abstract void mergeEntity(String entitySetName, OEntity entity) throws Exception;
 
+    
     /**
      * Modifies an existing entity using update semantics.
      * 
      * @param entitySetName  the entity-set name
      * @param entity  the entity modifications sent from the client
+     * @throws Exception
      * @see <a href="http://www.odata.org/developers/protocols/operations#UpdatingEntries">[odata.org] Updating Entries</a>
-     */
-    public abstract void updateEntity(String entitySetName, OEntity entity);
+     */   
+    public abstract void updateEntity(String entitySetName, OEntity entity) throws Exception;
 }

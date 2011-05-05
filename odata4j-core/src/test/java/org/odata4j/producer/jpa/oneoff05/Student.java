@@ -1,11 +1,11 @@
 package org.odata4j.producer.jpa.oneoff05;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+//import java.util.ArrayList;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
+//import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -26,8 +26,8 @@ public class Student implements Serializable {
 	@Column(name = "StudentName")
 	private String StudentName;
 	
-	@ElementCollection
-	private java.util.List<String> courses=new ArrayList<String>();
+	//@ElementCollection
+	//private java.util.List<String> courses=new ArrayList<String>();
 	
 	public String getStudentName() {
 		return StudentName;
@@ -45,13 +45,13 @@ public class Student implements Serializable {
 		StudentID = studentID;
 	}
 
-	public java.util.List<String> getCourses() {
+	/*public java.util.List<String> getCourses() {
 		return courses;
 	}
 
 	public void setCourses(java.util.List<String> courses) {
 		this.courses = courses;
-	}
+	}*/
 
 
 	
