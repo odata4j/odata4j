@@ -1,5 +1,7 @@
 package org.odata4j.producer.exceptions;
 
+import javax.ws.rs.core.Response;
+
 public class ForbiddenException extends ODataException {
 
 	/**
@@ -8,19 +10,11 @@ public class ForbiddenException extends ODataException {
 	private static final long serialVersionUID = 1L;
 
 	public ForbiddenException() {
-		super();
-	}
-
-	public ForbiddenException(String message, Throwable cause) {
-		super(message, cause);
+		super(Response.status(403).build());
 	}
 
 	public ForbiddenException(String message) {
-		super(message);
-	}
-
-	public ForbiddenException(Throwable cause) {
-		super(cause);
+		super(Response.status(403).entity(message).build());
 	}
 
 }

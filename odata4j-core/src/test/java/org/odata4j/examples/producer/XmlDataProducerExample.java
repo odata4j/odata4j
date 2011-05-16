@@ -165,7 +165,7 @@ public class XmlDataProducerExample {
 		}
 
 		@Override
-		public EdmDataServices getMetadata() throws Exception{
+		public EdmDataServices getMetadata(){
 			return this.metadata;
 		}
 
@@ -177,7 +177,7 @@ public class XmlDataProducerExample {
 		 */
 		@Override
 		public EntitiesResponse getEntities(String entitySetName,
-				QueryInfo queryInfo) throws Exception{
+				QueryInfo queryInfo){
 			EdmEntitySet ees = getMetadata().getEdmEntitySet(entitySetName);
 			
 			InputStream is = getClass()
@@ -238,7 +238,7 @@ public class XmlDataProducerExample {
 		
 		@Override
 		public EntitiesResponse getNavProperty(String entitySetName,
-				OEntityKey entityKey, String navProp, QueryInfo queryInfo) throws Exception{
+				OEntityKey entityKey, String navProp, QueryInfo queryInfo){
 			 throw new NotImplementedException();
 		}
 
@@ -247,33 +247,33 @@ public class XmlDataProducerExample {
 		}
 
 		@Override
-		public EntityResponse createEntity(String entitySetName, OEntity entity) throws Exception{
+		public EntityResponse createEntity(String entitySetName, OEntity entity){
 			 throw new NotImplementedException();
 		}
 
 		@Override
-	    public EntityResponse createEntity(String entitySetName, OEntityKey entityKey, String navProp, OEntity entity) throws Exception{
+	    public EntityResponse createEntity(String entitySetName, OEntityKey entityKey, String navProp, OEntity entity){
 			 throw new NotImplementedException();
 		}
 
 		@Override
-		public void deleteEntity(String entitySetName, OEntityKey entityKey) throws Exception{
+		public void deleteEntity(String entitySetName, OEntityKey entityKey){
 			 throw new NotImplementedException();
 		}
 
 		@Override
-		public void mergeEntity(String entitySetName, OEntity entity) throws Exception{
+		public void mergeEntity(String entitySetName, OEntity entity){
 			 throw new NotImplementedException();
 		}
 
 		@Override
-		public void updateEntity(String entitySetName, OEntity entity) throws Exception{
+		public void updateEntity(String entitySetName, OEntity entity){
 			 throw new NotImplementedException();
 		}
 
 		@Override
 		public EntityResponse getEntity(String entitySetName,
-				OEntityKey entityKey, QueryInfo queryInfo) throws Exception {
+				OEntityKey entityKey, QueryInfo queryInfo) {
 			 throw new NotImplementedException();
 		}
 

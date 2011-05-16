@@ -13,6 +13,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
@@ -21,7 +22,6 @@ import org.odata4j.format.FormatWriterFactory;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
-import org.odata4j.producer.exceptions.ExceptionHandler;
 
 import com.sun.jersey.api.core.HttpContext;
 
@@ -35,13 +35,8 @@ public class EntityRequestResource extends BaseResource {
 
         log.info(String.format("updateEntity(%s,%s)", entitySetName, id));
 
-        try {
-        	OEntity entity = this.getRequestEntity(context.getRequest(),producer.getMetadata(),entitySetName,OEntityKey.parse(id));
-        	producer.updateEntity(entitySetName, entity);
-        }
-        catch(Exception e) {
-        	return ExceptionHandler.Handle(e);
-        }
+    	OEntity entity = this.getRequestEntity(context.getRequest(),producer.getMetadata(),entitySetName,OEntityKey.parse(id));
+    	producer.updateEntity(entitySetName, entity);
 
         return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
     }
@@ -50,47 +45,43 @@ public class EntityRequestResource extends BaseResource {
     public Response mergeEntity(@Context HttpContext context, @Context ODataProducer producer, final @PathParam("entitySetName") String entitySetName, @PathParam("id") String id) {
 
         log.info(String.format("mergeEntity(%s,%s)", entitySetName, id));
-        try {
-	        OEntityKey entityKey = OEntityKey.parse(id);
-	
-	        String method = context.getRequest().getHeaderValue(ODataConstants.Headers.X_HTTP_METHOD);
-	        if ("MERGE".equals(method)) {
-	            OEntity entity = this.getRequestEntity(context.getRequest(),producer.getMetadata(),entitySetName,entityKey);
-	            producer.mergeEntity(entitySetName, entity);
-	
-	            return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
-	        }
-	
-	        if ("DELETE".equals(method)) {
-	            producer.deleteEntity(entitySetName, entityKey);
-	            
-	            return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
-	        }
-	        
-	        if ("PUT".equals(method)) {
-	            OEntity entity = this.getRequestEntity(context.getRequest(),producer.getMetadata(),entitySetName,OEntityKey.parse(id));
-	            producer.updateEntity(entitySetName, entity);
-	
-	            return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
-	        }
-	
-	        throw new RuntimeException("Expected a tunnelled PUT, MERGE or DELETE");
-	        
-        }catch(Exception e) {
-        	return ExceptionHandler.Handle(e);
+
+        OEntityKey entityKey = OEntityKey.parse(id);
+
+        String method = context.getRequest().getHeaderValue(ODataConstants.Headers.X_HTTP_METHOD);
+        if ("MERGE".equals(method)) {
+            OEntity entity = this.getRequestEntity(context.getRequest(),producer.getMetadata(),entitySetName,entityKey);
+            producer.mergeEntity(entitySetName, entity);
+
+            return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
         }
+
+        if ("DELETE".equals(method)) {
+            producer.deleteEntity(entitySetName, entityKey);
+            
+            return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
+        }
+        
+        if ("PUT".equals(method)) {
+            OEntity entity = this.getRequestEntity(context.getRequest(),producer.getMetadata(),entitySetName,OEntityKey.parse(id));
+            producer.updateEntity(entitySetName, entity);
+
+            return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
+        }
+
+        throw new RuntimeException("Expected a tunnelled PUT, MERGE or DELETE");
+	        
+
     }
 
     @DELETE
     public Response deleteEntity(@Context HttpContext context, @Context ODataProducer producer, final @PathParam("entitySetName") String entitySetName, @PathParam("id") String id) {
 
         log.info(String.format("getEntity(%s,%s)", entitySetName, id));
-        try {
-        	OEntityKey entityKey = OEntityKey.parse(id);
-        	producer.deleteEntity(entitySetName, entityKey);
-        }catch(Exception e) {
-        	return ExceptionHandler.Handle(e);
-        }       
+
+    	OEntityKey entityKey = OEntityKey.parse(id);
+    	producer.deleteEntity(entitySetName, entityKey);
+      
 
         return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
     }
@@ -115,14 +106,8 @@ public class EntityRequestResource extends BaseResource {
 				expand,
 				select));
     	
-    	EntityResponse response=null;
-    	
-    	try {    	
-    		response = producer.getEntity(entitySetName, OEntityKey.parse(id),query);
-    	}
-        catch(Exception e) {
-        	return ExceptionHandler.Handle(e);
-        }
+    	EntityResponse response= producer.getEntity(entitySetName, OEntityKey.parse(id),query);
+ 
         
         StringWriter sw = new StringWriter();
         FormatWriter<EntityResponse> fw = FormatWriterFactory.getFormatWriter(EntityResponse.class, context.getRequest().getAcceptableMediaTypes(), format, callback);

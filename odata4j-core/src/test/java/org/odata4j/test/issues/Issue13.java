@@ -25,7 +25,7 @@ public class Issue13 {
         final OEntityKey[] lastEntityKey = new OEntityKey[1];
         InMemoryProducer producer = new InMemoryProducer("Issue13"){
             @Override
-            public EntityResponse getEntity(String entitySetName, OEntityKey entityKey,QueryInfo queryInfo) throws Exception {
+            public EntityResponse getEntity(String entitySetName, OEntityKey entityKey,QueryInfo queryInfo) {
                 lastEntityKey[0] = entityKey;
                 return super.getEntity(entitySetName, entityKey, queryInfo);
             }

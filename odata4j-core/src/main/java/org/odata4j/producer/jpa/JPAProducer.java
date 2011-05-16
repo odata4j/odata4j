@@ -94,25 +94,25 @@ public class JPAProducer implements ODataProducer {
 	}
 
 	@Override
-	public EdmDataServices getMetadata() throws Exception{
+	public EdmDataServices getMetadata(){
 		return metadata;
 	}
 
 	@Override
 	public EntityResponse getEntity(String entitySetName, OEntityKey entityKey,
-			QueryInfo queryInfo) throws Exception {
+			QueryInfo queryInfo) {
 		return common(entitySetName, entityKey, queryInfo,
-				new ThrowingFunc1<Context, EntityResponse>() {
-					public EntityResponse apply(Context input) throws Exception {
+				new Func1<Context, EntityResponse>() {
+					public EntityResponse apply(Context input) {
 						return getEntity(input);
 					}
 				});
 	}
 
 	@Override
-	public EntitiesResponse getEntities(String entitySetName, QueryInfo queryInfo) throws Exception {
+	public EntitiesResponse getEntities(String entitySetName, QueryInfo queryInfo) {
 		return common(entitySetName, null, queryInfo,
-				new ThrowingFunc1<Context, EntitiesResponse>() {
+				new Func1<Context, EntitiesResponse>() {
 					public EntitiesResponse apply(Context input) {
 						return getEntities(input);
 					}
@@ -124,14 +124,14 @@ public class JPAProducer implements ODataProducer {
 			final String entitySetName,
 			final OEntityKey entityKey,
 			final String navProp,
-			final QueryInfo queryInfo) throws Exception {
+			final QueryInfo queryInfo) {
 		
 		return common(
 				entitySetName,
 				entityKey,
 				queryInfo,
-				new ThrowingFunc1<Context, BaseResponse>() {
-					public BaseResponse apply(Context input) throws Exception {
+				new Func1<Context, BaseResponse>() {
+					public BaseResponse apply(Context input) {
 						return getNavProperty(input, navProp);
 					}
 				});
@@ -205,7 +205,7 @@ public class JPAProducer implements ODataProducer {
 			String entitySetName,
 			OEntityKey entityKey,
 			QueryInfo query,
-			ThrowingFunc1<Context, T> fn) throws Exception{
+			Func1<Context, T> fn){
 		Context context = new Context();
 
 		context.em = emf.createEntityManager();

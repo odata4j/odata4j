@@ -1,5 +1,7 @@
 package org.odata4j.producer.exceptions;
 
+import javax.ws.rs.core.Response;
+
 public class NotFoundException extends ODataException {
 
 	/**
@@ -8,19 +10,12 @@ public class NotFoundException extends ODataException {
 	private static final long serialVersionUID = 1L;
 
 	public NotFoundException() {
-		super();
+		super(Response.status(404).build());
 	}
 
-	public NotFoundException(String message, Throwable cause) {
-		super(message, cause);
-	}
 
 	public NotFoundException(String message) {
-		super(message);
-	}
-
-	public NotFoundException(Throwable cause) {
-		super(cause);
+		super(Response.status(404).entity(message).build());
 	}
 
 }

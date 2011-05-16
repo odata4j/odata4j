@@ -447,7 +447,7 @@ public class InMemoryProducer implements ODataProducer {
     @SuppressWarnings("unchecked")
 	@Override
 	public EntityResponse getEntity(String entitySetName, OEntityKey entityKey,
-			QueryInfo queryInfo) throws Exception {
+			QueryInfo queryInfo) {
 		final EdmEntitySet ees = metadata.getEdmEntitySet(entitySetName);
         final EntityInfo<?, ?> ei = eis.get(entitySetName);
 
@@ -498,32 +498,32 @@ public class InMemoryProducer implements ODataProducer {
     }
 
     @Override
-    public void mergeEntity(String entitySetName, OEntity entity) throws Exception {
+    public void mergeEntity(String entitySetName, OEntity entity){
         throw new NotImplementedException();
     }
 
     @Override
-    public void updateEntity(String entitySetName, OEntity entity) throws Exception {
+    public void updateEntity(String entitySetName, OEntity entity) {
         throw new NotImplementedException();
     }
 
     @Override
-    public void deleteEntity(String entitySetName, OEntityKey entityKey) throws Exception {
+    public void deleteEntity(String entitySetName, OEntityKey entityKey) {
         throw new NotImplementedException();
     }
 
     @Override
-    public EntityResponse createEntity(String entitySetName, OEntity entity) throws Exception {
+    public EntityResponse createEntity(String entitySetName, OEntity entity) {
         throw new NotImplementedException();
     }
     
 	@Override
-    public EntityResponse createEntity(String entitySetName, OEntityKey entityKey, String navProp, OEntity entity) throws Exception {
+    public EntityResponse createEntity(String entitySetName, OEntityKey entityKey, String navProp, OEntity entity) {
 		throw new NotImplementedException();
 	}
 
 	@Override
-	public EntitiesResponse getNavProperty(String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) throws Exception {
+	public EntitiesResponse getNavProperty(String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo){
         throw new NotImplementedException();
 	}
 }

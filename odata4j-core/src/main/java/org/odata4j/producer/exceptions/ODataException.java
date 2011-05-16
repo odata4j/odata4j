@@ -1,6 +1,10 @@
 package org.odata4j.producer.exceptions;
 
-public class ODataException extends Exception {
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+
+public class ODataException extends WebApplicationException {
 
 	/**
 	 * 
@@ -11,16 +15,33 @@ public class ODataException extends Exception {
 		super();
 	}
 
-	public ODataException(String message, Throwable cause) {
-		super(message, cause);
+	public ODataException(int status) {
+		super(status);
 	}
 
-	public ODataException(String message) {
-		super(message);
+	public ODataException(Response response) {
+		super(response);
+	}
+
+	public ODataException(Status status) {
+		super(status);
+	}
+
+	public ODataException(Throwable cause, int status) {
+		super(cause, status);
+	}
+
+	public ODataException(Throwable cause, Response response) {
+		super(cause, response);
+	}
+
+	public ODataException(Throwable cause, Status status) {
+		super(cause, status);
 	}
 
 	public ODataException(Throwable cause) {
 		super(cause);
 	}
-
+	
+	
 }

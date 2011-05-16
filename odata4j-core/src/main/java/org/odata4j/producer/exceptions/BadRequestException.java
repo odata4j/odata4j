@@ -1,5 +1,7 @@
 package org.odata4j.producer.exceptions;
 
+import javax.ws.rs.core.Response;
+
 public class BadRequestException extends ODataException {
 
 	/**
@@ -8,19 +10,11 @@ public class BadRequestException extends ODataException {
 	private static final long serialVersionUID = 1L;
 
 	public BadRequestException() {
-		super();
+		super(Response.status(400).build());
 	}
-
-	public BadRequestException(String message, Throwable cause) {
-		super(message, cause);
-	}
-
+	
 	public BadRequestException(String message) {
-		super(message);
-	}
-
-	public BadRequestException(Throwable cause) {
-		super(cause);
+		super(Response.status(400).entity(message).build());
 	}
 
 }

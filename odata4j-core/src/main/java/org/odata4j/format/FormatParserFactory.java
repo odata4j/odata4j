@@ -7,6 +7,7 @@ import org.odata4j.format.json.JsonFeedFormatParser;
 import org.odata4j.format.xml.AtomEntryFormatParser;
 import org.odata4j.format.xml.AtomFeedFormatParser;
 import org.odata4j.producer.exceptions.BadRequestException;
+import org.odata4j.producer.exceptions.NotAcceptableException;
 
 public class FormatParserFactory {
 
@@ -41,7 +42,7 @@ public class FormatParserFactory {
     	} else if (contentType.isCompatible(MediaType.APPLICATION_ATOM_XML_TYPE)) {
     		type = FormatType.ATOM;
     	} else {
-    		throw new BadRequestException("Unknown content type " + contentType);
+    		throw new NotAcceptableException("Unknown content type " + contentType);
     	}
 
         return getParser(targetType, type, settings);

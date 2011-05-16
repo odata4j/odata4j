@@ -1,5 +1,7 @@
 package org.odata4j.producer.exceptions;
 
+import javax.ws.rs.core.Response;
+
 public class NotImplementedException extends ODataException {
 
 	/**
@@ -8,19 +10,12 @@ public class NotImplementedException extends ODataException {
 	private static final long serialVersionUID = 1L;
 
 	public NotImplementedException() {
-		super();
-	}
-
-	public NotImplementedException(String message, Throwable cause) {
-		super(message, cause);
+		super(Response.status(501).build());
 	}
 
 	public NotImplementedException(String message) {
-		super(message);
+		super(Response.status(501).entity(message).build());
 	}
 
-	public NotImplementedException(Throwable cause) {
-		super(cause);
-	}
 
 }

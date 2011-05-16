@@ -14,7 +14,7 @@ import org.odata4j.format.FormatParser;
 import org.odata4j.format.FormatParserFactory;
 import org.odata4j.format.Settings;
 import org.odata4j.internal.InternalUtil;
-import org.odata4j.producer.exceptions.BadRequestException;
+import org.odata4j.producer.exceptions.NotAcceptableException;
 import org.odata4j.producer.exceptions.ODataException;
 
 import com.sun.jersey.api.core.HttpRequestContext;
@@ -33,7 +33,7 @@ public abstract class BaseResource {
 		return convertFromString(requestEntity, request.getMediaType(), version, metadata, entitySetName, entityKey);
     }
     
-    private static OEntity convertFromString(String requestEntity, MediaType type, ODataVersion version, EdmDataServices metadata, String entitySetName, OEntityKey entityKey) throws BadRequestException {
+    private static OEntity convertFromString(String requestEntity, MediaType type, ODataVersion version, EdmDataServices metadata, String entitySetName, OEntityKey entityKey) throws NotAcceptableException {
     	FormatParser<Entry> parser = FormatParserFactory.getParser(Entry.class, type, 
     			new Settings(version, metadata, entitySetName, entityKey, null, false));
     	Entry entry = parser.parse(new StringReader(requestEntity));

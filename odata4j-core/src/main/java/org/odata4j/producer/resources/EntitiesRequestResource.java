@@ -30,7 +30,6 @@ import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
-import org.odata4j.producer.exceptions.ExceptionHandler;
 
 import com.sun.jersey.api.core.HttpContext;
 
@@ -116,13 +115,8 @@ public class EntitiesRequestResource extends BaseResource {
 				OptionsQueryParser.parseExpand(expand),
 				OptionsQueryParser.parseSelect(select));
 
-		EntitiesResponse response=null;
-		
-		try {
-			response = producer.getEntities(entitySetName, query);
-		} catch(Exception e) {
-        	return ExceptionHandler.Handle(e);
-        }
+		EntitiesResponse response= producer.getEntities(entitySetName, query);
+
 
 		StringWriter sw = new StringWriter();
 		FormatWriter<EntitiesResponse> fw =

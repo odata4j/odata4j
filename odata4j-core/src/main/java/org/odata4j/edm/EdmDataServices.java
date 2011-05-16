@@ -6,6 +6,7 @@ import java.util.List;
 import org.core4j.Enumerable;
 import org.core4j.Predicate1;
 import org.odata4j.core.ODataVersion;
+import org.odata4j.producer.exceptions.NotFoundException;
 
 /**
  * The &lt;edmx:DataServices&gt; element contains the service metadata of a Data Service. This service metadata contains zero or more EDM conceptual schemas.
@@ -37,7 +38,7 @@ public class EdmDataServices {
         if (ees != null) {
             return ees;
         }
-        throw new TypeNotPresentException(entitySetName,null);
+        throw new NotFoundException("EdmEntitySet "+entitySetName+" is not found");
     }
 
     public EdmEntitySet getEdmEntitySet(final EdmEntityType type) {
@@ -54,7 +55,7 @@ public class EdmDataServices {
     	if (ees != null) {
     		return ees;
     	}
-        throw new TypeNotPresentException(type.name,null);
+    	throw new NotFoundException("EdmEntitySet "+type.name+" is not found");
     }
 
     public EdmEntitySet findEdmEntitySet(String entitySetName) {

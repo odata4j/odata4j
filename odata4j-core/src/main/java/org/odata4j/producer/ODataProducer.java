@@ -18,7 +18,7 @@ public interface ODataProducer {
 	 * @return a fully-constructed metadata object
 	 * @throws Exception 
 	 */
-    public abstract EdmDataServices getMetadata() throws Exception;
+    public abstract EdmDataServices getMetadata();
 
     /** 
      * Gets all the entities for a given set matching the query information.
@@ -28,7 +28,7 @@ public interface ODataProducer {
      * @return a packaged collection of entities to pass back to the client
      * @throws Exception
      */
-    public abstract EntitiesResponse getEntities(String entitySetName, QueryInfo queryInfo) throws Exception;
+    public abstract EntitiesResponse getEntities(String entitySetName, QueryInfo queryInfo);
 
     
     /**
@@ -39,7 +39,7 @@ public interface ODataProducer {
      * @return the resulting entity
      * @throws Exception
      */
-    public abstract EntityResponse getEntity(String entitySetName, OEntityKey entityKey, QueryInfo queryInfo) throws Exception;
+    public abstract EntityResponse getEntity(String entitySetName, OEntityKey entityKey, QueryInfo queryInfo);
 
     /** 
      * Given a specific entity, follow one of its navigation properties, applying constraints as appropriate.
@@ -56,7 +56,7 @@ public interface ODataProducer {
             String entitySetName,
             OEntityKey entityKey,
             String navProp,
-            QueryInfo queryInfo) throws Exception;
+            QueryInfo queryInfo);
 
     /**
      * Releases any resources managed by this producer.
@@ -73,7 +73,7 @@ public interface ODataProducer {
      * @throws Exception
      * @see <a href="http://www.odata.org/developers/protocols/operations#CreatingnewEntries">[odata.org] Creating new Entries</a>
      */
-    public abstract EntityResponse createEntity(String entitySetName, OEntity entity) throws Exception;
+    public abstract EntityResponse createEntity(String entitySetName, OEntity entity);
 
     /**
      * Creates a new OData entity as a reference of an existing entity, implicitly linked to the existing entity by a navigation property.
@@ -86,7 +86,7 @@ public interface ODataProducer {
      * @throws Exception
      * @see <a href="http://www.odata.org/developers/protocols/operations#CreatingnewEntries">[odata.org] Creating new Entries</a>
      */
-    public abstract EntityResponse createEntity(String entitySetName, OEntityKey entityKey, String navProp, OEntity entity) throws Exception;
+    public abstract EntityResponse createEntity(String entitySetName, OEntityKey entityKey, String navProp, OEntity entity);
 
     /**
      * Deletes an existing entity.
@@ -96,7 +96,7 @@ public interface ODataProducer {
      * @throws Exception
      * @see <a href="http://www.odata.org/developers/protocols/operations#DeletingEntries">[odata.org] Deleting Entries</a>
      */
-    public abstract void deleteEntity(String entitySetName, OEntityKey entityKey) throws Exception;
+    public abstract void deleteEntity(String entitySetName, OEntityKey entityKey);
 
     /**
      * Modifies an existing entity using merge semantics.
@@ -106,7 +106,7 @@ public interface ODataProducer {
      * @throws Exception
      * @see <a href="http://www.odata.org/developers/protocols/operations#UpdatingEntries">[odata.org] Updating Entries</a>
      */
-    public abstract void mergeEntity(String entitySetName, OEntity entity) throws Exception;
+    public abstract void mergeEntity(String entitySetName, OEntity entity);
 
     
     /**
@@ -117,5 +117,5 @@ public interface ODataProducer {
      * @throws Exception
      * @see <a href="http://www.odata.org/developers/protocols/operations#UpdatingEntries">[odata.org] Updating Entries</a>
      */   
-    public abstract void updateEntity(String entitySetName, OEntity entity) throws Exception;
+    public abstract void updateEntity(String entitySetName, OEntity entity);
 }
