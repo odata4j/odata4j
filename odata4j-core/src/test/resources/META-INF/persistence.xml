@@ -145,7 +145,7 @@
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 	</persistence-unit>
 	
-		<!--  ONEOFF05 -->
+	<!--  ONEOFF05 -->
 	<persistence-unit name="Oneoff05EclipseLink" transaction-type="RESOURCE_LOCAL">
 		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
 		<class>org.odata4j.producer.jpa.oneoff05.Student</class>
@@ -154,6 +154,18 @@
 	<persistence-unit name="Oneoff05Hibernate" transaction-type="RESOURCE_LOCAL">
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 		<class>org.odata4j.producer.jpa.oneoff05.Student</class>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+	</persistence-unit>
+	
+	<!--  ONEOFF06 -->
+	<persistence-unit name="Oneoff06EclipseLink" transaction-type="RESOURCE_LOCAL">
+		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+		<class>org.odata4j.producer.jpa.oneoff06.Country</class>
+	</persistence-unit>
+	
+	<persistence-unit name="Oneoff06Hibernate" transaction-type="RESOURCE_LOCAL">
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+		<class>org.odata4j.producer.jpa.oneoff06.Country</class>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 	</persistence-unit>
 	
