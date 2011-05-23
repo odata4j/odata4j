@@ -1,6 +1,9 @@
 package org.odata4j.producer;
 
+import java.util.List;
+
 import org.odata4j.core.OEntity;
+import org.odata4j.core.OEntityId;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.edm.EdmDataServices;
 
@@ -12,110 +15,133 @@ import org.odata4j.edm.EdmDataServices;
  */
 public interface ODataProducer {
 
-	/** 
-	 * Obtains the service metadata for this producer.
-	 * 
-	 * @return a fully-constructed metadata object
-	 * @throws Exception 
-	 */
-    public abstract EdmDataServices getMetadata();
+  /** 
+   * Obtains the service metadata for this producer.
+   * 
+   * @return a fully-constructed metadata object
+   */
+  public abstract EdmDataServices getMetadata();
 
-    /** 
-     * Gets all the entities for a given set matching the query information.
-     * 
-     * @param entitySetName  the entity-set name for entities to return
-     * @param queryInfo  the additional constraints to apply to the entities
-     * @return a packaged collection of entities to pass back to the client
-     * @throws Exception
-     */
-    public abstract EntitiesResponse getEntities(String entitySetName, QueryInfo queryInfo);
+  /** 
+   * Gets all the entities for a given set matching the query information.
+   * 
+   * @param entitySetName  the entity-set name for entities to return
+   * @param queryInfo  the additional constraints to apply to the entities
+   * @return a packaged collection of entities to pass back to the client
+   */
+  public abstract EntitiesResponse getEntities(String entitySetName, QueryInfo queryInfo);
 
-    
-    /**
-     * Obtains a single entity based on its type and key. Also honors $select and $expand in queryInfo
-     * @param entitySetName the entity-set name for entities to return
-     * @param entityKey the unique entity-key of the entity to start with
-     * @param queryInfo the additional constraints to apply to the entities
-     * @return the resulting entity
-     * @throws Exception
-     */
-    public abstract EntityResponse getEntity(String entitySetName, OEntityKey entityKey, QueryInfo queryInfo);
+  /**
+   * Obtains a single entity based on its type and key. Also honors $select and $expand in queryInfo
+   * @param entitySetName the entity-set name for entities to return
+   * @param entityKey the unique entity-key of the entity to start with
+   * @param queryInfo the additional constraints to apply to the entities
+   * @return the resulting entity
+   */
+  public abstract EntityResponse getEntity(String entitySetName, OEntityKey entityKey, QueryInfo queryInfo);
 
-    /** 
-     * Given a specific entity, follow one of its navigation properties, applying constraints as appropriate.
-     * Return the resulting entity, entities, or property value.
-     * 
-     * @param entitySetName  the entity-set of the entity to start with
-     * @param entityKey  the unique entity-key of the entity to start with
-     * @param navProp  the navigation property to follow
-     * @param queryInfo  additional constraints to apply to the result
-     * @return the resulting entity, entities, or property value
-     * @throws Exception
-     */
-    public abstract BaseResponse getNavProperty(
-            String entitySetName,
-            OEntityKey entityKey,
-            String navProp,
-            QueryInfo queryInfo);
+  /** 
+   * Given a specific entity, follow one of its navigation properties, applying constraints as appropriate.
+   * Return the resulting entity, entities, or property value.
+   * 
+   * @param entitySetName  the entity-set of the entity to start with
+   * @param entityKey  the unique entity-key of the entity to start with
+   * @param navProp  the navigation property to follow
+   * @param queryInfo  additional constraints to apply to the result
+   * @return the resulting entity, entities, or property value
+   */
+  public abstract BaseResponse getNavProperty(String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo);
 
-    /**
-     * Releases any resources managed by this producer.
-     */
-    public abstract void close();
+  /**
+   * Releases any resources managed by this producer.
+   */
+  public abstract void close();
 
-    
-    /**
-     * Creates a new OData entity.
-     * 
-     * @param entitySetName  the entity-set name
-     * @param entity  the request entity sent from the client
-     * @return the newly-created entity, fully populated with the key and default properties
-     * @throws Exception
-     * @see <a href="http://www.odata.org/developers/protocols/operations#CreatingnewEntries">[odata.org] Creating new Entries</a>
-     */
-    public abstract EntityResponse createEntity(String entitySetName, OEntity entity);
+  /**
+   * Creates a new OData entity.
+   * 
+   * @param entitySetName  the entity-set name
+   * @param entity  the request entity sent from the client
+   * @return the newly-created entity, fully populated with the key and default properties
+   * @see <a href="http://www.odata.org/developers/protocols/operations#CreatingnewEntries">[odata.org] Creating new Entries</a>
+   */
+  public abstract EntityResponse createEntity(String entitySetName, OEntity entity);
 
-    /**
-     * Creates a new OData entity as a reference of an existing entity, implicitly linked to the existing entity by a navigation property.
-     * 
-     * @param entitySetName  the entity-set name of the existing entity
-     * @param entityKey  the entity-key of the existing entity
-     * @param navProp  the navigation property off of the existing entity
-     * @param entity  the request entity sent from the client
-     * @return the newly-created entity, fully populated with the key and default properties, and linked to the existing entity
-     * @throws Exception
-     * @see <a href="http://www.odata.org/developers/protocols/operations#CreatingnewEntries">[odata.org] Creating new Entries</a>
-     */
-    public abstract EntityResponse createEntity(String entitySetName, OEntityKey entityKey, String navProp, OEntity entity);
+  /**
+   * Creates a new OData entity as a reference of an existing entity, implicitly linked to the existing entity by a navigation property.
+   * 
+   * @param entitySetName  the entity-set name of the existing entity
+   * @param entityKey  the entity-key of the existing entity
+   * @param navProp  the navigation property off of the existing entity
+   * @param entity  the request entity sent from the client
+   * @return the newly-created entity, fully populated with the key and default properties, and linked to the existing entity
+   * @see <a href="http://www.odata.org/developers/protocols/operations#CreatingnewEntries">[odata.org] Creating new Entries</a>
+   */
+  public abstract EntityResponse createEntity(String entitySetName, OEntityKey entityKey, String navProp, OEntity entity);
 
-    /**
-     * Deletes an existing entity.
-     * 
-     * @param entitySetName  the entity-set name of the entity
-     * @param entityKey  the entity-key of the entity
-     * @throws Exception
-     * @see <a href="http://www.odata.org/developers/protocols/operations#DeletingEntries">[odata.org] Deleting Entries</a>
-     */
-    public abstract void deleteEntity(String entitySetName, OEntityKey entityKey);
+  /**
+   * Deletes an existing entity.
+   * 
+   * @param entitySetName  the entity-set name of the entity
+   * @param entityKey  the entity-key of the entity
+   * @see <a href="http://www.odata.org/developers/protocols/operations#DeletingEntries">[odata.org] Deleting Entries</a>
+   */
+  public abstract void deleteEntity(String entitySetName, OEntityKey entityKey);
 
-    /**
-     * Modifies an existing entity using merge semantics.
-     * 
-     * @param entitySetName  the entity-set name
-     * @param entity  the entity modifications sent from the client
-     * @throws Exception
-     * @see <a href="http://www.odata.org/developers/protocols/operations#UpdatingEntries">[odata.org] Updating Entries</a>
-     */
-    public abstract void mergeEntity(String entitySetName, OEntity entity);
+  /**
+   * Modifies an existing entity using merge semantics.
+   * 
+   * @param entitySetName  the entity-set name
+   * @param entity  the entity modifications sent from the client
+   * @see <a href="http://www.odata.org/developers/protocols/operations#UpdatingEntries">[odata.org] Updating Entries</a>
+   */
+  public abstract void mergeEntity(String entitySetName, OEntity entity);
 
-    
-    /**
-     * Modifies an existing entity using update semantics.
-     * 
-     * @param entitySetName  the entity-set name
-     * @param entity  the entity modifications sent from the client
-     * @throws Exception
-     * @see <a href="http://www.odata.org/developers/protocols/operations#UpdatingEntries">[odata.org] Updating Entries</a>
-     */   
-    public abstract void updateEntity(String entitySetName, OEntity entity);
+  /**
+   * Modifies an existing entity using update semantics.
+   * 
+   * @param entitySetName  the entity-set name
+   * @param entity  the entity modifications sent from the client
+   * @see <a href="http://www.odata.org/developers/protocols/operations#UpdatingEntries">[odata.org] Updating Entries</a>
+   */
+  public abstract void updateEntity(String entitySetName, OEntity entity);
+
+  /**
+   * Returns the value of an entity's navigation property as a collection of entity links (or a single link if the association cardinality is 1).
+   * 
+   * @param sourceEntity  an entity with at least one navigation property
+   * @param targetNavProp  the navigation property
+   * @return a collection of entity links (or a single link if the association cardinality is 1)
+   */
+  public abstract List<OEntityId> getLinks(OEntityId sourceEntity, String targetNavProp);
+
+  /**
+   * Creates a link between two entities.
+   * 
+   * @param sourceEntity  an entity with at least one navigation property
+   * @param targetNavProp  the navigation property
+   * @param targetEntity  the link target entity
+   * @see <a href="http://www.odata.org/developers/protocols/operations#CreatingLinksbetweenEntries">[odata.org] Creating Links between Entries</a>
+   */
+  public abstract void createLink(OEntityId sourceEntity, String targetNavProp, OEntityId targetEntity);
+
+  /**
+   * Replaces an existing link between two entities.
+   * 
+   * @param sourceEntity  an entity with at least one navigation property
+   * @param targetNavProp  the navigation property
+   * @param oldTargetEntityKey  if the navigation property represents a set, the key identifying the old target entity within the set, else n/a
+   * @param newTargetEntity  the new link target entity
+   * @see <a href="http://www.odata.org/developers/protocols/operations#ReplacingLinksbetweenEntries">[odata.org] Replacing Links between Entries</a>
+   */
+  public abstract void updateLink(OEntityId sourceEntity, String targetNavProp, OEntityKey oldTargetEntityKey, OEntityId newTargetEntity);
+
+  /**
+   * Deletes an existing link between two entities.
+   * 
+   * @param sourceEntity  an entity with at least one navigation property
+   * @param targetNavProp  the navigation property
+   * @param targetEntityKey  if the navigation property represents a set, the key identifying the target entity within the set, else n/a
+   */
+  public abstract void deleteLink(OEntityId sourceEntity, String targetNavProp, OEntityKey targetEntityKey);
 }
