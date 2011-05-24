@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.core4j.Enumerable;
 import org.core4j.Func;
@@ -59,6 +61,8 @@ import org.odata4j.producer.exceptions.NotImplementedException;
  */
 public class InMemoryProducer implements ODataProducer {
 
+  private final Logger log = Logger.getLogger(getClass().getName());
+	
   private static class EntityInfo<TEntity, TKey> {
     String entitySetName;
     Class<TKey> keyClass;
@@ -137,80 +141,222 @@ public class InMemoryProducer implements ODataProducer {
     List<EdmAssociation> associations = new ArrayList<EdmAssociation>();
     List<EdmAssociationSet> associationSets = new ArrayList<EdmAssociationSet>();
 
+    // creates id other basic SUPPORTED_TYPE properties(structural) entities
+    createStructuralEntities(entitySets, entityTypes);
+
+    // TODO handle back references too
+    // create hashmaps from sets
+    // --------------------------------------
+    // create entityname:entityTypes
+    Map<String, EdmEntityType> entityTypesByName = Enumerable.create(
+            entityTypes).toMap(new Func1<EdmEntityType, String>() {
+        public String apply(EdmEntityType input) {
+            return input.name;
+        }
+    });
+
+    // create entityname:entitySet
+    Map<String, EdmEntitySet> entitySetByName = Enumerable.create(
+            entitySets).toMap(new Func1<EdmEntitySet, String>() {
+        public String apply(EdmEntitySet input) {
+            return input.name;
+        }
+    });
+
+
+    Map<Class<?>, String> entityNameByClass = new HashMap<Class<?>, String>();
+
+    for (Entry<String, EntityInfo<?, ?>> e : eis.entrySet())
+        entityNameByClass.put(e.getValue().entityClass, e.getKey());
+
+    createNavigationProperties(associations, associationSets,
+            entityTypesByName, entitySetByName, entityNameByClass);
+
+
+    EdmEntityContainer container = new EdmEntityContainer(CONTAINER_NAME, true, 
+        null, entitySets, associationSets, null);
+    
+    containers.add(container);
+
+    EdmSchema schema = new EdmSchema(namespace, null, entityTypes, null,
+            associations, containers);
+    schemas.add(schema);
+    EdmDataServices rt = new EdmDataServices(
+            ODataConstants.DATA_SERVICE_VERSION, schemas);
+    return rt;
+  }
+  
+  private void createStructuralEntities(List<EdmEntitySet> entitySets,
+      List<EdmEntityType> entityTypes) {
+  
     for (String entitySetName : eis.keySet()) {
-      EntityInfo<?, ?> ei = eis.get(entitySetName);
+      EntityInfo<?, ?> entityInfo = eis.get(entitySetName);
 
       List<EdmProperty> properties = new ArrayList<EdmProperty>();
-      properties.add(new EdmProperty(ID_PROPNAME, getEdmType(ei.keyClass), false, null, null, null, null, null, null, null, null, null));
+  
+      properties.add(new EdmProperty(ID_PROPNAME,
+              getEdmType(entityInfo.keyClass), false, null, null, null,
+              null, null, null, null, null, null));
 
-      properties.addAll(toEdmProperties(ei.properties));
-
-      EdmEntityType eet = new EdmEntityType(namespace, null, entitySetName, null, Enumerable.create(ID_PROPNAME).toList(), properties, null);
-
+      properties.addAll(toEdmProperties(entityInfo.properties));
+  
+      EdmEntityType eet = new EdmEntityType(namespace, null,
+              entitySetName, null, Enumerable.create(ID_PROPNAME)
+                      .toList(), properties, null);
+  
       EdmEntitySet ees = new EdmEntitySet(entitySetName, eet);
+      
       entitySets.add(ees);
       entityTypes.add(eet);
     }
+  }
+  
+  private void createNavigationProperties(List<EdmAssociation> associations,
+      List<EdmAssociationSet> associationSets,
+      Map<String, EdmEntityType> entityTypesByName,
+      Map<String, EdmEntitySet> entitySetByName,
+      Map<Class<?>, String> entityNameByClass) {
 
-    // TODO handle back references too
-
-    Map<String, EdmEntityType> eetsByName = Enumerable.create(entityTypes).toMap(new Func1<EdmEntityType, String>() {
-      public String apply(EdmEntityType input) {
-        return input.name;
-      }
-    });
-    Map<String, EdmEntitySet> eesByName = Enumerable.create(entitySets).toMap(new Func1<EdmEntitySet, String>() {
-      public String apply(EdmEntitySet input) {
-        return input.name;
-      }
-    });
-    Map<Class<?>, String> eeNameByClass = new HashMap<Class<?>, String>();
-    for (Entry<String, EntityInfo<?, ?>> e : eis.entrySet())
-      eeNameByClass.put(e.getValue().entityClass, e.getKey());
-
-    for (String entitySetName : eis.keySet()) {
+    for (String entitySetName : eis.keySet()) {  
       EntityInfo<?, ?> ei = eis.get(entitySetName);
+      Class<?> clazz1 = ei.entityClass;
+  
+      generateToOneNavProperties(associations, associationSets,
+              entityTypesByName, entitySetByName, entityNameByClass,
+              entitySetName, ei);
+  
+      generateToManyNavProperties(associations, associationSets,
+              entityTypesByName, entitySetByName, entityNameByClass,
+              entitySetName, ei, clazz1);
+    }  
+}
+  
+  
+  private void generateToOneNavProperties(
+      List<EdmAssociation> associations,
+      List<EdmAssociationSet> associationSets,
+      Map<String, EdmEntityType> entityTypesByName,
+      Map<String, EdmEntitySet> entitySetByName,
+      Map<Class<?>, String> entityNameByClass, String entitySetName,
+      EntityInfo<?, ?> ei) {
+    
+    for (String assocProp : ei.properties.getPropertyNames()) {
+      
+      EdmEntityType eet1 = entityTypesByName.get(entitySetName);
+      Class<?> clazz2 = ei.properties.getPropertyType(assocProp);
+      String eetName2 = entityNameByClass.get(clazz2);
+  
+      if (eet1.getProperty(assocProp) != null || eetName2 == null) continue;
+  
+      EdmEntityType eet2 = entityTypesByName.get(eetName2);
+  
+      EdmMultiplicity m1 = EdmMultiplicity.MANY;
+      EdmMultiplicity m2 = EdmMultiplicity.ONE;
 
-      for (String assocProp : ei.properties.getCollectionNames()) {
+      String assocName = String.format("FK_%s_%s", eet1.name, eet2.name);
+      EdmAssociationEnd assocEnd1 = new EdmAssociationEnd(eet1.name,
+              eet1, m1);
+      String assocEnd2Name = eet2.name;
+      if (assocEnd2Name.equals(eet1.name))
+          assocEnd2Name = assocEnd2Name + "1";
+      
+      EdmAssociationEnd assocEnd2 = new EdmAssociationEnd(assocEnd2Name, eet2, m2);
+      EdmAssociation assoc = new EdmAssociation(namespace, null, assocName, assocEnd1, assocEnd2);
 
-        EdmEntityType eet1 = eetsByName.get(entitySetName);
+      associations.add(assoc);
 
-        Class<?> clazz2 = ei.properties.getCollectionElementType(assocProp);
-        String eetName2 = eeNameByClass.get(clazz2);
-        EdmEntityType eet2 = eetsByName.get(eetName2);
+      EdmEntitySet ees1 = entitySetByName.get(eet1.name);
+      EdmEntitySet ees2 = entitySetByName.get(eet2.name);
+      EdmAssociationSet eas = new EdmAssociationSet(assocName, assoc,
+              new EdmAssociationSetEnd(assocEnd1, ees1),
+              new EdmAssociationSetEnd(assocEnd2, ees2));
 
-        EdmMultiplicity m1 = EdmMultiplicity.ZERO_TO_ONE;
-        EdmMultiplicity m2 = EdmMultiplicity.MANY;
+      associationSets.add(eas);
 
-        String assocName = String.format("FK_%s_%s", eet1.name, eet2.name);
-        EdmAssociationEnd assocEnd1 = new EdmAssociationEnd(eet1.name, eet1, m1);
-        String assocEnd2Name = eet2.name;
-        if (assocEnd2Name.equals(eet1.name)) assocEnd2Name = assocEnd2Name + "1";
-        EdmAssociationEnd assocEnd2 = new EdmAssociationEnd(assocEnd2Name, eet2, m2);
-        EdmAssociation assoc = new EdmAssociation(namespace, null, assocName, assocEnd1, assocEnd2);
+      EdmNavigationProperty np = new EdmNavigationProperty(assocProp,
+              assoc, assoc.end1, assoc.end2);
 
-        associations.add(assoc);
+      eet1.navigationProperties.add(np);
+    }
+}
+  
+  
+  private void generateToManyNavProperties(List<EdmAssociation> associations,
+      List<EdmAssociationSet> associationSets,
+      Map<String, EdmEntityType> entityTypesByName,
+      Map<String, EdmEntitySet> entitySetByName,
+      Map<Class<?>, String> entityNameByClass, String entitySetName,
+      EntityInfo<?, ?> ei, Class<?> clazz1) {
 
-        EdmEntitySet ees1 = eesByName.get(eet1.name);
-        EdmEntitySet ees2 = eesByName.get(eet2.name);
-        EdmAssociationSet eas = new EdmAssociationSet(assocName, assoc, new EdmAssociationSetEnd(assocEnd1, ees1), new EdmAssociationSetEnd(assocEnd2, ees2));
 
-        associationSets.add(eas);
+    for(String assocProp : ei.properties.getCollectionNames()) {
+      
+      final EdmEntityType eet1 = entityTypesByName.get(entitySetName);
+      
+      Class<?> clazz2 = ei.properties.getCollectionElementType(assocProp);
+      String eetName2 = entityNameByClass.get(clazz2);
+      final EdmEntityType eet2 =  entityTypesByName.get(eetName2);
+           
+      try {
+        EdmAssociation assoc = Enumerable.create(associations).firstOrNull(new Predicate1<EdmAssociation>() {
+    
+            public boolean apply(EdmAssociation input) {
+                return input.end1.type.equals(eet2) && input.end2.type.equals(eet1);
+            }
+        });
+        
+        EdmAssociationEnd fromRole, toRole;
+        
+        if(assoc==null) {
+          //no association already exists
+          EdmMultiplicity m1 = EdmMultiplicity.ZERO_TO_ONE;
+          EdmMultiplicity m2 = EdmMultiplicity.MANY;
+                    
+          //find ei info of class2
+          EntityInfo<?,?> class2eiInfo = eis.get(eetName2);
+          for(String tmp : class2eiInfo.properties.getCollectionNames()) {
+              //class2 has a ref to class1
+              //Class<?> tmpc = class2eiInfo.properties.getCollectionElementType(tmp);
+              if(clazz1==class2eiInfo.properties.getCollectionElementType(tmp)){
+                  m1 = EdmMultiplicity.MANY;
+                  m2 = EdmMultiplicity.MANY;
+                  break;
+              }
+          }
 
-        EdmNavigationProperty np = new EdmNavigationProperty(assocProp, assoc, assoc.end1, assoc.end2);
+          String assocName = String.format("FK_%s_%s", eet1.name, eet2.name);
+          EdmAssociationEnd assocEnd1 = new EdmAssociationEnd(eet1.name, eet1, m1);
+          String assocEnd2Name = eet2.name;
+          if (assocEnd2Name.equals(eet1.name))
+              assocEnd2Name = assocEnd2Name + "1";
+          EdmAssociationEnd assocEnd2 = new EdmAssociationEnd(assocEnd2Name, eet2, m2);
+          assoc = new EdmAssociation(namespace, null, assocName, assocEnd1, assocEnd2);
+          
+          associations.add(assoc);
+
+          EdmEntitySet ees1 = entitySetByName.get(eet1.name);
+          EdmEntitySet ees2 = entitySetByName.get(eet2.name);
+          EdmAssociationSet eas = new EdmAssociationSet(assocName, assoc, new EdmAssociationSetEnd(assocEnd1, ees1), new EdmAssociationSetEnd(assocEnd2, ees2));
+          associationSets.add(eas);
+          
+          fromRole=assoc.end1;
+          toRole=assoc.end2;
+        }
+        else {
+            fromRole=assoc.end2;
+            toRole=assoc.end1;
+        }
+        
+        EdmNavigationProperty np = new EdmNavigationProperty(assocProp, assoc, fromRole, toRole);
 
         eet1.navigationProperties.add(np);
       }
+      catch(Exception e) {
+          log.log(Level.WARNING, "Exception building Edm associations: " + e.getMessage(),e);
+      }          
     }
-
-    EdmEntityContainer container = new EdmEntityContainer(CONTAINER_NAME, true, null, entitySets, associationSets, null);
-    containers.add(container);
-
-    EdmSchema schema = new EdmSchema(namespace, null, entityTypes, null, associations, containers);
-    schemas.add(schema);
-    EdmDataServices rt = new EdmDataServices(ODataConstants.DATA_SERVICE_VERSION, schemas);
-    return rt;
   }
+  
 
   @Override
   public void close() {
@@ -263,6 +409,13 @@ public class InMemoryProducer implements ODataProducer {
     ei.entityClass = entityClass;
 
     eis.put(entitySetName, ei);
+    //this.metadata = buildMetadata();
+  }
+ 
+  /**
+   * Generates metadata for registered entities
+   */
+  public void buildMetaData() {
     this.metadata = buildMetadata();
   }
 
@@ -291,7 +444,7 @@ public class InMemoryProducer implements ODataProducer {
 
   }
 
-  private OEntity toOEntity(EdmEntitySet ees, Object obj, List<EntitySimpleProperty> expand) {
+  protected OEntity toOEntity(EdmEntitySet ees, Object obj, List<EntitySimpleProperty> expand) {
     EntityInfo<?, ?> ei = eis.get(ees.name);
     final List<OLink> links = new ArrayList<OLink>();
     final List<OProperty<?>> properties = new ArrayList<OProperty<?>>();
