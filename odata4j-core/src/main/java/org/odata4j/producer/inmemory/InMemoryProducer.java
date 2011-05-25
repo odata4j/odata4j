@@ -472,6 +472,9 @@ public class InMemoryProducer implements ODataProducer {
         List<EntitySimpleProperty> remainingPropPath = props.length > 1 ? Arrays.asList(org.odata4j.expression.Expression.simpleProperty(props[1])) : null;
 
         EdmNavigationProperty edmNavProperty = edmEntityType.getNavigationProperty(prop);
+        
+        if(edmNavProperty == null) continue;
+        
         if (edmNavProperty.toRole.multiplicity == EdmMultiplicity.MANY) {
           List<OEntity> relatedEntities = new ArrayList<OEntity>();
           Iterable<?> values = ei.properties.getCollectionValue(obj, prop);
@@ -495,7 +498,22 @@ public class InMemoryProducer implements ODataProducer {
           // relation and href will be filled in later for atom or json
           links.add(OLinks.relatedEntitiesInline(null, edmNavProperty.name, null, relatedEntities));
         } else {
-          //	TODO handle the toOne or toZero navigation properties as well
+            final Object entity=ei.properties.getPropertyValue(obj, prop);    
+            
+            if(entity != null) {
+              EntityInfo<?, ?> oei = Enumerable.create(eis.values()).firstOrNull(new Predicate1<InMemoryProducer.EntityInfo<?, ?>>() {
+                @Override
+                public boolean apply(EntityInfo<?, ?> input) {
+                  return entity.getClass().equals(input.entityClass);
+                }
+              });
+            
+              EdmEntitySet relEntitySet=metadata.getEdmEntitySet(oei.entitySetName);            
+            
+              OEntity relatedEntity=toOEntity(relEntitySet,entity,remainingPropPath);            
+            
+              links.add(OLinks.relatedEntityInline(null, edmNavProperty.name, null, relatedEntity));
+            }            
         }
       }
     }
