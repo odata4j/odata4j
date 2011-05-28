@@ -124,11 +124,13 @@ public class InMemoryProducer implements ODataProducer {
   public InMemoryProducer(String namespace, int maxResults) {
     this.namespace = namespace;
     this.maxResults = maxResults;
-    this.metadata = buildMetadata();
   }
 
   @Override
   public EdmDataServices getMetadata() {
+    if (metadata == null) {
+      metadata = buildMetadata();
+    }
     return metadata;
   }
 
@@ -393,12 +395,20 @@ public class InMemoryProducer implements ODataProducer {
    * @param get a function to iterate over the elements in the set
    * @param id a function to extract the id from any given element in the set
    */
-  public <TEntity, TKey> void register(Class<TEntity> entityClass, Class<TKey> keyClass, String entitySetName, Func<Iterable<TEntity>> get, final Func1<TEntity, TKey> id) {
-
-    register(entityClass, new AugmentedBeanBasedPropertyModel(entityClass), keyClass, entitySetName, get, id);
+  public <TEntity, TKey> void register(Class<TEntity> entityClass, Class<TKey> keyClass, String entitySetName, Func<Iterable<TEntity>> get, Func1<TEntity, TKey> id) {
+    PropertyModel model = new BeanBasedPropertyModel(entityClass);
+    model = new EnumsAsStringsPropertyModelDelegate(model);
+    model = new EntityIdFunctionPropertyModelDelegate<TEntity, TKey>(model, ID_PROPNAME, keyClass, id);
+    register(entityClass, model, keyClass, entitySetName, get, id);
   }
-
-  public <TEntity, TKey> void register(Class<TEntity> entityClass, PropertyModel propertyModel, Class<TKey> keyClass, String entitySetName, Func<Iterable<TEntity>> get, final Func1<TEntity, TKey> id) {
+  
+  public <TEntity, TKey> void register(
+      Class<TEntity> entityClass,
+      PropertyModel propertyModel,
+      Class<TKey> keyClass,
+      String entitySetName,
+      Func<Iterable<TEntity>> get,
+      Func1<TEntity, TKey> id) {
 
     EntityInfo<TEntity, TKey> ei = new EntityInfo<TEntity, TKey>();
     ei.entitySetName = entitySetName;
@@ -409,41 +419,9 @@ public class InMemoryProducer implements ODataProducer {
     ei.entityClass = entityClass;
 
     eis.put(entitySetName, ei);
-    //this.metadata = buildMetadata();
+    metadata = null;
   }
- 
-  /**
-   * Generates metadata for registered entities
-   */
-  public void buildMetaData() {
-    this.metadata = buildMetadata();
-  }
-
-  /** A simple extention of the BeanBasedPropertyModel that treats Enums as their corresponding strings
-   */
-  private static class AugmentedBeanBasedPropertyModel extends BeanBasedPropertyModel {
-
-    public AugmentedBeanBasedPropertyModel(Class<?> clazz) {
-      super(clazz);
-    }
-
-    @Override
-    public Class<?> getPropertyType(String propertyName) {
-      Class<?> rt = super.getPropertyType(propertyName);
-      if (rt.isEnum()) return String.class;
-      return rt;
-    }
-
-    @Override
-    public Object getPropertyValue(Object target, String propertyName) {
-      Class<?> baseType = super.getPropertyType(propertyName);
-      Object rt = super.getPropertyValue(target, propertyName);
-      if (baseType.isEnum()) return ((Enum<?>) rt).name();
-      return rt;
-    }
-
-  }
-
+  
   protected OEntity toOEntity(EdmEntitySet ees, Object obj, List<EntitySimpleProperty> expand) {
     EntityInfo<?, ?> ei = eis.get(ees.name);
     final List<OLink> links = new ArrayList<OLink>();
@@ -489,7 +467,7 @@ public class InMemoryProducer implements ODataProducer {
                     return entity.getClass().equals(input.entityClass);
                   }
                 });
-                relEntitySet = metadata.getEdmEntitySet(oei.entitySetName);
+                relEntitySet = getMetadata().getEdmEntitySet(oei.entitySetName);
               }
 
               relatedEntities.add(toOEntity(relEntitySet, entity, remainingPropPath));
@@ -508,7 +486,7 @@ public class InMemoryProducer implements ODataProducer {
                 }
               });
             
-              EdmEntitySet relEntitySet=metadata.getEdmEntitySet(oei.entitySetName);            
+              EdmEntitySet relEntitySet = getMetadata().getEdmEntitySet(oei.entitySetName);            
             
               OEntity relatedEntity=toOEntity(relEntitySet,entity,remainingPropPath);            
             
@@ -531,7 +509,7 @@ public class InMemoryProducer implements ODataProducer {
 
   @Override
   public EntitiesResponse getEntities(String entitySetName, final QueryInfo queryInfo) {
-    final EdmEntitySet ees = metadata.getEdmEntitySet(entitySetName);
+    final EdmEntitySet ees = getMetadata().getEdmEntitySet(entitySetName);
     final EntityInfo<?, ?> ei = eis.get(entitySetName);
 
     Enumerable<Object> objects = Enumerable.create(ei.get.apply()).cast(Object.class);
@@ -605,7 +583,7 @@ public class InMemoryProducer implements ODataProducer {
   @SuppressWarnings("unchecked")
   @Override
   public EntityResponse getEntity(String entitySetName, OEntityKey entityKey, QueryInfo queryInfo) {
-    final EdmEntitySet ees = metadata.getEdmEntitySet(entitySetName);
+    final EdmEntitySet ees = getMetadata().getEdmEntitySet(entitySetName);
     final EntityInfo<?, ?> ei = eis.get(entitySetName);
 
     final Object idValue = InMemoryEvaluation.cast(entityKey.asSingleValue(), ei.keyClass);

@@ -261,7 +261,6 @@ public class DateTimeFormatTest {
 						return Enumerable.create(new DateTimeRoundtrip(1, new Date(now)));
 					}
 				}, "Key");
-		producer.buildMetaData();
 		ODataProducerProvider.setInstance(producer);
 		JerseyServer server = ProducerUtil.startODataServer(endpointUri);
 		ODataConsumer c = ODataConsumer.create(endpointUri);

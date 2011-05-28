@@ -34,7 +34,6 @@ public class PojoTest {
             
             List<Pojo1> pojo1s = new ArrayList<Pojo1>();
             producer.register(Pojo1.class, Integer.TYPE, "Pojo1", Funcs.constant((Iterable<Pojo1>) pojo1s), "Id");
-            producer.buildMetaData();
             
             Assert.assertEquals(1, c.getEntitySets().count());
             

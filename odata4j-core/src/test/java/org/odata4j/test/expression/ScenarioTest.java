@@ -35,7 +35,6 @@ public class ScenarioTest {
 
         List<Foo> foos = new ArrayList<Foo>();
         producer.register(Foo.class, String.class, "Foos1", Funcs.constant((Iterable<Foo>) foos), "Id");
-        producer.buildMetaData();
         
         Assert.assertEquals(1, c.getEntitySets().count());
 
