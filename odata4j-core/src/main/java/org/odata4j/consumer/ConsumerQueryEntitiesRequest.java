@@ -33,7 +33,7 @@ class ConsumerQueryEntitiesRequest<T> extends ConsumerQueryRequestBase<T> {
   
   @Override
   public Enumerable<T> execute() {
-    ODataClientRequest request = buildRequest();
+    ODataClientRequest request = buildRequest(null);
     Enumerable<Entry> entries = getEntries(request);
 
     return entries.select(new Func1<Entry, T>() {

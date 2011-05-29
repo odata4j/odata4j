@@ -68,9 +68,9 @@ public class JsonWriter {
             throw new RuntimeException(e);
         }
     }
-    public void writeString(String name) {
+    public void writeString(String value) {
         try {
-            writer.write("\"" + encode(name) + "\"");
+            writer.write("\"" + encode(value) + "\"");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

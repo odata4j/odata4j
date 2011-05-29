@@ -24,7 +24,7 @@ import org.odata4j.internal.InternalUtil;
 
 import com.sun.jersey.api.client.ClientResponse;
 
-class ConsumerCreateRequest<T> extends ConsumerEntityPayloadRequestBase implements OCreateRequest<T> {
+class ConsumerCreateEntityRequest<T> extends ConsumerEntityPayloadRequestBase implements OCreateRequest<T> {
 
   private final ODataClient client;
   private OEntity parent;
@@ -32,7 +32,7 @@ class ConsumerCreateRequest<T> extends ConsumerEntityPayloadRequestBase implemen
 
   private final FeedCustomizationMapping fcMapping;
 
-  public ConsumerCreateRequest(ODataClient client, String serviceRootUri, EdmDataServices metadata, String entitySetName, FeedCustomizationMapping fcMapping) {
+  public ConsumerCreateEntityRequest(ODataClient client, String serviceRootUri, EdmDataServices metadata, String entitySetName, FeedCustomizationMapping fcMapping) {
     super(entitySetName, serviceRootUri, metadata);
     this.client = client;
     this.fcMapping = fcMapping;
@@ -55,7 +55,7 @@ class ConsumerCreateRequest<T> extends ConsumerEntityPayloadRequestBase implemen
     }
 
     ODataClientRequest request = ODataClientRequest.post(url.toString(), entry);
-    ClientResponse response = client.createEntityResponse(request);
+    ClientResponse response = client.createEntity(request);
 
     ODataVersion version = InternalUtil.getDataServiceVersion(response.getHeaders()
         .getFirst(ODataConstants.Headers.DATA_SERVICE_VERSION));

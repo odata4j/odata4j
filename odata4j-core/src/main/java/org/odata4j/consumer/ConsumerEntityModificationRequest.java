@@ -14,7 +14,7 @@ import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.format.Entry;
 import org.odata4j.internal.EntitySegment;
 
-class ConsumerModificationRequest<T> extends ConsumerEntityPayloadRequestBase implements OModifyRequest<T> {
+class ConsumerEntityModificationRequest<T> extends ConsumerEntityPayloadRequestBase implements OModifyRequest<T> {
 
   private final T updateRoot;
   private final ODataClient client;
@@ -23,7 +23,7 @@ class ConsumerModificationRequest<T> extends ConsumerEntityPayloadRequestBase im
 
   private EdmEntitySet entitySet;
 
-  public ConsumerModificationRequest(T updateRoot, ODataClient client, String serviceRootUri, EdmDataServices metadata, String entitySetName, OEntityKey key) {
+  public ConsumerEntityModificationRequest(T updateRoot, ODataClient client, String serviceRootUri, EdmDataServices metadata, String entitySetName, OEntityKey key) {
     super(entitySetName, serviceRootUri, metadata);
     this.updateRoot = updateRoot;
     this.client = client;

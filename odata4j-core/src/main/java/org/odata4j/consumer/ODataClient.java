@@ -28,10 +28,11 @@ import org.odata4j.format.Entry;
 import org.odata4j.format.FormatType;
 import org.odata4j.format.FormatWriter;
 import org.odata4j.format.FormatWriterFactory;
+import org.odata4j.format.SingleLink;
 import org.odata4j.format.xml.AtomFeedFormatParser.CollectionInfo;
 import org.odata4j.format.xml.AtomServiceDocumentFormatParser;
 import org.odata4j.format.xml.EdmxFormatParser;
-import org.odata4j.format.xml.XmlLinkParser;
+import org.odata4j.format.xml.AtomSingleLinkFormatParser;
 import org.odata4j.internal.BOMWorkaroundReader;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.stax2.XMLEventReader2;
@@ -74,11 +75,13 @@ class ODataClient {
     return AtomServiceDocumentFormatParser.parseCollections(reader);
   }
 
-  public Iterable<String> getLinkUris(ODataClientRequest request) {
-    ClientResponse response = doRequest(FormatType.XML, request, 200);
+  public Iterable<SingleLink> getLinks(ODataClientRequest request) {
+    ClientResponse response = doRequest(FormatType.ATOM, request, 200);
     XMLEventReader2 reader = doXmlRequest(response);
-    return XmlLinkParser.parseLinkUris(reader);
+    return AtomSingleLinkFormatParser.parseLinks(reader);
   }
+  
+  
 
   public ClientResponse getEntity(ODataClientRequest request) {
     ClientResponse response = doRequest(type, request, 404, 200, 204);
@@ -95,7 +98,7 @@ class ODataClient {
     return response;
   }
 
-  public ClientResponse createEntityResponse(ODataClientRequest request) {
+  public ClientResponse createEntity(ODataClientRequest request) {
     return doRequest(type, request, 201);
   }
 
@@ -107,6 +110,14 @@ class ODataClient {
   public boolean deleteEntity(ODataClientRequest request) {
     doRequest(type, request, 200, 204, 404);
     return true;
+  }
+  
+  public void deleteLink(ODataClientRequest request) {
+    doRequest(type, request, 204);
+  }
+  
+  public void createLink(ODataClientRequest request) {
+    doRequest(type, request, 204);
   }
 
   Entry createRequestEntry(EdmEntitySet entitySet, OEntityKey entityKey, List<OProperty<?>> props, List<OLink> links) {
@@ -133,6 +144,7 @@ class ODataClient {
     };
   }
 
+  @SuppressWarnings("unchecked")
   private ClientResponse doRequest(FormatType reqType, ODataClientRequest request, Integer... expectedResponseStatus) {
 
     if (behaviors != null) {
@@ -162,12 +174,20 @@ class ODataClient {
       dumpHeaders(request, webResource, b);
 
     // request body
-    if (request.getEntry() != null) {
+    if (request.getPayload() != null) {
 
-      Entry entry = request.getEntry();
+      Class<?> payloadClass;
+      if (request.getPayload() instanceof Entry)
+        payloadClass = Entry.class;
+      else if (request.getPayload() instanceof SingleLink)
+        payloadClass = SingleLink.class;
+      else
+        throw new UnsupportedOperationException("Unsupported payload: " + request.getPayload());
+     
       StringWriter sw = new StringWriter();
-      FormatWriter<Entry> fw = FormatWriterFactory.getFormatWriter(Entry.class, null, type.toString(), null);
-      fw.write(null, sw, entry);
+      FormatWriter<Object> fw = (FormatWriter<Object>)(Object)
+          FormatWriterFactory.getFormatWriter(payloadClass, null, type.toString(), null);
+      fw.write(null, sw, request.getPayload());
 
       String entity = sw.toString();
       if (ODataConsumer.dump.requestBody())

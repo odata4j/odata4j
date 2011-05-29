@@ -350,7 +350,7 @@ public class ODataConsumer {
    */
   public OCreateRequest<OEntity> createEntity(String entitySetName) {
     FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
-    return new ConsumerCreateRequest<OEntity>(client, serviceRootUri, getMetadata(),
+    return new ConsumerCreateEntityRequest<OEntity>(client, serviceRootUri, getMetadata(),
         entitySetName, mapping);
   }
 
@@ -362,7 +362,7 @@ public class ODataConsumer {
    * @return a new modification-request builder
    */
   public OModifyRequest<OEntity> updateEntity(OEntity entity) {
-    return new ConsumerModificationRequest<OEntity>(entity, client, serviceRootUri, getMetadata(),
+    return new ConsumerEntityModificationRequest<OEntity>(entity, client, serviceRootUri, getMetadata(),
         entity.getEntitySet().name, entity.getEntityKey());
   }
 
@@ -398,7 +398,7 @@ public class ODataConsumer {
    * @return a new modification-request builder
    */
   public OModifyRequest<OEntity> mergeEntity(String entitySetName, OEntityKey key) {
-    return new ConsumerModificationRequest<OEntity>(null, client, serviceRootUri,
+    return new ConsumerEntityModificationRequest<OEntity>(null, client, serviceRootUri,
         getMetadata(), entitySetName, key);
   }
 
@@ -434,7 +434,7 @@ public class ODataConsumer {
    * @return a new entity-request builder
    */
   public OEntityRequest<Void> deleteEntity(String entitySetName, OEntityKey key) {
-    return new ConsumerDeleteRequest(client, serviceRootUri, getMetadata(), entitySetName, key);
+    return new ConsumerDeleteEntityRequest(client, serviceRootUri, getMetadata(), entitySetName, key);
   }
 
   private FeedCustomizationMapping getFeedCustomizationMapping(String entitySetName) {
@@ -491,17 +491,21 @@ public class ODataConsumer {
   }
   
   //TODO(0.5) javadoc
-  public OQueryRequest<OEntityId> getLinks(OEntityId entity, String navProp) {
-    String entityId = entity.getEntitySet().name + entity.getEntityKey().toKeyString();
-    return new ConsumerQueryLinksRequest(client, serviceRootUri, getMetadata(), entityId + "/$links/" +navProp);
-  }
-
   public OEntityId createEntityId(String entitySetName, Object... keyValues) {
     return OEntityIds.create(getMetadata(), entitySetName, OEntityKey.create(keyValues));
   }
+  
+  
+  public OQueryRequest<OEntityId> getLinks(OEntityId sourceEntity, String targetNavProp) {
+    return new ConsumerQueryLinksRequest(client, serviceRootUri, getMetadata(), sourceEntity, targetNavProp);
+  }
+  
+  public OEntityRequest<Void> createLink(OEntityId sourceEntity, String targetNavProp, OEntityId targetEntity) {
+    return new ConsumerCreateLinkRequest(client, serviceRootUri, getMetadata(), sourceEntity, targetNavProp, targetEntity);
+  }
 
-  public OEntityRequest<Void> createLink(OEntityId sourceEntity, String navProp, OEntityId targetEntity) {
-    throw new UnsupportedOperationException();
+  public OEntityRequest<Void> deleteLink(OEntityId sourceEntity, String targetNavProp, Object... targetKeyValues) {
+    return new ConsumerDeleteLinkRequest(client, serviceRootUri, getMetadata(), sourceEntity, targetNavProp, targetKeyValues);
   }
 
 }

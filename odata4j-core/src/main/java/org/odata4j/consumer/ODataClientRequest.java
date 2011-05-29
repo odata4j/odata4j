@@ -5,6 +5,7 @@ import org.odata4j.core.OClientBehavior;
 import java.util.Map;
 
 import org.odata4j.format.Entry;
+import org.odata4j.format.SingleLink;
 
 /**
  * Generic OData http request builder.  Only interesting for developers of custom {@link OClientBehavior} implementations.
@@ -15,14 +16,14 @@ public class ODataClientRequest {
   private final String url;
   private final Map<String, String> headers;
   private final Map<String, String> queryParams;
-  private final Entry entry;
+  private final Object payload;
 
-  private ODataClientRequest(String method, String url, Map<String, String> headers, Map<String, String> queryParams, Entry entry) {
+  private ODataClientRequest(String method, String url, Map<String, String> headers, Map<String, String> queryParams, Object payload) {
     this.method = method;
     this.url = url;
     this.headers = headers == null ? new HashMap<String, String>() : headers;
     this.queryParams = queryParams == null ? new HashMap<String, String>() : queryParams;
-    this.entry = entry;
+    this.payload = payload;
   }
 
   /**
@@ -66,8 +67,8 @@ public class ODataClientRequest {
    * 
    * @return the normalized OData payload
    */
-  public Entry getEntry() {
-    return entry;
+  public Object getPayload() {
+    return payload;
   }
 
   /**
@@ -89,6 +90,17 @@ public class ODataClientRequest {
    */
   public static ODataClientRequest post(String url, Entry entry) {
     return new ODataClientRequest("POST", url, null, null, entry);
+  }
+  
+  /**
+   * Creates a new POST request.
+   * 
+   * @param url  the request url
+   * @param entry  the normalized OData payload
+   * @return a new request builder
+   */
+  public static ODataClientRequest post(String url, SingleLink link) {
+    return new ODataClientRequest("POST", url, null, null, link);
   }
 
   /**
@@ -132,7 +144,7 @@ public class ODataClientRequest {
    */
   public ODataClientRequest header(String name, String value) {
     headers.put(name, value);
-    return new ODataClientRequest(method, url, headers, queryParams, entry);
+    return new ODataClientRequest(method, url, headers, queryParams, payload);
   }
 
   /**
@@ -144,7 +156,7 @@ public class ODataClientRequest {
    */
   public ODataClientRequest queryParam(String name, String value) {
     queryParams.put(name, value);
-    return new ODataClientRequest(method, url, headers, queryParams, entry);
+    return new ODataClientRequest(method, url, headers, queryParams, payload);
   }
 
   /**
@@ -154,7 +166,7 @@ public class ODataClientRequest {
    * @return the request builder
    */
   public ODataClientRequest url(String url) {
-    return new ODataClientRequest(method, url, headers, queryParams, entry);
+    return new ODataClientRequest(method, url, headers, queryParams, payload);
   }
 
   /**
@@ -164,17 +176,27 @@ public class ODataClientRequest {
    * @return the request builder
    */
   public ODataClientRequest method(String method) {
-    return new ODataClientRequest(method, url, headers, queryParams, entry);
+    return new ODataClientRequest(method, url, headers, queryParams, payload);
   }
 
   /**
    * Sets the normalized OData payload.
    * 
-   * @param entry  the payload
+   * @param entry  the entry payload
    * @return the request builder
    */
-  public ODataClientRequest entry(Entry entry) {
+  public ODataClientRequest entryPayload(Entry entry) {
     return new ODataClientRequest(method, url, headers, queryParams, entry);
+  }
+  
+  /**
+   * Sets the normalized OData payload.
+   * 
+   * @param link  the link payload
+   * @return the request builder
+   */
+  public ODataClientRequest linkPayload(SingleLink link) {
+    return new ODataClientRequest(method, url, headers, queryParams, link);
   }
 
 }

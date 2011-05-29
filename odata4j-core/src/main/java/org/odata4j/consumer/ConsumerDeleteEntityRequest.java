@@ -4,9 +4,9 @@ import org.core4j.Enumerable;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.edm.EdmDataServices;
 
-class ConsumerDeleteRequest extends ConsumerEntityRequestBase<Void> {
+class ConsumerDeleteEntityRequest extends ConsumerEntityRequestBase<Void> {
 
-  public ConsumerDeleteRequest(ODataClient client, String serviceRootUri,
+  public ConsumerDeleteEntityRequest(ODataClient client, String serviceRootUri,
       EdmDataServices metadata, String entitySetName, OEntityKey key) {
     super(client, serviceRootUri, metadata, entitySetName, key);
   }

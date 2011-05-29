@@ -56,6 +56,10 @@ public class OEntityIds {
 
     return parse(metadata, uri);
   }
+  
+  public static String toKeyString(OEntityId entity) {
+    return entity.getEntitySet().name + entity.getEntityKey().toKeyString();
+  }
 
   private static class OEntityIdImpl implements OEntityId {
 
