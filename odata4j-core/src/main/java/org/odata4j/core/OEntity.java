@@ -8,47 +8,47 @@ import java.util.List;
  * <p>The {@link OEntities} static factory class can be used to create <code>OEntity</code> instances.</p>
  * @see OEntities
  */
-public interface OEntity extends OEntityId { 
-	
-    /**
-     * Get all properties of this instance.
-     * 
-     * @return the properties
-     */
-    public abstract List<OProperty<?>> getProperties();
-    
-    /**
-     * Get a property by name.
-     * 
-     * @param propName  the property name
-     * @return the property
-     */
-    public abstract OProperty<?> getProperty(String propName);
-    
-    /**
-     * Get a property by name as a strongly-typed OProperty.
-     * 
-     * @param <T>  the java-type of the property
-     * @param propName  the property name
-     * @param propClass  the java-type of the property
-     * @return the property
-     */
-    public abstract <T> OProperty<T> getProperty(String propName, Class<T> propClass);
-    
-    /**
-     * Get all links of this instance.
-     * 
-     * @return the links
-     */
-    public abstract List<OLink> getLinks();
-    
-    /**
-     * Get a link with a given name and link-type.
-     * 
-     * @param <T>  the link-type as a java-type
-     * @param title  the link title
-     * @param linkClass  the link-type as a java-type
-     * @return the link strongly-typed as the java-type
-     */
-    public abstract <T extends OLink> T getLink(String title, Class<T> linkClass);
+public interface OEntity extends OEntityId {
+
+  /**
+   * Get all properties of this instance.
+   * 
+   * @return the properties
+   */
+  List<OProperty<?>> getProperties();
+
+  /**
+   * Get a property by name.
+   * 
+   * @param propName  the property name
+   * @return the property
+   */
+  OProperty<?> getProperty(String propName);
+
+  /**
+   * Get a property by name as a strongly-typed OProperty.
+   * 
+   * @param <T>  the java-type of the property
+   * @param propName  the property name
+   * @param propClass  the java-type of the property
+   * @return the property
+   */
+  <T> OProperty<T> getProperty(String propName, Class<T> propClass);
+
+  /**
+   * Get all links of this instance.
+   * 
+   * @return the links
+   */
+  List<OLink> getLinks();
+
+  /**
+   * Get a link with a given name and link-type.
+   * 
+   * @param <T>  the link-type as a java-type
+   * @param title  the link title
+   * @param linkClass  the link-type as a java-type
+   * @return the link strongly-typed as the java-type
+   */
+  <T extends OLink> T getLink(String title, Class<T> linkClass);
 }

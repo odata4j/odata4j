@@ -9,19 +9,19 @@ package org.odata4j.core;
  * @see NamedValues
  */
 public interface NamedValue<T> {
-    
-    /**
-     * Gets the name.
-     * 
-     * @return the name
-     */
-    public abstract String getName();
-    
-    /**
-     * Gets the value.
-     * 
-     * @return the value
-     */
-    public abstract T getValue();
-    
+
+  /**
+   * Gets the name.
+   * 
+   * @return the name
+   */
+  String getName();
+
+  /**
+   * Gets the value.
+   * 
+   * @return the value
+   */
+  T getValue();
+
 }

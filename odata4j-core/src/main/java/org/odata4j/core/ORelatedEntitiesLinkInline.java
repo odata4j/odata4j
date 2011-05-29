@@ -8,11 +8,11 @@ import java.util.List;
  * @see OLinks
  */
 public interface ORelatedEntitiesLinkInline extends ORelatedEntitiesLink {
-	
-	/**
-	 * Gets the inlined referents.
-	 * 
-	 * @return the inlined referents
-	 */
-	public abstract List<OEntity> getRelatedEntities();
+
+  /**
+   * Gets the inlined referents.
+   * 
+   * @return the inlined referents
+   */
+  List<OEntity> getRelatedEntities();
 }

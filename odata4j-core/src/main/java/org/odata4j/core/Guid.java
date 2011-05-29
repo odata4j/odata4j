@@ -8,43 +8,43 @@ import java.util.UUID;
  */
 public class Guid {
 
-    private final String value;
-    private Guid(String value){
-        this.value = value;
-    }
-    
-    /**
-     * Return a Guid for a given string.
-     * 
-     * @param value  the guid's string representation.
-     * @return a new Guid
-     */
-    public static Guid fromString(String value){
-        return new Guid(value);
-    }
+  private final String value;
 
-    /**
-     * Generate a new Guid.
-     * 
-     * @return a new Guid
-     */
-    public static Guid randomGuid() {
-        return new Guid(UUID.randomUUID().toString());
-    }
-    
-    @Override
-    public int hashCode() {
-        return value.hashCode();
-    }
-    
-    @Override
-    public boolean equals(Object other) {
-         return (other instanceof Guid) && ((Guid)other).value.equals(value);
-    }
-    
-    @Override
-    public String toString() {
-        return value;
-    }
+  private Guid(String value) {
+    this.value = value;
+  }
+
+  /**
+   * Return a Guid for a given string.
+   * 
+   * @param value  the guid's string representation.
+   * @return a new Guid
+   */
+  public static Guid fromString(String value) {
+    return new Guid(value);
+  }
+
+  /**
+   * Generate a new Guid.
+   * 
+   * @return a new Guid
+   */
+  public static Guid randomGuid() {
+    return new Guid(UUID.randomUUID().toString());
+  }
+
+  @Override
+  public int hashCode() {
+    return value.hashCode();
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    return (other instanceof Guid) && ((Guid) other).value.equals(value);
+  }
+
+  @Override
+  public String toString() {
+    return value;
+  }
 }
-

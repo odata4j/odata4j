@@ -9,13 +9,13 @@ import org.odata4j.edm.EdmType;
  * <p>The {@link OProperties} static factory class can be used to create <code>OProperty</code> instances.</p>
  * @see OProperties
  */
-public interface OProperty<T> extends NamedValue<T>{
+public interface OProperty<T> extends NamedValue<T> {
 
-    /**
-     * Gets the edm-type for this property.
-     * 
-     * @return the edm-type
-     */
-    public abstract EdmType getType();
-    
+  /**
+   * Gets the edm-type for this property.
+   * 
+   * @return the edm-type
+   */
+  EdmType getType();
+
 }

@@ -6,11 +6,11 @@ package org.odata4j.core;
  * @see OLinks
  */
 public interface ORelatedEntityLinkInline extends ORelatedEntityLink {
-	
-	/**
-	 * Gets the inlined referent.
-	 * 
-	 * @return the inlined referent
-	 */
-	public abstract OEntity getRelatedEntity();
+
+  /**
+   * Gets the inlined referent.
+   * 
+   * @return the inlined referent
+   */
+  OEntity getRelatedEntity();
 }

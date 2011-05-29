@@ -1,7 +1,7 @@
 package org.odata4j.core;
 
 /**
- * A consumer-side entity-request builder, used for operations on a single entity such as GET and DELETE.  Call {@link #execute()} to issue the request.
+ * A consumer-side entity-request builder, used for operations on a single entity such as DELETE.  Call {@link #execute()} to issue the request.
  *
  * @param <T>  the java-type of the operation response
  */

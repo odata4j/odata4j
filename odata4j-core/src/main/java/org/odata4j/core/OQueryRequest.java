@@ -16,7 +16,7 @@ public interface OQueryRequest<T> extends Iterable<T> {
    * 
    * @return the response as a client-side enumerable
    */
-  public abstract Enumerable<T> execute();
+  Enumerable<T> execute();
 
   /**
    * Sets the number of items to return.
@@ -25,7 +25,7 @@ public interface OQueryRequest<T> extends Iterable<T> {
    * @return the query-request builder
    * @see <a href="http://www.odata.org/developers/protocols/uri-conventions#TopSystemQueryOption">[odata.org] Top System Query Option ($top)</a>
    */
-  public abstract OQueryRequest<T> top(int top);
+  OQueryRequest<T> top(int top);
 
   /**
    * Sets the number of items to skip.
@@ -34,7 +34,7 @@ public interface OQueryRequest<T> extends Iterable<T> {
    * @return the query-request builder
    * @see <a href="http://www.odata.org/developers/protocols/uri-conventions#SkipSystemQueryOption">[odata.org] Skip System Query Option ($skip)</a>
    */
-  public abstract OQueryRequest<T> skip(int skip);
+  OQueryRequest<T> skip(int skip);
 
   /**
    * Sets the ordering expressions.
@@ -43,7 +43,7 @@ public interface OQueryRequest<T> extends Iterable<T> {
    * @return the query-request builder
    * @see <a href="http://www.odata.org/developers/protocols/uri-conventions#OrderBySystemQueryOption">[odata.org] Orderby System Query Option ($orderby)</a>
    */
-  public abstract OQueryRequest<T> orderBy(String orderBy);
+  OQueryRequest<T> orderBy(String orderBy);
 
   /**
    * Sets the filter expression.
@@ -52,7 +52,7 @@ public interface OQueryRequest<T> extends Iterable<T> {
    * @return the query-request builder
    * @see <a href="http://www.odata.org/developers/protocols/uri-conventions#FilterSystemQueryOption">[odata.org] Filter System Query Option ($filter)</a>
    */
-  public abstract OQueryRequest<T> filter(String filter);
+  OQueryRequest<T> filter(String filter);
 
   /**
    * Sets the selection clauses.
@@ -61,7 +61,7 @@ public interface OQueryRequest<T> extends Iterable<T> {
    * @return the query-request builder
    * @see <a href="http://www.odata.org/developers/protocols/uri-conventions#SelectSystemQueryOption">[odata.org] Select System Query Option ($select)</a>
    */
-  public abstract OQueryRequest<T> select(String select);
+  OQueryRequest<T> select(String select);
 
   /**
    * Navigates to a referenced collection using a collection-valued navigation property.
@@ -70,7 +70,7 @@ public interface OQueryRequest<T> extends Iterable<T> {
    * @param navProperty  the collection-valued navigation property off of the entity
    * @return the query-request builder
    */
-  public abstract OQueryRequest<T> nav(Object keyValue, String navProperty);
+  OQueryRequest<T> nav(Object keyValue, String navProperty);
 
   /**
    * Navigates to a referenced collection using a collection-valued navigation property.
@@ -79,7 +79,7 @@ public interface OQueryRequest<T> extends Iterable<T> {
    * @param navProperty  the collection-valued navigation property off of the entity
    * @return the query-request builder
    */
-  public abstract OQueryRequest<T> nav(OEntityKey key, String navProperty);
+  OQueryRequest<T> nav(OEntityKey key, String navProperty);
 
   /**
    * Adds a custom name-value pair.
@@ -89,7 +89,7 @@ public interface OQueryRequest<T> extends Iterable<T> {
    * @return the query-request builder
    * @see <a href="http://www.odata.org/developers/protocols/uri-conventions#CustomQueryOptions">[odata.org] Custom Query Options</a>
    */
-  public abstract OQueryRequest<T> custom(String name, String value);
+  OQueryRequest<T> custom(String name, String value);
 
   /**
    * Sets the expand expressions.
@@ -98,5 +98,5 @@ public interface OQueryRequest<T> extends Iterable<T> {
    * @return the query-request builder
    * @see <a href="http://www.odata.org/developers/protocols/uri-conventions#ExpandSystemQueryOption">[odata.org] Expand System Query Option ($expand)</a>
    */
-  public abstract OQueryRequest<T> expand(String expand);
+  OQueryRequest<T> expand(String expand);
 }

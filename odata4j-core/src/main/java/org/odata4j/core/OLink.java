@@ -9,25 +9,25 @@ package org.odata4j.core;
  */
 public interface OLink {
 
-    /**
-     * Gets the link title.
-     * 
-     * @return the link title
-     */
-    public abstract String getTitle();
-    
-    /**
-     * Gets the link relation.
-     * 
-     * @return the link relation
-     */
-    public abstract String getRelation();
-    
-    /**
-     * Gets the link href.
-     * 
-     * @return the link href
-     */
-    public abstract String getHref();
-    
+  /**
+   * Gets the link title.
+   * 
+   * @return the link title
+   */
+  String getTitle();
+
+  /**
+   * Gets the link relation.
+   * 
+   * @return the link relation
+   */
+  String getRelation();
+
+  /**
+   * Gets the link href.
+   * 
+   * @return the link href
+   */
+  String getHref();
+
 }

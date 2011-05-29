@@ -106,7 +106,7 @@ class ConsumerQueryEntitiesRequest<T> extends ConsumerQueryRequestBase<T> {
         int skipTokenIndex = feed.getNext().indexOf("$skiptoken=");
         if (skipTokenIndex > -1) {
           String skiptoken = feed.getNext().substring(skipTokenIndex + "$skiptoken=".length());
-          //	decode the skiptoken first since it gets encoded as a query param
+          // decode the skiptoken first since it gets encoded as a query param
           skiptoken = URLDecoder.decode(skiptoken, "UTF-8");
           request = request.queryParam("$skiptoken", skiptoken);
         } else if (feed.getNext().toLowerCase().startsWith("http")) {
