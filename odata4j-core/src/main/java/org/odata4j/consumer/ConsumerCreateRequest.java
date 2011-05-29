@@ -24,7 +24,7 @@ import org.odata4j.internal.InternalUtil;
 
 import com.sun.jersey.api.client.ClientResponse;
 
-class OCreateRequestImpl<T> extends OConsumerRequestBase implements OCreateRequest<T> {
+class ConsumerCreateRequest<T> extends ConsumerEntityPayloadRequestBase implements OCreateRequest<T> {
 
     private final ODataClient client;
     private OEntity parent;
@@ -32,7 +32,7 @@ class OCreateRequestImpl<T> extends OConsumerRequestBase implements OCreateReque
 
     private final FeedCustomizationMapping fcMapping;
     
-    public OCreateRequestImpl(ODataClient client, String serviceRootUri, EdmDataServices metadata, String entitySetName, FeedCustomizationMapping fcMapping) {
+    public ConsumerCreateRequest(ODataClient client, String serviceRootUri, EdmDataServices metadata, String entitySetName, FeedCustomizationMapping fcMapping) {
     	super(entitySetName, serviceRootUri, metadata);
         this.client = client;
         this.fcMapping = fcMapping;
@@ -61,7 +61,7 @@ class OCreateRequestImpl<T> extends OConsumerRequestBase implements OCreateReque
 				.getFirst(ODataConstants.Headers.DATA_SERVICE_VERSION));
 		
 		final FormatParser<Entry> parser = FormatParserFactory.getParser(Entry.class,
-				client.type, new Settings(version, metadata, entitySetName, null, fcMapping));
+				client.getFormatType(), new Settings(version, metadata, entitySetName, null, fcMapping));
 		entry = parser.parse(client.getFeedReader(response));
 
         return (T) entry.getEntity();

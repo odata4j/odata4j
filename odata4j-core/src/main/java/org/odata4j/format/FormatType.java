@@ -4,21 +4,23 @@ import javax.ws.rs.core.MediaType;
 
 public enum FormatType {
     ATOM(MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML),
-    JSON(MediaType.APPLICATION_JSON);
+    JSON(MediaType.APPLICATION_JSON),
+    XML(MediaType.APPLICATION_XML);
 
-    private FormatType(String... mediaTypes) {
-    	this.mediaTypes = mediaTypes;
-    }
-    
-    private final String[] mediaTypes;
-    
-    public String[] getAcceptableMediaTypes() {
-    	return mediaTypes;
-    }
-    
-    public static FormatType parse(String format){
-        if ("json".equalsIgnoreCase(format)) return JSON;
-        if ("atom".equalsIgnoreCase(format)) return ATOM;
-        throw new UnsupportedOperationException("Unsupported format " + format);
-    }
+  private FormatType(String... mediaTypes) {
+    this.mediaTypes = mediaTypes;
+  }
+
+  private final String[] mediaTypes;
+
+  public String[] getAcceptableMediaTypes() {
+    return mediaTypes;
+  }
+
+  public static FormatType parse(String format) {
+    if ("json".equalsIgnoreCase(format)) return JSON;
+    if ("atom".equalsIgnoreCase(format)) return ATOM;
+    if ("xml".equalsIgnoreCase(format)) return XML;
+    throw new UnsupportedOperationException("Unsupported format " + format);
+  }
 }

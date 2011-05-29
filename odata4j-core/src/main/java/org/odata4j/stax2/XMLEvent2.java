@@ -2,13 +2,12 @@ package org.odata4j.stax2;
 
 public interface XMLEvent2 {
 
-    boolean isStartElement();
+  boolean isStartElement();
 
-    StartElement2 asStartElement();
+  StartElement2 asStartElement();
 
-    boolean isEndElement();
+  boolean isEndElement();
 
-    EndElement2 asEndElement();
+  EndElement2 asEndElement();
 
-    
 }
