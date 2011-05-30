@@ -124,19 +124,16 @@ public class EntityRequestResource extends BaseResource {
 
   }
 
-  @Path("{first: \\$}links/{navProp:.+}")
+  @Path("{first: \\$}links/{targetNavProp:.+?}{targetId: (\\(.+?\\))?}")
   public LinksRequestResource getLinks(
       @PathParam("entitySetName") String entitySetName,
       @PathParam("id") String id,
-      @PathParam("navProp") String navProp) {
-    
-    log.info(String.format(
-        "getLinks(%s,%s,%s)",
-        entitySetName,
-        id,
-        navProp));
+      @PathParam("targetNavProp") String targetNavProp,
+      @PathParam("targetId") String targetId) {
 
-    return new LinksRequestResource(OEntityIds.create(entitySetName, OEntityKey.parse(id)), navProp);
+    OEntityKey targetEntityKey = targetId == null || targetId.isEmpty() ? null : OEntityKey.parse(targetId);
+
+    return new LinksRequestResource(OEntityIds.create(entitySetName, OEntityKey.parse(id)), targetNavProp, targetEntityKey);
   }
 
   @Path("{navProp:.+}")

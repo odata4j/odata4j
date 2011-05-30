@@ -1,8 +1,8 @@
 package org.odata4j.producer.inmemory;
 
-public abstract class PropertyModelDelegate implements PropertyModel {
+import org.odata4j.core.Delegate;
 
-  public abstract PropertyModel getDelegate();
+public abstract class PropertyModelDelegate implements Delegate<PropertyModel>, PropertyModel {
 
   @Override
   public Object getPropertyValue(Object target, String propertyName) {
