@@ -4,5 +4,5 @@ import java.io.Writer;
 
 public interface XMLWriterFactory2 {
 
-    public XMLWriter2 createXMLWriter(Writer writer);
+  XMLWriter2 createXMLWriter(Writer writer);
 }
