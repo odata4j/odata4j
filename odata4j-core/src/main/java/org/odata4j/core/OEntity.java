@@ -2,6 +2,8 @@ package org.odata4j.core;
 
 import java.util.List;
 
+import org.odata4j.edm.EdmEntitySet;
+
 /**
  * An immutable OData entity instance, consisting of an identity (an entity-set and a unique entity-key within that set), 
  * properties (typed, named values), and links (references to other entities).
@@ -10,6 +12,13 @@ import java.util.List;
  */
 public interface OEntity extends OEntityId {
 
+  /**
+   * Get the entity-set of this instance.
+   * 
+   * @return the entity-set
+   */
+  EdmEntitySet getEntitySet();
+  
   /**
    * Get all properties of this instance.
    * 

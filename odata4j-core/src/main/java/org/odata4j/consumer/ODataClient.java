@@ -119,6 +119,10 @@ class ODataClient {
   public void createLink(ODataClientRequest request) {
     doRequest(type, request, 204);
   }
+  
+  public void updateLink(ODataClientRequest request) {
+    doRequest(type, request, 204);
+  }
 
   Entry createRequestEntry(EdmEntitySet entitySet, OEntityKey entityKey, List<OProperty<?>> props, List<OLink> links) {
     final OEntity oentity = entityKey == null
@@ -298,5 +302,7 @@ class ODataClient {
   private static void log(String message) {
     System.out.println(message);
   }
+
+  
 
 }

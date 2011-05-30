@@ -62,6 +62,8 @@ public class OEntityKey {
       return create(Enumerable.create((Iterable<Object>) values[0]).toArray(Object.class));
     if (values != null && values.length == 1 && values[0] instanceof OEntityKey)
       return (OEntityKey) values[0];
+    if (values != null && values.length == 1 && values[0] instanceof OEntityId)
+      return ((OEntityId) values[0]).getEntityKey();
     if (values != null && values.length > 1 && values.length % 2 == 0 && values[0] instanceof String) {
       Map<String, Object> rt = new HashMap<String, Object>();
       for (int i = 0; i < values.length; i += 2) {

@@ -10,7 +10,6 @@ import org.odata4j.core.OCreateRequest;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityGetRequest;
 import org.odata4j.core.OEntityId;
-import org.odata4j.core.OEntityIds;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OEntityRequest;
 import org.odata4j.core.OModifyRequest;
@@ -410,7 +409,7 @@ public class ODataConsumer {
    * @return a new entity-request builder
    */
   public OEntityRequest<Void> deleteEntity(OEntityId entity) {
-    return deleteEntity(entity.getEntitySet().name, entity.getEntityKey());
+    return deleteEntity(entity.getEntitySetName(), entity.getEntityKey());
   }
 
   /**
@@ -491,11 +490,6 @@ public class ODataConsumer {
   }
   
   //TODO(0.5) javadoc
-  public OEntityId createEntityId(String entitySetName, Object... keyValues) {
-    return OEntityIds.create(getMetadata(), entitySetName, OEntityKey.create(keyValues));
-  }
-  
-  
   public OQueryRequest<OEntityId> getLinks(OEntityId sourceEntity, String targetNavProp) {
     return new ConsumerQueryLinksRequest(client, serviceRootUri, getMetadata(), sourceEntity, targetNavProp);
   }
@@ -506,6 +500,10 @@ public class ODataConsumer {
 
   public OEntityRequest<Void> deleteLink(OEntityId sourceEntity, String targetNavProp, Object... targetKeyValues) {
     return new ConsumerDeleteLinkRequest(client, serviceRootUri, getMetadata(), sourceEntity, targetNavProp, targetKeyValues);
+  }
+
+  public OEntityRequest<Void> updateLink(OEntityId sourceEntity, OEntityId newTargetEntity, String targetNavProp, Object... oldTargetKeyValues) {
+    return new ConsumerUpdateLinkRequest(client, serviceRootUri, getMetadata(), sourceEntity, newTargetEntity, targetNavProp, oldTargetKeyValues);
   }
 
 }

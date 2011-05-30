@@ -119,6 +119,11 @@ public class OEntities {
     public EdmEntitySet getEntitySet() {
       return entitySet;
     }
+    
+    @Override
+    public String getEntitySetName() {
+      return entitySet.name;
+    }
 
     @Override
     public OEntityKey getEntityKey() {

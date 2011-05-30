@@ -20,7 +20,8 @@ class ConsumerQueryLinksRequest extends ConsumerQueryRequestBase<OEntityId> {
   public static Func1<String, String> linksPath(final String targetNavProp, final Object[] targetKeyValues) {
     return new Func1<String, String>(){
       public String apply(String input) {
-        String keyString = targetKeyValues == null ? "" : OEntityKey.create(targetKeyValues).toKeyString();
+        String keyString = targetKeyValues == null || targetKeyValues.length == 0
+            ? "" : OEntityKey.create(targetKeyValues).toKeyString();
         return input + "/$links/" + targetNavProp + keyString;
       }};
   }
@@ -31,7 +32,7 @@ class ConsumerQueryLinksRequest extends ConsumerQueryRequestBase<OEntityId> {
     return Enumerable.create(getClient().getLinks(request)).select(new Func1<SingleLink, OEntityId>() {
       @Override
       public OEntityId apply(SingleLink link) {
-        return OEntityIds.parse(getMetadata(), getServiceRootUri(), link.getUri());
+        return OEntityIds.parse(getServiceRootUri(), link.getUri());
       }
     });
   }

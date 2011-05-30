@@ -11,7 +11,7 @@ class ConsumerDeleteLinkRequest extends ConsumerEntityRequestBase<Void> {
   
   public ConsumerDeleteLinkRequest(ODataClient client, String serviceRootUri,
       EdmDataServices metadata, OEntityId sourceEntity, String targetNavProp, Object... targetKeyValues) {
-    super(client, serviceRootUri, metadata, sourceEntity.getEntitySet().name, sourceEntity.getEntityKey());
+    super(client, serviceRootUri, metadata, sourceEntity.getEntitySetName(), sourceEntity.getEntityKey());
     this.targetNavProp = targetNavProp;
     this.targetKeyValues = targetKeyValues;
   }

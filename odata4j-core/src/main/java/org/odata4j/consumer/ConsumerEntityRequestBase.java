@@ -3,9 +3,13 @@ package org.odata4j.consumer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.odata4j.core.OEntityId;
+import org.odata4j.core.OEntityIds;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OEntityRequest;
 import org.odata4j.edm.EdmDataServices;
+import org.odata4j.format.SingleLink;
+import org.odata4j.format.SingleLinks;
 import org.odata4j.internal.EntitySegment;
 
 abstract class ConsumerEntityRequestBase<T> implements OEntityRequest<T> {
@@ -52,6 +56,15 @@ abstract class ConsumerEntityRequestBase<T> implements OEntityRequest<T> {
   public OEntityRequest<T> nav(String navProperty) {
     segments.add(new EntitySegment(navProperty, null));
     return this;
+  }
+  
+  
+  protected SingleLink toSingleLink(OEntityId entity) {
+    String uri = getServiceRootUri();
+    if (!uri.endsWith("/"))
+      uri += "/";
+    uri += OEntityIds.toKeyString(entity);
+    return SingleLinks.create(uri);
   }
 
 }

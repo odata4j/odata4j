@@ -113,6 +113,17 @@ public class ODataClientRequest {
   public static ODataClientRequest put(String url, Entry entry) {
     return new ODataClientRequest("PUT", url, null, null, entry);
   }
+  
+  /**
+   * Creates a new PUT request.
+   * 
+   * @param url  the request url
+   * @param entry  the normalized OData payload
+   * @return a new request builder
+   */
+  public static ODataClientRequest put(String url, SingleLink link) {
+    return new ODataClientRequest("PUT", url, null, null, link);
+  }
 
   /**
    * Creates a new MERGE request.
@@ -123,6 +134,17 @@ public class ODataClientRequest {
    */
   public static ODataClientRequest merge(String url, Entry entry) {
     return new ODataClientRequest("MERGE", url, null, null, entry);
+  }
+  
+  /**
+   * Creates a new MERGE request.
+   * 
+   * @param url  the request url
+   * @param entry  the normalized OData payload
+   * @return a new request builder
+   */
+  public static ODataClientRequest merge(String url, SingleLink link) {
+    return new ODataClientRequest("MERGE", url, null, null, link);
   }
 
   /**

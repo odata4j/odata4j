@@ -1,18 +1,17 @@
 package org.odata4j.core;
 
-import org.odata4j.edm.EdmEntitySet;
 
 /**
- * The identity of a single OData entity, consisting of an entity-set and a unique entity-key within that set.
+ * The identity of a single OData entity, consisting of an entity-set name and a unique entity-key within that set.
  */
 public interface OEntityId {
 
   /**
-   * Gets the entity-set for this instance.
+   * Gets the entity-set name for this instance.
    * 
-   * @return the entity-set
+   * @return the entity-set name
    */
-  EdmEntitySet getEntitySet();
+  String getEntitySetName();
 
   /**
    * Gets the entity-key for this instance.
