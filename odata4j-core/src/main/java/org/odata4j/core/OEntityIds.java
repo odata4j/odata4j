@@ -47,7 +47,15 @@ public class OEntityIds {
   }
   
   public static String toKeyString(OEntityId entity) {
+    if (entity == null)
+      return null;
     return entity.getEntitySetName() + entity.getEntityKey().toKeyString();
+  }
+  
+  public static boolean equals(OEntityId lhs, OEntityId rhs) {
+    if (lhs == null)
+      return rhs == null;
+    return toKeyString(lhs).equals(toKeyString(rhs));
   }
 
   private static class OEntityIdImpl implements OEntityId {
@@ -75,4 +83,5 @@ public class OEntityIds {
       return String.format("OEntityId[%s%s]", entitySetName, entityKey.toKeyString());
     }
   }
+
 }

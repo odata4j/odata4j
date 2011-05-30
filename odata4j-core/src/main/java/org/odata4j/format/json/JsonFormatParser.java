@@ -56,11 +56,11 @@ public class JsonFormatParser {
   protected boolean isResponse;
 
   protected JsonFormatParser(Settings settings) {
-    this.version = settings.version;
-    this.metadata = settings.metadata;
-    this.entitySetName = settings.entitySetName;
-    this.entityKey = settings.entityKey;
-    this.isResponse = settings.isResponse;
+    this.version = settings == null ? null : settings.version;
+    this.metadata = settings == null ? null : settings.metadata;
+    this.entitySetName = settings == null ? null : settings.entitySetName;
+    this.entityKey = settings == null ? null : settings.entityKey;
+    this.isResponse = settings == null ? false : settings.isResponse;
   }
 
   protected JsonFeed parseFeed(EdmEntitySet ees, JsonStreamReader jsr) {

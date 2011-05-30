@@ -4,8 +4,10 @@ import javax.ws.rs.core.MediaType;
 
 import org.odata4j.format.json.JsonEntryFormatParser;
 import org.odata4j.format.json.JsonFeedFormatParser;
+import org.odata4j.format.json.JsonSingleLinkFormatParser;
 import org.odata4j.format.xml.AtomEntryFormatParser;
 import org.odata4j.format.xml.AtomFeedFormatParser;
+import org.odata4j.format.xml.AtomSingleLinkFormatParser;
 import org.odata4j.producer.exceptions.BadRequestException;
 import org.odata4j.producer.exceptions.NotAcceptableException;
 
@@ -14,9 +16,11 @@ public class FormatParserFactory {
   private FormatParserFactory() {}
 
   private static interface FormatParsers {
-    public FormatParser<Feed> getFeedFormatParser(Settings settings);
+    FormatParser<Feed> getFeedFormatParser(Settings settings);
 
-    public FormatParser<Entry> getEntryFormatParser(Settings settings);
+    FormatParser<Entry> getEntryFormatParser(Settings settings);
+
+    FormatParser<SingleLink> getSingleLinkFormatParser(Settings settings);
   }
 
   @SuppressWarnings("unchecked")
@@ -28,9 +32,10 @@ public class FormatParserFactory {
 
     if (Feed.class.isAssignableFrom(targetType)) {
       return (FormatParser<T>) formatParsers.getFeedFormatParser(settings);
-    }
-    if (Entry.class.isAssignableFrom(targetType)) {
+    } else if (Entry.class.isAssignableFrom(targetType)) {
       return (FormatParser<T>) formatParsers.getEntryFormatParser(settings);
+    } else if (SingleLink.class.isAssignableFrom(targetType)) {
+      return (FormatParser<T>) formatParsers.getSingleLinkFormatParser(settings);
     }
     throw new IllegalArgumentException("Unable to locate format parser for " + targetType.getName() + " and format " + type);
   }
@@ -40,7 +45,8 @@ public class FormatParserFactory {
     FormatType type;
     if (contentType.isCompatible(MediaType.APPLICATION_JSON_TYPE)) {
       type = FormatType.JSON;
-    } else if (contentType.isCompatible(MediaType.APPLICATION_ATOM_XML_TYPE)) {
+    } else if (contentType.isCompatible(MediaType.APPLICATION_ATOM_XML_TYPE)
+        || contentType.isCompatible(MediaType.APPLICATION_XML_TYPE) && SingleLink.class.isAssignableFrom(targetType)) {
       type = FormatType.ATOM;
     } else {
       throw new NotAcceptableException("Unknown content type " + contentType);
@@ -61,6 +67,11 @@ public class FormatParserFactory {
       return new JsonEntryFormatParser(settings);
     }
 
+    @Override
+    public FormatParser<SingleLink> getSingleLinkFormatParser(Settings settings) {
+      return new JsonSingleLinkFormatParser(settings);
+    }
+
   }
 
   public static class AtomParsers implements FormatParsers {
@@ -73,6 +84,11 @@ public class FormatParserFactory {
     @Override
     public FormatParser<Entry> getEntryFormatParser(Settings settings) {
       return new AtomEntryFormatParser(settings.metadata, settings.entitySetName, settings.entityKey, settings.fcMapping);
+    }
+
+    @Override
+    public FormatParser<SingleLink> getSingleLinkFormatParser(Settings settings) {
+      return new AtomSingleLinkFormatParser();
     }
 
   }
