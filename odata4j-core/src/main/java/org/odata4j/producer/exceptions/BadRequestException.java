@@ -4,17 +4,14 @@ import javax.ws.rs.core.Response;
 
 public class BadRequestException extends ODataException {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	public BadRequestException() {
-		super(Response.status(400).build());
-	}
-	
-	public BadRequestException(String message) {
-		super(Response.status(400).entity(message).build());
-	}
+  public BadRequestException() {
+    super(Response.status(400).build());
+  }
+
+  public BadRequestException(String message) {
+    super(Response.status(400).entity(message).build());
+  }
 
 }

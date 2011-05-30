@@ -3,7 +3,7 @@ package org.odata4j.producer.inmemory;
 public abstract class PropertyModelDelegate implements PropertyModel {
 
   public abstract PropertyModel getDelegate();
-  
+
   @Override
   public Object getPropertyValue(Object target, String propertyName) {
     return getDelegate().getPropertyValue(target, propertyName);

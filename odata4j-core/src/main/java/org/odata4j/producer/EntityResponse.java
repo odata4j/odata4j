@@ -7,11 +7,11 @@ import org.odata4j.core.OEntity;
  * <p>The {@link Responses} static factory class can be used to create <code>EntityResponse</code> instances.</p>
  */
 public interface EntityResponse extends BaseResponse {
-	
-    /**
-     * Gets the OData entity.
-     * 
-     * @return the entity
-     */
-    public OEntity getEntity();
+
+  /**
+   * Gets the OData entity.
+   * 
+   * @return the entity
+   */
+  OEntity getEntity();
 }

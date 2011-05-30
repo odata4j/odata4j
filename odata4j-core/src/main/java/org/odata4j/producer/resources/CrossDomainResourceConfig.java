@@ -4,7 +4,7 @@ import com.sun.jersey.api.core.DefaultResourceConfig;
 
 public class CrossDomainResourceConfig extends DefaultResourceConfig {
 
-    public CrossDomainResourceConfig() {
-        super(CrossDomainXmlResource.class, ClientAccessPolicyXmlResource.class);
-    }
+  public CrossDomainResourceConfig() {
+    super(CrossDomainXmlResource.class, ClientAccessPolicyXmlResource.class);
+  }
 }

@@ -42,7 +42,7 @@ public class StaxXMLWriter2 implements XMLWriter2 {
   // throw new RuntimeException(e);
   // }
   // }
-  //	
+  // 
   // public void setDefaultNamespace( String namespaceUri){
   // try {
   // eventWriter.setDefaultNamespace(namespaceUri);

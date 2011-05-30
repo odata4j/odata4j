@@ -9,7 +9,7 @@ public class EntityIdFunctionPropertyModelDelegate<TEntity, TKey> extends Proper
   private final String idPropertyName;
   private final Class<TKey> idPropertyType;
   private final Func1<TEntity, TKey> id;
-  
+
   public EntityIdFunctionPropertyModelDelegate(PropertyModel propertyModel, String idPropertyName, Class<TKey> idPropertyType, Func1<TEntity, TKey> id) {
     this.propertyModel = propertyModel;
     this.idPropertyName = idPropertyName;
@@ -21,19 +21,19 @@ public class EntityIdFunctionPropertyModelDelegate<TEntity, TKey> extends Proper
   public PropertyModel getDelegate() {
     return propertyModel;
   }
-  
+
   @Override
   public Iterable<String> getPropertyNames() {
     return Enumerable.create(idPropertyName).concat(Enumerable.create(super.getPropertyNames()));
   }
-  
+
   @Override
   public Class<?> getPropertyType(String propertyName) {
     if (propertyName.equals(idPropertyName))
       return idPropertyType;
     return super.getPropertyType(propertyName);
   }
-  
+
   @SuppressWarnings("unchecked")
   @Override
   public Object getPropertyValue(Object target, String propertyName) {
@@ -41,5 +41,5 @@ public class EntityIdFunctionPropertyModelDelegate<TEntity, TKey> extends Proper
       return id.apply((TEntity) target);
     return super.getPropertyValue(target, propertyName);
   }
-  
+
 }

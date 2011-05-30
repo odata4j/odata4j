@@ -45,292 +45,289 @@ import org.odata4j.expression.TrimMethodCallExpression;
 
 public class JPQLGenerator {
 
-	private final String primaryKeyName;
-	private final String tableAlias;
+  private final String primaryKeyName;
+  private final String tableAlias;
 
-	public JPQLGenerator(String primaryKeyName, String tableAlias){
-		this.primaryKeyName = primaryKeyName;
-		this.tableAlias = tableAlias;
-	}
-	
-	public String getPrimaryKeyName() {
-		return primaryKeyName;
-	}
-	
-	public String getTableAlias() {
-		return tableAlias;
-	}
-	
-	
-	public static String toJpqlLiteral(Object value){
-		if (value instanceof String) 
-			return "'" + value + "'";
-		if (value instanceof Long) 
-			return value + "L";
-		if (value instanceof LocalTime) 
-			return "'" + new java.sql.Time(new LocalDateTime(
-						((LocalTime) value).getMillisOfDay(), DateTimeZone.UTC)
-						.toDateTime().getMillis()).toString() + "'";
-		if (value instanceof LocalDateTime) {
-			java.sql.Timestamp d = new Timestamp(((LocalDateTime) value).toDateTime().getMillis());
-			return "'" + d + "'";
-		}
-		return value.toString();
-	}
-	
-	public String toJpql(CommonExpression expression) {
+  public JPQLGenerator(String primaryKeyName, String tableAlias) {
+    this.primaryKeyName = primaryKeyName;
+    this.tableAlias = tableAlias;
+  }
 
-		if (expression instanceof BoolCommonExpression) 
-			return toJpql((BoolCommonExpression) expression);
+  public String getPrimaryKeyName() {
+    return primaryKeyName;
+  }
 
-		if (expression instanceof EntitySimpleProperty) {
-			String field = ((EntitySimpleProperty) expression).getPropertyName();
+  public String getTableAlias() {
+    return tableAlias;
+  }
 
-			field = field.equals(primaryKeyName)
-					? primaryKeyName
-					: field.replace("/", ".");
+  public static String toJpqlLiteral(Object value) {
+    if (value instanceof String)
+      return "'" + value + "'";
+    if (value instanceof Long)
+      return value + "L";
+    if (value instanceof LocalTime)
+      return "'" + new java.sql.Time(new LocalDateTime(
+          ((LocalTime) value).getMillisOfDay(), DateTimeZone.UTC)
+          .toDateTime().getMillis()).toString() + "'";
+    if (value instanceof LocalDateTime) {
+      java.sql.Timestamp d = new Timestamp(((LocalDateTime) value).toDateTime().getMillis());
+      return "'" + d + "'";
+    }
+    return value.toString();
+  }
 
-			return tableAlias + "." + field;
-		}
+  public String toJpql(CommonExpression expression) {
 
-		if (expression instanceof NullLiteral || expression == null) 
-			return null;
-		
-		if (expression instanceof LiteralExpression) {
-			Object lValue = org.odata4j.expression.Expression.literalValue((LiteralExpression) expression);
-			return toJpqlLiteral(lValue);
-		}
+    if (expression instanceof BoolCommonExpression)
+      return toJpql((BoolCommonExpression) expression);
 
-		if (expression instanceof AddExpression) 
-			return bceToJpql("%s + %s",(AddExpression)expression);
+    if (expression instanceof EntitySimpleProperty) {
+      String field = ((EntitySimpleProperty) expression).getPropertyName();
 
-		if (expression instanceof SubExpression) 
-			return bceToJpql("%s - %s",(SubExpression)expression);
+      field = field.equals(primaryKeyName)
+          ? primaryKeyName
+          : field.replace("/", ".");
 
-		if (expression instanceof MulExpression) 
-			return bceToJpql("%s * %s",(MulExpression)expression);
-		
-		if (expression instanceof DivExpression)
-			return bceToJpql("%s / %s",(DivExpression)expression);
-		
-		if (expression instanceof ModExpression) 
-			return bceToJpql("MOD(%s, %s)",(ModExpression)expression);
-		
-		if (expression instanceof LengthMethodCallExpression) {
-			LengthMethodCallExpression e = (LengthMethodCallExpression) expression;
+      return tableAlias + "." + field;
+    }
 
-			return String.format(
-					"LENGTH(%s)",
-					toJpql(e.getTarget()));
-		}
+    if (expression instanceof NullLiteral || expression == null)
+      return null;
 
-		if (expression instanceof IndexOfMethodCallExpression) {
-			IndexOfMethodCallExpression e = (IndexOfMethodCallExpression) expression;
+    if (expression instanceof LiteralExpression) {
+      Object lValue = org.odata4j.expression.Expression.literalValue((LiteralExpression) expression);
+      return toJpqlLiteral(lValue);
+    }
 
-			return String.format(
-					"(LOCATE(%s, %s) - 1)",
-					toJpql(e.getValue()),
-					toJpql(e.getTarget()));
-		}
+    if (expression instanceof AddExpression)
+      return bceToJpql("%s + %s", (AddExpression) expression);
 
-		if (expression instanceof SubstringMethodCallExpression) {
-			SubstringMethodCallExpression e = (SubstringMethodCallExpression) expression;
+    if (expression instanceof SubExpression)
+      return bceToJpql("%s - %s", (SubExpression) expression);
 
-			String length = toJpql(e.getLength());
-			length = length != null ? ", " + length : "";
+    if (expression instanceof MulExpression)
+      return bceToJpql("%s * %s", (MulExpression) expression);
 
-			return String.format(
-					"SUBSTRING(%s, %s + 1 %s)",
-					toJpql(e.getTarget()),
-					toJpql(e.getStart()),
-					length);
-		}
+    if (expression instanceof DivExpression)
+      return bceToJpql("%s / %s", (DivExpression) expression);
 
-		if (expression instanceof ToLowerMethodCallExpression) {
-			ToLowerMethodCallExpression e = (ToLowerMethodCallExpression) expression;
+    if (expression instanceof ModExpression)
+      return bceToJpql("MOD(%s, %s)", (ModExpression) expression);
 
-			return String.format(
-					"LOWER(%s)",
-					toJpql(e.getTarget()));
-		}
+    if (expression instanceof LengthMethodCallExpression) {
+      LengthMethodCallExpression e = (LengthMethodCallExpression) expression;
 
-		if (expression instanceof ToUpperMethodCallExpression) {
-			ToUpperMethodCallExpression e = (ToUpperMethodCallExpression) expression;
+      return String.format(
+          "LENGTH(%s)",
+          toJpql(e.getTarget()));
+    }
 
-			return String.format(
-					"UPPER(%s)",
-					toJpql(e.getTarget()));
-		}
+    if (expression instanceof IndexOfMethodCallExpression) {
+      IndexOfMethodCallExpression e = (IndexOfMethodCallExpression) expression;
 
-		if (expression instanceof TrimMethodCallExpression) {
-			TrimMethodCallExpression e = (TrimMethodCallExpression) expression;
+      return String.format(
+          "(LOCATE(%s, %s) - 1)",
+          toJpql(e.getValue()),
+          toJpql(e.getTarget()));
+    }
 
-			return String.format(
-					"TRIM(BOTH FROM %s)",
-					toJpql(e.getTarget()));
-		}
+    if (expression instanceof SubstringMethodCallExpression) {
+      SubstringMethodCallExpression e = (SubstringMethodCallExpression) expression;
 
-		if (expression instanceof ConcatMethodCallExpression) {
-			ConcatMethodCallExpression e = (ConcatMethodCallExpression) expression;
+      String length = toJpql(e.getLength());
+      length = length != null ? ", " + length : "";
 
-			return String.format(
-					"CONCAT(%s, %s)",
-					toJpql(e.getLHS()),
-					toJpql(e.getRHS()));
-		}
+      return String.format(
+          "SUBSTRING(%s, %s + 1 %s)",
+          toJpql(e.getTarget()),
+          toJpql(e.getStart()),
+          length);
+    }
 
-		if (expression instanceof ReplaceMethodCallExpression) {
-			ReplaceMethodCallExpression e = (ReplaceMethodCallExpression) expression;
+    if (expression instanceof ToLowerMethodCallExpression) {
+      ToLowerMethodCallExpression e = (ToLowerMethodCallExpression) expression;
 
-			return String.format(
-					"FUNC('REPLACE', %s, %s, %s)",
-					toJpql(e.getTarget()),
-					toJpql(e.getFind()),
-					toJpql(e.getReplace()));
-		}
+      return String.format(
+          "LOWER(%s)",
+          toJpql(e.getTarget()));
+    }
 
-		if (expression instanceof RoundMethodCallExpression) {
-			RoundMethodCallExpression e = (RoundMethodCallExpression) expression;
+    if (expression instanceof ToUpperMethodCallExpression) {
+      ToUpperMethodCallExpression e = (ToUpperMethodCallExpression) expression;
 
-			// TODO: don't work while HSQL implementation expecting ROUND(a ,b)
-			return String.format(
-					"FUNC('ROUND', %s)",
-					toJpql(e.getTarget()));
-		}
+      return String.format(
+          "UPPER(%s)",
+          toJpql(e.getTarget()));
+    }
 
-		if (expression instanceof DayMethodCallExpression) {
-			DayMethodCallExpression e = (DayMethodCallExpression) expression;
+    if (expression instanceof TrimMethodCallExpression) {
+      TrimMethodCallExpression e = (TrimMethodCallExpression) expression;
 
-			// TODO: don't work could be trim bug in EclipseLink ... or wrong
-			// syntax here
-			return String.format(
-					"TRIM(LEADING '0' FROM SUBSTRING(%s, 9, 2))",
-					toJpql(e.getTarget()));
-		}
+      return String.format(
+          "TRIM(BOTH FROM %s)",
+          toJpql(e.getTarget()));
+    }
 
-		if (expression instanceof ParenExpression) {
-			return toJpql(((ParenExpression) expression).getExpression());
-		}
+    if (expression instanceof ConcatMethodCallExpression) {
+      ConcatMethodCallExpression e = (ConcatMethodCallExpression) expression;
 
-		if (expression instanceof BoolParenExpression) {
-			return toJpql(((BoolParenExpression) expression).getExpression());
-		}
+      return String.format(
+          "CONCAT(%s, %s)",
+          toJpql(e.getLHS()),
+          toJpql(e.getRHS()));
+    }
 
-		throw new UnsupportedOperationException("unsupported expression " + expression);
-	}
+    if (expression instanceof ReplaceMethodCallExpression) {
+      ReplaceMethodCallExpression e = (ReplaceMethodCallExpression) expression;
 
-	public String toJpql(BoolCommonExpression expression) {
-		if (expression instanceof EqExpression)
-			return bceToJpql("%s = %s",  (EqExpression) expression);
-		
-		if (expression instanceof NeExpression)
-			return bceToJpql("%s <> %s",  (NeExpression) expression);
-	
-		if (expression instanceof AndExpression) {
-			AndExpression e = (AndExpression) expression;
-			return String.format(
-					"%s AND %s",
-					toJpql(e.getLHS()),
-					toJpql(e.getRHS()));
-		}
+      return String.format(
+          "FUNC('REPLACE', %s, %s, %s)",
+          toJpql(e.getTarget()),
+          toJpql(e.getFind()),
+          toJpql(e.getReplace()));
+    }
 
-		if (expression instanceof OrExpression) {
-			OrExpression e = (OrExpression) expression;
-			return String.format(
-					"%s OR %s",
-					toJpql(e.getLHS()),
-					toJpql(e.getRHS()));
-		}
+    if (expression instanceof RoundMethodCallExpression) {
+      RoundMethodCallExpression e = (RoundMethodCallExpression) expression;
 
-		if (expression instanceof BooleanLiteral) 
-			return Boolean.toString(((BooleanLiteral) expression).getValue());
-		
+      // TODO: don't work while HSQL implementation expecting ROUND(a ,b)
+      return String.format(
+          "FUNC('ROUND', %s)",
+          toJpql(e.getTarget()));
+    }
 
-		if (expression instanceof GtExpression) 
-			return bceToJpql("%s > %s", (GtExpression) expression);
-	
+    if (expression instanceof DayMethodCallExpression) {
+      DayMethodCallExpression e = (DayMethodCallExpression) expression;
 
-		if (expression instanceof LtExpression)
-			return bceToJpql("%s < %s", (LtExpression) expression);
-		
-		if (expression instanceof GeExpression)
-			return bceToJpql("%s >= %s", (GeExpression) expression);
-		
-		if (expression instanceof LeExpression) 
-			return bceToJpql("%s <= %s", (LeExpression) expression);
-		
-		if (expression instanceof NotExpression) {
-			NotExpression e = (NotExpression) expression;
-			return String.format(
-					"NOT (%s = TRUE)",
-					toJpql(e.getExpression()));
-		}
+      // TODO: don't work could be trim bug in EclipseLink ... or wrong
+      // syntax here
+      return String.format(
+          "TRIM(LEADING '0' FROM SUBSTRING(%s, 9, 2))",
+          toJpql(e.getTarget()));
+    }
 
-		if (expression instanceof SubstringOfMethodCallExpression) {
-			SubstringOfMethodCallExpression e = (SubstringOfMethodCallExpression) expression;
+    if (expression instanceof ParenExpression) {
+      return toJpql(((ParenExpression) expression).getExpression());
+    }
 
-			String value = (String) toJpql(e.getValue());
-			value = value.replace("'", "");
+    if (expression instanceof BoolParenExpression) {
+      return toJpql(((BoolParenExpression) expression).getExpression());
+    }
 
-			return String.format(
-					"(CASE WHEN %s LIKE '%%%s%%' THEN TRUE ELSE FALSE END)",
-					toJpql(e.getTarget()),
-					value);
-		}
+    throw new UnsupportedOperationException("unsupported expression " + expression);
+  }
 
-		if (expression instanceof EndsWithMethodCallExpression) {
-			EndsWithMethodCallExpression e = (EndsWithMethodCallExpression) expression;
+  public String toJpql(BoolCommonExpression expression) {
+    if (expression instanceof EqExpression)
+      return bceToJpql("%s = %s", (EqExpression) expression);
 
-			String value = (String) toJpql(e.getValue());
-			value = value.replace("'", "");
+    if (expression instanceof NeExpression)
+      return bceToJpql("%s <> %s", (NeExpression) expression);
 
-			return String.format(
-					"(CASE WHEN %s LIKE '%%%s' THEN TRUE ELSE FALSE END)",
-					toJpql(e.getTarget()),
-					value);
-		}
+    if (expression instanceof AndExpression) {
+      AndExpression e = (AndExpression) expression;
+      return String.format(
+          "%s AND %s",
+          toJpql(e.getLHS()),
+          toJpql(e.getRHS()));
+    }
 
-		if (expression instanceof StartsWithMethodCallExpression) {
-			StartsWithMethodCallExpression e = (StartsWithMethodCallExpression) expression;
+    if (expression instanceof OrExpression) {
+      OrExpression e = (OrExpression) expression;
+      return String.format(
+          "%s OR %s",
+          toJpql(e.getLHS()),
+          toJpql(e.getRHS()));
+    }
 
-			String value = (String) toJpql(e.getValue());
-			value = value.replace("'", "");
+    if (expression instanceof BooleanLiteral)
+      return Boolean.toString(((BooleanLiteral) expression).getValue());
 
-			return String.format(
-					"(CASE WHEN %s LIKE '%s%%' THEN TRUE ELSE FALSE END)",
-					toJpql(e.getTarget()),
-					value);
-		}
+    if (expression instanceof GtExpression)
+      return bceToJpql("%s > %s", (GtExpression) expression);
 
-		if (expression instanceof IsofExpression) {
-			IsofExpression e = (IsofExpression) expression;
+    if (expression instanceof LtExpression)
+      return bceToJpql("%s < %s", (LtExpression) expression);
 
-			String clazz = toJpql(e.getExpression());
-			if (clazz == null) {
-				clazz = tableAlias;
-			}
+    if (expression instanceof GeExpression)
+      return bceToJpql("%s >= %s", (GeExpression) expression);
 
-			// TODO: don't work, for me its bug in EclipseLink
-			return String.format(
-					"TYPE(%s) = '%s'",
-					clazz,
-					e.getType());
-		}
+    if (expression instanceof LeExpression)
+      return bceToJpql("%s <= %s", (LeExpression) expression);
 
-		if (expression instanceof ParenExpression) {
-			ParenExpression e = (ParenExpression) expression;
-			return "(" + toJpql((ParenExpression) e.getExpression()) + ")";
-		}
+    if (expression instanceof NotExpression) {
+      NotExpression e = (NotExpression) expression;
+      return String.format(
+          "NOT (%s = TRUE)",
+          toJpql(e.getExpression()));
+    }
 
-		if (expression instanceof BoolParenExpression) {
-			BoolParenExpression e = (BoolParenExpression) expression;
-			return "(" + toJpql((BoolCommonExpression) e.getExpression()) + ")";
-		}
+    if (expression instanceof SubstringOfMethodCallExpression) {
+      SubstringOfMethodCallExpression e = (SubstringOfMethodCallExpression) expression;
 
-		throw new UnsupportedOperationException("unsupported expression " + expression);
-	}
-	
-	private String bceToJpql(String format, BinaryCommonExpression bce){
-		return String.format(format,toJpql(bce.getLHS()),toJpql(bce.getRHS()));
-	}
+      String value = (String) toJpql(e.getValue());
+      value = value.replace("'", "");
+
+      return String.format(
+          "(CASE WHEN %s LIKE '%%%s%%' THEN TRUE ELSE FALSE END)",
+          toJpql(e.getTarget()),
+          value);
+    }
+
+    if (expression instanceof EndsWithMethodCallExpression) {
+      EndsWithMethodCallExpression e = (EndsWithMethodCallExpression) expression;
+
+      String value = (String) toJpql(e.getValue());
+      value = value.replace("'", "");
+
+      return String.format(
+          "(CASE WHEN %s LIKE '%%%s' THEN TRUE ELSE FALSE END)",
+          toJpql(e.getTarget()),
+          value);
+    }
+
+    if (expression instanceof StartsWithMethodCallExpression) {
+      StartsWithMethodCallExpression e = (StartsWithMethodCallExpression) expression;
+
+      String value = (String) toJpql(e.getValue());
+      value = value.replace("'", "");
+
+      return String.format(
+          "(CASE WHEN %s LIKE '%s%%' THEN TRUE ELSE FALSE END)",
+          toJpql(e.getTarget()),
+          value);
+    }
+
+    if (expression instanceof IsofExpression) {
+      IsofExpression e = (IsofExpression) expression;
+
+      String clazz = toJpql(e.getExpression());
+      if (clazz == null) {
+        clazz = tableAlias;
+      }
+
+      // TODO: don't work, for me its bug in EclipseLink
+      return String.format(
+          "TYPE(%s) = '%s'",
+          clazz,
+          e.getType());
+    }
+
+    if (expression instanceof ParenExpression) {
+      ParenExpression e = (ParenExpression) expression;
+      return "(" + toJpql((ParenExpression) e.getExpression()) + ")";
+    }
+
+    if (expression instanceof BoolParenExpression) {
+      BoolParenExpression e = (BoolParenExpression) expression;
+      return "(" + toJpql((BoolCommonExpression) e.getExpression()) + ")";
+    }
+
+    throw new UnsupportedOperationException("unsupported expression " + expression);
+  }
+
+  private String bceToJpql(String format, BinaryCommonExpression bce) {
+    return String.format(format, toJpql(bce.getLHS()), toJpql(bce.getRHS()));
+  }
 }

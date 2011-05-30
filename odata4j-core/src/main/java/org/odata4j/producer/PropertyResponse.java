@@ -8,10 +8,10 @@ import org.odata4j.core.OProperty;
  */
 public interface PropertyResponse extends BaseResponse {
 
-	/**
-	 * Gets the property value.
-	 * 
-	 * @return the property value
-	 */
-	public OProperty<?> getProperty();
+  /**
+   * Gets the property value.
+   * 
+   * @return the property value
+   */
+  OProperty<?> getProperty();
 }

@@ -7,11 +7,11 @@ import java.util.Properties;
  */
 public interface ODataProducerFactory {
 
-    /**
-     * Create a new OData producer from the given properties.
-     * 
-     * @param properties  the properties to use when constructing the producer
-     * @return the new producer
-     */
-    public abstract ODataProducer create(Properties properties);
+  /**
+   * Create a new OData producer from the given properties.
+   * 
+   * @param properties  the properties to use when constructing the producer
+   * @return the new producer
+   */
+  ODataProducer create(Properties properties);
 }

@@ -13,19 +13,19 @@ import org.odata4j.edm.EdmType;
 
 public class EclipseLink {
 
-	private EclipseLink(){}
-	
-    public static Map<String, Object> getPropertyInfo(SingularAttribute<?, ?> sa, EdmType type) {
+  private EclipseLink() {}
 
-        Map<String, Object> rt = new HashMap<String, Object>();
-        AttributeImpl<?, ?> ai = (AttributeImpl<?, ?>) sa;
-        DatabaseMapping dm = CoreUtils.getFieldValue(ai, "mapping", DatabaseMapping.class);
+  public static Map<String, Object> getPropertyInfo(SingularAttribute<?, ?> sa, EdmType type) {
 
-        DatabaseField df = dm.getField();
+    Map<String, Object> rt = new HashMap<String, Object>();
+    AttributeImpl<?, ?> ai = (AttributeImpl<?, ?>) sa;
+    DatabaseMapping dm = CoreUtils.getFieldValue(ai, "mapping", DatabaseMapping.class);
 
-        if (df != null && EdmType.STRING.equals(type)) {
-            rt.put("MaxLength", df.getLength());
-        }
-        return rt;
+    DatabaseField df = dm.getField();
+
+    if (df != null && EdmType.STRING.equals(type)) {
+      rt.put("MaxLength", df.getLength());
     }
+    return rt;
+  }
 }

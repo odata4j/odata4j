@@ -10,14 +10,15 @@ import org.odata4j.edm.EdmType;
 import org.odata4j.producer.jpa.JPAEdmGenerator;
 
 public class EclipseLinkJPAEdmGenerator extends JPAEdmGenerator {
-    protected EdmProperty toEdmProperty(String modelNamespace, SingularAttribute<?, ?> sa) {
-    	EdmProperty p = super.toEdmProperty(modelNamespace, sa);
-    	
-    	Integer maxLength = null;
-        Map<String, Object> eclipseLinkProps = EclipseLink.getPropertyInfo(sa, p.type);
-        if (Enumerable.create(EdmType.STRING,EdmType.BINARY).contains(p.type) && eclipseLinkProps.containsKey("MaxLength"))
-            maxLength = (Integer) eclipseLinkProps.get("MaxLength");
+  
+  protected EdmProperty toEdmProperty(String modelNamespace, SingularAttribute<?, ?> sa) {
+    EdmProperty p = super.toEdmProperty(modelNamespace, sa);
 
-        return new EdmProperty(p.name, p.type, p.nullable, maxLength, null, null, null, null, null, null, null, null);
-    }
+    Integer maxLength = null;
+    Map<String, Object> eclipseLinkProps = EclipseLink.getPropertyInfo(sa, p.type);
+    if (Enumerable.create(EdmType.STRING, EdmType.BINARY).contains(p.type) && eclipseLinkProps.containsKey("MaxLength"))
+      maxLength = (Integer) eclipseLinkProps.get("MaxLength");
+
+    return new EdmProperty(p.name, p.type, p.nullable, maxLength, null, null, null, null, null, null, null, null);
+  }
 }

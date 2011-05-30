@@ -875,10 +875,10 @@ public class JPAProducer implements ODataProducer {
       em.persist(jpaEntity);
       em.getTransaction().commit();
 
-      //	reread the entity in case we had links. This should insure
-      //	we get the implicitly set foreign keys. E.g in the Northwind model 
-      //	creating a new Product with a link to the Category should return
-      //	the CategoryID.
+      // reread the entity in case we had links. This should insure
+      // we get the implicitly set foreign keys. E.g in the Northwind model 
+      // creating a new Product with a link to the Category should return
+      // the CategoryID.
       if (entity.getLinks() != null
           && !entity.getLinks().isEmpty()) {
         em.getTransaction().begin();
@@ -908,13 +908,13 @@ public class JPAProducer implements ODataProducer {
   @SuppressWarnings({ "rawtypes", "unchecked" })
   @Override
   public EntityResponse createEntity(String entitySetName, OEntityKey entityKey, final String navProp, OEntity entity) {
-    //	get the EdmEntitySet for the parent (fromRole) entity
+    // get the EdmEntitySet for the parent (fromRole) entity
     final EdmEntitySet ees = metadata.getEdmEntitySet(entitySetName);
 
-    //	get the navigation property
+    // get the navigation property
     EdmNavigationProperty edmNavProperty = ees.type.getNavigationProperty(navProp);
 
-    //	check whether the navProperty is valid
+    // check whether the navProperty is valid
     if (edmNavProperty == null
         || edmNavProperty.toRole.multiplicity != EdmMultiplicity.MANY) {
       throw new IllegalArgumentException("unknown navigation property "
@@ -925,16 +925,16 @@ public class JPAProducer implements ODataProducer {
     try {
       em.getTransaction().begin();
 
-      //	get the entity we want the new entity add to
+      // get the entity we want the new entity add to
       EntityType<?> jpaEntityType = getJPAEntityType(em, ees.type.name);
       Object typeSafeEntityKey = typeSafeEntityKey(em, jpaEntityType, entityKey);
       Object jpaEntity = em.find(jpaEntityType.getJavaType(), typeSafeEntityKey);
 
-      //	create the new entity
+      // create the new entity
       EntityType<?> newJpaEntityType = getJPAEntityType(em, edmNavProperty.toRole.type.name);
       Object newJpaEntity = createNewJPAEntity(em, newJpaEntityType, entity, true);
 
-      //	get the collection attribute and add the new entity to the parent entity
+      // get the collection attribute and add the new entity to the parent entity
       PluralAttribute attr = Enumerable.create(
           jpaEntityType.getPluralAttributes())
           .firstOrNull(new Predicate1() {
@@ -947,7 +947,7 @@ public class JPAProducer implements ODataProducer {
       Collection<Object> collection = member.get();
       collection.add(newJpaEntity);
 
-      //	TODO handle ManyToMany relationships
+      // TODO handle ManyToMany relationships
       // set the backreference in bidirectional relationships
       OneToMany oneToMany = member.getAnnotation(OneToMany.class);
       if (oneToMany != null
@@ -957,8 +957,8 @@ public class JPAProducer implements ODataProducer {
             .set(jpaEntity);
       }
 
-      //	check whether the EntityManager will persist the
-      //	new entity or should we do it
+      // check whether the EntityManager will persist the
+      // new entity or should we do it
       if (oneToMany != null
           && oneToMany.cascade() != null) {
         List<CascadeType> cascadeTypes = Arrays.asList(oneToMany.cascade());
@@ -970,7 +970,7 @@ public class JPAProducer implements ODataProducer {
 
       em.getTransaction().commit();
 
-      //	prepare the response
+      // prepare the response
       EdmEntitySet toRoleees = getMetadata()
           .getEdmEntitySet(edmNavProperty.toRole.type);
       OEntity responseEntity = jpaEntityToOEntity(toRoleees,

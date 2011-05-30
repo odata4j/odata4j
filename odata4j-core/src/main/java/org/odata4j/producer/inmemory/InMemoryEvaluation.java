@@ -80,7 +80,7 @@ public class InMemoryEvaluation {
       Class<?> javaType = EdmType.get(castExpression.getType()).getJavaTypes().iterator().next();
       return TypeConverter.convert(evaluate(castExpression.getExpression(), target, properties), javaType);
     }
-    
+
     throw new UnsupportedOperationException("unsupported expression " + expression);
   }
 
@@ -148,15 +148,15 @@ public class InMemoryEvaluation {
   }
 
   private static interface BinaryFunction {
-    public abstract BigDecimal apply(BigDecimal lhs, BigDecimal rhs);
+    BigDecimal apply(BigDecimal lhs, BigDecimal rhs);
 
-    public abstract Double apply(Double lhs, Double rhs);
+    Double apply(Double lhs, Double rhs);
 
-    public abstract Float apply(Float lhs, Float rhs);
+    Float apply(Float lhs, Float rhs);
 
-    public abstract Integer apply(Integer lhs, Integer rhs);
+    Integer apply(Integer lhs, Integer rhs);
 
-    public abstract Long apply(Long lhs, Long rhs);
+    Long apply(Long lhs, Long rhs);
 
     public static final BinaryFunction ADD = new BinaryFunction() {
       public BigDecimal apply(BigDecimal lhs, BigDecimal rhs) {

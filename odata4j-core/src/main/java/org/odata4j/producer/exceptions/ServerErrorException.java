@@ -4,18 +4,14 @@ import javax.ws.rs.core.Response;
 
 public class ServerErrorException extends ODataException {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	public ServerErrorException() {
-		super(Response.status(500).build());
-	}
+  public ServerErrorException() {
+    super(Response.status(500).build());
+  }
 
-
-	public ServerErrorException(String message) {
-		super(Response.status(501).entity(message).build());
-	}
+  public ServerErrorException(String message) {
+    super(Response.status(501).entity(message).build());
+  }
 
 }

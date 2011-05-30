@@ -21,23 +21,22 @@ import com.sun.jersey.api.core.HttpRequestContext;
 
 public abstract class BaseResource {
 
-   
-    protected OEntity getRequestEntity(HttpRequestContext request, EdmDataServices metadata, String entitySetName, OEntityKey entityKey) throws ODataException {
-        String requestEntity = request.getEntity(String.class);
-        
-        //	TODO validation of MaxDataServiceVersion against DataServiceVersion
-        //	see spec [ms-odata] section 1.7
-        
-		ODataVersion version = InternalUtil.getDataServiceVersion(request
-				.getHeaderValue(ODataConstants.Headers.DATA_SERVICE_VERSION));
-		return convertFromString(requestEntity, request.getMediaType(), version, metadata, entitySetName, entityKey);
-    }
-    
-    private static OEntity convertFromString(String requestEntity, MediaType type, ODataVersion version, EdmDataServices metadata, String entitySetName, OEntityKey entityKey) throws NotAcceptableException {
-    	FormatParser<Entry> parser = FormatParserFactory.getParser(Entry.class, type, 
-    			new Settings(version, metadata, entitySetName, entityKey, null, false));
-    	Entry entry = parser.parse(new StringReader(requestEntity));
-    	return entry.getEntity();
-    }
+  protected OEntity getRequestEntity(HttpRequestContext request, EdmDataServices metadata, String entitySetName, OEntityKey entityKey) throws ODataException {
+    String requestEntity = request.getEntity(String.class);
+
+    // TODO validation of MaxDataServiceVersion against DataServiceVersion
+    // see spec [ms-odata] section 1.7
+
+    ODataVersion version = InternalUtil.getDataServiceVersion(request
+        .getHeaderValue(ODataConstants.Headers.DATA_SERVICE_VERSION));
+    return convertFromString(requestEntity, request.getMediaType(), version, metadata, entitySetName, entityKey);
+  }
+
+  private static OEntity convertFromString(String requestEntity, MediaType type, ODataVersion version, EdmDataServices metadata, String entitySetName, OEntityKey entityKey) throws NotAcceptableException {
+    FormatParser<Entry> parser = FormatParserFactory.getParser(Entry.class, type,
+        new Settings(version, metadata, entitySetName, entityKey, null, false));
+    Entry entry = parser.parse(new StringReader(requestEntity));
+    return entry.getEntity();
+  }
 
 }

@@ -20,7 +20,7 @@ public class EnumsAsStringsPropertyModelDelegate extends PropertyModelDelegate {
       return String.class;
     return rt;
   }
-  
+
   @Override
   public Object getPropertyValue(Object target, String propertyName) {
     Class<?> baseType = super.getPropertyType(propertyName);
@@ -29,5 +29,5 @@ public class EnumsAsStringsPropertyModelDelegate extends PropertyModelDelegate {
       return ((Enum<?>) rt).name();
     return rt;
   }
-  
+
 }

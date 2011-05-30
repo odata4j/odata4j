@@ -16,17 +16,17 @@ import org.odata4j.producer.ODataProducer;
 @Path("{first: \\$}metadata")
 public class MetadataResource {
 
-    @GET
-    @Produces(ODataConstants.APPLICATION_XML_CHARSET_UTF8)
-    public Response getMetadata(@Context ODataProducer producer) {
+  @GET
+  @Produces(ODataConstants.APPLICATION_XML_CHARSET_UTF8)
+  public Response getMetadata(@Context ODataProducer producer) {
 
+    EdmDataServices s = producer.getMetadata();
 
-        EdmDataServices s = producer.getMetadata();
+    StringWriter w = new StringWriter();
+    EdmxFormatWriter.write(s, w);
 
-        StringWriter w = new StringWriter();
-        EdmxFormatWriter.write(s, w);
+    return Response.ok(w.toString(), ODataConstants.APPLICATION_XML_CHARSET_UTF8)
+        .header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
 
-        return Response.ok(w.toString(), ODataConstants.APPLICATION_XML_CHARSET_UTF8).header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
-
-    }
+  }
 }

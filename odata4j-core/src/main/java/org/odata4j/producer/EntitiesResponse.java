@@ -11,31 +11,31 @@ import org.odata4j.edm.EdmEntitySet;
  */
 public interface EntitiesResponse extends BaseResponse {
 
-    /**
-     * Gets the entity-set for the entities.
-     * 
-     * @return the entity-set for the entities
-     */
-    public EdmEntitySet getEntitySet();
+  /**
+   * Gets the entity-set for the entities.
+   * 
+   * @return the entity-set for the entities
+   */
+  EdmEntitySet getEntitySet();
 
-    /**
-     * Gets the OData entities, if any.
-     * 
-     * @return the entities, if any
-     */
-    public List<OEntity> getEntities();
+  /**
+   * Gets the OData entities, if any.
+   * 
+   * @return the entities, if any
+   */
+  List<OEntity> getEntities();
 
-    /**
-     * Gets the inline-count value, if applicable.
-     * 
-     * @return the inline-count value, if applicable
-     */
-    public Integer getInlineCount();
-    
-    /**
-     * Gets the continuation token to use on a subsequent request, if applicable.
-     * 
-     * @return a continuation token, if applicable
-     */
-    public String getSkipToken();
+  /**
+   * Gets the inline-count value, if applicable.
+   * 
+   * @return the inline-count value, if applicable
+   */
+  Integer getInlineCount();
+
+  /**
+   * Gets the continuation token to use on a subsequent request, if applicable.
+   * 
+   * @return a continuation token, if applicable
+   */
+  String getSkipToken();
 }

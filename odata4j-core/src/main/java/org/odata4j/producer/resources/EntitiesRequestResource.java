@@ -36,182 +36,180 @@ import com.sun.jersey.api.core.HttpContext;
 @Path("{entitySetName}{optionalParens: ((\\(\\))?)}")
 public class EntitiesRequestResource extends BaseResource {
 
-	private static final Logger log = Logger.getLogger(EntitiesRequestResource.class.getName());
+  private static final Logger log = Logger.getLogger(EntitiesRequestResource.class.getName());
 
-	@POST
-	@Produces({ ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8, ODataConstants.TEXT_JAVASCRIPT_CHARSET_UTF8, ODataConstants.APPLICATION_JAVASCRIPT_CHARSET_UTF8})
-	public Response createEntity(
-			@Context HttpContext context,
-			@Context HttpHeaders headers,
-			@Context ODataProducer producer,
-			final @PathParam("entitySetName") String entitySetName) throws Exception {
-		
-		// visual studio will send a soap mex request
-		if (entitySetName.equals("mex") && headers.getMediaType() !=null && headers.getMediaType().toString().startsWith("application/soap+xml"))
-			return Response.status(405).build();
-		
-		log.info(String.format("createEntity(%s)", entitySetName));
-		
-		OEntity entity = this.getRequestEntity(context.getRequest(), producer.getMetadata(), entitySetName,null);
+  @POST
+  @Produces({ ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8, ODataConstants.TEXT_JAVASCRIPT_CHARSET_UTF8, ODataConstants.APPLICATION_JAVASCRIPT_CHARSET_UTF8 })
+  public Response createEntity(
+      @Context HttpContext context,
+      @Context HttpHeaders headers,
+      @Context ODataProducer producer,
+      final @PathParam("entitySetName") String entitySetName) throws Exception {
 
-		EntityResponse response = producer.createEntity(entitySetName, entity);
+    // visual studio will send a soap mex request
+    if (entitySetName.equals("mex") && headers.getMediaType() != null && headers.getMediaType().toString().startsWith("application/soap+xml"))
+      return Response.status(405).build();
 
-		FormatWriter<EntityResponse> writer = FormatWriterFactory
-			.getFormatWriter(EntityResponse.class, headers.getAcceptableMediaTypes(), null, null);
-		StringWriter sw = new StringWriter();
-		writer.write(context.getUriInfo(), sw, response);
-			
-		String relid = InternalUtil.getEntityRelId(response.getEntity());
-		String entryId = context.getUriInfo().getBaseUri().toString() + relid;		
-		
-		String responseEntity = sw.toString();
+    log.info(String.format("createEntity(%s)", entitySetName));
 
-		return Response
-				.ok(responseEntity,writer.getContentType())
-				.status(Status.CREATED)
-				.location(URI.create(entryId))
-				.header(ODataConstants.Headers.DATA_SERVICE_VERSION,
-						ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
+    OEntity entity = this.getRequestEntity(context.getRequest(), producer.getMetadata(), entitySetName, null);
 
-	}
+    EntityResponse response = producer.createEntity(entitySetName, entity);
 
-	@GET
-	@Produces({ ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8,
-			ODataConstants.TEXT_JAVASCRIPT_CHARSET_UTF8,
-			ODataConstants.APPLICATION_JAVASCRIPT_CHARSET_UTF8 })
-	public Response getEntities(@Context HttpContext context,
-			@Context ODataProducer producer,
-			@PathParam("entitySetName") String entitySetName,
-			@QueryParam("$inlinecount") String inlineCount,
-			@QueryParam("$top") String top,
-			@QueryParam("$skip") String skip,
-			@QueryParam("$filter") String filter,
-			@QueryParam("$orderby") String orderBy,
-			@QueryParam("$format") String format,
-			@QueryParam("$callback") String callback,
-			@QueryParam("$skiptoken") String skipToken,
-			@QueryParam("$expand") String expand,
-			@QueryParam("$select") String select) throws Exception {
+    FormatWriter<EntityResponse> writer = FormatWriterFactory
+        .getFormatWriter(EntityResponse.class, headers.getAcceptableMediaTypes(), null, null);
+    StringWriter sw = new StringWriter();
+    writer.write(context.getUriInfo(), sw, response);
 
-		log.info(String.format(
-				"getEntities(%s,%s,%s,%s,%s,%s,%s,%s)",
-				entitySetName,
-				inlineCount,
-				top,
-				skip,
-				filter,
-				orderBy,
-				skipToken,
-				expand));
+    String relid = InternalUtil.getEntityRelId(response.getEntity());
+    String entryId = context.getUriInfo().getBaseUri().toString() + relid;
 
-		QueryInfo query = new QueryInfo(
-				OptionsQueryParser.parseInlineCount(inlineCount),
-				OptionsQueryParser.parseTop(top),
-				OptionsQueryParser.parseSkip(skip),
-				OptionsQueryParser.parseFilter(filter),
-				OptionsQueryParser.parseOrderBy(orderBy),
-				OptionsQueryParser.parseSkipToken(skipToken),
-				OptionsQueryParser.parseCustomOptions(context),
-				OptionsQueryParser.parseExpand(expand),
-				OptionsQueryParser.parseSelect(select));
+    String responseEntity = sw.toString();
 
-		EntitiesResponse response= producer.getEntities(entitySetName, query);
+    return Response
+        .ok(responseEntity, writer.getContentType())
+        .status(Status.CREATED)
+        .location(URI.create(entryId))
+        .header(ODataConstants.Headers.DATA_SERVICE_VERSION,
+            ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
 
+  }
 
-		StringWriter sw = new StringWriter();
-		FormatWriter<EntitiesResponse> fw =
-				FormatWriterFactory.getFormatWriter(
-						EntitiesResponse.class,
-						context.getRequest()
-								.getAcceptableMediaTypes(),
-						format,
-						callback);
+  @GET
+  @Produces({ ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8,
+      ODataConstants.TEXT_JAVASCRIPT_CHARSET_UTF8,
+      ODataConstants.APPLICATION_JAVASCRIPT_CHARSET_UTF8 })
+  public Response getEntities(@Context HttpContext context,
+      @Context ODataProducer producer,
+      @PathParam("entitySetName") String entitySetName,
+      @QueryParam("$inlinecount") String inlineCount,
+      @QueryParam("$top") String top,
+      @QueryParam("$skip") String skip,
+      @QueryParam("$filter") String filter,
+      @QueryParam("$orderby") String orderBy,
+      @QueryParam("$format") String format,
+      @QueryParam("$callback") String callback,
+      @QueryParam("$skiptoken") String skipToken,
+      @QueryParam("$expand") String expand,
+      @QueryParam("$select") String select) throws Exception {
 
-		fw.write(context.getUriInfo(), sw, response);
-		String entity = sw.toString();
+    log.info(String.format(
+        "getEntities(%s,%s,%s,%s,%s,%s,%s,%s)",
+        entitySetName,
+        inlineCount,
+        top,
+        skip,
+        filter,
+        orderBy,
+        skipToken,
+        expand));
 
-		// TODO remove this hack, check whether we are Version 2.0 compatible anyway
-		ODataVersion version = MediaType.valueOf(fw.getContentType()).isCompatible(MediaType.APPLICATION_JSON_TYPE)
-			? ODataVersion.V2 : ODataVersion.V2;
+    QueryInfo query = new QueryInfo(
+        OptionsQueryParser.parseInlineCount(inlineCount),
+        OptionsQueryParser.parseTop(top),
+        OptionsQueryParser.parseSkip(skip),
+        OptionsQueryParser.parseFilter(filter),
+        OptionsQueryParser.parseOrderBy(orderBy),
+        OptionsQueryParser.parseSkipToken(skipToken),
+        OptionsQueryParser.parseCustomOptions(context),
+        OptionsQueryParser.parseExpand(expand),
+        OptionsQueryParser.parseSelect(select));
 
-		return Response
-				.ok(entity, fw.getContentType())
-				.header(ODataConstants.Headers.DATA_SERVICE_VERSION,
-						version.asString).build();
+    EntitiesResponse response = producer.getEntities(entitySetName, query);
 
-	}
+    StringWriter sw = new StringWriter();
+    FormatWriter<EntitiesResponse> fw =
+        FormatWriterFactory.getFormatWriter(
+            EntitiesResponse.class,
+            context.getRequest()
+                .getAcceptableMediaTypes(),
+            format,
+            callback);
 
-	@POST
-	@Consumes(ODataBatchProvider.MULTIPART_MIXED)
-	@Produces(ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8)
-	public Response processBatch(
-			@Context ODataProducer producer,
-			@Context HttpHeaders headers,
-			@Context Request request,
-			final List<BatchBodyPart> bodyParts) throws Exception {
+    fw.write(context.getUriInfo(), sw, response);
+    String entity = sw.toString();
 
-		log.info(String.format("processBatch(%s)", ""));
+    // TODO remove this hack, check whether we are Version 2.0 compatible anyway
+    ODataVersion version = MediaType.valueOf(fw.getContentType()).isCompatible(MediaType.APPLICATION_JSON_TYPE)
+        ? ODataVersion.V2 : ODataVersion.V2;
 
-		EntityRequestResource er = new EntityRequestResource();
+    return Response
+        .ok(entity, fw.getContentType())
+        .header(ODataConstants.Headers.DATA_SERVICE_VERSION,
+            version.asString).build();
 
-		String changesetBoundary = "changesetresponse_"
-				+ Guid.randomGuid().toString();
-		String batchBoundary = "batchresponse_" + Guid.randomGuid().toString();
-		StringBuilder batchResponse = new StringBuilder("\n--");
-		batchResponse.append(batchBoundary);
+  }
 
-		batchResponse
-				.append("\n").append(ODataConstants.Headers.CONTENT_TYPE).append(": multipart/mixed; boundary=")
-				.append(changesetBoundary);
+  @POST
+  @Consumes(ODataBatchProvider.MULTIPART_MIXED)
+  @Produces(ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8)
+  public Response processBatch(
+      @Context ODataProducer producer,
+      @Context HttpHeaders headers,
+      @Context Request request,
+      final List<BatchBodyPart> bodyParts) throws Exception {
 
-		batchResponse.append('\n');
+    log.info(String.format("processBatch(%s)", ""));
 
-		for (BatchBodyPart bodyPart : bodyParts) {
-			HttpContext context = bodyPart.createHttpContext();
-			String entitySetName = bodyPart.getEntitySetName();
-			String entityId = bodyPart.getEntityKey();
-			Response response = null;
+    EntityRequestResource er = new EntityRequestResource();
 
-			switch (bodyPart.getHttpMethod()) {
-				case POST:
-					response = this.createEntity(context, headers, producer,
-							entitySetName);
-					break;
-				case PUT:
-					response = er.updateEntity(context, producer,
-							entitySetName, entityId);
-					break;
-				case MERGE:
-					response = er.mergeEntity(context, producer, entitySetName,
-							entityId);
-					break;
-				case DELETE:
-					response = er.deleteEntity(context, producer,
-							entitySetName, entityId);
-					break;
-				case GET:
-					throw new UnsupportedOperationException(
-							"Not supported yet.");
-			}
+    String changesetBoundary = "changesetresponse_"
+        + Guid.randomGuid().toString();
+    String batchBoundary = "batchresponse_" + Guid.randomGuid().toString();
+    StringBuilder batchResponse = new StringBuilder("\n--");
+    batchResponse.append(batchBoundary);
 
-			batchResponse.append("\n--").append(changesetBoundary);
-			batchResponse.append("\n").append(ODataConstants.Headers.CONTENT_TYPE).append(": application/http");
-			batchResponse.append("\nContent-Transfer-Encoding: binary\n");
+    batchResponse
+        .append("\n").append(ODataConstants.Headers.CONTENT_TYPE).append(": multipart/mixed; boundary=")
+        .append(changesetBoundary);
 
-			batchResponse.append(ODataBatchProvider.createResponseBodyPart(
-					bodyPart,
-					response));
-		}
+    batchResponse.append('\n');
 
-		batchResponse.append("--").append(changesetBoundary).append("--\n");
-		batchResponse.append("--").append(batchBoundary).append("--\n");
+    for (BatchBodyPart bodyPart : bodyParts) {
+      HttpContext context = bodyPart.createHttpContext();
+      String entitySetName = bodyPart.getEntitySetName();
+      String entityId = bodyPart.getEntityKey();
+      Response response = null;
 
-		return Response
-				.status(Status.ACCEPTED)
-				.type(ODataBatchProvider.MULTIPART_MIXED + ";boundary="
-								+ batchBoundary).header(
-						ODataConstants.Headers.DATA_SERVICE_VERSION,
-						ODataConstants.DATA_SERVICE_VERSION_HEADER)
-				.entity(batchResponse.toString()).build();
-	}
+      switch (bodyPart.getHttpMethod()) {
+      case POST:
+        response = this.createEntity(context, headers, producer,
+              entitySetName);
+        break;
+      case PUT:
+        response = er.updateEntity(context, producer,
+              entitySetName, entityId);
+        break;
+      case MERGE:
+        response = er.mergeEntity(context, producer, entitySetName,
+              entityId);
+        break;
+      case DELETE:
+        response = er.deleteEntity(context, producer,
+              entitySetName, entityId);
+        break;
+      case GET:
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
+
+      batchResponse.append("\n--").append(changesetBoundary);
+      batchResponse.append("\n").append(ODataConstants.Headers.CONTENT_TYPE).append(": application/http");
+      batchResponse.append("\nContent-Transfer-Encoding: binary\n");
+
+      batchResponse.append(ODataBatchProvider.createResponseBodyPart(
+          bodyPart,
+          response));
+    }
+
+    batchResponse.append("--").append(changesetBoundary).append("--\n");
+    batchResponse.append("--").append(batchBoundary).append("--\n");
+
+    return Response
+        .status(Status.ACCEPTED)
+        .type(ODataBatchProvider.MULTIPART_MIXED + ";boundary="
+                + batchBoundary).header(
+            ODataConstants.Headers.DATA_SERVICE_VERSION,
+            ODataConstants.DATA_SERVICE_VERSION_HEADER)
+        .entity(batchResponse.toString()).build();
+  }
 }

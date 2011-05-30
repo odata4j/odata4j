@@ -38,184 +38,179 @@ import com.sun.jersey.api.core.HttpContext;
 
 public class PropertyRequestResource extends BaseResource {
 
-	private static final Logger log =
-			Logger.getLogger(PropertyRequestResource.class.getName());
+  private static final Logger log =
+      Logger.getLogger(PropertyRequestResource.class.getName());
 
-	@PUT
-	public Response updateEntity(
-			@Context HttpContext context,
-			@Context ODataProducer producer,
-			final @PathParam("entitySetName") String entitySetName,
-			final @PathParam("id") String id,
-			final @PathParam("navProp") String navProp) {
+  @PUT
+  public Response updateEntity(
+      @Context HttpContext context,
+      @Context ODataProducer producer,
+      @PathParam("entitySetName") String entitySetName,
+      final @PathParam("id") String id,
+      final @PathParam("navProp") String navProp) {
 
+    log.info("NavProp: updateEntity Not supported yet.");
+    throw new NotImplementedException("NavProp: updateEntity not supported yet.");
 
-		log.info("NavProp: updateEntity Not supported yet.");
-		throw new NotImplementedException("NavProp: updateEntity not supported yet.");
-		
-	}
+  }
 
-	@POST
-	public Response mergeEntity(
-			@Context HttpContext context,
-			@Context ODataProducer producer,
-			@Context HttpHeaders headers,
-			final @PathParam("entitySetName") String entitySetName,
-			final @PathParam("id") String id,
-			final @PathParam("navProp") String navProp) throws Exception{
+  @POST
+  public Response mergeEntity(
+      @Context HttpContext context,
+      @Context ODataProducer producer,
+      @Context HttpHeaders headers,
+      final @PathParam("entitySetName") String entitySetName,
+      final @PathParam("id") String id,
+      final @PathParam("navProp") String navProp) throws Exception {
 
+    if (!"MERGE".equals(context.getRequest().getHeaderValue(
+        ODataConstants.Headers.X_HTTP_METHOD))) {
 
-		if (!"MERGE".equals(context.getRequest().getHeaderValue(
-				ODataConstants.Headers.X_HTTP_METHOD))) {
-			
-			//	determine the expected entity set
-			EdmDataServices metadata = producer.getMetadata();
-			EdmEntitySet ees = metadata
-					.getEdmEntitySet(metadata.getEdmEntitySet(entitySetName).type
-							.getNavigationProperty(navProp).toRole.type);
-			
-			//	parse the request entity 
-			OEntity entity = getRequestEntity(context.getRequest(), metadata, ees.name, OEntityKey.parse(id));
-			
-			//	execute the create
-			EntityResponse response = producer.createEntity(entitySetName, OEntityKey.parse(id), navProp, entity);
+      // determine the expected entity set
+      EdmDataServices metadata = producer.getMetadata();
+      EdmEntitySet ees = metadata
+          .getEdmEntitySet(metadata.getEdmEntitySet(entitySetName).type
+              .getNavigationProperty(navProp).toRole.type);
 
-	        if (response == null) {
-	            return Response.status(Status.NOT_FOUND).build();
-	        }
-	        
-	        //	get the FormatWriter for the accepted media types requested by client
-	        StringWriter sw = new StringWriter();
-			FormatWriter<EntityResponse> fw = FormatWriterFactory
-					.getFormatWriter(EntityResponse.class, headers.getAcceptableMediaTypes(), null, null);
-			fw.write(context.getUriInfo(), sw, response);
-	        
-			//	calculate the uri for the location header
-			String relid = InternalUtil.getEntityRelId(response.getEntity());
-			String entryId = context.getUriInfo().getBaseUri().toString() + relid;		
+      // parse the request entity 
+      OEntity entity = getRequestEntity(context.getRequest(), metadata, ees.name, OEntityKey.parse(id));
 
-			//	create the response
-			String responseEntity = sw.toString();
-			return Response                            
-					.ok(responseEntity, fw.getContentType())
-					.status(Status.CREATED)
-					.location(URI.create(entryId))
-					.header(ODataConstants.Headers.DATA_SERVICE_VERSION,
-							ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
-		}
+      // execute the create
+      EntityResponse response = producer.createEntity(entitySetName, OEntityKey.parse(id), navProp, entity);
 
-		throw new NotImplementedException("Not supported yet.");
+      if (response == null) {
+        return Response.status(Status.NOT_FOUND).build();
+      }
 
-	}
+      // get the FormatWriter for the accepted media types requested by client
+      StringWriter sw = new StringWriter();
+      FormatWriter<EntityResponse> fw = FormatWriterFactory
+          .getFormatWriter(EntityResponse.class, headers.getAcceptableMediaTypes(), null, null);
+      fw.write(context.getUriInfo(), sw, response);
 
-	@DELETE
-	public Response deleteEntity(
-			@Context HttpContext context,
-			@Context ODataProducer producer,
-			final @PathParam("entitySetName") String entitySetName,
-			final @PathParam("id") String id,
-			final @PathParam("navProp") String navProp) {
+      // calculate the uri for the location header
+      String relid = InternalUtil.getEntityRelId(response.getEntity());
+      String entryId = context.getUriInfo().getBaseUri().toString() + relid;
 
+      // create the response
+      String responseEntity = sw.toString();
+      return Response
+          .ok(responseEntity, fw.getContentType())
+          .status(Status.CREATED)
+          .location(URI.create(entryId))
+          .header(ODataConstants.Headers.DATA_SERVICE_VERSION,
+              ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
+    }
 
-		throw new NotImplementedException("Not supported yet.");
+    throw new NotImplementedException("Not supported yet.");
 
-	}
+  }
 
-	@GET
-	@Produces({
-			ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8,
-			ODataConstants.TEXT_JAVASCRIPT_CHARSET_UTF8,
-			ODataConstants.APPLICATION_JAVASCRIPT_CHARSET_UTF8 })
-	public Response getNavProperty(
-			@Context HttpContext context,
-			@Context ODataProducer producer,
-			final @PathParam("entitySetName") String entitySetName,
-			final @PathParam("id") String id,
-			final @PathParam("navProp") String navProp,
-			final @QueryParam("$inlinecount") String inlineCount,
-			final @QueryParam("$top") String top,
-			final @QueryParam("$skip") String skip,
-			final @QueryParam("$filter") String filter,
-			final @QueryParam("$orderby") String orderBy,
-			final @QueryParam("$format") String format,
-			final @QueryParam("$callback") String callback,
-			final @QueryParam("$skiptoken") String skipToken,
-			final @QueryParam("$expand") String expand,
-			final @QueryParam("$select") String select) throws Exception {
+  @DELETE
+  public Response deleteEntity(
+      @Context HttpContext context,
+      @Context ODataProducer producer,
+      final @PathParam("entitySetName") String entitySetName,
+      final @PathParam("id") String id,
+      final @PathParam("navProp") String navProp) {
 
-		QueryInfo query = new QueryInfo(
-				OptionsQueryParser.parseInlineCount(inlineCount),
-				OptionsQueryParser.parseTop(top),
-				OptionsQueryParser.parseSkip(skip),
-				OptionsQueryParser.parseFilter(filter),
-				OptionsQueryParser.parseOrderBy(orderBy),
-				OptionsQueryParser.parseSkipToken(skipToken),
-				OptionsQueryParser.parseCustomOptions(context),
-				OptionsQueryParser.parseSelect(expand),
-				OptionsQueryParser.parseSelect(select));
+    throw new NotImplementedException("Not supported yet.");
 
-		
+  }
 
-		final BaseResponse response =producer.getNavProperty(
-				entitySetName,
-				OEntityKey.parse(id),
-				navProp,
-				query);
-	
-		if (response == null) {
-            return Response.status(Status.NOT_FOUND).build();
-        }
+  @GET
+  @Produces({
+      ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8,
+      ODataConstants.TEXT_JAVASCRIPT_CHARSET_UTF8,
+      ODataConstants.APPLICATION_JAVASCRIPT_CHARSET_UTF8 })
+  public Response getNavProperty(
+      @Context HttpContext context,
+      @Context ODataProducer producer,
+      final @PathParam("entitySetName") String entitySetName,
+      final @PathParam("id") String id,
+      final @PathParam("navProp") String navProp,
+      final @QueryParam("$inlinecount") String inlineCount,
+      final @QueryParam("$top") String top,
+      final @QueryParam("$skip") String skip,
+      final @QueryParam("$filter") String filter,
+      final @QueryParam("$orderby") String orderBy,
+      final @QueryParam("$format") String format,
+      final @QueryParam("$callback") String callback,
+      final @QueryParam("$skiptoken") String skipToken,
+      final @QueryParam("$expand") String expand,
+      final @QueryParam("$select") String select) throws Exception {
 
-		ODataVersion version = ODataConstants.DATA_SERVICE_VERSION;
-		
-		StringWriter sw = new StringWriter();
-		FormatWriter<?> fwBase;
-		if (response instanceof PropertyResponse) {
-			FormatWriter<PropertyResponse> fw =
-				FormatWriterFactory.getFormatWriter(
-						PropertyResponse.class,
-						context.getRequest().getAcceptableMediaTypes(),
-						format,
-						callback);
+    QueryInfo query = new QueryInfo(
+        OptionsQueryParser.parseInlineCount(inlineCount),
+        OptionsQueryParser.parseTop(top),
+        OptionsQueryParser.parseSkip(skip),
+        OptionsQueryParser.parseFilter(filter),
+        OptionsQueryParser.parseOrderBy(orderBy),
+        OptionsQueryParser.parseSkipToken(skipToken),
+        OptionsQueryParser.parseCustomOptions(context),
+        OptionsQueryParser.parseSelect(expand),
+        OptionsQueryParser.parseSelect(select));
 
-			fw.write(context.getUriInfo(), sw, (PropertyResponse)response);
-			fwBase = fw;
-		} else if (response instanceof EntityResponse) {
-			FormatWriter<EntityResponse> fw =
-					FormatWriterFactory.getFormatWriter(
-							EntityResponse.class,
-							context.getRequest().getAcceptableMediaTypes(),
-							format,
-							callback);
+    final BaseResponse response = producer.getNavProperty(
+        entitySetName,
+        OEntityKey.parse(id),
+        navProp,
+        query);
 
-			fw.write(context.getUriInfo(), sw, (EntityResponse)response);
-			fwBase = fw;
-		} else if (response instanceof EntitiesResponse){
-			FormatWriter<EntitiesResponse> fw =
-					FormatWriterFactory.getFormatWriter(
-							EntitiesResponse.class,
-							context.getRequest().getAcceptableMediaTypes(),
-							format,
-							callback);
+    if (response == null) {
+      return Response.status(Status.NOT_FOUND).build();
+    }
 
-			fw.write(context.getUriInfo(), sw, (EntitiesResponse) response);
-			fwBase = fw;
-			
-			// TODO remove this hack, check whether we are Version 2.0 compatible anyway
-			// the JsonWriter writes feed currently always as Version 2.0
-			version = MediaType.valueOf(fw.getContentType()).isCompatible(MediaType.APPLICATION_JSON_TYPE)
-				? ODataVersion.V2 : ODataVersion.V2;
+    ODataVersion version = ODataConstants.DATA_SERVICE_VERSION;
 
-		} else {
-			throw new NotImplementedException("Unknown BaseResponse type: " + response.getClass().getName());
-		}
-		
-		String entity = sw.toString();
-		return Response.ok(
-				entity,
-				fwBase.getContentType()).header(
-				ODataConstants.Headers.DATA_SERVICE_VERSION,
-				version.asString).build();
+    StringWriter sw = new StringWriter();
+    FormatWriter<?> fwBase;
+    if (response instanceof PropertyResponse) {
+      FormatWriter<PropertyResponse> fw =
+          FormatWriterFactory.getFormatWriter(
+              PropertyResponse.class,
+              context.getRequest().getAcceptableMediaTypes(),
+              format,
+              callback);
 
-	}
+      fw.write(context.getUriInfo(), sw, (PropertyResponse) response);
+      fwBase = fw;
+    } else if (response instanceof EntityResponse) {
+      FormatWriter<EntityResponse> fw =
+          FormatWriterFactory.getFormatWriter(
+              EntityResponse.class,
+              context.getRequest().getAcceptableMediaTypes(),
+              format,
+              callback);
+
+      fw.write(context.getUriInfo(), sw, (EntityResponse) response);
+      fwBase = fw;
+    } else if (response instanceof EntitiesResponse) {
+      FormatWriter<EntitiesResponse> fw =
+          FormatWriterFactory.getFormatWriter(
+              EntitiesResponse.class,
+              context.getRequest().getAcceptableMediaTypes(),
+              format,
+              callback);
+
+      fw.write(context.getUriInfo(), sw, (EntitiesResponse) response);
+      fwBase = fw;
+
+      // TODO remove this hack, check whether we are Version 2.0 compatible anyway
+      // the JsonWriter writes feed currently always as Version 2.0
+      version = MediaType.valueOf(fw.getContentType()).isCompatible(MediaType.APPLICATION_JSON_TYPE)
+          ? ODataVersion.V2 : ODataVersion.V2;
+
+    } else {
+      throw new NotImplementedException("Unknown BaseResponse type: " + response.getClass().getName());
+    }
+
+    String entity = sw.toString();
+    return Response.ok(
+        entity,
+        fwBase.getContentType()).header(
+        ODataConstants.Headers.DATA_SERVICE_VERSION,
+        version.asString).build();
+
+  }
 }

@@ -32,315 +32,315 @@ import com.sun.jersey.core.util.StringKeyStringValueIgnoreCaseMultivaluedMap;
 
 public class BatchBodyPart {
 
-    private MultivaluedMap<String, String> headers = new StringKeyStringValueIgnoreCaseMultivaluedMap();
-    private HTTP_METHOD httpMethod;
-    private HttpContext context;
-    private String entity;
-    private String uri;
-    private String uriLast;
+  private MultivaluedMap<String, String> headers = new StringKeyStringValueIgnoreCaseMultivaluedMap();
+  private HTTP_METHOD httpMethod;
+  private HttpContext context;
+  private String entity;
+  private String uri;
+  private String uriLast;
 
-    BatchBodyPart(HttpContext context) {
-        this.context = context;
+  BatchBodyPart(HttpContext context) {
+    this.context = context;
+  }
+
+  public String getEntity() {
+    return this.entity;
+  }
+
+  public void setEntity(String entity) {
+    this.entity = entity;
+  }
+
+  public MultivaluedMap<String, String> getHeaders() {
+    return this.headers;
+  }
+
+  public String getUri() {
+    return uri;
+  }
+
+  public void setUri(String uri) {
+    this.uri = uri;
+
+    int i = this.uri.lastIndexOf('/');
+    if (this.uri.length() > i) {
+      this.uriLast = this.uri.substring(this.uri.lastIndexOf('/') + 1);
+    } else {
+      this.uriLast = this.uri;
     }
+  }
 
-    public String getEntity() {
-        return this.entity;
-    }
+  public HTTP_METHOD getHttpMethod() {
+    return httpMethod;
+  }
 
-    public void setEntity(String entity) {
-        this.entity = entity;
-    }
+  public void setHttpMethod(HTTP_METHOD httpMethod) {
+    this.httpMethod = httpMethod;
+  }
 
-    public MultivaluedMap<String, String> getHeaders() {
-        return this.headers;
-    }
+  public String getEntitySetName() {
+    int i = this.uriLast.indexOf('(');
+    return i != -1
+        ? this.uriLast.substring(0, i)
+        : this.uriLast;
+  }
 
-    public String getUri() {
-        return uri;
-    }
+  public String getEntityKey() {
+    int i = this.uriLast.indexOf('(');
+    return i > -1 && i < this.uriLast.length()
+        ? this.uriLast.substring(i)
+        : null;
+  }
 
-    public void setUri(String uri) {
-        this.uri = uri;
+  public HttpContext createHttpContext() {
+    final ExtendedUriInfo exUriInfo = this.context.getUriInfo();
+    return new HttpContext() {
 
-        int i = this.uri.lastIndexOf('/');
-        if (this.uri.length() > i) {
-            this.uriLast = this.uri.substring(this.uri.lastIndexOf('/') + 1);
-        } else {
-            this.uriLast = this.uri;
+      @Override
+      public ExtendedUriInfo getUriInfo() {
+        return exUriInfo;
+      }
+
+      @Override
+      public HttpRequestContext getRequest() {
+        return createHttpRequestContext();
+      }
+
+      @Override
+      public HttpResponseContext getResponse() {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
+
+      @Override
+      public Map<String, Object> getProperties() {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
+
+      @Override
+      public boolean isTracingEnabled() {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
+
+      @Override
+      public void trace(String message) {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
+    };
+  }
+
+  private HttpRequestContext createHttpRequestContext() {
+    final MultivaluedMap<String, String> headersLocal = this.getHeaders();
+    final String methodName = this.getHttpMethod().name();
+    final String entityLocal = this.getEntity();
+
+    HttpRequestContext hrc = new HttpRequestContext() {
+
+      @Override
+      public URI getBaseUri() {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
+
+      @Override
+      @Deprecated
+      public List<MediaType> getAcceptableMediaTypes(List<QualitySourceMediaType> priorityMediaTypes) {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
+
+      @Override
+      @Deprecated
+      public MediaType getAcceptableMediaType(List<MediaType> mediaTypes) {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
+
+      @Override
+      public String getHeaderValue(String name) {
+        if (name.equals(ODataConstants.Headers.X_HTTP_METHOD)) {
+          return methodName;
         }
-    }
 
-    public HTTP_METHOD getHttpMethod() {
-        return httpMethod;
-    }
+        if (headersLocal.containsKey(name)) {
+          return headersLocal.getFirst(name);
+        }
 
-    public void setHttpMethod(HTTP_METHOD httpMethod) {
-        this.httpMethod = httpMethod;
-    }
+        return null;
+      }
 
-    public String getEntitySetName() {
-        int i = this.uriLast.indexOf('(');
-        return i != -1
-                ? this.uriLast.substring(0, i)
-                : this.uriLast;
-    }
+      @Override
+      @SuppressWarnings("unchecked")
+      public <T> T getEntity(Class<T> type) throws WebApplicationException {
+        if (type == null || type != String.class) {
+          throw new IllegalStateException("Support only String Entity instance.");
+        }
 
-    public String getEntityKey() {
-        int i = this.uriLast.indexOf('(');
-        return i > -1 && i < this.uriLast.length()
-                ? this.uriLast.substring(i)
-                : null;
-    }
+        return (T) entityLocal;
+      }
 
-    public HttpContext createHttpContext() {
-        final ExtendedUriInfo exUriInfo = this.context.getUriInfo();
-        return new HttpContext() {
+      @Override
+      public UriBuilder getBaseUriBuilder() {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
 
-            @Override
-            public ExtendedUriInfo getUriInfo() {
-                return exUriInfo;
-            }
+      @Override
+      public URI getRequestUri() {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
 
-            @Override
-            public HttpRequestContext getRequest() {
-                return createHttpRequestContext();
-            }
+      @Override
+      public UriBuilder getRequestUriBuilder() {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
 
-            @Override
-            public HttpResponseContext getResponse() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
+      @Override
+      public URI getAbsolutePath() {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
 
-            @Override
-            public Map<String, Object> getProperties() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
+      @Override
+      public UriBuilder getAbsolutePathBuilder() {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
 
-            @Override
-            public boolean isTracingEnabled() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
+      @Override
+      public String getPath() {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
 
-            @Override
-            public void trace(String message) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-        };
-    }
+      @Override
+      public String getPath(boolean decode) {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
 
-    private HttpRequestContext createHttpRequestContext() {
-        final MultivaluedMap<String, String> headersLocal = this.getHeaders();
-        final String methodName = this.getHttpMethod().name();
-        final String entityLocal = this.getEntity();
+      @Override
+      public List<PathSegment> getPathSegments() {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
 
-        HttpRequestContext hrc = new HttpRequestContext() {
+      @Override
+      public List<PathSegment> getPathSegments(boolean decode) {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
 
-            @Override
-            public URI getBaseUri() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
+      @Override
+      public MultivaluedMap<String, String> getQueryParameters() {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
 
-            @Override
-            @Deprecated
-            public List<MediaType> getAcceptableMediaTypes(List<QualitySourceMediaType> priorityMediaTypes) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-            
-            @Override
-            @Deprecated 
-            public MediaType getAcceptableMediaType(List<MediaType> mediaTypes) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
+      @Override
+      public MultivaluedMap<String, String> getQueryParameters(boolean decode) {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
 
-            @Override
-            public String getHeaderValue(String name) {
-                if (name.equals(ODataConstants.Headers.X_HTTP_METHOD)) {
-                    return methodName;
-                }
+      @Override
+      public MultivaluedMap<String, String> getCookieNameValueMap() {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
 
-                if (headersLocal.containsKey(name)) {
-                    return headersLocal.getFirst(name);
-                }
+      @Override
+      public <T> T getEntity(Class<T> type, Type genericType, Annotation[] as) throws WebApplicationException {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
 
-                return null;
-            }
+      @Override
+      public Form getFormParameters() {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
 
-            @Override
-            @SuppressWarnings("unchecked")
-            public <T> T getEntity(Class<T> type) throws WebApplicationException {
-                if (type == null || type != String.class) {
-                    throw new IllegalStateException("Support only String Entity instance.");
-                }
+      @Override
+      public List<String> getRequestHeader(String string) {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
 
-                return (T) entityLocal;
-            }
+      @Override
+      public MultivaluedMap<String, String> getRequestHeaders() {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
 
-            @Override
-            public UriBuilder getBaseUriBuilder() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
+      @Override
+      public List<MediaType> getAcceptableMediaTypes() {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
 
-            @Override
-            public URI getRequestUri() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
+      @Override
+      public List<Locale> getAcceptableLanguages() {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
 
-            @Override
-            public UriBuilder getRequestUriBuilder() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
+      @Override
+      public MediaType getMediaType() {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
 
-            @Override
-            public URI getAbsolutePath() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
+      @Override
+      public Locale getLanguage() {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
 
-            @Override
-            public UriBuilder getAbsolutePathBuilder() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
+      @Override
+      public Map<String, Cookie> getCookies() {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
 
-            @Override
-            public String getPath() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
+      @Override
+      public String getMethod() {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
 
-            @Override
-            public String getPath(boolean decode) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
+      @Override
+      public Variant selectVariant(List<Variant> list) throws IllegalArgumentException {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
 
-            @Override
-            public List<PathSegment> getPathSegments() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
+      @Override
+      public ResponseBuilder evaluatePreconditions(EntityTag et) {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
 
-            @Override
-            public List<PathSegment> getPathSegments(boolean decode) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
+      @Override
+      public ResponseBuilder evaluatePreconditions(Date date) {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
 
-            @Override
-            public MultivaluedMap<String, String> getQueryParameters() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
+      @Override
+      public ResponseBuilder evaluatePreconditions(Date date, EntityTag et) {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
 
-            @Override
-            public MultivaluedMap<String, String> getQueryParameters(boolean decode) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
+      @Override
+      public ResponseBuilder evaluatePreconditions() {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
 
-            @Override
-            public MultivaluedMap<String, String> getCookieNameValueMap() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
+      @Override
+      public Principal getUserPrincipal() {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
 
-            @Override
-            public <T> T getEntity(Class<T> type, Type genericType, Annotation[] as) throws WebApplicationException {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
+      @Override
+      public boolean isUserInRole(String string) {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
 
-            @Override
-            public Form getFormParameters() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
+      @Override
+      public boolean isSecure() {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
 
-            @Override
-            public List<String> getRequestHeader(String string) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
+      @Override
+      public String getAuthenticationScheme() {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
 
-            @Override
-            public MultivaluedMap<String, String> getRequestHeaders() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
+      @Override
+      public boolean isTracingEnabled() {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
 
-            @Override
-            public List<MediaType> getAcceptableMediaTypes() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
+      @Override
+      public void trace(String message) {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
+    };
 
-            @Override
-            public List<Locale> getAcceptableLanguages() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            @Override
-            public MediaType getMediaType() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            @Override
-            public Locale getLanguage() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            @Override
-            public Map<String, Cookie> getCookies() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            @Override
-            public String getMethod() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            @Override
-            public Variant selectVariant(List<Variant> list) throws IllegalArgumentException {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            @Override
-            public ResponseBuilder evaluatePreconditions(EntityTag et) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            @Override
-            public ResponseBuilder evaluatePreconditions(Date date) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            @Override
-            public ResponseBuilder evaluatePreconditions(Date date, EntityTag et) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            @Override
-            public ResponseBuilder evaluatePreconditions() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            @Override
-            public Principal getUserPrincipal() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            @Override
-            public boolean isUserInRole(String string) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            @Override
-            public boolean isSecure() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            @Override
-            public String getAuthenticationScheme() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            @Override
-            public boolean isTracingEnabled() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            @Override
-            public void trace(String message) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-        };
-
-        return hrc;
-    }
+    return hrc;
+  }
 }

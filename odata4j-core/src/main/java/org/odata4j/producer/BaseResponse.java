@@ -7,5 +7,5 @@ package org.odata4j.producer;
  * @see PropertyResponse
  */
 public interface BaseResponse {
- 
+
 }

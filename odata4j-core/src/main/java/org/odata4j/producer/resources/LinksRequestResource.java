@@ -13,18 +13,17 @@ import com.sun.jersey.api.core.HttpContext;
 
 public class LinksRequestResource extends BaseResource {
 
-	@POST
-	@Path("{navProp:.+}")
-	public Response updateEntity(
-			@Context HttpContext context,
-			@Context ODataProducer producer,
-			final @PathParam("entitySetName") String entitySetName,
-			final @PathParam("id") String id,
-			final @PathParam("navProp") String navProp) {
+  @POST
+  @Path("{navProp:.+}")
+  public Response updateEntity(
+      @Context HttpContext context,
+      @Context ODataProducer producer,
+      @PathParam("entitySetName") String entitySetName,
+      @PathParam("id") String id,
+      @PathParam("navProp") String navProp) {
 
+    throw new NotImplementedException("NavProp: updateEntity not supported yet.");
 
-		throw new NotImplementedException("NavProp: updateEntity not supported yet.");
-
-	}
+  }
 
 }
