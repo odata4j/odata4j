@@ -12,7 +12,7 @@ import org.odata4j.stax2.XMLEventReader2;
 public class AtomSingleLinkFormatParser extends XmlFormatParser {
 
   private static final QName2 URI = new QName2(NS_DATASERVICES, "uri");
-  
+
   public static Iterable<SingleLink> parseLinks(XMLEventReader2 reader) {
     List<SingleLink> rt = new ArrayList<SingleLink>();
     while (reader.hasNext()) {
@@ -23,5 +23,5 @@ public class AtomSingleLinkFormatParser extends XmlFormatParser {
     }
     return rt;
   }
-  
+
 }

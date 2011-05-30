@@ -16,6 +16,6 @@ import org.odata4j.core.OEntity;
  */
 public interface FormatParser<T> {
 
-	public T parse(Reader reader);
+  T parse(Reader reader);
 
 }

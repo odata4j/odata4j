@@ -5,39 +5,37 @@ import org.odata4j.edm.EdmEntitySet;
 
 import com.sun.jersey.api.core.ExtendedUriInfo;
 
-public class JsonServiceDocumentFormatWriter extends JsonFormatWriter<EdmDataServices>  {
+public class JsonServiceDocumentFormatWriter extends JsonFormatWriter<EdmDataServices> {
 
-   
-    public JsonServiceDocumentFormatWriter(String jsonpCallback) {
-        super(jsonpCallback);
-       
-    }
+  public JsonServiceDocumentFormatWriter(String jsonpCallback) {
+    super(jsonpCallback);
 
-    @Override
-    public void writeContent(ExtendedUriInfo uriInfo, JsonWriter jw, EdmDataServices target) {
-        
-        jw.startObject();
-        {
-            jw.writeName("EntitySets");
-            jw.startArray();
-            {
-                boolean isFirst = true;
-                for(EdmEntitySet ees : target.getEntitySets()) {
-                    if (isFirst)
-                        isFirst = false;
-                    else
-                        jw.writeSeparator();
-                    
-                    jw.writeString(ees.name);
-                }
-                
-            }
-            jw.endArray();
+  }
+
+  @Override
+  public void writeContent(ExtendedUriInfo uriInfo, JsonWriter jw, EdmDataServices target) {
+
+    jw.startObject();
+    {
+      jw.writeName("EntitySets");
+      jw.startArray();
+      {
+        boolean isFirst = true;
+        for (EdmEntitySet ees : target.getEntitySets()) {
+          if (isFirst)
+            isFirst = false;
+          else
+            jw.writeSeparator();
+
+          jw.writeString(ees.name);
         }
-        jw.endObject(); 
-       
-        
+
+      }
+      jw.endArray();
     }
+    jw.endObject();
+
+  }
 
 }
 

@@ -8,10 +8,11 @@ import org.odata4j.core.OEntity;
  * @see Feed
  */
 public interface Entry {
-	public String getUri();
-	
-	public String getETag();
-	
-	public OEntity getEntity();
+  
+  String getUri();
+
+  String getETag();
+
+  OEntity getEntity();
 
 }

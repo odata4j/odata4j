@@ -14,46 +14,44 @@ import com.sun.jersey.api.core.ExtendedUriInfo;
 
 public class AtomServiceDocumentFormatWriter extends XmlFormatWriter implements FormatWriter<EdmDataServices> {
 
-    
-    @Override
-    public String getContentType() {
-        return ODataConstants.APPLICATION_XML_CHARSET_UTF8;
-    }
-    
-    @Override
-    public void write(ExtendedUriInfo uriInfo,Writer w, EdmDataServices target) {
-        XMLWriter2 writer = XMLFactoryProvider2.getInstance().newXMLWriterFactory2().createXMLWriter(w);
-        writer.startDocument();
+  @Override
+  public String getContentType() {
+    return ODataConstants.APPLICATION_XML_CHARSET_UTF8;
+  }
 
-        String xmlns = app;
+  @Override
+  public void write(ExtendedUriInfo uriInfo, Writer w, EdmDataServices target) {
+    XMLWriter2 writer = XMLFactoryProvider2.getInstance().newXMLWriterFactory2().createXMLWriter(w);
+    writer.startDocument();
 
-        writer.startElement(new QName2("service"), xmlns);
-        writer.writeAttribute(new QName2("xml:base"), uriInfo.getBaseUri().toString());
-        writer.writeNamespace("atom", atom);
-        writer.writeNamespace("app", app);
+    String xmlns = app;
 
-        writer.startElement(new QName2("workspace"));
-        writeAtomTitle(writer, atom, "Default");
+    writer.startElement(new QName2("service"), xmlns);
+    writer.writeAttribute(new QName2("xml:base"), uriInfo.getBaseUri().toString());
+    writer.writeNamespace("atom", atom);
+    writer.writeNamespace("app", app);
 
-        for(EdmEntitySet ees : target.getEntitySets()) {
-           
-            writer.startElement("collection");
-            writer.writeAttribute("href", ees.name);
-            writeAtomTitle(writer, atom, ees.name);
+    writer.startElement(new QName2("workspace"));
+    writeAtomTitle(writer, atom, "Default");
 
-            writer.endElement("collection");
- 
-        }
+    for (EdmEntitySet ees : target.getEntitySets()) {
 
-        writer.endElement("workspace");
-        writer.endDocument();
+      writer.startElement("collection");
+      writer.writeAttribute("href", ees.name);
+      writeAtomTitle(writer, atom, ees.name);
+
+      writer.endElement("collection");
+
     }
 
-    private static void writeAtomTitle(XMLWriter2 writer, String atom, String title) {
-        writer.startElement(new QName2(atom, "title", "atom"));
-        writer.writeText(title);
-        writer.endElement("title");
-    }
+    writer.endElement("workspace");
+    writer.endDocument();
+  }
 
- 
+  private static void writeAtomTitle(XMLWriter2 writer, String atom, String title) {
+    writer.startElement(new QName2(atom, "title", "atom"));
+    writer.writeText(title);
+    writer.endElement("title");
+  }
+
 }

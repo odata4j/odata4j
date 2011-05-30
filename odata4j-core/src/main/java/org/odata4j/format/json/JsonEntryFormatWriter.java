@@ -6,13 +6,12 @@ import com.sun.jersey.api.core.ExtendedUriInfo;
 
 public class JsonEntryFormatWriter extends JsonFormatWriter<EntityResponse> {
 
-    public JsonEntryFormatWriter(String jsonpCallback) {
-        super(jsonpCallback);
-    }
+  public JsonEntryFormatWriter(String jsonpCallback) {
+    super(jsonpCallback);
+  }
 
-
-    @Override
-    protected void writeContent(ExtendedUriInfo uriInfo, JsonWriter jw, EntityResponse target) {    		
-        writeOEntity(uriInfo, jw, target.getEntity(), target.getEntity().getEntitySet(), true);
-    }
+  @Override
+  protected void writeContent(ExtendedUriInfo uriInfo, JsonWriter jw, EntityResponse target) {
+    writeOEntity(uriInfo, jw, target.getEntity(), target.getEntity().getEntitySet(), true);
+  }
 }

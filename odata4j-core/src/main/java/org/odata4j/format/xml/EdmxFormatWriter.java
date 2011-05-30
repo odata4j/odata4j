@@ -19,149 +19,142 @@ import org.odata4j.stax2.XMLWriter2;
 
 public class EdmxFormatWriter extends XmlFormatWriter {
 
-    
-  
-    public static void write(EdmDataServices services, Writer w) {
+  public static void write(EdmDataServices services, Writer w) {
 
-        XMLWriter2 writer = XMLFactoryProvider2.getInstance().newXMLWriterFactory2().createXMLWriter(w);
-        writer.startDocument();
+    XMLWriter2 writer = XMLFactoryProvider2.getInstance().newXMLWriterFactory2().createXMLWriter(w);
+    writer.startDocument();
 
-        writer.startElement(new QName2(edmx, "Edmx", "edmx"));
-        writer.writeAttribute("Version", "1.0");
-        writer.writeNamespace("edmx", edmx);
-        writer.writeNamespace("d", d);
-        writer.writeNamespace("m", m);
-        
-        writer.startElement(new QName2(edmx, "DataServices", "edmx"));
-        writer.writeAttribute(new QName2(m,"DataServiceVersion","m"), "1.0");
-       
-        
-        // Schema
-        for(EdmSchema schema : services.getSchemas()) {
+    writer.startElement(new QName2(edmx, "Edmx", "edmx"));
+    writer.writeAttribute("Version", "1.0");
+    writer.writeNamespace("edmx", edmx);
+    writer.writeNamespace("d", d);
+    writer.writeNamespace("m", m);
 
-            writer.startElement(new QName2("Schema"), edm);
-            writer.writeAttribute("Namespace", schema.namespace);
-          
+    writer.startElement(new QName2(edmx, "DataServices", "edmx"));
+    writer.writeAttribute(new QName2(m, "DataServiceVersion", "m"), "1.0");
 
-            // ComplexType
-            for(EdmComplexType ect : schema.complexTypes) {
-                writer.startElement(new QName2("ComplexType"));
-                
-                writer.writeAttribute("Name", ect.name);
-                
-                write(ect.properties,writer);
-                
-                writer.endElement("ComplexType");
-            }
-            // EntityType
-            for(EdmEntityType eet : schema.entityTypes) {
-                writer.startElement(new QName2("EntityType"));
+    // Schema
+    for (EdmSchema schema : services.getSchemas()) {
 
-                writer.writeAttribute("Name", eet.name);
+      writer.startElement(new QName2("Schema"), edm);
+      writer.writeAttribute("Namespace", schema.namespace);
 
-                writer.startElement(new QName2("Key"));
-                for(String key : eet.keys){
-                    writer.startElement(new QName2("PropertyRef"));
-                    writer.writeAttribute("Name", key);
-                    writer.endElement("PropertyRef");
-                }
+      // ComplexType
+      for (EdmComplexType ect : schema.complexTypes) {
+        writer.startElement(new QName2("ComplexType"));
 
-                writer.endElement("Key");
+        writer.writeAttribute("Name", ect.name);
 
-                write(eet.properties,writer);
+        write(ect.properties, writer);
 
-                for(EdmNavigationProperty np : eet.navigationProperties) {
+        writer.endElement("ComplexType");
+      }
+      // EntityType
+      for (EdmEntityType eet : schema.entityTypes) {
+        writer.startElement(new QName2("EntityType"));
 
-                    writer.startElement(new QName2("NavigationProperty"));
-                    writer.writeAttribute("Name", np.name);
-                    writer.writeAttribute("Relationship", np.relationship.getFQNamespaceName());
-                    writer.writeAttribute("FromRole", np.fromRole.role);
-                    writer.writeAttribute("ToRole", np.toRole.role);
+        writer.writeAttribute("Name", eet.name);
 
-                    writer.endElement("NavigationProperty");
+        writer.startElement(new QName2("Key"));
+        for (String key : eet.keys) {
+          writer.startElement(new QName2("PropertyRef"));
+          writer.writeAttribute("Name", key);
+          writer.endElement("PropertyRef");
+        }
 
-                }
+        writer.endElement("Key");
 
-                writer.endElement("EntityType");
+        write(eet.properties, writer);
 
-            }
+        for (EdmNavigationProperty np : eet.navigationProperties) {
 
-            // Association
-            for(EdmAssociation assoc : schema.associations) {
-                writer.startElement(new QName2("Association"));
+          writer.startElement(new QName2("NavigationProperty"));
+          writer.writeAttribute("Name", np.name);
+          writer.writeAttribute("Relationship", np.relationship.getFQNamespaceName());
+          writer.writeAttribute("FromRole", np.fromRole.role);
+          writer.writeAttribute("ToRole", np.toRole.role);
 
-                writer.writeAttribute("Name", assoc.name);
-
-                writer.startElement(new QName2("End"));
-                writer.writeAttribute("Role", assoc.end1.role);
-                writer.writeAttribute("Type", assoc.end1.type.getFQNamespaceName());
-                writer.writeAttribute("Multiplicity", assoc.end1.multiplicity.getSymbolString());
-                writer.endElement("End");
-
-                writer.startElement(new QName2("End"));
-                writer.writeAttribute("Role", assoc.end2.role);
-                writer.writeAttribute("Type", assoc.end2.type.getFQNamespaceName());
-                writer.writeAttribute("Multiplicity", assoc.end2.multiplicity.getSymbolString());
-                writer.endElement("End");
-
-                writer.endElement("Association");
-            }
-
-            // EntityContainer
-            for(EdmEntityContainer container : schema.entityContainers) {
-                writer.startElement(new QName2("EntityContainer"));
-
-                writer.writeAttribute("Name", container.name);
-                writer.writeAttribute(new QName2(m, "IsDefaultEntityContainer", "m"), Boolean.toString(container.isDefault));
-
-                for(EdmEntitySet ees : container.entitySets) {
-                    writer.startElement(new QName2("EntitySet"));
-                    writer.writeAttribute("Name", ees.name);
-                    writer.writeAttribute("EntityType", ees.type.getFQNamespaceName());
-                    writer.endElement("EntitySet");
-                }
-                for(EdmAssociationSet eas : container.associationSets) {
-                    writer.startElement(new QName2("AssociationSet"));
-                    writer.writeAttribute("Name", eas.name);
-                    writer.writeAttribute("Association", eas.association.getFQNamespaceName());
-
-                    writer.startElement(new QName2("End"));
-                    writer.writeAttribute("Role", eas.end1.role.role);
-                    writer.writeAttribute("EntitySet", eas.end1.entitySet.name);
-                    writer.endElement("End");
-
-                    writer.startElement(new QName2("End"));
-                    writer.writeAttribute("Role", eas.end2.role.role);
-                    writer.writeAttribute("EntitySet", eas.end2.entitySet.name);
-                    writer.endElement("End");
-
-                    writer.endElement("AssociationSet");
-                }
-
-                writer.endElement("EntityContainer");
-            }
-
-            writer.endElement("Schema");
+          writer.endElement("NavigationProperty");
 
         }
 
-        writer.endDocument();
-    }
-    
-    
-    
-    private static void write(List<EdmProperty> properties, XMLWriter2 writer){
-        for(EdmProperty prop : properties) {
+        writer.endElement("EntityType");
 
-            writer.startElement(new QName2("Property"));
+      }
 
-            writer.writeAttribute("Name", prop.name);
-            writer.writeAttribute("Type", prop.type.toTypeString());
-            writer.writeAttribute("Nullable", Boolean.toString(prop.nullable));
-            if (prop.maxLength != null)
-                writer.writeAttribute("MaxLength", Integer.toString(prop.maxLength));
-            writer.endElement("Property");
+      // Association
+      for (EdmAssociation assoc : schema.associations) {
+        writer.startElement(new QName2("Association"));
+
+        writer.writeAttribute("Name", assoc.name);
+
+        writer.startElement(new QName2("End"));
+        writer.writeAttribute("Role", assoc.end1.role);
+        writer.writeAttribute("Type", assoc.end1.type.getFQNamespaceName());
+        writer.writeAttribute("Multiplicity", assoc.end1.multiplicity.getSymbolString());
+        writer.endElement("End");
+
+        writer.startElement(new QName2("End"));
+        writer.writeAttribute("Role", assoc.end2.role);
+        writer.writeAttribute("Type", assoc.end2.type.getFQNamespaceName());
+        writer.writeAttribute("Multiplicity", assoc.end2.multiplicity.getSymbolString());
+        writer.endElement("End");
+
+        writer.endElement("Association");
+      }
+
+      // EntityContainer
+      for (EdmEntityContainer container : schema.entityContainers) {
+        writer.startElement(new QName2("EntityContainer"));
+
+        writer.writeAttribute("Name", container.name);
+        writer.writeAttribute(new QName2(m, "IsDefaultEntityContainer", "m"), Boolean.toString(container.isDefault));
+
+        for (EdmEntitySet ees : container.entitySets) {
+          writer.startElement(new QName2("EntitySet"));
+          writer.writeAttribute("Name", ees.name);
+          writer.writeAttribute("EntityType", ees.type.getFQNamespaceName());
+          writer.endElement("EntitySet");
         }
+        for (EdmAssociationSet eas : container.associationSets) {
+          writer.startElement(new QName2("AssociationSet"));
+          writer.writeAttribute("Name", eas.name);
+          writer.writeAttribute("Association", eas.association.getFQNamespaceName());
+
+          writer.startElement(new QName2("End"));
+          writer.writeAttribute("Role", eas.end1.role.role);
+          writer.writeAttribute("EntitySet", eas.end1.entitySet.name);
+          writer.endElement("End");
+
+          writer.startElement(new QName2("End"));
+          writer.writeAttribute("Role", eas.end2.role.role);
+          writer.writeAttribute("EntitySet", eas.end2.entitySet.name);
+          writer.endElement("End");
+
+          writer.endElement("AssociationSet");
+        }
+
+        writer.endElement("EntityContainer");
+      }
+
+      writer.endElement("Schema");
+
     }
-    
+
+    writer.endDocument();
+  }
+
+  private static void write(List<EdmProperty> properties, XMLWriter2 writer) {
+    for (EdmProperty prop : properties) {
+      writer.startElement(new QName2("Property"));
+
+      writer.writeAttribute("Name", prop.name);
+      writer.writeAttribute("Type", prop.type.toTypeString());
+      writer.writeAttribute("Nullable", Boolean.toString(prop.nullable));
+      if (prop.maxLength != null)
+        writer.writeAttribute("MaxLength", Integer.toString(prop.maxLength));
+      writer.endElement("Property");
+    }
+  }
+
 }

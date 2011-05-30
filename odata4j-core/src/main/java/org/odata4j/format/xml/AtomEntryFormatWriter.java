@@ -18,53 +18,50 @@ import com.sun.jersey.api.core.ExtendedUriInfo;
 
 public class AtomEntryFormatWriter extends XmlFormatWriter implements FormatWriter<EntityResponse> {
 
-	protected String baseUri;
-   
-    public void writeRequestEntry( Writer w, Entry entry) {
+  protected String baseUri;
 
-        DateTime utc = new DateTime().withZone(DateTimeZone.UTC);
-        String updated = InternalUtil.toString(utc);
+  public void writeRequestEntry(Writer w, Entry entry) {
 
-        XMLWriter2 writer = XMLFactoryProvider2.getInstance().newXMLWriterFactory2().createXMLWriter(w);
-        writer.startDocument();
+    DateTime utc = new DateTime().withZone(DateTimeZone.UTC);
+    String updated = InternalUtil.toString(utc);
 
-        writer.startElement(new QName2("entry"), atom);
-        writer.writeNamespace("d", d);
-        writer.writeNamespace("m", m);
+    XMLWriter2 writer = XMLFactoryProvider2.getInstance().newXMLWriterFactory2().createXMLWriter(w);
+    writer.startDocument();
 
-		writeEntry(writer, null, entry.getEntity().getProperties(), 
-				entry.getEntity().getLinks(),
-				null, null, updated, null, false);
-        writer.endDocument();
+    writer.startElement(new QName2("entry"), atom);
+    writer.writeNamespace("d", d);
+    writer.writeNamespace("m", m);
 
-    }
-    
-    
-    
-    
-    @Override
-    public String getContentType() {
-        return ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8;
-    }
+    writeEntry(writer, null, entry.getEntity().getProperties(),
+        entry.getEntity().getLinks(),
+        null, null, updated, null, false);
+    writer.endDocument();
 
-    @Override
-    public void write(ExtendedUriInfo uriInfo, Writer w, EntityResponse target) {
-        String baseUri = uriInfo.getBaseUri().toString();
-        EdmEntitySet ees = target.getEntity().getEntitySet();
-        
-        String entitySetName = ees.name;
-        DateTime utc = new DateTime().withZone(DateTimeZone.UTC);
-        String updated = InternalUtil.toString(utc);
+  }
 
-        XMLWriter2 writer = XMLFactoryProvider2.getInstance().newXMLWriterFactory2().createXMLWriter(w);
-        writer.startDocument();
+  @Override
+  public String getContentType() {
+    return ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8;
+  }
 
-        writer.startElement(new QName2("entry"), atom);
-        writer.writeNamespace("m", m);
-        writer.writeNamespace("d", d);
-        writer.writeAttribute("xml:base", baseUri);
+  @Override
+  public void write(ExtendedUriInfo uriInfo, Writer w, EntityResponse target) {
+    String baseUri = uriInfo.getBaseUri().toString();
+    EdmEntitySet ees = target.getEntity().getEntitySet();
 
-        writeEntry(writer, target.getEntity(), target.getEntity().getProperties(), target.getEntity().getLinks(), entitySetName, baseUri, updated, ees, true);
-        writer.endDocument();
-    }
+    String entitySetName = ees.name;
+    DateTime utc = new DateTime().withZone(DateTimeZone.UTC);
+    String updated = InternalUtil.toString(utc);
+
+    XMLWriter2 writer = XMLFactoryProvider2.getInstance().newXMLWriterFactory2().createXMLWriter(w);
+    writer.startDocument();
+
+    writer.startElement(new QName2("entry"), atom);
+    writer.writeNamespace("m", m);
+    writer.writeNamespace("d", d);
+    writer.writeAttribute("xml:base", baseUri);
+
+    writeEntry(writer, target.getEntity(), target.getEntity().getProperties(), target.getEntity().getLinks(), entitySetName, baseUri, updated, ees, true);
+    writer.endDocument();
+  }
 }

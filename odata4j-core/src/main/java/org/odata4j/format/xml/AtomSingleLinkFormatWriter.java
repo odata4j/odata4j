@@ -11,7 +11,7 @@ import org.odata4j.stax2.XMLWriter2;
 
 import com.sun.jersey.api.core.ExtendedUriInfo;
 
-public class AtomSingleLinkFormatWriter extends XmlFormatWriter implements FormatWriter<SingleLink>{
+public class AtomSingleLinkFormatWriter extends XmlFormatWriter implements FormatWriter<SingleLink> {
 
   @Override
   public void write(ExtendedUriInfo uriInfo, Writer w, SingleLink link) {

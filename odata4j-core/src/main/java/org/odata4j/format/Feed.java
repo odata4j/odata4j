@@ -7,6 +7,8 @@ package org.odata4j.format;
  * 
  */
 public interface Feed {
-	public String getNext();
-	public Iterable<Entry> getEntries();
+  
+  String getNext();
+
+  Iterable<Entry> getEntries();
 }

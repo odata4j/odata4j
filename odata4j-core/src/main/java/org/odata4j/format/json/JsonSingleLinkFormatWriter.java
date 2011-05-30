@@ -19,6 +19,7 @@ public class JsonSingleLinkFormatWriter extends JsonFormatWriter<SingleLink> {
     }
     jw.endObject();
   }
+}
 
 /*
 {
@@ -27,5 +28,3 @@ public class JsonSingleLinkFormatWriter extends JsonFormatWriter<SingleLink> {
 }
 }
 */
-  
-}
