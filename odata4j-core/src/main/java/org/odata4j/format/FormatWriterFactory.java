@@ -11,11 +11,13 @@ import org.odata4j.format.json.JsonPropertyFormatWriter;
 import org.odata4j.format.json.JsonRequestEntryFormatWriter;
 import org.odata4j.format.json.JsonServiceDocumentFormatWriter;
 import org.odata4j.format.json.JsonSingleLinkFormatWriter;
+import org.odata4j.format.json.JsonSingleLinksFormatWriter;
 import org.odata4j.format.xml.AtomEntryFormatWriter;
 import org.odata4j.format.xml.AtomFeedFormatWriter;
 import org.odata4j.format.xml.AtomRequestEntryFormatWriter;
 import org.odata4j.format.xml.AtomServiceDocumentFormatWriter;
 import org.odata4j.format.xml.AtomSingleLinkFormatWriter;
+import org.odata4j.format.xml.AtomSingleLinksFormatWriter;
 import org.odata4j.format.xml.XmlPropertyFormatWriter;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityResponse;
@@ -36,6 +38,8 @@ public class FormatWriterFactory {
     FormatWriter<Entry> getRequestEntryFormatWriter();
 
     FormatWriter<SingleLink> getSingleLinkFormatWriter();
+    
+    FormatWriter<SingleLinks> getSingleLinksFormatWriter();
 
   }
 
@@ -81,6 +85,9 @@ public class FormatWriterFactory {
 
     if (SingleLink.class.isAssignableFrom(targetType))
       return (FormatWriter<T>) formatWriters.getSingleLinkFormatWriter();
+    
+    if (SingleLinks.class.isAssignableFrom(targetType))
+      return (FormatWriter<T>) formatWriters.getSingleLinksFormatWriter();
 
     throw new IllegalArgumentException("Unable to locate format writer for " + targetType.getName() + " and format " + type);
 
@@ -124,6 +131,11 @@ public class FormatWriterFactory {
       return new JsonSingleLinkFormatWriter(callback);
     }
 
+    @Override
+    public FormatWriter<SingleLinks> getSingleLinksFormatWriter() {
+      return new JsonSingleLinksFormatWriter(callback);
+    }
+
   }
 
   public static class AtomWriters implements FormatWriters {
@@ -158,5 +170,9 @@ public class FormatWriterFactory {
       return new AtomSingleLinkFormatWriter();
     }
 
+    @Override
+    public FormatWriter<SingleLinks> getSingleLinksFormatWriter() {
+      return new AtomSingleLinksFormatWriter();
+    }
   }
 }

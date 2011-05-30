@@ -47,6 +47,7 @@ import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.OrderByExpression;
 import org.odata4j.producer.EntitiesResponse;
+import org.odata4j.producer.EntityIdResponse;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.InlineCount;
 import org.odata4j.producer.ODataProducer;
@@ -651,7 +652,7 @@ public class InMemoryProducer implements ODataProducer {
   }
 
   @Override
-  public List<OEntityId> getLinks(OEntityId sourceEntity, String targetNavProp) {
+  public EntityIdResponse getLinks(OEntityId sourceEntity, String targetNavProp) {
     throw new NotImplementedException();
   }
 

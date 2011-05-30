@@ -1,12 +1,45 @@
 package org.odata4j.format;
 
-public class SingleLinks {
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
-  private SingleLinks() {}
+import org.odata4j.core.OEntityId;
+import org.odata4j.core.OEntityIds;
+
+public class SingleLinks implements Iterable<SingleLink> {
+
+  private final List<SingleLink> links;
+  
+  private SingleLinks(Collection<SingleLink> links) {
+    this.links = new ArrayList<SingleLink>(links);
+  }
+  
+  @Override
+  public Iterator<SingleLink> iterator() {
+    return links.iterator();
+  }
 
   public static SingleLink create(String uri) {
     return new SingleLinkImpl(uri);
   }
+  
+  public static SingleLinks create(String serviceRootUri, Iterable<OEntityId> entities) {
+    List<SingleLink> rt = new ArrayList<SingleLink>();
+    for (OEntityId e : entities)
+      rt.add(create(serviceRootUri, e));
+    return new SingleLinks(rt);
+  }
+  
+  public static SingleLink create(String serviceRootUri, OEntityId entity) {
+    String uri = serviceRootUri;
+    if (!uri.endsWith("/"))
+      uri += "/";
+    uri += OEntityIds.toKeyString(entity);
+    return create(uri);
+  }
+
 
   private static class SingleLinkImpl implements SingleLink {
 

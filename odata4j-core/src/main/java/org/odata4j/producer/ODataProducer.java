@@ -1,7 +1,5 @@
 package org.odata4j.producer;
 
-import java.util.List;
-
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityId;
 import org.odata4j.core.OEntityKey;
@@ -113,7 +111,7 @@ public interface ODataProducer {
    * @param targetNavProp  the navigation property
    * @return a collection of entity links (or a single link if the association cardinality is 1)
    */
-  List<OEntityId> getLinks(OEntityId sourceEntity, String targetNavProp);
+  EntityIdResponse getLinks(OEntityId sourceEntity, String targetNavProp);
 
   /**
    * Creates a link between two entities.

@@ -54,6 +54,7 @@ import org.odata4j.expression.OrderByExpression;
 import org.odata4j.internal.TypeConverter;
 import org.odata4j.producer.BaseResponse;
 import org.odata4j.producer.EntitiesResponse;
+import org.odata4j.producer.EntityIdResponse;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.InlineCount;
 import org.odata4j.producer.ODataProducer;
@@ -499,12 +500,12 @@ public class JPAProducer implements ODataProducer {
     // jpql -> jpa query
     Query tq = context.em.createQuery(jpql);
 
-    Integer inlineCount = context.query.inlineCount == InlineCount.ALLPAGES
+    Integer inlineCount = context.query != null && context.query.inlineCount == InlineCount.ALLPAGES
         ? tq.getResultList().size()
         : null;
 
     int queryMaxResults = maxResults;
-    if (context.query.top != null) {
+    if (context.query != null && context.query.top != null) {
 
       // top=0: don't even hit jpa, return a response with zero entities
       if (context.query.top.equals(0))
@@ -517,7 +518,7 @@ public class JPAProducer implements ODataProducer {
     // jpa query for one more than specified to determine whether or not to return a skip token
     tq = tq.setMaxResults(queryMaxResults + 1);
 
-    if (context.query.skip != null)
+    if (context.query != null && context.query.skip != null)
       tq = tq.setFirstResult(context.query.skip);
 
     // execute jpa query
@@ -549,12 +550,12 @@ public class JPAProducer implements ODataProducer {
 
     // compute skip token if necessary
     String skipToken = null;
-    boolean hasMoreResults = context.query.top != null
+    boolean hasMoreResults = context.query != null && context.query.top != null
         ? context.query.top > maxResults && results.size() > queryMaxResults
         : results.size() > queryMaxResults;
 
     if (hasMoreResults)
-      skipToken = JPASkipToken.create(context.query.orderBy, Enumerable.create(entities).last());
+      skipToken = JPASkipToken.create(context.query == null ? null : context.query.orderBy, Enumerable.create(entities).last());
 
     if (context.edmPropertyBase instanceof EdmNavigationProperty) {
       EdmNavigationProperty edmNavProp = (EdmNavigationProperty) context.edmPropertyBase;
@@ -642,12 +643,12 @@ public class JPAProducer implements ODataProducer {
 
     JPQLGenerator jpqlGen = new JPQLGenerator(context.keyAttributeName, alias);
 
-    if (context.query.filter != null) {
+    if (context.query != null && context.query.filter != null) {
       String filterPredicate = jpqlGen.toJpql(context.query.filter);
       where = addWhereExpression(where, filterPredicate, "AND");
     }
 
-    if (context.query.skipToken != null) {
+    if (context.query != null && context.query.skipToken != null) {
       BoolCommonExpression skipTokenPredicateExpr = JPASkipToken.parse(jpqlGen.getPrimaryKeyName(), context.query.orderBy, context.query.skipToken);
       String skipTokenPredicate = jpqlGen.toJpql(skipTokenPredicateExpr);
       where = addWhereExpression(where, skipTokenPredicate, "AND");
@@ -656,7 +657,7 @@ public class JPAProducer implements ODataProducer {
     if (where != null)
       jpql = String.format("%s WHERE %s", jpql, where);
 
-    if (context.query.orderBy != null && !context.query.orderBy.isEmpty()) {
+    if (context.query != null && context.query.orderBy != null && !context.query.orderBy.isEmpty()) {
       List<String> orderBys = new ArrayList<String>();
       for (OrderByExpression orderBy : context.query.orderBy) {
         String field = jpqlGen.toJpql(orderBy.getExpression());
@@ -1090,8 +1091,17 @@ public class JPAProducer implements ODataProducer {
   }
 
   @Override
-  public List<OEntityId> getLinks(OEntityId sourceEntity, String targetNavProp) {
-    throw new NotImplementedException();
+  public EntityIdResponse getLinks(OEntityId sourceEntity, String targetNavProp) {
+    BaseResponse r = getNavProperty(sourceEntity.getEntitySetName(), sourceEntity.getEntityKey(), targetNavProp, null);
+    if (r instanceof EntitiesResponse) {
+      EntitiesResponse er = (EntitiesResponse) r;
+      return Responses.multipleIds(er.getEntities());
+    }
+    if (r instanceof EntityResponse) {
+      EntityResponse er = (EntityResponse) r;
+      return Responses.singleId(er.getEntity());
+    }
+    throw new NotImplementedException(sourceEntity + " " + targetNavProp);
   }
 
   @Override

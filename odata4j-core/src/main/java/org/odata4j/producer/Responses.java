@@ -1,10 +1,14 @@
 package org.odata4j.producer;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.odata4j.core.OEntity;
+import org.odata4j.core.OEntityId;
 import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.edm.EdmMultiplicity;
 
 /**
  * A static factory to create immutable {@link EntitiesResponse}, {@link EntityResponse}, or {@link PropertyResponse} instances.
@@ -80,5 +84,41 @@ public class Responses {
         return property;
       }
     };
+  }
+  
+  // TODO(0.5) javadoc
+  public static <T extends OEntityId> EntityIdResponse singleId(T entityId) {
+    final List<OEntityId> entities = new ArrayList<OEntityId>();
+    entities.add(entityId);
+      
+    return new EntityIdResponse(){
+
+      @Override
+      public EdmMultiplicity getMultiplicity() {
+        return EdmMultiplicity.ONE;
+      }
+
+      @Override
+      public Collection<OEntityId> getEntities() {
+        return entities;
+      }};
+  }
+  
+  public static <T extends OEntityId> EntityIdResponse multipleIds(Iterable<T> entityIds) {
+    final List<OEntityId> entities = new ArrayList<OEntityId>();
+    for(T entityId : entityIds)
+      entities.add(entityId);
+    
+    return new EntityIdResponse(){
+
+      @Override
+      public EdmMultiplicity getMultiplicity() {
+        return EdmMultiplicity.MANY;
+      }
+
+      @Override
+      public Collection<OEntityId> getEntities() {
+        return entities;
+      }};
   }
 }

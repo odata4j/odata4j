@@ -12,6 +12,10 @@ public class JsonSingleLinkFormatWriter extends JsonFormatWriter<SingleLink> {
 
   @Override
   protected void writeContent(ExtendedUriInfo uriInfo, JsonWriter jw, SingleLink link) {
+    writeUri(jw, link);
+  }
+  
+  static void writeUri(JsonWriter jw, SingleLink link) {
     jw.startObject();
     {
       jw.writeName("uri");

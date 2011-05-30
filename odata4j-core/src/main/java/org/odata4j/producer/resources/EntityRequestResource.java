@@ -16,6 +16,7 @@ import javax.ws.rs.core.Response;
 
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OEntity;
+import org.odata4j.core.OEntityIds;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.format.FormatWriter;
 import org.odata4j.format.FormatWriterFactory;
@@ -31,7 +32,9 @@ public class EntityRequestResource extends BaseResource {
   private static final Logger log = Logger.getLogger(EntityRequestResource.class.getName());
 
   @PUT
-  public Response updateEntity(@Context HttpContext context, @Context ODataProducer producer, final @PathParam("entitySetName") String entitySetName, @PathParam("id") String id) {
+  public Response updateEntity(@Context HttpContext context, @Context ODataProducer producer,
+      @PathParam("entitySetName") String entitySetName,
+      @PathParam("id") String id) {
 
     log.info(String.format("updateEntity(%s,%s)", entitySetName, id));
 
@@ -42,7 +45,9 @@ public class EntityRequestResource extends BaseResource {
   }
 
   @POST
-  public Response mergeEntity(@Context HttpContext context, @Context ODataProducer producer, final @PathParam("entitySetName") String entitySetName, @PathParam("id") String id) {
+  public Response mergeEntity(@Context HttpContext context, @Context ODataProducer producer,
+      @PathParam("entitySetName") String entitySetName,
+      @PathParam("id") String id) {
 
     log.info(String.format("mergeEntity(%s,%s)", entitySetName, id));
 
@@ -74,7 +79,9 @@ public class EntityRequestResource extends BaseResource {
   }
 
   @DELETE
-  public Response deleteEntity(@Context HttpContext context, @Context ODataProducer producer, final @PathParam("entitySetName") String entitySetName, @PathParam("id") String id) {
+  public Response deleteEntity(@Context HttpContext context, @Context ODataProducer producer,
+      @PathParam("entitySetName") String entitySetName,
+      @PathParam("id") String id) {
 
     log.info(String.format("getEntity(%s,%s)", entitySetName, id));
 
@@ -86,7 +93,9 @@ public class EntityRequestResource extends BaseResource {
 
   @GET
   @Produces({ ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8, ODataConstants.TEXT_JAVASCRIPT_CHARSET_UTF8, ODataConstants.APPLICATION_JAVASCRIPT_CHARSET_UTF8 })
-  public Response getEntity(@Context HttpContext context, @Context ODataProducer producer, final @PathParam("entitySetName") String entitySetName, @PathParam("id") String id,
+  public Response getEntity(@Context HttpContext context, @Context ODataProducer producer,
+      @PathParam("entitySetName") String entitySetName,
+      @PathParam("id") String id,
       @QueryParam("$format") String format,
       @QueryParam("$callback") String callback,
       @QueryParam("$expand") String expand,
@@ -116,8 +125,18 @@ public class EntityRequestResource extends BaseResource {
   }
 
   @Path("{first: \\$}links/{navProp:.+}")
-  public LinksRequestResource getLinks() {
-    return new LinksRequestResource();
+  public LinksRequestResource getLinks(
+      @PathParam("entitySetName") String entitySetName,
+      @PathParam("id") String id,
+      @PathParam("navProp") String navProp) {
+    
+    log.info(String.format(
+        "getLinks(%s,%s,%s)",
+        entitySetName,
+        id,
+        navProp));
+
+    return new LinksRequestResource(OEntityIds.create(entitySetName, OEntityKey.parse(id)), navProp);
   }
 
   @Path("{navProp:.+}")
