@@ -2,7 +2,7 @@ package org.odata4j.expression;
 
 public interface IsofExpression extends BoolCommonExpression {
 
-    CommonExpression getExpression(); // optional
+  CommonExpression getExpression(); // optional
 
-    String getType();
+  String getType();
 }

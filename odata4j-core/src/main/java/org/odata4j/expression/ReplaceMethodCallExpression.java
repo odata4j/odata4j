@@ -2,9 +2,9 @@ package org.odata4j.expression;
 
 public interface ReplaceMethodCallExpression extends MethodCallExpression {
 
-    public abstract CommonExpression getTarget();
+  CommonExpression getTarget();
 
-    public abstract CommonExpression getFind();
+  CommonExpression getFind();
 
-    public abstract CommonExpression getReplace();
+  CommonExpression getReplace();
 }

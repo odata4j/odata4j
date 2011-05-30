@@ -7,29 +7,29 @@ package org.odata4j.edm;
  */
 public class EdmEntitySet {
 
-    /**
-     * The name of the entity set.
-     */
-    public final String name;
-    
-    /**
-     * The entity type for which the entity set contains instances.
-     */
-    public final EdmEntityType type;
+  /**
+   * The name of the entity set.
+   */
+  public final String name;
 
-    /**
-     * Creates a new <code>EdmEntitySet</code>.
-     * 
-     * @param name  the name of the entity set
-     * @param type  the entity type for which the entity set contains instances
-     */
-    public EdmEntitySet(String name, EdmEntityType type) {
-        this.name = name;
-        this.type = type;
-    }
-    
-    @Override
-    public String toString() {
-    	return String.format("EdmEntitySet[%s,%s]",name,type);
-    }
+  /**
+   * The entity type for which the entity set contains instances.
+   */
+  public final EdmEntityType type;
+
+  /**
+   * Creates a new <code>EdmEntitySet</code>.
+   * 
+   * @param name  the name of the entity set
+   * @param type  the entity type for which the entity set contains instances
+   */
+  public EdmEntitySet(String name, EdmEntityType type) {
+    this.name = name;
+    this.type = type;
+  }
+
+  @Override
+  public String toString() {
+    return String.format("EdmEntitySet[%s,%s]", name, type);
+  }
 }

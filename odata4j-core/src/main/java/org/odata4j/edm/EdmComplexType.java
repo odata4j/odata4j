@@ -5,20 +5,19 @@ import java.util.List;
 
 public class EdmComplexType {
 
-    public final String namespace;
-    public final String name;
-   
-    public final List<EdmProperty> properties;
-  
+  public final String namespace;
+  public final String name;
 
-    public EdmComplexType(String namespace, String name, List<EdmProperty> properties) {
-        this.namespace = namespace;
-        this.name = name;
-        this.properties = properties == null ? new ArrayList<EdmProperty>() : properties;
-    }
+  public final List<EdmProperty> properties;
 
-    public String getFQName() {
-        return namespace + "." + name;
-    }
+  public EdmComplexType(String namespace, String name, List<EdmProperty> properties) {
+    this.namespace = namespace;
+    this.name = name;
+    this.properties = properties == null ? new ArrayList<EdmProperty>() : properties;
+  }
+
+  public String getFQName() {
+    return namespace + "." + name;
+  }
 
 }
