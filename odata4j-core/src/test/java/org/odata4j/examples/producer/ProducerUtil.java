@@ -12,35 +12,33 @@ import com.sun.jersey.api.container.filter.LoggingFilter;
 
 public class ProducerUtil {
 
-    public static void hostODataServer(String baseUri) {
-       
-        JerseyServer server= startODataServer(baseUri);
-        System.out.println("Press any key to exit");
-        readLine();
-        server.stop();
-    }
-    
-    public static JerseyServer startODataServer(String baseUri) {
-        JerseyServer server = new JerseyServer(baseUri);
-        server.addAppResourceClasses(new ODataResourceConfig().getClasses());
-        server.addRootResourceClasses(new CrossDomainResourceConfig().getClasses());
+  public static void hostODataServer(String baseUri) {
+    JerseyServer server = startODataServer(baseUri);
+    System.out.println("Press any key to exit");
+    readLine();
+    server.stop();
+  }
 
-        server.addJerseyRequestFilter(LoggingFilter.class); // log all requests
+  public static JerseyServer startODataServer(String baseUri) {
+    JerseyServer server = new JerseyServer(baseUri);
+    server.addAppResourceClasses(new ODataResourceConfig().getClasses());
+    server.addRootResourceClasses(new CrossDomainResourceConfig().getClasses());
 
-        // server.addHttpServerFilter(new WhitelistFilter("127.0.0.1","0:0:0:0:0:0:0:1%0")); // only allow local requests
-        server.start();
-        
-        return server;
-        
+    server.addJerseyRequestFilter(LoggingFilter.class); // log all requests
+
+    // server.addHttpServerFilter(new WhitelistFilter("127.0.0.1","0:0:0:0:0:0:0:1%0")); // only allow local requests
+    server.start();
+
+    return server;
+
+  }
+
+  public static void readLine() {
+    try {
+      new BufferedReader(new InputStreamReader(System.in)).readLine();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
-    
-    public static void readLine(){
-        try {
-            new BufferedReader(new InputStreamReader(System.in)).readLine();
-        } catch (IOException e) {
-           throw new RuntimeException(e);
-        }
-    }
-    
-  
+  }
+
 }

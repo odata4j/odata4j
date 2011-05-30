@@ -43,24 +43,24 @@ public class NorthwindTestUtils {
   private static final Client client = Client.create();
 
   private static final String RESOURCES_ROOT = "/META-INF/uri-conventions/";
-  
-  public static void main(String[] args) throws Exception{
+
+  public static void main(String[] args) throws Exception {
     //saveFromNorthwind("/Products(1)/$links/Category", "LinksSingleTest");
     saveFromNorthwind("/Products(1)/$links/Order_Details", "LinksMultipleTest");
   }
-  
+
   private static void saveFromNorthwind(String path, String fileName) {
     saveFromNorthwind(path, fileName, MediaType.APPLICATION_XML, "xml");
     saveFromNorthwind(path, fileName, MediaType.APPLICATION_JSON, "json");
   }
-  
+
   private static void saveFromNorthwind(String path, String fileName, String accept, String format) {
     String northwindSvc = "http://services.odata.org/Northwind/Northwind.svc";
     String contents = client.resource(northwindSvc + path).accept(accept).get(String.class);
-    String filePath = "src/test/resources" + RESOURCES_ROOT + format+ "/" + fileName + "." + format;
+    String filePath = "src/test/resources" + RESOURCES_ROOT + format + "/" + fileName + "." + format;
     writeStringToFile(filePath, contents);
   }
-  
+
   public static void fillDatabase(EntityManagerFactory emf) {
     try {
       Class.forName("org.hsqldb.jdbcDriver");
@@ -102,7 +102,7 @@ public class NorthwindTestUtils {
 
       br.close();
       statement.close();
-      
+
     } catch (Exception ex) {
       Logger.getLogger(NorthwindTestUtils.class.getName()).log(
           Level.SEVERE,
@@ -131,14 +131,15 @@ public class NorthwindTestUtils {
     } catch (Exception e) {
       throw new RuntimeException(e);
     } finally {
-      if (out != null ) {
+      if (out != null) {
         try {
           out.close();
-        } catch (IOException e) { }
+        } catch (IOException e) {}
       }
     }
-   
+
   }
+
   public static String readFileToString(String fileName) {
     return readFileToString(fileName, Charset.defaultCharset().name());
   }
@@ -248,7 +249,7 @@ public class NorthwindTestUtils {
         "http://localhost:8810/northwind",
         "http://services.odata.org/northwind");
     result = result.replace("OrderDetails", "Order_Details");
-    
+
     String expect =
         NorthwindTestUtils.readFileToString(
             RESOURCES_ROOT
@@ -259,7 +260,7 @@ public class NorthwindTestUtils {
     expect = expect.replace("http://services.odata.org/Northwind", "http://services.odata.org/northwind");
 
     //System.out.println("result: " + result);
-    
+
     try {
       DocumentBuilderFactory factory = DocumentBuilderFactory
           .newInstance();
@@ -478,7 +479,7 @@ public class NorthwindTestUtils {
                 .getNamedItem("rel")).getNodeValue())
             && "href".equals(attr.getName())) {
           resultValue = expectedValue; // we are using a different
-                         // $skiptoken mechanism
+          // $skiptoken mechanism
         }
 
         Assert.assertEquals(expectedValue, resultValue);
@@ -614,7 +615,7 @@ public class NorthwindTestUtils {
     // replace braces for ignore fields sort/order in json
     text = text.replace("}", "");
     text = text.replace("]", "");
-    
+
     return text;
   }
 }

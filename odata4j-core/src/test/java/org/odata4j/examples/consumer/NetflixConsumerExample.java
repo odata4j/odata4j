@@ -10,25 +10,23 @@ import org.odata4j.examples.ODataEndpoints;
 
 public class NetflixConsumerExample extends BaseExample {
 
-    public static void main(String... args) {
+  public static void main(String... args) {
 
-        ODataConsumer c = ODataConsumer.create(ODataEndpoints.NETFLIX);
+    ODataConsumer c = ODataConsumer.create(ODataEndpoints.NETFLIX);
 
-        // locate the netflix id for Morgan Spurlock
-        int morganSpurlockId = c.getEntities("People").filter("substringof('Spurlock',Name)").execute().first().getProperty("Id", Integer.class).getValue();
+    // locate the netflix id for Morgan Spurlock
+    int morganSpurlockId = c.getEntities("People").filter("substringof('Spurlock',Name)").execute().first().getProperty("Id", Integer.class).getValue();
 
-        // lookup and print all titles he's acted in
-        List<OEntity> titlesActedIn = c.getEntities("People").nav(morganSpurlockId, "TitlesActedIn").execute().toList();
-        for(OEntity title : titlesActedIn) {
-            for(OProperty<?> p : title.getProperties()) {
-                report("%s: %s", p.getName(), p.getValue());
-            }
-            report("\n");
-        }
-        report("count: " + titlesActedIn.size());
-
+    // lookup and print all titles he's acted in
+    List<OEntity> titlesActedIn = c.getEntities("People").nav(morganSpurlockId, "TitlesActedIn").execute().toList();
+    for (OEntity title : titlesActedIn) {
+      for (OProperty<?> p : title.getProperties()) {
+        report("%s: %s", p.getName(), p.getValue());
+      }
+      report("\n");
     }
+    report("count: " + titlesActedIn.size());
 
-
+  }
 
 }

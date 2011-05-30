@@ -6,36 +6,36 @@ import javax.persistence.Id;
 
 @Entity
 public class Airport {
-	@Id
-    @Basic(optional = false)
-	private String code;
-	
-	private String name;
+  @Id
+  @Basic(optional = false)
+  private String code;
 
-	private String country;
+  private String name;
 
-	public String getCode() {
-		return code;
-	}
+  private String country;
 
-	public void setCode(String code) {
-		this.code = code;
-	}
+  public String getCode() {
+    return code;
+  }
 
-	public String getName() {
-		return name;
-	}
+  public void setCode(String code) {
+    this.code = code;
+  }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public String getCountry() {
-		return country;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	public void setCountry(String country) {
-		this.country = country;
-	}
+  public String getCountry() {
+    return country;
+  }
+
+  public void setCountry(String country) {
+    this.country = country;
+  }
 
 }

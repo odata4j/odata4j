@@ -11,33 +11,33 @@ import com.sun.net.httpserver.HttpExchange;
 
 public class WhitelistFilter extends Filter {
 
-    private static final Logger log = Logger.getLogger(WhitelistFilter.class.getName());
+  private static final Logger log = Logger.getLogger(WhitelistFilter.class.getName());
 
-    private final Set<String> whitelist;
+  private final Set<String> whitelist;
 
-    public WhitelistFilter(String... allowedAddresses) {
-        whitelist = Enumerable.create(allowedAddresses).toSet();
+  public WhitelistFilter(String... allowedAddresses) {
+    whitelist = Enumerable.create(allowedAddresses).toSet();
+  }
+
+  @Override
+  public String description() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void doFilter(HttpExchange exchange, Chain chain) throws IOException {
+
+    String ipaddr = exchange.getRemoteAddress().getAddress().getHostAddress();
+    String path = exchange.getRequestURI().getPath();
+
+    if (whitelist.contains(ipaddr)) {
+      log.info("allow " + ipaddr + " for" + path);
+      chain.doFilter(exchange);
+    } else {
+      log.info("DENY " + ipaddr + " for " + path);
+      exchange.close();
     }
 
-    @Override
-    public String description() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void doFilter(HttpExchange exchange, Chain chain) throws IOException {
-
-        String ipaddr = exchange.getRemoteAddress().getAddress().getHostAddress();
-        String path = exchange.getRequestURI().getPath();
-
-        if (whitelist.contains(ipaddr)) {
-            log.info("allow " + ipaddr + " for" + path);
-            chain.doFilter(exchange);
-        } else {
-            log.info("DENY " + ipaddr + " for " + path);
-            exchange.close();
-        }
-
-    }
+  }
 
 }

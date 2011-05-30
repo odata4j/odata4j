@@ -8,47 +8,42 @@ import javax.persistence.*;
 @Entity
 @Table(name = "School")
 public class School implements Serializable {
-	private static final long serialVersionUID = 1L;
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Basic(optional = false)
-	@Column(name = "SchoolID")
-	private Integer SchoolID;
-	
-	@OneToMany	 
-    private java.util.Collection<Student> students = new HashSet<Student>();
-	
-	@Basic(optional = false)
-	@Column(name = "SchoolName")
-	private String SchoolName;
+  private static final long serialVersionUID = 1L;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Basic(optional = false)
+  @Column(name = "SchoolID")
+  private Integer SchoolID;
 
-	public Integer getSchoolID() {
-		return SchoolID;
-	}
+  @OneToMany
+  private java.util.Collection<Student> students = new HashSet<Student>();
 
-	public void setSchoolID(Integer schoolID) {
-		SchoolID = schoolID;
-	}
+  @Basic(optional = false)
+  @Column(name = "SchoolName")
+  private String SchoolName;
 
-	public java.util.Collection<Student> getStudents() {
-		return students;
-	}
+  public Integer getSchoolID() {
+    return SchoolID;
+  }
 
-	public void setStudents(java.util.Collection<Student> students) {
-		this.students = students;
-	}
+  public void setSchoolID(Integer schoolID) {
+    SchoolID = schoolID;
+  }
 
-	public String getSchoolName() {
-		return SchoolName;
-	}
+  public java.util.Collection<Student> getStudents() {
+    return students;
+  }
 
-	public void setSchoolName(String schoolName) {
-		SchoolName = schoolName;
-	}
+  public void setStudents(java.util.Collection<Student> students) {
+    this.students = students;
+  }
 
-	
+  public String getSchoolName() {
+    return SchoolName;
+  }
 
-		
+  public void setSchoolName(String schoolName) {
+    SchoolName = schoolName;
+  }
 
-	
 }

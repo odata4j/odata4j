@@ -17,40 +17,37 @@ import org.odata4j.core.OEntityKey;
 
 public class Issue13 {
 
-    @Test
-    public void issue13(){
-        
-        String endpointUri = "http://localhost:8813/Issue13.svc/";
-        
-        final OEntityKey[] lastEntityKey = new OEntityKey[1];
-        InMemoryProducer producer = new InMemoryProducer("Issue13"){
-            @Override
-            public EntityResponse getEntity(String entitySetName, OEntityKey entityKey,QueryInfo queryInfo) {
-                lastEntityKey[0] = entityKey;
-                return super.getEntity(entitySetName, entityKey, queryInfo);
-            }
-        };
-        producer.register(Long.class, Long.class,"Entity" , new Func<Iterable<Long>>(){
-            public Iterable<Long> apply() {
-                 return Enumerable.create(1L,2L,3L);
-            }},Funcs.identity(Long.class));
-        
-        
-        ODataProducerProvider.setInstance(producer);
-        JerseyServer server = ProducerUtil.startODataServer(endpointUri);
-        
-        ODataConsumer c = ODataConsumer.create(endpointUri);
-        
-        
-        lastEntityKey[0] = null;
-        Assert.assertNotNull( c.getEntity("Entity", 2L).execute());
-        Assert.assertNotNull(lastEntityKey[0]);
-        Assert.assertEquals(OEntityKey.create(2L), lastEntityKey[0]);
-       
-        server.stop();
-        
-    }
-    
-   
-    
+  @Test
+  public void issue13() {
+
+    String endpointUri = "http://localhost:8813/Issue13.svc/";
+
+    final OEntityKey[] lastEntityKey = new OEntityKey[1];
+    InMemoryProducer producer = new InMemoryProducer("Issue13") {
+      @Override
+      public EntityResponse getEntity(String entitySetName, OEntityKey entityKey, QueryInfo queryInfo) {
+        lastEntityKey[0] = entityKey;
+        return super.getEntity(entitySetName, entityKey, queryInfo);
+      }
+    };
+    producer.register(Long.class, Long.class, "Entity", new Func<Iterable<Long>>() {
+      public Iterable<Long> apply() {
+        return Enumerable.create(1L, 2L, 3L);
+      }
+    }, Funcs.identity(Long.class));
+
+    ODataProducerProvider.setInstance(producer);
+    JerseyServer server = ProducerUtil.startODataServer(endpointUri);
+
+    ODataConsumer c = ODataConsumer.create(endpointUri);
+
+    lastEntityKey[0] = null;
+    Assert.assertNotNull(c.getEntity("Entity", 2L).execute());
+    Assert.assertNotNull(lastEntityKey[0]);
+    Assert.assertEquals(OEntityKey.create(2L), lastEntityKey[0]);
+
+    server.stop();
+
+  }
+
 }

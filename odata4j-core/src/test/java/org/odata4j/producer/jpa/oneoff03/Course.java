@@ -15,44 +15,42 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "Course")
 public class Course implements Serializable {
-	private static final long serialVersionUID = 1L;
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Basic(optional = false)
-	@Column(name = "CourseID")
-	private Integer CourseID;
-	
+  private static final long serialVersionUID = 1L;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Basic(optional = false)
+  @Column(name = "CourseID")
+  private Integer CourseID;
 
-	@Basic(optional = false)
-	@Column(name = "CourseName")
-	private String CourseName;
-	
-	@ManyToMany(targetEntity=Student.class, mappedBy="courses")
-	private java.util.Collection<Student> students= new ArrayList<Student>();
-	
-	public java.util.Collection<Student> getStudents() {
-		return students;
-	}
+  @Basic(optional = false)
+  @Column(name = "CourseName")
+  private String CourseName;
 
-	public void setStudents(java.util.Collection<Student> students) {
-		this.students = students;
-	}
+  @ManyToMany(targetEntity = Student.class, mappedBy = "courses")
+  private java.util.Collection<Student> students = new ArrayList<Student>();
 
-	public String getCourseName() {
-		return CourseName;
-	}
+  public java.util.Collection<Student> getStudents() {
+    return students;
+  }
 
-	public void setCourseName(String courseName) {
-		CourseName = courseName;
-	}
+  public void setStudents(java.util.Collection<Student> students) {
+    this.students = students;
+  }
 
-	public Integer getCourseID() {
-		return CourseID;
-	}
+  public String getCourseName() {
+    return CourseName;
+  }
 
-	public void setCourseID(Integer courseID) {
-		CourseID = courseID;
-	}
+  public void setCourseName(String courseName) {
+    CourseName = courseName;
+  }
 
-	
+  public Integer getCourseID() {
+    return CourseID;
+  }
+
+  public void setCourseID(Integer courseID) {
+    CourseID = courseID;
+  }
+
 }

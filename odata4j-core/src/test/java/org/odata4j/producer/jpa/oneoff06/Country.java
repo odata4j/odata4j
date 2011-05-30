@@ -13,32 +13,32 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "Country")
 public class Country implements Serializable {
-	private static final long serialVersionUID = 1L;
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Basic(optional = false)
-	@Column(name = "ID")
-	private Integer id;
-	
-	@Basic(optional = false)
-	@Column(name = "NAME")
-	private String name;
+  private static final long serialVersionUID = 1L;
 
-	public Integer getId() {
-		return id;
-	}
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Basic(optional = false)
+  @Column(name = "ID")
+  private Integer id;
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+  @Basic(optional = false)
+  @Column(name = "NAME")
+  private String name;
 
-	public String getName() {
-		return name;
-	}
+  public Integer getId() {
+    return id;
+  }
 
-	public void setName(String name) {
-		this.name = name;
-	}
-	
+  public void setId(Integer id) {
+    this.id = id;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
 }

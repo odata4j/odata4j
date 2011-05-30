@@ -11,34 +11,34 @@ import javax.persistence.OneToOne;
 
 @Entity
 public class Flight {
-	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-	private Long flightID;
-	
-    @OneToOne
-    private FlightSchedule flightSchedule;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Basic(optional = false)
+  private Long flightID;
 
-	private Timestamp takeoffTime;
+  @OneToOne
+  private FlightSchedule flightSchedule;
 
-	public FlightSchedule getFlightSchedule() {
-		return flightSchedule;
-	}
+  private Timestamp takeoffTime;
 
-	public void setFlightSchedule(FlightSchedule flightSchedule) {
-		this.flightSchedule = flightSchedule;
-	}
+  public FlightSchedule getFlightSchedule() {
+    return flightSchedule;
+  }
 
-	public Timestamp getTakeoffTime() {
-		return takeoffTime;
-	}
+  public void setFlightSchedule(FlightSchedule flightSchedule) {
+    this.flightSchedule = flightSchedule;
+  }
 
-	public void setTakeoffTime(Timestamp takeoffTime) {
-		this.takeoffTime = takeoffTime;
-	}
+  public Timestamp getTakeoffTime() {
+    return takeoffTime;
+  }
 
-	public Long getFlightID() {
-		return flightID;
-	}
-	
+  public void setTakeoffTime(Timestamp takeoffTime) {
+    this.takeoffTime = takeoffTime;
+  }
+
+  public Long getFlightID() {
+    return flightID;
+  }
+
 }

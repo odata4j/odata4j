@@ -17,108 +17,108 @@ import javax.persistence.TemporalType;
 
 @Entity
 public class FlightSchedule {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-	private Long flightScheduleID;
-	
-    @Column(nullable=false)
-	private String flightNo;
-	
-	@Temporal(TemporalType.TIME)
-    @Column(nullable=false, length=8)
-    private Date departureTime;
-	
-	@OneToOne
-	@JoinColumn(name = "DEPARTUREAIRPORT_CODE")
-	private Airport departureAirport;
-	
-	@Column(name = "DEPARTUREAIRPORT_CODE", insertable = false, updatable = false)
-	private String departureAirportCode;
-	
-    @Column(nullable=false)
-    private Time arrivalTime;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Basic(optional = false)
+  private Long flightScheduleID;
 
-    @OneToOne
-	@JoinColumn(name = "ARRIVALAIRPORT_CODE")
-	private Airport arrivalAirport;
-    
-	@Column(name = "ARRIVALAIRPORT_CODE", insertable = false, updatable = false)
-    private String arrivalAirportCode;
+  @Column(nullable = false)
+  private String flightNo;
 
-	@Temporal(TemporalType.TIMESTAMP)
-    @Column(nullable=false)
-	private Calendar firstDeparture;
+  @Temporal(TemporalType.TIME)
+  @Column(nullable = false, length = 8)
+  private Date departureTime;
 
-	@Temporal(TemporalType.DATE)
-	private Date lastDeparture;
+  @OneToOne
+  @JoinColumn(name = "DEPARTUREAIRPORT_CODE")
+  private Airport departureAirport;
 
-	public String getFlightNo() {
-		return flightNo;
-	}
+  @Column(name = "DEPARTUREAIRPORT_CODE", insertable = false, updatable = false)
+  private String departureAirportCode;
 
-	public void setFlightNo(String flightNo) {
-		this.flightNo = flightNo;
-	}
+  @Column(nullable = false)
+  private Time arrivalTime;
 
-	public Date getDepartureTime() {
-		return departureTime;
-	}
+  @OneToOne
+  @JoinColumn(name = "ARRIVALAIRPORT_CODE")
+  private Airport arrivalAirport;
 
-	public void setDepartureTime(Date departureTime) {
-		this.departureTime = departureTime;
-	}
+  @Column(name = "ARRIVALAIRPORT_CODE", insertable = false, updatable = false)
+  private String arrivalAirportCode;
 
-	public Airport getDepartureAirport() {
-		return departureAirport;
-	}
+  @Temporal(TemporalType.TIMESTAMP)
+  @Column(nullable = false)
+  private Calendar firstDeparture;
 
-	public void setDepartureAirport(Airport departureAirport) {
-		this.departureAirport = departureAirport;
-	}
+  @Temporal(TemporalType.DATE)
+  private Date lastDeparture;
 
-	public String getDepartureAirportCode() {
-		return departureAirportCode;
-	}
+  public String getFlightNo() {
+    return flightNo;
+  }
 
-	public Time getArrivalTime() {
-		return arrivalTime;
-	}
+  public void setFlightNo(String flightNo) {
+    this.flightNo = flightNo;
+  }
 
-	public void setArrivalTime(Time arrivalTime) {
-		this.arrivalTime = arrivalTime;
-	}
+  public Date getDepartureTime() {
+    return departureTime;
+  }
 
-	public Airport getArrivalAirport() {
-		return arrivalAirport;
-	}
+  public void setDepartureTime(Date departureTime) {
+    this.departureTime = departureTime;
+  }
 
-	public void setArrivalAirport(Airport arrivalAirport) {
-		this.arrivalAirport = arrivalAirport;
-	}
+  public Airport getDepartureAirport() {
+    return departureAirport;
+  }
 
-	public String getArrivalAirportCode() {
-		return arrivalAirportCode;
-	}
+  public void setDepartureAirport(Airport departureAirport) {
+    this.departureAirport = departureAirport;
+  }
 
-	public Calendar getFirstDeparture() {
-		return firstDeparture;
-	}
+  public String getDepartureAirportCode() {
+    return departureAirportCode;
+  }
 
-	public void setFirstDeparture(Calendar firstDeparture) {
-		this.firstDeparture = firstDeparture;
-	}
+  public Time getArrivalTime() {
+    return arrivalTime;
+  }
 
-	public Date getLastDeparture() {
-		return lastDeparture;
-	}
+  public void setArrivalTime(Time arrivalTime) {
+    this.arrivalTime = arrivalTime;
+  }
 
-	public void setLastDeparture(Date lastDeparture) {
-		this.lastDeparture = lastDeparture;
-	}
+  public Airport getArrivalAirport() {
+    return arrivalAirport;
+  }
 
-	public Long getFlightScheduleID() {
-		return flightScheduleID;
-	}
+  public void setArrivalAirport(Airport arrivalAirport) {
+    this.arrivalAirport = arrivalAirport;
+  }
+
+  public String getArrivalAirportCode() {
+    return arrivalAirportCode;
+  }
+
+  public Calendar getFirstDeparture() {
+    return firstDeparture;
+  }
+
+  public void setFirstDeparture(Calendar firstDeparture) {
+    this.firstDeparture = firstDeparture;
+  }
+
+  public Date getLastDeparture() {
+    return lastDeparture;
+  }
+
+  public void setLastDeparture(Date lastDeparture) {
+    this.lastDeparture = lastDeparture;
+  }
+
+  public Long getFlightScheduleID() {
+    return flightScheduleID;
+  }
 
 }

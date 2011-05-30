@@ -17,46 +17,43 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "Student")
 public class Student implements Serializable {
-	private static final long serialVersionUID = 1L;
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Basic(optional = false)
-	@Column(name = "StudentID")
-	private Integer StudentID;
+  private static final long serialVersionUID = 1L;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Basic(optional = false)
+  @Column(name = "StudentID")
+  private Integer StudentID;
 
+  @Basic(optional = false)
+  @Column(name = "StudentName")
+  private String StudentName;
 
-	@Basic(optional = false)
-	@Column(name = "StudentName")
-	private String StudentName;
-		
-	@ManyToMany(targetEntity=Course.class, cascade=CascadeType.ALL)
-	@JoinTable(name="Student_Course",joinColumns = @JoinColumn(name="StudentID"), inverseJoinColumns = @JoinColumn(name = "CourseID")) 
-    private java.util.Collection<Course> courses;
-	
-	public Integer getStudentID() {
-		return StudentID;
-	}
+  @ManyToMany(targetEntity = Course.class, cascade = CascadeType.ALL)
+  @JoinTable(name = "Student_Course", joinColumns = @JoinColumn(name = "StudentID"), inverseJoinColumns = @JoinColumn(name = "CourseID"))
+  private java.util.Collection<Course> courses;
 
-	public void setStudentID(Integer studentID) {
-		StudentID = studentID;
-	}
+  public Integer getStudentID() {
+    return StudentID;
+  }
 
-	
-	public String getStudentName() {
-		return StudentName;
-	}
+  public void setStudentID(Integer studentID) {
+    StudentID = studentID;
+  }
 
-	public void setStudentName(String studentName) {
-		StudentName = studentName;
-	}
+  public String getStudentName() {
+    return StudentName;
+  }
 
-	public java.util.Collection<Course> getCourses() {
-		return courses;
-	}
+  public void setStudentName(String studentName) {
+    StudentName = studentName;
+  }
 
-	public void setCourses(java.util.Collection<Course> courses) {
-		this.courses = courses;
-	}
+  public java.util.Collection<Course> getCourses() {
+    return courses;
+  }
 
-	
+  public void setCourses(java.util.Collection<Course> courses) {
+    this.courses = courses;
+  }
+
 }

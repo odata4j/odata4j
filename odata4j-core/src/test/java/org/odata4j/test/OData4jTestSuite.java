@@ -31,60 +31,58 @@ import org.odata4j.test.issues.Issue13;
 import org.odata4j.test.issues.Issue15;
 import org.odata4j.test.issues.Issue16;
 
-
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-	ExpressionTest.class,
-	JsonTest.class,
-	PojoTest.class,
-	ScenarioTest.class,
-	TypeConverterTest.class,
-	Issue10.class,
-	Issue13.class,
-	Issue15.class,
-	Issue16.class,
-	ResourcePathTest.class,
-	QueryOptionTest.class,
-	QueryOptionTest50.class,
-	QueryOptionAtomTest.class,
-	QueryOptionAtomTest50.class,
-	DateTimeFormatTest.class,
-	CreateTest.class,
-	UpdateTest.class,
-	DeleteTest.class,
-	EdmTimeTemporalTest.class,
-	EdmDateTimeTemporalTest.class,
-	CreateWithLinkTest.class,
-	CreateWithLink2Test.class,
-	OEntityKeyTest.class,
-	CompositeKeyEntityTest.class,
-	Oneoff01_Unidirectional.class,
-	Oneoff02_ManyToManyWithoutMappedName.class,
-	Oneoff03_ManyToMany.class,
-	AtomFeedFormatParserTest.class
-})
-
+    ExpressionTest.class,
+    JsonTest.class,
+    PojoTest.class,
+    ScenarioTest.class,
+    TypeConverterTest.class,
+    Issue10.class,
+    Issue13.class,
+    Issue15.class,
+    Issue16.class,
+    ResourcePathTest.class,
+    QueryOptionTest.class,
+    QueryOptionTest50.class,
+    QueryOptionAtomTest.class,
+    QueryOptionAtomTest50.class,
+    DateTimeFormatTest.class,
+    CreateTest.class,
+    UpdateTest.class,
+    DeleteTest.class,
+    EdmTimeTemporalTest.class,
+    EdmDateTimeTemporalTest.class,
+    CreateWithLinkTest.class,
+    CreateWithLink2Test.class,
+    OEntityKeyTest.class,
+    CompositeKeyEntityTest.class,
+    Oneoff01_Unidirectional.class,
+    Oneoff02_ManyToManyWithoutMappedName.class,
+    Oneoff03_ManyToMany.class,
+    AtomFeedFormatParserTest.class })
 public class OData4jTestSuite {
 
-	public static enum JPAProvider{
-		ECLIPSELINK("EclipseLink"),
-		HIBERNATE("Hibernate");
-		
-		public final String caption;
-		JPAProvider(String caption){
-			this.caption = caption;
-		}
-	}
-	
-	public static final JPAProvider JPA_PROVIDER;
+  public static enum JPAProvider {
+    ECLIPSELINK("EclipseLink"),
+    HIBERNATE("Hibernate");
 
-	static{
-		String prop = System.getProperty("jpa");
-		if (JPAProvider.ECLIPSELINK.caption.equalsIgnoreCase(prop))
-			JPA_PROVIDER = JPAProvider.ECLIPSELINK;
-		else if (JPAProvider.HIBERNATE.caption.equalsIgnoreCase(prop))
-			JPA_PROVIDER = JPAProvider.HIBERNATE;
-		else 
-			JPA_PROVIDER = JPAProvider.ECLIPSELINK;
-	}
+    public final String caption;
+
+    JPAProvider(String caption) {
+      this.caption = caption;
+    }
+  }
+
+  public static final JPAProvider JPA_PROVIDER;
+
+  static {
+    String prop = System.getProperty("jpa");
+    if (JPAProvider.ECLIPSELINK.caption.equalsIgnoreCase(prop))
+      JPA_PROVIDER = JPAProvider.ECLIPSELINK;
+    else if (JPAProvider.HIBERNATE.caption.equalsIgnoreCase(prop))
+      JPA_PROVIDER = JPAProvider.HIBERNATE;
+    else
+      JPA_PROVIDER = JPAProvider.ECLIPSELINK;
+  }
 }
