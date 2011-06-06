@@ -161,7 +161,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
 
       if (isResponse) {
         if (ees != null) {
-          for (final EdmNavigationProperty np : ees.type.navigationProperties) {
+          for (final EdmNavigationProperty np : ees.type.getAllNavigationProperties()) {
             if (!np.selected) {
               continue;
             }

@@ -97,12 +97,12 @@ public class BaseExample {
           ets = ets + " HasStream=" + et.hasStream;
         report(ets);
 
-        for (String key : et.keys) {
+        for (String key : et.getKeys()) {
           report("    Key PropertyRef Name=%s", key);
         }
 
-        reportProperties(et.properties);
-        for (EdmNavigationProperty np : et.navigationProperties) {
+        reportProperties(et.getScopedProperties());
+        for (EdmNavigationProperty np : et.getScopedNavigationProperties()) {
           report("    NavigationProperty Name=%s Relationship=%s FromRole=%s ToRole=%s",
               np.name, np.relationship.getFQNamespaceName(), np.fromRole.role, np.toRole.role);
         }

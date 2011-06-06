@@ -209,7 +209,7 @@ public class XmlFormatWriter {
 
     if (isResponse) {
       // for responses we need to include all links whether inlined or not
-      for (EdmNavigationProperty np : ees.type.navigationProperties) {
+      for (EdmNavigationProperty np : ees.type.getAllNavigationProperties()) {
         if (!np.selected) {
           continue;
         }

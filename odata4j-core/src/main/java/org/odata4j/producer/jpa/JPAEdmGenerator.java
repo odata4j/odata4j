@@ -218,7 +218,7 @@ public class JPAEdmGenerator {
                 association,
                 association.end1,
                 association.end2);
-            fromEntityType.navigationProperties.add(navigationProperty);
+            fromEntityType.addNavigationProperty(navigationProperty);
           }
         }
       }
@@ -275,7 +275,7 @@ public class JPAEdmGenerator {
                             association,
                             fromRole,
                             toRole);
-            fromEntityType.navigationProperties.add(navigationProperty);
+            fromEntityType.addNavigationProperty(navigationProperty);
 
           } catch (Exception e) {
             log.log(Level.WARNING, "Exception building Edm associations: " + e.getMessage(), e);

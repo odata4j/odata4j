@@ -55,18 +55,23 @@ public class EdmxFormatWriter extends XmlFormatWriter {
 
         writer.writeAttribute("Name", eet.name);
 
-        writer.startElement(new QName2("Key"));
-        for (String key : eet.keys) {
-          writer.startElement(new QName2("PropertyRef"));
-          writer.writeAttribute("Name", key);
-          writer.endElement("PropertyRef");
+        // keys only on base types
+        if (eet.isRootType()) {
+          writer.startElement(new QName2("Key"));
+          for (String key : eet.getKeys()) {
+              writer.startElement(new QName2("PropertyRef"));
+              writer.writeAttribute("Name", key);
+              writer.endElement("PropertyRef");
+          }
+
+          writer.endElement("Key");
+        } else {
+            writer.writeAttribute("BaseType", eet.getBaseType().getFQNamespaceName());
         }
 
-        writer.endElement("Key");
+        write(eet.getScopedProperties(), writer);
 
-        write(eet.properties, writer);
-
-        for (EdmNavigationProperty np : eet.navigationProperties) {
+        for (EdmNavigationProperty np : eet.getScopedNavigationProperties()) {
 
           writer.startElement(new QName2("NavigationProperty"));
           writer.writeAttribute("Name", np.name);

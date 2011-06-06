@@ -102,9 +102,9 @@ public class OEntityKey {
     EdmEntityType eet = entitySet.type;
     if (eet == null)
       throw new IllegalArgumentException("EdmEntityType cannot be null");
-    List<String> keys = eet.keys;
+    List<String> keys = eet.getKeys();
     if (keys.size() == 0) {
-      String idProp = Enumerable.create(eet.properties).select(OFuncs.edmPropertyName()).firstOrNull(OPredicates.equalsIgnoreCase("id"));
+      String idProp = Enumerable.create(eet.getAllProperties()).select(OFuncs.edmPropertyName()).firstOrNull(OPredicates.equalsIgnoreCase("id"));
       if (idProp != null)
         keys.add(idProp);
     }

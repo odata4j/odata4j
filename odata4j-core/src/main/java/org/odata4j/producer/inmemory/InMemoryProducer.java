@@ -276,7 +276,7 @@ public class InMemoryProducer implements ODataProducer {
       EdmNavigationProperty np = new EdmNavigationProperty(assocProp,
               assoc, assoc.end1, assoc.end2);
 
-      eet1.navigationProperties.add(np);
+      eet1.addNavigationProperty(np);
     }
   }
 
@@ -346,7 +346,7 @@ public class InMemoryProducer implements ODataProducer {
 
         EdmNavigationProperty np = new EdmNavigationProperty(assocProp, assoc, fromRole, toRole);
 
-        eet1.navigationProperties.add(np);
+        eet1.addNavigationProperty(np);
       } catch (Exception e) {
         log.log(Level.WARNING, "Exception building Edm associations: " + e.getMessage(), e);
       }

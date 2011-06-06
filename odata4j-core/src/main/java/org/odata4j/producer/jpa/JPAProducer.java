@@ -246,7 +246,7 @@ public class JPAProducer implements ODataProducer {
           idAtt.getPersistentAttributeType() == PersistentAttributeType.EMBEDDED;
 
       // get properties
-      for (EdmProperty ep : ees.type.properties) {
+      for (EdmProperty ep : ees.type.getAllProperties()) {
 
         if (!isSelected(ep.name, select)) {
           continue;
@@ -254,7 +254,7 @@ public class JPAProducer implements ODataProducer {
 
         // we have a embedded composite key and we want a property from
         // that key
-        if (hasEmbeddedCompositeKey && ees.type.keys.contains(ep.name)) {
+        if (hasEmbeddedCompositeKey && ees.type.getKeys().contains(ep.name)) {
           Object value = getIdValue(jpaEntity, idAtt, ep.name);
 
           properties.add(OProperties.simple(
@@ -277,7 +277,7 @@ public class JPAProducer implements ODataProducer {
         }
       }
 
-      for (final EdmNavigationProperty ep : ees.type.navigationProperties) {
+      for (final EdmNavigationProperty ep : ees.type.getAllNavigationProperties()) {
         ep.selected = isSelected(ep.name, select);
       }
 

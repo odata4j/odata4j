@@ -3,6 +3,7 @@ package org.odata4j.format.xml;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.core4j.Enumerable;
 import org.core4j.Func1;
@@ -101,8 +102,8 @@ public class EdmxFormatParser extends XmlFormatParser {
 
       // resolve navproperties
       for (EdmEntityType eet : edmSchema.entityTypes) {
-        for (int i = 0; i < eet.navigationProperties.size(); i++) {
-          final TempEdmNavigationProperty tmp = (TempEdmNavigationProperty) eet.navigationProperties.get(i);
+        for (int i = 0; i < eet.getScopedNavigationProperties().size(); i++) {
+          final TempEdmNavigationProperty tmp = (TempEdmNavigationProperty) eet.getScopedNavigationProperties().get(i);
           final EdmAssociation ea = allEasByFQName.get(tmp.relationshipName);
 
           List<EdmAssociationEnd> finalEnds = Enumerable.create(tmp.fromRoleName, tmp.toRoleName).select(new Func1<String, EdmAssociationEnd>() {
@@ -116,7 +117,7 @@ public class EdmxFormatParser extends XmlFormatParser {
           }).toList();
 
           EdmNavigationProperty enp = new EdmNavigationProperty(tmp.name, ea, finalEnds.get(0), finalEnds.get(1));
-          eet.navigationProperties.set(i, enp);
+          eet.getScopedNavigationProperties().set(i, enp);
         }
       }
 
@@ -174,6 +175,18 @@ public class EdmxFormatParser extends XmlFormatParser {
           EdmType type = EdmType.get(tmpEfi.returnTypeName);
 
           edmEntityContainer.functionImports.set(i, new EdmFunctionImport(tmpEfi.name, ees, type, tmpEfi.httpMethod, tmpEfi.parameters));
+        }
+      }
+
+      // resolve type hierarchy
+      for (Entry<String, EdmEntityType> entry : allEetsByFQName.entrySet()) {
+        String baseTypeName = entry.getValue().getFQBaseTypeName();
+        if (null != baseTypeName) {
+          EdmEntityType baseType = allEetsByFQName.get(baseTypeName);
+          if (null == baseType) {
+            throw new IllegalArgumentException("Invalid baseType: " + baseTypeName);
+          }
+          entry.getValue().setBaseType(baseType);
         }
       }
 
@@ -367,6 +380,7 @@ public class EdmxFormatParser extends XmlFormatParser {
     String name = entityTypeElement.getAttributeByName("Name").getValue();
     String hasStreamValue = getAttributeValueIfExists(entityTypeElement, new QName2(NS_METADATA, "HasStream"));
     Boolean hasStream = hasStreamValue == null ? null : hasStreamValue.equals("true");
+    String baseType = getAttributeValueIfExists(entityTypeElement, "BaseType");
 
     List<String> keys = new ArrayList<String>();
     List<EdmProperty> edmProperties = new ArrayList<EdmProperty>();
@@ -393,7 +407,7 @@ public class EdmxFormatParser extends XmlFormatParser {
       }
 
       if (isEndElement(event, entityTypeElement.getName())) {
-        return new EdmEntityType(schemaNamespace, schemaAlias, name, hasStream, keys, edmProperties, edmNavigationProperties);
+        return new EdmEntityType(schemaNamespace, schemaAlias, name, hasStream, keys, edmProperties, edmNavigationProperties, baseType);
       }
     }
 
