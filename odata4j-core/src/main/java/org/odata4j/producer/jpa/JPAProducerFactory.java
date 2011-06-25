@@ -28,7 +28,7 @@ public class JPAProducerFactory implements ODataProducerFactory {
 
     log.info(String.format("Using persistence unit [%s] with edm namespace [%s] and max results [%s]", persistenceUnitName, edmNamespace, maxResults));
 
-    EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceUnitName);
+    EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceUnitName, properties);
     JPAProducer producer = new JPAProducer(emf, edmNamespace, Integer.parseInt(maxResults));
     return producer;
   }
