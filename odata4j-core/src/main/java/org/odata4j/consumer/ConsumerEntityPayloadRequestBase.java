@@ -52,7 +52,7 @@ abstract class ConsumerEntityPayloadRequestBase {
 
   private <T> T link(T rt, String navProperty, EdmEntitySet targetEntitySet, OEntityKey targetKey) {
     EdmEntitySet entitySet = metadata.getEdmEntitySet(entitySetName);
-    EdmNavigationProperty navProp = entitySet.type.getNavigationProperty(navProperty);
+    EdmNavigationProperty navProp = entitySet.type.findNavigationProperty(navProperty);
     if (navProp == null)
       throw new IllegalArgumentException("unknown navigation property " + navProperty);
 

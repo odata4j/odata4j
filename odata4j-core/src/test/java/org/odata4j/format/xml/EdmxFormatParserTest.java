@@ -1,44 +1,23 @@
-/*
- *  Copyright 2011 rozan04.
- * 
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- * 
- *       http://www.apache.org/licenses/LICENSE-2.0
- * 
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- *  under the License.
- */
-
 package org.odata4j.format.xml;
 
-import java.io.StringReader;
-import java.io.StringWriter;
-import org.odata4j.edm.EdmEntityType;
-import org.odata4j.edm.EdmEntitySet;
-import java.io.InputStreamReader;
-import java.io.InputStream;
-import org.odata4j.edm.EdmDataServices;
-import org.odata4j.stax2.XMLEventReader2;
+import static org.junit.Assert.assertTrue;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import org.odata4j.internal.InternalUtil;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.io.StringWriter;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import org.odata4j.edm.EdmDataServices;
+import org.odata4j.edm.EdmEntityType;
+import org.odata4j.internal.InternalUtil;
+import org.odata4j.stax2.XMLEventReader2;
 
-/**
- *
- * @author rozan04
- */
 public class EdmxFormatParserTest {
 
     public EdmxFormatParserTest() {
@@ -89,61 +68,61 @@ public class EdmxFormatParserTest {
       EdmEntityType badAirport = d.findEdmEntitySet("BadAirport").type;
       assertTrue(badAirport.getBaseType().equals(airport));
       assertTrue(badAirport.getKeys().equals(airport.getKeys()));
-      assertTrue(badAirport.getScopedNavigationProperties().isEmpty());
-      assertTrue(badAirport.getAllNavigationProperties().count() == airport.getScopedNavigationProperties().size() +
-          badAirport.getScopedNavigationProperties().size());
-      assertTrue(badAirport.getScopedProperties().size() == 2);
-      assertTrue(badAirport.getScopedProperty("rating") != null);
-      assertTrue(badAirport.getScopedProperty("prop2") != null);
-      assertTrue(badAirport.getAllProperties().count() == airport.getScopedProperties().size() +
-          badAirport.getScopedProperties().size());
-      assertTrue(badAirport.getProperty("name") != null);
-      assertTrue(badAirport.getProperty("code") != null);
-      assertTrue(badAirport.getProperty("country") != null);
-      assertTrue(badAirport.getProperty("rating") != null);
-      assertTrue(badAirport.getProperty("prop2") != null);
+      assertTrue(badAirport.getDeclaredNavigationProperties().count() == 0);
+      assertTrue(badAirport.getNavigationProperties().count() == airport.getDeclaredNavigationProperties().count() +
+          badAirport.getDeclaredNavigationProperties().count());
+      assertTrue(badAirport.getDeclaredProperties().count() == 2);
+      assertTrue(badAirport.findDeclaredProperty("rating") != null);
+      assertTrue(badAirport.findDeclaredProperty("prop2") != null);
+      assertTrue(badAirport.getProperties().count() == airport.getDeclaredProperties().count() +
+          badAirport.getDeclaredProperties().count());
+      assertTrue(badAirport.findProperty("name") != null);
+      assertTrue(badAirport.findProperty("code") != null);
+      assertTrue(badAirport.findProperty("country") != null);
+      assertTrue(badAirport.findProperty("rating") != null);
+      assertTrue(badAirport.findProperty("prop2") != null);
 
       EdmEntityType schedule = d.findEdmEntitySet("FlightSchedule").type;
       EdmEntityType subSchedule = d.findEdmEntitySet("SubFlightSchedule").type;
       assertTrue(subSchedule.getBaseType().equals(schedule));
       assertTrue(subSchedule.getKeys().equals(schedule.getKeys()));
-      assertTrue(subSchedule.getScopedNavigationProperties().isEmpty());
-      assertTrue(subSchedule.getAllNavigationProperties().count() == 2);
-      assertTrue(subSchedule.getAllNavigationProperties().count() == schedule.getScopedNavigationProperties().size() +
-          subSchedule.getScopedNavigationProperties().size());
+      assertTrue(subSchedule.getDeclaredNavigationProperties().count() == 0);
+      assertTrue(subSchedule.getNavigationProperties().count() == 2);
+      assertTrue(subSchedule.getNavigationProperties().count() == schedule.getDeclaredNavigationProperties().count() +
+          subSchedule.getDeclaredNavigationProperties().count());
 
-      assertTrue(subSchedule.getScopedProperties().size() == 3);
-      assertTrue(subSchedule.getScopedProperty("prop3") != null);
-      assertTrue(subSchedule.getScopedProperty("prop4") != null);
-      assertTrue(subSchedule.getScopedProperty("prop5") != null);
-      assertTrue(subSchedule.getAllProperties().count() == schedule.getScopedProperties().size() +
-          subSchedule.getScopedProperties().size());
-      assertTrue(subSchedule.getProperty("arrivalAirportCode") != null);
-      assertTrue(subSchedule.getProperty("flightScheduleID") != null);
-      assertTrue(subSchedule.getProperty("arrivalTime") != null);
-      assertTrue(subSchedule.getProperty("flightNo") != null);
-      assertTrue(subSchedule.getProperty("firstDeparture") != null);
-      assertTrue(subSchedule.getProperty("departureTime") != null);
-      assertTrue(subSchedule.getProperty("departureAirportCode") != null);
-      assertTrue(subSchedule.getProperty("lastDeparture") != null);
-      assertTrue(subSchedule.getProperty("prop3") != null);
-      assertTrue(subSchedule.getProperty("prop4") != null);
-      assertTrue(subSchedule.getProperty("prop5") != null);
+      assertTrue(subSchedule.getDeclaredProperties().count() == 3);
+      assertTrue(subSchedule.findDeclaredProperty("prop3") != null);
+      assertTrue(subSchedule.findDeclaredProperty("prop4") != null);
+      assertTrue(subSchedule.findDeclaredProperty("prop5") != null);
+      assertTrue(subSchedule.getProperties().count() == schedule.getDeclaredProperties().count() +
+          subSchedule.getDeclaredProperties().count());
+      assertTrue(subSchedule.findProperty("arrivalAirportCode") != null);
+      assertTrue(subSchedule.findProperty("flightScheduleID") != null);
+      assertTrue(subSchedule.findProperty("arrivalTime") != null);
+      assertTrue(subSchedule.findProperty("flightNo") != null);
+      assertTrue(subSchedule.findProperty("firstDeparture") != null);
+      assertTrue(subSchedule.findProperty("departureTime") != null);
+      assertTrue(subSchedule.findProperty("departureAirportCode") != null);
+      assertTrue(subSchedule.findProperty("lastDeparture") != null);
+      assertTrue(subSchedule.findProperty("prop3") != null);
+      assertTrue(subSchedule.findProperty("prop4") != null);
+      assertTrue(subSchedule.findProperty("prop5") != null);
 
       EdmEntityType subsubSchedule = d.findEdmEntitySet("SubSubFlightSchedule").type;
       assertTrue(subsubSchedule.getBaseType().equals(subSchedule));
       assertTrue(subsubSchedule.getKeys().equals(subSchedule.getKeys()));
-      assertTrue(subsubSchedule.getScopedNavigationProperties().size() == 1);
-      assertTrue(subsubSchedule.getAllNavigationProperties().count() ==
-          schedule.getScopedNavigationProperties().size() +
-          subSchedule.getScopedNavigationProperties().size() +
-          subsubSchedule.getScopedNavigationProperties().size());
+      assertTrue(subsubSchedule.getDeclaredNavigationProperties().count() == 1);
+      assertTrue(subsubSchedule.getNavigationProperties().count() ==
+          schedule.getDeclaredNavigationProperties().count() +
+          subSchedule.getDeclaredNavigationProperties().count() +
+          subsubSchedule.getDeclaredNavigationProperties().count());
 
-      assertTrue(subsubSchedule.getScopedProperties().size() == 4);
-      assertTrue(subsubSchedule.getAllProperties().count() ==
-          subsubSchedule.getScopedProperties().size() +
-          subSchedule.getScopedProperties().size() +
-          schedule.getScopedProperties().size());
+      assertTrue(subsubSchedule.getDeclaredProperties().count() == 4);
+      assertTrue(subsubSchedule.getProperties().count() ==
+          subsubSchedule.getDeclaredProperties().count() +
+          subSchedule.getDeclaredProperties().count() +
+          schedule.getDeclaredProperties().count());
     }
 
 }

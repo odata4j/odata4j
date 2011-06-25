@@ -1,10 +1,11 @@
 package org.odata4j.edm;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.core4j.Enumerable;
-import org.core4j.Predicate1;
+import org.odata4j.core.OPredicates;
 
 public class EdmEntityType {
 
@@ -36,8 +37,11 @@ public class EdmEntityType {
 
     this.keys = keys;
     this.baseType = baseType;
-    assert (null == baseType && null != keys) ||
-           (null != baseType && null == keys) : "keys on basetype only";
+    
+    if (baseType == null && keys == null)
+      throw new IllegalArgumentException("Root types must have keys");
+    if (baseType != null && keys != null)
+      throw new IllegalArgumentException("Keys on root types only");
     
     this.properties = properties == null ? new ArrayList<EdmProperty>() : properties;
     this.navigationProperties = navigationProperties == null ? new ArrayList<EdmNavigationProperty>() : navigationProperties;
@@ -57,141 +61,100 @@ public class EdmEntityType {
   }
 
   /**
-   * get a navigation property by name, searches up the type hierarchy if necessary
-   * @param name
-   * @return EdmNavigationProperty object
+   * Finds a navigation property by name, searching up the type hierarchy if necessary.
    */
-  public EdmNavigationProperty getNavigationProperty(final String name) {
-    return this.getAllNavigationProperties()
-        .firstOrNull(new Predicate1<EdmNavigationProperty>() {
-          @Override
-          public boolean apply(EdmNavigationProperty input) {
-            return input.name.equals(name);
-          }
-        });
+  public EdmNavigationProperty findNavigationProperty(String name) {
+    return getNavigationProperties().firstOrNull(OPredicates.edmNavigationPropertyNameEquals(name));
   }
 
   /**
-   * get a property by name, searches up the type hierarchy if necessary
-   * @param name
-   * @return EdmProperty object
+   * Finds a property by name, searching up the type hierarchy if necessary.
    */
-  public EdmProperty getProperty(final String name) {
-    return this.getAllProperties()
-        .firstOrNull(new Predicate1<EdmProperty>() {
-          @Override
-          public boolean apply(EdmProperty input) {
-            return input.name.equals(name);
-          }
-        });
+  public EdmProperty findProperty(String name) {
+    return getProperties().firstOrNull(OPredicates.edmPropertyNameEquals(name));
   }
 
   /**
-   * get the properties defined for this entity type
-   * *not including* inherited properties
-   * @return
+   * Gets the properties defined for this entity type <i>not including</i> inherited properties.
    */
-  public List<EdmProperty> getScopedProperties() {
-    return properties;
-  }
-
-  /**
-   * get an Enumerable over the properties defined for this entity type
-   * *not including* inherited properties
-   * @return
-   */
-  public Enumerable<EdmProperty> getScopedPropertiesEnumerable() {
+  public Enumerable<EdmProperty> getDeclaredProperties() {
     return Enumerable.create(properties);
   }
 
-  public EdmProperty getScopedProperty(final String name) {
-    return this.getScopedPropertiesEnumerable()
-        .firstOrNull(new Predicate1<EdmProperty>() {
-          @Override
-          public boolean apply(EdmProperty input) {
-            return input.name.equals(name);
-          }
-        });
+  /**
+   * Finds a property by name on this entity type <i>not including</i> inherited properties.
+   */
+  public EdmProperty findDeclaredProperty(String name) {
+    return getDeclaredProperties().firstOrNull(OPredicates.edmPropertyNameEquals(name));
   }
 
   /**
-   * get the properties defined for this entity type
-   * *including* inherited properties
-   * @return
+   * Gets the properties defined for this entity type <i>including</i> inherited properties.
    */
-  public Enumerable<EdmProperty> getAllProperties() {
-    Enumerable<EdmProperty> e = (null == this.baseType ? null : this.baseType.getAllProperties());
-    e = (null == e ? getScopedPropertiesEnumerable() : e.union(getScopedPropertiesEnumerable()));
-    return e;
+  public Enumerable<EdmProperty> getProperties() {
+    return isRootType()
+        ? getDeclaredProperties()
+        : baseType.getProperties().union(getDeclaredProperties());
   }
 
   /**
-   * get the navigation properties defined for this entity type
-   * *not including* inherited properties
-   * @return
+   * Gets the navigation properties defined for this entity type <i>not including</i> inherited properties.
    */
-  public List<EdmNavigationProperty> getScopedNavigationProperties() {
-    return this.navigationProperties;
+  public Enumerable<EdmNavigationProperty> getDeclaredNavigationProperties() {
+    return Enumerable.create(navigationProperties);
   }
-
-   /**
-   * get an Enumerable over the navigation properties defined for this entity type
-   * *not including* inherited properties
-   * @return
-   */
-  public Enumerable<EdmNavigationProperty> getScopedNavigationPropertiesEnumerable() {
-    return Enumerable.create(this.navigationProperties);
-  }
-
-  public EdmNavigationProperty getScopedNavigationProperty(final String name) {
-    return this.getScopedNavigationPropertiesEnumerable()
-        .firstOrNull(new Predicate1<EdmNavigationProperty>() {
-          @Override
-          public boolean apply(EdmNavigationProperty input) {
-            return input.name.equals(name);
-          }
-        });
-  }
-
+  
   /**
-   * get an Enumerable over the navigation properties defined for this entity type
-   * *including* inherited properties
-   * @return
+   * Finds a navigation property by name on this entity type <i>not including</i> inherited properties.
    */
-  public Enumerable<EdmNavigationProperty> getAllNavigationProperties() {
-    Enumerable<EdmNavigationProperty> e = (null == this.baseType ? null : this.baseType.getAllNavigationProperties());
-    e = (null == e ? getScopedNavigationPropertiesEnumerable() : e.union(getScopedNavigationPropertiesEnumerable()));
-    return e;
+  public EdmNavigationProperty findDeclaredNavigationProperty(String name) {
+    return getDeclaredNavigationProperties().firstOrNull(OPredicates.edmNavigationPropertyNameEquals(name));
+  }
+  
+  /**
+   * Gets the navigation properties defined for this entity type <i>including</i> inherited properties.
+   */
+  public Enumerable<EdmNavigationProperty> getNavigationProperties() {
+    return isRootType()
+        ? getDeclaredNavigationProperties()
+        : baseType.getNavigationProperties().union(getDeclaredNavigationProperties());
   }
 
   public EdmEntityType getBaseType() {
-    return this.baseType;
-  }
-
-  public void setBaseType(EdmEntityType baseType) {
-    this.baseType = baseType;
+    return baseType;
   }
 
   public String getFQBaseTypeName() {
-    return null != this.baseTypeNameFQ ? this.baseTypeNameFQ :
-        (null != this.getBaseType() ? this.getBaseType().getFQNamespaceName() : null);
+    return baseTypeNameFQ != null ? baseTypeNameFQ :
+        (getBaseType() != null ? getBaseType().getFQNamespaceName() : null);
   }
 
   public boolean isRootType() {
-    return null == this.baseType;
+    return baseType == null;
   }
 
   /**
-   * get keys for this EdmEntityType.  Keys are defined only in a root types
-   * @return
+   * Gets the keys for this EdmEntityType.  Keys are defined only in a root types.
    */
   public List<String> getKeys() {
-    return null == this.baseType ? this.keys : this.baseType.getKeys();
+    return isRootType() ? keys : baseType.getKeys();
   }
 
+  
+  //TODO remove!
   public void addNavigationProperty(EdmNavigationProperty np) {
     this.navigationProperties.add(np);
   }
-
+  
+  // TODO remove!
+  public void setDeclaredNavigationProperties(Collection<EdmNavigationProperty> navProperties) {
+    this.navigationProperties.clear();
+    this.navigationProperties.addAll(navProperties);
+  }
+  
+  // TODO remove!
+  public void setBaseType(EdmEntityType baseType) {
+    this.baseType = baseType;
+  }
 
 }

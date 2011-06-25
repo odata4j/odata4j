@@ -246,7 +246,7 @@ public class JPAProducer implements ODataProducer {
           idAtt.getPersistentAttributeType() == PersistentAttributeType.EMBEDDED;
 
       // get properties
-      for (EdmProperty ep : ees.type.getAllProperties()) {
+      for (EdmProperty ep : ees.type.getProperties()) {
 
         if (!isSelected(ep.name, select)) {
           continue;
@@ -277,7 +277,7 @@ public class JPAProducer implements ODataProducer {
         }
       }
 
-      for (final EdmNavigationProperty ep : ees.type.getAllNavigationProperties()) {
+      for (final EdmNavigationProperty ep : ees.type.getNavigationProperties()) {
         ep.selected = isSelected(ep.name, select);
       }
 
@@ -913,7 +913,7 @@ public class JPAProducer implements ODataProducer {
     final EdmEntitySet ees = metadata.getEdmEntitySet(entitySetName);
 
     // get the navigation property
-    EdmNavigationProperty edmNavProperty = ees.type.getNavigationProperty(navProp);
+    EdmNavigationProperty edmNavProperty = ees.type.findNavigationProperty(navProp);
 
     // check whether the navProperty is valid
     if (edmNavProperty == null

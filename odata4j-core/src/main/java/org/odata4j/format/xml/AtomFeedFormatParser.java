@@ -445,7 +445,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
 
             // get the entity set belonging to the from role type
             EdmNavigationProperty navProperty = fromRoleEntitySet != null
-                ? fromRoleEntitySet.type.getNavigationProperty(link.title)
+                ? fromRoleEntitySet.type.findNavigationProperty(link.title)
                 : null;
             final EdmEntitySet toRoleEntitySet = metadata != null && navProperty != null
                 ? metadata.getEdmEntitySet(navProperty.toRole.type)
@@ -474,7 +474,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
         } else if (link.type.equals(XmlFormatWriter.atom_entry_content_type))
           if (link.inlineEntry != null) {
             EdmNavigationProperty navProperty = fromRoleEntitySet != null
-                ? fromRoleEntitySet.type.getNavigationProperty(link.title)
+                ? fromRoleEntitySet.type.findNavigationProperty(link.title)
                 : null;
               EdmEntitySet toRoleEntitySet = metadata != null && navProperty != null
                   ? metadata.getEdmEntitySet(navProperty.toRole.type)

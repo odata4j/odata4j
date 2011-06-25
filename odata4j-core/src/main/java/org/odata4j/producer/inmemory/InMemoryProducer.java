@@ -246,7 +246,7 @@ public class InMemoryProducer implements ODataProducer {
       Class<?> clazz2 = ei.properties.getPropertyType(assocProp);
       String eetName2 = entityNameByClass.get(clazz2);
 
-      if (eet1.getProperty(assocProp) != null || eetName2 == null) continue;
+      if (eet1.findProperty(assocProp) != null || eetName2 == null) continue;
 
       EdmEntityType eet2 = entityTypesByName.get(eetName2);
 
@@ -442,7 +442,7 @@ public class InMemoryProducer implements ODataProducer {
         String prop = props[0];
         List<EntitySimpleProperty> remainingPropPath = props.length > 1 ? Arrays.asList(org.odata4j.expression.Expression.simpleProperty(props[1])) : null;
 
-        EdmNavigationProperty edmNavProperty = edmEntityType.getNavigationProperty(prop);
+        EdmNavigationProperty edmNavProperty = edmEntityType.findNavigationProperty(prop);
 
         if (edmNavProperty == null) continue;
 

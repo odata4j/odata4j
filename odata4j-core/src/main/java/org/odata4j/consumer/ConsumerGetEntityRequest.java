@@ -67,7 +67,7 @@ class ConsumerGetEntityRequest<T> extends ConsumerEntityRequestBase<T> implement
     //  the first segment contains the entitySetName we start from
     EdmEntitySet entitySet = getMetadata().getEdmEntitySet(getSegments().get(0).segment);
     for (EntitySegment segment : getSegments().subList(1, getSegments().size())) {
-      EdmNavigationProperty navProperty = entitySet.type.getNavigationProperty(segment.segment);
+      EdmNavigationProperty navProperty = entitySet.type.findNavigationProperty(segment.segment);
       entitySet = getMetadata().getEdmEntitySet(navProperty.toRole.type);
     }
 

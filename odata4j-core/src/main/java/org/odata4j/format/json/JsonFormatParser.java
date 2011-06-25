@@ -175,7 +175,7 @@ public class JsonFormatParser {
 
     if (event.isEndProperty()) {
       // scalar property
-      EdmProperty ep = ees.type.getProperty(name);
+      EdmProperty ep = ees.type.findProperty(name);
       if (ep == null) {
         throw new IllegalArgumentException("unknown property " + name + " for " + ees.name);
       }
@@ -201,7 +201,7 @@ public class JsonFormatParser {
       if (event.isValue()) {
         throw new IllegalArgumentException("arrays of primitive types not supported! property " + ees.name + "." + name);
       } else if (event.isStartObject()) {
-        EdmNavigationProperty navProp = ees.type.getNavigationProperty(name);
+        EdmNavigationProperty navProp = ees.type.findNavigationProperty(name);
         ees = metadata.getEdmEntitySet(navProp.toRole.type);
         List<OEntity> entities = new ArrayList<OEntity>();
         do {
@@ -255,7 +255,7 @@ public class JsonFormatParser {
       }
 
       // inlined feed
-      EdmNavigationProperty navProp = ees.type.getNavigationProperty(name);
+      EdmNavigationProperty navProp = ees.type.findNavigationProperty(name);
 
       // [
       ensureStartArray(jsr.nextEvent());
@@ -276,7 +276,7 @@ public class JsonFormatParser {
 
     } else if (METADATA_PROPERTY.equals(event.asStartProperty().getName())) {
       // inlined entity or link starting with meta data
-      EdmNavigationProperty navProp = ees.type.getNavigationProperty(name);
+      EdmNavigationProperty navProp = ees.type.findNavigationProperty(name);
       JsonEntryMetaData jemd = parseMetadata(jsr);
       JsonEntry refentry = parseEntry(jemd, metadata.getEdmEntitySet(navProp.toRole.type), jsr);
 
@@ -296,7 +296,7 @@ public class JsonFormatParser {
     } else if (event.isStartProperty()) {
       // inlined entity
 
-      EdmNavigationProperty navProp = ees.type.getNavigationProperty(name);
+      EdmNavigationProperty navProp = ees.type.findNavigationProperty(name);
       ees = metadata.getEdmEntitySet(navProp.toRole.type);
 
       JsonEntry refentry = new JsonEntry();

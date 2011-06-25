@@ -35,7 +35,7 @@ class ConsumerEntityModificationRequest<T> extends ConsumerEntityPayloadRequestB
   @Override
   public OModifyRequest<T> nav(String navProperty, OEntityKey key) {
     segments.add(new EntitySegment(navProperty, key));
-    entitySet = metadata.getEdmEntitySet(entitySet.type.getNavigationProperty(navProperty).toRole.type);
+    entitySet = metadata.getEdmEntitySet(entitySet.type.findNavigationProperty(navProperty).toRole.type);
     return this;
   }
 

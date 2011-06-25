@@ -1,7 +1,6 @@
 package org.odata4j.format.xml;
 
 import java.io.Writer;
-import java.util.List;
 
 import org.odata4j.edm.EdmAssociation;
 import org.odata4j.edm.EdmAssociationSet;
@@ -69,9 +68,9 @@ public class EdmxFormatWriter extends XmlFormatWriter {
             writer.writeAttribute("BaseType", eet.getBaseType().getFQNamespaceName());
         }
 
-        write(eet.getScopedProperties(), writer);
+        write(eet.getDeclaredProperties(), writer);
 
-        for (EdmNavigationProperty np : eet.getScopedNavigationProperties()) {
+        for (EdmNavigationProperty np : eet.getDeclaredNavigationProperties()) {
 
           writer.startElement(new QName2("NavigationProperty"));
           writer.writeAttribute("Name", np.name);
@@ -149,7 +148,7 @@ public class EdmxFormatWriter extends XmlFormatWriter {
     writer.endDocument();
   }
 
-  private static void write(List<EdmProperty> properties, XMLWriter2 writer) {
+  private static void write(Iterable<EdmProperty> properties, XMLWriter2 writer) {
     for (EdmProperty prop : properties) {
       writer.startElement(new QName2("Property"));
 

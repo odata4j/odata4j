@@ -108,7 +108,7 @@ class ConsumerCreateEntityRequest<T> extends ConsumerEntityPayloadRequestBase im
   @Override
   public OCreateRequest<T> inline(String navProperty, OEntity... entities) {
     EdmEntitySet entitySet = metadata.getEdmEntitySet(entitySetName);
-    EdmNavigationProperty navProp = entitySet.type.getNavigationProperty(navProperty);
+    EdmNavigationProperty navProp = entitySet.type.findNavigationProperty(navProperty);
     if (navProp == null) 
       throw new IllegalArgumentException("unknown navigation property " + navProperty);
     

@@ -70,7 +70,7 @@ public class PropertyRequestResource extends BaseResource {
       EdmDataServices metadata = producer.getMetadata();
       EdmEntitySet ees = metadata
           .getEdmEntitySet(metadata.getEdmEntitySet(entitySetName).type
-              .getNavigationProperty(navProp).toRole.type);
+              .findNavigationProperty(navProp).toRole.type);
 
       // parse the request entity 
       OEntity entity = getRequestEntity(context.getRequest(), metadata, ees.name, OEntityKey.parse(id));

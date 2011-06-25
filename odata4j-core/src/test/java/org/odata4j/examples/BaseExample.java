@@ -1,7 +1,5 @@
 package org.odata4j.examples;
 
-import java.util.List;
-
 import org.core4j.Enumerable;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
@@ -59,7 +57,7 @@ public class BaseExample {
     return count;
   }
 
-  private static void reportProperties(List<EdmProperty> properties) {
+  private static void reportProperties(Iterable<EdmProperty> properties) {
     for (EdmProperty property : properties) {
       String p = String.format("Property Name=%s Type=%s Nullable=%s", property.name, property.type, property.nullable);
       if (property.maxLength != null)
@@ -101,8 +99,8 @@ public class BaseExample {
           report("    Key PropertyRef Name=%s", key);
         }
 
-        reportProperties(et.getScopedProperties());
-        for (EdmNavigationProperty np : et.getScopedNavigationProperties()) {
+        reportProperties(et.getDeclaredProperties());
+        for (EdmNavigationProperty np : et.getDeclaredNavigationProperties()) {
           report("    NavigationProperty Name=%s Relationship=%s FromRole=%s ToRole=%s",
               np.name, np.relationship.getFQNamespaceName(), np.fromRole.role, np.toRole.role);
         }

@@ -446,7 +446,7 @@ public class ODataConsumer {
           rt = null;
         } else {
           EdmEntityType eet = ees.type;
-          for (EdmProperty ep : eet.getAllProperties()) {
+          for (EdmProperty ep : eet.getProperties()) {
             if ("SyndicationTitle".equals(ep.fcTargetPath) && "false".equals(ep.fcKeepInContent))
               rt.titlePropName = ep.name;
             if ("SyndicationSummary".equals(ep.fcTargetPath) && "false".equals(ep.fcKeepInContent))

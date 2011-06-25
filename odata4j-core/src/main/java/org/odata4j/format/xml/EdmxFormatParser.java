@@ -102,23 +102,26 @@ public class EdmxFormatParser extends XmlFormatParser {
 
       // resolve navproperties
       for (EdmEntityType eet : edmSchema.entityTypes) {
-        for (int i = 0; i < eet.getScopedNavigationProperties().size(); i++) {
-          final TempEdmNavigationProperty tmp = (TempEdmNavigationProperty) eet.getScopedNavigationProperties().get(i);
+        List<EdmNavigationProperty> navProps = eet.getDeclaredNavigationProperties().toList();
+        for (int i = 0; i < navProps.size(); i++) {
+          final TempEdmNavigationProperty tmp = (TempEdmNavigationProperty) navProps.get(i);
           final EdmAssociation ea = allEasByFQName.get(tmp.relationshipName);
 
           List<EdmAssociationEnd> finalEnds = Enumerable.create(tmp.fromRoleName, tmp.toRoleName).select(new Func1<String, EdmAssociationEnd>() {
             public EdmAssociationEnd apply(String input) {
               if (ea.end1.role.equals(input))
-                                return ea.end1;
+                return ea.end1;
               if (ea.end2.role.equals(input))
-                                return ea.end2;
+                return ea.end2;
               throw new IllegalArgumentException("Invalid role name " + input);
             }
           }).toList();
 
           EdmNavigationProperty enp = new EdmNavigationProperty(tmp.name, ea, finalEnds.get(0), finalEnds.get(1));
-          eet.getScopedNavigationProperties().set(i, enp);
+          navProps.set(i, enp);
         }
+        eet.setDeclaredNavigationProperties(navProps);
+        
       }
 
       // resolve entitysets

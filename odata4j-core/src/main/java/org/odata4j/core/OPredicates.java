@@ -1,6 +1,8 @@
 package org.odata4j.core;
 
 import org.core4j.Predicate1;
+import org.odata4j.edm.EdmNavigationProperty;
+import org.odata4j.edm.EdmProperty;
 
 /**
  * A static factory to create useful generic predicate instances.
@@ -41,6 +43,22 @@ public class OPredicates {
     return new Predicate1<String>() {
       public boolean apply(String input) {
         return input.equalsIgnoreCase(value);
+      }
+    };
+  }
+  
+  public static Predicate1<EdmProperty> edmPropertyNameEquals(final String name) {
+    return new Predicate1<EdmProperty>() {
+      public boolean apply(EdmProperty input) {
+        return input.name.equals(name);
+      }
+    };
+  }
+  
+  public static Predicate1<EdmNavigationProperty> edmNavigationPropertyNameEquals(final String name) {
+    return new Predicate1<EdmNavigationProperty>() {
+      public boolean apply(EdmNavigationProperty input) {
+        return input.name.equals(name);
       }
     };
   }
