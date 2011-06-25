@@ -367,6 +367,6 @@ public class JPAEdmGenerator {
       temporal = ((Method) member).getAnnotation(Temporal.class);
     }
 
-    return temporal.value();
+    return temporal == null ? null : temporal.value();
   }
 }
