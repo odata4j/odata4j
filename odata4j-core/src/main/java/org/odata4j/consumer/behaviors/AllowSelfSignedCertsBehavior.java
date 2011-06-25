@@ -14,6 +14,7 @@ import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.core.OClientBehavior;
 
 import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.filter.Filterable;
 import com.sun.jersey.client.urlconnection.HTTPSProperties;
 
 public enum AllowSelfSignedCertsBehavior implements OClientBehavior {
@@ -57,5 +58,11 @@ public enum AllowSelfSignedCertsBehavior implements OClientBehavior {
       throw new RuntimeException(e);
     }
   }
+
+  @Override
+  public void modifyClientFilters(Filterable client) {}
+
+  @Override
+  public void modifyWebResourceFilters(Filterable webResource) {}
 
 }

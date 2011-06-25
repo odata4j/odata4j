@@ -10,6 +10,7 @@ import org.odata4j.internal.PlatformUtil;
 import org.odata4j.internal.StringProvider2;
 
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.core.impl.provider.header.MediaTypeProvider;
 import com.sun.jersey.core.spi.factory.AbstractRuntimeDelegate;
@@ -43,7 +44,18 @@ class ClientUtil {
       for (OClientBehavior behavior : behaviors)
         behavior.modify(cc);
     Client client = Client.create(cc);
+    if (behaviors != null)
+      for (OClientBehavior behavior : behaviors)
+        behavior.modifyClientFilters(client);
     return client;
+  }
+  
+  public static WebResource resource(Client client, String url, OClientBehavior[] behaviors) {
+    WebResource resource = client.resource(url);
+    if (behaviors != null)
+      for (OClientBehavior behavior : behaviors)
+        behavior.modifyWebResourceFilters(resource);
+    return resource;
   }
 
 }

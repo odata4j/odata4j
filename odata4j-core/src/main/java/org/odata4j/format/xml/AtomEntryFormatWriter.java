@@ -5,6 +5,7 @@ import java.io.Writer;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.odata4j.core.ODataConstants;
+import org.odata4j.core.OEntity;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.format.Entry;
 import org.odata4j.format.FormatWriter;
@@ -31,10 +32,10 @@ public class AtomEntryFormatWriter extends XmlFormatWriter implements FormatWrit
     writer.startElement(new QName2("entry"), atom);
     writer.writeNamespace("d", d);
     writer.writeNamespace("m", m);
-
-    writeEntry(writer, null, entry.getEntity().getProperties(),
-        entry.getEntity().getLinks(),
-        null, null, updated, null, false);
+    
+    OEntity entity = entry.getEntity();
+    writeEntry(writer, null, entity.getProperties(), entity.getLinks(),
+        null, null, updated, entity.getEntitySet(), false);
     writer.endDocument();
 
   }

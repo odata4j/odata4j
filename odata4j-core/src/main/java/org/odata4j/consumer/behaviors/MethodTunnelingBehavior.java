@@ -1,12 +1,9 @@
 package org.odata4j.consumer.behaviors;
 
 import org.odata4j.consumer.ODataClientRequest;
-import org.odata4j.core.OClientBehavior;
 import org.odata4j.core.ODataConstants;
 
-import com.sun.jersey.api.client.config.ClientConfig;
-
-public class MethodTunnelingBehavior implements OClientBehavior {
+public class MethodTunnelingBehavior extends BaseClientBehavior {
 
     private final String[] methodsToTunnel;
 
@@ -14,9 +11,6 @@ public class MethodTunnelingBehavior implements OClientBehavior {
         this.methodsToTunnel = methodsToTunnel;
     }
     
-    @Override
-    public void modify(ClientConfig clientConfig) { }
-
     @Override
     public ODataClientRequest transform(ODataClientRequest request) {
         String method = request.getMethod();

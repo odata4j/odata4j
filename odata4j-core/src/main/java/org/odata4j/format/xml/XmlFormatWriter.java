@@ -253,9 +253,7 @@ public class XmlFormatWriter {
         }
       }
 
-      writeElement(writer, "category", null,
-          "term", ees.type.getFQNamespaceName(),
-          "scheme", scheme);
+     
     } else {
       // for requests we include only the provided links
       if (entityLinks != null) {
@@ -279,6 +277,10 @@ public class XmlFormatWriter {
         }
       }
     }
+    
+    writeElement(writer, "category", null,
+        "term", ees.type.getFQNamespaceName(),
+        "scheme", scheme);
 
     writer.startElement("content");
     writer.writeAttribute("type", MediaType.APPLICATION_XML);

@@ -156,7 +156,7 @@ class ODataClient {
         request = behavior.transform(request);
     }
 
-    WebResource webResource = client.resource(request.getUrl());
+    WebResource webResource = ClientUtil.resource(client, request.getUrl(), behaviors);
 
     // set query params
     for (String qpn : request.getQueryParams().keySet()) {

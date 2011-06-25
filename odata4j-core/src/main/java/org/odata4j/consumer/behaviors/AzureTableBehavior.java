@@ -8,13 +8,10 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.consumer.ODataConsumer;
-import org.odata4j.core.OClientBehavior;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
 
-import com.sun.jersey.api.client.config.ClientConfig;
-
-public class AzureTableBehavior implements OClientBehavior {
+public class AzureTableBehavior extends BaseClientBehavior {
 
     private final String account;
     private final String key;
@@ -24,9 +21,6 @@ public class AzureTableBehavior implements OClientBehavior {
         this.key = key;
     }
     
-    @Override
-    public void modify(ClientConfig clientConfig) { }
-
     @Override
     public ODataClientRequest transform(ODataClientRequest request) {
         try {

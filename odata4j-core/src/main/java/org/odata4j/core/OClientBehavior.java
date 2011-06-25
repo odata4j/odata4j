@@ -3,6 +3,7 @@ package org.odata4j.core;
 import org.odata4j.consumer.ODataClientRequest;
 
 import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.filter.Filterable;
 
 /**
  * Extension-point for modifying client http requests.
@@ -24,4 +25,18 @@ public interface OClientBehavior {
    * @param clientConfig  the jersey client api configuration
    */
   void modify(ClientConfig clientConfig);
+  
+  /**
+   * Allows for modification of jersey filters at the client-level.
+   * 
+   * @param client  the jersey {@link Client}
+   */
+  void modifyClientFilters(Filterable client);
+  
+  /**
+   * Allows for modification of jersey filters at the resource-level.
+   * 
+   * @param webResource  the jersey {@link WebResource}
+   */
+  void modifyWebResourceFilters(Filterable webResource);
 }
