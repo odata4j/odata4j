@@ -29,14 +29,14 @@ public interface OClientBehavior {
   /**
    * Allows for modification of jersey filters at the client-level.
    * 
-   * @param client  the jersey {@link Client}
+   * @param client  the jersey {@link com.sun.jersey.api.client.Client}
    */
   void modifyClientFilters(Filterable client);
   
   /**
    * Allows for modification of jersey filters at the resource-level.
    * 
-   * @param webResource  the jersey {@link WebResource}
+   * @param webResource  the jersey {@link com.sun.jersey.api.client.WebResource}
    */
   void modifyWebResourceFilters(Filterable webResource);
 }

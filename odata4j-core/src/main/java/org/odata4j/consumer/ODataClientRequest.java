@@ -96,7 +96,7 @@ public class ODataClientRequest {
    * Creates a new POST request.
    * 
    * @param url  the request url
-   * @param entry  the normalized OData payload
+   * @param link  the link
    * @return a new request builder
    */
   public static ODataClientRequest post(String url, SingleLink link) {
@@ -118,7 +118,7 @@ public class ODataClientRequest {
    * Creates a new PUT request.
    * 
    * @param url  the request url
-   * @param entry  the normalized OData payload
+   * @param link  the link
    * @return a new request builder
    */
   public static ODataClientRequest put(String url, SingleLink link) {
@@ -140,7 +140,7 @@ public class ODataClientRequest {
    * Creates a new MERGE request.
    * 
    * @param url  the request url
-   * @param entry  the normalized OData payload
+   * @param link  the link
    * @return a new request builder
    */
   public static ODataClientRequest merge(String url, SingleLink link) {

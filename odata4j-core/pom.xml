@@ -103,7 +103,7 @@
                             <goal>single</goal>
                         </goals>
                         <configuration>
-                      		<skipAssembly>true</skipAssembly>
+                      		<skipAssembly>false</skipAssembly>
                             <finalName>${project.name}-clientbundle-${project.version}</finalName>
                             <descriptors>
 					            <descriptor>src/main/assembly/clientbundle.xml</descriptor>
