@@ -5,6 +5,8 @@ import java.util.List;
 import javax.ws.rs.core.MediaType;
 
 import org.odata4j.edm.EdmDataServices;
+import org.odata4j.format.json.JsonCollectionFormatWriter;
+import org.odata4j.format.json.JsonComplexObjectFormatWriter;
 import org.odata4j.format.json.JsonEntryFormatWriter;
 import org.odata4j.format.json.JsonFeedFormatWriter;
 import org.odata4j.format.json.JsonPropertyFormatWriter;
@@ -19,9 +21,12 @@ import org.odata4j.format.xml.AtomServiceDocumentFormatWriter;
 import org.odata4j.format.xml.AtomSingleLinkFormatWriter;
 import org.odata4j.format.xml.AtomSingleLinksFormatWriter;
 import org.odata4j.format.xml.XmlPropertyFormatWriter;
+import org.odata4j.producer.CollectionResponse;
+import org.odata4j.producer.ComplexObjectResponse;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.PropertyResponse;
+import org.odata4j.producer.exceptions.NotImplementedException;
 
 public class FormatWriterFactory {
 
@@ -41,6 +46,9 @@ public class FormatWriterFactory {
     
     FormatWriter<SingleLinks> getSingleLinksFormatWriter();
 
+    FormatWriter<ComplexObjectResponse> getComplexObjectFormatWriter();
+
+    FormatWriter<CollectionResponse> getCollectionFormatWriter();
   }
 
   @SuppressWarnings("unchecked")
@@ -89,6 +97,14 @@ public class FormatWriterFactory {
     if (SingleLinks.class.isAssignableFrom(targetType))
       return (FormatWriter<T>) formatWriters.getSingleLinksFormatWriter();
 
+    if (targetType.equals(ComplexObjectResponse.class)) {
+      return (FormatWriter<T>) formatWriters.getComplexObjectFormatWriter();
+    }
+
+    if (targetType.equals(CollectionResponse.class)) {
+      return (FormatWriter<T>) formatWriters.getCollectionFormatWriter();
+    }
+
     throw new IllegalArgumentException("Unable to locate format writer for " + targetType.getName() + " and format " + type);
 
   }
@@ -136,6 +152,15 @@ public class FormatWriterFactory {
       return new JsonSingleLinksFormatWriter(callback);
     }
 
+    @Override
+    public FormatWriter<ComplexObjectResponse> getComplexObjectFormatWriter() {
+        return new JsonComplexObjectFormatWriter(callback);
+    }
+
+    @Override
+    public FormatWriter<CollectionResponse> getCollectionFormatWriter() {
+      return new JsonCollectionFormatWriter(callback);
+    }
   }
 
   public static class AtomWriters implements FormatWriters {
@@ -173,6 +198,16 @@ public class FormatWriterFactory {
     @Override
     public FormatWriter<SingleLinks> getSingleLinksFormatWriter() {
       return new AtomSingleLinksFormatWriter();
+    }
+
+    @Override
+    public FormatWriter<ComplexObjectResponse> getComplexObjectFormatWriter() {
+      throw new NotImplementedException();
+    }
+
+    @Override
+    public FormatWriter<CollectionResponse> getCollectionFormatWriter() {
+      throw new NotImplementedException();
     }
   }
 }

@@ -35,6 +35,7 @@ import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityId;
 import org.odata4j.core.OEntityKey;
+import org.odata4j.core.OFunctionParameter;
 import org.odata4j.core.OLink;
 import org.odata4j.core.OLinks;
 import org.odata4j.core.OProperties;
@@ -44,6 +45,7 @@ import org.odata4j.core.ORelatedEntityLink;
 import org.odata4j.core.ORelatedEntityLinkInline;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.edm.EdmMultiplicity;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
@@ -1119,4 +1121,8 @@ public class JPAProducer implements ODataProducer {
     throw new NotImplementedException();
   }
 
+  @Override
+  public BaseResponse callFunction(EdmFunctionImport name, java.util.Map<String, OFunctionParameter> params, QueryInfo queryInfo) {
+    throw new NotImplementedException();
+  }
 }

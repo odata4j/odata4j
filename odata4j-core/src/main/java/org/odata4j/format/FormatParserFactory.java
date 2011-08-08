@@ -2,6 +2,11 @@ package org.odata4j.format;
 
 import javax.ws.rs.core.MediaType;
 
+import org.odata4j.core.OCollection;
+import org.odata4j.core.OComplexObject;
+import org.odata4j.core.OObject;
+import org.odata4j.format.json.JsonCollectionFormatParser;
+import org.odata4j.format.json.JsonComplexObjectFormatParser;
 import org.odata4j.format.json.JsonEntryFormatParser;
 import org.odata4j.format.json.JsonFeedFormatParser;
 import org.odata4j.format.json.JsonSingleLinkFormatParser;
@@ -21,6 +26,11 @@ public class FormatParserFactory {
     FormatParser<Entry> getEntryFormatParser(Settings settings);
 
     FormatParser<SingleLink> getSingleLinkFormatParser(Settings settings);
+    
+    FormatParser<OComplexObject> getComplexObjectFormatParser(Settings settings);
+    
+    FormatParser<OCollection<? extends OObject>> getCollectionFormatParser(Settings settings);
+    
   }
 
   @SuppressWarnings("unchecked")
@@ -36,6 +46,10 @@ public class FormatParserFactory {
       return (FormatParser<T>) formatParsers.getEntryFormatParser(settings);
     } else if (SingleLink.class.isAssignableFrom(targetType)) {
       return (FormatParser<T>) formatParsers.getSingleLinkFormatParser(settings);
+    } else if (OComplexObject.class.isAssignableFrom(targetType)) {
+      return (FormatParser<T>) formatParsers.getComplexObjectFormatParser(settings);
+    } else if (OCollection.class.isAssignableFrom(targetType)) {
+      return (FormatParser<T>) formatParsers.getCollectionFormatParser(settings);
     }
     throw new IllegalArgumentException("Unable to locate format parser for " + targetType.getName() + " and format " + type);
   }
@@ -72,6 +86,16 @@ public class FormatParserFactory {
       return new JsonSingleLinkFormatParser(settings);
     }
 
+    @Override
+    public FormatParser<OComplexObject> getComplexObjectFormatParser(Settings settings) {
+      return new JsonComplexObjectFormatParser(settings);
+    }
+
+    @Override
+    public FormatParser<OCollection<? extends OObject>> getCollectionFormatParser(Settings settings) {
+      return new JsonCollectionFormatParser(settings);
+    }
+
   }
 
   public static class AtomParsers implements FormatParsers {
@@ -89,6 +113,16 @@ public class FormatParserFactory {
     @Override
     public FormatParser<SingleLink> getSingleLinkFormatParser(Settings settings) {
       return new AtomSingleLinkFormatParser();
+    }
+
+    @Override
+    public FormatParser<OComplexObject> getComplexObjectFormatParser(Settings settings) {
+      throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public FormatParser<OCollection<? extends OObject>> getCollectionFormatParser(Settings settings) {
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
   }

@@ -12,7 +12,9 @@ import org.odata4j.core.OEntityGetRequest;
 import org.odata4j.core.OEntityId;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OEntityRequest;
+import org.odata4j.core.OFunctionRequest;
 import org.odata4j.core.OModifyRequest;
+import org.odata4j.core.OObject;
 import org.odata4j.core.OQueryRequest;
 import org.odata4j.core.ORelatedEntitiesLink;
 import org.odata4j.core.ORelatedEntityLink;
@@ -504,6 +506,10 @@ public class ODataConsumer {
 
   public OEntityRequest<Void> updateLink(OEntityId sourceEntity, OEntityId newTargetEntity, String targetNavProp, Object... oldTargetKeyValues) {
     return new ConsumerUpdateLinkRequest(client, serviceRootUri, getMetadata(), sourceEntity, newTargetEntity, targetNavProp, oldTargetKeyValues);
+  }
+
+  public OFunctionRequest<OObject> callFunction(String functionName) {
+    return new ConsumerFunctionCallRequest(client, serviceRootUri, getMetadata(), functionName);
   }
 
 }

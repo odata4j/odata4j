@@ -17,8 +17,16 @@ import org.odata4j.core.Guid;
  * Simple types are exposed as constants and associated with one or more java-types.
  *
  * @see <a href="http://msdn.microsoft.com/en-us/library/bb399213.aspx">[msdn] Simple Types (EDM)</a>
+ *
+ * Refactoring Note:
+ * - this class was originally used for simple and complex types.  The full
+ *   semantics are now:  if your type is an EdmType, you can be a property of an Entity.
+ *   This does not preclude you from being a another thing...like a FunctionParameter for example.
+ 
+ * @see EdmSimpleType
+ * @see EdmComplexType
  */
-public class EdmType {
+public abstract class EdmType extends EdmBaseType {
 
   private static Map<String, EdmType> POOL = new HashMap<String, EdmType>();
 
@@ -43,12 +51,8 @@ public class EdmType {
    */
   public static Set<EdmType> SIMPLE = Collections.unmodifiableSet(Enumerable.create(POOL.values()).toSet());
 
-  private final String typeString;
-  private final Set<Class<?>> javaTypes;
-
-  private EdmType(String typeString, Set<Class<?>> javaTypes) {
-    this.typeString = typeString;
-    this.javaTypes = Collections.unmodifiableSet(javaTypes);
+  protected EdmType(String typeString) {
+    super(typeString);
   }
 
   /**
@@ -65,8 +69,13 @@ public class EdmType {
     if (typeString == null)
       return null;
     Set<Class<?>> javaTypeSet = Enumerable.create(javaTypes).toSet();
-    if (!POOL.containsKey(typeString))
-      POOL.put(typeString, new EdmType(typeString, javaTypeSet));
+    if (!POOL.containsKey(typeString)) {
+      if (null == javaTypes || 0 == javaTypes.length) {
+        POOL.put(typeString, new EdmComplexType(typeString));
+      } else {
+        POOL.put(typeString, new EdmSimpleType(typeString, javaTypeSet));
+      }
+    }
     return POOL.get(typeString);
   }
 
@@ -75,32 +84,9 @@ public class EdmType {
    * 
    * @return true or false
    */
-  public boolean isSimple() {
-    return javaTypes.size() > 0;
-  }
+  public abstract boolean isSimple();
 
-  /**
-   * Gets the fully-qualified type name for this edm-type.
-   * 
-   * @return the fully-qualified type name
-   */
-  public String toTypeString() {
-    return typeString;
-  }
-
-  /**
-   * Gets the java-types associated with this edm-type.  Only valid for simple types.
-   * 
-   * @return the associated java-types.
-   */
-  public Set<Class<?>> getJavaTypes() {
-    return javaTypes;
-  }
-
-  @Override
-  public String toString() {
-    return toTypeString();
-  }
+  public abstract Set<Class<?>> getJavaTypes();
 
   /**
    * Finds the edm simple type for a given java-type.
@@ -113,16 +99,6 @@ public class EdmType {
       if (simple.getJavaTypes().contains(javaType))
         return simple;
     return null;
-  }
-
-  @Override
-  public int hashCode() {
-    return typeString.hashCode();
-  }
-
-  @Override
-  public boolean equals(Object other) {
-    return other instanceof EdmType && ((EdmType) other).typeString.equals(typeString);
   }
 
 }

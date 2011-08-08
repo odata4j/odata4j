@@ -13,6 +13,8 @@ import org.odata4j.edm.EdmAssociation;
 import org.odata4j.edm.EdmAssociationEnd;
 import org.odata4j.edm.EdmAssociationSet;
 import org.odata4j.edm.EdmAssociationSetEnd;
+import org.odata4j.edm.EdmBaseType;
+import org.odata4j.edm.EdmCollectionType;
 import org.odata4j.edm.EdmComplexType;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntityContainer;
@@ -175,9 +177,29 @@ public class EdmxFormatParser extends XmlFormatParser {
             }
           });
 
-          EdmType type = EdmType.get(tmpEfi.returnTypeName);
+          EdmBaseType type = null;
 
-          edmEntityContainer.functionImports.set(i, new EdmFunctionImport(tmpEfi.name, ees, type, tmpEfi.httpMethod, tmpEfi.parameters));
+          // type resolution:
+          // NOTE: this will likely change if RowType is ever implemented. I'm
+          //       guessing that in that case, the TempEdmFunctionImport will already
+          //       have a EdmRowType instance it built during parsing.
+          // first, try to resolve the type name as a simple or complex type
+          type = EdmType.get(tmpEfi.returnTypeName);
+          if (null == type) {
+            // ok, not one of these.  Is this an Entity type?
+            type = metadata.findEdmEntityType(tmpEfi.returnTypeName);
+          } else if (!((EdmType)type).isSimple()) {
+            // EdmType.get returns a new EdmComplexType instance...it doesn't have properties
+            // though.  We need them.
+              type = metadata.findEdmComplexType(type.toTypeString());
+          }
+          
+          if (tmpEfi.isCollection) {
+            type = new EdmCollectionType(tmpEfi.returnTypeName, type);
+          }
+
+          edmEntityContainer.functionImports.set(i,
+            new EdmFunctionImport(tmpEfi.name, ees, type, tmpEfi.httpMethod, tmpEfi.parameters));
         }
       }
 
@@ -269,6 +291,12 @@ public class EdmxFormatParser extends XmlFormatParser {
     String entitySet = getAttributeValueIfExists(functionImportElement, "EntitySet");
     Attribute2 returnTypeAttr = functionImportElement.getAttributeByName("ReturnType");
     String returnType = returnTypeAttr != null ? returnTypeAttr.getValue() : null;
+    
+    // strict parsing
+    boolean isCollection = null != returnType && returnType.matches("^Collection\\(.*\\)$");
+    if (isCollection) {
+        returnType = returnType.substring(11, returnType.length() - 1);
+    }
     String httpMethod = getAttributeValueIfExists(functionImportElement, new QName2(NS_METADATA, "HttpMethod"));
 
     List<EdmFunctionParameter> parameters = new ArrayList<EdmFunctionParameter>();
@@ -283,7 +311,7 @@ public class EdmxFormatParser extends XmlFormatParser {
                         event.asStartElement().getAttributeByName("Mode").getValue()));
 
       if (isEndElement(event, functionImportElement.getName())) {
-        return new TempEdmFunctionImport(name, entitySet, returnType, httpMethod, parameters);
+        return new TempEdmFunctionImport(name, entitySet, returnType, isCollection, httpMethod, parameters);
       }
     }
     throw new UnsupportedOperationException();
@@ -420,11 +448,14 @@ public class EdmxFormatParser extends XmlFormatParser {
   private static class TempEdmFunctionImport extends EdmFunctionImport {
     public final String entitySetName;
     public final String returnTypeName;
+    public final boolean isCollection;
 
-    public TempEdmFunctionImport(String name, String entitySetName, String returnTypeName, String httpMethod, List<EdmFunctionParameter> parameters) {
+    public TempEdmFunctionImport(String name, String entitySetName, String returnTypeName,
+        boolean isCollection, String httpMethod, List<EdmFunctionParameter> parameters) {
       super(name, null, null, httpMethod, parameters);
       this.entitySetName = entitySetName;
       this.returnTypeName = returnTypeName;
+      this.isCollection = isCollection;
     }
   }
 

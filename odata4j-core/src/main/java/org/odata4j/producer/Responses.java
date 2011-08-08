@@ -3,9 +3,12 @@ package org.odata4j.producer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import org.odata4j.core.OCollection;
+import org.odata4j.core.OComplexObject;
 
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityId;
+import org.odata4j.core.OObject;
 import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmMultiplicity;
@@ -121,4 +124,24 @@ public class Responses {
         return entities;
       }};
   }
+
+  public static ComplexObjectResponse complexObject(final OComplexObject obj) {
+    return new ComplexObjectResponse() {
+
+      @Override
+      public OComplexObject getObject() {
+        return obj;
+      }
+    };
+  }
+
+  public static <T  extends OObject> CollectionResponse collection(final OCollection<T> obj) {
+    return new CollectionResponse<T>() {
+      @Override
+      public OCollection<T> getCollection() {
+        return obj;
+      }
+    };
+  }
+  
 }

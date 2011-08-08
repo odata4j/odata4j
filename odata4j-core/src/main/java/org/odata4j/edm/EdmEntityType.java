@@ -7,7 +7,7 @@ import java.util.List;
 import org.core4j.Enumerable;
 import org.odata4j.core.OPredicates;
 
-public class EdmEntityType {
+public class EdmEntityType extends EdmBaseType {
 
   public final String namespace;
   public final String alias;
@@ -30,6 +30,7 @@ public class EdmEntityType {
   }
 
   public EdmEntityType(String namespace, String alias, String name, Boolean hasStream, List<String> keys, EdmEntityType baseType, List<EdmProperty> properties, List<EdmNavigationProperty> navigationProperties) {
+    super(namespace + "." + name);
     this.namespace = namespace;
     this.alias = alias;
     this.name = name;
@@ -47,6 +48,10 @@ public class EdmEntityType {
     this.navigationProperties = navigationProperties == null ? new ArrayList<EdmNavigationProperty>() : navigationProperties;
   }
 
+  @Deprecated
+  /**
+   * use EdmBaseType.toTypeString()
+   */
   public String getFQNamespaceName() {
     return namespace + "." + name;
   }

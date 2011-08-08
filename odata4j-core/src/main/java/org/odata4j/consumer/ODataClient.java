@@ -97,6 +97,11 @@ class ODataClient {
     ClientResponse response = doRequest(type, request, 200);
     return response;
   }
+  
+  public ClientResponse callFunction(ODataClientRequest request) {
+    ClientResponse response = doRequest(type, request, 200);
+    return response;
+  }
 
   public ClientResponse createEntity(ODataClientRequest request) {
     return doRequest(type, request, 201);

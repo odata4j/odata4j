@@ -27,6 +27,10 @@ import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
 import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
 
 import com.sun.jersey.api.core.ExtendedUriInfo;
+import org.odata4j.core.OComplexObject;
+import org.odata4j.edm.EdmBaseType;
+import org.odata4j.edm.EdmComplexType;
+import org.odata4j.edm.EdmSimpleType;
 
 /** Write content to an HTTP stream in JSON format.
  * 
@@ -93,45 +97,74 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
 
   protected void writeProperty(JsonWriter jw, OProperty<?> prop) {
     jw.writeName(prop.getName());
-    Object pvalue = prop.getValue();
+    writeValue(jw, prop.getType(), prop.getValue());
+  }
+
+  protected void writeValue(JsonWriter jw, EdmBaseType type, Object pvalue) {
     if (pvalue == null) {
       jw.writeNull();
-    } else if (prop.getType().equals(EdmType.BINARY)) {
+    } else if (type.equals(EdmType.BINARY)) {
       jw.writeString(Base64.encodeBase64String((byte[]) pvalue));
-    } else if (prop.getType().equals(EdmType.BOOLEAN)) {
+    } else if (type.equals(EdmType.BOOLEAN)) {
       jw.writeBoolean((Boolean) pvalue);
-    } else if (prop.getType().equals(EdmType.BYTE)) {
+    } else if (type.equals(EdmType.BYTE)) {
       jw.writeString(Hex.encodeHexString(new byte[] { (Byte) pvalue }));
-    } else if (prop.getType().equals(EdmType.DATETIME)) {
+    } else if (type.equals(EdmType.DATETIME)) {
       LocalDateTime ldt = (LocalDateTime) pvalue;
       long millis = ldt.toDateTime(DateTimeZone.UTC).getMillis();
       String date = "\"\\/Date(" + millis + ")\\/\"";
       jw.writeRaw(date);
-    } else if (prop.getType().equals(EdmType.DECIMAL)) {
+    } else if (type.equals(EdmType.DECIMAL)) {
       // jw.writeString("decimal'" + (BigDecimal) pvalue + "'");
       jw.writeString(String.format(Locale.ENGLISH, "%1$.4f", pvalue));
-    } else if (prop.getType().equals(EdmType.DOUBLE)) {
+    } else if (type.equals(EdmType.DOUBLE)) {
       // jw.writeString(pvalue.toString());
       jw.writeString(String.format(Locale.ENGLISH, "%1$.4f", pvalue));
-    } else if (prop.getType().equals(EdmType.GUID)) {
+    } else if (type.equals(EdmType.GUID)) {
       jw.writeString("guid'" + (Guid) pvalue + "'");
-    } else if (prop.getType().equals(EdmType.INT16)) {
+    } else if (type.equals(EdmType.INT16)) {
       jw.writeNumber((Short) pvalue);
-    } else if (prop.getType().equals(EdmType.INT32)) {
+    } else if (type.equals(EdmType.INT32)) {
       jw.writeNumber((Integer) pvalue);
-    } else if (prop.getType().equals(EdmType.INT64)) {
+    } else if (type.equals(EdmType.INT64)) {
       jw.writeString(pvalue.toString());
-    } else if (prop.getType().equals(EdmType.SINGLE)) {
+    } else if (type.equals(EdmType.SINGLE)) {
       jw.writeNumber((Float) pvalue);
-    } else if (prop.getType().equals(EdmType.TIME)) {
+    } else if (type.equals(EdmType.TIME)) {
       LocalTime ldt = (LocalTime) pvalue;
       jw.writeString("time'" + ldt + "'");
-    } else if (prop.getType().equals(EdmType.DATETIMEOFFSET)) {
+    } else if (type.equals(EdmType.DATETIMEOFFSET)) {
       jw.writeString("datetimeoffset'" + InternalUtil.toString((DateTime) pvalue) + "'");
+    } else if (type instanceof EdmComplexType || (type instanceof EdmType && (!((EdmType)type).isSimple()))) {
+      // the OComplexObject value type is not in use everywhere yet, fix TODO
+      if (pvalue instanceof OComplexObject) {
+          pvalue = ((OComplexObject)pvalue).getProperties();
+      }
+      writeComplexObject(jw, type.toTypeString(), (List<OProperty<?>>)pvalue);
     } else {
       String value = pvalue.toString();
       jw.writeString(value);
     }
+  }
+
+  protected void writeComplexObject(JsonWriter jw, String fqTypeName, List<OProperty<?>> props) {
+    jw.startObject();
+    {
+      /* Confused:  The live OData producers that have complex types (ebay, netflix)
+       * both write this __metadata object for each complex object.  I can't find
+       * this in the OData spec though...
+      jw.writeName("__metadata");
+      jw.startObject();
+      {
+        jw.writeName("type");
+        jw.writeString(fqTypeName);
+      }
+      jw.endObject();
+      jw.writeSeparator();
+      */
+      writeOProperties(jw, props);
+    }
+    jw.endObject();
   }
 
   protected void writeOEntity(ExtendedUriInfo uriInfo, JsonWriter jw, OEntity oe, EdmEntitySet ees, boolean isResponse) {

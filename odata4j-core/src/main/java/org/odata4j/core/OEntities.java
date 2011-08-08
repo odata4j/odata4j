@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.core4j.Enumerable;
+import org.odata4j.edm.EdmBaseType;
 import org.odata4j.edm.EdmEntitySet;
 
 /**
@@ -159,6 +160,11 @@ public class OEntities {
           return (T) link;
       throw new IllegalArgumentException("No link with title: " + title);
     }
+
+   @Override
+   public EdmBaseType getType() {
+     return this.entitySet.type;
+   }
 
   }
 

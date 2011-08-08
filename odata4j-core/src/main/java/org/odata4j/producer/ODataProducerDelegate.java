@@ -1,10 +1,13 @@
 package org.odata4j.producer;
 
+import java.util.List;
 import org.odata4j.core.Delegate;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityId;
 import org.odata4j.core.OEntityKey;
+import org.odata4j.core.OFunctionParameter;
 import org.odata4j.edm.EdmDataServices;
+import org.odata4j.edm.EdmFunctionImport;
 
 public abstract class ODataProducerDelegate implements Delegate<ODataProducer>, ODataProducer {
 
@@ -76,5 +79,10 @@ public abstract class ODataProducerDelegate implements Delegate<ODataProducer>, 
   @Override
   public void deleteLink(OEntityId sourceEntity, String targetNavProp, OEntityKey targetEntityKey) {
     getDelegate().deleteLink(sourceEntity, targetNavProp, targetEntityKey);
+  }
+
+  @Override
+  public BaseResponse callFunction(EdmFunctionImport name, java.util.Map<String, OFunctionParameter> params, QueryInfo queryInfo) {
+    return getDelegate().callFunction( null, null, null);
   }
 }

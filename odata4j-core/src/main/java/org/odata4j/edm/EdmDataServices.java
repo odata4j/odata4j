@@ -95,6 +95,17 @@ public class EdmDataServices {
     return null;
   }
 
+  public EdmBaseType findEdmEntityType(String fqName) {
+    for (EdmSchema schema : this.schemas) {
+      for (EdmEntityType et : schema.entityTypes) {
+        if (et.toTypeString().equals(fqName)) {
+          return et;
+        }
+      }
+    }
+    return null;
+  }
+
   public EdmPropertyBase findEdmProperty(String propName) {
     for (EdmSchema schema : this.schemas) {
       for (EdmEntityContainer eec : schema.entityContainers) {
@@ -149,4 +160,14 @@ public class EdmDataServices {
     }
     return rt;
   }
+
+  public EdmSchema findSchema(String namespace) {
+    for (EdmSchema schema : this.schemas) {
+      if (schema.namespace.equals(namespace)) {
+        return schema;
+      }
+    }
+    return null;
+  }
+
 }

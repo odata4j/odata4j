@@ -3,6 +3,7 @@ package org.odata4j.core;
 import java.util.List;
 
 import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.edm.EdmEntityType;
 
 /**
  * An immutable OData entity instance, consisting of an identity (an entity-set and a unique entity-key within that set), 
@@ -10,7 +11,7 @@ import org.odata4j.edm.EdmEntitySet;
  * <p>The {@link OEntities} static factory class can be used to create <code>OEntity</code> instances.</p>
  * @see OEntities
  */
-public interface OEntity extends OEntityId {
+public interface OEntity extends OEntityId, OObject {
 
   /**
    * Get the entity-set of this instance.

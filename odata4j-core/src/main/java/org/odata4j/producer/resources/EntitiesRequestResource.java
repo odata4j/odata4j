@@ -104,6 +104,12 @@ public class EntitiesRequestResource extends BaseResource {
         skipToken,
         expand));
 
+    // the OData URI scheme makes it impossible to have unique @Paths that refer
+    // to functions and entity sets
+    if (null != producer.getMetadata().findEdmFunctionImport(entitySetName)) {
+        return FunctionResource.callFunction(context, producer, entitySetName, format, callback, skipToken);
+    }
+
     QueryInfo query = new QueryInfo(
         OptionsQueryParser.parseInlineCount(inlineCount),
         OptionsQueryParser.parseTop(top),

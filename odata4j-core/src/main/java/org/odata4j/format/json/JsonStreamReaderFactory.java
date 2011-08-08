@@ -82,7 +82,14 @@ public class JsonStreamReaderFactory {
     boolean hasNext();
 
     JsonEvent nextEvent();
-
+    
+    /**
+     * returns the JsonEvent that the last call to nextEvent() returned.
+     * 
+     * @return the last JsonEvent returned by nextEvent()
+     */
+    JsonEvent previousEvent();
+    
     void close();
   }
 
@@ -388,15 +395,15 @@ class JsonStreamTokenizerImpl implements JsonStreamTokenizer {
           quote = false;
         }
       } else {
-        if ('{' == c || '}' == c
-            || '[' == c || ']' == c
-            || ':' == c || ',' == c
-            || '"' == c || ' ' == c) {
+        if ('-' == c || Character.isDigit(c)
+            || 'E' == c || 'e' == c
+            || '+' == c) {
+          buffer.append(c); // a valid character in a number
+        } else {
+          // must be done with the number.
           pushBack(i);
           checkNumberFormat(buffer);
           token = new JsonToken(JsonTokenType.NUMBER, buffer.toString());
-        } else {
-          buffer.append(c);
         }
       }
     }
@@ -498,6 +505,7 @@ class JsonStreamReaderImpl implements JsonStreamReader {
   private Stack<Boolean> expectCommaOrEndStack = new Stack<Boolean>();
   private boolean expectCommaOrEnd;
   private boolean fireEndPropertyEvent;
+  private JsonEvent previousEvent = null;
 
   JsonStreamReaderImpl(Reader reader) {
     this.state.push(ReaderState.NONE);
@@ -612,40 +620,44 @@ class JsonStreamReaderImpl implements JsonStreamReader {
         }
       }
     }
+    this.previousEvent = null;
     throw new RuntimeException("no event");
   }
 
   private JsonEvent createStartPropertyEvent(final String name) {
     state.push(ReaderState.PROPERTY);
-    return new JsonStartPropertyEventImpl() {
+    this.previousEvent = new JsonStartPropertyEventImpl() {
 
       @Override
       public String getName() {
         return name;
       }
     };
+    return this.previousEvent;
   }
 
   private JsonEvent createEndPropertyEvent(final String value) {
     state.pop();
-    return new JsonEndPropertyEventImpl() {
+    this.previousEvent = new JsonEndPropertyEventImpl() {
       @Override
       public String getValue() {
         return value;
       }
     };
+    return this.previousEvent;
   }
 
   private JsonEvent createStartObjectEvent() {
     state.push(ReaderState.OBJECT);
     expectCommaOrEndStack.push(expectCommaOrEnd);
     expectCommaOrEnd = false;
-    return new JsonEventImpl() {
+    this.previousEvent = new JsonEventImpl() {
       @Override
       public boolean isStartObject() {
         return true;
       }
     };
+    return this.previousEvent;
   }
 
   private JsonEvent createEndObjectEvent() {
@@ -659,24 +671,26 @@ class JsonStreamReaderImpl implements JsonStreamReader {
       fireEndPropertyEvent = true;
     }
 
-    return new JsonEventImpl() {
+    this.previousEvent = new JsonEventImpl() {
       @Override
       public boolean isEndObject() {
         return true;
       }
     };
+    return this.previousEvent;
   }
 
   private JsonEvent createStartArrayEvent() {
     state.push(ReaderState.ARRAY);
     expectCommaOrEndStack.push(expectCommaOrEnd);
     expectCommaOrEnd = false;
-    return new JsonEventImpl() {
+    this.previousEvent = new JsonEventImpl() {
       @Override
       public boolean isStartArray() {
         return true;
       }
     };
+    return this.previousEvent;
   }
 
   private JsonEvent createEndArrayEvent() {
@@ -690,25 +704,33 @@ class JsonStreamReaderImpl implements JsonStreamReader {
       fireEndPropertyEvent = true;
     }
 
-    return new JsonEventImpl() {
+    this.previousEvent = new JsonEventImpl() {
       @Override
       public boolean isEndArray() {
         return true;
       }
     };
+    return this.previousEvent;
   }
 
   private JsonEvent createValueEvent(final String value) {
-    return new JsonValueEventImpl() {
+    this.previousEvent = new JsonValueEventImpl() {
       @Override
       public String getValue() {
         return value;
       }
     };
+    return this.previousEvent;
   }
 
+  @Override
   public void close() {
     tokenizer.close();
+  }
+
+  @Override
+  public JsonEvent previousEvent() {
+    return previousEvent;
   }
 
 }

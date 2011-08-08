@@ -13,6 +13,7 @@ import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OLink;
 import org.odata4j.core.OLinks;
 import org.odata4j.core.OProperty;
+import org.odata4j.edm.EdmBaseType;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmNavigationProperty;
@@ -54,6 +55,7 @@ public class JsonFormatParser {
   protected String entitySetName;
   protected OEntityKey entityKey;
   protected boolean isResponse;
+  protected EdmBaseType parseType;
 
   protected JsonFormatParser(Settings settings) {
     this.version = settings == null ? null : settings.version;
@@ -61,6 +63,7 @@ public class JsonFormatParser {
     this.entitySetName = settings == null ? null : settings.entitySetName;
     this.entityKey = settings == null ? null : settings.entityKey;
     this.isResponse = settings == null ? false : settings.isResponse;
+    this.parseType = settings == null ? null : settings.parseType; 
   }
 
   protected JsonFeed parseFeed(EdmEntitySet ees, JsonStreamReader jsr) {
@@ -329,8 +332,8 @@ public class JsonFormatParser {
   }
 
   protected void ensureStartProperty(JsonEvent event, String name) {
-    if (!event.isStartProperty()
-        && !name.equals(event.asStartProperty().getName())) {
+    if (!(event.isStartProperty()
+        && name.equals(event.asStartProperty().getName()))) {
       throw new IllegalArgumentException("no valid OData JSON format (expected StartProperty " + name + " got " + event + ")");
     }
   }
@@ -358,5 +361,11 @@ public class JsonFormatParser {
       throw new IllegalArgumentException("no valid OData JSON format expected StartArray got " + event + ")");
     }
   }
-
+  
+  protected void ensureEndArray(JsonEvent event) {
+    if (!event.isEndArray()) {
+      throw new IllegalArgumentException("no valid OData JSON format expected EndArray got " + event + ")");
+    }
+  }
+   
 }

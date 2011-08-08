@@ -9,6 +9,8 @@ import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntityContainer;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmEntityType;
+import org.odata4j.edm.EdmFunctionImport;
+import org.odata4j.edm.EdmFunctionParameter;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSchema;
@@ -120,6 +122,27 @@ public class EdmxFormatWriter extends XmlFormatWriter {
           writer.writeAttribute("EntityType", ees.type.getFQNamespaceName());
           writer.endElement("EntitySet");
         }
+
+        for (EdmFunctionImport fi : container.functionImports) {
+          writer.startElement(new QName2("FunctionImport"));
+          writer.writeAttribute("Name", fi.name);
+          if (null != fi.entitySet) {
+            writer.writeAttribute("EntitySet", fi.entitySet.name);
+          }
+          // TODO: how to differentiate inline ReturnType vs embedded ReturnType?
+          writer.writeAttribute("ReturnType", fi.returnType.toTypeString());
+          writer.writeAttribute(new QName2(m, "HttpMethod", "m"), fi.httpMethod);
+
+          for (EdmFunctionParameter param : fi.parameters) {
+              writer.startElement(new QName2("Parameter"));
+              writer.writeAttribute("Name", param.name);
+              writer.writeAttribute("Type", param.type.toTypeString());
+              writer.writeAttribute("Mode", param.mode);
+              writer.endElement("Parameter");
+          }
+          writer.endElement("FunctionImport");
+        }
+
         for (EdmAssociationSet eas : container.associationSets) {
           writer.startElement(new QName2("AssociationSet"));
           writer.writeAttribute("Name", eas.name);

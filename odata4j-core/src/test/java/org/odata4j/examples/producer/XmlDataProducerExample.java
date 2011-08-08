@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -28,15 +29,18 @@ import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityId;
 import org.odata4j.core.OEntityKey;
+import org.odata4j.core.OFunctionParameter;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntityContainer;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmEntityType;
+import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmType;
+import org.odata4j.producer.BaseResponse;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityIdResponse;
 import org.odata4j.producer.EntityResponse;
@@ -267,6 +271,11 @@ public class XmlDataProducerExample {
 
     @Override
     public void deleteLink(OEntityId sourceEntity, String targetNavProp, OEntityKey targetEntityKey) {
+      throw new NotImplementedException();
+    }
+
+    @Override
+    public BaseResponse callFunction(EdmFunctionImport name, Map<String, OFunctionParameter> params, QueryInfo queryInfo) {
       throw new NotImplementedException();
     }
 

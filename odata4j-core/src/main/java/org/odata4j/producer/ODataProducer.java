@@ -1,9 +1,12 @@
 package org.odata4j.producer;
 
+import java.util.List;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityId;
 import org.odata4j.core.OEntityKey;
+import org.odata4j.core.OFunctionParameter;
 import org.odata4j.edm.EdmDataServices;
+import org.odata4j.edm.EdmFunctionImport;
 
 /** 
  * Implement <code>ODataProducer</code> on the server-side to create a new java-based OData producer.
@@ -142,4 +145,24 @@ public interface ODataProducer {
    * @param targetEntityKey  if the navigation property represents a set, the key identifying the target entity within the set, else n/a
    */
   void deleteLink(OEntityId sourceEntity, String targetNavProp, OEntityKey targetEntityKey);
+
+  /**
+   * Call a function (aka Service Operation)
+   * @param name the name of the function
+   * @param params the parameters to the function
+   * @return
+   *    From the spec:
+   *    The return type of <Function> MUST be one of the following:
+   *        An EDMSimpleType or collection of EDMSimpleTypes.
+   *        An entity type or collection of entity types.
+   *        A complex type or collection of complex types.
+   *        A row type or collection of row types.
+   *        <ReturnType> can contain a maximum of one <CollectionType> element.
+   *        <ReturnType> can contain a maximum of one <ReferenceType> element.
+   *        <ReturnType> can contain a maximum of one <RowType> element.
+   *        A ref type or collection of ref types.
+   *
+   *    BaseResponse will be appropriately typed to hold the function results.
+   */
+  public abstract BaseResponse callFunction(EdmFunctionImport name, java.util.Map<String, OFunctionParameter> params, QueryInfo queryInfo);
 }

@@ -22,4 +22,13 @@ public class EdmSchema {
     this.entityContainers = entityContainers == null ? Enumerable.empty(EdmEntityContainer.class).toList() : entityContainers;
 
   }
+
+  public EdmEntityContainer findEntityContainer(String name) {
+    for (EdmEntityContainer ec : this.entityContainers) {
+      if (ec.name.equals(name)) {
+        return ec;
+      }
+    }
+    return null;
+  }
 }
