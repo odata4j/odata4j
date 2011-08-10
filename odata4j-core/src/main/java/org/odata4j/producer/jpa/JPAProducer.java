@@ -69,7 +69,6 @@ import org.odata4j.producer.exceptions.NotImplementedException;
 public class JPAProducer implements ODataProducer {
 
   private final EntityManagerFactory emf;
-  private final EntityManager em;
   private final EdmDataServices metadata;
   private final int maxResults;
 
@@ -81,7 +80,6 @@ public class JPAProducer implements ODataProducer {
     this.emf = emf;
     this.maxResults = maxResults;
     this.metadata = metadata;
-    em = emf.createEntityManager(); // necessary for metamodel
   }
 
   public JPAProducer(
@@ -93,7 +91,6 @@ public class JPAProducer implements ODataProducer {
 
   @Override
   public void close() {
-    em.close();
     emf.close();
   }
 
@@ -618,7 +615,7 @@ public class JPAProducer implements ODataProducer {
             context.keyAttributeName = JPAEdmGenerator.getIdAttribute(context.jpaEntityType).getName();
 
             context.typeSafeEntityKey = typeSafeEntityKey(
-                em,
+                context.em,
                 context.jpaEntityType,
                 entityKey);
 
