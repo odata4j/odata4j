@@ -6,7 +6,6 @@ import java.util.Locale;
 
 import org.core4j.Enumerable;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.odata4j.core.Guid;
@@ -30,7 +29,6 @@ import com.sun.jersey.api.core.ExtendedUriInfo;
 import org.odata4j.core.OComplexObject;
 import org.odata4j.edm.EdmBaseType;
 import org.odata4j.edm.EdmComplexType;
-import org.odata4j.edm.EdmSimpleType;
 
 /** Write content to an HTTP stream in JSON format.
  * 
@@ -111,7 +109,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
       jw.writeString(Hex.encodeHexString(new byte[] { (Byte) pvalue }));
     } else if (type.equals(EdmType.DATETIME)) {
       LocalDateTime ldt = (LocalDateTime) pvalue;
-      long millis = ldt.toDateTime(DateTimeZone.UTC).getMillis();
+      long millis = ldt.toDateTime().getMillis();
       String date = "\"\\/Date(" + millis + ")\\/\"";
       jw.writeRaw(date);
     } else if (type.equals(EdmType.DECIMAL)) {

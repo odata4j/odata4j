@@ -2,7 +2,6 @@ package org.odata4j.format.json;
 
 import java.math.BigDecimal;
 
-import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.odata4j.core.Guid;
@@ -55,27 +54,25 @@ public class JsonTypeConverter {
     } else if (EdmType.DATETIME.equals(type)) {
       LocalDateTime dValue = null;
       if (value != null) {
-        if (!value.startsWith("\\/Date(") || !value.endsWith(")\\/")) {
+        if (!value.startsWith("/Date(") || !value.endsWith(")/")) {
           throw new IllegalArgumentException("invalid date format");
         }
-        String ticks = value.substring(7, value.length() - 3);
+        String ticks = value.substring(6, value.length() - 2);
         String offset = null;
         int idx = ticks.indexOf('-');
         if (idx > 0) {
           offset = ticks.substring(idx + 1);
           ticks = ticks.substring(0, idx);
-          dValue = new LocalDateTime(Long.parseLong(ticks),
-              DateTimeZone.UTC);
+          dValue = new LocalDateTime(Long.parseLong(ticks));
           dValue = dValue.minusMinutes(Integer.valueOf(offset));
         } else if ((idx = ticks.indexOf('+')) > 0) {
           offset = ticks.substring(idx + 1);
           ticks = ticks.substring(0, idx);
-          dValue = new LocalDateTime(Long.parseLong(ticks),
-              DateTimeZone.UTC);
+          dValue = new LocalDateTime(Long.parseLong(ticks));
           dValue = dValue.plusMinutes(Integer.valueOf(offset));
         } else {
-          dValue = new LocalDateTime(Long.parseLong(ticks),
-              DateTimeZone.UTC);
+          // ticks are the milliseconds from 1970-01-01T00:00:00Z
+          dValue = new LocalDateTime(Long.parseLong(ticks));
         }
       }
       return OProperties.datetime(name, dValue);
