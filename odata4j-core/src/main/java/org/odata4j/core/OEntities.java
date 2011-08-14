@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.core4j.Enumerable;
-import org.odata4j.edm.EdmBaseType;
+import org.odata4j.edm.EdmType;
 import org.odata4j.edm.EdmEntitySet;
 
 /**
@@ -104,7 +104,7 @@ public class OEntities {
         throw new IllegalArgumentException("entitySet cannot be null");
       if (entityKeyRequired && entityKey == null)
         throw new IllegalArgumentException("entityKey cannot be null");
-      
+
       this.entitySet = entitySet;
       this.entityKey = entityKey;
       this.properties = Collections.unmodifiableList(properties);
@@ -120,7 +120,7 @@ public class OEntities {
     public EdmEntitySet getEntitySet() {
       return entitySet;
     }
-    
+
     @Override
     public String getEntitySetName() {
       return entitySet.name;
@@ -161,10 +161,10 @@ public class OEntities {
       throw new IllegalArgumentException("No link with title: " + title);
     }
 
-   @Override
-   public EdmBaseType getType() {
-     return this.entitySet.type;
-   }
+    @Override
+    public EdmType getType() {
+      return this.entitySet.type;
+    }
 
   }
 

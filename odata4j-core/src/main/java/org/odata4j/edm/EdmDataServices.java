@@ -87,7 +87,7 @@ public class EdmDataServices {
   public EdmComplexType findEdmComplexType(String complexTypeFQName) {
     for (EdmSchema schema : this.schemas) {
       for (EdmComplexType ect : schema.complexTypes) {
-        if (ect.getFQName().equals(complexTypeFQName)) {
+        if (ect.getFullyQualifiedTypeName().equals(complexTypeFQName)) {
           return ect;
         }
       }
@@ -95,10 +95,10 @@ public class EdmDataServices {
     return null;
   }
 
-  public EdmBaseType findEdmEntityType(String fqName) {
+  public EdmType findEdmEntityType(String fqName) {
     for (EdmSchema schema : this.schemas) {
       for (EdmEntityType et : schema.entityTypes) {
-        if (et.toTypeString().equals(fqName)) {
+        if (et.getFullyQualifiedTypeName().equals(fqName)) {
           return et;
         }
       }

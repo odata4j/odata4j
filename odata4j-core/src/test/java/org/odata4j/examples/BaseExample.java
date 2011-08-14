@@ -16,7 +16,7 @@ import org.odata4j.edm.EdmFunctionParameter;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSchema;
-import org.odata4j.edm.EdmType;
+import org.odata4j.edm.EdmSimpleType;
 
 public class BaseExample {
 
@@ -32,7 +32,7 @@ public class BaseExample {
     report(caption);
     for (OProperty<?> p : entity.getProperties()) {
       Object v = p.getValue();
-      if (p.getType().equals(EdmType.BINARY) && v != null)
+      if (p.getType().equals(EdmSimpleType.BINARY) && v != null)
             v = org.odata4j.repack.org.apache.commons.codec.binary.Base64.encodeBase64String((byte[]) v).trim();
       report("  %s: %s", p.getName(), v);
     }
@@ -114,14 +114,14 @@ public class BaseExample {
       }
       for (EdmAssociation assoc : schema.associations) {
         report("  Association Name=%s", assoc.name);
-        report("    End Role=%s Type=%s Multiplicity=%s", assoc.end1.role, assoc.end1.type.getFQNamespaceName(), assoc.end1.multiplicity);
-        report("    End Role=%s Type=%s Multiplicity=%s", assoc.end2.role, assoc.end2.type.getFQNamespaceName(), assoc.end2.multiplicity);
+        report("    End Role=%s Type=%s Multiplicity=%s", assoc.end1.role, assoc.end1.type.getFullyQualifiedTypeName(), assoc.end1.multiplicity);
+        report("    End Role=%s Type=%s Multiplicity=%s", assoc.end2.role, assoc.end2.type.getFullyQualifiedTypeName(), assoc.end2.multiplicity);
       }
       for (EdmEntityContainer ec : schema.entityContainers) {
         report("  EntityContainer Name=%s IsDefault=%s LazyLoadingEnabled=%s", ec.name, ec.isDefault, ec.lazyLoadingEnabled);
 
         for (EdmEntitySet ees : ec.entitySets) {
-          report("    EntitySet Name=%s EntityType=%s", ees.name, ees.type.getFQNamespaceName());
+          report("    EntitySet Name=%s EntityType=%s", ees.name, ees.type.getFullyQualifiedTypeName());
         }
 
         for (EdmAssociationSet eas : ec.associationSets) {

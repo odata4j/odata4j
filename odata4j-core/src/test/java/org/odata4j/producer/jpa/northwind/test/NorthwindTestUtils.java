@@ -26,7 +26,7 @@ import javax.ws.rs.core.MediaType;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.junit.Assert;
-import org.odata4j.edm.EdmType;
+import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.internal.InternalUtil;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -357,7 +357,7 @@ public class NorthwindTestUtils {
       } else if ("updated".equals(expected.getNodeName()))
         ; // ignore because time stamps differ always
       else if (expected.getAttributes().getNamedItem("m:type") != null
-          && EdmType.BINARY.toTypeString().equals(
+          && EdmSimpleType.BINARY.getFullyQualifiedTypeName().equals(
               expected.getAttributes().getNamedItem("m:type")
                   .getNodeValue())
           && expectedChildNode.getNodeType() == Node.TEXT_NODE) {
@@ -373,7 +373,7 @@ public class NorthwindTestUtils {
         // regard these
         // when we write a decimal value
       } else if (expected.getAttributes().getNamedItem("m:type") != null
-          && EdmType.DECIMAL.toTypeString().equals(
+          && EdmSimpleType.DECIMAL.getFullyQualifiedTypeName().equals(
               expected.getAttributes().getNamedItem("m:type")
                   .getNodeValue())
           && expectedChildNode.getNodeType() == Node.TEXT_NODE) {
@@ -382,7 +382,7 @@ public class NorthwindTestUtils {
             Double.parseDouble(((Text) resultChildNode).getData()),
             0.00001);
       } else if (expected.getAttributes().getNamedItem("m:type") != null
-          && EdmType.SINGLE.toTypeString().equals(
+          && EdmSimpleType.SINGLE.getFullyQualifiedTypeName().equals(
               expected.getAttributes().getNamedItem("m:type")
                   .getNodeValue())
           && expectedChildNode.getNodeType() == Node.TEXT_NODE) {
@@ -393,7 +393,7 @@ public class NorthwindTestUtils {
             0.00001);
       } else {
         if (expected.getAttributes().getNamedItem("m:type") != null
-            && EdmType.DATETIME.toTypeString().equals(
+            && EdmSimpleType.DATETIME.getFullyQualifiedTypeName().equals(
                 expected.getAttributes().getNamedItem("m:type")
                     .getNodeValue())
             && expectedChildNode.getNodeType() == Node.TEXT_NODE) {

@@ -13,7 +13,7 @@ import org.core4j.Enumerable;
 import org.core4j.Func1;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmEntityType;
-import org.odata4j.edm.EdmType;
+import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.expression.CommonExpression;
 import org.odata4j.expression.Expression;
 import org.odata4j.expression.ExpressionParser;
@@ -330,8 +330,8 @@ public class OEntityKey {
   }
 
   private static final Set<Class<?>> EDM_SIMPLE_JAVA_TYPES =
-      Enumerable.create(EdmType.SIMPLE).selectMany(new Func1<EdmType, Enumerable<Class<?>>>() {
-        public Enumerable<Class<?>> apply(EdmType input) {
+      Enumerable.create(EdmSimpleType.ALL).selectMany(new Func1<EdmSimpleType, Enumerable<Class<?>>>() {
+        public Enumerable<Class<?>> apply(EdmSimpleType input) {
           return Enumerable.create(input.getJavaTypes());
         }
       }).toSet();

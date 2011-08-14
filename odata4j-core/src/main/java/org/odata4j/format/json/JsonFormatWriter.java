@@ -19,7 +19,7 @@ import org.odata4j.core.ORelatedEntitiesLinkInline;
 import org.odata4j.core.ORelatedEntityLinkInline;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmNavigationProperty;
-import org.odata4j.edm.EdmType;
+import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.format.FormatWriter;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
@@ -27,7 +27,7 @@ import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
 
 import com.sun.jersey.api.core.ExtendedUriInfo;
 import org.odata4j.core.OComplexObject;
-import org.odata4j.edm.EdmBaseType;
+import org.odata4j.edm.EdmType;
 import org.odata4j.edm.EdmComplexType;
 
 /** Write content to an HTTP stream in JSON format.
@@ -98,47 +98,48 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
     writeValue(jw, prop.getType(), prop.getValue());
   }
 
-  protected void writeValue(JsonWriter jw, EdmBaseType type, Object pvalue) {
+  @SuppressWarnings("unchecked")
+  protected void writeValue(JsonWriter jw, EdmType type, Object pvalue) {
     if (pvalue == null) {
       jw.writeNull();
-    } else if (type.equals(EdmType.BINARY)) {
+    } else if (type.equals(EdmSimpleType.BINARY)) {
       jw.writeString(Base64.encodeBase64String((byte[]) pvalue));
-    } else if (type.equals(EdmType.BOOLEAN)) {
+    } else if (type.equals(EdmSimpleType.BOOLEAN)) {
       jw.writeBoolean((Boolean) pvalue);
-    } else if (type.equals(EdmType.BYTE)) {
+    } else if (type.equals(EdmSimpleType.BYTE)) {
       jw.writeString(Hex.encodeHexString(new byte[] { (Byte) pvalue }));
-    } else if (type.equals(EdmType.DATETIME)) {
+    } else if (type.equals(EdmSimpleType.DATETIME)) {
       LocalDateTime ldt = (LocalDateTime) pvalue;
       long millis = ldt.toDateTime().getMillis();
       String date = "\"\\/Date(" + millis + ")\\/\"";
       jw.writeRaw(date);
-    } else if (type.equals(EdmType.DECIMAL)) {
+    } else if (type.equals(EdmSimpleType.DECIMAL)) {
       // jw.writeString("decimal'" + (BigDecimal) pvalue + "'");
       jw.writeString(String.format(Locale.ENGLISH, "%1$.4f", pvalue));
-    } else if (type.equals(EdmType.DOUBLE)) {
+    } else if (type.equals(EdmSimpleType.DOUBLE)) {
       // jw.writeString(pvalue.toString());
       jw.writeString(String.format(Locale.ENGLISH, "%1$.4f", pvalue));
-    } else if (type.equals(EdmType.GUID)) {
+    } else if (type.equals(EdmSimpleType.GUID)) {
       jw.writeString("guid'" + (Guid) pvalue + "'");
-    } else if (type.equals(EdmType.INT16)) {
+    } else if (type.equals(EdmSimpleType.INT16)) {
       jw.writeNumber((Short) pvalue);
-    } else if (type.equals(EdmType.INT32)) {
+    } else if (type.equals(EdmSimpleType.INT32)) {
       jw.writeNumber((Integer) pvalue);
-    } else if (type.equals(EdmType.INT64)) {
+    } else if (type.equals(EdmSimpleType.INT64)) {
       jw.writeString(pvalue.toString());
-    } else if (type.equals(EdmType.SINGLE)) {
+    } else if (type.equals(EdmSimpleType.SINGLE)) {
       jw.writeNumber((Float) pvalue);
-    } else if (type.equals(EdmType.TIME)) {
+    } else if (type.equals(EdmSimpleType.TIME)) {
       LocalTime ldt = (LocalTime) pvalue;
       jw.writeString("time'" + ldt + "'");
-    } else if (type.equals(EdmType.DATETIMEOFFSET)) {
+    } else if (type.equals(EdmSimpleType.DATETIMEOFFSET)) {
       jw.writeString("datetimeoffset'" + InternalUtil.toString((DateTime) pvalue) + "'");
-    } else if (type instanceof EdmComplexType || (type instanceof EdmType && (!((EdmType)type).isSimple()))) {
+    } else if (type instanceof EdmComplexType || (type instanceof EdmSimpleType && (!((EdmSimpleType)type).isSimple()))) {
       // the OComplexObject value type is not in use everywhere yet, fix TODO
       if (pvalue instanceof OComplexObject) {
           pvalue = ((OComplexObject)pvalue).getProperties();
       }
-      writeComplexObject(jw, type.toTypeString(), (List<OProperty<?>>)pvalue);
+      writeComplexObject(jw, type.getFullyQualifiedTypeName(), (List<OProperty<?>>)pvalue);
     } else {
       String value = pvalue.toString();
       jw.writeString(value);
@@ -182,7 +183,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
           jw.writeString(absId);
           jw.writeSeparator();
           jw.writeName("type");
-          jw.writeString(ees.type.getFQNamespaceName());
+          jw.writeString(ees.type.getFullyQualifiedTypeName());
         }
         jw.endObject();
         jw.writeSeparator();

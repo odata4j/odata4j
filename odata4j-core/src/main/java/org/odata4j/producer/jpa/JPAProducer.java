@@ -50,6 +50,7 @@ import org.odata4j.edm.EdmMultiplicity;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmPropertyBase;
+import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.OrderByExpression;
@@ -258,7 +259,7 @@ public class JPAProducer implements ODataProducer {
 
           properties.add(OProperties.simple(
               ep.name,
-              ep.type,
+              (EdmSimpleType) ep.type,
               value,
               true));
 
@@ -270,7 +271,7 @@ public class JPAProducer implements ODataProducer {
 
           properties.add(OProperties.simple(
               ep.name,
-              ep.type,
+              (EdmSimpleType) ep.type,
               value,
               true));
         }
@@ -533,7 +534,7 @@ public class JPAProducer implements ODataProducer {
       Object value = results.get(0);
       OProperty<?> op = OProperties.simple(
           ((EdmProperty) propInfo).name,
-          ((EdmProperty) propInfo).type,
+          (EdmSimpleType) ((EdmProperty) propInfo).type,
           value);
       return DynamicEntitiesResponse.property(op);
     }

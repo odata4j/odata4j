@@ -39,6 +39,7 @@ import org.odata4j.edm.EdmAssociation;
 import org.odata4j.edm.EdmAssociationEnd;
 import org.odata4j.edm.EdmAssociationSet;
 import org.odata4j.edm.EdmAssociationSetEnd;
+import org.odata4j.edm.EdmType;
 import org.odata4j.edm.EdmComplexType;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntityContainer;
@@ -48,41 +49,41 @@ import org.odata4j.edm.EdmMultiplicity;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSchema;
-import org.odata4j.edm.EdmType;
+import org.odata4j.edm.EdmSimpleType;
 
 public class JPAEdmGenerator {
 
   private final Logger log = Logger.getLogger(getClass().getName());
 
-  protected EdmType toEdmType(SingularAttribute<?, ?> sa) {
+  protected EdmSimpleType toEdmType(SingularAttribute<?, ?> sa) {
 
     Class<?> javaType = sa.getType().getJavaType();
 
     if (javaType.equals(Date.class) || javaType.equals(Calendar.class)) {
       TemporalType temporal = getTemporalType(sa);
       if (temporal == null) {
-        return EdmType.DATETIME;
+        return EdmSimpleType.DATETIME;
       } else {
         switch (temporal) {
         case DATE:
         case TIMESTAMP:
-          return EdmType.DATETIME;
+          return EdmSimpleType.DATETIME;
         case TIME:
-          return EdmType.TIME;
+          return EdmSimpleType.TIME;
         }
       }
     }
     if (javaType.equals(Time.class)) {
-      return EdmType.TIME;
+      return EdmSimpleType.TIME;
     }
     if (javaType.equals(Instant.class)) {
-      return EdmType.DATETIME;
+      return EdmSimpleType.DATETIME;
     }
     if (javaType.equals(Timestamp.class)) {
-      return EdmType.DATETIME;
+      return EdmSimpleType.DATETIME;
     }
 
-    EdmType rt = EdmType.forJavaType(javaType);
+    EdmSimpleType rt = EdmSimpleType.forJavaType(javaType);
     if (rt != null)
           return rt;
 
@@ -97,7 +98,7 @@ public class JPAEdmGenerator {
       type = EdmType.get(modelNamespace + "." + simpleName);
     } else if (sa.getBindableJavaType().isEnum()) {
       // TODO assume string mapping for now, @Enumerated info not avail in metamodel?
-      type = EdmType.STRING;
+      type = EdmSimpleType.STRING;
     } else {
       type = toEdmType(sa);
     }
@@ -106,7 +107,7 @@ public class JPAEdmGenerator {
     Integer maxLength = null;
     if (sa.getJavaMember() instanceof AnnotatedElement) {
       Column col = ((AnnotatedElement) sa.getJavaMember()).getAnnotation(Column.class);
-      if (col != null && Enumerable.create(EdmType.BINARY, EdmType.STRING).contains(type))
+      if (col != null && Enumerable.<EdmType>create(EdmSimpleType.BINARY, EdmSimpleType.STRING).contains(type))
         maxLength = col.length();
     }
 

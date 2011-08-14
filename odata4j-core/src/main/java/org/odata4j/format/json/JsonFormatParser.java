@@ -13,11 +13,12 @@ import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OLink;
 import org.odata4j.core.OLinks;
 import org.odata4j.core.OProperty;
-import org.odata4j.edm.EdmBaseType;
+import org.odata4j.edm.EdmType;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
+import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.format.Entry;
 import org.odata4j.format.Feed;
 import org.odata4j.format.Settings;
@@ -55,7 +56,7 @@ public class JsonFormatParser {
   protected String entitySetName;
   protected OEntityKey entityKey;
   protected boolean isResponse;
-  protected EdmBaseType parseType;
+  protected EdmType parseType;
 
   protected JsonFormatParser(Settings settings) {
     this.version = settings == null ? null : settings.version;
@@ -182,7 +183,10 @@ public class JsonFormatParser {
       if (ep == null) {
         throw new IllegalArgumentException("unknown property " + name + " for " + ees.name);
       }
-      entry.properties.add(JsonTypeConverter.parse(name, ep.type, event.asEndProperty().getValue()));
+      // TODO support complex type properties
+      if (!ep.type.isSimple())
+        throw new UnsupportedOperationException("Only simple properties supported");
+      entry.properties.add(JsonTypeConverter.parse(name, (EdmSimpleType) ep.type, event.asEndProperty().getValue()));
     } else if (event.isStartObject()) {
       // reference deferred or inlined
 

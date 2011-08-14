@@ -15,10 +15,11 @@ import org.odata4j.core.OProperty;
 import org.odata4j.core.ORelatedEntitiesLink;
 import org.odata4j.core.ORelatedEntitiesLinkInline;
 import org.odata4j.core.ORelatedEntityLinkInline;
+import org.odata4j.edm.EdmType;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmMultiplicity;
 import org.odata4j.edm.EdmNavigationProperty;
-import org.odata4j.edm.EdmType;
+import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
 import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
@@ -61,7 +62,7 @@ public class XmlFormatWriter {
     if (!type.isSimple()) {
       writer.writeAttribute(
           new QName2(m, "type", "m"),
-          type.toTypeString());
+          type.getFullyQualifiedTypeName());
       // complex
       List<OProperty<?>> complexProperties = (List<OProperty<?>>) value;
       if (complexProperties != null) {
@@ -69,102 +70,102 @@ public class XmlFormatWriter {
       }
     } else {
       // simple
-      if (type == EdmType.INT32) {
+      if (type == EdmSimpleType.INT32) {
         writer.writeAttribute(
             new QName2(m, "type", "m"),
-            type.toTypeString());
+            type.getFullyQualifiedTypeName());
         if (value != null) {
           sValue = value.toString();
         }
-      } else if (type == EdmType.INT16) {
+      } else if (type == EdmSimpleType.INT16) {
         writer.writeAttribute(
             new QName2(m, "type", "m"),
-            type.toTypeString());
+            type.getFullyQualifiedTypeName());
         if (value != null) {
           sValue = value.toString();
         }
-      } else if (type == EdmType.INT64) {
+      } else if (type == EdmSimpleType.INT64) {
         writer.writeAttribute(
             new QName2(m, "type", "m"),
-            type.toTypeString());
+            type.getFullyQualifiedTypeName());
         if (value != null) {
           sValue = value.toString();
         }
-      } else if (type == EdmType.BOOLEAN) {
+      } else if (type == EdmSimpleType.BOOLEAN) {
         writer.writeAttribute(
             new QName2(m, "type", "m"),
-            type.toTypeString());
+            type.getFullyQualifiedTypeName());
         if (value != null) {
           sValue = value.toString();
         }
-      } else if (type == EdmType.BYTE) {
+      } else if (type == EdmSimpleType.BYTE) {
         writer.writeAttribute(
             new QName2(m, "type", "m"),
-            type.toTypeString());
+            type.getFullyQualifiedTypeName());
         if (value != null) {
           sValue = Hex.encodeHexString(
               new byte[] { (Byte) value });
         }
-      } else if (type == EdmType.DECIMAL) {
+      } else if (type == EdmSimpleType.DECIMAL) {
         writer.writeAttribute(
             new QName2(m, "type", "m"),
-            type.toTypeString());
+            type.getFullyQualifiedTypeName());
         if (value != null) {
           sValue = value.toString();
         }
-      } else if (type == EdmType.SINGLE) {
+      } else if (type == EdmSimpleType.SINGLE) {
         writer.writeAttribute(
             new QName2(m, "type", "m"),
-            type.toTypeString());
+            type.getFullyQualifiedTypeName());
         if (value != null) {
           sValue = value.toString();
         }
-      } else if (type == EdmType.DOUBLE) {
+      } else if (type == EdmSimpleType.DOUBLE) {
         writer.writeAttribute(
             new QName2(m, "type", "m"),
-            type.toTypeString());
+            type.getFullyQualifiedTypeName());
         if (value != null) {
           sValue = value.toString();
         }
-      } else if (type == EdmType.STRING) {
+      } else if (type == EdmSimpleType.STRING) {
         if (value != null) {
           sValue = value.toString();
         }
-      } else if (type == EdmType.DATETIME) {
+      } else if (type == EdmSimpleType.DATETIME) {
         writer.writeAttribute(
             new QName2(m, "type", "m"),
-            type.toTypeString());
+            type.getFullyQualifiedTypeName());
         if (value != null)
           sValue = InternalUtil.formatDateTime(
                   (LocalDateTime) value);
-      } else if (type == EdmType.BINARY) {
+      } else if (type == EdmSimpleType.BINARY) {
         writer.writeAttribute(
             new QName2(m, "type", "m"),
-            type.toTypeString());
+            type.getFullyQualifiedTypeName());
         byte[] bValue = (byte[]) value;
         if (value != null) {
           sValue = Base64.encodeBase64String(bValue);
         }
-      } else if (type == EdmType.GUID) {
+      } else if (type == EdmSimpleType.GUID) {
         writer.writeAttribute(
             new QName2(m, "type", "m"),
-            type.toTypeString());
+            type.getFullyQualifiedTypeName());
         if (value != null) {
           sValue = value.toString();
         }
-      } else if (type == EdmType.TIME) {
+      } else if (type == EdmSimpleType.TIME) {
         writer.writeAttribute(
             new QName2(m, "type", "m"),
-            type.toTypeString());
+            type.getFullyQualifiedTypeName());
         if (value != null) {
           sValue = InternalUtil.toString((LocalTime) value);
         }
-      } else if (type == EdmType.DATETIMEOFFSET) {
+      } else if (type == EdmSimpleType.DATETIMEOFFSET) {
         // Edm.DateTimeOffset '-'? yyyy '-' mm '-' dd 'T' hh ':' mm
         // ':' ss ('.' s+)? (zzzzzz)?
         writer.writeAttribute(
             new QName2(m, "type", "m"),
-            type.toTypeString());
+            type.getFullyQualifiedTypeName());
         if (value != null) {
           sValue = InternalUtil.toString((DateTime) value);
         }
@@ -279,7 +280,7 @@ public class XmlFormatWriter {
     }
     
     writeElement(writer, "category", null,
-        "term", ees.type.getFQNamespaceName(),
+        "term", ees.type.getFullyQualifiedTypeName(),
         "scheme", scheme);
 
     writer.startElement("content");

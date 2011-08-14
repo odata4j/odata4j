@@ -48,7 +48,7 @@ public class FormatWriterFactory {
 
     FormatWriter<ComplexObjectResponse> getComplexObjectFormatWriter();
 
-    FormatWriter<CollectionResponse> getCollectionFormatWriter();
+    FormatWriter<CollectionResponse<?>> getCollectionFormatWriter();
   }
 
   @SuppressWarnings("unchecked")
@@ -158,7 +158,7 @@ public class FormatWriterFactory {
     }
 
     @Override
-    public FormatWriter<CollectionResponse> getCollectionFormatWriter() {
+    public FormatWriter<CollectionResponse<?>> getCollectionFormatWriter() {
       return new JsonCollectionFormatWriter(callback);
     }
   }
@@ -206,7 +206,7 @@ public class FormatWriterFactory {
     }
 
     @Override
-    public FormatWriter<CollectionResponse> getCollectionFormatWriter() {
+    public FormatWriter<CollectionResponse<?>> getCollectionFormatWriter() {
       throw new NotImplementedException();
     }
   }

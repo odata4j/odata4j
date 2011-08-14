@@ -10,7 +10,7 @@ import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.junit.Test;
 import org.odata4j.core.Guid;
-import org.odata4j.edm.EdmType;
+import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.expression.AddExpression;
 import org.odata4j.expression.AndExpression;
 import org.odata4j.expression.BinaryLiteral;
@@ -144,11 +144,11 @@ public class ExpressionTest {
     t(Expression.not(Expression.null_()), "not null");
     t(Expression.negate(Expression.simpleProperty("a")), "-a");
     t(Expression.negate(Expression.simpleProperty("a")), "- a");
-    t(Expression.cast(EdmType.STRING.toTypeString()), "cast('Edm.String')");
-    t(Expression.cast(EdmType.STRING.toTypeString()), "cast    ( 'Edm.String'  ) ");
-    t(Expression.cast(Expression.null_(), EdmType.STRING.toTypeString()), "cast(null,'Edm.String')");
-    t(Expression.cast(Expression.null_(), EdmType.STRING.toTypeString()), "    cast   (  null  ,  'Edm.String'   ) ");
-    t(Expression.isof(EdmType.STRING.toTypeString()), "isof('Edm.String')");
+    t(Expression.cast(EdmSimpleType.STRING.getFullyQualifiedTypeName()), "cast('Edm.String')");
+    t(Expression.cast(EdmSimpleType.STRING.getFullyQualifiedTypeName()), "cast    ( 'Edm.String'  ) ");
+    t(Expression.cast(Expression.null_(), EdmSimpleType.STRING.getFullyQualifiedTypeName()), "cast(null,'Edm.String')");
+    t(Expression.cast(Expression.null_(), EdmSimpleType.STRING.getFullyQualifiedTypeName()), "    cast   (  null  ,  'Edm.String'   ) ");
+    t(Expression.isof(EdmSimpleType.STRING.getFullyQualifiedTypeName()), "isof('Edm.String')");
 
     t(Expression.endsWith(Expression.string("aba"), Expression.string("a")), "endswith('aba','a')");
     t(Expression.startsWith(Expression.string("aba"), Expression.string("a")), "startswith('aba','a')");

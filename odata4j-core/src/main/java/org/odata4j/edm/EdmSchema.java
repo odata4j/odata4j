@@ -20,7 +20,6 @@ public class EdmSchema {
     this.complexTypes = complexTypes == null ? Enumerable.empty(EdmComplexType.class).toList() : complexTypes;
     this.associations = associations == null ? Enumerable.empty(EdmAssociation.class).toList() : associations;
     this.entityContainers = entityContainers == null ? Enumerable.empty(EdmEntityContainer.class).toList() : entityContainers;
-
   }
 
   public EdmEntityContainer findEntityContainer(String name) {

@@ -509,7 +509,7 @@ public class ODataConsumer {
   }
 
   public OFunctionRequest<OObject> callFunction(String functionName) {
-    return new ConsumerFunctionCallRequest(client, serviceRootUri, getMetadata(), functionName);
+    return new ConsumerFunctionCallRequest<OObject>(client, serviceRootUri, getMetadata(), functionName);
   }
 
 }

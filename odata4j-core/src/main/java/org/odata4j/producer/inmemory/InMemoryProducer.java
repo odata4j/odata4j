@@ -44,7 +44,7 @@ import org.odata4j.edm.EdmMultiplicity;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSchema;
-import org.odata4j.edm.EdmType;
+import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.OrderByExpression;
@@ -78,31 +78,31 @@ public class InMemoryProducer implements ODataProducer {
 
   private static final String ID_PROPNAME = "EntityId";
   private static final String CONTAINER_NAME = "Container";
-  private static final Map<Class<?>, EdmType> SUPPORTED_TYPES = new HashMap<Class<?>, EdmType>();
+  private static final Map<Class<?>, EdmSimpleType> SUPPORTED_TYPES = new HashMap<Class<?>, EdmSimpleType>();
   static {
-    SUPPORTED_TYPES.put(byte[].class, EdmType.BINARY);
-    SUPPORTED_TYPES.put(Boolean.class, EdmType.BOOLEAN);
-    SUPPORTED_TYPES.put(Boolean.TYPE, EdmType.BOOLEAN);
-    SUPPORTED_TYPES.put(byte.class, EdmType.BYTE);
-    SUPPORTED_TYPES.put(LocalDateTime.class, EdmType.DATETIME);
-    SUPPORTED_TYPES.put(BigDecimal.class, EdmType.DECIMAL);
-    SUPPORTED_TYPES.put(Double.class, EdmType.DOUBLE);
-    SUPPORTED_TYPES.put(Double.TYPE, EdmType.DOUBLE);
-    SUPPORTED_TYPES.put(Guid.class, EdmType.GUID);
-    SUPPORTED_TYPES.put(Short.class, EdmType.INT16);
-    SUPPORTED_TYPES.put(Short.TYPE, EdmType.INT16);
-    SUPPORTED_TYPES.put(Integer.class, EdmType.INT32);
-    SUPPORTED_TYPES.put(Integer.TYPE, EdmType.INT32);
-    SUPPORTED_TYPES.put(Long.class, EdmType.INT64);
-    SUPPORTED_TYPES.put(Long.TYPE, EdmType.INT64);
-    SUPPORTED_TYPES.put(Float.class, EdmType.SINGLE);
-    SUPPORTED_TYPES.put(Float.TYPE, EdmType.SINGLE);
-    SUPPORTED_TYPES.put(String.class, EdmType.STRING);
-    SUPPORTED_TYPES.put(LocalTime.class, EdmType.TIME);
-    SUPPORTED_TYPES.put(DateTime.class, EdmType.DATETIMEOFFSET);
-    SUPPORTED_TYPES.put(Date.class, EdmType.DATETIME);
+    SUPPORTED_TYPES.put(byte[].class, EdmSimpleType.BINARY);
+    SUPPORTED_TYPES.put(Boolean.class, EdmSimpleType.BOOLEAN);
+    SUPPORTED_TYPES.put(Boolean.TYPE, EdmSimpleType.BOOLEAN);
+    SUPPORTED_TYPES.put(byte.class, EdmSimpleType.BYTE);
+    SUPPORTED_TYPES.put(LocalDateTime.class, EdmSimpleType.DATETIME);
+    SUPPORTED_TYPES.put(BigDecimal.class, EdmSimpleType.DECIMAL);
+    SUPPORTED_TYPES.put(Double.class, EdmSimpleType.DOUBLE);
+    SUPPORTED_TYPES.put(Double.TYPE, EdmSimpleType.DOUBLE);
+    SUPPORTED_TYPES.put(Guid.class, EdmSimpleType.GUID);
+    SUPPORTED_TYPES.put(Short.class, EdmSimpleType.INT16);
+    SUPPORTED_TYPES.put(Short.TYPE, EdmSimpleType.INT16);
+    SUPPORTED_TYPES.put(Integer.class, EdmSimpleType.INT32);
+    SUPPORTED_TYPES.put(Integer.TYPE, EdmSimpleType.INT32);
+    SUPPORTED_TYPES.put(Long.class, EdmSimpleType.INT64);
+    SUPPORTED_TYPES.put(Long.TYPE, EdmSimpleType.INT64);
+    SUPPORTED_TYPES.put(Float.class, EdmSimpleType.SINGLE);
+    SUPPORTED_TYPES.put(Float.TYPE, EdmSimpleType.SINGLE);
+    SUPPORTED_TYPES.put(String.class, EdmSimpleType.STRING);
+    SUPPORTED_TYPES.put(LocalTime.class, EdmSimpleType.TIME);
+    SUPPORTED_TYPES.put(DateTime.class, EdmSimpleType.DATETIMEOFFSET);
+    SUPPORTED_TYPES.put(Date.class, EdmSimpleType.DATETIME);
 
-    SUPPORTED_TYPES.put(Object.class, EdmType.STRING);
+    SUPPORTED_TYPES.put(Object.class, EdmSimpleType.STRING);
   }
 
   private final String namespace;
@@ -427,7 +427,7 @@ public class InMemoryProducer implements ODataProducer {
     properties.add(OProperties.simple(ID_PROPNAME, getEdmType(ei.keyClass), keyValue));
 
     for (String propName : ei.properties.getPropertyNames()) {
-      EdmType type;
+      EdmSimpleType type;
       Object value = ei.properties.getPropertyValue(obj, propName);
       Class<?> propType = ei.properties.getPropertyType(propName);
       type = findEdmType(propType);
@@ -604,7 +604,7 @@ public class InMemoryProducer implements ODataProducer {
 
     for (String propName : model.getPropertyNames()) {
       Class<?> propType = model.getPropertyType(propName);
-      EdmType type = findEdmType(propType);
+      EdmSimpleType type = findEdmType(propType);
       if (type == null) continue;
       rt.add(new EdmProperty(propName, type, true, null, null, null, null, null, null, null, null, null));
     }
@@ -612,14 +612,14 @@ public class InMemoryProducer implements ODataProducer {
     return rt;
   }
 
-  private EdmType getEdmType(Class<?> clazz) {
-    EdmType type = findEdmType(clazz);
+  private EdmSimpleType getEdmType(Class<?> clazz) {
+    EdmSimpleType type = findEdmType(clazz);
     if (type != null) return type;
     throw new UnsupportedOperationException(clazz.getName());
   }
 
-  private EdmType findEdmType(Class<?> clazz) {
-    EdmType type = SUPPORTED_TYPES.get(clazz);
+  private EdmSimpleType findEdmType(Class<?> clazz) {
+    EdmSimpleType type = SUPPORTED_TYPES.get(clazz);
     if (type != null) return type;
     return null;
   }

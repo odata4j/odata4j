@@ -10,6 +10,7 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metamodel.AttributeImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.odata4j.edm.EdmType;
+import org.odata4j.edm.EdmSimpleType;
 
 public class EclipseLink {
 
@@ -23,7 +24,7 @@ public class EclipseLink {
 
     DatabaseField df = dm.getField();
 
-    if (df != null && EdmType.STRING.equals(type)) {
+    if (df != null && EdmSimpleType.STRING.equals(type)) {
       rt.put("MaxLength", df.getLength());
     }
     return rt;

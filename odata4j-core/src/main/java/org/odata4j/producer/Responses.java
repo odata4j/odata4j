@@ -3,9 +3,9 @@ package org.odata4j.producer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import org.odata4j.core.OCollection;
 import org.odata4j.core.OComplexObject;
 
+import org.odata4j.core.OCollection;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityId;
 import org.odata4j.core.OObject;
@@ -88,13 +88,13 @@ public class Responses {
       }
     };
   }
-  
+
   // TODO(0.5) javadoc
   public static <T extends OEntityId> EntityIdResponse singleId(T entityId) {
     final List<OEntityId> entities = new ArrayList<OEntityId>();
     entities.add(entityId);
-      
-    return new EntityIdResponse(){
+
+    return new EntityIdResponse() {
 
       @Override
       public EdmMultiplicity getMultiplicity() {
@@ -104,15 +104,16 @@ public class Responses {
       @Override
       public Collection<OEntityId> getEntities() {
         return entities;
-      }};
+      }
+    };
   }
-  
+
   public static <T extends OEntityId> EntityIdResponse multipleIds(Iterable<T> entityIds) {
     final List<OEntityId> entities = new ArrayList<OEntityId>();
-    for(T entityId : entityIds)
+    for (T entityId : entityIds)
       entities.add(entityId);
-    
-    return new EntityIdResponse(){
+
+    return new EntityIdResponse() {
 
       @Override
       public EdmMultiplicity getMultiplicity() {
@@ -122,12 +123,12 @@ public class Responses {
       @Override
       public Collection<OEntityId> getEntities() {
         return entities;
-      }};
+      }
+    };
   }
 
   public static ComplexObjectResponse complexObject(final OComplexObject obj) {
     return new ComplexObjectResponse() {
-
       @Override
       public OComplexObject getObject() {
         return obj;
@@ -135,7 +136,7 @@ public class Responses {
     };
   }
 
-  public static <T  extends OObject> CollectionResponse collection(final OCollection<T> obj) {
+  public static <T extends OObject> CollectionResponse<?> collection(final OCollection<T> obj) {
     return new CollectionResponse<T>() {
       @Override
       public OCollection<T> getCollection() {
@@ -143,5 +144,5 @@ public class Responses {
       }
     };
   }
-  
+
 }

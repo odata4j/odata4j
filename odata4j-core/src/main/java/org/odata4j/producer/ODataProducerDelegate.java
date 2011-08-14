@@ -1,6 +1,7 @@
 package org.odata4j.producer;
 
-import java.util.List;
+import java.util.Map;
+
 import org.odata4j.core.Delegate;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityId;
@@ -82,7 +83,7 @@ public abstract class ODataProducerDelegate implements Delegate<ODataProducer>, 
   }
 
   @Override
-  public BaseResponse callFunction(EdmFunctionImport name, java.util.Map<String, OFunctionParameter> params, QueryInfo queryInfo) {
-    return getDelegate().callFunction( null, null, null);
+  public BaseResponse callFunction(EdmFunctionImport name, Map<String, OFunctionParameter> params, QueryInfo queryInfo) {
+    return getDelegate().callFunction(name, params, queryInfo);
   }
 }

@@ -1,6 +1,7 @@
 package org.odata4j.producer;
 
-import java.util.List;
+import java.util.Map;
+
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityId;
 import org.odata4j.core.OEntityKey;
@@ -148,21 +149,23 @@ public interface ODataProducer {
 
   /**
    * Call a function (aka Service Operation)
-   * @param name the name of the function
-   * @param params the parameters to the function
-   * @return
-   *    From the spec:
-   *    The return type of <Function> MUST be one of the following:
+   * 
+   * @param name  the name of the function
+   * @param params  the parameters to the function
+   * @param queryInfo  additional query parameters to apply to collection-valued results
+   * @return a BaseResponse appropriately typed to hold the function results
+   *    From the spec:<pre>
+   *    The return type of &lt;Function&gt; MUST be one of the following:
    *        An EDMSimpleType or collection of EDMSimpleTypes.
    *        An entity type or collection of entity types.
    *        A complex type or collection of complex types.
    *        A row type or collection of row types.
-   *        <ReturnType> can contain a maximum of one <CollectionType> element.
-   *        <ReturnType> can contain a maximum of one <ReferenceType> element.
-   *        <ReturnType> can contain a maximum of one <RowType> element.
-   *        A ref type or collection of ref types.
+   *        &lt;ReturnType&gt; can contain a maximum of one &lt;CollectionType&gt; element.
+   *        &lt;ReturnType&gt; can contain a maximum of one &lt;ReferenceType&gt; element.
+   *        &lt;ReturnType&gt; can contain a maximum of one &lt;RowType&gt; element.
+   *        A ref type or collection of ref types.</pre>
    *
-   *    BaseResponse will be appropriately typed to hold the function results.
+   *   
    */
-  public abstract BaseResponse callFunction(EdmFunctionImport name, java.util.Map<String, OFunctionParameter> params, QueryInfo queryInfo);
+  BaseResponse callFunction(EdmFunctionImport name, Map<String, OFunctionParameter> params, QueryInfo queryInfo);
 }

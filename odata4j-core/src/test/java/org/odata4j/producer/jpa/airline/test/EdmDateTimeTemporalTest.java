@@ -19,7 +19,7 @@ import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperties;
 import org.odata4j.edm.EdmDataServices;
-import org.odata4j.edm.EdmType;
+import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.examples.producer.ProducerUtil;
 import org.odata4j.producer.jpa.JPAEdmGenerator;
 import org.odata4j.producer.jpa.JPAProducer;
@@ -42,12 +42,12 @@ public class EdmDateTimeTemporalTest extends AirlineJPAProducerTestBase {
     emf = Persistence.createEntityManagerFactory(persistenceUnitName);
 
     JPAProducer producer = new JPAProducer(emf, new JPAEdmGenerator() {
-      protected EdmType toEdmType(SingularAttribute<?, ?> sa) {
+      protected EdmSimpleType toEdmType(SingularAttribute<?, ?> sa) {
         Class<?> javaType = sa.getType().getJavaType();
         if (javaType.equals(Date.class)
             || javaType.equals(Calendar.class)
             || javaType.equals(Time.class)) {
-          return EdmType.DATETIME;
+          return EdmSimpleType.DATETIME;
         } else {
           return super.toEdmType(sa);
         }
@@ -64,8 +64,8 @@ public class EdmDateTimeTemporalTest extends AirlineJPAProducerTestBase {
 
     EdmDataServices metadata = consumer.getMetadata();
 
-    Assert.assertEquals(EdmType.DATETIME, metadata.findEdmEntitySet("FlightSchedule").type.findProperty("departureTime").type);
-    Assert.assertEquals(EdmType.DATETIME, metadata.findEdmEntitySet("FlightSchedule").type.findProperty("arrivalTime").type);
+    Assert.assertEquals(EdmSimpleType.DATETIME, metadata.findEdmEntitySet("FlightSchedule").type.findProperty("departureTime").type);
+    Assert.assertEquals(EdmSimpleType.DATETIME, metadata.findEdmEntitySet("FlightSchedule").type.findProperty("arrivalTime").type);
   }
 
   @Test

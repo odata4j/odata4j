@@ -15,7 +15,7 @@ import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperties;
 import org.odata4j.edm.EdmDataServices;
-import org.odata4j.edm.EdmType;
+import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.examples.producer.ProducerUtil;
 import org.odata4j.producer.jpa.JPAProducer;
 import org.odata4j.producer.resources.ODataProducerProvider;
@@ -42,8 +42,8 @@ public class EdmTimeTemporalTest extends AirlineJPAProducerTestBase {
 
     EdmDataServices metadata = consumer.getMetadata();
 
-    Assert.assertEquals(EdmType.TIME, metadata.findEdmEntitySet("FlightSchedule").type.findProperty("departureTime").type);
-    Assert.assertEquals(EdmType.TIME, metadata.findEdmEntitySet("FlightSchedule").type.findProperty("arrivalTime").type);
+    Assert.assertEquals(EdmSimpleType.TIME, metadata.findEdmEntitySet("FlightSchedule").type.findProperty("departureTime").type);
+    Assert.assertEquals(EdmSimpleType.TIME, metadata.findEdmEntitySet("FlightSchedule").type.findProperty("arrivalTime").type);
   }
 
   @Test

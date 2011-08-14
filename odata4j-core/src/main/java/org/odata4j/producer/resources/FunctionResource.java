@@ -1,12 +1,12 @@
 package org.odata4j.producer.resources;
 
-import com.sun.jersey.api.core.HttpContext;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
+
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OFunctionParameter;
@@ -21,6 +21,8 @@ import org.odata4j.producer.ComplexObjectResponse;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.exceptions.NotImplementedException;
 
+import com.sun.jersey.api.core.HttpContext;
+
 /**
  * Handles function calls.  Unfortunately the OData URI scheme makes it
  * impossible to differentiate a function call "resource" from an EntitySet.
@@ -34,40 +36,12 @@ import org.odata4j.producer.exceptions.NotImplementedException;
  *  - make sure this works for GET and POST
  */
 public class FunctionResource extends BaseResource {
-  private static final Logger log = Logger.getLogger(FunctionResource.class.getName());
-
-  /**
-   * takes a Map<String,String> filled with the request URIs custom parameters and
-   * turns them into a map of strongly-typed OFunctionParameter objects.
-   *
-   * @param function - the function being called
-   * @param opts - request URI custom parameters
-   * @return
-   *
-   */
-  private static Map<String, OFunctionParameter> getFunctionParameters(EdmFunctionImport function, Map<String, String> opts) {
-
-    Map<String, OFunctionParameter> m = new HashMap<String, OFunctionParameter>();
-    for (EdmFunctionParameter p : function.parameters) {
-      String val = opts.get(p.name);
-      m.put(p.name, null == val ? null : OFunctionParameters.parse(p.name, p.type, opts.get(p.name)));
-    }
-    return m;
-  }
 
   /**
    * Handles function call resource access by gathering function call info from
    * the request and delegating to the producer.
-   *
-   * @param context
-   * @param producer
-   * @param functionName
-   * @param format
-   * @param callback
-   * @param skipToken
-   * @return
-   * @throws Exception
    */
+  @SuppressWarnings("rawtypes")
   public static Response callFunction(HttpContext context,
       ODataProducer producer,
       String functionName,
@@ -79,10 +53,12 @@ public class FunctionResource extends BaseResource {
 
     // do we have this function?
     EdmFunctionImport function = producer.getMetadata().findEdmFunctionImport(functionName);
-    if (null == function) { return Response.status(Status.NOT_FOUND).build(); }
+    if (null == function) {
+      return Response.status(Status.NOT_FOUND).build();
+    }
 
     final BaseResponse response = producer.callFunction(
-      function, getFunctionParameters(function, opts), null);
+        function, getFunctionParameters(function, opts), null);
 
     if (response == null) {
       return Response.status(Status.NOT_FOUND).build();
@@ -112,7 +88,7 @@ public class FunctionResource extends BaseResource {
               format,
               callback);
 
-      fw.write(context.getUriInfo(), sw, (CollectionResponse) response);
+      fw.write(context.getUriInfo(), sw, (CollectionResponse<?>) response);
       fwBase = fw;
     } else {
       // TODO add in other response types.
@@ -120,12 +96,24 @@ public class FunctionResource extends BaseResource {
     }
 
     String entity = sw.toString();
-    return Response.ok(
-        entity,
-        fwBase.getContentType()).header(
-        ODataConstants.Headers.DATA_SERVICE_VERSION,
-        version.asString).build();
-
+    return Response.ok(entity, fwBase.getContentType())
+        .header(ODataConstants.Headers.DATA_SERVICE_VERSION, version.asString)
+        .build();
   }
-
+  
+  /**
+   * Takes a Map<String,String> filled with the request URIs custom parameters and
+   * turns them into a map of strongly-typed OFunctionParameter objects.
+   *
+   * @param function  the function being called
+   * @param opts  request URI custom parameters
+   */
+  private static Map<String, OFunctionParameter> getFunctionParameters(EdmFunctionImport function, Map<String, String> opts) {
+    Map<String, OFunctionParameter> m = new HashMap<String, OFunctionParameter>();
+    for (EdmFunctionParameter p : function.parameters) {
+      String val = opts.get(p.name);
+      m.put(p.name, null == val ? null : OFunctionParameters.parse(p.name, p.type, val));
+    }
+    return m;
+  }
 }

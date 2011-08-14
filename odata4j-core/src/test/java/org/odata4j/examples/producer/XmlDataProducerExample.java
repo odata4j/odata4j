@@ -39,7 +39,7 @@ import org.odata4j.edm.EdmEntityType;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSchema;
-import org.odata4j.edm.EdmType;
+import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.producer.BaseResponse;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityIdResponse;
@@ -124,16 +124,16 @@ public class XmlDataProducerExample {
       String namespace = "XmlExample";
 
       List<EdmProperty> properties = new ArrayList<EdmProperty>();
-      properties.add(new EdmProperty("address", EdmType.STRING, false));
-      properties.add(new EdmProperty("city", EdmType.STRING, false));
-      properties.add(new EdmProperty("companyName", EdmType.STRING, false));
-      properties.add(new EdmProperty("contactName", EdmType.STRING, false));
-      properties.add(new EdmProperty("contactTitle", EdmType.STRING, false));
-      properties.add(new EdmProperty("country", EdmType.STRING, false));
-      properties.add(new EdmProperty("customerID", EdmType.STRING, false));
-      properties.add(new EdmProperty("fax", EdmType.STRING, false));
-      properties.add(new EdmProperty("phone", EdmType.STRING, false));
-      properties.add(new EdmProperty("postalCode", EdmType.STRING, false));
+      properties.add(new EdmProperty("address", EdmSimpleType.STRING, false));
+      properties.add(new EdmProperty("city", EdmSimpleType.STRING, false));
+      properties.add(new EdmProperty("companyName", EdmSimpleType.STRING, false));
+      properties.add(new EdmProperty("contactName", EdmSimpleType.STRING, false));
+      properties.add(new EdmProperty("contactTitle", EdmSimpleType.STRING, false));
+      properties.add(new EdmProperty("country", EdmSimpleType.STRING, false));
+      properties.add(new EdmProperty("customerID", EdmSimpleType.STRING, false));
+      properties.add(new EdmProperty("fax", EdmSimpleType.STRING, false));
+      properties.add(new EdmProperty("phone", EdmSimpleType.STRING, false));
+      properties.add(new EdmProperty("postalCode", EdmSimpleType.STRING, false));
 
       List<EdmEntityType> entityTypes = new ArrayList<EdmEntityType>();
       EdmEntityType type = new EdmEntityType(namespace, null, "Customers", null, Arrays.asList("customerID"), properties, null);

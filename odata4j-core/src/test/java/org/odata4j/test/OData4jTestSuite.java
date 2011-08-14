@@ -10,6 +10,7 @@ import org.odata4j.producer.jpa.northwind.test.CompositeKeyEntityTest;
 import org.odata4j.producer.jpa.northwind.test.CreateTest;
 import org.odata4j.producer.jpa.northwind.test.CreateWithLink2Test;
 import org.odata4j.producer.jpa.northwind.test.DeleteTest;
+import org.odata4j.producer.jpa.northwind.test.FunctionTest;
 import org.odata4j.producer.jpa.northwind.test.LinksTest;
 import org.odata4j.producer.jpa.northwind.test.QueryOptionAtomTest;
 import org.odata4j.producer.jpa.northwind.test.QueryOptionAtomTest50;
@@ -64,7 +65,8 @@ import org.odata4j.test.issues.Issue16;
     Oneoff03_ManyToMany.class,
     AtomFeedFormatParserTest.class,
     LinksTest.class,
-    EdmxFormatParserTest.class })
+    EdmxFormatParserTest.class,
+    FunctionTest.class })
 public class OData4jTestSuite {
 
   public static enum JPAProvider {

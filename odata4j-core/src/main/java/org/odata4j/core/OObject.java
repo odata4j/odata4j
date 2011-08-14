@@ -1,9 +1,9 @@
 package org.odata4j.core;
 
-import org.odata4j.edm.EdmBaseType;
+import org.odata4j.edm.EdmType;
 
 /**
- * base OData object class
+ * OData value/instance object with the given {@link EdmType}.
  *
  * @see OEntity
  * @see OSimpleObject
@@ -12,6 +12,6 @@ import org.odata4j.edm.EdmBaseType;
  */
 public interface OObject {
 
-    public EdmBaseType getType();
+  EdmType getType();
 
 }

@@ -4,9 +4,10 @@ import org.odata4j.core.OCollection;
 import org.odata4j.core.OObject;
 
 /**
- * Encapsulates a client response that is a OCollection of OObjects
+ * An <code>CollectionResponse</code> is a response to a client request expecting a collection of OData objects.
+ * <p>The {@link Responses} static factory class can be used to create <code>CollectionResponse</code> instances.</p>
  */
-public interface CollectionResponse<T  extends OObject> extends BaseResponse {
+public interface CollectionResponse<T extends OObject> extends BaseResponse {
 
   OCollection<T> getCollection();
 

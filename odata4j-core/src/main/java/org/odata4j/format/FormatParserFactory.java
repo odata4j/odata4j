@@ -26,11 +26,11 @@ public class FormatParserFactory {
     FormatParser<Entry> getEntryFormatParser(Settings settings);
 
     FormatParser<SingleLink> getSingleLinkFormatParser(Settings settings);
-    
+
     FormatParser<OComplexObject> getComplexObjectFormatParser(Settings settings);
-    
+
     FormatParser<OCollection<? extends OObject>> getCollectionFormatParser(Settings settings);
-    
+
   }
 
   @SuppressWarnings("unchecked")

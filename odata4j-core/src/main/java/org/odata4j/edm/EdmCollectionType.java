@@ -1,18 +1,24 @@
 package org.odata4j.edm;
 
 /**
- * A homogeneous collection of OObjects
+ * Describes a homogeneous collection of instances of a specific type.
  */
-public class EdmCollectionType extends EdmBaseType {
+public class EdmCollectionType extends EdmType {
 
-  public EdmCollectionType(String fqTypeName, EdmBaseType collectionType) {
+  private final EdmType collectionType;
+  
+  public EdmCollectionType(String fqTypeName, EdmType collectionType) {
     super(fqTypeName);
+    if (collectionType == null) throw new IllegalArgumentException("collectionType cannot be null");
     this.collectionType = collectionType;
   }
 
-  public EdmBaseType getCollectionType() {
-    return this.collectionType;
+  @Override
+  public boolean isSimple() {
+    return false;
   }
-  
-  private final EdmBaseType collectionType;
+
+  public EdmType getCollectionType() {
+    return collectionType;
+  }
 }

@@ -67,7 +67,7 @@ public class EdmxFormatWriter extends XmlFormatWriter {
 
           writer.endElement("Key");
         } else {
-            writer.writeAttribute("BaseType", eet.getBaseType().getFQNamespaceName());
+            writer.writeAttribute("BaseType", eet.getBaseType().getFullyQualifiedTypeName());
         }
 
         write(eet.getDeclaredProperties(), writer);
@@ -96,13 +96,13 @@ public class EdmxFormatWriter extends XmlFormatWriter {
 
         writer.startElement(new QName2("End"));
         writer.writeAttribute("Role", assoc.end1.role);
-        writer.writeAttribute("Type", assoc.end1.type.getFQNamespaceName());
+        writer.writeAttribute("Type", assoc.end1.type.getFullyQualifiedTypeName());
         writer.writeAttribute("Multiplicity", assoc.end1.multiplicity.getSymbolString());
         writer.endElement("End");
 
         writer.startElement(new QName2("End"));
         writer.writeAttribute("Role", assoc.end2.role);
-        writer.writeAttribute("Type", assoc.end2.type.getFQNamespaceName());
+        writer.writeAttribute("Type", assoc.end2.type.getFullyQualifiedTypeName());
         writer.writeAttribute("Multiplicity", assoc.end2.multiplicity.getSymbolString());
         writer.endElement("End");
 
@@ -119,7 +119,7 @@ public class EdmxFormatWriter extends XmlFormatWriter {
         for (EdmEntitySet ees : container.entitySets) {
           writer.startElement(new QName2("EntitySet"));
           writer.writeAttribute("Name", ees.name);
-          writer.writeAttribute("EntityType", ees.type.getFQNamespaceName());
+          writer.writeAttribute("EntityType", ees.type.getFullyQualifiedTypeName());
           writer.endElement("EntitySet");
         }
 
@@ -130,13 +130,13 @@ public class EdmxFormatWriter extends XmlFormatWriter {
             writer.writeAttribute("EntitySet", fi.entitySet.name);
           }
           // TODO: how to differentiate inline ReturnType vs embedded ReturnType?
-          writer.writeAttribute("ReturnType", fi.returnType.toTypeString());
+          writer.writeAttribute("ReturnType", fi.returnType.getFullyQualifiedTypeName());
           writer.writeAttribute(new QName2(m, "HttpMethod", "m"), fi.httpMethod);
 
           for (EdmFunctionParameter param : fi.parameters) {
               writer.startElement(new QName2("Parameter"));
               writer.writeAttribute("Name", param.name);
-              writer.writeAttribute("Type", param.type.toTypeString());
+              writer.writeAttribute("Type", param.type.getFullyQualifiedTypeName());
               writer.writeAttribute("Mode", param.mode);
               writer.endElement("Parameter");
           }
@@ -176,7 +176,7 @@ public class EdmxFormatWriter extends XmlFormatWriter {
       writer.startElement(new QName2("Property"));
 
       writer.writeAttribute("Name", prop.name);
-      writer.writeAttribute("Type", prop.type.toTypeString());
+      writer.writeAttribute("Type", prop.type.getFullyQualifiedTypeName());
       writer.writeAttribute("Nullable", Boolean.toString(prop.nullable));
       if (prop.maxLength != null)
         writer.writeAttribute("MaxLength", Integer.toString(prop.maxLength));

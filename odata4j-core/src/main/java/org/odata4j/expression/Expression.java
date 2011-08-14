@@ -8,7 +8,7 @@ import org.joda.time.LocalTime;
 import org.odata4j.core.Guid;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
-import org.odata4j.edm.EdmType;
+import org.odata4j.edm.EdmSimpleType;
 
 public class Expression {
 
@@ -944,7 +944,7 @@ public class Expression {
     if (value == null)
       throw new IllegalArgumentException("Cannot infer literal expression type for a null value");
 
-    EdmType edmType = EdmType.forJavaType(value.getClass());
+    EdmSimpleType edmType = EdmSimpleType.forJavaType(value.getClass());
     if (edmType == null)
       throw new IllegalArgumentException("Cannot infer literal expression type for java type: " + value.getClass().getName());
 
@@ -952,31 +952,31 @@ public class Expression {
     boolean throwOnException = true;
     OProperty<?> prop = OProperties.simple("temp", edmType, value, throwOnException);
 
-    if (edmType.equals(EdmType.BINARY))
+    if (edmType.equals(EdmSimpleType.BINARY))
       return binary((byte[]) prop.getValue());
-    if (edmType.equals(EdmType.BOOLEAN))
+    if (edmType.equals(EdmSimpleType.BOOLEAN))
       return boolean_((Boolean) prop.getValue());
-    if (edmType.equals(EdmType.DATETIME))
+    if (edmType.equals(EdmSimpleType.DATETIME))
       return dateTime((LocalDateTime) prop.getValue());
-    if (edmType.equals(EdmType.DATETIMEOFFSET))
+    if (edmType.equals(EdmSimpleType.DATETIMEOFFSET))
       return dateTimeOffset((DateTime) prop.getValue());
-    if (edmType.equals(EdmType.DECIMAL))
+    if (edmType.equals(EdmSimpleType.DECIMAL))
       return decimal((BigDecimal) prop.getValue());
-    if (edmType.equals(EdmType.DOUBLE))
+    if (edmType.equals(EdmSimpleType.DOUBLE))
       return double_((Double) prop.getValue());
-    if (edmType.equals(EdmType.STRING))
+    if (edmType.equals(EdmSimpleType.STRING))
       return string((String) prop.getValue());
-    if (edmType.equals(EdmType.GUID))
+    if (edmType.equals(EdmSimpleType.GUID))
       return guid((Guid) prop.getValue());
-    if (edmType.equals(EdmType.INT64))
+    if (edmType.equals(EdmSimpleType.INT64))
       return int64((Long) prop.getValue());
-    if (edmType.equals(EdmType.INT32) || edmType.equals(EdmType.INT16))
+    if (edmType.equals(EdmSimpleType.INT32) || edmType.equals(EdmSimpleType.INT16))
       return integral(Integer.parseInt(prop.getValue().toString()));
-    if (edmType.equals(EdmType.SINGLE))
+    if (edmType.equals(EdmSimpleType.SINGLE))
       return single((Float) prop.getValue());
-    if (edmType.equals(EdmType.TIME))
+    if (edmType.equals(EdmSimpleType.TIME))
       return time((LocalTime) prop.getValue());
-    if (edmType.equals(EdmType.BYTE))
+    if (edmType.equals(EdmSimpleType.BYTE))
       return byte_((Byte) prop.getValue());
 
     throw new UnsupportedOperationException("Cannot infer literal expression type for edm type: " + edmType);

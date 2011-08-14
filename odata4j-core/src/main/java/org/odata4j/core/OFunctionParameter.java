@@ -1,6 +1,6 @@
 package org.odata4j.core;
 
-import org.odata4j.edm.EdmBaseType;
+import org.odata4j.edm.EdmType;
 
 /**
  * An immutable service operation parameter, consisting of a name, a strongly-typed value, and an edm-type.
@@ -16,12 +16,6 @@ public interface OFunctionParameter extends NamedValue<OObject> {
    *
    * @return the edm-type
    */
-  EdmBaseType getType();
-
-  /**
-   * formats the function parameter for including in a URI
-   * 
-   * @return - value formatted for URI 
-   */
-  String toURIString();
+  EdmType getType();
+  
 }

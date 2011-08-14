@@ -2,8 +2,10 @@ package org.odata4j.core;
 
 import java.util.List;
 
+import org.odata4j.edm.EdmComplexType;
+
 /**
- * An instance of an EdmComplexType
+ * An instance of an {@link EdmComplexType}.
  *
  * Design Note:
  * - is there enough similarity with OEntity to factor out a base class?

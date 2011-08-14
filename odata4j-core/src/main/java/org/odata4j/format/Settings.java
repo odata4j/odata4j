@@ -2,7 +2,7 @@ package org.odata4j.format;
 
 import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OEntityKey;
-import org.odata4j.edm.EdmBaseType;
+import org.odata4j.edm.EdmType;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.internal.FeedCustomizationMapping;
 
@@ -13,7 +13,7 @@ public class Settings {
   public final OEntityKey entityKey;
   public final FeedCustomizationMapping fcMapping;
   public final boolean isResponse;
-  public final EdmBaseType parseType;
+  public final EdmType parseType;
   
   public Settings(ODataVersion version, EdmDataServices metadata,
       String entitySetName, OEntityKey entityKey, FeedCustomizationMapping fcMapping) {
@@ -28,7 +28,7 @@ public class Settings {
 
   public Settings(ODataVersion version, EdmDataServices metadata,
       String entitySetName, OEntityKey entityKey, FeedCustomizationMapping fcMapping,
-      boolean isResponse, EdmBaseType parseType) {
+      boolean isResponse, EdmType parseType) {
     this.version = version;
     this.metadata = metadata;
     this.entitySetName = entitySetName;

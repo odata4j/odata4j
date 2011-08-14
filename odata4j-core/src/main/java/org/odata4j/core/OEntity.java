@@ -3,7 +3,6 @@ package org.odata4j.core;
 import java.util.List;
 
 import org.odata4j.edm.EdmEntitySet;
-import org.odata4j.edm.EdmEntityType;
 
 /**
  * An immutable OData entity instance, consisting of an identity (an entity-set and a unique entity-key within that set), 

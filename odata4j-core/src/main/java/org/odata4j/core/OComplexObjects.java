@@ -6,9 +6,7 @@ import org.core4j.Enumerable;
 import org.odata4j.edm.EdmComplexType;
 
 /**
- * Factory for creating OComplexObject instances.
- *
- * I'm not 100% sure why OEntity is not mutable...I'll keep to the pattern though.
+ * A static factory to create immutable {@link OComplexObject} instances.
  */
 public class OComplexObjects {
 
