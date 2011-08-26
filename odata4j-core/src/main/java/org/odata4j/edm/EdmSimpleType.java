@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.core4j.Enumerable;
+import org.core4j.Predicate1;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
@@ -44,7 +45,13 @@ public class EdmSimpleType extends EdmType {
   /**
    * Set of all edm simple types.
    */
-  public static Set<EdmSimpleType> ALL = Collections.unmodifiableSet(Enumerable.create(POOL.values()).cast(EdmSimpleType.class).toSet());
+  public static Set<EdmSimpleType> ALL = Collections.unmodifiableSet(
+      Enumerable.create(POOL.values()).where(new Predicate1<EdmType>() {
+        @Override
+        public boolean apply(EdmType t) {
+            return (t instanceof EdmSimpleType);
+        }
+    }).cast(EdmSimpleType.class).toSet());
 
   private final Set<Class<?>> javaTypes;
 
