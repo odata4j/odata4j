@@ -42,6 +42,10 @@ public class EdmSimpleType extends EdmType {
     return rt;
   }
 
+  protected static void init() {
+    // intentional no-op, see EdmType static initializer for reason. 
+  }
+  
   /**
    * Set of all edm simple types.
    */

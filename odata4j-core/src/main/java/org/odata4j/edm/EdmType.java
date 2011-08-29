@@ -15,6 +15,13 @@ import org.core4j.Enumerable;
 public abstract class EdmType {
 
   protected static Map<String, EdmType> POOL = new HashMap<String, EdmType>();
+  static {
+    // the latest EdmType refactoring has introduced a class initialization order
+    // bug:  if EdmSimpleType has not been loaded, POOL will not contain all of the
+    // EdmSimpleTypes.  So, get("Edm.Int16") will return a new EdmComplexType.
+    // I think the POOL should be redesigned...but not right at this moment.
+    EdmSimpleType.init();
+  }
   
   private final String fullyQualifiedTypeName;
   
