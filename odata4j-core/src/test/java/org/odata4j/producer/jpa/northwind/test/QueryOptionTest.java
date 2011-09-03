@@ -487,6 +487,13 @@ public class QueryOptionTest extends JPAProducerTestBase {
     String uri = "Products(1)?$expand=Category";
     NorthwindTestUtils.testJSONResult(endpointUri, uri, inp);
   }
+  
+  @Test
+  public void SelectTopZeroEntitiesTest() {
+    String inp = "SelectTopZeroEntitiesTest";
+    String uri = "Products?$top=0";
+    NorthwindTestUtils.testAtomResult(endpointUri, uri, inp);
+  }
 
   @Test
   public void SelectExpandOnSingleEntityTest() {

@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -508,9 +509,14 @@ public class JPAProducer implements ODataProducer {
     if (context.query != null && context.query.top != null) {
 
       // top=0: don't even hit jpa, return a response with zero entities
-      if (context.query.top.equals(0))
-        return DynamicEntitiesResponse.entities(null, inlineCount, null);
-
+      if (context.query.top.equals(0)) {
+    	// returning null from this function would cause the FormatWriters to throw
+      	// a null reference exception as the entities collection is expected to be empty and 
+      	// not null. This prevents us from being able to successfully respond to $top=0 requests.
+    	List<OEntity> emptyList = Collections.emptyList(); 
+        return DynamicEntitiesResponse.entities(emptyList, inlineCount, null);
+      }
+      
       if (context.query.top < maxResults)
         queryMaxResults = context.query.top;
     }
