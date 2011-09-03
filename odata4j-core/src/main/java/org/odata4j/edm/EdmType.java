@@ -1,26 +1,21 @@
 package org.odata4j.edm;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.core4j.Enumerable;
+import org.odata4j.core.OFuncs;
 
 /**
  * A type in the EDM type system.
  * 
  * @see <a href="http://msdn.microsoft.com/en-us/library/bb399591.aspx">[msdn] Types (Metadata)</a>
- * @see 
  */
 public abstract class EdmType {
 
-  protected static Map<String, EdmType> POOL = new HashMap<String, EdmType>();
-  static {
-    // the latest EdmType refactoring has introduced a class initialization order
-    // bug:  if EdmSimpleType has not been loaded, POOL will not contain all of the
-    // EdmSimpleTypes.  So, get("Edm.Int16") will return a new EdmComplexType.
-    // I think the POOL should be redesigned...but not right at this moment.
-    EdmSimpleType.init();
+  private static class LazyInit {
+    private static final Map<String, EdmType> POOL = Enumerable.create(EdmSimpleType.ALL)
+        .cast(EdmType.class)
+        .toMap(OFuncs.edmTypeFullyQualifiedTypeName());
   }
   
   private final String fullyQualifiedTypeName;
@@ -30,27 +25,17 @@ public abstract class EdmType {
   }
 
   /**
-   * Gets the edm-type for a given type name.
-   * 
-   * @param typeString  the fully-qualified type name
+   * Gets an edm-type for a given type name.
+   *
+   * @param fullyQualifiedTypeName  the fully-qualified type name
    * @return the edm-type
    */
-  public static EdmType get(String typeString) {
-    return getInternal(typeString);
-  }
-
-  protected static EdmType getInternal(String typeString, Class<?>... javaTypes) {
-    if (typeString == null)
+  public static EdmType get(String fullyQualifiedTypeName) {
+    if (fullyQualifiedTypeName == null)
       return null;
-    Set<Class<?>> javaTypeSet = Enumerable.create(javaTypes).toSet();
-    if (!POOL.containsKey(typeString)) {
-      if (null == javaTypes || 0 == javaTypes.length) {
-        POOL.put(typeString, EdmComplexType.create(typeString));
-      } else {
-        POOL.put(typeString, new EdmSimpleType(typeString, javaTypeSet));
-      }
-    }
-    return POOL.get(typeString);
+    if (!LazyInit.POOL.containsKey(fullyQualifiedTypeName))
+      LazyInit.POOL.put(fullyQualifiedTypeName, new EdmNonSimpleType(fullyQualifiedTypeName));
+    return LazyInit.POOL.get(fullyQualifiedTypeName);
   }
   
   /**
@@ -62,7 +47,7 @@ public abstract class EdmType {
 
   @Override
   public String toString() {
-    return getFullyQualifiedTypeName();
+    return String.format("%s[%s]", getClass().getSimpleName(), getFullyQualifiedTypeName());
   }
 
   @Override

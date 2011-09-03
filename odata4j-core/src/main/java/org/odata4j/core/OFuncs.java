@@ -4,6 +4,7 @@ import org.core4j.Func1;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmEntityType;
 import org.odata4j.edm.EdmProperty;
+import org.odata4j.edm.EdmType;
 
 /**
  * A static factory to create useful generic function instances.
@@ -32,6 +33,14 @@ public class OFuncs {
     return new Func1<EdmEntitySet, String>() {
       public String apply(EdmEntitySet input) {
         return input.name;
+      }
+    };
+  }
+  
+  public static Func1<EdmType, String> edmTypeFullyQualifiedTypeName() {
+    return new Func1<EdmType, String>() {
+      public String apply(EdmType input) {
+        return input.getFullyQualifiedTypeName();
       }
     };
   }

@@ -6,24 +6,19 @@ import java.util.List;
 import org.core4j.Enumerable;
 import org.odata4j.core.OPredicates;
 
-public abstract class EdmStructuralType extends EdmType {
+public abstract class EdmStructuralType extends EdmNonSimpleType {
 
   public final String namespace;
   public final String name;
   public final List<EdmProperty> properties;
   private EdmEntityType baseType;
 
-  public EdmStructuralType(EdmEntityType baseType, String namespace, String name, List<EdmProperty> properties) {
+  protected EdmStructuralType(EdmEntityType baseType, String namespace, String name, List<EdmProperty> properties) {
     super(namespace + "." + name);
     this.baseType = baseType;
     this.namespace = namespace;
     this.name = name;
     this.properties = properties == null ? new ArrayList<EdmProperty>() : properties;
-  }
-
-  @Override
-  public boolean isSimple() {
-    return false;
   }
 
   public EdmEntityType getBaseType() {

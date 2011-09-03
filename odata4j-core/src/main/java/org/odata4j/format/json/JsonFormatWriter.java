@@ -146,7 +146,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
     }
   }
 
-  protected void writeComplexObject(JsonWriter jw, String fqTypeName, List<OProperty<?>> props) {
+  protected void writeComplexObject(JsonWriter jw, String fullyQualifiedTypeName, List<OProperty<?>> props) {
     jw.startObject();
     {
       /* Confused:  The live OData producers that have complex types (ebay, netflix)
@@ -156,7 +156,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
       jw.startObject();
       {
         jw.writeName("type");
-        jw.writeString(fqTypeName);
+        jw.writeString(fullyQualifiedTypeName);
       }
       jw.endObject();
       jw.writeSeparator();

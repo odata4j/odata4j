@@ -2,10 +2,10 @@ package org.odata4j.edm;
 
 import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.core4j.Enumerable;
-import org.core4j.Predicate1;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
@@ -19,6 +19,8 @@ import org.odata4j.core.Guid;
  */
 public class EdmSimpleType extends EdmType {
 
+  private static Set<EdmSimpleType> all = new HashSet<EdmSimpleType>();
+  
   // http://msdn.microsoft.com/en-us/library/bb399213.aspx
   public static final EdmSimpleType BINARY = newSimple("Edm.Binary", byte[].class, Byte[].class);
   public static final EdmSimpleType BOOLEAN = newSimple("Edm.Boolean", boolean.class, Boolean.class);
@@ -35,32 +37,21 @@ public class EdmSimpleType extends EdmType {
   public static final EdmSimpleType STRING = newSimple("Edm.String", char.class, Character.class, String.class);
   public static final EdmSimpleType TIME = newSimple("Edm.Time", LocalTime.class);
 
-  protected static EdmSimpleType newSimple(String typeString, Class<?>... javaTypes) {
-    Set<Class<?>> javaTypeSet = Enumerable.create(javaTypes).toSet();
-    EdmSimpleType rt = new EdmSimpleType(typeString, javaTypeSet);
-    POOL.put(typeString, rt);
+  private static EdmSimpleType newSimple(String typeString, Class<?>... javaTypes) {
+    EdmSimpleType rt = new EdmSimpleType(typeString, Collections.unmodifiableSet(Enumerable.create(javaTypes).toSet()));
+    all.add(rt);
     return rt;
-  }
-
-  protected static void init() {
-    // intentional no-op, see EdmType static initializer for reason. 
   }
   
   /**
-   * Set of all edm simple types.
+   * Immutable set of all edm simple types.
    */
-  public static Set<EdmSimpleType> ALL = Collections.unmodifiableSet(
-      Enumerable.create(POOL.values()).where(new Predicate1<EdmType>() {
-        @Override
-        public boolean apply(EdmType t) {
-            return (t instanceof EdmSimpleType);
-        }
-    }).cast(EdmSimpleType.class).toSet());
+  public static Set<EdmSimpleType> ALL = Collections.unmodifiableSet(all);
 
   private final Set<Class<?>> javaTypes;
 
-  protected EdmSimpleType(String fqTypeName, Set<Class<?>> javaTypes) {
-    super(fqTypeName);
+  private EdmSimpleType(String fullyQualifiedTypeName, Set<Class<?>> javaTypes) {
+    super(fullyQualifiedTypeName);
     this.javaTypes = javaTypes;
   }
   

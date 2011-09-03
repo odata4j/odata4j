@@ -13,7 +13,6 @@ import org.odata4j.edm.EdmAssociation;
 import org.odata4j.edm.EdmAssociationEnd;
 import org.odata4j.edm.EdmAssociationSet;
 import org.odata4j.edm.EdmAssociationSetEnd;
-import org.odata4j.edm.EdmType;
 import org.odata4j.edm.EdmCollectionType;
 import org.odata4j.edm.EdmComplexType;
 import org.odata4j.edm.EdmDataServices;
@@ -26,7 +25,7 @@ import org.odata4j.edm.EdmMultiplicity;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSchema;
-import org.odata4j.edm.EdmSimpleType;
+import org.odata4j.edm.EdmType;
 import org.odata4j.stax2.Attribute2;
 import org.odata4j.stax2.QName2;
 import org.odata4j.stax2.StartElement2;
@@ -307,7 +306,7 @@ public class EdmxFormatParser extends XmlFormatParser {
       if (isStartElement(event, EDM2006_PARAMETER, EDM2007_PARAMETER, EDM2008_PARAMETER, EDM2009_PARAMETER))
                 parameters.add(new EdmFunctionParameter(
                         event.asStartElement().getAttributeByName("Name").getValue(),
-                        EdmSimpleType.get(event.asStartElement().getAttributeByName("Type").getValue()),
+                        EdmType.get(event.asStartElement().getAttributeByName("Type").getValue()),
                         event.asStartElement().getAttributeByName("Mode").getValue()));
 
       if (isEndElement(event, functionImportElement.getName())) {
@@ -374,7 +373,7 @@ public class EdmxFormatParser extends XmlFormatParser {
     String fcEpmKeepInContent = getAttributeValueIfExists(event.asStartElement(), M_FC_EPMKEEPINCONTENT);
 
     return new EdmProperty(propertyName,
-                EdmSimpleType.get(propertyType),
+                EdmType.get(propertyType),
                 "false".equals(propertyNullable),
                 maxLength == null ? null : maxLength.equals("Max") ? Integer.MAX_VALUE : Integer.parseInt(maxLength),
                 "false".equals(unicode),

@@ -22,6 +22,8 @@ import org.odata4j.producer.jpa.oneoff01.Oneoff01_Unidirectional;
 import org.odata4j.producer.jpa.oneoff02.Oneoff02_ManyToManyWithoutMappedName;
 import org.odata4j.producer.jpa.oneoff03.Oneoff03_ManyToMany;
 import org.odata4j.test.core.AtomFeedFormatParserTest;
+import org.odata4j.test.core.EdmSimpleTypeTest;
+import org.odata4j.test.core.EdmTypeTest;
 import org.odata4j.test.core.OEntityKeyTest;
 import org.odata4j.test.expression.DateTimeFormatTest;
 import org.odata4j.test.expression.ExpressionTest;
@@ -66,7 +68,9 @@ import org.odata4j.test.issues.Issue16;
     AtomFeedFormatParserTest.class,
     LinksTest.class,
     EdmxFormatParserTest.class,
-    FunctionTest.class })
+    FunctionTest.class,
+    EdmSimpleTypeTest.class,
+    EdmTypeTest.class})
 public class OData4jTestSuite {
 
   public static enum JPAProvider {
