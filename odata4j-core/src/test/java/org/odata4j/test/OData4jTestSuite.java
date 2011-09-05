@@ -3,6 +3,7 @@ package org.odata4j.test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.odata4j.format.xml.EdmxFormatParserTest;
+import org.odata4j.format.xml.MultipleWorkspacesTest;
 import org.odata4j.producer.jpa.airline.test.CreateWithLinkTest;
 import org.odata4j.producer.jpa.airline.test.EdmDateTimeTemporalTest;
 import org.odata4j.producer.jpa.airline.test.EdmTimeTemporalTest;
@@ -70,7 +71,8 @@ import org.odata4j.test.issues.Issue16;
     EdmxFormatParserTest.class,
     FunctionTest.class,
     EdmSimpleTypeTest.class,
-    EdmTypeTest.class})
+    EdmTypeTest.class,
+    MultipleWorkspacesTest.class })
 public class OData4jTestSuite {
 
   public static enum JPAProvider {

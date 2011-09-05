@@ -50,17 +50,6 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
     this.fcMapping = fcMapping;
   }
 
-  public static class CollectionInfo {
-    public String url;
-    public String title;
-    public String accept;
-
-    @Override
-    public String toString() {
-      return InternalUtil.reflectionToString(this);
-    }
-  }
-
   static class AtomFeed implements Feed {
     public String next;
     public Iterable<Entry> entries;

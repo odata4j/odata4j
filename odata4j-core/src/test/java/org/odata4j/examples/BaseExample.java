@@ -38,18 +38,18 @@ public class BaseExample {
     }
   }
 
-  protected static int reportEntities(ODataConsumer c, String entitySet, int limit) {
-    report("entitySet: " + entitySet);
-    Enumerable<OEntity> entities = c.getEntities(entitySet).execute().take(limit);
-    return reportEntities(entitySet, entities);
+  protected static int reportEntities(ODataConsumer c, String entitySetHref, int limit) {
+    report("entitySetHref: " + entitySetHref);
+    Enumerable<OEntity> entities = c.getEntities(entitySetHref).execute().take(limit);
+    return reportEntities(entitySetHref, entities);
   }
 
-  protected static int reportEntities(String entitySet, Enumerable<OEntity> entities) {
+  protected static int reportEntities(String entitySetHref, Enumerable<OEntity> entities) {
 
     int count = 0;
 
     for (OEntity e : entities) {
-      reportEntity(entitySet + " entity" + count, e);
+      reportEntity(entitySetHref + " entity" + count, e);
       count++;
     }
     report("total count: %s \n\n", count);

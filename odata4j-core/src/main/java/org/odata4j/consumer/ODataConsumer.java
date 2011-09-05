@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.core4j.Enumerable;
-import org.core4j.Func1;
+import org.odata4j.core.EntitySetInfo;
 import org.odata4j.core.OClientBehavior;
 import org.odata4j.core.OCreateRequest;
 import org.odata4j.core.OEntity;
@@ -23,7 +23,6 @@ import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmEntityType;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.format.FormatType;
-import org.odata4j.format.xml.AtomFeedFormatParser.CollectionInfo;
 import org.odata4j.internal.EdmDataServicesDecorator;
 import org.odata4j.internal.FeedCustomizationMapping;
 
@@ -202,17 +201,13 @@ public class ODataConsumer {
   }
 
   /**
-   * Lists the names of all top-level entity-sets for the OData service.
+   * Lists all top-level entity-sets for the OData service.
    * 
-   * @return the entity-set names
+   * @return the entity-set information
    */
-  public Enumerable<String> getEntitySets() {
+  public Enumerable<EntitySetInfo> getEntitySets() {
     ODataClientRequest request = ODataClientRequest.get(serviceRootUri);
-    return Enumerable.create(client.getCollections(request)).select(new Func1<CollectionInfo, String>() {
-      public String apply(CollectionInfo input) {
-        return input.title;
-      }
-    });
+    return Enumerable.create(client.getCollections(request)).cast(EntitySetInfo.class);
   }
 
   /**
@@ -243,11 +238,11 @@ public class ODataConsumer {
    * Gets entities from the given entity-set.
    * <p>The query-request builder returned can be used for further server-side filtering.  Call {@link OQueryRequest#execute()} or simply iterate to issue request.</p>
    * 
-   * @param entitySetName  the entity-set name
+   * @param entitySetHref  the entity-set href
    * @return a new query-request builder
    */
-  public OQueryRequest<OEntity> getEntities(String entitySetName) {
-    return getEntities(OEntity.class, entitySetName);
+  public OQueryRequest<OEntity> getEntities(String entitySetHref) {
+    return getEntities(OEntity.class, entitySetHref);
   }
 
   /**
@@ -256,12 +251,12 @@ public class ODataConsumer {
    *  
    * @param <T>  the entity representation as a java type
    * @param entityType  the entity representation as a java type
-   * @param entitySetName  the entity-set name
+   * @param entitySetName  the entity-set href
    * @return  a new query-request builder
    */
-  public <T> OQueryRequest<T> getEntities(Class<T> entityType, String entitySetName) {
-    FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
-    return new ConsumerQueryEntitiesRequest<T>(client, entityType, serviceRootUri, getMetadata(), entitySetName, mapping);
+  public <T> OQueryRequest<T> getEntities(Class<T> entityType, String entitySetHref) {
+    FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetHref);
+    return new ConsumerQueryEntitiesRequest<T>(client, entityType, serviceRootUri, getMetadata(), entitySetHref, mapping);
   }
 
   /**

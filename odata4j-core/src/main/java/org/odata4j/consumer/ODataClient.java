@@ -29,8 +29,9 @@ import org.odata4j.format.FormatType;
 import org.odata4j.format.FormatWriter;
 import org.odata4j.format.FormatWriterFactory;
 import org.odata4j.format.SingleLink;
-import org.odata4j.format.xml.AtomFeedFormatParser.CollectionInfo;
+import org.odata4j.format.xml.AtomCollectionInfo;
 import org.odata4j.format.xml.AtomServiceDocumentFormatParser;
+import org.odata4j.format.xml.AtomWorkspaceInfo;
 import org.odata4j.format.xml.EdmxFormatParser;
 import org.odata4j.format.xml.AtomSingleLinkFormatParser;
 import org.odata4j.internal.BOMWorkaroundReader;
@@ -69,10 +70,11 @@ class ODataClient {
     return EdmxFormatParser.parseMetadata(reader);
   }
 
-  public Iterable<CollectionInfo> getCollections(ODataClientRequest request) {
+  public Iterable<AtomCollectionInfo> getCollections(ODataClientRequest request) {
     ClientResponse response = doRequest(FormatType.ATOM, request, 200);
     XMLEventReader2 reader = doXmlRequest(response);
-    return AtomServiceDocumentFormatParser.parseCollections(reader);
+    return Enumerable.create(AtomServiceDocumentFormatParser.parseWorkspaces(reader))
+        .selectMany(AtomWorkspaceInfo.GET_COLLECTIONS);
   }
 
   public Iterable<SingleLink> getLinks(ODataClientRequest request) {
@@ -81,8 +83,6 @@ class ODataClient {
     return AtomSingleLinkFormatParser.parseLinks(reader);
   }
   
-  
-
   public ClientResponse getEntity(ODataClientRequest request) {
     ClientResponse response = doRequest(type, request, 404, 200, 204);
     if (response.getStatus() == 404)
@@ -307,7 +307,5 @@ class ODataClient {
   private static void log(String message) {
     System.out.println(message);
   }
-
-  
 
 }
