@@ -98,6 +98,7 @@ public class XmlFormatParser {
   public static final QName2 M_PROPERTIES = new QName2(NS_METADATA, "properties");
   public static final QName2 M_TYPE = new QName2(NS_METADATA, "type");
   public static final QName2 M_NULL = new QName2(NS_METADATA, "null");
+  public static final QName2 M_INLINE = new QName2(NS_METADATA, "inline");
   public static final QName2 M_FC_TARGETPATH = new QName2(NS_METADATA, "FC_TargetPath");
   public static final QName2 M_FC_CONTENTKIND = new QName2(NS_METADATA, "FC_ContentKind");
   public static final QName2 M_FC_KEEPINCONTENT = new QName2(NS_METADATA, "FC_KeepInContent");

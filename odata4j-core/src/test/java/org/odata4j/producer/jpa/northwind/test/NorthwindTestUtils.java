@@ -42,7 +42,7 @@ public class NorthwindTestUtils {
 
   private static final Client client = Client.create();
 
-  private static final String RESOURCES_ROOT = "/META-INF/uri-conventions/";
+  public static final String RESOURCES_ROOT = "/META-INF/uri-conventions/";
 
   public static void main(String[] args) throws Exception {
     //saveFromNorthwind("/Products(1)/$links/Category", "LinksSingleTest");
@@ -271,13 +271,15 @@ public class NorthwindTestUtils {
 
       assertEquals(expectedDocument.getDocumentElement(),
           resultDocument.getDocumentElement(), true);
-    } catch (Exception ex) {
+    } catch (Throwable ex) {
+      System.out.println("got document: ");
+      System.out.println(result);
       ex.printStackTrace();
       Assert.fail(ex.toString());
     }
   }
 
-  private static void assertEquals(Node expected, Node result,
+  public static void assertEquals(Node expected, Node result,
       boolean isTopLevel) {
     Assert.assertEquals(expected.getNodeType(), result.getNodeType());
     Assert.assertEquals(expected.getNodeName(), result.getNodeName());
@@ -599,7 +601,7 @@ public class NorthwindTestUtils {
     return bld.toString();
   }
 
-  private static String normalizeFormat(String text) {
+  public static String normalizeFormat(String text) {
     text = text.replace("+", "%20");
     text = text.replace("%20", " ");
 

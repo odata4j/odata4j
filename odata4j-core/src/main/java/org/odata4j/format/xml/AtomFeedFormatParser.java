@@ -96,6 +96,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
     public String href;
     public AtomFeed inlineFeed;
     public AtomEntry inlineEntry;
+    public boolean inlineContentExpected;
   }
 
   static class BasicAtomEntry extends AtomEntry {
@@ -213,12 +214,22 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
     rt.type = getAttributeValueIfExists(linkElement, "type");
     rt.title = getAttributeValueIfExists(linkElement, "title");
     rt.href = getAttributeValueIfExists(linkElement, "href");
+    rt.inlineContentExpected = false;
+    
+    // expected cases:
+    // 1.  </link>                  - no inlined content, i.e. deferred
+    // 2.  <m:inline/></link>       - inlined content but null entity or empty feed
+    // 3.  <m:inline><feed>...</m:inline></link> - inlined content with 1 or more items
+    // 4.  <m:inline><entry>..</m:inline></link> - inlined content 1 an item
 
     while (reader.hasNext()) {
       XMLEvent2 event = reader.nextEvent();
 
+      
       if (event.isEndElement() && event.asEndElement().getName().equals(linkElement.getName())) {
         break;
+      } else if (isStartElement(event, XmlFormatParser.M_INLINE)) {
+        rt.inlineContentExpected = true; // may be null content.
       } else if (isStartElement(event, ATOM_FEED)) {
         rt.inlineFeed = parseFeed(reader);
       } else if (isStartElement(event, ATOM_ENTRY)) {
@@ -428,8 +439,10 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
 
       if (link.relation.startsWith(XmlFormatWriter.related)) {
         if (link.type.equals(XmlFormatWriter.atom_feed_content_type)) {
+          
+          if (link.inlineContentExpected) {
           List<OEntity> relatedEntities = null;
-          // do we have inlined entities
+            
           if (link.inlineFeed != null && link.inlineFeed.entries != null) {
 
             // get the entity set belonging to the from role type
@@ -451,6 +464,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
                     return entityFromAtomEntry(metadata, toRoleEntitySet, input, mapping);
                   }
                 }).toList();
+            } // else empty feed.
             rt.add(OLinks.relatedEntitiesInline(
                 link.relation,
                 link.title,
@@ -461,19 +475,21 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
             rt.add(OLinks.relatedEntities(link.relation, link.title, link.href));
           }
         } else if (link.type.equals(XmlFormatWriter.atom_entry_content_type))
-          if (link.inlineEntry != null) {
+          if (link.inlineContentExpected) {
+            OEntity relatedEntity = null;
+            if (null != link.inlineEntry) {
             EdmNavigationProperty navProperty = fromRoleEntitySet != null
                 ? fromRoleEntitySet.type.findNavigationProperty(link.title)
                 : null;
               EdmEntitySet toRoleEntitySet = metadata != null && navProperty != null
                   ? metadata.getEdmEntitySet(navProperty.toRole.type)
                   : null;
-
-              rt.add(OLinks.relatedEntityInline(link.relation,
-                  link.title, link.href,
-                  entityFromAtomEntry(metadata, toRoleEntitySet,
+              relatedEntity = entityFromAtomEntry(metadata, toRoleEntitySet,
                       (DataServicesAtomEntry) link.inlineEntry,
-                      mapping)));
+                      mapping);
+            }
+              rt.add(OLinks.relatedEntityInline(link.relation,
+                  link.title, link.href, relatedEntity));
           } else {
             // no inlined entity
           rt.add(OLinks.relatedEntity(link.relation, link.title, link.href));

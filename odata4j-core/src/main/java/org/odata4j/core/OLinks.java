@@ -11,10 +11,12 @@ public class OLinks {
 
   /**
    * Creates a new {@link OLink} where the link sub-type is unknown or undefined.
+   * 
+   * Nobody calls this, seems safe to nuke as it has no semantic value.
    */
-  public static OLink link(String relation, String title, String href) {
-    return new OLinkImpl(OLink.class, relation, title, href);
-  }
+  //public static OLink link(String relation, String title, String href) {
+  //  return new OLinkImpl(OLink.class, relation, title, href);
+  //}
 
   /**
    * Creates a new {@link OLink} of sub-type {@link ORelatedEntitiesLink}.
@@ -44,7 +46,7 @@ public class OLinks {
     return new ORelatedEntityLinkInlineImpl(relation, title, href, relatedEntity);
   }
 
-  private static class OLinkImpl implements OLink {
+  private static abstract class OLinkImpl implements OLink {
     private final Class<?> interfaceType;
 
     private final String title;
@@ -84,6 +86,26 @@ public class OLinks {
     public ORelatedEntitiesLinkImpl(String relation, String title, String href) {
       super(ORelatedEntitiesLink.class, relation, title, href);
     }
+
+    @Override
+    public boolean isInline() {
+      return false;
+    }
+
+    @Override
+    public boolean isCollection() {
+      return true;
+    }
+
+    @Override
+    public OEntity getRelatedEntity() {
+      return null;
+    }
+
+    @Override
+    public List<OEntity> getRelatedEntities() {
+      return null;
+    }
   }
 
   private static class ORelatedEntitiesLinkInlineImpl extends OLinkImpl implements ORelatedEntitiesLinkInline {
@@ -98,11 +120,46 @@ public class OLinks {
     public List<OEntity> getRelatedEntities() {
       return relatedEntities;
     }
+
+    @Override
+    public boolean isInline() {
+      return true;
+    }
+
+    @Override
+    public boolean isCollection() {
+      return true;
+    }
+
+    @Override
+    public OEntity getRelatedEntity() {
+      return null;
+    }
   }
 
   private static class ORelatedEntityLinkImpl extends OLinkImpl implements ORelatedEntityLink {
     public ORelatedEntityLinkImpl(String relation, String title, String href) {
       super(ORelatedEntityLink.class, relation, title, href);
+    }
+
+    @Override
+    public boolean isInline() {
+      return false;
+    }
+
+    @Override
+    public boolean isCollection() {
+      return false;
+    }
+
+    @Override
+    public OEntity getRelatedEntity() {
+      return null;
+    }
+
+    @Override
+    public List<OEntity> getRelatedEntities() {
+      return null;
     }
   }
 
@@ -117,6 +174,21 @@ public class OLinks {
     @Override
     public OEntity getRelatedEntity() {
       return relatedEntity;
+    }
+
+    @Override
+    public boolean isInline() {
+      return true;
+    }
+
+    @Override
+    public boolean isCollection() {
+      return false;
+    }
+
+    @Override
+    public List<OEntity> getRelatedEntities() {
+      return null;
     }
 
   }

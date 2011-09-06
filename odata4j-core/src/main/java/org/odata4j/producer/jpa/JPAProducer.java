@@ -278,9 +278,6 @@ public class JPAProducer implements ODataProducer {
         }
       }
 
-      for (final EdmNavigationProperty ep : ees.type.getNavigationProperties()) {
-        ep.selected = isSelected(ep.name, select);
-      }
 
       // get the collections if necessary
       if (expand != null && !expand.isEmpty()) {
@@ -357,6 +354,29 @@ public class JPAProducer implements ODataProducer {
 
         }
       }
+
+      // for every navigation propety that we didn' expand we must place an deferred
+      // OLink if the nav prop is selected
+      for (final EdmNavigationProperty ep : ees.type.getNavigationProperties()) {
+        if (isSelected(ep.name, select)) {
+          boolean expanded = null != Enumerable.create(links).firstOrNull(new Predicate1<OLink>() {
+            @Override
+            public boolean apply(OLink t) {
+              return t.getTitle().equals(ep.name);
+            }
+          });
+          
+          if (!expanded) {
+            // defer
+            if (ep.toRole.multiplicity == EdmMultiplicity.MANY) {
+              links.add(OLinks.relatedEntities(null, ep.name, null));
+            } else {
+              links.add(OLinks.relatedEntity(null, ep.name, null));
+            }
+          }
+        }
+      }
+
 
       return OEntities.create(ees, toOEntityKey(jpaEntity, idAtt), properties, links);
 

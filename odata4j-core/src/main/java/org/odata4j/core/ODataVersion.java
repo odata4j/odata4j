@@ -33,4 +33,12 @@ public enum ODataVersion {
       throw new IllegalArgumentException("Unknown ODataVersion " + str);
     }
   }
+  
+  public static boolean isVersionGreaterThan(ODataVersion v, ODataVersion target) {
+    return v.compareTo(target) > 0;
+  }
+  
+  public static boolean isVersionGreaterThanOrEqualTo(ODataVersion v, ODataVersion target) {
+    return v.compareTo(target) >= 0;
+  }
 }

@@ -208,58 +208,44 @@ public class XmlFormatWriter {
           entitySetName, "href", relid);
     }
 
+    if (entityLinks != null) {
     if (isResponse) {
-      // for responses we need to include all links whether inlined or not
-      for (EdmNavigationProperty np : ees.type.getNavigationProperties()) {
-        if (!np.selected) {
-          continue;
-        }
+        // the producer has populated the link collection, we just what he gave us.
+        for (OLink link : entityLinks) {
+          final String linkTitle = link.getTitle();
 
-        String otherEntity = np.name;
-        String rel = related + otherEntity;
-        String type = atom_feed_content_type;
-        if (np.toRole.multiplicity != EdmMultiplicity.MANY) {
-          type = atom_entry_content_type;
-        }
-        final String title = otherEntity;
-        String href = relid + "/" + otherEntity;
-
-        // check whether we have to write inlined entities
-        OLink linkToInline = entityLinks != null
-            ? Enumerable.create(entityLinks).firstOrNull(
-                new Predicate1<OLink>() {
-                  @Override
-                  public boolean apply(OLink input) {
-                    return title.equals(input.getTitle());
-                  }
-                })
-            : null;
-
-        if (linkToInline == null) {
-          writeElement(writer, "link", null,
-              "rel", rel,
-              "type", type,
-              "title", title,
-              "href", href);
-        } else {
+          String rel = related + link.getTitle();
+          String type = (link.isCollection())
+                  ? atom_feed_content_type
+                  : atom_entry_content_type;
+          String href = relid + "/" + link.getTitle();
+          if (link.isInline()) {
           writer.startElement("link");
           writer.writeAttribute("rel", rel);
           writer.writeAttribute("type", type);
-          writer.writeAttribute("title", title);
+            writer.writeAttribute("title", link.getTitle());
           writer.writeAttribute("href", href);
           // write the inlined entities inside the link element
-          writeLinkInline(writer, linkToInline,
+            writeLinkInline(writer, link,
               href, baseUri, updated, isResponse);
           writer.endElement("link");
+          } else {
+            // deferred link.
+            writeElement(writer, "link", null,
+                    "rel", rel,
+                    "type", type,
+                    "title", link.getTitle(),
+                    "href", href);
         }
       }
-
-     
     } else {
       // for requests we include only the provided links
-      if (entityLinks != null) {
+        // Note: It seems that OLinks for responses are only built using the
+        // title and OLinks for requests have the additional info in them 
+        // alread.  I'm leaving that inconsistency in place for now but this
+        // else and its preceding if could probably be unified.
         for (OLink olink : entityLinks) {
-          String type = olink instanceof ORelatedEntitiesLink
+          String type = olink.isCollection()
               ? atom_feed_content_type
               : atom_entry_content_type;
 
@@ -268,8 +254,7 @@ public class XmlFormatWriter {
           writer.writeAttribute("type", type);
           writer.writeAttribute("title", olink.getTitle());
           writer.writeAttribute("href", olink.getHref());
-          if (olink instanceof ORelatedEntitiesLinkInline
-              || olink instanceof ORelatedEntityLinkInline) {
+          if (olink.isInline()) {
             // write the inlined entities inside the link element
             writeLinkInline(writer, olink, olink.getHref(),
                 baseUri, updated, isResponse);
@@ -277,7 +262,7 @@ public class XmlFormatWriter {
           writer.endElement("link");
         }
       }
-    }
+    } // else entityLinks null
     
     writeElement(writer, "category", null,
         "term", ees.type.getFullyQualifiedTypeName(),

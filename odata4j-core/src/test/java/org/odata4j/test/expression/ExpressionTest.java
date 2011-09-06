@@ -163,6 +163,8 @@ public class ExpressionTest {
     t(Expression.substring(Expression.string("aba"), Expression.integral(1), Expression.integral(2)), "substring('aba',1,2)");
     t(Expression.concat(Expression.string("a"), Expression.string("b")), "concat('a','b')");
     t(Expression.length(Expression.string("aba")), "length('aba')");
+    
+    t(Expression.substringOf(Expression.simpleProperty("Name"), Expression.string("Boris")), "substringof(Name, 'Boris')");
 
     t(Expression.year(Expression.string("aba")), "year('aba')");
     t(Expression.month(Expression.string("aba")), "month('aba')");

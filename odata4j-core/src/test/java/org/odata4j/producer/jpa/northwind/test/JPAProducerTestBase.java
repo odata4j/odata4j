@@ -49,10 +49,12 @@ public abstract class JPAProducerTestBase {
   public static void tearDownClass() throws Exception {
     if (server != null) {
       server.stop();
+      server = null;
     }
 
     if (emf != null) {
       emf.close();
+      emf = null;
     }
   }
 

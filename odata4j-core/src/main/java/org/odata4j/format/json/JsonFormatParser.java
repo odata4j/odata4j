@@ -16,6 +16,7 @@ import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmType;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.edm.EdmMultiplicity;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSimpleType;
@@ -181,6 +182,16 @@ public class JsonFormatParser {
       // scalar property
       EdmProperty ep = ees.type.findProperty(name);
       if (ep == null) {
+        // a navigation property with muliplicty 1 and a null associated element looks
+        // like a scalar property here with a null value
+        if (null == event.asEndProperty().getValue()) {
+          EdmNavigationProperty navProp = ees.type.findNavigationProperty(name);
+          if (null != navProp) {
+            // aha
+            entry.links.add(OLinks.relatedEntityInline(name, name, entry.getUri() + "/" + name, null));
+            return;
+          }
+        }
         throw new IllegalArgumentException("unknown property " + name + " for " + ees.name);
       }
       // TODO support complex type properties
@@ -193,7 +204,14 @@ public class JsonFormatParser {
       JsonObjectPropertyValue val = getValue(event, ees, name, jsr);
 
       if (val.uri != null) {
+        // lookup the cardinality of the relationship so we can insert the correct
+        // link type.
+        EdmNavigationProperty navProp = ees.type.findNavigationProperty(name);
+        if (navProp.toRole.multiplicity == EdmMultiplicity.MANY) {
+          entry.links.add(OLinks.relatedEntities(name, name, val.uri));
+        } else {
         entry.links.add(OLinks.relatedEntity(name, name, val.uri));
+        }
       } else if (val.entity != null) {
         entry.links.add(OLinks.relatedEntityInline(name, name, entry.getUri() + "/" + name,
             val.entity));
@@ -257,9 +275,12 @@ public class JsonFormatParser {
 
       // "results" :
     } else if (RESULTS_PROPERTY.equals(event.asStartProperty().getName())) {
+      
+      // if we support V1, put this in again
+      /*
       if (version == ODataVersion.V1) {
         throw new IllegalArgumentException("no valid OData JSON format results not expected");
-      }
+      }*/
 
       // inlined feed
       EdmNavigationProperty navProp = ees.type.findNavigationProperty(name);

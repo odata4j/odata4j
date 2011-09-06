@@ -4,7 +4,6 @@ import java.io.Writer;
 import java.util.List;
 import java.util.Locale;
 
-import org.core4j.Enumerable;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
@@ -12,13 +11,10 @@ import org.odata4j.core.Guid;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OLink;
-import org.odata4j.core.OPredicates;
 import org.odata4j.core.OProperty;
-import org.odata4j.core.ORelatedEntitiesLink;
 import org.odata4j.core.ORelatedEntitiesLinkInline;
 import org.odata4j.core.ORelatedEntityLinkInline;
 import org.odata4j.edm.EdmEntitySet;
-import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.format.FormatWriter;
 import org.odata4j.internal.InternalUtil;
@@ -27,6 +23,7 @@ import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
 
 import com.sun.jersey.api.core.ExtendedUriInfo;
 import org.odata4j.core.OComplexObject;
+import org.odata4j.core.ODataVersion;
 import org.odata4j.edm.EdmType;
 import org.odata4j.edm.EdmComplexType;
 
@@ -190,49 +187,42 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
       }
 
       writeOProperties(jw, oe.getProperties());
+      writeLinks(jw, oe, uriInfo, isResponse); 
+    }
+    jw.endObject();
+  }
 
+  protected void writeLinks(JsonWriter jw, OEntity oe, ExtendedUriInfo uriInfo, boolean isResponse) {
+
+    if (oe.getLinks() != null) {
+      for (OLink link : oe.getLinks()) {
       if (isResponse) {
-        if (ees != null) {
-          for (final EdmNavigationProperty np : ees.type.getNavigationProperties()) {
-            if (!np.selected) {
-              continue;
+          writeResponseLink(jw, link, oe, uriInfo);
+        } else {
+          writeRequestLink(jw, link, oe, uriInfo);
+        }
+      }
+    }
             }
 
+  protected void writeResponseLink(JsonWriter jw, OLink link, OEntity oe, ExtendedUriInfo uriInfo) {
             jw.writeSeparator();
+    jw.writeName(link.getTitle());
+    if (link.isInline()) {
+      if (link.isCollection()) {
 
-            // check whether we have to write inlined entities
-            OLink linkToInline = oe.getLinks() != null
-                  ? Enumerable.create(oe.getLinks()).firstOrNull(OPredicates.linkTitleEquals(np.name))
-                  : null;
-
-            jw.writeName(np.name);
-            if (linkToInline == null
-                  || ((linkToInline instanceof ORelatedEntitiesLinkInline) &&
-                      ((ORelatedEntitiesLinkInline) linkToInline).getRelatedEntities() == null)
-                  || ((linkToInline instanceof ORelatedEntityLinkInline) &&
-                      ((ORelatedEntityLinkInline) linkToInline).getRelatedEntity() == null)) {
+        // the version check will only make sense when this library properly
+        // supports version negotiation.  For now we write v2 only
+        if (true) { //  || ODataVersion.isVersionGreaterThan(settings.version, ODataVersion.V1)) {
               jw.startObject();
-              {
-                jw.writeName("__deferred");
-                jw.startObject();
-                {
-                  String absId = baseUri + InternalUtil.getEntityRelId(oe);
-                  jw.writeName("uri");
-                  jw.writeString(absId + "/" + np.name);
+          jw.writeName(JsonFormatParser.RESULTS_PROPERTY);
                 }
-                jw.endObject();
-              }
-              jw.endObject();
-            } else {
-              if (linkToInline instanceof ORelatedEntitiesLinkInline) {
-                jw.startObject();
-                {
-                  jw.writeName("results");
 
                   jw.startArray();
                   {
+          if (((ORelatedEntitiesLinkInline) link).getRelatedEntities() != null) {
                     boolean isFirstInlinedEntity = true;
-                    for (OEntity re : ((ORelatedEntitiesLinkInline) linkToInline).getRelatedEntities()) {
+            for (OEntity re : ((ORelatedEntitiesLinkInline) link).getRelatedEntities()) {
 
                       if (isFirstInlinedEntity) {
                         isFirstInlinedEntity = false;
@@ -240,61 +230,80 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
                         jw.writeSeparator();
                       }
 
-                      writeOEntity(uriInfo, jw, re, re.getEntitySet(), isResponse);
+              writeOEntity(uriInfo, jw, re, re.getEntitySet(), true);
                     }
 
                   }
+        }
                   jw.endArray();
+
+        // maybe later
+        if (true) { // ODataVersion.isVersionGreaterThan(settings.version, ODataVersion.V1)) {
+          jw.endObject();
+        }
+        
+      } else {
+        OEntity re = ((ORelatedEntityLinkInline) link).getRelatedEntity();
+        if (null == re) {
+          jw.writeNull();
+        } else {
+          writeOEntity(uriInfo, jw, re, re.getEntitySet(), true);
+        }
+      }
+    } else {
+      // deferred
+      jw.startObject();
+      {
+        jw.writeName("__deferred");
+        jw.startObject();
+        {
+          String absId = uriInfo.getBaseUri().toString() + InternalUtil.getEntityRelId(oe);
+          jw.writeName("uri");
+          jw.writeString(absId + "/" + link.getTitle());
                 }
                 jw.endObject();
-              } else if (linkToInline instanceof ORelatedEntityLinkInline) {
-                OEntity re = ((ORelatedEntityLinkInline) linkToInline).getRelatedEntity();
-                writeOEntity(uriInfo, jw, re, re.getEntitySet(), isResponse);
-              } else
-                throw new RuntimeException("Unknown OLink type " + linkToInline.getClass());
             }
+      jw.endObject();
           }
         }
-      } else {
-        for (OLink link : oe.getLinks()) {
+  
+  protected void writeRequestLink(JsonWriter jw, OLink link, OEntity oe, ExtendedUriInfo uriInfo) {
           jw.writeSeparator();
 
           jw.writeName(link.getTitle());
 
-          if (link instanceof ORelatedEntitiesLink) {
+    if (link.isInline()) {
+      if (link.isCollection()) {
 
             jw.startArray();
-
-            if (link instanceof ORelatedEntitiesLinkInline) {
+        if (((ORelatedEntitiesLinkInline) link).getRelatedEntities() != null) {
               List<OEntity> relEntities = ((ORelatedEntitiesLinkInline) link).getRelatedEntities();
               for (int i = 0, size = relEntities.size(); i < size; i++) {
                 OEntity relEntity = relEntities.get(i);
-                writeOEntity(uriInfo, jw, relEntity, relEntity.getEntitySet(), isResponse);
+            writeOEntity(uriInfo, jw, relEntity, relEntity.getEntitySet(), false);
                 if (i < size - 1) {
                   jw.writeSeparator();
                 }
               }
-            } else {
-              writeLinkInline(jw, link);
             }
-
             jw.endArray();
           } else {
-            if (link instanceof ORelatedEntityLinkInline) {
+        // single entity
               OEntity relEntity = ((ORelatedEntityLinkInline) link).getRelatedEntity();
-              writeOEntity(uriInfo, jw, relEntity, relEntity.getEntitySet(), isResponse);
+        if (null == relEntity) {
+          jw.writeNull();
             } else {
-              writeLinkInline(jw, link);
-            }
+          writeOEntity(uriInfo, jw, relEntity, relEntity.getEntitySet(), false);
           }
         }
+    } else {
+        writeInlineLink(jw, link);
       }
     }
 
-    jw.endObject();
-  }
 
-  private void writeLinkInline(JsonWriter jw, OLink link) {
+  private void writeInlineLink(JsonWriter jw, OLink link) {
+    // in requests, this represents a reference to an existing entity
     jw.startObject();
     jw.writeName("__metadata");
     jw.startObject();

@@ -17,6 +17,16 @@
                 <Property Name="name" Type="Edm.String" Nullable="true"></Property>
                 <Property Name="code" Type="Edm.String" Nullable="false"></Property>
                 <Property Name="country" Type="Edm.String" Nullable="true"></Property>
+                <NavigationProperty Name="flights" Relationship="AirlineModel.FK_Airport_Flight" 
+                    FromRole="Airport" ToRole="Flight"></NavigationProperty>
+                <NavigationProperty Name="city" Relationship="AirlineModel.FK_Airport_City"
+                    FromRole="Airport" ToRole="City"/>
+            </EntityType>
+            <EntityType Name="City">
+                <Key>
+                    <PropertyRef Name="name"></PropertyRef>
+                </Key>
+                <Property Name="name" Type="Edm.String" Nullable="false"/>
             </EntityType>
             <EntityType Name="BadAirport" BaseType="AirlineModel.Airport">
                 <Property Name="rating" Type="Edm.Int32" Nullable="false"/>
@@ -66,11 +76,20 @@
                 <End Role="PrimaryFlightSchedule" Type="AirlineModel.FlightSchedule" Multiplicity="1"></End>
                 <End Role="BackupFlightSchedule" Type="AirlineModel.FlightSchedule" Multiplicity="1"></End>
             </Association>
+            <Association Name="FK_Airport_Flight">
+                <End Role="Airport" Type="AirlineModel.Airport" Multiplicity="1"></End>
+                <End Role="Flight" Type="AirlineModel.Flight" Multiplicity="*"></End>
+            </Association>
+            <Association Name="FK_Airport_City">
+                <End Role="Airport" Type="AirlineModel.Airport" Multiplicity="1"></End>
+                <End Role="City" Type="AirlineModel.City" Multiplicity="0..1"></End>
+            </Association>
         </Schema>
         <Schema xmlns="http://schemas.microsoft.com/ado/2006/04/edm" Namespace="AirlineContainer">
             <EntityContainer Name="AirlineEntities" m:IsDefaultEntityContainer="true">
                 <EntitySet Name="Flight" EntityType="AirlineModel.Flight"></EntitySet>
                 <EntitySet Name="Airport" EntityType="AirlineModel.Airport"></EntitySet>
+                <EntitySet Name="City" EntityType="AirlineModel.City"></EntitySet>
                 <EntitySet Name="BadAirport" EntityType="AirlineModel.BadAirport"></EntitySet>
                 <EntitySet Name="FlightSchedule" EntityType="AirlineModel.FlightSchedule"></EntitySet>
                 <EntitySet Name="SubFlightSchedule" EntityType="AirlineModel.SubFlightSchedule"></EntitySet>
@@ -91,6 +110,14 @@
                 <AssociationSet Name="BackupSchedule" Association="AirlineModel.BackupSchedule">
                     <End Role="PrimaryFlightSchedule" EntitySet="FlightSchedule"></End>
                     <End Role="BackupFlightSchedule" EntitySet="FlightSchedule"></End>
+                </AssociationSet>
+                <AssociationSet Name="FK_Airport_Flight" Association="AirlineModel.FK_Airport_Flight">
+                    <End Role="Airport" EntitySet="Airport"></End>
+                    <End Role="Flight" EntitySet="Flight"></End>
+                </AssociationSet>
+                 <AssociationSet Name="FK_Airport_City" Association="AirlineModel.FK_Airport_City">
+                    <End Role="Airport" EntitySet="Airport"></End>
+                    <End Role="City" EntitySet="City"></End>
                 </AssociationSet>
             </EntityContainer>
         </Schema>

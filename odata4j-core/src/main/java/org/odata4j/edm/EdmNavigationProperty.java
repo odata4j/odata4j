@@ -6,8 +6,6 @@ public class EdmNavigationProperty extends EdmPropertyBase {
   public final EdmAssociationEnd fromRole;
   public final EdmAssociationEnd toRole;
 
-  public boolean selected = true;
-
   public EdmNavigationProperty(
       String name,
       EdmAssociation relationship,

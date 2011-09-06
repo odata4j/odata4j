@@ -473,6 +473,7 @@ public class InMemoryProducer implements ODataProducer {
           links.add(OLinks.relatedEntitiesInline(null, edmNavProperty.name, null, relatedEntities));
         } else {
           final Object entity = ei.properties.getPropertyValue(obj, prop);
+          OEntity relatedEntity = null;
 
           if (entity != null) {
             EntityInfo<?, ?> oei = Enumerable.create(eis.values()).firstOrNull(new Predicate1<InMemoryProducer.EntityInfo<?, ?>>() {
@@ -484,10 +485,32 @@ public class InMemoryProducer implements ODataProducer {
 
             EdmEntitySet relEntitySet = getMetadata().getEdmEntitySet(oei.entitySetName);
 
-            OEntity relatedEntity = toOEntity(relEntitySet, entity, remainingPropPath);
-
-            links.add(OLinks.relatedEntityInline(null, edmNavProperty.name, null, relatedEntity));
+            relatedEntity = toOEntity(relEntitySet, entity, remainingPropPath);
           }
+          links.add(OLinks.relatedEntityInline(null, edmNavProperty.name, null, relatedEntity));
+        }
+      }
+    }
+
+    // for every navigation propety that we didn' expand we must place an deferred
+    // OLink if the nav prop is selected
+    for (final EdmNavigationProperty ep : ees.type.getNavigationProperties()) {
+      // if $select is ever supported, check here and only include nave props
+      // that are selected
+      boolean expanded = null != Enumerable.create(links).firstOrNull(new Predicate1<OLink>() {
+
+        @Override
+        public boolean apply(OLink t) {
+          return t.getTitle().equals(ep.name);
+          }
+      });
+
+      if (!expanded) {
+        // defer
+        if (ep.toRole.multiplicity == EdmMultiplicity.MANY) {
+          links.add(OLinks.relatedEntities(null, ep.name, null));
+        } else {
+          links.add(OLinks.relatedEntity(null, ep.name, null));
         }
       }
     }
