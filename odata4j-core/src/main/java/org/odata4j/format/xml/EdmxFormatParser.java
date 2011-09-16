@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import org.core4j.Enumerable;
 import org.core4j.Func1;
 import org.core4j.Predicate1;
+import org.odata4j.core.Namespace;
 import org.odata4j.core.ODataVersion;
 import org.odata4j.edm.EdmAssociation;
 import org.odata4j.edm.EdmAssociationEnd;
@@ -24,6 +25,7 @@ import org.odata4j.edm.EdmFunctionParameter;
 import org.odata4j.edm.EdmMultiplicity;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
+import org.odata4j.edm.EdmProperty.CollectionKind;
 import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmType;
 import org.odata4j.stax2.Attribute2;
@@ -36,13 +38,19 @@ public class EdmxFormatParser extends XmlFormatParser {
 
   public static EdmDataServices parseMetadata(XMLEventReader2 reader) {
     List<EdmSchema> schemas = new ArrayList<EdmSchema>();
-
+    List<Namespace> namespaces = null;
+    
     ODataVersion version = null;
     boolean foundDataServices = false;
     while (reader.hasNext()) {
       XMLEvent2 event = reader.nextEvent();
 
       boolean shouldReturn = false;
+      
+      if (isStartElement(event, XmlFormatParser.EDMX_EDMX)) {
+        // should extract the declared namespaces here...
+      }
+      
       if (isStartElement(event, EDMX_DATASERVICES)) {
         foundDataServices = true;
         String str = getAttributeValueIfExists(event.asStartElement(), new QName2(NS_METADATA, "DataServiceVersion"));
@@ -61,7 +69,7 @@ public class EdmxFormatParser extends XmlFormatParser {
         shouldReturn = true;
 
       if (shouldReturn) {
-        EdmDataServices rt = new EdmDataServices(version, schemas);
+        EdmDataServices rt = new EdmDataServices(version, schemas, namespaces);
         resolve(rt);
         return rt;
       }
@@ -363,6 +371,11 @@ public class EdmxFormatParser extends XmlFormatParser {
     String maxLength = getAttributeValueIfExists(event.asStartElement(), "MaxLength");
     String unicode = getAttributeValueIfExists(event.asStartElement(), "Unicode");
     String fixedLength = getAttributeValueIfExists(event.asStartElement(), "FixedLength");
+    String collectionKindS = getAttributeValueIfExists(event.asStartElement(), "CollectionKind");
+    CollectionKind ckind = CollectionKind.None;
+    if (null != collectionKindS) {
+      ckind = Enum.valueOf(CollectionKind.class, collectionKindS);
+    }
 
     String storeGeneratedPattern = getAttributeValueIfExists(event.asStartElement(), new QName2(NS_EDMANNOTATION, "StoreGeneratedPattern"));
 
@@ -383,7 +396,10 @@ public class EdmxFormatParser extends XmlFormatParser {
                 fcContentKind,
                 fcKeepInContent,
                 fcEpmContentKind,
-                fcEpmKeepInContent);
+                fcEpmKeepInContent,
+                ckind,
+                null,  // documentation TODO
+                null); // annoations TODO
   }
 
   private static EdmComplexType parseEdmComplexType(XMLEventReader2 reader, String schemaNamespace, StartElement2 complexTypeElement) {

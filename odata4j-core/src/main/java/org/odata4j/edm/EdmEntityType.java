@@ -26,8 +26,20 @@ public class EdmEntityType extends EdmStructuralType {
     this.baseTypeNameFQ = baseTypeNameFQ;
   }
 
-  public EdmEntityType(String namespace, String alias, String name, Boolean hasStream, List<String> keys, EdmEntityType baseType, List<EdmProperty> properties, List<EdmNavigationProperty> navigationProperties) {
-    super(baseType, namespace, name, properties);
+  
+
+  public EdmEntityType(String namespace, String alias, String name, Boolean hasStream, 
+          List<String> keys, EdmEntityType baseType, List<EdmProperty> properties,
+          List<EdmNavigationProperty> navigationProperties) {
+    this(namespace, alias, name, hasStream, keys, baseType, properties, navigationProperties, null, null);
+  }
+  
+  public EdmEntityType(String namespace, String alias, String name, Boolean hasStream, 
+          List<String> keys, EdmEntityType baseType, List<EdmProperty> properties, 
+          List<EdmNavigationProperty> navigationProperties,
+          EdmDocumentation doc, List<EdmAnnotation> annotations) {
+  
+    super(baseType, namespace, name, properties, doc, annotations);
     this.alias = alias;
     this.hasStream = hasStream;
 

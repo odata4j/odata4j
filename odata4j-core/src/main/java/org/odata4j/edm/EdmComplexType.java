@@ -5,7 +5,11 @@ import java.util.List;
 public class EdmComplexType extends EdmStructuralType {
 
   public EdmComplexType(String namespace, String name, List<EdmProperty> properties) {
-    super(null, namespace, name, properties);
+    this(namespace, name, properties, null, null);
+  }
+
+  public EdmComplexType(String namespace, String name, List<EdmProperty> properties, EdmDocumentation documentation, List<EdmAnnotation> annots) {
+    super(null, namespace, name, properties, documentation, annots);
   }
   
 }

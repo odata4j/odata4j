@@ -43,8 +43,11 @@ import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.edm.EdmMultiplicity;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
+import org.odata4j.edm.EdmProperty.CollectionKind;
 import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmSimpleType;
+import org.odata4j.edm.IEdmDecorator;
+import org.odata4j.edm.IEdmGenerator;
 import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.OrderByExpression;
@@ -63,9 +66,11 @@ import org.odata4j.producer.exceptions.NotImplementedException;
  * An in-memory implementation of an ODATA Producer.  Uses the standard Java bean
  * and property model to access information within entities. 
  */
-public class InMemoryProducer implements ODataProducer {
+public class InMemoryProducer implements ODataProducer, IEdmGenerator {
 
   private final Logger log = Logger.getLogger(getClass().getName());
+
+  
 
   private static class EntityInfo<TEntity, TKey> {
     String entitySetName;
@@ -109,7 +114,8 @@ public class InMemoryProducer implements ODataProducer {
   private final int maxResults;
   private final Map<String, EntityInfo<?, ?>> eis = new HashMap<String, EntityInfo<?, ?>>();
   private EdmDataServices metadata;
-
+  private final IEdmDecorator decorator;
+  
   private static final int DEFAULT_MAX_RESULTS = 100;
 
   /** Create a new instance of an in-memory POJO/JPA producer
@@ -126,8 +132,13 @@ public class InMemoryProducer implements ODataProducer {
    * @param maxResults - the maximum number of entities to return
    */
   public InMemoryProducer(String namespace, int maxResults) {
+    this(namespace, maxResults, null);
+  }
+  
+  public InMemoryProducer(String namespace, int maxResults, IEdmDecorator decorator) {
     this.namespace = namespace;
     this.maxResults = maxResults;
+    this.decorator = decorator;
   }
 
   @Override
@@ -138,6 +149,14 @@ public class InMemoryProducer implements ODataProducer {
     return metadata;
   }
 
+  public IEdmDecorator getDecorator() {
+    return this.decorator;
+  }
+
+  public EdmDataServices generateEdm() {
+    return null == metadata ? getMetadata() : metadata;
+  }
+  
   private EdmDataServices buildMetadata() {
 
     List<EdmSchema> schemas = new ArrayList<EdmSchema>();
@@ -186,7 +205,8 @@ public class InMemoryProducer implements ODataProducer {
             associations, containers);
     schemas.add(schema);
     EdmDataServices rt = new EdmDataServices(
-            ODataConstants.DATA_SERVICE_VERSION, schemas);
+            ODataConstants.DATA_SERVICE_VERSION, schemas,
+            null == decorator ? null : decorator.getNamespaces());
     return rt;
   }
 
@@ -200,13 +220,23 @@ public class InMemoryProducer implements ODataProducer {
 
       properties.add(new EdmProperty(ID_PROPNAME,
               getEdmType(entityInfo.keyClass), false, null, null, null,
-              null, null, null, null, null, null));
+              null, null, null, null, null, null, CollectionKind.None, 
+              null == this.decorator ? null : this.decorator.getDocumentationForProperty(namespace, entitySetName, ID_PROPNAME), 
+              null == this.decorator ? null : this.decorator.getAnnotationsForProperty(namespace, entitySetName, ID_PROPNAME)));
 
-      properties.addAll(toEdmProperties(entityInfo.properties));
+      properties.addAll(toEdmProperties(entityInfo.properties, entitySetName));
 
-      EdmEntityType eet = new EdmEntityType(namespace, null,
-              entitySetName, null, Enumerable.create(ID_PROPNAME)
-                      .toList(), properties, null);
+      EdmEntityType eet = new EdmEntityType(
+              namespace, 
+              null,       // alias
+              entitySetName, 
+              null,     // hasSream
+              Enumerable.create(ID_PROPNAME).toList(),  // keys
+              null,     // basetype
+              properties, 
+              null,     // nav props
+              null == this.decorator ? null : this.decorator.getDocumentationForEntityType(namespace, entitySetName), 
+              null == this.decorator ? null : this.decorator.getAnnotationsForEntityType(namespace, entitySetName));
 
       EdmEntitySet ees = new EdmEntitySet(entitySetName, eet);
 
@@ -622,14 +652,16 @@ public class InMemoryProducer implements ODataProducer {
     return Responses.entity(oe);
   }
 
-  private Collection<EdmProperty> toEdmProperties(PropertyModel model) {
+  private Collection<EdmProperty> toEdmProperties(PropertyModel model, String structuralTypename) {
     List<EdmProperty> rt = new ArrayList<EdmProperty>();
 
     for (String propName : model.getPropertyNames()) {
       Class<?> propType = model.getPropertyType(propName);
       EdmSimpleType type = findEdmType(propType);
       if (type == null) continue;
-      rt.add(new EdmProperty(propName, type, true, null, null, null, null, null, null, null, null, null));
+      rt.add(new EdmProperty(propName, type, true, null, null, null, null, null, null, null, null, null, CollectionKind.None, 
+              null == this.decorator ? null : this.decorator.getDocumentationForProperty(namespace, structuralTypename, propName), 
+              null == this.decorator ? null : this.decorator.getAnnotationsForProperty(namespace, structuralTypename, propName)));
     }
 
     return rt;

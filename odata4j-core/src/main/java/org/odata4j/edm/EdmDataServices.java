@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.core4j.Enumerable;
 import org.core4j.Predicate1;
+import org.odata4j.core.Namespace;
 import org.odata4j.core.ODataVersion;
 import org.odata4j.producer.exceptions.NotFoundException;
 
@@ -17,12 +18,18 @@ public class EdmDataServices {
 
   private final ODataVersion version;
   private final List<EdmSchema> schemas;
-
+  private final List<Namespace> namespaces; // for Annotations
+  
   public static final EdmDataServices EMPTY = new EdmDataServices(null, new ArrayList<EdmSchema>());
 
   public EdmDataServices(ODataVersion version, List<EdmSchema> schemas) {
+    this(version, schemas, null);
+  }
+  
+  public EdmDataServices(ODataVersion version, List<EdmSchema> schemas, List<Namespace> namespaces) {
     this.version = version;
     this.schemas = schemas;
+    this.namespaces = namespaces;
   }
 
   public String getVersion() {
@@ -31,6 +38,10 @@ public class EdmDataServices {
 
   public List<EdmSchema> getSchemas() {
     return schemas;
+  }
+  
+  public List<Namespace> getNamespaces() {
+    return this.namespaces;
   }
 
   public EdmEntitySet getEdmEntitySet(String entitySetName) {

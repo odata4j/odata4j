@@ -190,6 +190,9 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
         boolean isComplexType = false;
         if (typeAttribute != null) {
           type = typeAttribute.getValue();
+          // TODO: the proper way to resolve the type is to use the Edm type of
+          // the thing we are parsing to figure out the type of the property.
+          // This way the proper form of OProperties.complex can be used below.
           EdmType et = EdmType.get(type);
           isComplexType = !et.isSimple();
         }

@@ -21,6 +21,7 @@ public class XmlFormatParser {
   public static final String NS_EDMX = "http://schemas.microsoft.com/ado/2007/06/edmx";
   public static final String NS_EDMANNOTATION = "http://schemas.microsoft.com/ado/2009/02/edm/annotation";
 
+  public static final QName2 EDMX_EDMX = new QName2(NS_EDMX, "Edmx");
   public static final QName2 EDMX_DATASERVICES = new QName2(NS_EDMX, "DataServices");
 
   public static final QName2 EDM2006_SCHEMA = new QName2(NS_EDM2006, "Schema");

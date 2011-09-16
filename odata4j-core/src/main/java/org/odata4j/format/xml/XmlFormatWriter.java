@@ -1,5 +1,6 @@
 package org.odata4j.format.xml;
 
+import java.util.Iterator;
 import java.util.List;
 
 import javax.ws.rs.core.MediaType;
@@ -9,12 +10,16 @@ import org.core4j.Predicate1;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
+import org.odata4j.core.OCollection;
+import org.odata4j.core.OComplexObject;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OLink;
+import org.odata4j.core.OObject;
 import org.odata4j.core.OProperty;
 import org.odata4j.core.ORelatedEntitiesLink;
 import org.odata4j.core.ORelatedEntitiesLinkInline;
 import org.odata4j.core.ORelatedEntityLinkInline;
+import org.odata4j.core.OSimpleObject;
 import org.odata4j.edm.EdmType;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmMultiplicity;
@@ -47,11 +52,10 @@ public class XmlFormatWriter {
 
   @SuppressWarnings("unchecked")
   protected void writeProperty(XMLWriter2 writer, OProperty<?> prop, boolean isDocumentElement) {
-
-    String name = prop.getName();
-    EdmType type = prop.getType();
-    Object value = prop.getValue();
-
+    writeProperty(writer, prop.getName(), prop.getType(), prop.getValue(), isDocumentElement, true);
+  }
+  
+  protected void writeProperty(XMLWriter2 writer, String name, EdmType type, Object value, boolean isDocumentElement, boolean writeType) {
     if (isDocumentElement)
       writer.startElement(new QName2(name), d);
     else
@@ -60,70 +64,64 @@ public class XmlFormatWriter {
     String sValue = null;
 
     if (!type.isSimple()) {
-      writer.writeAttribute(
-          new QName2(m, "type", "m"),
-          type.getFullyQualifiedTypeName());
-      // complex
-      List<OProperty<?>> complexProperties = (List<OProperty<?>>) value;
-      if (complexProperties != null) {
-        writeProperties(writer, complexProperties);
+      if (writeType) {
+        String typename = type.getFullyQualifiedTypeName();
+        if (value instanceof OCollection) {
+          typename = "Bag(" + typename + ")";
+        }
+        writer.writeAttribute(new QName2(m, "type", "m"), typename);
+      }
+      // complex or collection
+      if (value instanceof OCollection) {
+        writeCollection(writer, name, (OCollection<? extends OObject>)value);
+      } else if (value instanceof OComplexObject) {
+        writeProperties(writer, ((OComplexObject)value).getProperties());
+      } else {
+        // deprecated form of a complex object.
+        List<OProperty<?>> complexProperties = (List<OProperty<?>>) value;
+        if (complexProperties != null) {
+          writeProperties(writer, complexProperties);
+        }
       }
     } else {
       // simple
-      if (type == EdmSimpleType.INT32) {
+      // write the type attribute if requested and not a string
+      if (writeType && type != EdmSimpleType.STRING) {
         writer.writeAttribute(
             new QName2(m, "type", "m"),
             type.getFullyQualifiedTypeName());
+      }
+      // now write the value
+      if (type == EdmSimpleType.INT32) {
         if (value != null) {
           sValue = value.toString();
         }
       } else if (type == EdmSimpleType.INT16) {
-        writer.writeAttribute(
-            new QName2(m, "type", "m"),
-            type.getFullyQualifiedTypeName());
         if (value != null) {
           sValue = value.toString();
         }
       } else if (type == EdmSimpleType.INT64) {
-        writer.writeAttribute(
-            new QName2(m, "type", "m"),
-            type.getFullyQualifiedTypeName());
         if (value != null) {
           sValue = value.toString();
         }
       } else if (type == EdmSimpleType.BOOLEAN) {
-        writer.writeAttribute(
-            new QName2(m, "type", "m"),
-            type.getFullyQualifiedTypeName());
         if (value != null) {
           sValue = value.toString();
         }
       } else if (type == EdmSimpleType.BYTE) {
-        writer.writeAttribute(
-            new QName2(m, "type", "m"),
-            type.getFullyQualifiedTypeName());
         if (value != null) {
           sValue = Hex.encodeHexString(
               new byte[] { (Byte) value });
         }
       } else if (type == EdmSimpleType.DECIMAL) {
-        writer.writeAttribute(
-            new QName2(m, "type", "m"),
-            type.getFullyQualifiedTypeName());
         if (value != null) {
           sValue = value.toString();
         }
       } else if (type == EdmSimpleType.SINGLE) {
-        writer.writeAttribute(
-            new QName2(m, "type", "m"),
-            type.getFullyQualifiedTypeName());
         if (value != null) {
           sValue = value.toString();
         }
       } else if (type == EdmSimpleType.DOUBLE) {
-        writer.writeAttribute(
-            new QName2(m, "type", "m"),
-            type.getFullyQualifiedTypeName());
         if (value != null) {
           sValue = value.toString();
         }
@@ -132,40 +130,25 @@ public class XmlFormatWriter {
           sValue = value.toString();
         }
       } else if (type == EdmSimpleType.DATETIME) {
-        writer.writeAttribute(
-            new QName2(m, "type", "m"),
-            type.getFullyQualifiedTypeName());
         if (value != null)
           sValue = InternalUtil.formatDateTime(
                   (LocalDateTime) value);
       } else if (type == EdmSimpleType.BINARY) {
-        writer.writeAttribute(
-            new QName2(m, "type", "m"),
-            type.getFullyQualifiedTypeName());
         byte[] bValue = (byte[]) value;
         if (value != null) {
           sValue = Base64.encodeBase64String(bValue);
         }
       } else if (type == EdmSimpleType.GUID) {
-        writer.writeAttribute(
-            new QName2(m, "type", "m"),
-            type.getFullyQualifiedTypeName());
         if (value != null) {
           sValue = value.toString();
         }
       } else if (type == EdmSimpleType.TIME) {
-        writer.writeAttribute(
-            new QName2(m, "type", "m"),
-            type.getFullyQualifiedTypeName());
         if (value != null) {
           sValue = InternalUtil.toString((LocalTime) value);
         }
       } else if (type == EdmSimpleType.DATETIMEOFFSET) {
         // Edm.DateTimeOffset '-'? yyyy '-' mm '-' dd 'T' hh ':' mm
         // ':' ss ('.' s+)? (zzzzzz)?
-        writer.writeAttribute(
-            new QName2(m, "type", "m"),
-            type.getFullyQualifiedTypeName());
         if (value != null) {
           sValue = InternalUtil.toString((DateTime) value);
         }
@@ -176,7 +159,7 @@ public class XmlFormatWriter {
 
     if (value == null) {
       writer.writeAttribute(new QName2(m, "null", "m"), "true");
-    } else {
+    } else if (sValue != null) {
       writer.writeText(sValue);
     }
     writer.endElement(name);
@@ -354,5 +337,13 @@ public class XmlFormatWriter {
       writer.writeText(elementText);
     }
     writer.endElement(elementName);
+  }
+
+  private void writeCollection(XMLWriter2 writer, String name, OCollection<? extends OObject> c) {
+    Iterator<? extends OObject> iter = c.iterator();
+    while (iter.hasNext()) {
+      OObject o = iter.next();
+      writeProperty(writer, "element", o.getType(), o, false, false); // not a doc element and don't write the typename
+    }
   }
 }

@@ -7,6 +7,7 @@ import javax.persistence.metamodel.SingularAttribute;
 import org.core4j.Enumerable;
 import org.odata4j.edm.EdmType;
 import org.odata4j.edm.EdmProperty;
+import org.odata4j.edm.EdmProperty.CollectionKind;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.producer.jpa.JPAEdmGenerator;
 
@@ -21,6 +22,6 @@ public class EclipseLinkJPAEdmGenerator extends JPAEdmGenerator {
         && eclipseLinkProps.containsKey("MaxLength"))
       maxLength = (Integer) eclipseLinkProps.get("MaxLength");
 
-    return new EdmProperty(p.name, p.type, p.nullable, maxLength, null, null, null, null, null, null, null, null);
+    return new EdmProperty(p.name, p.type, p.nullable, maxLength, null, null, null, null, null, null, null, null, CollectionKind.None, null, null);
   }
 }

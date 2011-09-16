@@ -1,6 +1,8 @@
 package org.odata4j.edm;
 
-public class EdmAssociation {
+import java.util.List;
+
+public class EdmAssociation extends EdmItem {
 
   public final String namespace;
   public final String alias;
@@ -9,6 +11,12 @@ public class EdmAssociation {
   public final EdmAssociationEnd end2;
 
   public EdmAssociation(String namespace, String alias, String name, EdmAssociationEnd end1, EdmAssociationEnd end2) {
+    this(namespace, alias, name, end1, end2, null, null);
+  }
+  
+  public EdmAssociation(String namespace, String alias, String name, EdmAssociationEnd end1, EdmAssociationEnd end2,
+          EdmDocumentation doc, List<EdmAnnotation> annots) {
+    super(doc, annots);
     this.namespace = namespace;
     this.alias = alias;
     this.name = name;

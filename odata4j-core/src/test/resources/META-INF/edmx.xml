@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata">
+<edmx:Edmx Version="1.0" 
+           xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx" 
+           xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" 
+           xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
+           xmlns:myns="http://tempuri.org/hello">
     <edmx:DataServices m:DataServiceVersion="1.0">
         <Schema xmlns="http://schemas.microsoft.com/ado/2006/04/edm" Namespace="AirlineModel">
             <EntityType Name="Flight">
@@ -10,7 +14,7 @@
                 <Property Name="takeoffTime" Type="Edm.DateTime" Nullable="true"></Property>
                 <NavigationProperty Name="flightSchedule" Relationship="AirlineModel.FK_Flight_FlightSchedule" FromRole="Flight" ToRole="FlightSchedule"></NavigationProperty>
             </EntityType>
-            <EntityType Name="Airport">
+            <EntityType Name="Airport" myns:AnnotationAttribute="test annotation attribute">
                 <Key>
                     <PropertyRef Name="code"></PropertyRef>
                 </Key>
@@ -21,6 +25,12 @@
                     FromRole="Airport" ToRole="Flight"></NavigationProperty>
                 <NavigationProperty Name="city" Relationship="AirlineModel.FK_Airport_City"
                     FromRole="Airport" ToRole="City"/>
+                <myns:AnnotationElement>
+                  <myns:testing>hello</myns:testing>
+                  <myns:another foo="bar">
+                    <myns:yetanother>yetanother</myns:yetanother>
+                  </myns:another>
+                </myns:AnnotationElement>  
             </EntityType>
             <EntityType Name="City">
                 <Key>

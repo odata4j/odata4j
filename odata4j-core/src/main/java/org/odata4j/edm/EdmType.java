@@ -1,5 +1,6 @@
 package org.odata4j.edm;
 
+import java.util.List;
 import java.util.Map;
 
 import org.core4j.Enumerable;
@@ -10,7 +11,7 @@ import org.odata4j.core.OFuncs;
  * 
  * @see <a href="http://msdn.microsoft.com/en-us/library/bb399591.aspx">[msdn] Types (Metadata)</a>
  */
-public abstract class EdmType {
+public abstract class EdmType extends EdmItem {
 
   private static class LazyInit {
     private static final Map<String, EdmType> POOL = Enumerable.create(EdmSimpleType.ALL)
@@ -21,6 +22,12 @@ public abstract class EdmType {
   private final String fullyQualifiedTypeName;
   
   public EdmType(String fullyQualifiedTypeName) {
+    super(null, null);
+    this.fullyQualifiedTypeName = fullyQualifiedTypeName;
+  }
+  
+  public EdmType(String fullyQualifiedTypeName, EdmDocumentation documentation, List<EdmAnnotation> annotations) {
+    super(documentation, annotations);
     this.fullyQualifiedTypeName = fullyQualifiedTypeName;
   }
 

@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
+import org.odata4j.edm.EdmCollectionType;
+import org.odata4j.edm.EdmComplexType;
 import org.odata4j.edm.EdmType;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.internal.InternalUtil;
@@ -144,9 +146,35 @@ public class OProperties {
    * @param type  the property edm-type
    * @param value  the property values
    * @return a new OData property instance
+   * @deprecated this form uses as the property's type an abstract EdmNonSimple which is undesirable.
+   *             I'm thinking the EdmType.get should only be for simple types?
    */
   public static OProperty<List<OProperty<?>>> complex(String name, String type, List<OProperty<?>> value) {
     return new PropertyImpl<List<OProperty<?>>>(name, EdmType.get(type), value);
+  }
+  
+  /**
+   * Creates a new complex-valued OData property of the given edm-type.
+   * 
+   * @param name  the property name
+   * @param type  the property edm-type
+   * @param value  the property values
+   * @return a new OData property instance
+   */
+  public static OProperty<List<OProperty<?>>> complex(String name, EdmComplexType type, List<OProperty<?>> value) {
+    return new PropertyImpl<List<OProperty<?>>>(name, type, value);
+  }
+  
+   /**
+   * Creates a new collecion-valued OData property of the given edm-type.
+   * 
+   * @param name  the property name
+   * @param type  the property edm-type of objects in the collection
+   * @param value  the OCollection
+   * @return a new OData property instance
+   */
+  public static OProperty<OCollection<? extends OObject>> collection(String name, EdmCollectionType type, OCollection<? extends OObject> value) {
+    return new PropertyImpl<OCollection<? extends OObject>>(name, type, value);
   }
 
   /**

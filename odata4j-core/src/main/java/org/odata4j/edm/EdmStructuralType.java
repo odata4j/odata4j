@@ -14,7 +14,12 @@ public abstract class EdmStructuralType extends EdmNonSimpleType {
   private EdmEntityType baseType;
 
   protected EdmStructuralType(EdmEntityType baseType, String namespace, String name, List<EdmProperty> properties) {
-    super(namespace + "." + name);
+    this(baseType, namespace, name, properties, null, null);
+  }    
+  
+  protected EdmStructuralType(EdmEntityType baseType, String namespace, String name, List<EdmProperty> properties,
+          EdmDocumentation doc, List<EdmAnnotation> annotations) {
+    super(namespace + "." + name, doc, annotations);
     this.baseType = baseType;
     this.namespace = namespace;
     this.name = name;

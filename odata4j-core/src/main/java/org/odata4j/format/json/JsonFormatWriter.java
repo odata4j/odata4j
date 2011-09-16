@@ -22,8 +22,13 @@ import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
 import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
 
 import com.sun.jersey.api.core.ExtendedUriInfo;
+import java.util.Iterator;
+import org.odata4j.core.OCollection;
 import org.odata4j.core.OComplexObject;
 import org.odata4j.core.ODataVersion;
+import org.odata4j.core.OObject;
+import org.odata4j.core.OSimpleObject;
+import org.odata4j.edm.EdmCollectionType;
 import org.odata4j.edm.EdmType;
 import org.odata4j.edm.EdmComplexType;
 
@@ -61,8 +66,8 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
   @Override
   public String getContentType() {
     return jsonpCallback == null
-        ? ODataConstants.APPLICATION_JAVASCRIPT_CHARSET_UTF8
-        : ODataConstants.TEXT_JAVASCRIPT_CHARSET_UTF8;
+            ? ODataConstants.APPLICATION_JAVASCRIPT_CHARSET_UTF8
+            : ODataConstants.TEXT_JAVASCRIPT_CHARSET_UTF8;
   }
 
   protected String getJsonpCallback() {
@@ -104,7 +109,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
     } else if (type.equals(EdmSimpleType.BOOLEAN)) {
       jw.writeBoolean((Boolean) pvalue);
     } else if (type.equals(EdmSimpleType.BYTE)) {
-      jw.writeString(Hex.encodeHexString(new byte[] { (Byte) pvalue }));
+      jw.writeString(Hex.encodeHexString(new byte[]{(Byte) pvalue}));
     } else if (type.equals(EdmSimpleType.DATETIME)) {
       LocalDateTime ldt = (LocalDateTime) pvalue;
       long millis = ldt.toDateTime().getMillis();
@@ -131,16 +136,56 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
       jw.writeString("time'" + ldt + "'");
     } else if (type.equals(EdmSimpleType.DATETIMEOFFSET)) {
       jw.writeString("datetimeoffset'" + InternalUtil.toString((DateTime) pvalue) + "'");
-    } else if (type instanceof EdmComplexType || (type instanceof EdmSimpleType && (!((EdmSimpleType)type).isSimple()))) {
+    } else if (type instanceof EdmComplexType || (type instanceof EdmSimpleType && (!((EdmSimpleType) type).isSimple()))) {
       // the OComplexObject value type is not in use everywhere yet, fix TODO
       if (pvalue instanceof OComplexObject) {
-          pvalue = ((OComplexObject)pvalue).getProperties();
+        pvalue = ((OComplexObject) pvalue).getProperties();
       }
-      writeComplexObject(jw, type.getFullyQualifiedTypeName(), (List<OProperty<?>>)pvalue);
+      writeComplexObject(jw, type.getFullyQualifiedTypeName(), (List<OProperty<?>>) pvalue);
+    } else if (type instanceof EdmCollectionType) {
+      writeCollection(jw, (EdmCollectionType) type, (OCollection<? extends OObject>) pvalue);
     } else {
       String value = pvalue.toString();
       jw.writeString(value);
     }
+  }
+
+  protected void writeCollection(JsonWriter jw, EdmCollectionType type, OCollection<? extends OObject> coll) {
+    jw.startObject();
+    {
+      jw.writeName("results");
+
+      jw.startArray();
+      {
+        boolean isFirst = true;
+        Iterator<? extends OObject> iter = coll.iterator();
+        while (iter.hasNext()) {
+          OObject obj = iter.next();
+          if (isFirst) {
+            isFirst = false;
+          } else {
+            jw.writeSeparator();
+          }
+          if (obj instanceof OComplexObject) {
+            writeComplexObject(jw, obj.getType().getFullyQualifiedTypeName(), ((OComplexObject) obj).getProperties());
+          } else if (obj instanceof OSimpleObject) {
+            writeValue(jw, obj.getType(), ((OSimpleObject) obj).getValue());
+          } 
+          //else if (obj instanceof OEntity) {
+          //  I think the FormatWriter sig is going to have to change:
+          //  1.  passing around a Jersey type like ExtendedUriInfo is not a good idea imo
+          //  2.  why does JSON write absolute uris (http://blah/blah) for every entity?  The Atom
+          //      equivalent parts have the relative uri in many places.  Hmmh, a JSON feed representation
+          //      doesn't carry the xml:base uri like in Atom...weird...protocol seems inconsistent.
+          //  this.writeOEntity(null, jw, null, null, isFirst);
+          //}
+          // others for later: ORowType
+        }
+
+      }
+      jw.endArray();
+    }
+    jw.endObject();
   }
 
   protected void writeComplexObject(JsonWriter jw, String fullyQualifiedTypeName, List<OProperty<?>> props) {
@@ -152,12 +197,12 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
       jw.writeName("__metadata");
       jw.startObject();
       {
-        jw.writeName("type");
-        jw.writeString(fullyQualifiedTypeName);
+      jw.writeName("type");
+      jw.writeString(fullyQualifiedTypeName);
       }
       jw.endObject();
       jw.writeSeparator();
-      */
+       */
       writeOProperties(jw, props);
     }
     jw.endObject();
@@ -187,7 +232,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
       }
 
       writeOProperties(jw, oe.getProperties());
-      writeLinks(jw, oe, uriInfo, isResponse); 
+      writeLinks(jw, oe, uriInfo, isResponse);
     }
     jw.endObject();
   }
@@ -196,17 +241,17 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
 
     if (oe.getLinks() != null) {
       for (OLink link : oe.getLinks()) {
-      if (isResponse) {
+        if (isResponse) {
           writeResponseLink(jw, link, oe, uriInfo);
         } else {
           writeRequestLink(jw, link, oe, uriInfo);
         }
       }
     }
-            }
+  }
 
   protected void writeResponseLink(JsonWriter jw, OLink link, OEntity oe, ExtendedUriInfo uriInfo) {
-            jw.writeSeparator();
+    jw.writeSeparator();
     jw.writeName(link.getTitle());
     if (link.isInline()) {
       if (link.isCollection()) {
@@ -214,34 +259,34 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
         // the version check will only make sense when this library properly
         // supports version negotiation.  For now we write v2 only
         if (true) { //  || ODataVersion.isVersionGreaterThan(settings.version, ODataVersion.V1)) {
-              jw.startObject();
+          jw.startObject();
           jw.writeName(JsonFormatParser.RESULTS_PROPERTY);
-                }
+        }
 
-                  jw.startArray();
-                  {
+        jw.startArray();
+        {
           if (((ORelatedEntitiesLinkInline) link).getRelatedEntities() != null) {
-                    boolean isFirstInlinedEntity = true;
+            boolean isFirstInlinedEntity = true;
             for (OEntity re : ((ORelatedEntitiesLinkInline) link).getRelatedEntities()) {
 
-                      if (isFirstInlinedEntity) {
-                        isFirstInlinedEntity = false;
-                      } else {
-                        jw.writeSeparator();
-                      }
+              if (isFirstInlinedEntity) {
+                isFirstInlinedEntity = false;
+              } else {
+                jw.writeSeparator();
+              }
 
               writeOEntity(uriInfo, jw, re, re.getEntitySet(), true);
-                    }
+            }
 
-                  }
+          }
         }
-                  jw.endArray();
+        jw.endArray();
 
         // maybe later
         if (true) { // ODataVersion.isVersionGreaterThan(settings.version, ODataVersion.V1)) {
           jw.endObject();
         }
-        
+
       } else {
         OEntity re = ((ORelatedEntityLinkInline) link).getRelatedEntity();
         if (null == re) {
@@ -260,46 +305,46 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
           String absId = uriInfo.getBaseUri().toString() + InternalUtil.getEntityRelId(oe);
           jw.writeName("uri");
           jw.writeString(absId + "/" + link.getTitle());
-                }
-                jw.endObject();
-            }
-      jw.endObject();
-          }
         }
-  
-  protected void writeRequestLink(JsonWriter jw, OLink link, OEntity oe, ExtendedUriInfo uriInfo) {
-          jw.writeSeparator();
+        jw.endObject();
+      }
+      jw.endObject();
+    }
+  }
 
-          jw.writeName(link.getTitle());
+  protected void writeRequestLink(JsonWriter jw, OLink link, OEntity oe, ExtendedUriInfo uriInfo) {
+    jw.writeSeparator();
+
+    jw.writeName(link.getTitle());
 
     if (link.isInline()) {
       if (link.isCollection()) {
 
-            jw.startArray();
+        jw.startArray();
         if (((ORelatedEntitiesLinkInline) link).getRelatedEntities() != null) {
-              List<OEntity> relEntities = ((ORelatedEntitiesLinkInline) link).getRelatedEntities();
-              for (int i = 0, size = relEntities.size(); i < size; i++) {
-                OEntity relEntity = relEntities.get(i);
+          List<OEntity> relEntities = ((ORelatedEntitiesLinkInline) link).getRelatedEntities();
+          for (int i = 0, size = relEntities.size(); i < size; i++) {
+            OEntity relEntity = relEntities.get(i);
             writeOEntity(uriInfo, jw, relEntity, relEntity.getEntitySet(), false);
-                if (i < size - 1) {
-                  jw.writeSeparator();
-                }
-              }
+            if (i < size - 1) {
+              jw.writeSeparator();
             }
-            jw.endArray();
-          } else {
-        // single entity
-              OEntity relEntity = ((ORelatedEntityLinkInline) link).getRelatedEntity();
-        if (null == relEntity) {
-          jw.writeNull();
-            } else {
-          writeOEntity(uriInfo, jw, relEntity, relEntity.getEntitySet(), false);
           }
         }
-    } else {
-        writeInlineLink(jw, link);
+        jw.endArray();
+      } else {
+        // single entity
+        OEntity relEntity = ((ORelatedEntityLinkInline) link).getRelatedEntity();
+        if (null == relEntity) {
+          jw.writeNull();
+        } else {
+          writeOEntity(uriInfo, jw, relEntity, relEntity.getEntitySet(), false);
+        }
       }
+    } else {
+      writeInlineLink(jw, link);
     }
+  }
 
 
   private void writeInlineLink(JsonWriter jw, OLink link) {

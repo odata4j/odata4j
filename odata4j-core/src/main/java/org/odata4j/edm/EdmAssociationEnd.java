@@ -1,12 +1,20 @@
 package org.odata4j.edm;
 
-public class EdmAssociationEnd {
+import java.util.List;
+
+public class EdmAssociationEnd extends EdmItem {
 
   public final String role;
   public final EdmEntityType type;
   public final EdmMultiplicity multiplicity;
 
   public EdmAssociationEnd(String role, EdmEntityType type, EdmMultiplicity multiplicity) {
+    this(role, type, multiplicity, null, null);
+  }
+  
+  public EdmAssociationEnd(String role, EdmEntityType type, EdmMultiplicity multiplicity, 
+          EdmDocumentation doc, List<EdmAnnotation> annots) {
+    super(doc, annots);
     this.role = role;
     this.type = type;
     this.multiplicity = multiplicity;

@@ -48,6 +48,7 @@ import org.odata4j.edm.EdmEntityType;
 import org.odata4j.edm.EdmMultiplicity;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
+import org.odata4j.edm.EdmProperty.CollectionKind;
 import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmSimpleType;
 
@@ -111,7 +112,7 @@ public class JPAEdmGenerator {
         maxLength = col.length();
     }
 
-    return new EdmProperty(name, type, nullable, maxLength, null, null, null, null, null, null, null, null);
+    return new EdmProperty(name, type, nullable, maxLength, null, null, null, null, null, null, null, null, CollectionKind.None, null, null);
   }
 
   protected List<EdmProperty> getProperties(String modelNamespace, ManagedType<?> et) {

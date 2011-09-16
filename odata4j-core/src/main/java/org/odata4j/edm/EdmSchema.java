@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.core4j.Enumerable;
 
-public class EdmSchema {
+public class EdmSchema extends EdmItem {
 
   public final String namespace;
   public final String alias;
@@ -13,7 +13,17 @@ public class EdmSchema {
   public final List<EdmAssociation> associations;
   public final List<EdmEntityContainer> entityContainers;
 
-  public EdmSchema(String namespace, String alias, List<EdmEntityType> entityTypes, List<EdmComplexType> complexTypes, List<EdmAssociation> associations, List<EdmEntityContainer> entityContainers) {
+  public EdmSchema(String namespace, String alias, List<EdmEntityType> entityTypes, 
+          List<EdmComplexType> complexTypes, List<EdmAssociation> associations, 
+          List<EdmEntityContainer> entityContainers) {
+    this(namespace, alias, entityTypes, complexTypes, associations, entityContainers, null, null);
+  }
+  
+  public EdmSchema(String namespace, String alias, List<EdmEntityType> entityTypes, 
+          List<EdmComplexType> complexTypes, List<EdmAssociation> associations, 
+          List<EdmEntityContainer> entityContainers, 
+          EdmDocumentation doc, List<EdmAnnotation> annots) {
+    super(doc, annots);
     this.namespace = namespace;
     this.alias = alias;
     this.entityTypes = entityTypes == null ? Enumerable.empty(EdmEntityType.class).toList() : entityTypes;
