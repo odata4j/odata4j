@@ -48,9 +48,19 @@
       <email>phanirajuyn@gmail.com</email>
     </developer>
     <developer>
+      <id>philipp.thun</id>
+      <name>Philipp Thun</name>
+      <email>philipp.thun@sap.com</email>
+    </developer>
+    <developer>
       <id>sergei.inbox</id>
       <name>Sergej.T</name>
       <email>sergei.inbox@gmail.com</email>
+    </developer>
+    <developer>
+      <id>stephan.klevenz</id>
+      <name>Stephan Klevenz</name>
+      <email>stephan.klevenz@sap.com</email>
     </developer>
   </developers>
 
