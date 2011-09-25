@@ -192,15 +192,14 @@ public class EdmxFormatParser extends XmlFormatParser {
           //       have a EdmRowType instance it built during parsing.
           // first, try to resolve the type name as a simple or complex type
           type = EdmType.get(tmpEfi.returnTypeName);
-          if (null == type) {
-            // ok, not one of these.  Is this an Entity type?
+          if (!type.isSimple()) {
             type = metadata.findEdmEntityType(tmpEfi.returnTypeName);
-          } else if (!type.isSimple()) {
-            // EdmType.get returns a new EdmComplexType instance...it doesn't have properties
-            // though.  We need them.
-              type = metadata.findEdmComplexType(type.getFullyQualifiedTypeName());
+            if (type == null)
+              type = metadata.findEdmComplexType(tmpEfi.returnTypeName);
           }
-          
+          if (type == null)
+            throw new RuntimeException("Edm-type not found: " + tmpEfi.returnTypeName);
+        
           if (tmpEfi.isCollection) {
             type = new EdmCollectionType(tmpEfi.returnTypeName, type);
           }

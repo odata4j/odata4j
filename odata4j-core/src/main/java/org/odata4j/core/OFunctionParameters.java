@@ -1,9 +1,10 @@
 package org.odata4j.core;
 
-import org.odata4j.edm.EdmType;
 import org.odata4j.edm.EdmCollectionType;
 import org.odata4j.edm.EdmComplexType;
+import org.odata4j.edm.EdmEntityType;
 import org.odata4j.edm.EdmSimpleType;
+import org.odata4j.edm.EdmType;
 import org.odata4j.expression.CommonExpression;
 import org.odata4j.expression.Expression;
 import org.odata4j.expression.ExpressionParser;
@@ -121,6 +122,8 @@ public class OFunctionParameters {
       return OComplexObject.class;
     } else if (edmType instanceof EdmCollectionType) {
       return OCollection.class;
+    } else if (edmType instanceof EdmEntityType) {
+      return OEntity.class;
     } else {
       throw new NotImplementedException("function return type " + edmType.getFullyQualifiedTypeName() + " not supported");
     }

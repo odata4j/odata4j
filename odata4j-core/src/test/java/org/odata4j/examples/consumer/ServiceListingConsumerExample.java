@@ -3,11 +3,14 @@ package org.odata4j.examples.consumer;
 import org.core4j.Enumerable;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.EntitySetInfo;
+import org.odata4j.core.OClientBehavior;
 import org.odata4j.examples.BaseExample;
 import org.odata4j.examples.ODataEndpoints;
 
 public class ServiceListingConsumerExample extends BaseExample {
 
+  private static OClientBehavior[] behaviors = {};
+  
   @SuppressWarnings("unused")
   public static void main(String[] args) {
 
@@ -44,13 +47,17 @@ public class ServiceListingConsumerExample extends BaseExample {
     Enumerable<String> largeServices = Enumerable.create(
         ODataEndpoints.BASEBALL_STATS,
         ODataEndpoints.NETFLIX,
-        // ODataEndpoints.STACK_OVERFLOW, // Votes entity-sets return 500
+        // ODataEndpoints.STACK_OVERFLOW, // Votes entity-sets return 500 
         // ODataEndpoints.SUPER_USER,   
         // ODataEndpoints.SERVER_FAULT,  
         // ODataEndpoints.META_STACK_OVERFLOW, 
         ODataEndpoints.WORLD_CUP
         );
 
+    // stack overflow feeds 500 unless requests are rate-limited
+    //behaviors = new OClientBehavior[] { OClientBehaviors.rateLimit(1000) };
+    //printOutFirstEntities(Enumerable.create(ODataEndpoints.STACK_OVERFLOW));
+    
     // print out each entity in every entity-set exposed by small services
     printOutAllEntities(smallServices);
 
@@ -61,7 +68,7 @@ public class ServiceListingConsumerExample extends BaseExample {
 
   private static void printOutFirstEntities(Iterable<String> services) {
     for (String endpoint : services) {
-      ODataConsumer c = ODataConsumer.create(endpoint);
+      ODataConsumer c = ODataConsumer.create(endpoint, behaviors);
       for (EntitySetInfo entitySet : c.getEntitySets()) {
         reportEntities(entitySet.getHref(), c.getEntities(entitySet.getHref()).top(1).execute());
       }
@@ -70,7 +77,7 @@ public class ServiceListingConsumerExample extends BaseExample {
 
   private static void printOutAllEntities(Iterable<String> services) {
     for (String endpoint : services) {
-      ODataConsumer c = ODataConsumer.create(endpoint);
+      ODataConsumer c = ODataConsumer.create(endpoint, behaviors);
       for (EntitySetInfo entitySet : c.getEntitySets()) {
         reportEntities(entitySet.getTitle(), c.getEntities(entitySet.getHref()).execute());
       }

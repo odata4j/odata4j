@@ -69,4 +69,12 @@ public class OFuncs {
       }
     };
   }
+  
+  public static Func1<EntitySetInfo, String> entitySetInfoTitle() {
+    return new Func1<EntitySetInfo, String>() {
+      public String apply(EntitySetInfo input) {
+        return input.getTitle();
+      }
+    };
+  }
 }

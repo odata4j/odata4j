@@ -173,6 +173,12 @@ class ConsumerFunctionCallRequest<T extends OObject>
   public OFunctionRequest<T> pTime(String name, LocalDateTime value) {
     return parameter(name, OSimpleObjects.create(value, EdmSimpleType.TIME));
   }
+  
+  @Override
+  public OFunctionRequest<T> pString(String name, String value) {
+    return parameter(name, OSimpleObjects.create(value, EdmSimpleType.STRING));
+  }
+
 
   private class FunctionResultsIterator extends ReadOnlyIterator<OObject> {
 

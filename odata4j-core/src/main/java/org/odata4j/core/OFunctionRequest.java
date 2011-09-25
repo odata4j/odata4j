@@ -59,4 +59,7 @@ public interface OFunctionRequest<T> extends OQueryRequest<T> {
 
   /** Add a time parameter */
   OFunctionRequest<T> pTime(String name, LocalDateTime value);
+  
+  /** Add a string parameter */
+  OFunctionRequest<T> pString(String name, String value);
 }

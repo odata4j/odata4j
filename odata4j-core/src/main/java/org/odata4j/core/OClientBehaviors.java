@@ -1,7 +1,9 @@
 package org.odata4j.core;
 
+import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.consumer.behaviors.AllowSelfSignedCertsBehavior;
 import org.odata4j.consumer.behaviors.AzureTableBehavior;
+import org.odata4j.consumer.behaviors.BaseClientBehavior;
 import org.odata4j.consumer.behaviors.BasicAuthenticationBehavior;
 import org.odata4j.consumer.behaviors.MethodTunnelingBehavior;
 
@@ -51,5 +53,25 @@ public class OClientBehaviors {
    */
   public static OClientBehavior methodTunneling(String... methodsToTunnel) {
     return new MethodTunnelingBehavior(methodsToTunnel);
+  }
+  
+  /**
+   * Creates a behavior that sleeps a specified amount of time before each client request.
+   * 
+   * @param millis  the time to sleep in milliseconds
+   * @return a behavior that sleeps a specified amount of time before each client request
+   */
+  public static OClientBehavior rateLimit(final long millis) {
+    return new BaseClientBehavior() {
+      @Override
+      public ODataClientRequest transform(ODataClientRequest request) {
+        try {
+          Thread.sleep(millis);
+        } catch (InterruptedException e) {
+          throw new RuntimeException(e);
+        }
+         return request;
+      }
+    };
   }
 }
