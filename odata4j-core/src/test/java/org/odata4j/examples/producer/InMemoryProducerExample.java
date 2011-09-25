@@ -55,7 +55,7 @@ public class InMemoryProducerExample {
       public Iterable<EdmEntityType> apply() {
         return producer.getMetadata().getEntityTypes();
       }
-    }, "FQNamespaceName");
+    }, "FullyQualifiedTypeName");
 
     // expose a current listing of exchange traded funds sourced from an external csv (EtfInfo instances) as an entity-set called "ETFs"
     producer.register(EtfInfo.class, String.class, "ETFs", Funcs.wrap(new ThrowingFunc<Iterable<EtfInfo>>() {

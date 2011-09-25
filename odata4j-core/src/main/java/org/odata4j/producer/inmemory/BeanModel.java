@@ -220,7 +220,7 @@ public class BeanModel {
 
     for (String propertyName : getters.keySet()) {
       Class<?> getterType = getters.get(propertyName).getReturnType();
-      if (!isCollection(getterType))
+      if (!isIterable(getterType))
         rt.put(propertyName, getterType);
     }
 
@@ -230,10 +230,11 @@ public class BeanModel {
         Class<?> setterType = setters.get(propertyName).getParameterTypes()[0];
 
         if (getterType != null && !getterType.equals(setterType))
-          throw new RuntimeException(String.format("Inconsistent types for property %s: getter type %s, setter type %s",
-                  propertyName,
-                  getterType.getName(),
-                  setterType.getName()));
+          throw new RuntimeException(String.format("Inconsistent types for property %s.%s: getter type %s, setter type %s",
+              setters.get(propertyName).getDeclaringClass().getName(),
+              propertyName,
+              getterType.getName(),
+              setterType.getName()));
 
         rt.put(propertyName, setterType);
       }
@@ -248,16 +249,17 @@ public class BeanModel {
 
     for (String propertyName : getters.keySet()) {
       Class<?> getterType = getters.get(propertyName).getReturnType();
-      if (isCollection(getterType)) {
+      if (isIterable(getterType)) {
         Class<?> setterType = setters.containsKey(propertyName)
             ? setters.get(propertyName).getParameterTypes()[0]
             : null;
         if (setterType != null) {
           if (!getterType.equals(setterType))
-            throw new RuntimeException(String.format("Inconsistent types for association %s: getter type %s, setter type %s",
-                    propertyName,
-                    getterType.getName(),
-                    setterType.getName()));
+            throw new RuntimeException(String.format("Inconsistent types for association %s.%s: getter type %s, setter type %s",
+                setters.get(propertyName).getDeclaringClass().getName(),
+                propertyName,
+                getterType.getName(),
+                setterType.getName()));
 
           Class<?> elementClass;
           Type type = getters.get(propertyName).getGenericReturnType();
@@ -277,8 +279,8 @@ public class BeanModel {
     return rt;
   }
 
-  private static boolean isCollection(Class<?> clazz) {
-    return clazz.isArray() || Collection.class.isAssignableFrom(clazz);
+  private static boolean isIterable(Class<?> clazz) {
+    return clazz.isArray() || Iterable.class.isAssignableFrom(clazz);
   }
 
   private static Map<String, Method> getBeanGetters(Class<?> clazz) {

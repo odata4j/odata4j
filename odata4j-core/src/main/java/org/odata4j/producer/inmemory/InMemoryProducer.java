@@ -218,12 +218,6 @@ public class InMemoryProducer implements ODataProducer, IEdmGenerator {
 
       List<EdmProperty> properties = new ArrayList<EdmProperty>();
 
-      properties.add(new EdmProperty(ID_PROPNAME,
-              getEdmType(entityInfo.keyClass), false, null, null, null,
-              null, null, null, null, null, null, CollectionKind.None, 
-              null == this.decorator ? null : this.decorator.getDocumentationForProperty(namespace, entitySetName, ID_PROPNAME), 
-              null == this.decorator ? null : this.decorator.getAnnotationsForProperty(namespace, entitySetName, ID_PROPNAME)));
-
       properties.addAll(toEdmProperties(entityInfo.properties, entitySetName));
 
       EdmEntityType eet = new EdmEntityType(
@@ -326,6 +320,9 @@ public class InMemoryProducer implements ODataProducer, IEdmGenerator {
 
       Class<?> clazz2 = ei.properties.getCollectionElementType(assocProp);
       String eetName2 = entityNameByClass.get(clazz2);
+      if (eetName2 == null)
+        continue;
+      
       final EdmEntityType eet2 = entityTypesByName.get(eetName2);
 
       try {
@@ -452,9 +449,8 @@ public class InMemoryProducer implements ODataProducer, IEdmGenerator {
     EntityInfo<?, ?> ei = eis.get(ees.name);
     final List<OLink> links = new ArrayList<OLink>();
     final List<OProperty<?>> properties = new ArrayList<OProperty<?>>();
-
-    Object keyValue = ei.id.apply(obj);
-    properties.add(OProperties.simple(ID_PROPNAME, getEdmType(ei.keyClass), keyValue));
+    
+    Object keyValue = ei.properties.getPropertyValue(obj, ID_PROPNAME);
 
     for (String propName : ei.properties.getPropertyNames()) {
       EdmSimpleType type;

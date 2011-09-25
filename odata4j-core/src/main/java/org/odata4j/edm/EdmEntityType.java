@@ -1,7 +1,6 @@
 package org.odata4j.edm;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.core4j.Enumerable;
@@ -110,8 +109,8 @@ public class EdmEntityType extends EdmStructuralType {
   }
 
   // TODO remove!
-  public void setDeclaredNavigationProperties(Collection<EdmNavigationProperty> navProperties) {
+  public void setDeclaredNavigationProperties(Enumerable<EdmNavigationProperty> navProperties) {
     this.navigationProperties.clear();
-    this.navigationProperties.addAll(navProperties);
+    this.navigationProperties.addAll(navProperties.toList());
   }
 }

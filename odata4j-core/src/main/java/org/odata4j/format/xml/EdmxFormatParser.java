@@ -129,7 +129,7 @@ public class EdmxFormatParser extends XmlFormatParser {
           EdmNavigationProperty enp = new EdmNavigationProperty(tmp.name, ea, finalEnds.get(0), finalEnds.get(1));
           navProps.set(i, enp);
         }
-        eet.setDeclaredNavigationProperties(navProps);
+        eet.setDeclaredNavigationProperties(Enumerable.create(navProps));
         
       }
 
