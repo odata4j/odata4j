@@ -54,6 +54,9 @@ public class EdmxFormatWriter extends XmlFormatWriter {
         writer.startElement(new QName2("ComplexType"));
 
         writer.writeAttribute("Name", ect.name);
+        if (null != ect.isAbstract) {
+          writer.writeAttribute("Abstract", ect.isAbstract.toString());
+        }
         writeAnnotationAttributes(ect, writer);
         writeDocumentation(ect, writer);
 
@@ -66,6 +69,9 @@ public class EdmxFormatWriter extends XmlFormatWriter {
         writer.startElement(new QName2("EntityType"));
 
         writer.writeAttribute("Name", eet.name);
+        if (null != eet.isAbstract) {
+          writer.writeAttribute("Abstract", eet.isAbstract.toString());
+        }
 
         // keys only on base types
         if (eet.isRootType()) {
@@ -236,6 +242,15 @@ public class EdmxFormatWriter extends XmlFormatWriter {
       if (!prop.collectionKind.equals(CollectionKind.None)) {
         writer.writeAttribute("CollectionKind", prop.collectionKind.toString());
       }
+      if (prop.defaultValue != null) {
+        writer.writeAttribute("DefaultValue", prop.defaultValue);
+      }
+      if (prop.precision != null) {
+        writer.writeAttribute("Precision", Integer.toString(prop.precision));
+      }
+      if (prop.scale != null) {
+        writer.writeAttribute("Scale", Integer.toString(prop.precision));
+      }
       writeAnnotationAttributes(prop, writer);
       writeAnnotationElements(prop, writer);
       writer.endElement("Property");
@@ -266,6 +281,8 @@ public class EdmxFormatWriter extends XmlFormatWriter {
           // - create an IAnnotationWriter interface that knows how to serialize it
           // - provide a way for the application to set the IAnnotationWriter implementation and
           //   call tha here.
+          // or:
+          // - perhaps we restrict these to OComplexObjects or somethings
           writer.writeText("TODO");
           writer.endElement(a.getLocalName());
         }

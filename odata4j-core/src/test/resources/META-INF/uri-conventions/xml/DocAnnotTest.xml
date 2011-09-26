@@ -10,7 +10,6 @@
         <Key>
           <PropertyRef Name="EntityId"></PropertyRef>
         </Key>
-        <Property Name="EntityId" Type="Edm.String" Nullable="false"></Property>
         <Property Name="EntityId" Type="Edm.String" Nullable="true"></Property>
         <Property Name="Name" Type="Edm.String" Nullable="true"></Property>
         <Property Name="Country" Type="Edm.String" Nullable="true"></Property>
