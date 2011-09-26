@@ -18,7 +18,7 @@ public class DeleteTest extends JPAProducerTestBase {
 
   @Test
   public void tunneledDeleteEntity() {
-    ODataConsumer consumer = ODataConsumer.create(endpointUri, OClientBehaviors.methodTunneling("PUT"));
+    ODataConsumer consumer = ODataConsumer.newBuilder(endpointUri).setClientBehaviors(OClientBehaviors.methodTunneling("PUT")).build();
 
     deleteEntityAndTest(consumer, "QUEEN");
   }

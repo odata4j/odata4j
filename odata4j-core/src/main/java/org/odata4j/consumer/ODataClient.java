@@ -52,10 +52,10 @@ class ODataClient {
 
   private final Client client;
 
-  public ODataClient(FormatType type, OClientBehavior... behaviors) {
+  public ODataClient(FormatType type, ClientFactory clientFactory, OClientBehavior... behaviors) {
     this.behaviors = Enumerable.create(requiredBehaviors).concat(Enumerable.create(behaviors)).toArray(OClientBehavior.class);
     this.type = type;
-    this.client = ClientUtil.newClient(behaviors);
+    this.client = ClientUtil.newClient(clientFactory, behaviors);
   }
 
   public FormatType getFormatType() {

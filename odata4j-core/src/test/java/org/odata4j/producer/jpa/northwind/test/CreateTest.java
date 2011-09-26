@@ -20,13 +20,13 @@ public class CreateTest extends JPAProducerTestBase {
 
   @Test
   public void tunneledInsertEntityToExistingEntityRelationAtom() {
-    ODataConsumer consumer = ODataConsumer.create(endpointUri, OClientBehaviors.methodTunneling("PUT"));
+    ODataConsumer consumer = ODataConsumer.newBuilder(endpointUri).setClientBehaviors(OClientBehaviors.methodTunneling("PUT")).build();
     insertEntityToExistingEntityRelationAndTest(consumer);
   }
 
   @Test
   public void tunneledInsertEntityToExistingEntityRelationJson() {
-    ODataConsumer consumer = ODataConsumer.create(FormatType.JSON, endpointUri, OClientBehaviors.methodTunneling("PUT"));
+    ODataConsumer consumer = ODataConsumer.newBuilder(endpointUri).setFormatType(FormatType.JSON).setClientBehaviors(OClientBehaviors.methodTunneling("PUT")).build();
     insertEntityToExistingEntityRelationAndTest(consumer);
   }
 
@@ -38,19 +38,19 @@ public class CreateTest extends JPAProducerTestBase {
 
   @Test
   public void insertEntityToExistingEntityRelationJson() {
-    ODataConsumer consumer = ODataConsumer.create(FormatType.JSON, endpointUri);
+    ODataConsumer consumer = ODataConsumer.newBuilder(endpointUri).setFormatType(FormatType.JSON).build();
     insertEntityToExistingEntityRelationAndTest(consumer);
   }
 
   @Test
   public void tunneledInsertEntityUsingLinksAtom() {
-    ODataConsumer consumer = ODataConsumer.create(endpointUri, OClientBehaviors.methodTunneling("PUT"));
+    ODataConsumer consumer = ODataConsumer.newBuilder(endpointUri).setClientBehaviors(OClientBehaviors.methodTunneling("PUT")).build();
     insertEntityUsingLinksAndTest(consumer);
   }
 
   @Test
   public void tunneledInsertEntityUsingLinksJson() {
-    ODataConsumer consumer = ODataConsumer.create(FormatType.JSON, endpointUri, OClientBehaviors.methodTunneling("PUT"));
+    ODataConsumer consumer = ODataConsumer.newBuilder(endpointUri).setFormatType(FormatType.JSON).setClientBehaviors(OClientBehaviors.methodTunneling("PUT")).build();
     insertEntityUsingLinksAndTest(consumer);
   }
 
@@ -62,7 +62,7 @@ public class CreateTest extends JPAProducerTestBase {
 
   @Test
   public void insertEntityUsingLinksJson() {
-    ODataConsumer consumer = ODataConsumer.create(FormatType.JSON, endpointUri);
+    ODataConsumer consumer = ODataConsumer.newBuilder(endpointUri).setFormatType(FormatType.JSON).build();
     insertEntityUsingLinksAndTest(consumer);
   }
 
@@ -74,7 +74,7 @@ public class CreateTest extends JPAProducerTestBase {
 
   @Test
   public void insertEntityWithInlinedEntitiesJson() {
-    ODataConsumer consumer = ODataConsumer.create(FormatType.JSON, endpointUri);
+    ODataConsumer consumer = ODataConsumer.newBuilder(endpointUri).setFormatType(FormatType.JSON).build();
     insertEntityWithInlinedEntities(consumer);
   }
 
@@ -128,7 +128,7 @@ public class CreateTest extends JPAProducerTestBase {
 
   @Test
   public void insertEntityWithInlinedEntityJson() {
-    insertEntityWithInlinedEntity(ODataConsumer.create(FormatType.JSON, endpointUri));
+    insertEntityWithInlinedEntity(ODataConsumer.newBuilder(endpointUri).setFormatType(FormatType.JSON).build());
   }
 
   @Test
@@ -138,7 +138,7 @@ public class CreateTest extends JPAProducerTestBase {
 
   @Test
   public void expandEntitiesWithNullReferenceJson() {
-    expandEntitiesWithNullReference(ODataConsumer.create(FormatType.JSON, endpointUri));
+    expandEntitiesWithNullReference(ODataConsumer.newBuilder(endpointUri).setFormatType(FormatType.JSON).build());
   }
 
   public void insertEntityWithInlinedEntity(ODataConsumer consumer) {

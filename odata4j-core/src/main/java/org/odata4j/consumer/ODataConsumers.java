@@ -21,7 +21,7 @@ public class ODataConsumers {
   public static ODataConsumer azureTables(String account, String key) {
     String url = "http://" + account + ".table.core.windows.net/";
 
-    return ODataConsumer.create(url, OClientBehaviors.azureTables(account, key));
+    return ODataConsumer.newBuilder(url).setClientBehaviors(OClientBehaviors.azureTables(account, key)).build();
 
   }
 
@@ -42,7 +42,7 @@ public class ODataConsumers {
 
     // CTP3
     OClientBehavior basicAuth = OClientBehaviors.basicAuth("accountKey", accountKey);
-    return ODataConsumer.create(serviceRootUri, basicAuth);
+    return ODataConsumer.newBuilder(serviceRootUri).setClientBehaviors(basicAuth).build();
   }
 
   /**
@@ -54,7 +54,7 @@ public class ODataConsumers {
    */
   public static ODataConsumer dataMarket(String serviceRootUri, String accountKey) {
     OClientBehavior basicAuth = OClientBehaviors.basicAuth("accountKey", accountKey);
-    return ODataConsumer.create(serviceRootUri, basicAuth);
+    return ODataConsumer.newBuilder(serviceRootUri).setClientBehaviors(basicAuth).build();
   }
 
 }

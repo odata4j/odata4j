@@ -18,7 +18,7 @@ public class UpdateTest extends JPAProducerTestBase {
 
   @Test
   public void tunneledUpdateEntity() {
-    ODataConsumer consumer = ODataConsumer.create(endpointUri, OClientBehaviors.methodTunneling("PUT"));
+    ODataConsumer consumer = ODataConsumer.newBuilder(endpointUri).setClientBehaviors(OClientBehaviors.methodTunneling("PUT")).build();
 
     updateEntityAndTest(consumer);
   }

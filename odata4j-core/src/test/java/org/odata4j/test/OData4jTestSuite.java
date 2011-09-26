@@ -22,6 +22,7 @@ import org.odata4j.producer.jpa.northwind.test.UpdateTest;
 import org.odata4j.producer.jpa.oneoff01.Oneoff01_Unidirectional;
 import org.odata4j.producer.jpa.oneoff02.Oneoff02_ManyToManyWithoutMappedName;
 import org.odata4j.producer.jpa.oneoff03.Oneoff03_ManyToMany;
+import org.odata4j.test.consumer.ClientFactoryTest;
 import org.odata4j.test.core.AtomFeedFormatParserTest;
 import org.odata4j.test.core.EdmSimpleTypeTest;
 import org.odata4j.test.core.EdmTypeTest;
@@ -72,7 +73,8 @@ import org.odata4j.test.issues.Issue16;
     FunctionTest.class,
     EdmSimpleTypeTest.class,
     EdmTypeTest.class,
-    MultipleWorkspacesTest.class })
+    MultipleWorkspacesTest.class,
+    ClientFactoryTest.class })
 public class OData4jTestSuite {
 
   public static enum JPAProvider {

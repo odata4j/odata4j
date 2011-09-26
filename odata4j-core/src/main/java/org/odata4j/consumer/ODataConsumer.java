@@ -152,12 +152,12 @@ public class ODataConsumer {
 
   private EdmDataServices cachedMetadata;
 
-  private ODataConsumer(FormatType type, String serviceRootUri, OClientBehavior... behaviors) {
+  private ODataConsumer(FormatType type, String serviceRootUri, ClientFactory clientFactory, OClientBehavior... behaviors) {
     if (!serviceRootUri.endsWith("/"))
       serviceRootUri = serviceRootUri + "/";
 
     this.serviceRootUri = serviceRootUri;
-    this.client = new ODataClient(type, behaviors);
+    this.client = new ODataClient(type, clientFactory, behaviors);
   }
 
   /**
@@ -171,33 +171,88 @@ public class ODataConsumer {
   }
 
   /**
+   * Builder for {@link ODataConsumer} objects.
+   */
+  public static class Builder {
+
+    private FormatType formatType;
+    private String serviceRootUri;
+    private ClientFactory clientFactory;
+    private OClientBehavior[] clientBehaviors;
+
+    private Builder(String serviceRootUri) {
+      this.serviceRootUri = serviceRootUri;
+      this.formatType = FormatType.ATOM;
+      this.clientFactory = DefaultClientFactory.INSTANCE;
+    }
+
+    /**
+     * Sets a preferred {@link FormatType}. Defaults to {@link FormatType.ATOM}.
+     * 
+     * @param formatType  the format type
+     * @return this builder
+     */
+    public Builder setFormatType(FormatType formatType) {
+      this.formatType = formatType;
+      return this;
+    }
+
+    /**
+     * Sets a specific {@link ClientFactory}.
+     * 
+     * @param clientFactory  the jersey client factory
+     * @return this builder
+     */
+    public Builder setClientFactory(ClientFactory clientFactory) {
+      this.clientFactory = clientFactory;
+      return this;
+    }
+
+    /**
+     * Sets one or more client behaviors.
+     * 
+     * Client behaviors transform http requests to interact with services that require custom extensions.
+     * 
+     * @param clientBehaviors  the client behaviors
+     * @return this builder
+     */
+    public Builder setClientBehaviors(OClientBehavior... clientBehaviors) {
+      this.clientBehaviors = clientBehaviors;
+      return this;
+    }
+
+    /**
+     * Builds the {@link ODataConsumer} object.
+     * 
+     * @return a new OData consumer
+     */
+    public ODataConsumer build() {
+      if (this.clientBehaviors != null)
+        return new ODataConsumer(this.formatType, this.serviceRootUri, this.clientFactory, this.clientBehaviors);
+      else
+        return new ODataConsumer(this.formatType, this.serviceRootUri, this.clientFactory);
+    }
+  }
+
+  /**
+   * Constructs a new builder for an {@link ODataConsumer} object.
+   * 
+   * @param serviceRootUri  the OData service root uri
+   */
+  public static Builder newBuilder(String serviceRootUri) {
+    return new Builder(serviceRootUri);
+  }
+
+  /**
    * Creates a new consumer for the given OData service uri.
+   * 
+   * Wrapper for {@code ODataConsumer.newBuilder(serviceRootUri).build()}.
    * 
    * @param serviceRootUri  the service uri <p>e.g. <code>http://services.odata.org/Northwind/Northwind.svc/</code></p>
    * @return a new OData consumer
    */
   public static ODataConsumer create(String serviceRootUri) {
-    return new ODataConsumer(FormatType.ATOM, serviceRootUri);
-  }
-
-  /**
-   * Creates a new consumer for the given OData service uri, adding one or more client behaviors.  
-   * Client behaviors transform http requests to interact with services that require custom extensions.
-   * 
-   * @param serviceRootUri  the service uri <p>e.g. <code>http://services.odata.org/Northwind/Northwind.svc/</code></p>
-   * @param behaviors  one or more client behaviors
-   * @return a new OData consumer
-   */
-  public static ODataConsumer create(String serviceRootUri, OClientBehavior... behaviors) {
-    return new ODataConsumer(FormatType.ATOM, serviceRootUri, behaviors);
-  }
-
-  public static ODataConsumer create(FormatType preferredType, String serviceRootUri) {
-    return new ODataConsumer(preferredType, serviceRootUri);
-  }
-
-  public static ODataConsumer create(FormatType preferredType, String serviceRootUri, OClientBehavior... behaviors) {
-    return new ODataConsumer(preferredType, serviceRootUri, behaviors);
+    return ODataConsumer.newBuilder(serviceRootUri).build();
   }
 
   /**

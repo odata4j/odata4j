@@ -23,7 +23,7 @@ public class CodePlexConsumerExample extends BaseExample {
     String codeplexPassword = codeplexCreds[1];
 
     for (String collection : Enumerable.create("TFS03", "TFS05", "TFS09")) {
-      ODataConsumer c = ODataConsumer.create("https://codeplexodata.cloudapp.net/" + collection, OClientBehaviors.basicAuth(codeplexUser, codeplexPassword));
+      ODataConsumer c = ODataConsumer.newBuilder("https://codeplexodata.cloudapp.net/" + collection).setClientBehaviors(OClientBehaviors.basicAuth(codeplexUser, codeplexPassword)).build();
 
       for (OEntity p : c.getEntities("Projects").execute()) {
         reportEntity("project:", p);

@@ -37,13 +37,13 @@ class ClientUtil {
     }
   }
 
-  public static Client newClient(OClientBehavior[] behaviors) {
+  public static Client newClient(ClientFactory clientFactory, OClientBehavior[] behaviors) {
     DefaultClientConfig cc = new DefaultClientConfig();
     cc.getSingletons().add(new StringProvider2());
     if (behaviors != null)
       for (OClientBehavior behavior : behaviors)
         behavior.modify(cc);
-    Client client = Client.create(cc);
+    Client client = clientFactory.createClient(cc);
     if (behaviors != null)
       for (OClientBehavior behavior : behaviors)
         behavior.modifyClientFilters(client);

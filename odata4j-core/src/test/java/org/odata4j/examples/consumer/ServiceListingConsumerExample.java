@@ -68,7 +68,7 @@ public class ServiceListingConsumerExample extends BaseExample {
 
   private static void printOutFirstEntities(Iterable<String> services) {
     for (String endpoint : services) {
-      ODataConsumer c = ODataConsumer.create(endpoint, behaviors);
+      ODataConsumer c = ODataConsumer.newBuilder(endpoint).setClientBehaviors(behaviors).build();
       for (EntitySetInfo entitySet : c.getEntitySets()) {
         reportEntities(entitySet.getHref(), c.getEntities(entitySet.getHref()).top(1).execute());
       }
@@ -77,7 +77,7 @@ public class ServiceListingConsumerExample extends BaseExample {
 
   private static void printOutAllEntities(Iterable<String> services) {
     for (String endpoint : services) {
-      ODataConsumer c = ODataConsumer.create(endpoint, behaviors);
+      ODataConsumer c = ODataConsumer.newBuilder(endpoint).setClientBehaviors(behaviors).build();
       for (EntitySetInfo entitySet : c.getEntitySets()) {
         reportEntities(entitySet.getTitle(), c.getEntities(entitySet.getHref()).execute());
       }
