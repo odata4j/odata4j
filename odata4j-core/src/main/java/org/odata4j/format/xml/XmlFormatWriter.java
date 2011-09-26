@@ -343,7 +343,13 @@ public class XmlFormatWriter {
     Iterator<? extends OObject> iter = c.iterator();
     while (iter.hasNext()) {
       OObject o = iter.next();
-      writeProperty(writer, "element", o.getType(), o, false, false); // not a doc element and don't write the typename
+      if (o instanceof OComplexObject) {
+        writeProperty(writer, "element", o.getType(), o, false, false);
+      } else if (o instanceof OSimpleObject) {
+        writeProperty(writer, "element", o.getType(), ((OSimpleObject)o).getValue(), false, false); // not a doc element and don't write the typename
+      } else {
+        // TODO...
+      }
     }
   }
 }

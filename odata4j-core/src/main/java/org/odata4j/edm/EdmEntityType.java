@@ -20,8 +20,10 @@ public class EdmEntityType extends EdmStructuralType {
     this(namespace, alias, name, hasStream, keys, null, properties, navigationProperties);
   }
 
-  public EdmEntityType(String namespace, String alias, String name, Boolean hasStream, List<String> keys, List<EdmProperty> properties, List<EdmNavigationProperty> navigationProperties, String baseTypeNameFQ) {
-    this(namespace, alias, name, hasStream, keys, null, properties, navigationProperties);
+  public EdmEntityType(String namespace, String alias, String name, Boolean hasStream, List<String> keys, 
+          List<EdmProperty> properties, List<EdmNavigationProperty> navigationProperties, 
+          String baseTypeNameFQ, EdmDocumentation doc, List<EdmAnnotation> annotations, Boolean isAbstract) {
+    this(namespace, alias, name, hasStream, keys, null, properties, navigationProperties, doc, annotations, isAbstract);
     // during schema parsing we may not have the base type object yet...
     this.baseTypeNameFQ = baseTypeNameFQ;
   }
@@ -31,15 +33,23 @@ public class EdmEntityType extends EdmStructuralType {
   public EdmEntityType(String namespace, String alias, String name, Boolean hasStream, 
           List<String> keys, EdmEntityType baseType, List<EdmProperty> properties,
           List<EdmNavigationProperty> navigationProperties) {
-    this(namespace, alias, name, hasStream, keys, baseType, properties, navigationProperties, null, null);
+    this(namespace, alias, name, hasStream, keys, baseType, properties, navigationProperties, null, null, null);
   }
   
   public EdmEntityType(String namespace, String alias, String name, Boolean hasStream, 
           List<String> keys, EdmEntityType baseType, List<EdmProperty> properties, 
           List<EdmNavigationProperty> navigationProperties,
           EdmDocumentation doc, List<EdmAnnotation> annotations) {
+    this(namespace, alias, name, hasStream, keys, baseType, properties,
+            navigationProperties, doc, annotations, null);
+  }
   
-    super(baseType, namespace, name, properties, doc, annotations);
+  public EdmEntityType(String namespace, String alias, String name, Boolean hasStream, 
+          List<String> keys, EdmEntityType baseType, List<EdmProperty> properties, 
+          List<EdmNavigationProperty> navigationProperties,
+          EdmDocumentation doc, List<EdmAnnotation> annotations, Boolean isAbstract) {
+  
+    super(baseType, namespace, name, properties, doc, annotations, isAbstract);
     this.alias = alias;
     this.hasStream = hasStream;
 

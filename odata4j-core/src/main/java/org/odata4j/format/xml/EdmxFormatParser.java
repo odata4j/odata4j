@@ -376,7 +376,10 @@ public class EdmxFormatParser extends XmlFormatParser {
     if (null != collectionKindS) {
       ckind = Enum.valueOf(CollectionKind.class, collectionKindS);
     }
-
+    String defaultValue = getAttributeValueIfExists(event.asStartElement(), "DefaultValue");
+    String precision = getAttributeValueIfExists(event.asStartElement(), "Precision");
+    String scale = getAttributeValueIfExists(event.asStartElement(), "Scale");
+    
     String storeGeneratedPattern = getAttributeValueIfExists(event.asStartElement(), new QName2(NS_EDMANNOTATION, "StoreGeneratedPattern"));
 
     String fcTargetPath = getAttributeValueIfExists(event.asStartElement(), M_FC_TARGETPATH);
@@ -399,11 +402,15 @@ public class EdmxFormatParser extends XmlFormatParser {
                 fcEpmKeepInContent,
                 ckind,
                 null,  // documentation TODO
-                null); // annoations TODO
+                null, // annoations TODO
+                defaultValue, 
+                precision == null ? null : Integer.parseInt(precision), 
+                scale == null ? null : Integer.parseInt(scale));
   }
 
   private static EdmComplexType parseEdmComplexType(XMLEventReader2 reader, String schemaNamespace, StartElement2 complexTypeElement) {
     String name = complexTypeElement.getAttributeByName("Name").getValue();
+    String isAbstractS = getAttributeValueIfExists(complexTypeElement, "Abstract");
     List<EdmProperty> edmProperties = new ArrayList<EdmProperty>();
 
     while (reader.hasNext()) {
@@ -414,7 +421,10 @@ public class EdmxFormatParser extends XmlFormatParser {
       }
 
       if (isEndElement(event, complexTypeElement.getName())) {
-        return new EdmComplexType(schemaNamespace, name, edmProperties);
+        return new EdmComplexType(schemaNamespace, name, edmProperties,
+                null, // doc
+                null, // annotations
+                null == isAbstractS ? null : "true".equals(isAbstractS));
       }
     }
 
@@ -427,7 +437,8 @@ public class EdmxFormatParser extends XmlFormatParser {
     String hasStreamValue = getAttributeValueIfExists(entityTypeElement, new QName2(NS_METADATA, "HasStream"));
     Boolean hasStream = hasStreamValue == null ? null : hasStreamValue.equals("true");
     String baseType = getAttributeValueIfExists(entityTypeElement, "BaseType");
-
+    String isAbstractS = getAttributeValueIfExists(entityTypeElement, "Abstract");
+    
     List<String> keys = new ArrayList<String>();
     List<EdmProperty> edmProperties = new ArrayList<EdmProperty>();
     List<EdmNavigationProperty> edmNavigationProperties = new ArrayList<EdmNavigationProperty>();
@@ -453,7 +464,18 @@ public class EdmxFormatParser extends XmlFormatParser {
       }
 
       if (isEndElement(event, entityTypeElement.getName())) {
-        return new EdmEntityType(schemaNamespace, schemaAlias, name, hasStream, keys, edmProperties, edmNavigationProperties, baseType);
+        return new EdmEntityType(
+                schemaNamespace, 
+                schemaAlias, 
+                name, 
+                hasStream, 
+                keys, 
+                edmProperties, 
+                edmNavigationProperties, 
+                baseType,
+                null, // documentation, TODO
+                null, // annotations, TODO
+                null == isAbstractS ? null : "true".equals(isAbstractS));
       }
     }
 

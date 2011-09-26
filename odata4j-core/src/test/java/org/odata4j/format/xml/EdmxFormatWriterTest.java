@@ -5,8 +5,14 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Map;
 import org.custommonkey.xmlunit.ElementNameAndTextQualifier;
 import org.custommonkey.xmlunit.Diff;
+import org.odata4j.core.IAnnotation;
+import org.odata4j.edm.EdmItem;
+import org.odata4j.edm.EdmProperty;
+import org.odata4j.edm.EdmStructuralType;
+import org.odata4j.producer.Path;
 import org.odata4j.producer.server.JerseyServer;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmAnnotationElement;
@@ -18,6 +24,7 @@ import org.odata4j.edm.IEdmDecorator;
 import org.core4j.Func;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Locale;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.odata4j.producer.jpa.airline.Airport;
 import org.odata4j.examples.producer.ProducerUtil;
@@ -32,6 +39,8 @@ import org.odata4j.producer.jpa.northwind.test.NorthwindTestUtils;
 import static org.junit.Assert.*;
 import static org.custommonkey.xmlunit.XMLAssert.*;
 import org.junit.Assert;
+import org.odata4j.core.OProperty;
+import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.internal.InternalUtil;
 import org.xml.sax.SAXException;
      
@@ -81,7 +90,7 @@ public class EdmxFormatWriterTest implements IEdmDecorator {
     String metadata = webResource.get(
             String.class);
     
-    //System.out.println(metadata);
+    System.out.println(metadata);
     
     String expected = NorthwindTestUtils.readFileToString("/META-INF/uri-conventions/xml/DocAnnotTest.xml");
 
@@ -155,6 +164,36 @@ public class EdmxFormatWriterTest implements IEdmDecorator {
               "This is the long description for Airport.");
     }
     return null;
+  }
+
+  @Override
+  public Object resolveStructuralTypeProperty(EdmStructuralType st, Path path) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public Object resolvePropertyProperty(EdmProperty st, Path path) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public Object getAnnotationValueOverride(EdmItem item, IAnnotation annot, boolean flatten, Locale locale, Map<String, String> options) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+  
+  @Override
+  public void decorateEntity(EdmEntitySet entitySet, EdmItem item, EdmItem originalQueryItem, 
+    List<OProperty<?>> props, boolean flatten, Locale locale, Map<String, String> options) {
+  }
+
+  @Override
+  public EdmDocumentation getDocumentationForSchema(String namespace, String typeName) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public List<EdmAnnotation> getAnnotationsForSchema(String namespace, String typeName) {
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 
   public static class ComplexAnnot {

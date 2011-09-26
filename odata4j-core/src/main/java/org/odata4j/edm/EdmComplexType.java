@@ -8,8 +8,15 @@ public class EdmComplexType extends EdmStructuralType {
     this(namespace, name, properties, null, null);
   }
 
-  public EdmComplexType(String namespace, String name, List<EdmProperty> properties, EdmDocumentation documentation, List<EdmAnnotation> annots) {
-    super(null, namespace, name, properties, documentation, annots);
+  public EdmComplexType(String namespace, String name, List<EdmProperty> properties, 
+          EdmDocumentation documentation, List<EdmAnnotation> annots) {
+    this(namespace, name, properties, documentation, annots, null);
+  }
+  
+  public EdmComplexType(String namespace, String name, List<EdmProperty> properties, 
+          EdmDocumentation documentation, List<EdmAnnotation> annots,
+          Boolean isAbstract) {
+    super(null, namespace, name, properties, documentation, annots, isAbstract);
   }
   
 }
