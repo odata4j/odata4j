@@ -36,7 +36,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.odata4j.producer.jpa.northwind.test.NorthwindTestUtils;
-import static org.junit.Assert.*;
 import static org.custommonkey.xmlunit.XMLAssert.*;
 import org.junit.Assert;
 import org.odata4j.core.OProperty;
@@ -67,6 +66,7 @@ public class EdmxFormatWriterTest implements IEdmDecorator {
   }
   
   private JerseyServer server = null;
+  @SuppressWarnings("unused")
   private EdmDataServices ds = null;
   
   @Before

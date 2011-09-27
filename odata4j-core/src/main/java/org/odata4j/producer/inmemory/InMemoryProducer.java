@@ -671,6 +671,7 @@ public class InMemoryProducer implements ODataProducer, IEdmGenerator {
     return rt;
   }
 
+  @SuppressWarnings("unused")
   private EdmSimpleType getEdmType(Class<?> clazz) {
     EdmSimpleType type = findEdmType(clazz);
     if (type != null) return type;

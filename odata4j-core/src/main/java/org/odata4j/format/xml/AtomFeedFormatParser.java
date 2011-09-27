@@ -18,6 +18,7 @@ import org.odata4j.core.OLink;
 import org.odata4j.core.OLinks;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
+import org.odata4j.edm.EdmComplexType;
 import org.odata4j.edm.EdmType;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
@@ -187,18 +188,19 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
         OProperty<?> op = null;
 
         String type = null;
+        EdmType et = null;
         boolean isComplexType = false;
         if (typeAttribute != null) {
           type = typeAttribute.getValue();
           // TODO: the proper way to resolve the type is to use the Edm type of
           // the thing we are parsing to figure out the type of the property.
           // This way the proper form of OProperties.complex can be used below.
-          EdmType et = EdmType.get(type);
+          et = EdmType.get(type);
           isComplexType = !et.isSimple();
         }
 
         if (isComplexType) {
-          op = OProperties.complex(name, type, isNull ? null : Enumerable.create(parseProperties(reader, event.asStartElement())).toList());
+          op = OProperties.complex(name, (EdmComplexType)et, isNull ? null : Enumerable.create(parseProperties(reader, event.asStartElement())).toList());
         } else {
           op = OProperties.parse(name, type, isNull ? null : reader.getElementText());
         }

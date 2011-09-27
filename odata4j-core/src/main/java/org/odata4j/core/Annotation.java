@@ -34,7 +34,7 @@ public class Annotation implements IAnnotation {
   /**
    * a simple annotation is one that can be represented with a simple datatype
    * like a string.
-   * @return 
+   * @return true if annotation is simple, false otherwise
    */
   public boolean isSimple() {
     return value instanceof String;

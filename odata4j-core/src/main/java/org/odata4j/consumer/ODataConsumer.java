@@ -187,7 +187,7 @@ public class ODataConsumer {
     }
 
     /**
-     * Sets a preferred {@link FormatType}. Defaults to {@link FormatType.ATOM}.
+     * Sets a preferred {@link FormatType}. Defaults to {@code FormatType.ATOM}.
      * 
      * @param formatType  the format type
      * @return this builder
@@ -306,7 +306,7 @@ public class ODataConsumer {
    *  
    * @param <T>  the entity representation as a java type
    * @param entityType  the entity representation as a java type
-   * @param entitySetName  the entity-set href
+   * @param entitySetHref  the entity-set href
    * @return  a new query-request builder
    */
   public <T> OQueryRequest<T> getEntities(Class<T> entityType, String entitySetHref) {

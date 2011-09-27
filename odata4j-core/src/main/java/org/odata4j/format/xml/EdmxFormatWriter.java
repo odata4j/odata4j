@@ -4,7 +4,6 @@ import java.io.Writer;
 
 import org.odata4j.core.IAnnotation;
 import org.odata4j.core.Namespace;
-import org.odata4j.edm.EdmAnnotationAttribute;
 import org.odata4j.edm.EdmAssociation;
 import org.odata4j.edm.EdmAssociationSet;
 import org.odata4j.edm.EdmComplexType;

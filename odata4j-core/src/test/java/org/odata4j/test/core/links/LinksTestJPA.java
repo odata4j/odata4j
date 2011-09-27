@@ -1,11 +1,6 @@
 package org.odata4j.test.core.links;
 
-import org.junit.Assert;
 import org.junit.Test;
-import org.odata4j.consumer.ODataConsumer;
-import org.odata4j.core.OEntity;
-import org.odata4j.core.OLink;
-import org.odata4j.core.ORelatedEntityLink;
 import org.odata4j.format.FormatType;
 
 /**
