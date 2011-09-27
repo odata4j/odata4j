@@ -25,7 +25,6 @@ import com.sun.jersey.api.core.ExtendedUriInfo;
 import java.util.Iterator;
 import org.odata4j.core.OCollection;
 import org.odata4j.core.OComplexObject;
-import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OObject;
 import org.odata4j.core.OSimpleObject;
 import org.odata4j.edm.EdmCollectionType;
@@ -150,6 +149,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
     }
   }
 
+  @SuppressWarnings("rawtypes")
   protected void writeCollection(JsonWriter jw, EdmCollectionType type, OCollection<? extends OObject> coll) {
     jw.startObject();
     {

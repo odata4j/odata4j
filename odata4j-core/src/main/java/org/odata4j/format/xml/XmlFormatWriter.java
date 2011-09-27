@@ -5,8 +5,6 @@ import java.util.List;
 
 import javax.ws.rs.core.MediaType;
 
-import org.core4j.Enumerable;
-import org.core4j.Predicate1;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
@@ -16,14 +14,11 @@ import org.odata4j.core.OEntity;
 import org.odata4j.core.OLink;
 import org.odata4j.core.OObject;
 import org.odata4j.core.OProperty;
-import org.odata4j.core.ORelatedEntitiesLink;
 import org.odata4j.core.ORelatedEntitiesLinkInline;
 import org.odata4j.core.ORelatedEntityLinkInline;
 import org.odata4j.core.OSimpleObject;
 import org.odata4j.edm.EdmType;
 import org.odata4j.edm.EdmEntitySet;
-import org.odata4j.edm.EdmMultiplicity;
-import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
@@ -50,11 +45,11 @@ public class XmlFormatWriter {
     }
   }
 
-  @SuppressWarnings("unchecked")
   protected void writeProperty(XMLWriter2 writer, OProperty<?> prop, boolean isDocumentElement) {
     writeProperty(writer, prop.getName(), prop.getType(), prop.getValue(), isDocumentElement, true);
   }
   
+  @SuppressWarnings("unchecked")
   protected void writeProperty(XMLWriter2 writer, String name, EdmType type, Object value, boolean isDocumentElement, boolean writeType) {
     if (isDocumentElement)
       writer.startElement(new QName2(name), d);
@@ -195,8 +190,6 @@ public class XmlFormatWriter {
     if (isResponse) {
         // the producer has populated the link collection, we just what he gave us.
         for (OLink link : entityLinks) {
-          final String linkTitle = link.getTitle();
-
           String rel = related + link.getTitle();
           String type = (link.isCollection())
                   ? atom_feed_content_type
@@ -339,6 +332,7 @@ public class XmlFormatWriter {
     writer.endElement(elementName);
   }
 
+  @SuppressWarnings("rawtypes")
   private void writeCollection(XMLWriter2 writer, String name, OCollection<? extends OObject> c) {
     Iterator<? extends OObject> iter = c.iterator();
     while (iter.hasNext()) {

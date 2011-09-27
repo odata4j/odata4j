@@ -43,7 +43,7 @@ public interface OLink {
   /**
    * returns true if this OLink represents a collection of related entities,
    * false if it is a single entity link
-   * @return 
+   * @return true for a collection of related entities
    */
   boolean isCollection();
   

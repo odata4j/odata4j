@@ -1,13 +1,7 @@
 
 package org.odata4j.test.core.links;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
-import java.io.StringReader;
-import java.math.BigDecimal;
-import java.util.Arrays;
 import javax.persistence.EntityManager;
-import javax.xml.parsers.DocumentBuilderFactory;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -20,14 +14,9 @@ import org.odata4j.core.ORelatedEntityLink;
 import org.odata4j.core.ORelatedEntityLinkInline;
 import org.odata4j.examples.producer.ProducerUtil;
 import org.odata4j.format.FormatType;
-import org.odata4j.producer.jpa.JPAProducer;
 import org.odata4j.producer.jpa.northwind.Orders;
 import org.odata4j.producer.jpa.northwind.test.JPAProducerTestBase;
-import org.odata4j.producer.jpa.northwind.test.NorthwindTestUtils;
 import org.odata4j.producer.resources.ODataProducerProvider;
-import org.odata4j.producer.server.JerseyServer;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
 
 /**
  * Tests for new OLink semantics.
