@@ -104,6 +104,18 @@ public class Path {
   public String toString() {
     return spath;
   }
+  
+  public boolean startsWith(Path p) {
+    if (this.getNComponents() < p.getNComponents()) { return false; }
+    
+    for (int i = 0; i < p.getNComponents(); i++) {
+      if (!this.pathComponents[i].equals(p.getNthComponent(i))) {
+        return false;
+      }
+    }
+    return true;
+  }
+  
   private String[] pathComponents;
   private String spath;
 }

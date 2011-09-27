@@ -47,6 +47,7 @@ import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.Responses;
+import org.odata4j.producer.edm.MetadataProducer;
 import org.odata4j.producer.exceptions.NotImplementedException;
 import org.odata4j.producer.jpa.northwind.Customers;
 import org.odata4j.producer.jpa.northwind.test.NorthwindTestUtils;
@@ -277,6 +278,11 @@ public class XmlDataProducerExample {
     @Override
     public BaseResponse callFunction(EdmFunctionImport name, Map<String, OFunctionParameter> params, QueryInfo queryInfo) {
       throw new NotImplementedException();
+    }
+
+    @Override
+    public MetadataProducer getMetadataProducer() {
+      return null;
     }
 
   }

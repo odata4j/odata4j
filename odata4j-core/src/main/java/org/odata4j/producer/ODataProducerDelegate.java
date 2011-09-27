@@ -9,12 +9,18 @@ import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OFunctionParameter;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmFunctionImport;
+import org.odata4j.producer.edm.MetadataProducer;
 
 public abstract class ODataProducerDelegate implements Delegate<ODataProducer>, ODataProducer {
 
   @Override
   public EdmDataServices getMetadata() {
     return getDelegate().getMetadata();
+  }
+  
+  @Override
+  public MetadataProducer getMetadataProducer() {
+    return getDelegate().getMetadataProducer();
   }
 
   @Override

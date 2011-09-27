@@ -59,6 +59,7 @@ import org.odata4j.producer.InlineCount;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.Responses;
+import org.odata4j.producer.edm.MetadataProducer;
 import org.odata4j.producer.exceptions.NotFoundException;
 import org.odata4j.producer.exceptions.NotImplementedException;
 
@@ -70,7 +71,7 @@ public class InMemoryProducer implements ODataProducer, IEdmGenerator {
 
   private final Logger log = Logger.getLogger(getClass().getName());
 
-  
+ 
 
   private static class EntityInfo<TEntity, TKey> {
     String entitySetName;
@@ -115,6 +116,7 @@ public class InMemoryProducer implements ODataProducer, IEdmGenerator {
   private final Map<String, EntityInfo<?, ?>> eis = new HashMap<String, EntityInfo<?, ?>>();
   private EdmDataServices metadata;
   private final IEdmDecorator decorator;
+  private final MetadataProducer metadataProducer;
   
   private static final int DEFAULT_MAX_RESULTS = 100;
 
@@ -139,6 +141,7 @@ public class InMemoryProducer implements ODataProducer, IEdmGenerator {
     this.namespace = namespace;
     this.maxResults = maxResults;
     this.decorator = decorator;
+    metadataProducer = new MetadataProducer(this, decorator);
   }
 
   @Override
@@ -147,6 +150,11 @@ public class InMemoryProducer implements ODataProducer, IEdmGenerator {
       metadata = buildMetadata();
     }
     return metadata;
+  }
+  
+  @Override
+  public MetadataProducer getMetadataProducer() {
+    return metadataProducer;
   }
 
   public IEdmDecorator getDecorator() {
@@ -729,5 +737,5 @@ public class InMemoryProducer implements ODataProducer, IEdmGenerator {
   public BaseResponse callFunction(EdmFunctionImport name, java.util.Map<String, OFunctionParameter> params, QueryInfo queryInfo) {
     throw new NotImplementedException();
   }
-
+  
 }

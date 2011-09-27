@@ -43,6 +43,9 @@ public class PathTest {
     assertTrue(p.equals(new Path("")));
     p = p.addComponent("blar");
     assertTrue(p.equals(new Path("blar")));
+    
+    assertTrue(p.startsWith(new Path("")));
+    assertFalse(p.startsWith(new Path("foo/bar")));
   }
 
   @Test
@@ -56,6 +59,11 @@ public class PathTest {
     assertTrue(p.equals(new Path("foo")));
     p = p.addComponent("blar");
     assertTrue(p.equals(new Path("foo/blar")));
+    
+    assertTrue(p.startsWith(new Path("")));
+    assertTrue(p.startsWith(new Path("foo")));
+    assertTrue(p.startsWith(new Path("foo/blar")));
+    assertFalse(p.startsWith(new Path("foobar/blar")));
   }
 
   @Test

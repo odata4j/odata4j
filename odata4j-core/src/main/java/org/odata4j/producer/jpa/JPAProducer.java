@@ -52,6 +52,7 @@ import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmPropertyBase;
 import org.odata4j.edm.EdmSimpleType;
+import org.odata4j.edm.IEdmDecorator;
 import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.OrderByExpression;
@@ -65,6 +66,7 @@ import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.PropertyResponse;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.Responses;
+import org.odata4j.producer.edm.MetadataProducer;
 import org.odata4j.producer.exceptions.NotFoundException;
 import org.odata4j.producer.exceptions.NotImplementedException;
 
@@ -73,15 +75,25 @@ public class JPAProducer implements ODataProducer {
   private final EntityManagerFactory emf;
   private final EdmDataServices metadata;
   private final int maxResults;
-
+  private final MetadataProducer metadataProducer;
+  
   public JPAProducer(
       EntityManagerFactory emf,
       EdmDataServices metadata,
-      int maxResults) {
+      int maxResults,
+      IEdmDecorator metadataDecorator) {
 
     this.emf = emf;
     this.maxResults = maxResults;
     this.metadata = metadata;
+    this.metadataProducer = new MetadataProducer(this, metadataDecorator);
+  }
+  
+   public JPAProducer(
+      EntityManagerFactory emf,
+      EdmDataServices metadata,
+      int maxResults) {
+    this(emf, metadata, maxResults, null);
   }
 
   public JPAProducer(
@@ -99,6 +111,11 @@ public class JPAProducer implements ODataProducer {
   @Override
   public EdmDataServices getMetadata() {
     return metadata;
+  }
+  
+  @Override
+  public MetadataProducer getMetadataProducer() {
+    return this.metadataProducer;
   }
 
   @Override
@@ -140,6 +157,7 @@ public class JPAProducer implements ODataProducer {
         });
   }
 
+  
   private static class Context {
     EntityManager em;
     EdmEntitySet ees;

@@ -8,6 +8,7 @@ import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OFunctionParameter;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmFunctionImport;
+import org.odata4j.producer.edm.MetadataProducer;
 
 /** 
  * Implement <code>ODataProducer</code> on the server-side to create a new java-based OData producer.
@@ -24,6 +25,14 @@ public interface ODataProducer {
    */
   EdmDataServices getMetadata();
 
+  /**
+   * Obtains the ODataProducer implementation that serves the metadata as
+   * OData EDM constructs.
+   * 
+   * @return the MetadataProducer object
+   */
+  MetadataProducer getMetadataProducer();
+  
   /** 
    * Gets all the entities for a given set matching the query information.
    * 
