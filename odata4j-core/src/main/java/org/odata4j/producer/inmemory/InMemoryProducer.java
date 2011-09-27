@@ -210,7 +210,10 @@ public class InMemoryProducer implements ODataProducer, IEdmGenerator {
     containers.add(container);
 
     EdmSchema schema = new EdmSchema(namespace, null, entityTypes, null,
-            associations, containers);
+            associations, containers,
+            null == decorator ? null : decorator.getDocumentationForSchema(namespace, namespace),
+            null == decorator ? null : decorator.getAnnotationsForSchema(namespace, namespace));
+    
     schemas.add(schema);
     EdmDataServices rt = new EdmDataServices(
             ODataConstants.DATA_SERVICE_VERSION, schemas,
