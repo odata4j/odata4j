@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import org.odata4j.core.IAnnotation;
+import org.odata4j.core.OCollection;
 import org.odata4j.core.OCollection.Builder;
 import org.odata4j.core.OCollections;
 import org.odata4j.core.OComplexObject;
@@ -606,11 +607,15 @@ public class MetadataProducer implements ODataProducer {
                     null == c.queryInfo ? null : c.queryInfo.customOptions) : null;
 
             if (override != MetadataProducer.RemoveAnnotationOverride) {
+              Object ov = null == override ? a.getValue() : override;
               if (a instanceof EdmAnnotationAttribute) {
-                props.add(OProperties.string(propName, null == override ? a.getValue().toString() : override.toString()));
-              } else {
-                OComplexObject co = (OComplexObject) (null == override ? a.getValue() : override);
+                props.add(OProperties.string(propName, ov.toString()));
+              } else if (ov instanceof OComplexObject) {
+                OComplexObject co = (OComplexObject)ov;
                 props.add(OProperties.complex(propName, (EdmComplexType) co.getType(), co.getProperties()));
+              } else if (ov instanceof OCollection) {
+                OCollection co = (OCollection)ov;
+                props.add(OProperties.collection(propName, new EdmCollectionType("", co.getType()), co));
               }
             }
           }

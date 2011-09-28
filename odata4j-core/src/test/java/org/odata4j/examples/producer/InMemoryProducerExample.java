@@ -15,9 +15,11 @@ import org.core4j.Funcs;
 import org.core4j.ThrowingFunc;
 import org.odata4j.core.IAnnotation;
 import org.odata4j.core.Namespace;
+import org.odata4j.core.OCollections;
 import org.odata4j.core.OComplexObjects;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
+import org.odata4j.core.OSimpleObjects;
 import org.odata4j.edm.EdmAnnotation;
 import org.odata4j.edm.EdmAnnotationAttribute;
 import org.odata4j.edm.EdmAnnotationElement;
@@ -200,6 +202,9 @@ public class InMemoryProducerExample {
       
       annots.add(new EdmAnnotationElement(namespace, prefix, "SchemaInfo", OComplexObjects.create(schemaInfoType, p)));
 
+      annots.add(new EdmAnnotationElement(namespace, prefix, "Tags", 
+              OCollections.newBuilder(EdmSimpleType.STRING).add(OSimpleObjects.create("tag1", EdmSimpleType.STRING))
+              .add(OSimpleObjects.create("tag2", EdmSimpleType.STRING)).build()));
       return annots;
     }
 
