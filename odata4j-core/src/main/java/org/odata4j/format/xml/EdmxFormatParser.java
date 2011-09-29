@@ -22,6 +22,7 @@ import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmEntityType;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.edm.EdmFunctionParameter;
+import org.odata4j.edm.EdmFunctionParameter.Mode;
 import org.odata4j.edm.EdmMultiplicity;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
@@ -310,11 +311,14 @@ public class EdmxFormatParser extends XmlFormatParser {
     while (reader.hasNext()) {
       XMLEvent2 event = reader.nextEvent();
 
-      if (isStartElement(event, EDM2006_PARAMETER, EDM2007_PARAMETER, EDM2008_PARAMETER, EDM2009_PARAMETER))
-                parameters.add(new EdmFunctionParameter(
-                        event.asStartElement().getAttributeByName("Name").getValue(),
-                        EdmType.get(event.asStartElement().getAttributeByName("Type").getValue()),
-                        event.asStartElement().getAttributeByName("Mode").getValue()));
+      if (isStartElement(event, EDM2006_PARAMETER, EDM2007_PARAMETER, EDM2008_PARAMETER, EDM2009_PARAMETER)) {
+        // Mode attribute is optional and thus can be null
+        Attribute2 modeAttribute = event.asStartElement().getAttributeByName("Mode");
+        parameters.add(new EdmFunctionParameter(
+            event.asStartElement().getAttributeByName("Name").getValue(),
+            EdmType.get(event.asStartElement().getAttributeByName("Type").getValue()),
+            modeAttribute != null ? Mode.valueOf(modeAttribute.getValue()) : null));
+      }
 
       if (isEndElement(event, functionImportElement.getName())) {
         return new TempEdmFunctionImport(name, entitySet, returnType, isCollection, httpMethod, parameters);

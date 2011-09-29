@@ -171,7 +171,8 @@ public class EdmxFormatWriter extends XmlFormatWriter {
               writer.startElement(new QName2("Parameter"));
               writer.writeAttribute("Name", param.name);
               writer.writeAttribute("Type", param.type.getFullyQualifiedTypeName());
-              writer.writeAttribute("Mode", param.mode);
+              if (param.mode != null)
+                writer.writeAttribute("Mode", param.mode.toString());
               writeAnnotationAttributes(param, writer);
               writeDocumentation(param, writer);
               writeAnnotationElements(param, writer);

@@ -17,6 +17,7 @@ import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntityContainer;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.edm.EdmFunctionParameter;
+import org.odata4j.edm.EdmFunctionParameter.Mode;
 import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.producer.BaseResponse;
@@ -100,67 +101,67 @@ public class NorthwindProducerWithFunctions extends ODataProducerDelegate {
     params.add(new EdmFunctionParameter(
         "PBoolean", // String name, 
         EdmSimpleType.BOOLEAN, // EdmBaseType type, 
-        "IN")); //String mode);
+        Mode.In));
 
     params.add(new EdmFunctionParameter(
         "PByte", // String name, 
         EdmSimpleType.BYTE, // EdmBaseType type, 
-        "IN")); //String mode);
+        Mode.In));
 
     params.add(new EdmFunctionParameter(
         "PDateTime", // String name, 
         EdmSimpleType.DATETIME, // EdmBaseType type, 
-        "IN"));
+        Mode.In));
 
     params.add(new EdmFunctionParameter(
         "PDateTimeOffset", // String name, 
         EdmSimpleType.DATETIMEOFFSET, // EdmBaseType type, 
-        "IN"));
+        Mode.In));
 
     params.add(new EdmFunctionParameter(
         "PDecimal", // String name, 
         EdmSimpleType.DECIMAL, // EdmBaseType type, 
-        "IN"));
+        Mode.In));
 
     params.add(new EdmFunctionParameter(
         "PDouble", // String name, 
         EdmSimpleType.DOUBLE, // EdmBaseType type, 
-        "IN"));
+        Mode.In));
 
     params.add(new EdmFunctionParameter(
         "PGuid", // String name, 
         EdmSimpleType.GUID, // EdmBaseType type, 
-        "IN"));
+        Mode.In));
 
     params.add(new EdmFunctionParameter(
         "PInt16", // String name, 
         EdmSimpleType.INT16, // EdmBaseType type, 
-        "IN"));
+        Mode.In));
 
     params.add(new EdmFunctionParameter(
         "PInt32", // String name, 
         EdmSimpleType.INT32, // EdmBaseType type, 
-        "IN"));
+        Mode.In));
 
     params.add(new EdmFunctionParameter(
         "PInt64", // String name, 
         EdmSimpleType.INT64, // EdmBaseType type, 
-        "IN"));
+        Mode.In));
 
     params.add(new EdmFunctionParameter(
         "PSingle", // String name, 
         EdmSimpleType.SINGLE, // EdmBaseType type, 
-        "IN"));
+        Mode.In));
 
     params.add(new EdmFunctionParameter(
         "PString", // String name, 
         EdmSimpleType.STRING, // EdmBaseType type, 
-        "IN"));
+        Mode.In));
 
     params.add(new EdmFunctionParameter(
         "PTime", // String name, 
         EdmSimpleType.TIME, // EdmBaseType type, 
-        "IN"));
+        Mode.In));
 
     EdmFunctionImport f = new EdmFunctionImport(
         "TestFunction1", //String name, 
@@ -174,7 +175,7 @@ public class NorthwindProducerWithFunctions extends ODataProducerDelegate {
     params.add(new EdmFunctionParameter(
         "NResults", // String name, 
         EdmSimpleType.INT16, // EdmBaseType type, 
-        "IN")); //String mode);
+        Mode.In));
 
     f = new EdmFunctionImport(
         "TestFunction2", //String name, 

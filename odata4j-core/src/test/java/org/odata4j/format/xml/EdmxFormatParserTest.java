@@ -41,6 +41,8 @@ public class EdmxFormatParserTest {
 
     // a "unit" edmx
     private String edmxFile = "/META-INF/edmx.xml";
+    // an SAP Data Services sample edmx
+    private String sapDsSampleEdmxFile = "/META-INF/sap_ds_sample_edmx.xml";
 
     @Test
     public void testInheritance() throws FileNotFoundException, InterruptedException {
@@ -61,6 +63,14 @@ public class EdmxFormatParserTest {
       assertTrue("parsed", null != d2);
 
       checkTypeHierarchy(d2);
+    }
+
+    @Test
+    public void parseSapDsSample() {
+      XMLEventReader2 reader =  InternalUtil.newXMLEventReader(new BufferedReader(
+          new InputStreamReader(getClass().getResourceAsStream(sapDsSampleEdmxFile))));
+      EdmDataServices d = EdmxFormatParser.parseMetadata(reader);
+      assertTrue("parsed", null != d);
     }
 
     private void checkTypeHierarchy(EdmDataServices d) {
