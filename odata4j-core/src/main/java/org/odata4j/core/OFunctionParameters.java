@@ -10,7 +10,6 @@ import org.odata4j.expression.Expression;
 import org.odata4j.expression.ExpressionParser;
 import org.odata4j.expression.LiteralExpression;
 import org.odata4j.producer.exceptions.NotImplementedException;
-import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
 
 /**
  * A static factory to create immutable {@link OFunctionParameter} instances.
@@ -107,13 +106,7 @@ public class OFunctionParameters {
 
     @Override
     public String toString() {
-      Object value = this.getValue();
-      if (value instanceof OSimpleObject<?>) {
-        Object simpleValue = ((OSimpleObject<?>) value).getValue();
-        if (simpleValue instanceof byte[])
-          value = "0x" + Hex.encodeHexString((byte[]) simpleValue);
-      }
-      return String.format("OFunctionParameter[%s,%s,%s]", getName(), getType(), value);
+      return String.format("OFunctionParameter[%s,%s,%s]", getName(), getType(), getValue());
     }
   }
 

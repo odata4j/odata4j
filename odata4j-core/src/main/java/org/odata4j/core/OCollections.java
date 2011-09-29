@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.core4j.Enumerable;
 import org.odata4j.core.OCollection.Builder;
 import org.odata4j.edm.EdmType;
 
@@ -57,7 +58,11 @@ public class OCollections {
     public int size() {
       return values.size();
     }
-    
+
+    @Override
+    public String toString() {
+      return String.format("OCollection[%s,%s]", type, Enumerable.create(values).join(","));
+    }
   }
   
 }

@@ -2,6 +2,7 @@ package org.odata4j.core;
 
 import org.odata4j.edm.EdmType;
 import org.odata4j.edm.EdmSimpleType;
+import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
 
 /**
  * A static factory to create immutable {@link OSimpleObject} instances.
@@ -30,6 +31,14 @@ public class OSimpleObjects {
     @Override
     public EdmType getType() {
       return prop.getType();
+    }
+
+    @Override
+    public String toString() {
+      Object value = this.getValue();
+      if (value instanceof byte[])
+        value = "0x" + Hex.encodeHexString((byte[]) value);
+      return value.toString();
     }
   }
   
