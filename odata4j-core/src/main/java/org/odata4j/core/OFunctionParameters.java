@@ -37,17 +37,17 @@ public class OFunctionParameters {
 
     EdmType type = EdmSimpleType.forJavaType(value.getClass());
     if (type == null) {
-      // it is not a simple or complex property type.
+      // it is not a simple property type.
       // TODO:
       // support: OEntity, OComplexObject, Collection<OEntity|OComplexObject|EdmSimpleType>
       throw new IllegalArgumentException("Cannot infer EdmType for java type: " + value.getClass().getName());
     }
 
-    if (type instanceof EdmSimpleType) {
+    //if (type instanceof EdmSimpleType) {
       return new FunctionParameterImpl(name, OSimpleObjects.create(value, (EdmSimpleType) type));
-    } else {
-      throw new IllegalArgumentException("type not supported for function parameter: " + type.getFullyQualifiedTypeName());
-    }
+    //} else {
+    //  throw new IllegalArgumentException("type not supported for function parameter: " + type.getFullyQualifiedTypeName());
+    //}
   }
 
   public static OFunctionParameter parse(String name, EdmType type, String value) {
@@ -68,13 +68,13 @@ public class OFunctionParameters {
     Object v = val;
     if (type.equals(EdmSimpleType.INT16) && (!(val instanceof Short))) {
       // parser gave us an Integer
-      v = new Short(((Number) val).shortValue());
+      v = Short.valueOf(((Number) val).shortValue());
     } else if (type.equals(EdmSimpleType.SINGLE) && (!(val instanceof Float))) {
       // parser gave us an Double
       v = new Float(((Number) val).floatValue());
     } else if (type.equals(EdmSimpleType.BYTE) && (!(val instanceof Byte))) {
       // parser gave us an Double
-      v = new Byte(((Number) val).byteValue());
+      v = Byte.valueOf(((Number) val).byteValue());
     }
 
     return v;
@@ -108,8 +108,10 @@ public class OFunctionParameters {
     @Override
     public String toString() {
       Object value = this.getValue();
-      if (value instanceof byte[]) {
-        value = "0x" + Hex.encodeHexString((byte[]) value);
+      if (value instanceof OSimpleObject<?>) {
+        Object simpleValue = ((OSimpleObject<?>) value).getValue();
+        if (simpleValue instanceof byte[])
+          value = "0x" + Hex.encodeHexString((byte[]) simpleValue);
       }
       return String.format("OFunctionParameter[%s,%s,%s]", getName(), getType(), value);
     }

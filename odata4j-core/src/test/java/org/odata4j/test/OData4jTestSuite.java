@@ -27,6 +27,7 @@ import org.odata4j.test.core.AtomFeedFormatParserTest;
 import org.odata4j.test.core.EdmSimpleTypeTest;
 import org.odata4j.test.core.EdmTypeTest;
 import org.odata4j.test.core.OEntityKeyTest;
+import org.odata4j.test.core.OFunctionParametersTest;
 import org.odata4j.test.expression.DateTimeFormatTest;
 import org.odata4j.test.expression.ExpressionTest;
 import org.odata4j.test.expression.JsonTest;
@@ -74,7 +75,8 @@ import org.odata4j.test.issues.Issue16;
     EdmSimpleTypeTest.class,
     EdmTypeTest.class,
     MultipleWorkspacesTest.class,
-    ClientFactoryTest.class })
+    ClientFactoryTest.class,
+    OFunctionParametersTest.class })
 public class OData4jTestSuite {
 
   public static enum JPAProvider {

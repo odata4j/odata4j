@@ -28,12 +28,12 @@ import org.odata4j.stax2.XMLWriter2;
 
 public class XmlFormatWriter {
 
-  protected static String edmx = "http://schemas.microsoft.com/ado/2007/06/edmx";
-  protected static String d = "http://schemas.microsoft.com/ado/2007/08/dataservices";
-  protected static String m = "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata";
-  protected static String edm = "http://schemas.microsoft.com/ado/2006/04/edm";
-  protected static String atom = "http://www.w3.org/2005/Atom";
-  protected static String app = "http://www.w3.org/2007/app";
+  protected static final String edmx = "http://schemas.microsoft.com/ado/2007/06/edmx";
+  protected static final String d = "http://schemas.microsoft.com/ado/2007/08/dataservices";
+  protected static final String m = "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata";
+  protected static final String edm = "http://schemas.microsoft.com/ado/2006/04/edm";
+  protected static final String atom = "http://www.w3.org/2005/Atom";
+  protected static final String app = "http://www.w3.org/2007/app";
   protected static final String scheme = "http://schemas.microsoft.com/ado/2007/08/dataservices/scheme";
   public static final String related = "http://schemas.microsoft.com/ado/2007/08/dataservices/related/";
   public static final String atom_feed_content_type = "application/atom+xml;type=feed";

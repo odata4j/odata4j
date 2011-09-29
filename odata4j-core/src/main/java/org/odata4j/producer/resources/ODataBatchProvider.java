@@ -167,7 +167,7 @@ public class ODataBatchProvider implements MessageBodyReader<List<BatchBodyPart>
   }
 
   private static BatchBodyPart validateBodyPart(BatchBodyPart block) {
-    if (block.getHttpMethod() == null ? "" == null : block.getHttpMethod().equals("")) {
+    if (block.getHttpMethod() == null ? "" == null : block.getHttpMethod().toString().equals("")) {
       throw new IllegalArgumentException("Block HTTP METHOD is empty.");
     }
 

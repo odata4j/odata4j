@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.core4j.Enumerable;
@@ -218,16 +219,17 @@ public class BeanModel {
   private static Map<String, Class<?>> computeTypes(Map<String, Method> getters, Map<String, Method> setters) {
     Map<String, Class<?>> rt = new HashMap<String, Class<?>>();
 
-    for (String propertyName : getters.keySet()) {
-      Class<?> getterType = getters.get(propertyName).getReturnType();
+    for (Entry<String, Method> getter : getters.entrySet()) {
+      Class<?> getterType = getter.getValue().getReturnType();
       if (!isIterable(getterType))
-        rt.put(propertyName, getterType);
+        rt.put(getter.getKey(), getterType);
     }
 
-    for (String propertyName : setters.keySet()) {
+    for (Entry<String, Method> setter : setters.entrySet()) {
+      String propertyName = setter.getKey();
       Class<?> getterType = rt.get(propertyName);
       if (getterType != null) {
-        Class<?> setterType = setters.get(propertyName).getParameterTypes()[0];
+        Class<?> setterType = setter.getValue().getParameterTypes()[0];
 
         if (getterType != null && !getterType.equals(setterType))
           throw new RuntimeException(String.format("Inconsistent types for property %s.%s: getter type %s, setter type %s",
@@ -247,8 +249,10 @@ public class BeanModel {
       Map<String, Method> getters2, Map<String, Method> setters2) {
     Map<String, Class<?>> rt = new HashMap<String, Class<?>>();
 
-    for (String propertyName : getters.keySet()) {
-      Class<?> getterType = getters.get(propertyName).getReturnType();
+    for (Entry<String, Method> getter : getters.entrySet()) {
+      String propertyName = getter.getKey();
+      Method method = getter.getValue();
+      Class<?> getterType = method.getReturnType();
       if (isIterable(getterType)) {
         Class<?> setterType = setters.containsKey(propertyName)
             ? setters.get(propertyName).getParameterTypes()[0]
@@ -262,7 +266,7 @@ public class BeanModel {
                 setterType.getName()));
 
           Class<?> elementClass;
-          Type type = getters.get(propertyName).getGenericReturnType();
+          Type type = method.getGenericReturnType();
           if (type instanceof ParameterizedType) {
             Type[] actualTypes = ((ParameterizedType) type).getActualTypeArguments();
             elementClass = actualTypes.length > 0

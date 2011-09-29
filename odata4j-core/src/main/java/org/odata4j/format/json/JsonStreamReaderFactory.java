@@ -596,11 +596,8 @@ class JsonStreamReaderImpl implements JsonStreamReader {
 
         switch (token.type) {
         case STRING:
-          expectCommaOrEnd = true;
         case NUMBER:
-          expectCommaOrEnd = true;
         case TRUE:
-          expectCommaOrEnd = true;
         case FALSE:
           expectCommaOrEnd = true;
           return createValueEvent(token.value);

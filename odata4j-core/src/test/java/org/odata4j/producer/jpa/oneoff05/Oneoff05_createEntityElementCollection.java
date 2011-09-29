@@ -4,7 +4,6 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
-import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperties;
 import org.odata4j.producer.jpa.oneoff.OneoffTestBase;
 
@@ -15,14 +14,13 @@ public class Oneoff05_createEntityElementCollection extends OneoffTestBase {
     setUpClass(Oneoff05_createEntityElementCollection.class, 20);
   }
 
-  @SuppressWarnings("unused")
   @Ignore
   @Test
   public void createEntityElementCollection() {
     final long now = System.currentTimeMillis();
     ODataConsumer consumer = ODataConsumer.create(endpointUri);
 
-    OEntity student = consumer
+    consumer
         .createEntity("Student")
         .properties(OProperties.string("StudentName", "Student1" + now))
         //todo add courses as well to the student

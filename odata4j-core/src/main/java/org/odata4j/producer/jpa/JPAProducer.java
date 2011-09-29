@@ -765,106 +765,102 @@ public class JPAProducer implements ODataProducer {
     if (links == null)
       return;
 
-    try {
-      for (final OLink link : links) {
-        String[] propNameSplit = link.getRelation().split("/");
-        String propName = propNameSplit[propNameSplit.length - 1];
+    for (final OLink link : links) {
+      String[] propNameSplit = link.getRelation().split("/");
+      String propName = propNameSplit[propNameSplit.length - 1];
 
-        if (link instanceof ORelatedEntitiesLinkInline) {
-          PluralAttribute<?, ?, ?> att = (PluralAttribute<?, ?, ?>) jpaEntityType.getAttribute(propName);
-          JPAMember member = JPAMember.create(att, jpaEntity);
+      if (link instanceof ORelatedEntitiesLinkInline) {
+        PluralAttribute<?, ?, ?> att = (PluralAttribute<?, ?, ?>) jpaEntityType.getAttribute(propName);
+        JPAMember member = JPAMember.create(att, jpaEntity);
 
-          EntityType<?> collJpaEntityType = (EntityType<?>) att.getElementType();
+        EntityType<?> collJpaEntityType = (EntityType<?>) att.getElementType();
 
-          OneToMany oneToMany = member.getAnnotation(OneToMany.class);
-          boolean hasSingularBackRef = oneToMany != null
-              && oneToMany.mappedBy() != null
-              && !oneToMany.mappedBy().isEmpty();
+        OneToMany oneToMany = member.getAnnotation(OneToMany.class);
+        boolean hasSingularBackRef = oneToMany != null
+            && oneToMany.mappedBy() != null
+            && !oneToMany.mappedBy().isEmpty();
 
-          ManyToMany manyToMany = member.getAnnotation(ManyToMany.class);
+        ManyToMany manyToMany = member.getAnnotation(ManyToMany.class);
 
-          Collection<Object> coll = member.get();
-          if (coll == null) {
-            coll = (Collection<Object>) newInstance(member.getJavaType());
-            member.set(coll);
+        Collection<Object> coll = member.get();
+        if (coll == null) {
+          coll = (Collection<Object>) newInstance(member.getJavaType());
+          member.set(coll);
+        }
+        for (OEntity oentity : ((ORelatedEntitiesLinkInline) link).getRelatedEntities()) {
+          Object collJpaEntity = createNewJPAEntity(em, collJpaEntityType, oentity, true);
+          if (hasSingularBackRef) {
+            JPAMember backRef = JPAMember.create(collJpaEntityType.getAttribute(oneToMany.mappedBy()), collJpaEntity);
+            backRef.set(jpaEntity);
           }
-          for (OEntity oentity : ((ORelatedEntitiesLinkInline) link).getRelatedEntities()) {
-            Object collJpaEntity = createNewJPAEntity(em, collJpaEntityType, oentity, true);
-            if (hasSingularBackRef) {
-              JPAMember backRef = JPAMember.create(collJpaEntityType.getAttribute(oneToMany.mappedBy()), collJpaEntity);
-              backRef.set(jpaEntity);
-            }
-            if (manyToMany != null) {
-              Attribute<?, ?> other = null;
-              if (manyToMany.mappedBy() != null && !manyToMany.mappedBy().isEmpty())
-                other = collJpaEntityType.getAttribute(manyToMany.mappedBy());
-              else {
-                for (Attribute<?, ?> att2 : collJpaEntityType.getAttributes()) {
-                  if (att2.isCollection() && JPAMember.create(att2, null).getAnnotation(ManyToMany.class) != null) {
-                    CollectionAttribute<?, ?> ca = (CollectionAttribute<?, ?>) att2;
-                    if (ca.getElementType().equals(jpaEntityType)) {
-                      other = ca;
-                      break;
-                    }
+          if (manyToMany != null) {
+            Attribute<?, ?> other = null;
+            if (manyToMany.mappedBy() != null && !manyToMany.mappedBy().isEmpty())
+              other = collJpaEntityType.getAttribute(manyToMany.mappedBy());
+            else {
+              for (Attribute<?, ?> att2 : collJpaEntityType.getAttributes()) {
+                if (att2.isCollection() && JPAMember.create(att2, null).getAnnotation(ManyToMany.class) != null) {
+                  CollectionAttribute<?, ?> ca = (CollectionAttribute<?, ?>) att2;
+                  if (ca.getElementType().equals(jpaEntityType)) {
+                    other = ca;
+                    break;
                   }
                 }
               }
-
-              if (other == null)
-                throw new RuntimeException("Could not find other side of many-to-many relationship");
-
-              JPAMember backRef = JPAMember.create(other, collJpaEntity);
-              Collection<Object> coll2 = backRef.get();
-              if (coll2 == null) {
-                coll2 = newInstance(backRef.getJavaType());
-                backRef.set(coll2);
-              }
-              coll2.add(jpaEntity);
             }
 
-            em.persist(collJpaEntity);
-            coll.add(collJpaEntity);
+            if (other == null)
+              throw new RuntimeException("Could not find other side of many-to-many relationship");
+
+            JPAMember backRef = JPAMember.create(other, collJpaEntity);
+            Collection<Object> coll2 = backRef.get();
+            if (coll2 == null) {
+              coll2 = newInstance(backRef.getJavaType());
+              backRef.set(coll2);
+            }
+            coll2.add(jpaEntity);
           }
 
-        } else if (link instanceof ORelatedEntityLinkInline) {
-          SingularAttribute<?, ?> att = jpaEntityType.getSingularAttribute(propName);
-          JPAMember member = JPAMember.create(att, jpaEntity);
-
-          EntityType<?> relJpaEntityType = (EntityType<?>) att.getType();
-          Object relJpaEntity = createNewJPAEntity(em, relJpaEntityType,
-              ((ORelatedEntityLinkInline) link).getRelatedEntity(), true);
-          em.persist(relJpaEntity);
-
-          member.set(relJpaEntity);
-        } else if (link instanceof ORelatedEntityLink) {
-
-          // look up the linked entity, and set the member value
-          SingularAttribute<?, ?> att = jpaEntityType.getSingularAttribute(propName);
-          JPAMember member = JPAMember.create(att, jpaEntity);
-
-          EntityType<?> relJpaEntityType = (EntityType<?>) att.getType();
-          Object key = typeSafeEntityKey(em, relJpaEntityType, OEntityKey.parse(link.getHref().substring(link.getHref().indexOf('('))));
-          Object relEntity = em.find(relJpaEntityType.getJavaType(), key);
-
-          member.set(relEntity);
-
-          // set corresponding property (if there is one)
-          JoinColumn joinColumn = member.getAnnotation(JoinColumn.class);
-          ManyToOne manyToOne = member.getAnnotation(ManyToOne.class);
-          if (joinColumn != null && manyToOne != null) {
-            String columnName = joinColumn.name();
-            JPAMember m = JPAMember.findByColumn(jpaEntityType, columnName, jpaEntity);
-            if (m != null)
-              m.set(key);
-
-          }
-
-        } else {
-          throw new UnsupportedOperationException("binding the new entity to many entities is not supported");
+          em.persist(collJpaEntity);
+          coll.add(collJpaEntity);
         }
+
+      } else if (link instanceof ORelatedEntityLinkInline) {
+        SingularAttribute<?, ?> att = jpaEntityType.getSingularAttribute(propName);
+        JPAMember member = JPAMember.create(att, jpaEntity);
+
+        EntityType<?> relJpaEntityType = (EntityType<?>) att.getType();
+        Object relJpaEntity = createNewJPAEntity(em, relJpaEntityType,
+            ((ORelatedEntityLinkInline) link).getRelatedEntity(), true);
+        em.persist(relJpaEntity);
+
+        member.set(relJpaEntity);
+      } else if (link instanceof ORelatedEntityLink) {
+
+        // look up the linked entity, and set the member value
+        SingularAttribute<?, ?> att = jpaEntityType.getSingularAttribute(propName);
+        JPAMember member = JPAMember.create(att, jpaEntity);
+
+        EntityType<?> relJpaEntityType = (EntityType<?>) att.getType();
+        Object key = typeSafeEntityKey(em, relJpaEntityType, OEntityKey.parse(link.getHref().substring(link.getHref().indexOf('('))));
+        Object relEntity = em.find(relJpaEntityType.getJavaType(), key);
+
+        member.set(relEntity);
+
+        // set corresponding property (if there is one)
+        JoinColumn joinColumn = member.getAnnotation(JoinColumn.class);
+        ManyToOne manyToOne = member.getAnnotation(ManyToOne.class);
+        if (joinColumn != null && manyToOne != null) {
+          String columnName = joinColumn.name();
+          JPAMember m = JPAMember.findByColumn(jpaEntityType, columnName, jpaEntity);
+          if (m != null)
+            m.set(key);
+
+        }
+
+      } else {
+        throw new UnsupportedOperationException("binding the new entity to many entities is not supported");
       }
-    } catch (Exception e) {
-      throw new RuntimeException(e);
     }
   }
 

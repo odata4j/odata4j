@@ -28,7 +28,7 @@ public class ExceptionTest extends JPAProducerTestBase {
   public void tearDown() {}
 
   @Test
-  public void Test404NoEntityType() {
+  public void test404NoEntityType() {
     ODataConsumer consumer = ODataConsumer.create(endpointUri);
     OEntity customer = null;
     try {
@@ -41,7 +41,7 @@ public class ExceptionTest extends JPAProducerTestBase {
   }
 
   @Test
-  public void Test404NoEntity() {
+  public void test404NoEntity() {
     ODataConsumer consumer = ODataConsumer.create(endpointUri);
     OEntity customer = null;
     try {
@@ -54,7 +54,7 @@ public class ExceptionTest extends JPAProducerTestBase {
   }
 
   @Test
-  public void Test500InvalidKey() {
+  public void test500InvalidKey() {
 
     thrown.expect(RuntimeException.class);
     thrown.expectMessage(JUnitMatchers.containsString("found 500"));

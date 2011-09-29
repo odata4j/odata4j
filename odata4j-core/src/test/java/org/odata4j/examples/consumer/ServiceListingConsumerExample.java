@@ -11,7 +11,6 @@ public class ServiceListingConsumerExample extends BaseExample {
 
   private static OClientBehavior[] behaviors = {};
   
-  @SuppressWarnings("unused")
   public static void main(String[] args) {
 
     ODataConsumer.dump.requestHeaders(true);
@@ -35,14 +34,14 @@ public class ServiceListingConsumerExample extends BaseExample {
         ODataEndpoints.NUGET
         );
 
-    Enumerable<String> brokenServices = Enumerable.create(
-        ODataEndpoints.CITY_OF_EDMONTON,
-        ODataEndpoints.DEVEXPRESS, // skiptoken not implemented
-        ODataEndpoints.DEVTRANSIT, // returning 500 for access problems
-        ODataEndpoints.LOGMYTIME, // returning proper 4xx, we should handle better in listing
-        ODataEndpoints.PDC_2010, // four of the entity types return 404
-        ODataEndpoints.MIX10 // down
-        );
+    //Enumerable<String> brokenServices = Enumerable.create(
+    //    ODataEndpoints.CITY_OF_EDMONTON,
+    //    ODataEndpoints.DEVEXPRESS, // skiptoken not implemented
+    //    ODataEndpoints.DEVTRANSIT, // returning 500 for access problems
+    //    ODataEndpoints.LOGMYTIME, // returning proper 4xx, we should handle better in listing
+    //    ODataEndpoints.PDC_2010, // four of the entity types return 404
+    //    ODataEndpoints.MIX10 // down
+    //    );
 
     Enumerable<String> largeServices = Enumerable.create(
         ODataEndpoints.BASEBALL_STATS,

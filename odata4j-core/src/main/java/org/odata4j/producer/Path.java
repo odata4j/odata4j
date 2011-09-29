@@ -87,7 +87,7 @@ public class Path {
 
   @Override
   public boolean equals(Object rhso) {
-    if (!rhso.getClass().equals(Path.class)) {
+    if (rhso == null || !(rhso instanceof Path)) {
       return false;
     }
     Path rhs = (Path) rhso;

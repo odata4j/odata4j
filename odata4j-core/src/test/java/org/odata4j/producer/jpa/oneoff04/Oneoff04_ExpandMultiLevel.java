@@ -17,10 +17,9 @@ public class Oneoff04_ExpandMultiLevel extends OneoffTestBase {
     setUpClass(Oneoff04_ExpandMultiLevel.class, 20);
   }
 
-  @SuppressWarnings("unused")
   @Ignore
   @Test
-  public void ExpandMultiLevel() {
+  public void expandMultiLevel() {
     final long now = System.currentTimeMillis();
     ODataConsumer consumer = ODataConsumer.create(endpointUri);
 
@@ -46,7 +45,7 @@ public class Oneoff04_ExpandMultiLevel extends OneoffTestBase {
         .inline("courses", course1, course2)
         .get();
 
-    OEntity school = consumer
+    consumer
         .createEntity("School")
         .properties(OProperties.string("SchoolName", "School" + now))
         .inline("students", student1, student2)

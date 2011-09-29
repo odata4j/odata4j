@@ -35,4 +35,14 @@ public class RecursivePath extends Path {
     return isUnlimited() || d <= this.depth;
   }
   private final int depth;
+
+  @Override
+  public boolean equals(Object obj) {
+    return super.equals(obj) && obj instanceof RecursivePath && ((RecursivePath) obj).depth == this.depth;
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode() + this.depth;
+  }
 }

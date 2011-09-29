@@ -46,7 +46,7 @@ public class EdmSimpleType extends EdmType {
   /**
    * Immutable set of all edm simple types.
    */
-  public static Set<EdmSimpleType> ALL = Collections.unmodifiableSet(all);
+  public static final Set<EdmSimpleType> ALL = Collections.unmodifiableSet(all);
 
   private final Set<Class<?>> javaTypes;
 

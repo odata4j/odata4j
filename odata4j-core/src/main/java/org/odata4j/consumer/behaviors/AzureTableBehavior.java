@@ -1,5 +1,9 @@
 package org.odata4j.consumer.behaviors;
 
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.ws.rs.core.MediaType;
@@ -79,7 +83,11 @@ public class AzureTableBehavior extends BaseClientBehavior {
             }
 
             return request;
-        } catch (Exception e) {
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidKeyException e) {
+            throw new RuntimeException(e);
+        } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
     }
