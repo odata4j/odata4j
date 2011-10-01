@@ -19,18 +19,17 @@ public class ProducerUtil {
     server.stop();
   }
 
+  public static JerseyServer createODataServer(String baseUri) {
+    return new JerseyServer(baseUri)
+        .addAppResourceClasses(new ODataResourceConfig().getClasses())
+        .addRootResourceClasses(new CrossDomainResourceConfig().getClasses())
+        .addJerseyRequestFilter(LoggingFilter.class) // log all requests
+//      .addHttpServerFilter(new WhitelistFilter("127.0.0.1","0:0:0:0:0:0:0:1%0")) // only allow local requests
+        ;
+  }
+
   public static JerseyServer startODataServer(String baseUri) {
-    JerseyServer server = new JerseyServer(baseUri);
-    server.addAppResourceClasses(new ODataResourceConfig().getClasses());
-    server.addRootResourceClasses(new CrossDomainResourceConfig().getClasses());
-
-    server.addJerseyRequestFilter(LoggingFilter.class); // log all requests
-
-    // server.addHttpServerFilter(new WhitelistFilter("127.0.0.1","0:0:0:0:0:0:0:1%0")); // only allow local requests
-    server.start();
-
-    return server;
-
+    return createODataServer(baseUri).start();
   }
 
   public static void readLine() {

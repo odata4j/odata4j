@@ -49,24 +49,24 @@ public class RoundtripExample extends BaseExample {
 
   public static void main(String[] args) {
 
+    // create/start the server
     String endpointUri = "http://localhost:8885/RoundtripExample.svc/";
 
     InMemoryProducer producer = new InMemoryProducer("RoundtripExample");
-
     producer.register(Customer.class, Integer.TYPE, "Customers", new Func<Iterable<Customer>>() {
       public Iterable<Customer> apply() {
-
         List<Customer> customers = new ArrayList<Customer>();
         customers.add(new Customer(1, "John"));
         return customers;
-
       }
     }, "Id");
 
     ODataProducerProvider.setInstance(producer);
-    JerseyServer server = ProducerUtil.startODataServer(endpointUri);
+    JerseyServer server = ProducerUtil.createODataServer(endpointUri).setJerseyTrace(true).start();
 
     try {
+      // create the client
+      ODataConsumer.dump.responseHeaders(true);
       ODataConsumer consumer = ODataConsumer.create(endpointUri);
 
       reportEntities("Customers", consumer.getEntities("Customers").execute());
@@ -76,9 +76,9 @@ public class RoundtripExample extends BaseExample {
       }
 
     } finally {
+      // stop the server
       server.stop();
     }
-
   }
 
 }
