@@ -56,6 +56,7 @@ import org.odata4j.edm.IEdmDecorator;
 import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.OrderByExpression;
+import org.odata4j.expression.OrderByExpression.Direction;
 import org.odata4j.internal.TypeConverter;
 import org.odata4j.producer.BaseResponse;
 import org.odata4j.producer.EntitiesResponse;
@@ -705,7 +706,7 @@ public class JPAProducer implements ODataProducer {
       List<String> orderBys = new ArrayList<String>();
       for (OrderByExpression orderBy : context.query.orderBy) {
         String field = jpqlGen.toJpql(orderBy.getExpression());
-        orderBys.add(field + (orderBy.isAscending() ? "" : " DESC"));
+        orderBys.add(field + (orderBy.getDirection() == Direction.ASCENDING ? "" : " DESC"));
       }
       jpql = jpql + " ORDER BY " + Enumerable.create(orderBys).join(",");
     }

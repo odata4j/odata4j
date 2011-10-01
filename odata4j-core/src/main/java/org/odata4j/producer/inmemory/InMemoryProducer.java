@@ -51,6 +51,7 @@ import org.odata4j.edm.IEdmGenerator;
 import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.OrderByExpression;
+import org.odata4j.expression.OrderByExpression.Direction;
 import org.odata4j.producer.BaseResponse;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityIdResponse;
@@ -630,7 +631,7 @@ public class InMemoryProducer implements ODataProducer, IEdmGenerator {
         public int compare(Object o1, Object o2) {
           Comparable lhs = (Comparable) InMemoryEvaluation.evaluate(orderBy.getExpression(), o1, properties);
           Comparable rhs = (Comparable) InMemoryEvaluation.evaluate(orderBy.getExpression(), o2, properties);
-          return (orderBy.isAscending() ? 1 : -1) * lhs.compareTo(rhs);
+          return (orderBy.getDirection() == Direction.ASCENDING ? 1 : -1) * lhs.compareTo(rhs);
         }
       });
     return iter;

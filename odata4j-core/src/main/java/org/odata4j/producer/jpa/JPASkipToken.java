@@ -14,6 +14,7 @@ import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.Expression;
 import org.odata4j.expression.LiteralExpression;
 import org.odata4j.expression.OrderByExpression;
+import org.odata4j.expression.OrderByExpression.Direction;
 
 public class JPASkipToken {
 
@@ -64,7 +65,7 @@ public class JPASkipToken {
         LiteralExpression orderByValue = (LiteralExpression) Expression.parse(orderByValueString);
         orderByValues.add(orderByValue);
         // a > avalue
-        BoolCommonExpression ordExp = orderBy.isAscending()
+        BoolCommonExpression ordExp = orderBy.getDirection() == Direction.ASCENDING
             ? Expression.gt(orderBy.getExpression(), orderByValue)
             : Expression.lt(orderBy.getExpression(), orderByValue);
 

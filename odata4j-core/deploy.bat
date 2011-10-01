@@ -1,1 +1,0 @@
-mvn clean package deploy -DaltDeploymentRepository=local::default::file://C:/i/projects/odata4j/hg-mavenrepo

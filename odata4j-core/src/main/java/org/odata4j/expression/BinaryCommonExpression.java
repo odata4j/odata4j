@@ -1,6 +1,6 @@
 package org.odata4j.expression;
 
-public interface BinaryCommonExpression {
+public interface BinaryCommonExpression extends CommonExpression {
 
   CommonExpression getLHS();
 

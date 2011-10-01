@@ -14,6 +14,7 @@ import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.odata4j.core.Guid;
+import org.odata4j.expression.OrderByExpression.Direction;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.repack.org.apache.commons.codec.DecoderException;
 import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
@@ -80,7 +81,7 @@ public class ExpressionParser {
         if (input instanceof OrderByExpression) {
           return (OrderByExpression) input;
         }
-        return Expression.orderBy(input, true); // default to asc
+        return Expression.orderBy(input, Direction.ASCENDING); // default to asc
       }
     }).toList();
   }
@@ -377,7 +378,9 @@ public class ExpressionParser {
     // OrderBy asc, desc
     Token lastToken = tokens.get(tokens.size() - 1);
     if (lastToken.type == TokenType.WORD && (lastToken.value.equals("asc") || lastToken.value.equals("desc"))) {
-      return Expression.orderBy(readExpression(tokens.subList(0, tokens.size() - 1)), lastToken.value.equals("asc"));
+      return Expression.orderBy(
+          readExpression(tokens.subList(0, tokens.size() - 1)),
+          lastToken.value.equals("asc") ? Direction.ASCENDING : Direction.DESCENDING);
     }
 
     // Grouping (highest precedence)

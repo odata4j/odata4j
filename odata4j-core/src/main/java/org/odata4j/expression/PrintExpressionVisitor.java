@@ -1,5 +1,6 @@
 package org.odata4j.expression;
 
+import org.odata4j.expression.OrderByExpression.Direction;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
 
@@ -291,6 +292,11 @@ public class PrintExpressionVisitor implements ExpressionVisitor {
   @Override
   public void visit(OrderByExpression expr) {
     append("orderBy");
+  }
+  
+  @Override
+  public void visit(Direction direction) {
+    append(direction == Direction.ASCENDING ? "asc" : "desc");
   }
 
   @Override

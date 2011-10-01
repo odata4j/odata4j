@@ -11,6 +11,8 @@ public interface ExpressionVisitor {
   void visit(String type);
 
   void visit(OrderByExpression expr);
+  
+  void visit(OrderByExpression.Direction direction);
 
   void visit(AddExpression expr);
 

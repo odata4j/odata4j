@@ -67,6 +67,7 @@ import org.odata4j.expression.ToLowerMethodCallExpression;
 import org.odata4j.expression.ToUpperMethodCallExpression;
 import org.odata4j.expression.TrimMethodCallExpression;
 import org.odata4j.expression.YearMethodCallExpression;
+import org.odata4j.expression.OrderByExpression.Direction;
 
 public class ExpressionTest {
 
@@ -176,9 +177,9 @@ public class ExpressionTest {
     t(Expression.ceiling(Expression.string("aba")), "ceiling('aba')");
     t(Expression.floor(Expression.string("aba")), "floor('aba')");
 
-    o("a desc", Expression.orderBy(Expression.simpleProperty("a"), false));
-    o("a", Expression.orderBy(Expression.simpleProperty("a"), true));
-    o("b desc, a", Expression.orderBy(Expression.simpleProperty("b"), false), Expression.orderBy(Expression.simpleProperty("a"), true));
+    o("a desc", Expression.orderBy(Expression.simpleProperty("a"), Direction.DESCENDING));
+    o("a", Expression.orderBy(Expression.simpleProperty("a"), Direction.ASCENDING));
+    o("b desc, a", Expression.orderBy(Expression.simpleProperty("b"), Direction.DESCENDING), Expression.orderBy(Expression.simpleProperty("a"), Direction.ASCENDING));
   }
 
   private void o(String value, OrderByExpression... expecteds) {
@@ -188,7 +189,7 @@ public class ExpressionTest {
       OrderByExpression expected = expecteds[i];
       OrderByExpression actual = actuals.get(i);
 
-      Assert.assertEquals(expected.isAscending(), actual.isAscending());
+      Assert.assertEquals(expected.getDirection(), actual.getDirection());
 
       assertSame(expected.getExpression(), actual.getExpression());
 

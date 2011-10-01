@@ -14,6 +14,7 @@ import org.odata4j.core.OProperty;
 import org.odata4j.core.ORelatedEntitiesLinkInline;
 import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.OrderByExpression;
+import org.odata4j.expression.OrderByExpression.Direction;
 import org.odata4j.producer.InlineCount;
 import org.odata4j.producer.QueryInfo;
 
@@ -102,7 +103,7 @@ public class ListUtils {
         public int compare(OEntity o1, OEntity o2) {
           Comparable<Comparable<?>> lhs = (Comparable<Comparable<?>>) InMemoryEvaluation.evaluate(orderBy.getExpression(), o1, properties);
           Comparable<?> rhs = (Comparable<?>) InMemoryEvaluation.evaluate(orderBy.getExpression(), o2, properties);
-          return (orderBy.isAscending() ? 1 : -1) * lhs.compareTo(rhs);
+          return (orderBy.getDirection() == Direction.ASCENDING ? 1 : -1) * lhs.compareTo(rhs);
         }
       });
     }

@@ -9,6 +9,7 @@ import org.odata4j.core.Guid;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmSimpleType;
+import org.odata4j.expression.OrderByExpression.Direction;
 
 public class Expression {
 
@@ -20,526 +21,142 @@ public class Expression {
 
   public static String asPrintString(CommonExpression expr) {
     PrintExpressionVisitor v = new PrintExpressionVisitor();
-    Expression.visit(expr, v);
+    expr.visit(v);
     return v.toString();
   }
 
   public static String asFilterString(CommonExpression expr) {
     FilterExpressionVisitor v = new FilterExpressionVisitor();
-    Expression.visit(expr, v);
+    expr.visit(v);
     return v.toString();
   }
 
   public static NullLiteral null_() {
-    return new NullLiteral() {
-      @Override
-      public String toString() {
-        return NullLiteral.class.getSimpleName();
-      }
-    };
+    return NullLiteralImpl.INSTANCE;
   }
 
-  public static IntegralLiteral integral(final int value) {
-    return new IntegralLiteral() {
-      @Override
-      public String toString() {
-        return IntegralLiteral.class.getSimpleName();
-      }
-
-      @Override
-      public int getValue() {
-        return value;
-      }
-    };
+  public static IntegralLiteral integral(int value) {
+    return new IntegralLiteralImpl(value);
   }
 
-  public static BooleanLiteral boolean_(final boolean value) {
-    return new BooleanLiteral() {
-      @Override
-      public String toString() {
-        return BooleanLiteral.class.getSimpleName();
-      }
-
-      @Override
-      public boolean getValue() {
-        return value;
-      }
-    };
+  public static BooleanLiteral boolean_(boolean value) {
+    return value ? BooleanLiteralImpl.TRUE : BooleanLiteralImpl.FALSE;
   }
 
-  public static DateTimeLiteral dateTime(final LocalDateTime value) {
-    return new DateTimeLiteral() {
-      @Override
-      public String toString() {
-        return DateTimeLiteral.class.getSimpleName();
-      }
-
-      @Override
-      public LocalDateTime getValue() {
-        return value;
-      }
-    };
+  public static DateTimeLiteral dateTime(LocalDateTime value) {
+    return new DateTimeLiteralImpl(value);
   }
 
-  public static DateTimeOffsetLiteral dateTimeOffset(final DateTime value) {
-    return new DateTimeOffsetLiteral() {
-      @Override
-      public String toString() {
-        return DateTimeOffsetLiteral.class.getSimpleName();
-      }
-
-      @Override
-      public DateTime getValue() {
-        return value;
-      }
-    };
+  public static DateTimeOffsetLiteral dateTimeOffset(DateTime value) {
+    return new DateTimeOffsetLiteralImpl(value);
   }
 
-  public static TimeLiteral time(final LocalTime value) {
-    return new TimeLiteral() {
-      @Override
-      public String toString() {
-        return TimeLiteral.class.getSimpleName();
-      }
-
-      @Override
-      public LocalTime getValue() {
-        return value;
-      }
-    };
+  public static TimeLiteral time(LocalTime value) {
+    return new TimeLiteralImpl(value);
   }
 
-  public static StringLiteral string(final String value) {
-    return new StringLiteral() {
-      @Override
-      public String toString() {
-        return StringLiteral.class.getSimpleName();
-      }
-
-      @Override
-      public String getValue() {
-        return value;
-      }
-    };
+  public static StringLiteral string(String value) {
+    return new StringLiteralImpl(value);
   }
 
-  public static GuidLiteral guid(final Guid value) {
-    return new GuidLiteral() {
-      @Override
-      public String toString() {
-        return GuidLiteral.class.getSimpleName();
-      }
-
-      @Override
-      public Guid getValue() {
-        return value;
-      }
-    };
+  public static GuidLiteral guid(Guid value) {
+    return new GuidLiteralImpl(value);
   }
 
-  public static DecimalLiteral decimal(final BigDecimal value) {
-    return new DecimalLiteral() {
-      @Override
-      public String toString() {
-        return DecimalLiteral.class.getSimpleName();
-      }
-
-      @Override
-      public BigDecimal getValue() {
-        return value;
-      }
-    };
+  public static DecimalLiteral decimal(BigDecimal value) {
+    return new DecimalLiteralImpl(value);
   }
 
-  public static BinaryLiteral binary(final byte[] value) {
-    return new BinaryLiteral() {
-      @Override
-      public String toString() {
-        return BinaryLiteral.class.getSimpleName();
-      }
-
-      @Override
-      public byte[] getValue() {
-        return value;
-      }
-    };
+  public static BinaryLiteral binary(byte[] value) {
+    return new BinaryLiteralImpl(value);
   }
 
-  public static ByteLiteral byte_(final byte value) {
-    return new ByteLiteral() {
-      @Override
-      public String toString() {
-        return ByteLiteral.class.getSimpleName();
-      }
-
-      @Override
-      public byte getValue() {
-        return value;
-      }
-    };
+  public static ByteLiteral byte_(byte value) {
+    return new ByteLiteralImpl(value);
   }
 
-  public static SingleLiteral single(final float value) {
-    return new SingleLiteral() {
-      @Override
-      public String toString() {
-        return SingleLiteral.class.getSimpleName();
-      }
-
-      @Override
-      public float getValue() {
-        return value;
-      }
-    };
+  public static SingleLiteral single(float value) {
+    return new SingleLiteralImpl(value);
   }
 
-  public static DoubleLiteral double_(final double value) {
-    return new DoubleLiteral() {
-      @Override
-      public String toString() {
-        return DoubleLiteral.class.getSimpleName();
-      }
-
-      @Override
-      public double getValue() {
-        return value;
-      }
-    };
+  public static DoubleLiteral double_(double value) {
+    return new DoubleLiteralImpl(value);
   }
 
-  public static Int64Literal int64(final long value) {
-    return new Int64Literal() {
-      @Override
-      public String toString() {
-        return Int64Literal.class.getSimpleName();
-      }
-
-      @Override
-      public long getValue() {
-        return value;
-      }
-    };
+  public static Int64Literal int64(long value) {
+    return new Int64LiteralImpl(value);
   }
 
-  public static EntitySimpleProperty simpleProperty(final String propertyName) {
-    return new EntitySimpleProperty() {
-      @Override
-      public String toString() {
-        return EntitySimpleProperty.class.getSimpleName();
-      }
-
-      @Override
-      public String getPropertyName() {
-        return propertyName;
-      }
-    };
+  public static EntitySimpleProperty simpleProperty(String propertyName) {
+    return new EntitySimplePropertyImpl(propertyName);
   }
 
-  public static EqExpression eq(final CommonExpression lhs, final CommonExpression rhs) {
-    return new EqExpression() {
-      @Override
-      public String toString() {
-        return EqExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getRHS() {
-        return rhs;
-      }
-
-      @Override
-      public CommonExpression getLHS() {
-        return lhs;
-      }
-    };
+  public static EqExpression eq(CommonExpression lhs, CommonExpression rhs) {
+    return new EqExpressionImpl(lhs, rhs);
   }
 
-  public static NeExpression ne(final CommonExpression lhs, final CommonExpression rhs) {
-    return new NeExpression() {
-      @Override
-      public String toString() {
-        return NeExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getRHS() {
-        return rhs;
-      }
-
-      @Override
-      public CommonExpression getLHS() {
-        return lhs;
-      }
-    };
+  public static NeExpression ne(CommonExpression lhs, CommonExpression rhs) {
+    return new NeExpressionImpl(lhs, rhs);
   }
 
-  public static AndExpression and(final BoolCommonExpression lhs, final BoolCommonExpression rhs) {
-    return new AndExpression() {
-      @Override
-      public String toString() {
-        return AndExpression.class.getSimpleName();
-      }
-
-      @Override
-      public BoolCommonExpression getRHS() {
-        return rhs;
-      }
-
-      @Override
-      public BoolCommonExpression getLHS() {
-        return lhs;
-      }
-    };
+  public static AndExpression and(BoolCommonExpression lhs, BoolCommonExpression rhs) {
+    return new AndExpressionImpl(lhs, rhs);
   }
 
   public static OrExpression or(final BoolCommonExpression lhs, final BoolCommonExpression rhs) {
-    return new OrExpression() {
-      @Override
-      public String toString() {
-        return OrExpression.class.getSimpleName();
-      }
-
-      @Override
-      public BoolCommonExpression getRHS() {
-        return rhs;
-      }
-
-      @Override
-      public BoolCommonExpression getLHS() {
-        return lhs;
-      }
-    };
+    return new OrExpressionImpl(lhs, rhs);
   }
 
   public static LtExpression lt(final CommonExpression lhs, final CommonExpression rhs) {
-    return new LtExpression() {
-      @Override
-      public String toString() {
-        return LtExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getRHS() {
-        return rhs;
-      }
-
-      @Override
-      public CommonExpression getLHS() {
-        return lhs;
-      }
-    };
+    return new LtExpressionImpl(lhs, rhs);
   }
 
   public static GtExpression gt(final CommonExpression lhs, final CommonExpression rhs) {
-    return new GtExpression() {
-      @Override
-      public String toString() {
-        return GtExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getRHS() {
-        return rhs;
-      }
-
-      @Override
-      public CommonExpression getLHS() {
-        return lhs;
-      }
-    };
+    return new GtExpressionImpl(lhs, rhs);
   }
 
   public static LeExpression le(final CommonExpression lhs, final CommonExpression rhs) {
-    return new LeExpression() {
-      @Override
-      public String toString() {
-        return LeExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getRHS() {
-        return rhs;
-      }
-
-      @Override
-      public CommonExpression getLHS() {
-        return lhs;
-      }
-    };
+    return new LeExpressionImpl(lhs, rhs);
   }
 
   public static GeExpression ge(final CommonExpression lhs, final CommonExpression rhs) {
-    return new GeExpression() {
-      @Override
-      public String toString() {
-        return GeExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getRHS() {
-        return rhs;
-      }
-
-      @Override
-      public CommonExpression getLHS() {
-        return lhs;
-      }
-    };
+    return new GeExpressionImpl(lhs, rhs);
   }
 
   public static AddExpression add(final CommonExpression lhs, final CommonExpression rhs) {
-    return new AddExpression() {
-      @Override
-      public String toString() {
-        return AddExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getRHS() {
-        return rhs;
-      }
-
-      @Override
-      public CommonExpression getLHS() {
-        return lhs;
-      }
-    };
+    return new AddExpressionImpl(lhs, rhs);
   }
 
   public static SubExpression sub(final CommonExpression lhs, final CommonExpression rhs) {
-    return new SubExpression() {
-      @Override
-      public String toString() {
-        return SubExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getRHS() {
-        return rhs;
-      }
-
-      @Override
-      public CommonExpression getLHS() {
-        return lhs;
-      }
-    };
+    return new SubExpressionImpl(lhs, rhs);
   }
 
   public static MulExpression mul(final CommonExpression lhs, final CommonExpression rhs) {
-    return new MulExpression() {
-      @Override
-      public String toString() {
-        return MulExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getRHS() {
-        return rhs;
-      }
-
-      @Override
-      public CommonExpression getLHS() {
-        return lhs;
-      }
-    };
+    return new MulExpressionImpl(lhs, rhs);
   }
 
   public static DivExpression div(final CommonExpression lhs, final CommonExpression rhs) {
-    return new DivExpression() {
-      @Override
-      public String toString() {
-        return DivExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getRHS() {
-        return rhs;
-      }
-
-      @Override
-      public CommonExpression getLHS() {
-        return lhs;
-      }
-    };
+    return new DivExpressionImpl(lhs, rhs);
   }
 
   public static ModExpression mod(final CommonExpression lhs, final CommonExpression rhs) {
-    return new ModExpression() {
-      @Override
-      public String toString() {
-        return ModExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getRHS() {
-        return rhs;
-      }
-
-      @Override
-      public CommonExpression getLHS() {
-        return lhs;
-      }
-    };
+    return new ModExpressionImpl(lhs, rhs);
   }
 
   public static ParenExpression paren(final CommonExpression expression) {
-    return new ParenExpression() {
-      @Override
-      public String toString() {
-        return ParenExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getExpression() {
-        return expression;
-      }
-
-    };
+    return new ParenExpressionImpl(expression);
   }
 
   public static BoolParenExpression boolParen(final CommonExpression expression) {
-    return new BoolParenExpression() {
-      @Override
-      public String toString() {
-        return BoolParenExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getExpression() {
-        return expression;
-      }
-
-    };
+    return new BoolParenExpressionImpl(expression);
   }
 
   public static NotExpression not(final CommonExpression expression) {
-    return new NotExpression() {
-      @Override
-      public String toString() {
-        return NotExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getExpression() {
-        return expression;
-      }
-
-    };
+    return new NotExpressionImpl(expression);
   }
 
   public static NegateExpression negate(final CommonExpression expression) {
-    return new NegateExpression() {
-      @Override
-      public String toString() {
-        return NegateExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getExpression() {
-        return expression;
-      }
-
-    };
+    return new NegateExpressionImpl(expression);
   }
 
   public static CastExpression cast(String type) {
@@ -547,22 +164,7 @@ public class Expression {
   }
 
   public static CastExpression cast(final CommonExpression expression, final String type) {
-    return new CastExpression() {
-      @Override
-      public String toString() {
-        return CastExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getExpression() {
-        return expression;
-      }
-
-      @Override
-      public String getType() {
-        return type;
-      }
-    };
+    return new CastExpressionImpl(expression, type);
   }
 
   public static IsofExpression isof(String type) {
@@ -570,60 +172,15 @@ public class Expression {
   }
 
   public static IsofExpression isof(final CommonExpression expression, final String type) {
-    return new IsofExpression() {
-      @Override
-      public String toString() {
-        return IsofExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getExpression() {
-        return expression;
-      }
-
-      @Override
-      public String getType() {
-        return type;
-      }
-    };
+    return new IsofExpressionImpl(expression, type);
   }
 
   public static EndsWithMethodCallExpression endsWith(final CommonExpression target, final CommonExpression value) {
-    return new EndsWithMethodCallExpression() {
-      @Override
-      public String toString() {
-        return EndsWithMethodCallExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getTarget() {
-        return target;
-      }
-
-      @Override
-      public CommonExpression getValue() {
-        return value;
-      }
-    };
+    return new EndsWithMethodCallExpressionImpl(target, value);
   }
 
   public static StartsWithMethodCallExpression startsWith(final CommonExpression target, final CommonExpression value) {
-    return new StartsWithMethodCallExpression() {
-      @Override
-      public String toString() {
-        return StartsWithMethodCallExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getTarget() {
-        return target;
-      }
-
-      @Override
-      public CommonExpression getValue() {
-        return value;
-      }
-    };
+    return new StartsWithMethodCallExpressionImpl(target, value);
   }
 
   public static SubstringOfMethodCallExpression substringOf(CommonExpression value) {
@@ -631,107 +188,27 @@ public class Expression {
   }
 
   public static SubstringOfMethodCallExpression substringOf(final CommonExpression value, final CommonExpression target) {
-    return new SubstringOfMethodCallExpression() {
-      @Override
-      public String toString() {
-        return SubstringOfMethodCallExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getTarget() {
-        return target;
-      }
-
-      @Override
-      public CommonExpression getValue() {
-        return value;
-      }
-    };
+    return new SubstringOfMethodCallExpressionImpl(target, value);
   }
 
   public static IndexOfMethodCallExpression indexOf(final CommonExpression target, final CommonExpression value) {
-    return new IndexOfMethodCallExpression() {
-      @Override
-      public String toString() {
-        return IndexOfMethodCallExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getTarget() {
-        return target;
-      }
-
-      @Override
-      public CommonExpression getValue() {
-        return value;
-      }
-    };
+    return new IndexOfMethodCallExpressionImpl(target, value);
   }
 
   public static ReplaceMethodCallExpression replace(final CommonExpression target, final CommonExpression find, final CommonExpression replace) {
-    return new ReplaceMethodCallExpression() {
-      @Override
-      public String toString() {
-        return ReplaceMethodCallExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getFind() {
-        return find;
-      }
-
-      @Override
-      public CommonExpression getReplace() {
-        return replace;
-      }
-
-      @Override
-      public CommonExpression getTarget() {
-        return target;
-      }
-    };
+    return new ReplaceMethodCallExpressionImpl(target, find, replace);
   }
 
   public static ToLowerMethodCallExpression toLower(final CommonExpression target) {
-    return new ToLowerMethodCallExpression() {
-      @Override
-      public String toString() {
-        return ToLowerMethodCallExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getTarget() {
-        return target;
-      }
-    };
+    return new ToLowerMethodCallExpressionImpl(target);
   }
 
   public static ToUpperMethodCallExpression toUpper(final CommonExpression target) {
-    return new ToUpperMethodCallExpression() {
-      @Override
-      public String toString() {
-        return ToUpperMethodCallExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getTarget() {
-        return target;
-      }
-    };
+    return new ToUpperMethodCallExpressionImpl(target);
   }
 
   public static TrimMethodCallExpression trim(final CommonExpression target) {
-    return new TrimMethodCallExpression() {
-      @Override
-      public String toString() {
-        return TrimMethodCallExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getTarget() {
-        return target;
-      }
-    };
+    return new TrimMethodCallExpressionImpl(target);
   }
 
   public static SubstringMethodCallExpression substring(final CommonExpression target, final CommonExpression start) {
@@ -739,205 +216,55 @@ public class Expression {
   }
 
   public static SubstringMethodCallExpression substring(final CommonExpression target, final CommonExpression start, final CommonExpression length) {
-    return new SubstringMethodCallExpression() {
-      @Override
-      public String toString() {
-        return SubstringMethodCallExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getTarget() {
-        return target;
-      }
-
-      @Override
-      public CommonExpression getLength() {
-        return length;
-      }
-
-      @Override
-      public CommonExpression getStart() {
-        return start;
-      }
-    };
+    return new SubstringMethodCallExpressionImpl(target, start, length);
   }
 
   public static ConcatMethodCallExpression concat(final CommonExpression lhs, final CommonExpression rhs) {
-    return new ConcatMethodCallExpression() {
-      @Override
-      public String toString() {
-        return ConcatMethodCallExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getLHS() {
-        return lhs;
-      }
-
-      @Override
-      public CommonExpression getRHS() {
-        return rhs;
-      }
-    };
+    return new ConcatMethodCallExpressionImpl(lhs, rhs);
   }
 
   public static LengthMethodCallExpression length(final CommonExpression target) {
-    return new LengthMethodCallExpression() {
-      @Override
-      public String toString() {
-        return LengthMethodCallExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getTarget() {
-        return target;
-      }
-    };
+    return new LengthMethodCallExpressionImpl(target);
   }
 
   public static YearMethodCallExpression year(final CommonExpression target) {
-    return new YearMethodCallExpression() {
-      @Override
-      public String toString() {
-        return YearMethodCallExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getTarget() {
-        return target;
-      }
-    };
+    return new YearMethodCallExpressionImpl(target) ;
   }
 
   public static MonthMethodCallExpression month(final CommonExpression target) {
-    return new MonthMethodCallExpression() {
-      @Override
-      public String toString() {
-        return MonthMethodCallExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getTarget() {
-        return target;
-      }
-    };
+    return new MonthMethodCallExpressionImpl(target) ;
   }
 
   public static DayMethodCallExpression day(final CommonExpression target) {
-    return new DayMethodCallExpression() {
-      @Override
-      public String toString() {
-        return DayMethodCallExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getTarget() {
-        return target;
-      }
-    };
+    return new DayMethodCallExpressionImpl(target);
   }
 
   public static HourMethodCallExpression hour(final CommonExpression target) {
-    return new HourMethodCallExpression() {
-      @Override
-      public String toString() {
-        return HourMethodCallExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getTarget() {
-        return target;
-      }
-    };
+    return new HourMethodCallExpressionImpl(target);
   }
 
   public static MinuteMethodCallExpression minute(final CommonExpression target) {
-    return new MinuteMethodCallExpression() {
-      @Override
-      public String toString() {
-        return MinuteMethodCallExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getTarget() {
-        return target;
-      }
-    };
+    return new MinuteMethodCallExpressionImpl(target);
   }
 
   public static SecondMethodCallExpression second(final CommonExpression target) {
-    return new SecondMethodCallExpression() {
-      @Override
-      public String toString() {
-        return SecondMethodCallExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getTarget() {
-        return target;
-      }
-    };
+    return new SecondMethodCallExpressionImpl(target);
   }
 
   public static RoundMethodCallExpression round(final CommonExpression target) {
-    return new RoundMethodCallExpression() {
-      @Override
-      public String toString() {
-        return RoundMethodCallExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getTarget() {
-        return target;
-      }
-    };
+    return new RoundMethodCallExpressionImpl(target);
   }
 
   public static CeilingMethodCallExpression ceiling(final CommonExpression target) {
-    return new CeilingMethodCallExpression() {
-      @Override
-      public String toString() {
-        return CeilingMethodCallExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getTarget() {
-        return target;
-      }
-    };
+    return new CeilingMethodCallExpressionImpl(target);
   }
 
   public static FloorMethodCallExpression floor(final CommonExpression target) {
-    return new FloorMethodCallExpression() {
-      @Override
-      public String toString() {
-        return FloorMethodCallExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getTarget() {
-        return target;
-      }
-    };
+    return new FloorMethodCallExpressionImpl(target);
   }
 
-  public static OrderByExpression orderBy(final CommonExpression expression, final boolean isAscending) {
-    return new OrderByExpression() {
-      @Override
-      public String toString() {
-        return OrderByExpression.class.getSimpleName();
-      }
-
-      @Override
-      public CommonExpression getExpression() {
-        return expression;
-      }
-
-      @Override
-      public boolean isAscending() {
-        return isAscending;
-      }
-    };
+  public static OrderByExpression orderBy(final CommonExpression expression, final Direction direction) {
+    return new OrderByExpressionImpl(expression, direction);
   }
 
   public static LiteralExpression literal(Object value) {
@@ -1015,300 +342,838 @@ public class Expression {
     throw new UnsupportedOperationException("Implement " + expression);
   }
 
-  public static void visit(CommonExpression expr, ExpressionVisitor visitor) {
+  private abstract static class ExpressionImpl implements CommonExpression {
+    private final Class<?> interfaceType;
+    protected ExpressionImpl(Class<?> interfaceType) {
+      this.interfaceType = interfaceType;
+    }
+    @Override
+    public String toString() {
+      return interfaceType.getSimpleName();
+    }
+    @Override
+    public void visit(ExpressionVisitor visitor) {
+      visitThis(visitor);
+    }
+    abstract void visitThis(ExpressionVisitor visitor);
+  }
 
-    if (expr instanceof EqExpression) {
-      visitor.visit((EqExpression) expr);
+  private static class NullLiteralImpl extends ExpressionImpl implements NullLiteral {
+    static NullLiteral INSTANCE = new NullLiteralImpl();
+    private NullLiteralImpl() {
+      super(NullLiteral.class);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class BooleanLiteralImpl extends ExpressionImpl implements BooleanLiteral {
+    static BooleanLiteral TRUE = new BooleanLiteralImpl(true);
+    static BooleanLiteral FALSE = new BooleanLiteralImpl(false);
+    private final boolean value;
+    private BooleanLiteralImpl(boolean value) {
+      super(BooleanLiteral.class);
+      this.value = value;
+    }
+    @Override
+    public boolean getValue() {
+      return value;
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class IntegralLiteralImpl extends ExpressionImpl implements IntegralLiteral {
+    private final int value;
+    public IntegralLiteralImpl(int value) {
+      super(IntegralLiteral.class);
+      this.value = value;
+    }
+    @Override
+    public int getValue() {
+      return value;
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class ByteLiteralImpl extends ExpressionImpl implements ByteLiteral {
+    private final byte value;
+    public ByteLiteralImpl(byte value) {
+      super(ByteLiteral.class);
+      this.value = value;
+    }
+    @Override
+    public byte getValue() {
+      return value;
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class SingleLiteralImpl extends ExpressionImpl implements SingleLiteral {
+    private final float value;
+    public SingleLiteralImpl(float value) {
+      super(SingleLiteral.class);
+      this.value = value;
+    }
+    @Override
+    public float getValue() {
+      return value;
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class DoubleLiteralImpl extends ExpressionImpl implements DoubleLiteral {
+    private final double value;
+    public DoubleLiteralImpl(double value) {
+      super(DoubleLiteral.class);
+      this.value = value;
+    }
+    @Override
+    public double getValue() {
+      return value;
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class Int64LiteralImpl extends ExpressionImpl implements Int64Literal {
+    private final long value;
+    public Int64LiteralImpl(long value) {
+      super(Int64Literal.class);
+      this.value = value;
+    }
+    @Override
+    public long getValue() {
+      return value;
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private abstract static class ObjectLiteralImpl<T> extends ExpressionImpl {
+    private final T value;
+    public ObjectLiteralImpl(Class<?> interfaceType, T value) {
+      super(interfaceType);
+      this.value = value;
+    }
+    public T getValue() {
+      return value;
+    }
+  }
+
+  private static class DateTimeLiteralImpl extends ObjectLiteralImpl<LocalDateTime> implements DateTimeLiteral {
+    public DateTimeLiteralImpl(LocalDateTime value) {
+      super(DateTimeLiteral.class, value);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class DateTimeOffsetLiteralImpl extends ObjectLiteralImpl<DateTime> implements DateTimeOffsetLiteral {
+    public DateTimeOffsetLiteralImpl(DateTime value) {
+      super(DateTimeOffsetLiteral.class, value);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class TimeLiteralImpl extends ObjectLiteralImpl<LocalTime> implements TimeLiteral {
+    public TimeLiteralImpl(LocalTime value) {
+      super(TimeLiteral.class, value);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class StringLiteralImpl extends ObjectLiteralImpl<String> implements StringLiteral {
+    public StringLiteralImpl(String value) {
+      super(StringLiteral.class, value);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class GuidLiteralImpl extends ObjectLiteralImpl<Guid> implements GuidLiteral {
+    public GuidLiteralImpl(Guid value) {
+      super(GuidLiteral.class, value);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class DecimalLiteralImpl extends ObjectLiteralImpl<BigDecimal> implements DecimalLiteral {
+    public DecimalLiteralImpl(BigDecimal value) {
+      super(DecimalLiteral.class, value);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class BinaryLiteralImpl extends ObjectLiteralImpl<byte[]> implements BinaryLiteral {
+    public BinaryLiteralImpl(byte[] value) {
+      super(BinaryLiteral.class, value);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class EntitySimplePropertyImpl extends ExpressionImpl implements EntitySimpleProperty {
+    private final String propertyName;
+    protected EntitySimplePropertyImpl(String propertyName) {
+      super(EntitySimpleProperty.class);
+      this.propertyName = propertyName;
+    }
+    @Override
+    public String getPropertyName() {
+      return propertyName;
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private abstract static class BinaryCommonExpressionImpl extends ExpressionImpl implements BinaryCommonExpression {
+    private final CommonExpression lhs;
+    private final CommonExpression rhs;
+    public BinaryCommonExpressionImpl(Class<?> interfaceType, CommonExpression lhs, CommonExpression rhs) {
+      super(interfaceType);
+      this.lhs = lhs;
+      this.rhs = rhs;
+    }
+    @Override
+    public CommonExpression getLHS() {
+      return lhs;
+    }
+    @Override
+    public CommonExpression getRHS() {
+      return rhs;
+    }
+    @Override
+    public void visit(ExpressionVisitor visitor) {
+      visitThis(visitor);
       visitor.beforeDescend();
-      visit(((EqExpression) expr).getLHS(), visitor);
+      getLHS().visit(visitor);
       visitor.betweenDescend();
-      visit(((EqExpression) expr).getRHS(), visitor);
+      getRHS().visit(visitor);
       visitor.afterDescend();
-    } else if (expr instanceof AndExpression) {
-      visitor.visit((AndExpression) expr);
+    }
+  }
+
+  private static class EqExpressionImpl extends BinaryCommonExpressionImpl implements EqExpression {
+    public EqExpressionImpl(CommonExpression lhs, CommonExpression rhs) {
+      super(EqExpression.class, lhs, rhs);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class NeExpressionImpl extends BinaryCommonExpressionImpl implements NeExpression {
+    public NeExpressionImpl(CommonExpression lhs, CommonExpression rhs) {
+      super(NeExpression.class, lhs, rhs);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private abstract static class BinaryBoolCommonExpressionImpl extends BinaryCommonExpressionImpl implements BinaryBoolCommonExpression {
+    private final BoolCommonExpression lhs;
+    private final BoolCommonExpression rhs;
+    public BinaryBoolCommonExpressionImpl(Class<?> interfaceType, BoolCommonExpression lhs, BoolCommonExpression rhs) {
+      super(interfaceType, lhs, rhs);
+      this.lhs = lhs;
+      this.rhs = rhs;
+    }
+    @Override
+    public BoolCommonExpression getLHS() {
+      return lhs;
+    }
+    @Override
+    public BoolCommonExpression getRHS() {
+      return rhs;
+    }
+  }
+
+  private static class AndExpressionImpl extends BinaryBoolCommonExpressionImpl implements AndExpression {
+    public AndExpressionImpl(BoolCommonExpression lhs, BoolCommonExpression rhs) {
+      super(AndExpression.class, lhs, rhs);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class OrExpressionImpl extends BinaryBoolCommonExpressionImpl implements OrExpression {
+    public OrExpressionImpl(BoolCommonExpression lhs, BoolCommonExpression rhs) {
+      super(OrExpression.class, lhs, rhs);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class LtExpressionImpl extends BinaryCommonExpressionImpl implements LtExpression {
+    public LtExpressionImpl(CommonExpression lhs, CommonExpression rhs) {
+      super(LtExpression.class, lhs, rhs);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class GtExpressionImpl extends BinaryCommonExpressionImpl implements GtExpression {
+    public GtExpressionImpl(CommonExpression lhs, CommonExpression rhs) {
+      super(GtExpression.class, lhs, rhs);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class LeExpressionImpl extends BinaryCommonExpressionImpl implements LeExpression {
+    public LeExpressionImpl(CommonExpression lhs, CommonExpression rhs) {
+      super(LeExpression.class, lhs, rhs);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class GeExpressionImpl extends BinaryCommonExpressionImpl implements GeExpression {
+    public GeExpressionImpl(CommonExpression lhs, CommonExpression rhs) {
+      super(GeExpression.class, lhs, rhs);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class AddExpressionImpl extends BinaryCommonExpressionImpl implements AddExpression {
+    public AddExpressionImpl(CommonExpression lhs, CommonExpression rhs) {
+      super(AddExpression.class, lhs, rhs);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class SubExpressionImpl extends BinaryCommonExpressionImpl implements SubExpression {
+    public SubExpressionImpl(CommonExpression lhs, CommonExpression rhs) {
+      super(SubExpression.class, lhs, rhs);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class MulExpressionImpl extends BinaryCommonExpressionImpl implements MulExpression {
+    public MulExpressionImpl(CommonExpression lhs, CommonExpression rhs) {
+      super(MulExpression.class, lhs, rhs);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class DivExpressionImpl extends BinaryCommonExpressionImpl implements DivExpression {
+    public DivExpressionImpl(CommonExpression lhs, CommonExpression rhs) {
+      super(DivExpression.class, lhs, rhs);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class ModExpressionImpl extends BinaryCommonExpressionImpl implements ModExpression {
+    public ModExpressionImpl(CommonExpression lhs, CommonExpression rhs) {
+      super(ModExpression.class, lhs, rhs);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class ConcatMethodCallExpressionImpl extends BinaryCommonExpressionImpl implements ConcatMethodCallExpression {
+    public ConcatMethodCallExpressionImpl(CommonExpression lhs, CommonExpression rhs) {
+      super(ConcatMethodCallExpression.class, lhs, rhs);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private abstract static class OneExpressionImpl extends ExpressionImpl {
+    private final CommonExpression expression;
+    protected OneExpressionImpl(Class<?> interfaceType, CommonExpression expression) {
+      super(interfaceType);
+      this.expression = expression;
+    }
+    public CommonExpression getExpression() {
+      return expression;
+    }
+  }
+
+  private abstract static class UnaryExpressionImpl extends OneExpressionImpl {
+    protected UnaryExpressionImpl(Class<?> interfaceType, CommonExpression expression) {
+      super(interfaceType, expression);
+    }
+    @Override
+    public void visit(ExpressionVisitor visitor) {
+      visitThis(visitor);
       visitor.beforeDescend();
-      visit(((AndExpression) expr).getLHS(), visitor);
-      visitor.betweenDescend();
-      visit(((AndExpression) expr).getRHS(), visitor);
+      getExpression().visit(visitor);
       visitor.afterDescend();
-    } else if (expr instanceof OrExpression) {
-      visitor.visit((OrExpression) expr);
+    }
+  }
+
+  private static class ParenExpressionImpl extends UnaryExpressionImpl implements ParenExpression {
+    protected ParenExpressionImpl(CommonExpression expression) {
+      super(ParenExpression.class, expression);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class BoolParenExpressionImpl extends UnaryExpressionImpl implements BoolParenExpression {
+    protected BoolParenExpressionImpl(CommonExpression expression) {
+      super(BoolParenExpression.class, expression);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class NotExpressionImpl extends UnaryExpressionImpl implements NotExpression {
+    protected NotExpressionImpl(CommonExpression expression) {
+      super(NotExpression.class, expression);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class NegateExpressionImpl extends UnaryExpressionImpl implements NegateExpression {
+    protected NegateExpressionImpl(CommonExpression expression) {
+      super(NegateExpression.class, expression);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private abstract static class ExpressionAndTypeImpl extends OneExpressionImpl {
+    private final String type;
+    protected ExpressionAndTypeImpl(Class<?> interfaceType, CommonExpression expression, String type) {
+      super(interfaceType, expression);
+      this.type = type;
+    }
+    public String getType() {
+      return type;
+    }
+    @Override
+    public void visit(ExpressionVisitor visitor) {
+      visitThis(visitor);
       visitor.beforeDescend();
-      visit(((OrExpression) expr).getLHS(), visitor);
-      visitor.betweenDescend();
-      visit(((OrExpression) expr).getRHS(), visitor);
-      visitor.afterDescend();
-    } else if (expr instanceof NeExpression) {
-      visitor.visit((NeExpression) expr);
-      visitor.beforeDescend();
-      visit(((NeExpression) expr).getLHS(), visitor);
-      visitor.betweenDescend();
-      visit(((NeExpression) expr).getRHS(), visitor);
-      visitor.afterDescend();
-    } else if (expr instanceof LtExpression) {
-      visitor.visit((LtExpression) expr);
-      visitor.beforeDescend();
-      visit(((LtExpression) expr).getLHS(), visitor);
-      visitor.betweenDescend();
-      visit(((LtExpression) expr).getRHS(), visitor);
-      visitor.afterDescend();
-    } else if (expr instanceof GtExpression) {
-      visitor.visit((GtExpression) expr);
-      visitor.beforeDescend();
-      visit(((GtExpression) expr).getLHS(), visitor);
-      visitor.betweenDescend();
-      visit(((GtExpression) expr).getRHS(), visitor);
-      visitor.afterDescend();
-    } else if (expr instanceof LeExpression) {
-      visitor.visit((LeExpression) expr);
-      visitor.beforeDescend();
-      visit(((LeExpression) expr).getLHS(), visitor);
-      visitor.betweenDescend();
-      visit(((LeExpression) expr).getRHS(), visitor);
-      visitor.afterDescend();
-    } else if (expr instanceof GeExpression) {
-      visitor.visit((GeExpression) expr);
-      visitor.beforeDescend();
-      visit(((GeExpression) expr).getLHS(), visitor);
-      visitor.betweenDescend();
-      visit(((GeExpression) expr).getRHS(), visitor);
-      visitor.afterDescend();
-    } else if (expr instanceof AddExpression) {
-      visitor.visit((AddExpression) expr);
-      visitor.beforeDescend();
-      visit(((AddExpression) expr).getLHS(), visitor);
-      visitor.betweenDescend();
-      visit(((AddExpression) expr).getRHS(), visitor);
-      visitor.afterDescend();
-    } else if (expr instanceof SubExpression) {
-      visitor.visit((SubExpression) expr);
-      visitor.beforeDescend();
-      visit(((SubExpression) expr).getLHS(), visitor);
-      visitor.betweenDescend();
-      visit(((SubExpression) expr).getRHS(), visitor);
-      visitor.afterDescend();
-    } else if (expr instanceof DivExpression) {
-      visitor.visit((DivExpression) expr);
-      visitor.beforeDescend();
-      visit(((DivExpression) expr).getLHS(), visitor);
-      visitor.betweenDescend();
-      visit(((DivExpression) expr).getRHS(), visitor);
-      visitor.afterDescend();
-    } else if (expr instanceof MulExpression) {
-      visitor.visit((MulExpression) expr);
-      visitor.beforeDescend();
-      visit(((MulExpression) expr).getLHS(), visitor);
-      visitor.betweenDescend();
-      visit(((MulExpression) expr).getRHS(), visitor);
-      visitor.afterDescend();
-    } else if (expr instanceof ModExpression) {
-      visitor.visit((ModExpression) expr);
-      visitor.beforeDescend();
-      visit(((ModExpression) expr).getLHS(), visitor);
-      visitor.betweenDescend();
-      visit(((ModExpression) expr).getRHS(), visitor);
-      visitor.afterDescend();
-    } else if (expr instanceof StringLiteral) {
-      visitor.visit((StringLiteral) expr);
-    } else if (expr instanceof BooleanLiteral) {
-      visitor.visit((BooleanLiteral) expr);
-    } else if (expr instanceof DecimalLiteral) {
-      visitor.visit((DecimalLiteral) expr);
-    } else if (expr instanceof SingleLiteral) {
-      visitor.visit((SingleLiteral) expr);
-    } else if (expr instanceof BinaryLiteral) {
-      visitor.visit((BinaryLiteral) expr);
-    } else if (expr instanceof ByteLiteral) {
-      visitor.visit((ByteLiteral) expr);
-    } else if (expr instanceof DoubleLiteral) {
-      visitor.visit((DoubleLiteral) expr);
-    } else if (expr instanceof IntegralLiteral) {
-      visitor.visit((IntegralLiteral) expr);
-    } else if (expr instanceof Int64Literal) {
-      visitor.visit((Int64Literal) expr);
-    } else if (expr instanceof GuidLiteral) {
-      visitor.visit((GuidLiteral) expr);
-    } else if (expr instanceof DateTimeLiteral) {
-      visitor.visit((DateTimeLiteral) expr);
-    } else if (expr instanceof DateTimeOffsetLiteral) {
-      visitor.visit((DateTimeOffsetLiteral) expr);
-    } else if (expr instanceof TimeLiteral) {
-      visitor.visit((TimeLiteral) expr);
-    } else if (expr instanceof EntitySimpleProperty) {
-      visitor.visit((EntitySimpleProperty) expr);
-    } else if (expr instanceof NullLiteral) {
-      visitor.visit((NullLiteral) expr);
-    } else if (expr instanceof ParenExpression) {
-      visitor.visit((ParenExpression) expr);
-      visitor.beforeDescend();
-      visit(((ParenExpression) expr).getExpression(), visitor);
-      visitor.afterDescend();
-    } else if (expr instanceof BoolParenExpression) {
-      visitor.visit((BoolParenExpression) expr);
-      visitor.beforeDescend();
-      visit(((BoolParenExpression) expr).getExpression(), visitor);
-      visitor.afterDescend();
-    } else if (expr instanceof NotExpression) {
-      visitor.visit((NotExpression) expr);
-      visitor.beforeDescend();
-      visit(((NotExpression) expr).getExpression(), visitor);
-      visitor.afterDescend();
-    } else if (expr instanceof NegateExpression) {
-      visitor.visit((NegateExpression) expr);
-      visitor.beforeDescend();
-      visit(((NegateExpression) expr).getExpression(), visitor);
-      visitor.afterDescend();
-    } else if (expr instanceof CastExpression) {
-      visitor.visit((CastExpression) expr);
-      visitor.beforeDescend();
-      if (((CastExpression) expr).getExpression() != null) {
-        visit(((CastExpression) expr).getExpression(), visitor);
+      if (getExpression() != null) {
+        getExpression().visit(visitor);
         visitor.betweenDescend();
       }
-      visitor.visit(((CastExpression) expr).getType());
+      visitor.visit(getType());
       visitor.afterDescend();
-    } else if (expr instanceof IsofExpression) {
-      visitor.visit((IsofExpression) expr);
+    }
+  }
+
+  private static class CastExpressionImpl extends ExpressionAndTypeImpl implements CastExpression {
+    protected CastExpressionImpl(CommonExpression expression, String type) {
+      super(CastExpression.class, expression, type);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class IsofExpressionImpl extends ExpressionAndTypeImpl implements IsofExpression {
+    protected IsofExpressionImpl(CommonExpression expression, String type) {
+      super(IsofExpression.class, expression, type);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class EndsWithMethodCallExpressionImpl extends TargetValueExpressionImpl implements EndsWithMethodCallExpression {
+    protected EndsWithMethodCallExpressionImpl(CommonExpression target, CommonExpression value) {
+      super(EndsWithMethodCallExpression.class, target, value);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class StartsWithMethodCallExpressionImpl extends TargetValueExpressionImpl implements StartsWithMethodCallExpression {
+    protected StartsWithMethodCallExpressionImpl(CommonExpression target, CommonExpression value) {
+      super(StartsWithMethodCallExpression.class, target, value);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class SubstringOfMethodCallExpressionImpl extends TargetValueExpressionImpl implements SubstringOfMethodCallExpression {
+    protected SubstringOfMethodCallExpressionImpl(CommonExpression target, CommonExpression value) {
+      super(SubstringOfMethodCallExpression.class, target, value);
+    }
+    @Override
+    public void visit(ExpressionVisitor visitor) {
+      visitThis(visitor);
       visitor.beforeDescend();
-      if (((IsofExpression) expr).getExpression() != null) {
-        visit(((IsofExpression) expr).getExpression(), visitor);
+      getValue().visit(visitor);
+      if (getTarget() != null) {
         visitor.betweenDescend();
-      }
-      visitor.visit(((IsofExpression) expr).getType());
-      visitor.afterDescend();
-    } else if (expr instanceof EndsWithMethodCallExpression) {
-      visitor.visit((EndsWithMethodCallExpression) expr);
-      visitor.beforeDescend();
-      visit(((EndsWithMethodCallExpression) expr).getTarget(), visitor);
-      visitor.betweenDescend();
-      visit(((EndsWithMethodCallExpression) expr).getValue(), visitor);
-      visitor.afterDescend();
-    } else if (expr instanceof StartsWithMethodCallExpression) {
-      visitor.visit((StartsWithMethodCallExpression) expr);
-      visitor.beforeDescend();
-      visit(((StartsWithMethodCallExpression) expr).getTarget(), visitor);
-      visitor.betweenDescend();
-      visit(((StartsWithMethodCallExpression) expr).getValue(), visitor);
-      visitor.afterDescend();
-    } else if (expr instanceof SubstringOfMethodCallExpression) {
-      visitor.visit((SubstringOfMethodCallExpression) expr);
-      visitor.beforeDescend();
-      visit(((SubstringOfMethodCallExpression) expr).getValue(), visitor);
-      if (((SubstringOfMethodCallExpression) expr).getTarget() != null) {
-        visitor.betweenDescend();
-        visit(((SubstringOfMethodCallExpression) expr).getTarget(), visitor);
-      }
-      visitor.afterDescend();
-    } else if (expr instanceof IndexOfMethodCallExpression) {
-      visitor.visit((IndexOfMethodCallExpression) expr);
-      visitor.beforeDescend();
-      visit(((IndexOfMethodCallExpression) expr).getTarget(), visitor);
-      visitor.betweenDescend();
-      visit(((IndexOfMethodCallExpression) expr).getValue(), visitor);
-      visitor.afterDescend();
-    } else if (expr instanceof ReplaceMethodCallExpression) {
-      visitor.visit((ReplaceMethodCallExpression) expr);
-      visitor.beforeDescend();
-      visit(((ReplaceMethodCallExpression) expr).getTarget(), visitor);
-      visitor.betweenDescend();
-      visit(((ReplaceMethodCallExpression) expr).getFind(), visitor);
-      visitor.betweenDescend();
-      visit(((ReplaceMethodCallExpression) expr).getReplace(), visitor);
-      visitor.afterDescend();
-    } else if (expr instanceof ToLowerMethodCallExpression) {
-      visitor.visit((ToLowerMethodCallExpression) expr);
-      visitor.beforeDescend();
-      visit(((ToLowerMethodCallExpression) expr).getTarget(), visitor);
-      visitor.afterDescend();
-    } else if (expr instanceof ToUpperMethodCallExpression) {
-      visitor.visit((ToUpperMethodCallExpression) expr);
-      visitor.beforeDescend();
-      visit(((ToUpperMethodCallExpression) expr).getTarget(), visitor);
-      visitor.afterDescend();
-    } else if (expr instanceof TrimMethodCallExpression) {
-      visitor.visit((TrimMethodCallExpression) expr);
-      visitor.beforeDescend();
-      visit(((TrimMethodCallExpression) expr).getTarget(), visitor);
-      visitor.afterDescend();
-    } else if (expr instanceof SubstringMethodCallExpression) {
-      visitor.visit((SubstringMethodCallExpression) expr);
-      visitor.beforeDescend();
-      visit(((SubstringMethodCallExpression) expr).getTarget(), visitor);
-      visitor.betweenDescend();
-      visit(((SubstringMethodCallExpression) expr).getStart(), visitor);
-      if (((SubstringMethodCallExpression) expr).getLength() != null) {
-        visitor.betweenDescend();
-        visit(((SubstringMethodCallExpression) expr).getLength(), visitor);
+        getTarget().visit(visitor);
       }
       visitor.afterDescend();
-    } else if (expr instanceof ConcatMethodCallExpression) {
-      visitor.visit((ConcatMethodCallExpression) expr);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class ReplaceMethodCallExpressionImpl extends TargetExpressionImpl implements ReplaceMethodCallExpression {
+    private final CommonExpression find;
+    private final CommonExpression replace;
+    protected ReplaceMethodCallExpressionImpl(CommonExpression target, CommonExpression find, CommonExpression replace) {
+      super(ReplaceMethodCallExpression.class, target);
+      this.find = find;
+      this.replace = replace;
+    }
+    @Override
+    public CommonExpression getFind() {
+      return find;
+    }
+    @Override
+    public CommonExpression getReplace() {
+      return replace;
+    }
+    @Override
+    public void visit(ExpressionVisitor visitor) {
+      visitThis(visitor);
       visitor.beforeDescend();
-      visit(((ConcatMethodCallExpression) expr).getLHS(), visitor);
+      getTarget().visit(visitor);
       visitor.betweenDescend();
-      visit(((ConcatMethodCallExpression) expr).getRHS(), visitor);
-      visitor.afterDescend();
-    } else if (expr instanceof LengthMethodCallExpression) {
-      visitor.visit((LengthMethodCallExpression) expr);
-      visitor.beforeDescend();
-      visit(((LengthMethodCallExpression) expr).getTarget(), visitor);
-      visitor.afterDescend();
-    } else if (expr instanceof YearMethodCallExpression) {
-      visitor.visit((YearMethodCallExpression) expr);
-      visitor.beforeDescend();
-      visit(((YearMethodCallExpression) expr).getTarget(), visitor);
-      visitor.afterDescend();
-    } else if (expr instanceof MonthMethodCallExpression) {
-      visitor.visit((MonthMethodCallExpression) expr);
-      visitor.beforeDescend();
-      visit(((MonthMethodCallExpression) expr).getTarget(), visitor);
-      visitor.afterDescend();
-    } else if (expr instanceof DayMethodCallExpression) {
-      visitor.visit((DayMethodCallExpression) expr);
-      visitor.beforeDescend();
-      visit(((DayMethodCallExpression) expr).getTarget(), visitor);
-      visitor.afterDescend();
-    } else if (expr instanceof HourMethodCallExpression) {
-      visitor.visit((HourMethodCallExpression) expr);
-      visitor.beforeDescend();
-      visit(((HourMethodCallExpression) expr).getTarget(), visitor);
-      visitor.afterDescend();
-    } else if (expr instanceof MinuteMethodCallExpression) {
-      visitor.visit((MinuteMethodCallExpression) expr);
-      visitor.beforeDescend();
-      visit(((MinuteMethodCallExpression) expr).getTarget(), visitor);
-      visitor.afterDescend();
-    } else if (expr instanceof SecondMethodCallExpression) {
-      visitor.visit((SecondMethodCallExpression) expr);
-      visitor.beforeDescend();
-      visit(((SecondMethodCallExpression) expr).getTarget(), visitor);
-      visitor.afterDescend();
-    } else if (expr instanceof RoundMethodCallExpression) {
-      visitor.visit((RoundMethodCallExpression) expr);
-      visitor.beforeDescend();
-      visit(((RoundMethodCallExpression) expr).getTarget(), visitor);
-      visitor.afterDescend();
-    } else if (expr instanceof CeilingMethodCallExpression) {
-      visitor.visit((CeilingMethodCallExpression) expr);
-      visitor.beforeDescend();
-      visit(((CeilingMethodCallExpression) expr).getTarget(), visitor);
-      visitor.afterDescend();
-    } else if (expr instanceof FloorMethodCallExpression) {
-      visitor.visit((FloorMethodCallExpression) expr);
-      visitor.beforeDescend();
-      visit(((FloorMethodCallExpression) expr).getTarget(), visitor);
-      visitor.afterDescend();
-    } else if (expr instanceof OrderByExpression) {
-      visitor.visit((OrderByExpression) expr);
-      visitor.beforeDescend();
-      visit(((OrderByExpression) expr).getExpression(), visitor);
+      getFind().visit(visitor);
       visitor.betweenDescend();
-      visitor.visit(((OrderByExpression) expr).isAscending() ? "asc" : "desc");
+      getReplace().visit(visitor);
       visitor.afterDescend();
-    } else {
-      throw new RuntimeException("Unsupported: " + expr);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private abstract static class TargetValueExpressionImpl extends TargetExpressionImpl {
+    private final CommonExpression value;
+    protected TargetValueExpressionImpl(Class<?> interfaceType, CommonExpression target, CommonExpression value) {
+      super(interfaceType, target);
+      this.value = value;
+    }
+    public CommonExpression getValue() {
+      return value;
+    }
+    @Override
+    public void visit(ExpressionVisitor visitor) {
+      visitThis(visitor);
+      visitor.beforeDescend();
+      getTarget().visit(visitor);
+      visitor.betweenDescend();
+      getValue().visit(visitor);
+    }
+  }
+
+  private static class IndexOfMethodCallExpressionImpl extends TargetValueExpressionImpl implements IndexOfMethodCallExpression {
+    protected IndexOfMethodCallExpressionImpl(CommonExpression target, CommonExpression value) {
+      super(IndexOfMethodCallExpression.class, target, value);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private abstract static class TargetExpressionImpl extends ExpressionImpl {
+    private final CommonExpression target;
+    protected TargetExpressionImpl(Class<?> interfaceType, CommonExpression target) {
+      super(interfaceType);
+      this.target = target;
     }
 
+    public CommonExpression getTarget() {
+      return target;
+    }
+  }
+
+  private static class SubstringMethodCallExpressionImpl extends TargetExpressionImpl implements SubstringMethodCallExpression {
+    private final CommonExpression start;
+    private final CommonExpression length;
+    protected SubstringMethodCallExpressionImpl(CommonExpression target, CommonExpression start, CommonExpression length) {
+      super(SubstringMethodCallExpression.class, target);
+      this.start = start;
+      this.length = length;
+    }
+    @Override
+    public CommonExpression getStart() {
+      return start;
+    }
+    @Override
+    public CommonExpression getLength() {
+      return length;
+    }
+    @Override
+    public void visit(ExpressionVisitor visitor) {
+      visitThis(visitor);
+      visitor.beforeDescend();
+      getTarget().visit(visitor);
+      visitor.betweenDescend();
+      getStart().visit(visitor);
+      if (getLength() != null) {
+        visitor.betweenDescend();
+        getLength().visit(visitor);
+      }
+      visitor.afterDescend();
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private abstract static class OneTargetExpressionImpl extends OneExpressionImpl {
+    protected OneTargetExpressionImpl(Class<?> interfaceType, CommonExpression expression) {
+      super(interfaceType, expression);
+    }
+    public CommonExpression getTarget() {
+      return getExpression();
+    }
+    @Override
+    public void visit(ExpressionVisitor visitor) {
+      visitThis(visitor);
+      visitor.beforeDescend();
+      getTarget().visit(visitor);
+      visitor.afterDescend();
+    }
+  }
+
+  private static class LengthMethodCallExpressionImpl extends OneTargetExpressionImpl implements LengthMethodCallExpression {
+    protected LengthMethodCallExpressionImpl(CommonExpression expression) {
+      super(LengthMethodCallExpression.class, expression);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class FloorMethodCallExpressionImpl extends OneTargetExpressionImpl implements FloorMethodCallExpression {
+    protected FloorMethodCallExpressionImpl(CommonExpression expression) {
+      super(FloorMethodCallExpression.class, expression);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class CeilingMethodCallExpressionImpl extends OneTargetExpressionImpl implements CeilingMethodCallExpression {
+    protected CeilingMethodCallExpressionImpl(CommonExpression expression) {
+      super(CeilingMethodCallExpression.class, expression);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class RoundMethodCallExpressionImpl extends OneTargetExpressionImpl implements RoundMethodCallExpression {
+    protected RoundMethodCallExpressionImpl(CommonExpression expression) {
+      super(RoundMethodCallExpression.class, expression);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class SecondMethodCallExpressionImpl extends OneTargetExpressionImpl implements SecondMethodCallExpression {
+    protected SecondMethodCallExpressionImpl(CommonExpression expression) {
+      super(SecondMethodCallExpression.class, expression);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class MinuteMethodCallExpressionImpl extends OneTargetExpressionImpl implements MinuteMethodCallExpression {
+    protected MinuteMethodCallExpressionImpl(CommonExpression expression) {
+      super(MinuteMethodCallExpression.class, expression);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class HourMethodCallExpressionImpl extends OneTargetExpressionImpl implements HourMethodCallExpression {
+    protected HourMethodCallExpressionImpl(CommonExpression expression) {
+      super(HourMethodCallExpression.class, expression);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class DayMethodCallExpressionImpl extends OneTargetExpressionImpl implements DayMethodCallExpression {
+    protected DayMethodCallExpressionImpl(CommonExpression expression) {
+      super(DayMethodCallExpression.class, expression);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class YearMethodCallExpressionImpl extends OneTargetExpressionImpl implements YearMethodCallExpression {
+    protected YearMethodCallExpressionImpl(CommonExpression expression) {
+      super(YearMethodCallExpression.class, expression);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class MonthMethodCallExpressionImpl extends OneTargetExpressionImpl implements MonthMethodCallExpression {
+    protected MonthMethodCallExpressionImpl(CommonExpression expression) {
+      super(MonthMethodCallExpression.class, expression);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class ToLowerMethodCallExpressionImpl extends OneTargetExpressionImpl implements ToLowerMethodCallExpression {
+    protected ToLowerMethodCallExpressionImpl(CommonExpression expression) {
+      super(ToLowerMethodCallExpression.class, expression);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class ToUpperMethodCallExpressionImpl extends OneTargetExpressionImpl implements ToUpperMethodCallExpression {
+    protected ToUpperMethodCallExpressionImpl(CommonExpression expression) {
+      super(ToUpperMethodCallExpression.class, expression);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class TrimMethodCallExpressionImpl extends OneTargetExpressionImpl implements TrimMethodCallExpression {
+    protected TrimMethodCallExpressionImpl(CommonExpression expression) {
+      super(LengthMethodCallExpression.class, expression);
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class OrderByExpressionImpl extends OneExpressionImpl implements OrderByExpression {
+    private final Direction direction;
+    protected OrderByExpressionImpl(CommonExpression expression, Direction direction) {
+      super(OrderByExpression.class, expression);
+      this.direction = direction;
+    }
+    @Override
+    public Direction getDirection() {
+      return direction;
+    }
+    @Override
+    public void visit(ExpressionVisitor visitor) {
+      visitThis(visitor);
+      visitor.beforeDescend();
+      getExpression().visit(visitor);
+      visitor.betweenDescend();
+      visitor.visit(getDirection());
+      visitor.afterDescend();
+    }
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
   }
 
 }
