@@ -178,7 +178,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
         return rt;
       }
 
-      if (event.isStartElement() && event.asStartElement().getName().getNamespaceURI().equals(NS_DATASERVICES)) {
+      if (event.isStartElement() && event.asStartElement().getName().getNamespaceUri().equals(NS_DATASERVICES)) {
 
         String name = event.asStartElement().getName().getLocalPart();
         Attribute2 typeAttribute = event.asStartElement().getAttributeByName(M_TYPE);

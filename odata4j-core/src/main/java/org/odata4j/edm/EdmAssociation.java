@@ -13,9 +13,9 @@ public class EdmAssociation extends EdmItem {
   public EdmAssociation(String namespace, String alias, String name, EdmAssociationEnd end1, EdmAssociationEnd end2) {
     this(namespace, alias, name, end1, end2, null, null);
   }
-  
+
   public EdmAssociation(String namespace, String alias, String name, EdmAssociationEnd end1, EdmAssociationEnd end2,
-          EdmDocumentation doc, List<EdmAnnotation> annots) {
+      EdmDocumentation doc, List<EdmAnnotation<?>> annots) {
     super(doc, annots);
     this.namespace = namespace;
     this.alias = alias;

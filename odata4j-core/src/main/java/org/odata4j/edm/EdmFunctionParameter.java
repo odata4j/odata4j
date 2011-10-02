@@ -15,11 +15,12 @@ public class EdmFunctionParameter extends EdmItem {
   public EdmFunctionParameter(String name, EdmType type, Mode mode) {
     this(name, type, mode, null, null);
   }
-  
-  public EdmFunctionParameter(String name, EdmType type, Mode mode, EdmDocumentation doc, List<EdmAnnotation> annots) {
-    super(null, null); // TODO
+
+  public EdmFunctionParameter(String name, EdmType type, Mode mode, EdmDocumentation doc, List<EdmAnnotation<?>> annots) {
+    super(null, null);
     this.name = name;
     this.type = type;
     this.mode = mode;
   }
+
 }

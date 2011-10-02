@@ -13,16 +13,17 @@ import org.core4j.Func;
 import org.core4j.Func1;
 import org.core4j.Funcs;
 import org.core4j.ThrowingFunc;
-import org.odata4j.core.IAnnotation;
+import org.odata4j.core.Annotation;
 import org.odata4j.core.Namespace;
+import org.odata4j.core.OCollection;
 import org.odata4j.core.OCollections;
+import org.odata4j.core.OComplexObject;
 import org.odata4j.core.OComplexObjects;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
 import org.odata4j.core.OSimpleObjects;
 import org.odata4j.edm.EdmAnnotation;
 import org.odata4j.edm.EdmAnnotationAttribute;
-import org.odata4j.edm.EdmAnnotationElement;
 import org.odata4j.edm.EdmComplexType;
 import org.odata4j.edm.EdmDocumentation;
 import org.odata4j.edm.EdmEntitySet;
@@ -31,7 +32,7 @@ import org.odata4j.edm.EdmItem;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.edm.EdmStructuralType;
-import org.odata4j.edm.IEdmDecorator;
+import org.odata4j.edm.EdmDecorator;
 import org.odata4j.producer.Path;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.resources.ODataProducerProvider;
@@ -148,25 +149,25 @@ public class InMemoryProducerExample {
       return fundType;
     }
   }
-  
-  public static class MyEdmDecorator implements IEdmDecorator {
+
+  public static class MyEdmDecorator implements EdmDecorator {
 
     public static final String namespace = "http://tempuri.org";
     public static final String prefix = "inmem";
-    
+
+    private final List<Namespace> namespaces = new ArrayList<Namespace>(1);
+    private final EdmComplexType schemaInfoType;
+
     public MyEdmDecorator() {
       namespaces.add(new Namespace(namespace, prefix));
       this.schemaInfoType = createSchemaInfoType();
     }
-    private final List<Namespace> namespaces = new ArrayList<Namespace>(1);
-    
+
     @Override
     public List<Namespace> getNamespaces() {
       return namespaces;
     }
 
-    private final EdmComplexType schemaInfoType;
-    
     @Override
     public EdmDocumentation getDocumentationForSchema(String namespace, String typeName) {
       return new EdmDocumentation("InMemoryProducerExample", "This schema exposes a few example types to demonstrate the InMemoryProducer");
@@ -188,23 +189,26 @@ public class InMemoryProducerExample {
         props.add(ep);
 
         return new EdmComplexType(namespace, "SchemaInfo", props);
-      
+
     }
 
     @Override
-    public List<EdmAnnotation> getAnnotationsForSchema(String namespace, String typeName) {
-      List<EdmAnnotation> annots = new ArrayList<EdmAnnotation>();
+    public List<EdmAnnotation<?>> getAnnotationsForSchema(String namespace, String typeName) {
+      List<EdmAnnotation<?>> annots = new ArrayList<EdmAnnotation<?>>();
       annots.add(new EdmAnnotationAttribute(namespace, prefix, "Version", "1.0 early experience pre-alpha"));
-      
+
       List<OProperty<?>> p = new ArrayList<OProperty<?>>();
       p.add(OProperties.string("Author", "Xavier S. Dumont"));
       p.add(OProperties.string("SeeAlso", "InMemoryProducerExample.java"));
-      
-      annots.add(new EdmAnnotationElement(namespace, prefix, "SchemaInfo", OComplexObjects.create(schemaInfoType, p)));
 
-      annots.add(new EdmAnnotationElement(namespace, prefix, "Tags", 
-              OCollections.newBuilder(EdmSimpleType.STRING).add(OSimpleObjects.create("tag1", EdmSimpleType.STRING))
-              .add(OSimpleObjects.create("tag2", EdmSimpleType.STRING)).build()));
+      annots.add(EdmAnnotation.element(namespace, prefix, "SchemaInfo", OComplexObject.class,
+          OComplexObjects.create(schemaInfoType, p)));
+
+      annots.add(EdmAnnotation.element(namespace, prefix, "Tags", OCollection.class,
+          OCollections.newBuilder(EdmSimpleType.STRING)
+              .add(OSimpleObjects.create("tag1", EdmSimpleType.STRING))
+              .add(OSimpleObjects.create("tag2", EdmSimpleType.STRING))
+              .build()));
       return annots;
     }
 
@@ -214,12 +218,12 @@ public class InMemoryProducerExample {
     }
 
     @Override
-    public List<EdmAnnotation> getAnnotationsForEntityType(String namespace, String typeName) {
+    public List<EdmAnnotation<?>> getAnnotationsForEntityType(String namespace, String typeName) {
       return null;
     }
 
     @Override
-    public Object resolveStructuralTypeProperty(EdmStructuralType st, Path path) throws Exception {
+    public Object resolveStructuralTypeProperty(EdmStructuralType st, Path path) throws IllegalArgumentException {
       return null;
     }
 
@@ -229,17 +233,17 @@ public class InMemoryProducerExample {
     }
 
     @Override
-    public List<EdmAnnotation> getAnnotationsForProperty(String namespace, String typename, String propName) {
+    public List<EdmAnnotation<?>> getAnnotationsForProperty(String namespace, String typename, String propName) {
       return null;
     }
 
     @Override
-    public Object resolvePropertyProperty(EdmProperty st, Path path) throws Exception {
+    public Object resolvePropertyProperty(EdmProperty st, Path path) throws IllegalArgumentException {
       return null;
     }
 
     @Override
-    public Object getAnnotationValueOverride(EdmItem item, IAnnotation annot, boolean flatten, Locale locale, Map<String, String> options) {
+    public Object getAnnotationValueOverride(EdmItem item, Annotation<?> annot, boolean flatten, Locale locale, Map<String, String> options) {
       return null;
     }
 
@@ -247,6 +251,6 @@ public class InMemoryProducerExample {
     public void decorateEntity(EdmEntitySet entitySet, EdmItem item, EdmItem originalQueryItem, List<OProperty<?>> props, boolean flatten, Locale locale, Map<String, String> options) {
       // no-op
     }
-    
+
   }
 }

@@ -31,8 +31,8 @@ public class StaxXMLFactoryProvider2 extends XMLFactoryProvider2 {
 
   public static QName toQName(QName2 qname) {
     if (qname.getPrefix() == null)
-      return new QName(qname.getNamespaceURI(), qname.getLocalPart());
-    return new QName(qname.getNamespaceURI(), qname.getLocalPart(), qname.getPrefix());
+      return new QName(qname.getNamespaceUri(), qname.getLocalPart());
+    return new QName(qname.getNamespaceUri(), qname.getLocalPart(), qname.getPrefix());
   }
 
   @Override

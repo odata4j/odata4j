@@ -4,20 +4,18 @@
  */
 package org.odata4j.producer;
 
-import org.odata4j.producer.PathHelper;
-import org.odata4j.expression.EntitySimpleProperty;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Collections;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import org.odata4j.expression.EntitySimpleProperty;
 
-/**
- *
- * @author rozan04
- */
 public class PathHelperTest {
 
   public PathHelperTest() {
@@ -178,7 +176,7 @@ public class PathHelperTest {
     PathHelper h = new PathHelper(
             "Name,Alias", // $select
             "EntityTypes",
-            "SubTypes/Namespace,SubTypes/Name", // $selectR 
+            "SubTypes/Namespace,SubTypes/Name", // $selectR
             "SubTypes/0,Properties/1");
 
     // Path: "" type: Schema
@@ -227,7 +225,7 @@ public class PathHelperTest {
     PathHelper h = new PathHelper(
             "Name,Alias,EntityTypes/SubTypes/Prop1", // $select
             "EntityTypes", // $expand
-            "SubTypes/Namespace,SubTypes/Name", // $selectR 
+            "SubTypes/Namespace,SubTypes/Name", // $selectR
             "SubTypes/0,Properties/1");
 
     h.navigate("EntityTypes");

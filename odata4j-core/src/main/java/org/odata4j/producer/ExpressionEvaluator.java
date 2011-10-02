@@ -4,8 +4,8 @@ import java.math.BigDecimal;
 import java.util.Set;
 
 import org.core4j.Enumerable;
-import org.odata4j.edm.EdmType;
 import org.odata4j.edm.EdmSimpleType;
+import org.odata4j.edm.EdmType;
 import org.odata4j.expression.AddExpression;
 import org.odata4j.expression.AndExpression;
 import org.odata4j.expression.BinaryCommonExpression;
@@ -34,26 +34,24 @@ import org.odata4j.expression.SubstringOfMethodCallExpression;
 import org.odata4j.internal.TypeConverter;
 
 /**
- * Evaluate an $filter expression.  The VariableResolver you attach to the 
+ * Evaluate an $filter expression.  The VariableResolver you attach to the
  * evaluator determines the context for evaluation.  The VariableResolver must
  * supply actual values for all EntitySimpleProperties referenced in the $filter.
- * 
+ *
  * Note: this used to be class InMemoryEvaluation, I just factored out/de-coupled the
  * VariableResolver to make it reusable.
- * 
- * @author Tony Rozga
  */
 public class ExpressionEvaluator {
 
   public static interface VariableResolver {
-
     Object resolveVariable(String path);
   }
+
+  private VariableResolver resolver = null;
 
   public ExpressionEvaluator(VariableResolver resolver) {
     this.resolver = resolver;
   }
-  private VariableResolver resolver = null;
 
   public Object evaluate(CommonExpression expression) {
 

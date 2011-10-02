@@ -3,8 +3,6 @@ package org.odata4j.producer.edm;
 /**
  * A bunch of constants for defining the meta EDM.  This form is nice for ide code completion...
  * including the short class name 'Edm' :)...
- * 
- * @author Tony Rozga
  */
 public class Edm {
 

@@ -1,8 +1,5 @@
 package org.odata4j.producer.edm;
 
-import org.odata4j.producer.PathHelper;
-import org.odata4j.producer.Path;
-import org.odata4j.producer.ExpressionEvaluator.VariableResolver;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,7 +8,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import org.odata4j.core.IAnnotation;
+import java.util.Stack;
+
+import org.core4j.Enumerable;
+import org.odata4j.core.Annotation;
 import org.odata4j.core.OCollection;
 import org.odata4j.core.OCollection.Builder;
 import org.odata4j.core.OCollections;
@@ -30,6 +30,7 @@ import org.odata4j.edm.EdmAnnotationAttribute;
 import org.odata4j.edm.EdmCollectionType;
 import org.odata4j.edm.EdmComplexType;
 import org.odata4j.edm.EdmDataServices;
+import org.odata4j.edm.EdmDecorator;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmEntityType;
 import org.odata4j.edm.EdmFunctionImport;
@@ -39,34 +40,35 @@ import org.odata4j.edm.EdmProperty.CollectionKind;
 import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmStructuralType;
 import org.odata4j.edm.EdmType;
-import org.odata4j.edm.IEdmDecorator;
 import org.odata4j.format.xml.EdmxFormatWriter;
 import org.odata4j.producer.BaseResponse;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityIdResponse;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.ExpressionEvaluator;
+import org.odata4j.producer.ExpressionEvaluator.VariableResolver;
 import org.odata4j.producer.ODataProducer;
+import org.odata4j.producer.Path;
+import org.odata4j.producer.PathHelper;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.Responses;
+import org.odata4j.producer.exceptions.NotFoundException;
 import org.odata4j.producer.exceptions.NotImplementedException;
 
 /**
  * a producer for $metadata.
- * 
+ *
  * This is somewhat brute-forceish.  There is maybe a world where an enhanced
- * InMemoryProducer and the org.odata4j.edm pojos together are sufficient to 
+ * InMemoryProducer and the org.odata4j.edm pojos together are sufficient to
  * implement much of this...I'm not sure.
- * 
- * @author Tony Rozga
  */
 public class MetadataProducer implements ODataProducer {
 
   /**
-   * return this from your decorators annotation override method and the 
+   * return this from your decorators annotation override method and the
    * annotation will be removed.
    */
-  public static final Object RemoveAnnotationOverride = new Object();
+  public static final Object REMOVE_ANNOTATION_OVERRIDE = new Object();
 
   public static class CustomOptions {
 
@@ -85,19 +87,19 @@ public class MetadataProducer implements ODataProducer {
   /**
    * create
    * @param dataProducer - the data producer who defines the $metadata we will expose
-   * @param edmDecorator - an optional decorator.  the decorator provides 
+   * @param edmDecorator - an optional decorator.  the decorator provides
    *                       context for evaluating $filter expressions, custom
-   *                       runtime overrides for annotation values and overrides 
+   *                       runtime overrides for annotation values and overrides
    *                       for other metadata properties
    */
-  public MetadataProducer(ODataProducer dataProducer, IEdmDecorator edmDecorator) {
+  public MetadataProducer(ODataProducer dataProducer, EdmDecorator edmDecorator) {
     this.dataProducer = dataProducer;
     this.decorator = edmDecorator;
     edm = new MetadataEdmGenerator(edmDecorator).generateEdm();
   }
   private ODataProducer dataProducer = null;
   private EdmDataServices edm = null;
-  private IEdmDecorator decorator = null;
+  private EdmDecorator decorator = null;
 
   /**
    * Get the EDM model that this producer exposes.
@@ -109,7 +111,7 @@ public class MetadataProducer implements ODataProducer {
 
   /**
    * Get the EDM that defines the queryable metadata, the meta-EDM
-   * @return 
+   * @return
    */
   @Override
   public EdmDataServices getMetadata() {
@@ -196,7 +198,6 @@ public class MetadataProducer implements ODataProducer {
     }
 
     private Object resolveStructuralTypeVariable(EdmStructuralType et, Path path) {
-      Object result = null;
       if (path.getNComponents() == 1) {
         String name = path.getLastComponent();
         if (Edm.EntityType.Abstract.equals(name)) {
@@ -221,11 +222,9 @@ public class MetadataProducer implements ODataProducer {
         // TODO: superclass maybe
         throw new RuntimeException("EdmEntityType navigation property " + navProp + " not found or not supported");
       }
-      //return result;
     }
 
     private Object resolvePropertyVariable(EdmProperty prop, Path path) {
-      Object result = null;
       if (path.getNComponents() == 1) {
         String name = path.getLastComponent();
         if (Edm.Property.DefaultValue.equals(name)) {
@@ -250,15 +249,14 @@ public class MetadataProducer implements ODataProducer {
           return null == prop.precision ? null : prop.precision.toString();
         } else if (Edm.Property.Scale.equals(name)) {
           return null == prop.scale ? null : prop.scale.toString();
-        } else {
+        } else if (null != decorator) {
           try {
-            if (null != decorator) {
-              return decorator.resolvePropertyProperty(prop, path);
-            }
-          } catch (Exception ex) {
-          } finally {
-            throw new RuntimeException("EdmProperty property " + name + " not found");
+            return decorator.resolvePropertyProperty(prop, path);
+          } catch (IllegalArgumentException e) {
+            throw new RuntimeException("EdmProperty property path " + path + " not found");
           }
+        } else {
+          throw new RuntimeException("EdmProperty property " + name + " not found");
         }
       } else {
         String navProp = path.getFirstComponent();
@@ -266,9 +264,8 @@ public class MetadataProducer implements ODataProducer {
         // TODO: class maybe
         throw new RuntimeException("EdmProperty navigation property " + navProp + " not found or not supported");
       }
-      //return result;
     }
-    private Stak<EdmItem> resolverContext = new Stak<EdmItem>();
+    private Stack<EdmItem> resolverContext = new Stack<EdmItem>();
 
     private void pushResolver(EdmItem item) {
       resolverContext.push(item);
@@ -282,46 +279,6 @@ public class MetadataProducer implements ODataProducer {
       resolverContext.pop();
     }
 
-    private class Stak<T> implements Iterable<T> {
-      // sugar!
-
-      public Stak() {
-      }
-
-      public int size() {
-        return l.size();
-      }
-
-      public boolean isEmpty() {
-        return l.isEmpty();
-      }
-
-      public T pop() {
-        return l.remove(l.size() - 1);
-      }
-
-      public T peek() {
-        return l.get(l.size() - 1);
-      }
-
-      public void push(T value) {
-        l.add(value);
-      }
-
-      public T get(int i) {
-        return l.get(i);
-      }
-
-      public void clear() {
-        l.clear();
-      }
-      private List<T> l = new ArrayList<T>();
-
-      @Override
-      public Iterator<T> iterator() {
-        return l.iterator();
-      }
-    }
   }
 
   @Override
@@ -341,8 +298,7 @@ public class MetadataProducer implements ODataProducer {
     } else if (entitySetName.equals(Edm.EntitySets.Properties)) {
       getProperties(c);
     } else {
-      // TODO: how does one return a 404?
-      throw new RuntimeException("EntitySet " + entitySetName + " not found");
+      throw new NotFoundException("EntitySet " + entitySetName + " not found");
     }
 
     return Responses.entities(c.entities, c.entitySet,
@@ -421,7 +377,7 @@ public class MetadataProducer implements ODataProducer {
     addAnnotationProperties(c, schema, props);
 
     return OEntities.create(c.entitySet,
-            OEntityKey.create(Edm.Schema.Namespace, schema.namespace), // OEntityKey entityKey, 
+            OEntityKey.create(Edm.Schema.Namespace, schema.namespace), // OEntityKey entityKey,
             props,
             links);
   }
@@ -529,7 +485,7 @@ public class MetadataProducer implements ODataProducer {
     // --------------- SubTypes-------------------------------------
     if (c.pathHelper.isSelected(Edm.StructuralType.NavProps.SubTypes)) {
       if (c.pathHelper.isExpanded(Edm.StructuralType.NavProps.SubTypes)) {
-        List<EdmStructuralType> stypes = getSubTypes(st);
+        List<EdmStructuralType> stypes = Enumerable.create(dataProducer.getMetadata().getSubTypes(st)).toList();
         List<OEntity> subtypes = new ArrayList<OEntity>(stypes.size());
         // these are not root types...
         EdmEntitySet baseSet = c.entitySet;
@@ -556,7 +512,7 @@ public class MetadataProducer implements ODataProducer {
     addAnnotationProperties(c, st, props);
 
     return OEntities.create(c.entitySet,
-            OEntityKey.create(Edm.StructuralType.Namespace, st.namespace, Edm.StructuralType.Name, st.name), // OEntityKey entityKey, 
+            OEntityKey.create(Edm.StructuralType.Namespace, st.namespace, Edm.StructuralType.Name, st.name), // OEntityKey entityKey,
             props,
             links);
   }
@@ -583,15 +539,15 @@ public class MetadataProducer implements ODataProducer {
       if (null != item.getDocumentation().getLongDescription()) {
         docProps.add(OProperties.string(Edm.Documentation.LongDescription, item.getDocumentation().getLongDescription()));
       }
-      OComplexObject doc = OComplexObjects.create(docType, docProps);
+      // OComplexObject doc = OComplexObjects.create(docType, docProps);
       props.add(OProperties.complex(Edm.Documentation.class.getSimpleName(), docType, docProps));
     }
   }
 
   private void addAnnotationProperties(Context c, EdmItem item, List<OProperty<?>> props) {
     if (null != item.getAnnotations()) {
-      for (IAnnotation a : item.getAnnotations()) {
-        if (null != a.getValue()) {
+      for (Annotation<?> a : item.getAnnotations()) {
+        if (a.getValue() != null) {
           /*
            * property naming: so...annotations live in a namespace.  JSON doesn't have the concept of namespaces,
            * I think <prefix>_<propname> makes the most sense.  We *could* use <prefix>:<propname> if we quoted the
@@ -606,15 +562,15 @@ public class MetadataProducer implements ODataProducer {
             Object override = null != this.decorator ? this.decorator.getAnnotationValueOverride(item, a, c.flatten, c.locale,
                     null == c.queryInfo ? null : c.queryInfo.customOptions) : null;
 
-            if (override != MetadataProducer.RemoveAnnotationOverride) {
+            if (override != MetadataProducer.REMOVE_ANNOTATION_OVERRIDE) {
               Object ov = null == override ? a.getValue() : override;
               if (a instanceof EdmAnnotationAttribute) {
                 props.add(OProperties.string(propName, ov.toString()));
               } else if (ov instanceof OComplexObject) {
-                OComplexObject co = (OComplexObject)ov;
+                OComplexObject co = (OComplexObject) ov;
                 props.add(OProperties.complex(propName, (EdmComplexType) co.getType(), co.getProperties()));
               } else if (ov instanceof OCollection) {
-                OCollection co = (OCollection)ov;
+                OCollection<?> co = (OCollection<?>) ov;
                 props.add(OProperties.collection(propName, new EdmCollectionType("", co.getType()), co));
               }
             }
@@ -624,19 +580,7 @@ public class MetadataProducer implements ODataProducer {
     }
   }
 
-  private List<EdmStructuralType> getSubTypes(EdmStructuralType t) {
-    List<EdmStructuralType> l = new LinkedList<EdmStructuralType>();
-    EdmDataServices ds = dataProducer.getMetadata();
-    // EdmDataServices api weakness..
-    Iterable candidates = t instanceof EdmEntityType ? ds.getEntityTypes() : ds.getComplexTypes();
-    for (Object eto : candidates) {
-      EdmStructuralType st = (EdmStructuralType) eto;
-      if ((!t.equals(st)) && t.equals(st.getBaseType())) {
-        l.add(st);
-      }
-    }
-    return l;
-  }
+
 
   private OEntity getProperty(EdmStructuralType queryType, EdmStructuralType et, EdmProperty p, Context c) {
     List<OProperty<?>> props = new ArrayList<OProperty<?>>();
@@ -756,7 +700,7 @@ public class MetadataProducer implements ODataProducer {
     }
 
     EdmDataServices ds = dataProducer.getMetadata();
-    Iterator candidates = (st instanceof EdmComplexType) ? ds.getComplexTypes().iterator() : ds.getEntityTypes().iterator();
+    Iterator<?> candidates = (st instanceof EdmComplexType) ? ds.getComplexTypes().iterator() : ds.getEntityTypes().iterator();
     // down the subtypes hole...
     while (candidates.hasNext()) {
       EdmStructuralType item = (EdmStructuralType) candidates.next();
@@ -779,13 +723,11 @@ public class MetadataProducer implements ODataProducer {
             || entitySetName.equals(Edm.EntitySets.RootComplexTypes)) {
       findStructuralType(c, false, entitySetName.equals(Edm.EntitySets.RootComplexTypes));
     } else {
-      // TODO: how does one return a 404?
-      throw new RuntimeException("EntitySet " + entitySetName + " not found");
+      throw new NotFoundException("EntitySet " + entitySetName + " not found");
     }
 
-    // TODO: how does one return a 404?
     if (c.entities.isEmpty()) {
-      throw new RuntimeException(entitySetName + entityKey.toKeyString() + " not found");
+      throw new NotFoundException(entitySetName + entityKey.toKeyString() + " not found");
     }
 
     return Responses.entity(c.entities.get(0));
@@ -803,7 +745,7 @@ public class MetadataProducer implements ODataProducer {
 
   protected void findStructuralType(Context c, boolean isEntity, boolean root) {
     EdmDataServices ds = dataProducer.getMetadata();
-    Iterable candidates = isEntity ? ds.getEntityTypes() : ds.getComplexTypes();
+    Iterable<?> candidates = isEntity ? ds.getEntityTypes() : ds.getComplexTypes();
     for (Object eto : candidates) {
       EdmStructuralType st = (EdmStructuralType) eto;
 

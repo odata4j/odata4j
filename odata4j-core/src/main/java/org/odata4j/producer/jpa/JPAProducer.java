@@ -52,7 +52,7 @@ import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmPropertyBase;
 import org.odata4j.edm.EdmSimpleType;
-import org.odata4j.edm.IEdmDecorator;
+import org.odata4j.edm.EdmDecorator;
 import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.OrderByExpression;
@@ -82,7 +82,7 @@ public class JPAProducer implements ODataProducer {
       EntityManagerFactory emf,
       EdmDataServices metadata,
       int maxResults,
-      IEdmDecorator metadataDecorator) {
+      EdmDecorator metadataDecorator) {
 
     this.emf = emf;
     this.maxResults = maxResults;

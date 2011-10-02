@@ -10,10 +10,10 @@ public class EdmAssociationSetEnd extends EdmItem {
   public EdmAssociationSetEnd(EdmAssociationEnd role, EdmEntitySet entitySet) {
     this(role, entitySet, null, null);
   }
-    
+
   public EdmAssociationSetEnd(EdmAssociationEnd role, EdmEntitySet entitySet,
-          EdmDocumentation doc, List<EdmAnnotation> annots) {
-    super(null, null); // TODO
+      EdmDocumentation doc, List<EdmAnnotation<?>> annots) {
+    super(null, null);
     this.role = role;
     this.entitySet = entitySet;
   }

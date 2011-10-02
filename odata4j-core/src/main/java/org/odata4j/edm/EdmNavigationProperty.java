@@ -11,7 +11,7 @@ public class EdmNavigationProperty extends EdmPropertyBase {
       EdmAssociation relationship,
       EdmAssociationEnd fromRole,
       EdmAssociationEnd toRole) {
-    super(name);
+    super(name, null, null);
     this.relationship = relationship;
     this.fromRole = fromRole;
     this.toRole = toRole;

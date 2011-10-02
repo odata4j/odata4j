@@ -2,8 +2,10 @@ package org.odata4j.format.xml;
 
 import java.io.Writer;
 
-import org.odata4j.core.IAnnotation;
+import org.odata4j.core.Annotation;
 import org.odata4j.core.Namespace;
+import org.odata4j.edm.EdmAnnotationAttribute;
+import org.odata4j.edm.EdmAnnotationElement;
 import org.odata4j.edm.EdmAssociation;
 import org.odata4j.edm.EdmAssociationSet;
 import org.odata4j.edm.EdmComplexType;
@@ -47,7 +49,7 @@ public class EdmxFormatWriter extends XmlFormatWriter {
       writer.writeAttribute("Namespace", schema.namespace);
       writeAnnotationAttributes(schema, writer);
       writeDocumentation(schema, writer);
-      
+
       // ComplexType
       for (EdmComplexType ect : schema.complexTypes) {
         writer.startElement(new QName2("ComplexType"));
@@ -94,7 +96,7 @@ public class EdmxFormatWriter extends XmlFormatWriter {
 
         for (EdmNavigationProperty np : eet.getDeclaredNavigationProperties()) {
 
-         
+
           writer.startElement(new QName2("NavigationProperty"));
           writer.writeAttribute("Name", np.name);
           writer.writeAttribute("Relationship", np.relationship.getFQNamespaceName());
@@ -106,7 +108,7 @@ public class EdmxFormatWriter extends XmlFormatWriter {
           writer.endElement("NavigationProperty");
 
         }
-        
+
         writeAnnotationElements(eet, writer);
         writer.endElement("EntityType");
 
@@ -131,7 +133,7 @@ public class EdmxFormatWriter extends XmlFormatWriter {
         writer.writeAttribute("Type", assoc.end2.type.getFullyQualifiedTypeName());
         writer.writeAttribute("Multiplicity", assoc.end2.multiplicity.getSymbolString());
         writer.endElement("End");
-        
+
         writeAnnotationElements(assoc, writer);
         writer.endElement("Association");
       }
@@ -216,19 +218,19 @@ public class EdmxFormatWriter extends XmlFormatWriter {
   }
 
   /**
-   * extensions to CSDL like Annotations appear in an application specific set 
-   * of namespaces.  
+   * extensions to CSDL like Annotations appear in an application specific set
+   * of namespaces.
    * @param services
-   * @param writer 
+   * @param writer
    */
   private static void writeExtensionNamespaces(EdmDataServices services, XMLWriter2 writer) {
     if (null != services.getNamespaces()) {
       for (Namespace ns : services.getNamespaces()) {
-        writer.writeNamespace(ns.getPrefix(), ns.getURI());
+        writer.writeNamespace(ns.getPrefix(), ns.getUri());
       }
     }
   }
-  
+
   private static void write(Iterable<EdmProperty> properties, XMLWriter2 writer) {
     for (EdmProperty prop : properties) {
       writer.startElement(new QName2("Property"));
@@ -256,40 +258,30 @@ public class EdmxFormatWriter extends XmlFormatWriter {
       writer.endElement("Property");
     }
   }
-  
+
   private static void writeAnnotationAttributes(EdmItem item, XMLWriter2 writer) {
     if (null != item.getAnnotations()) {
-      for (IAnnotation a : item.getAnnotations()) {
-        if (a.isSimple()) {
+      for (Annotation<?> a : item.getAnnotations()) {
+        if (a instanceof EdmAnnotationAttribute) {
           writer.writeAttribute(
-                  new QName2(a.getNamespaceURI(), a.getLocalName(), a.getNamespacePrefix()),
+                  new QName2(a.getNamespaceUri(), a.getLocalName(), a.getNamespacePrefix()),
                   null == a.getValue() ? "" : a.getValue().toString());
         }
       }
     }
   }
-  
+
   private static void writeAnnotationElements(EdmItem item, XMLWriter2 writer) {
     if (null != item.getAnnotations()) {
-      for (IAnnotation a : item.getAnnotations()) {
-        if (!a.isSimple()) {
-          writer.startElement(
-                  new QName2(a.getNamespaceURI(), a.getLocalName(), a.getNamespacePrefix()));
-
-          // TODO: a.getValue() is an Object whose type is application specific.
-          // To solve:
-          // - create an IAnnotationWriter interface that knows how to serialize it
-          // - provide a way for the application to set the IAnnotationWriter implementation and
-          //   call tha here.
-          // or:
-          // - perhaps we restrict these to OComplexObjects or somethings
-          writer.writeText("TODO");
-          writer.endElement(a.getLocalName());
+      for (Annotation<?> a : item.getAnnotations()) {
+        if (a instanceof EdmAnnotationElement) {
+          // TODO
+          throw new UnsupportedOperationException("Implement element annotations");
         }
       }
     }
   }
-  
+
   private static void writeDocumentation(EdmItem item, XMLWriter2 writer) {
     EdmDocumentation doc = item.getDocumentation();
     if (null != doc && (null != doc.getSummary() || null != doc.getLongDescription())) {
@@ -312,6 +304,6 @@ public class EdmxFormatWriter extends XmlFormatWriter {
       writer.endElement(d.getLocalPart());
     }
   }
-  
+
 
 }

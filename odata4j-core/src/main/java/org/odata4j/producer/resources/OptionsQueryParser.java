@@ -13,9 +13,6 @@ import org.odata4j.producer.InlineCount;
 
 import com.sun.jersey.api.core.HttpContext;
 
-/**
- * @author sergei.grizenok
- */
 public class OptionsQueryParser {
 
   public static InlineCount parseInlineCount(String inlineCount) {

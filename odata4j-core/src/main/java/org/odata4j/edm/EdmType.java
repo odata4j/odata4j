@@ -8,7 +8,7 @@ import org.odata4j.core.OFuncs;
 
 /**
  * A type in the EDM type system.
- * 
+ *
  * @see <a href="http://msdn.microsoft.com/en-us/library/bb399591.aspx">[msdn] Types (Metadata)</a>
  */
 public abstract class EdmType extends EdmItem {
@@ -18,15 +18,15 @@ public abstract class EdmType extends EdmItem {
         .cast(EdmType.class)
         .toMap(OFuncs.edmTypeFullyQualifiedTypeName());
   }
-  
+
   private final String fullyQualifiedTypeName;
-  
+
   public EdmType(String fullyQualifiedTypeName) {
     super(null, null);
     this.fullyQualifiedTypeName = fullyQualifiedTypeName;
   }
-  
-  public EdmType(String fullyQualifiedTypeName, EdmDocumentation documentation, List<EdmAnnotation> annotations) {
+
+  public EdmType(String fullyQualifiedTypeName, EdmDocumentation documentation, List<EdmAnnotation<?>> annotations) {
     super(documentation, annotations);
     this.fullyQualifiedTypeName = fullyQualifiedTypeName;
   }
@@ -44,7 +44,7 @@ public abstract class EdmType extends EdmItem {
       LazyInit.POOL.put(fullyQualifiedTypeName, new EdmNonSimpleType(fullyQualifiedTypeName));
     return LazyInit.POOL.get(fullyQualifiedTypeName);
   }
-  
+
   /**
    * Gets the fully-qualified type name for this edm-type.
    */
@@ -66,6 +66,7 @@ public abstract class EdmType extends EdmItem {
   public boolean equals(Object other) {
     return other instanceof EdmType && ((EdmType) other).fullyQualifiedTypeName.equals(this.fullyQualifiedTypeName);
   }
-  
+
   public abstract boolean isSimple();
+
 }

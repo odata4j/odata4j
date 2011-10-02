@@ -179,7 +179,7 @@ public class XmlPullXMLFactoryProvider2 extends XMLFactoryProvider2 {
 
     @Override
     public Attribute2 getAttributeByName(final QName2 arg0) {
-      final String value = xpp.getAttributeValue(arg0.getNamespaceURI(), arg0.getLocalPart());
+      final String value = xpp.getAttributeValue(arg0.getNamespaceUri(), arg0.getLocalPart());
       if (value == null)
                 return null;
 

@@ -13,16 +13,16 @@ public class EdmSchema extends EdmItem {
   public final List<EdmAssociation> associations;
   public final List<EdmEntityContainer> entityContainers;
 
-  public EdmSchema(String namespace, String alias, List<EdmEntityType> entityTypes, 
-          List<EdmComplexType> complexTypes, List<EdmAssociation> associations, 
-          List<EdmEntityContainer> entityContainers) {
+  public EdmSchema(String namespace, String alias, List<EdmEntityType> entityTypes,
+      List<EdmComplexType> complexTypes, List<EdmAssociation> associations,
+      List<EdmEntityContainer> entityContainers) {
     this(namespace, alias, entityTypes, complexTypes, associations, entityContainers, null, null);
   }
-  
-  public EdmSchema(String namespace, String alias, List<EdmEntityType> entityTypes, 
-          List<EdmComplexType> complexTypes, List<EdmAssociation> associations, 
-          List<EdmEntityContainer> entityContainers, 
-          EdmDocumentation doc, List<EdmAnnotation> annots) {
+
+  public EdmSchema(String namespace, String alias, List<EdmEntityType> entityTypes,
+      List<EdmComplexType> complexTypes, List<EdmAssociation> associations,
+      List<EdmEntityContainer> entityContainers,
+      EdmDocumentation doc, List<EdmAnnotation<?>> annots) {
     super(doc, annots);
     this.namespace = namespace;
     this.alias = alias;
@@ -33,11 +33,12 @@ public class EdmSchema extends EdmItem {
   }
 
   public EdmEntityContainer findEntityContainer(String name) {
-    for (EdmEntityContainer ec : this.entityContainers) {
+    for (EdmEntityContainer ec : entityContainers) {
       if (ec.name.equals(name)) {
         return ec;
       }
     }
     return null;
   }
+
 }

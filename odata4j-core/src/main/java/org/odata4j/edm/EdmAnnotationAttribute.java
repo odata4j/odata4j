@@ -2,18 +2,16 @@
 package org.odata4j.edm;
 
 /**
- * CSDL AnnotationAttribute
- * Note how the value must be a String.
- * 
- * @author Tony Rozga
+ * A CSDL Annotation attribute.
+ *
+ * <p>Annotation attributes in conceptual schema definition language (CSDL) are custom XML attributes
+ * in the conceptual model. Annotation attributes can be used to provide extra metadata about
+ * the elements in a conceptual model.
+ *
+ * @see <a href="http://msdn.microsoft.com/en-us/library/ee473438.aspx">[msdn] Annotation Attributes (CSDL)</a>
  */
-public class EdmAnnotationAttribute extends EdmAnnotation {
-  public EdmAnnotationAttribute(String namespaceURI, String namespacePrefix, String name, String value) {
-    super(namespaceURI, namespacePrefix, name, value);
-  }
-  
-  @Override
-  public boolean isSimple() {
-    return true;
+public class EdmAnnotationAttribute extends EdmAnnotation<String> {
+  public EdmAnnotationAttribute(String namespaceUri, String namespacePrefix, String name, String value) {
+    super(namespaceUri, namespacePrefix, name, String.class, value);
   }
 }

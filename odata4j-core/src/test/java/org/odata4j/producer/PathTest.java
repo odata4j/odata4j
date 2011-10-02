@@ -1,15 +1,16 @@
 package org.odata4j.producer;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
- *
- * @author Tony Rozga
+ * Tests for {@link Path}
  */
 public class PathTest {
 
@@ -43,7 +44,7 @@ public class PathTest {
     assertTrue(p.equals(new Path("")));
     p = p.addComponent("blar");
     assertTrue(p.equals(new Path("blar")));
-    
+
     assertTrue(p.startsWith(new Path("")));
     assertFalse(p.startsWith(new Path("foo/bar")));
   }
@@ -59,7 +60,7 @@ public class PathTest {
     assertTrue(p.equals(new Path("foo")));
     p = p.addComponent("blar");
     assertTrue(p.equals(new Path("foo/blar")));
-    
+
     assertTrue(p.startsWith(new Path("")));
     assertTrue(p.startsWith(new Path("foo")));
     assertTrue(p.startsWith(new Path("foo/blar")));

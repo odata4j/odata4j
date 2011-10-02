@@ -10,9 +10,9 @@ public class EdmNonSimpleType extends EdmType {
   public EdmNonSimpleType(String fullyQualifiedTypeName) {
     this(fullyQualifiedTypeName, null, null);
   }
-  
-  public EdmNonSimpleType(String fullyQualifiedTypeName, EdmDocumentation documentation, 
-          List<EdmAnnotation> annotations) {
+
+  public EdmNonSimpleType(String fullyQualifiedTypeName, EdmDocumentation documentation,
+      List<EdmAnnotation<?>> annotations) {
     super(fullyQualifiedTypeName, documentation, annotations);
   }
 

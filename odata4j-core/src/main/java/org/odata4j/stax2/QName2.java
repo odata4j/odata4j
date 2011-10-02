@@ -2,7 +2,7 @@ package org.odata4j.stax2;
 
 public class QName2 {
 
-  private final String namespaceURI;
+  private final String namespaceUri;
   private final String localPart;
   private final String prefix;
   private final String fqName;
@@ -11,23 +11,23 @@ public class QName2 {
     this(null, localPart);
   }
 
-  public QName2(String namespaceURI, String localPart) {
-    this(namespaceURI, localPart, null);
+  public QName2(String namespaceUri, String localPart) {
+    this(namespaceUri, localPart, null);
   }
 
-  public QName2(String namespaceURI, String localPart, String prefix) {
-    this.namespaceURI = namespaceURI;
+  public QName2(String namespaceUri, String localPart, String prefix) {
+    this.namespaceUri = namespaceUri;
     this.localPart = localPart;
     this.prefix = prefix;
-    this.fqName = "{" + namespaceURI + "}" + "{" + prefix + "}" + localPart;
+    this.fqName = "{" + namespaceUri + "}" + "{" + prefix + "}" + localPart;
   }
 
   public String getLocalPart() {
     return localPart;
   }
 
-  public String getNamespaceURI() {
-    return namespaceURI;
+  public String getNamespaceUri() {
+    return namespaceUri;
   }
 
   public String getPrefix() {

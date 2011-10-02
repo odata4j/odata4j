@@ -32,14 +32,14 @@ import org.odata4j.edm.EdmType;
 import org.odata4j.edm.EdmComplexType;
 
 /** Write content to an HTTP stream in JSON format.
- * 
+ *
  * This class is abstract because it delegates the strategy pattern of writing
  * actual content elements to its (various) subclasses.
  *
  * Each element in the array to be written can be wrapped in a function call
  * on the JavaScript side by specifying the name of a function to call to the
  * constructor.
- * 
+ *
  * @param <T> the type of the content elements to be written to the stream.
  */
 public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
@@ -47,7 +47,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
   private final String jsonpCallback;
 
   /** Create a new JSON writer.
-   * 
+   *
    * @param jsonpCallback a function to call on the javascript side to act
    * on the data provided in the content.
    */
@@ -170,7 +170,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
             writeComplexObject(jw, obj.getType().getFullyQualifiedTypeName(), ((OComplexObject) obj).getProperties());
           } else if (obj instanceof OSimpleObject) {
             writeValue(jw, obj.getType(), ((OSimpleObject) obj).getValue());
-          } 
+          }
           //else if (obj instanceof OEntity) {
           //  I think the FormatWriter sig is going to have to change:
           //  1.  passing around a Jersey type like ExtendedUriInfo is not a good idea imo

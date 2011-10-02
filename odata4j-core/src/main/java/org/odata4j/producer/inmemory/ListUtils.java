@@ -18,10 +18,6 @@ import org.odata4j.expression.OrderByExpression.Direction;
 import org.odata4j.producer.InlineCount;
 import org.odata4j.producer.QueryInfo;
 
-/**
- *
- * @author sergei.grizenok
- */
 public class ListUtils {
 
   private ListUtils() {}

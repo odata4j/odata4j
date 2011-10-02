@@ -11,9 +11,9 @@ public class EdmAssociationEnd extends EdmItem {
   public EdmAssociationEnd(String role, EdmEntityType type, EdmMultiplicity multiplicity) {
     this(role, type, multiplicity, null, null);
   }
-  
-  public EdmAssociationEnd(String role, EdmEntityType type, EdmMultiplicity multiplicity, 
-          EdmDocumentation doc, List<EdmAnnotation> annots) {
+
+  public EdmAssociationEnd(String role, EdmEntityType type, EdmMultiplicity multiplicity,
+      EdmDocumentation doc, List<EdmAnnotation<?>> annots) {
     super(doc, annots);
     this.role = role;
     this.type = type;

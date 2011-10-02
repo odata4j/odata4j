@@ -13,15 +13,15 @@ public class EdmEntityContainer extends EdmItem {
   public final List<EdmAssociationSet> associationSets;
   public final List<EdmFunctionImport> functionImports;
 
-  public EdmEntityContainer(String name, boolean isDefault, Boolean lazyLoadingEnabled, 
-          List<EdmEntitySet> entitySets, List<EdmAssociationSet> associationSets, 
-          List<EdmFunctionImport> functionImports) {
+  public EdmEntityContainer(String name, boolean isDefault, Boolean lazyLoadingEnabled,
+      List<EdmEntitySet> entitySets, List<EdmAssociationSet> associationSets,
+      List<EdmFunctionImport> functionImports) {
     this(name, isDefault, lazyLoadingEnabled, entitySets, associationSets, functionImports, null, null);
   }
-  
- public EdmEntityContainer(String name, boolean isDefault, Boolean lazyLoadingEnabled, 
-         List<EdmEntitySet> entitySets, List<EdmAssociationSet> associationSets, 
-         List<EdmFunctionImport> functionImports, EdmDocumentation doc, List<EdmAnnotation> annots) {
+
+ public EdmEntityContainer(String name, boolean isDefault, Boolean lazyLoadingEnabled,
+     List<EdmEntitySet> entitySets, List<EdmAssociationSet> associationSets,
+     List<EdmFunctionImport> functionImports, EdmDocumentation doc, List<EdmAnnotation<?>> annots) {
     super(doc, annots);
     this.name = name;
     this.isDefault = isDefault;

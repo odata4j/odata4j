@@ -14,14 +14,15 @@ public class EdmFunctionImport extends EdmItem {
       String httpMethod, List<EdmFunctionParameter> parameters) {
     this(name, entitySet, returnType, httpMethod, parameters, null, null);
   }
-  
+
   public EdmFunctionImport(String name, EdmEntitySet entitySet, EdmType returnType,
-      String httpMethod, List<EdmFunctionParameter> parameters, EdmDocumentation doc, List<EdmAnnotation> annots) {
-    super(null, null); // TODO
+      String httpMethod, List<EdmFunctionParameter> parameters, EdmDocumentation doc, List<EdmAnnotation<?>> annots) {
+    super(null, null);
     this.name = name;
     this.entitySet = entitySet;
     this.returnType = returnType;
     this.httpMethod = httpMethod;
     this.parameters = parameters;
   }
+
 }

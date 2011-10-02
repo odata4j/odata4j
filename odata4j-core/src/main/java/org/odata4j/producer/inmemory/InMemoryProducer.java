@@ -46,8 +46,8 @@ import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmProperty.CollectionKind;
 import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmSimpleType;
-import org.odata4j.edm.IEdmDecorator;
-import org.odata4j.edm.IEdmGenerator;
+import org.odata4j.edm.EdmDecorator;
+import org.odata4j.edm.EdmGenerator;
 import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.OrderByExpression;
@@ -68,7 +68,7 @@ import org.odata4j.producer.exceptions.NotImplementedException;
  * An in-memory implementation of an ODATA Producer.  Uses the standard Java bean
  * and property model to access information within entities. 
  */
-public class InMemoryProducer implements ODataProducer, IEdmGenerator {
+public class InMemoryProducer implements ODataProducer, EdmGenerator {
 
   private final Logger log = Logger.getLogger(getClass().getName());
 
@@ -116,7 +116,7 @@ public class InMemoryProducer implements ODataProducer, IEdmGenerator {
   private final int maxResults;
   private final Map<String, EntityInfo<?, ?>> eis = new HashMap<String, EntityInfo<?, ?>>();
   private EdmDataServices metadata;
-  private final IEdmDecorator decorator;
+  private final EdmDecorator decorator;
   private final MetadataProducer metadataProducer;
   
   private static final int DEFAULT_MAX_RESULTS = 100;
@@ -138,7 +138,7 @@ public class InMemoryProducer implements ODataProducer, IEdmGenerator {
     this(namespace, maxResults, null);
   }
   
-  public InMemoryProducer(String namespace, int maxResults, IEdmDecorator decorator) {
+  public InMemoryProducer(String namespace, int maxResults, EdmDecorator decorator) {
     this.namespace = namespace;
     this.maxResults = maxResults;
     this.decorator = decorator;
@@ -158,7 +158,7 @@ public class InMemoryProducer implements ODataProducer, IEdmGenerator {
     return metadataProducer;
   }
 
-  public IEdmDecorator getDecorator() {
+  public EdmDecorator getDecorator() {
     return this.decorator;
   }
 

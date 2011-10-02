@@ -1,56 +1,63 @@
 package org.odata4j.producer;
 
-import org.odata4j.producer.RecursivePath;
-import org.odata4j.producer.Path;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.ExpressionParser;
 
 /**
  * helps producers determine if a property is $selected and/or $expanded
- * 
+ *
  * Note on recursive extensions:
  * The idea here is that when one has an object graph that is a tree of like
  * nodes (such as a class hierarchy), it should be possible to specify a $expand
  * that is applied recursively.
- * 
+ *
  * Two new custom options are proposed:
- * 
+ *
  * expandR and selectR
- * 
+ *
  * ABNF:
  * expandRQueryOp = "expandR=" recursiveExpandClause *("," recursiveExpandClause)
  * recursiveExpandClause = entityNavProperty "/" expandDepth
  * expandDepth = integer
- * 
+ *
  * selectRQueryOp = "selectR=" recursiveSelectClause *("," recursiveSelectClause)
  * recursiveSelectClause = rSelectItem *("," recursiveSelectClause)
  * rSelectItem = selectedNavProperty "/" rPropItem
  * rPropItem = "*" / selectedProperty
- * 
+ *
  * expandDepth drives the number of traversal iterations.  An expandDepth of 0 is
  * unlimited.  During query processing, the max expandDepth of all recursivExpandClauses
  * is computed and drives processing.
- * 
+ *
  * example:
- *  expandR=SubTypes/0,Properties/1 
- *  
+ *  expandR=SubTypes/0,Properties/1
+ *
  * This says that at each position in the object graph traversal
  *  during query we will expand the SubTypes navigation property.  At the first
  *  level we will also expand the Properties navigation property
- * 
+ *
  *  selectR=SubTypes/Namespace,SubTypes/Type
- * 
- *  This says that whenever we expand the SubTypes navigation property we will only 
+ *
+ *  This says that whenever we expand the SubTypes navigation property we will only
  *  include Namespace and Type properties.
- * 
- * @author Tony Rozga
  */
 public class PathHelper {
 
   public static final String OptionExpandR = "expandR";
   public static final String OptionSelectR = "selectR";
+
+  /*
+   * Our current path in the navigation.  An empty path means we are currently
+   * at the root object.
+   */
+  private Path currentNavPath = new Path("");
+  protected List<Path> selectPaths = null;
+  protected List<Path> expandPaths = null;
+  protected List<Path> selectRPaths = null;
+  protected List<RecursivePath> expandRPaths = null;
 
   public PathHelper(String select, String expand) {
     setup(select, expand, null, null);
@@ -173,7 +180,7 @@ public class PathHelper {
     }
 
     for (Path p : selectRPaths) {
-      // blat/<propname> matches foo/bar/blat matches 
+      // blat/<propname> matches foo/bar/blat matches
       if (p.getFirstComponent().equals(this.currentNavPath.getLastComponent())) {
         // this is a candidate path that matches in length
         if (p.isWild()) {
@@ -212,7 +219,7 @@ public class PathHelper {
       limited = true;
       for (Path p : this.selectRPaths) {
         // p of:
-        //     blat/<propname> 
+        //     blat/<propname>
         // matches current of:
         //     .../blat
         if (p.getLastComponent().equals(propName)
@@ -235,7 +242,7 @@ public class PathHelper {
   /**
    * determines if the given navigation property is expanded on the current navigation path
    * @param navPropName - name of a navigation property
-   * @return 
+   * @return
    */
   protected boolean isExpandedExplicit(String navPropName) {
 
@@ -298,13 +305,5 @@ public class PathHelper {
   public String toString() {
     return currentNavPath.toString();
   }
-  /*
-   * Our current path in the navigation.  An empty path means we are currently
-   * at the root object.
-   */
-  private Path currentNavPath = new Path("");
-  protected List<Path> selectPaths = null;
-  protected List<Path> expandPaths = null;
-  protected List<Path> selectRPaths = null;
-  protected List<RecursivePath> expandRPaths = null;
+
 }

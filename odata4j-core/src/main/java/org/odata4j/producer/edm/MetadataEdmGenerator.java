@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+
 import org.core4j.Enumerable;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.edm.EdmAssociation;
@@ -12,48 +13,46 @@ import org.odata4j.edm.EdmAssociationSet;
 import org.odata4j.edm.EdmAssociationSetEnd;
 import org.odata4j.edm.EdmComplexType;
 import org.odata4j.edm.EdmDataServices;
+import org.odata4j.edm.EdmDecorator;
 import org.odata4j.edm.EdmEntityContainer;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmEntityType;
+import org.odata4j.edm.EdmGenerator;
 import org.odata4j.edm.EdmMultiplicity;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmProperty.CollectionKind;
 import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmSimpleType;
-import org.odata4j.edm.IEdmDecorator;
-import org.odata4j.edm.IEdmGenerator;
 import org.odata4j.format.xml.XmlFormatParser;
 
 /**
  * Creates an EdmDataServices instance that models the EDM in terms of the EDM,
  * call it a meta-EDM.
- * 
+ *
  * This model then serves as the basis for queryable metadata.  This generator
- * can be parameterized with an optional IEdmDecorator.  The decorator implements
+ * can be parameterized with an optional {@link EdmDecorator}.  The decorator implements
  * aspects of the meta EDM that are application specific such as Documentation
  * and Annotations.
- * 
+ *
  * The current implementation is not 100% complete.
- * 
+ *
  * EntityTypes implemented include: Schema, Property, ComplexType and EntityType
  *                                  (note that NavigationProperty is *no* implemented yet)
  * EntitySets implemented include: Schemas, Properties, EntityTypes, RootEntityTypes,
  *                                 ComplexTypes and RootComplexTypes
- * 
+ *
  * Documentation elements are supported
  * AnnotationAttributes are supported
  * AnnotationElements are partially supported (JSON only)
- * 
- * @author Tony Rozga
  */
-public class MetadataEdmGenerator implements IEdmGenerator {
+public class MetadataEdmGenerator implements EdmGenerator {
 
   /**
    * construct
    * @param decorator - optional
    */
-  public MetadataEdmGenerator(IEdmDecorator decorator) {
+  public MetadataEdmGenerator(EdmDecorator decorator) {
     this.decorator = decorator;
   }
 
@@ -62,7 +61,7 @@ public class MetadataEdmGenerator implements IEdmGenerator {
    * @return the decorator
    */
   @Override
-  public IEdmDecorator getDecorator() {
+  public EdmDecorator getDecorator() {
     return decorator;
   }
 
@@ -77,15 +76,15 @@ public class MetadataEdmGenerator implements IEdmGenerator {
 
     container = new EdmEntityContainer(
             Edm.ContainerName, // name
-            true, // boolean isDefault, 
-            Boolean.TRUE, // Boolean lazyLoadingEnabled, 
-            esets, // List<EdmEntitySet> entitySets, 
+            true, // boolean isDefault,
+            Boolean.TRUE, // Boolean lazyLoadingEnabled,
+            esets, // List<EdmEntitySet> entitySets,
             asets, // List<EdmAssociationSet> associationSets, a
             null);          // List<EdmFunctionImport> functionImports) {
 
     schema = new EdmSchema(
             Edm.namespace,
-            null, // String alias, 
+            null, // String alias,
             etypes,
             ctypes,
             assocs,
@@ -181,7 +180,7 @@ public class MetadataEdmGenerator implements IEdmGenerator {
             Edm.Schema.name(),
             null, // hasStream
             keys,
-            null, // baseType, 
+            null, // baseType,
             props,
             navprops,
             null, // null == decorator ? null : decorator.getDocumentationForEntityType(Edm.namespace, Edm.EntityType.name()),
@@ -229,7 +228,7 @@ public class MetadataEdmGenerator implements IEdmGenerator {
             Edm.StructuralType.name(),
             null, // hasStream
             keys,
-            null, // baseType, 
+            null, // baseType,
             props,
             navprops,
             null, // null == decorator ? null : decorator.getDocumentationForEntityType(Edm.namespace, Edm.EntityType.name()),
@@ -251,8 +250,8 @@ public class MetadataEdmGenerator implements IEdmGenerator {
             null, // alias
             Edm.ComplexType.name(),
             null, // hasStream
-            null, // keys, defined on basetype already 
-            structuralType, // baseType, 
+            null, // keys, defined on basetype already
+            structuralType, // baseType,
             props,
             navprops,
             null, //  TODO: null == decorator ? null : decorator.getDocumentationForComplexType(Edm.namespace, Edm.ComplexType.name()),
@@ -285,8 +284,8 @@ public class MetadataEdmGenerator implements IEdmGenerator {
             null, // alias
             Edm.EntityType.name(),
             null, // hasStream
-            null, // keys, defined on basetype already 
-            structuralType, // baseType, 
+            null, // keys, defined on basetype already
+            structuralType, // baseType,
             props,
             navprops,
             null, // null == decorator ? null : decorator.getDocumentationForEntityType(Edm.namespace, Edm.EntityType.name()),
@@ -395,7 +394,7 @@ public class MetadataEdmGenerator implements IEdmGenerator {
             Edm.Property.name(),
             null, // hasStream
             keys,
-            null, // baseType, 
+            null, // baseType,
             props,
             navprops,
             null == decorator ? null : decorator.getDocumentationForEntityType(Edm.namespace, Edm.Property.name()),
@@ -528,7 +527,7 @@ public class MetadataEdmGenerator implements IEdmGenerator {
     assocs.add(association);
     return association;
   }
-  private IEdmDecorator decorator = null;
+  private EdmDecorator decorator = null;
   private EdmSchema schema = null;
   private EdmEntityContainer container = null;
   private EdmComplexType entityKeyType = null;

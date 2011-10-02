@@ -68,7 +68,7 @@ class ConsumerFunctionCallRequest<T extends OObject>
   public Enumerable<T> execute() {
     // turn each param into a custom query option
     for (OFunctionParameter p : params) {
-      custom(p.getName(), toURIString(p));
+      custom(p.getName(), toUriString(p));
     }
     final ODataClientRequest request = buildRequest(null);
     Enumerable<OObject> results = Enumerable.createFromIterator(
@@ -81,7 +81,7 @@ class ConsumerFunctionCallRequest<T extends OObject>
     return (Enumerable<T>) results;
   }
   
-  private static String toURIString(OFunctionParameter p) {
+  private static String toUriString(OFunctionParameter p) {
     OObject obj = p.getValue();
     if (obj instanceof OSimpleObject) {
       LiteralExpression le = Expression.literal(((OSimpleObject<?>)obj).getValue());

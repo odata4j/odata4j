@@ -3,10 +3,6 @@ package org.odata4j.test.core.links;
 import org.junit.Test;
 import org.odata4j.format.FormatType;
 
-/**
- *
- * @author rozan04
- */
 public class LinksTestJPA extends LinksTestBase {
 
   static {
@@ -42,5 +38,5 @@ public class LinksTestJPA extends LinksTestBase {
   public void testReadPopulatedJSON() {
     testReadPopulated(FormatType.JSON);
   }
-  
+
 }

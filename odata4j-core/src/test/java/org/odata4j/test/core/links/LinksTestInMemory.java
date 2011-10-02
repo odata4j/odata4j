@@ -4,42 +4,38 @@ package org.odata4j.test.core.links;
 import org.junit.Test;
 import org.odata4j.format.FormatType;
 
-/**
- *
- * @author rozan04
- */
 public class LinksTestInMemory extends LinksTestBase {
-  
-  
-  @Test 
+
+
+  @Test
   public void testReadDeferredAtom() {
     testReadDeferred(FormatType.ATOM);
   }
-  
-  @Test 
+
+  @Test
   public void testReadDeferredJSON() {
     testReadDeferred(FormatType.JSON);
   }
-  
-  @Test 
+
+  @Test
   public void testReadEmptyAtom() {
     testReadEmpty(FormatType.ATOM);
   }
-  
-  @Test 
+
+  @Test
   public void testReadEmptyJSON() {
     testReadEmpty(FormatType.JSON);
   }
-  
-  @Test 
+
+  @Test
   public void testReadPopulatedAtom() {
     testReadPopulated(FormatType.ATOM);
   }
-  
-  @Test 
+
+  @Test
   public void testReadPopulatedJSON() {
     testReadPopulated(FormatType.JSON);
   }
-  
- 
+
+
 }

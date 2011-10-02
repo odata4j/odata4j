@@ -3,10 +3,12 @@ package org.odata4j.producer;
 import java.util.Arrays;
 
 /**
- * a path in an object graph
- * @author Tony Rozga
+ * A path in an object graph
  */
 public class Path {
+
+  private String[] pathComponents;
+  private String spath;
 
   public Path(String path) {
     this.spath = path;
@@ -28,11 +30,9 @@ public class Path {
 
   // components numbered from 0
   public String getNthComponent(int n) {
-
     if (n < 0 || n > (getNComponents() - 1)) {
       throw new java.lang.IndexOutOfBoundsException();
     }
-
     return pathComponents[n];
   }
 
@@ -104,10 +104,10 @@ public class Path {
   public String toString() {
     return spath;
   }
-  
+
   public boolean startsWith(Path p) {
     if (this.getNComponents() < p.getNComponents()) { return false; }
-    
+
     for (int i = 0; i < p.getNComponents(); i++) {
       if (!this.pathComponents[i].equals(p.getNthComponent(i))) {
         return false;
@@ -115,7 +115,5 @@ public class Path {
     }
     return true;
   }
-  
-  private String[] pathComponents;
-  private String spath;
+
 }

@@ -7,6 +7,7 @@ import org.core4j.Enumerable;
 import org.core4j.Predicate1;
 import org.odata4j.core.Namespace;
 import org.odata4j.core.ODataVersion;
+import org.odata4j.core.OPredicates;
 import org.odata4j.producer.exceptions.NotFoundException;
 
 /**
@@ -19,13 +20,13 @@ public class EdmDataServices {
   private final ODataVersion version;
   private final List<EdmSchema> schemas;
   private final List<Namespace> namespaces; // for Annotations
-  
+
   public static final EdmDataServices EMPTY = new EdmDataServices(null, new ArrayList<EdmSchema>());
 
   public EdmDataServices(ODataVersion version, List<EdmSchema> schemas) {
     this(version, schemas, null);
   }
-  
+
   public EdmDataServices(ODataVersion version, List<EdmSchema> schemas, List<Namespace> namespaces) {
     this.version = version;
     this.schemas = schemas;
@@ -39,7 +40,7 @@ public class EdmDataServices {
   public List<EdmSchema> getSchemas() {
     return schemas;
   }
-  
+
   public List<Namespace> getNamespaces() {
     return this.namespaces;
   }
@@ -154,6 +155,11 @@ public class EdmDataServices {
     return rt;
   }
 
+  public Iterable<EdmStructuralType> getStructuralTypes() {
+    return Enumerable.create(getEntityTypes()).cast(EdmStructuralType.class)
+        .concat(Enumerable.create(getComplexTypes()).cast(EdmStructuralType.class));
+  }
+
   public Iterable<EdmAssociation> getAssociations() {
     List<EdmAssociation> rt = new ArrayList<EdmAssociation>();
     for (EdmSchema schema : this.schemas) {
@@ -179,6 +185,10 @@ public class EdmDataServices {
       }
     }
     return null;
+  }
+
+  public Iterable<EdmStructuralType> getSubTypes(EdmStructuralType t) {
+    return Enumerable.create(getStructuralTypes()).where(OPredicates.edmSubTypeOf(t));
   }
 
 }
