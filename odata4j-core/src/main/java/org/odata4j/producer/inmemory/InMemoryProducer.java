@@ -508,7 +508,7 @@ public class InMemoryProducer implements ODataProducer, EdmGenerator {
             }
           }
           // relation and href will be filled in later for atom or json
-          links.add(OLinks.relatedEntitiesInline(null, edmNavProperty.name, null, relatedEntities));
+          links.add(OLinks.relatedEntitiesInline(null, edmNavProperty.getName(), null, relatedEntities));
         } else {
           final Object entity = ei.properties.getPropertyValue(obj, prop);
           OEntity relatedEntity = null;
@@ -525,7 +525,7 @@ public class InMemoryProducer implements ODataProducer, EdmGenerator {
 
             relatedEntity = toOEntity(relEntitySet, entity, remainingPropPath);
           }
-          links.add(OLinks.relatedEntityInline(null, edmNavProperty.name, null, relatedEntity));
+          links.add(OLinks.relatedEntityInline(null, edmNavProperty.getName(), null, relatedEntity));
         }
       }
     }
@@ -539,16 +539,16 @@ public class InMemoryProducer implements ODataProducer, EdmGenerator {
 
         @Override
         public boolean apply(OLink t) {
-          return t.getTitle().equals(ep.name);
+          return t.getTitle().equals(ep.getName());
           }
       });
 
       if (!expanded) {
         // defer
         if (ep.getToRole().getMultiplicity() == EdmMultiplicity.MANY) {
-          links.add(OLinks.relatedEntities(null, ep.name, null));
+          links.add(OLinks.relatedEntities(null, ep.getName(), null));
         } else {
-          links.add(OLinks.relatedEntity(null, ep.name, null));
+          links.add(OLinks.relatedEntity(null, ep.getName(), null));
         }
       }
     }

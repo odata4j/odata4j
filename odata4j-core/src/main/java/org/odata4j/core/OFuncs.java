@@ -16,7 +16,7 @@ public class OFuncs {
   public static Func1<EdmProperty, String> edmPropertyName() {
     return new Func1<EdmProperty, String>() {
       public String apply(EdmProperty input) {
-        return input.name;
+        return input.getName();
       }
     };
   }

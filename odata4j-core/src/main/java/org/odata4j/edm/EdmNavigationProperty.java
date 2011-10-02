@@ -31,7 +31,7 @@ public class EdmNavigationProperty extends EdmPropertyBase {
 
   @Override
   public String toString() {
-    return String.format("EdmNavigationProperty[%s,rel=%s,from=%s,to=%s]", name, relationship, fromRole, toRole);
+    return String.format("EdmNavigationProperty[%s,rel=%s,from=%s,to=%s]", getName(), relationship, fromRole, toRole);
   }
 
 }

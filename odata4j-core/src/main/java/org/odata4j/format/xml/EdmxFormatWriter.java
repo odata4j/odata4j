@@ -98,7 +98,7 @@ public class EdmxFormatWriter extends XmlFormatWriter {
 
 
           writer.startElement(new QName2("NavigationProperty"));
-          writer.writeAttribute("Name", np.name);
+          writer.writeAttribute("Name", np.getName());
           writer.writeAttribute("Relationship", np.getRelationship().getFQNamespaceName());
           writer.writeAttribute("FromRole", np.getFromRole().getRole());
           writer.writeAttribute("ToRole", np.getToRole().getRole());
@@ -235,7 +235,7 @@ public class EdmxFormatWriter extends XmlFormatWriter {
     for (EdmProperty prop : properties) {
       writer.startElement(new QName2("Property"));
 
-      writer.writeAttribute("Name", prop.name);
+      writer.writeAttribute("Name", prop.getName());
       writer.writeAttribute("Type", prop.getType().getFullyQualifiedTypeName());
       writer.writeAttribute("Nullable", Boolean.toString(prop.isNullable()));
       if (prop.getMaxLength() != null) {

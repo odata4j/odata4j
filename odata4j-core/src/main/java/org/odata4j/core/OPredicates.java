@@ -51,7 +51,7 @@ public class OPredicates {
   public static Predicate1<EdmProperty> edmPropertyNameEquals(final String name) {
     return new Predicate1<EdmProperty>() {
       public boolean apply(EdmProperty input) {
-        return input.name.equals(name);
+        return input.getName().equals(name);
       }
     };
   }
@@ -59,7 +59,7 @@ public class OPredicates {
   public static Predicate1<EdmNavigationProperty> edmNavigationPropertyNameEquals(final String name) {
     return new Predicate1<EdmNavigationProperty>() {
       public boolean apply(EdmNavigationProperty input) {
-        return input.name.equals(name);
+        return input.getName().equals(name);
       }
     };
   }

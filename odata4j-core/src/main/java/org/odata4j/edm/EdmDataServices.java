@@ -123,12 +123,12 @@ public class EdmDataServices {
       for (EdmEntityContainer eec : schema.getEntityContainers()) {
         for (EdmEntitySet ees : eec.getEntitySets()) {
           for (EdmNavigationProperty ep : ees.getType().getNavigationProperties()) {
-            if (ep.name.equals(propName)) {
+            if (ep.getName().equals(propName)) {
               return ep;
             }
           }
           for (final EdmProperty ep : ees.getType().getProperties()) {
-            if (ep.name.equals(propName)) {
+            if (ep.getName().equals(propName)) {
               return ep;
             }
           }

@@ -133,7 +133,7 @@ public class EdmProperty extends EdmPropertyBase {
 
   @Override
   public String toString() {
-    return String.format("EdmProperty[%s,%s]", name, type);
+    return String.format("EdmProperty[%s,%s]", getName(), type);
   }
 
   /**

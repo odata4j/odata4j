@@ -59,7 +59,7 @@ public class BaseExample {
 
   private static void reportProperties(Iterable<EdmProperty> properties) {
     for (EdmProperty property : properties) {
-      String p = String.format("Property Name=%s Type=%s Nullable=%s", property.name, property.getType(), property.isNullable());
+      String p = String.format("Property Name=%s Type=%s Nullable=%s", property.getName(), property.getType(), property.isNullable());
       if (property.getMaxLength() != null)
         p = p + " MaxLength=" + property.getMaxLength();
       if (property.getUnicode() != null)
@@ -102,7 +102,7 @@ public class BaseExample {
         reportProperties(et.getDeclaredProperties());
         for (EdmNavigationProperty np : et.getDeclaredNavigationProperties()) {
           report("    NavigationProperty Name=%s Relationship=%s FromRole=%s ToRole=%s",
-              np.name, np.getRelationship().getFQNamespaceName(), np.getFromRole().getRole(), np.getToRole().getRole());
+              np.getName(), np.getRelationship().getFQNamespaceName(), np.getFromRole().getRole(), np.getToRole().getRole());
         }
 
       }

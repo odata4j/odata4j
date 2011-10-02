@@ -268,29 +268,29 @@ public class JPAProducer implements ODataProducer {
       // get properties
       for (EdmProperty ep : ees.getType().getProperties()) {
 
-        if (!isSelected(ep.name, select)) {
+        if (!isSelected(ep.getName(), select)) {
           continue;
         }
 
         // we have a embedded composite key and we want a property from
         // that key
-        if (hasEmbeddedCompositeKey && ees.getType().getKeys().contains(ep.name)) {
-          Object value = getIdValue(jpaEntity, idAtt, ep.name);
+        if (hasEmbeddedCompositeKey && ees.getType().getKeys().contains(ep.getName())) {
+          Object value = getIdValue(jpaEntity, idAtt, ep.getName());
 
           properties.add(OProperties.simple(
-              ep.name,
+              ep.getName(),
               (EdmSimpleType) ep.getType(),
               value,
               true));
 
         } else {
           // get the simple attribute
-          Attribute<?, ?> att = entityType.getAttribute(ep.name);
+          Attribute<?, ?> att = entityType.getAttribute(ep.getName());
           JPAMember member = JPAMember.create(att, jpaEntity);
           Object value = member.get();
 
           properties.add(OProperties.simple(
-              ep.name,
+              ep.getName(),
               (EdmSimpleType) ep.getType(),
               value,
               true));
@@ -377,20 +377,20 @@ public class JPAProducer implements ODataProducer {
       // for every navigation propety that we didn' expand we must place an deferred
       // OLink if the nav prop is selected
       for (final EdmNavigationProperty ep : ees.getType().getNavigationProperties()) {
-        if (isSelected(ep.name, select)) {
+        if (isSelected(ep.getName(), select)) {
           boolean expanded = null != Enumerable.create(links).firstOrNull(new Predicate1<OLink>() {
             @Override
             public boolean apply(OLink t) {
-              return t.getTitle().equals(ep.name);
+              return t.getTitle().equals(ep.getName());
             }
           });
 
           if (!expanded) {
             // defer
             if (ep.getToRole().getMultiplicity() == EdmMultiplicity.MANY) {
-              links.add(OLinks.relatedEntities(null, ep.name, null));
+              links.add(OLinks.relatedEntities(null, ep.getName(), null));
             } else {
-              links.add(OLinks.relatedEntity(null, ep.name, null));
+              links.add(OLinks.relatedEntity(null, ep.getName(), null));
             }
           }
         }
@@ -578,7 +578,7 @@ public class JPAProducer implements ODataProducer {
 
       Object value = results.get(0);
       OProperty<?> op = OProperties.simple(
-          ((EdmProperty) propInfo).name,
+          ((EdmProperty) propInfo).getName(),
           (EdmSimpleType) ((EdmProperty) propInfo).getType(),
           value);
       return DynamicEntitiesResponse.property(op);
@@ -670,7 +670,7 @@ public class JPAProducer implements ODataProducer {
         } else if (context.edmPropertyBase instanceof EdmProperty) {
           EdmProperty propInfo = (EdmProperty) context.edmPropertyBase;
 
-          alias = alias + "." + propInfo.name;
+          alias = alias + "." + propInfo.getName();
           // TODO
           context.ees = null;
         }

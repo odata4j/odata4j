@@ -22,6 +22,6 @@ public class EclipseLinkJPAEdmGenerator extends JPAEdmGenerator {
         && eclipseLinkProps.containsKey("MaxLength"))
       maxLength = (Integer) eclipseLinkProps.get("MaxLength");
 
-    return new EdmProperty(p.name, p.getType(), p.isNullable(), maxLength, null, null, null, null, null, null, null, null, CollectionKind.NONE, null, null);
+    return new EdmProperty(p.getName(), p.getType(), p.isNullable(), maxLength, null, null, null, null, null, null, null, null, CollectionKind.NONE, null, null);
   }
 }

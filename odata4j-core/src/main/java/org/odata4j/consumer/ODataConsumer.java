@@ -500,9 +500,9 @@ public class ODataConsumer {
           EdmEntityType eet = ees.getType();
           for (EdmProperty ep : eet.getProperties()) {
             if ("SyndicationTitle".equals(ep.getFcTargetPath()) && "false".equals(ep.getFcKeepInContent()))
-              rt.titlePropName = ep.name;
+              rt.titlePropName = ep.getName();
             if ("SyndicationSummary".equals(ep.getFcTargetPath()) && "false".equals(ep.getFcKeepInContent()))
-              rt.summaryPropName = ep.name;
+              rt.summaryPropName = ep.getName();
           }
         }
       }

@@ -238,7 +238,7 @@ public class MetadataProducer implements ODataProducer {
         } else if (Edm.Property.MaxLength.equals(name)) {
           return null != prop.getMaxLength() ? prop.getMaxLength().toString() : null;
         } else if (Edm.Property.Name.equals(name)) {
-          return prop.name;
+          return prop.getName();
         } else if (Edm.Property.Namespace.equals(name)) {
           return prop.getStructuralType().getNamespace();
         } else if (Edm.Property.Nullable.equals(name)) {
@@ -591,7 +591,7 @@ public class MetadataProducer implements ODataProducer {
       props.add(OProperties.string(Edm.Property.EntityTypeName, et.getName()));
     }
     if (c.pathHelper.isSelected(Edm.Property.Name)) {
-      props.add(OProperties.string(Edm.Property.Name, p.name));
+      props.add(OProperties.string(Edm.Property.Name, p.getName()));
     }
     if (c.pathHelper.isSelected(Edm.Property.Type)) {
       props.add(OProperties.string(Edm.Property.Type, p.getType().getFullyQualifiedTypeName()));
@@ -633,7 +633,7 @@ public class MetadataProducer implements ODataProducer {
     }
 
     return OEntities.create(entitySet,
-            OEntityKey.create(Edm.Property.Namespace, et.getNamespace(), Edm.Property.EntityTypeName, et.getName(), Edm.Property.Name, p.name),
+            OEntityKey.create(Edm.Property.Namespace, et.getNamespace(), Edm.Property.EntityTypeName, et.getName(), Edm.Property.Name, p.getName()),
             props,
             Collections.<OLink>emptyList());
   }
