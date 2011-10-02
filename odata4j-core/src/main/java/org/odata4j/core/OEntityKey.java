@@ -52,7 +52,7 @@ public class OEntityKey {
    *   <li><code>OEntityKey.create("a",1,"foo","bar")</code></li>
    *   <li><code>OEntityKey.create(NamedValues.create("a",1),NamedValues.create("foo","bar"))</code></li>
    * </ul></p>
-   * 
+   *
    * @param values  the key values
    * @return a newly-created entity-key
    */
@@ -79,7 +79,7 @@ public class OEntityKey {
 
   /**
    * Creates an entity-key from a map of names and values.
-   * 
+   *
    * @param values  the map of names and values
    * @return a newly-created entity-key
    */
@@ -89,7 +89,7 @@ public class OEntityKey {
 
   /**
    * Creates an entity-key using key information from the given entity-set and values from the given property list.
-   * 
+   *
    * @param entitySet  an entity-set to provide key information
    * @param props  a list of properties to provide key values
    * @return a newly-created entity-key
@@ -99,7 +99,7 @@ public class OEntityKey {
       throw new IllegalArgumentException("EdmEntitySet cannot be null");
     if (props == null)
       throw new IllegalArgumentException("props cannot be null");
-    EdmEntityType eet = entitySet.type;
+    EdmEntityType eet = entitySet.getType();
     if (eet == null)
       throw new IllegalArgumentException("EdmEntityType cannot be null");
     List<String> keys = eet.getKeys();
@@ -119,7 +119,7 @@ public class OEntityKey {
 
   /**
    * Creates an entity-key from its standard string representation.
-   * 
+   *
    * @param keyString  a standard key-string
    * @return a newly-created entity-key
    */
@@ -196,7 +196,7 @@ public class OEntityKey {
 
   /**
    * Gets the standard string representation of this entity-key, including parentheses.
-   * 
+   *
    * @return the standard key-string
    */
   public String toKeyString() {
@@ -205,7 +205,7 @@ public class OEntityKey {
 
   /**
    * Gets the standard string representation of this entity-key, excluding parentheses.
-   * 
+   *
    * @return the standard key-string, without parentheses
    */
   public String toKeyStringWithoutParentheses() {
@@ -228,7 +228,7 @@ public class OEntityKey {
 
   /**
    * Gets a the value of a single-valued entity-key.
-   * 
+   *
    * @return the key value
    */
   public Object asSingleValue() {
@@ -239,7 +239,7 @@ public class OEntityKey {
 
   /**
    * Gets the values of a complex entity-key.
-   * 
+   *
    * @return the key values as a set of named-values
    */
   @SuppressWarnings("unchecked")
@@ -250,7 +250,7 @@ public class OEntityKey {
 
   /**
    * Gets the values of complex entity-key.
-   * 
+   *
    * @return the key values as a set of properties
    */
   public Set<OProperty<?>> asComplexProperties() {
@@ -271,7 +271,7 @@ public class OEntityKey {
 
   /**
    * Gets the entity-key type: SINGLE or COMPLEX.
-   * 
+   *
    * @return SINGLE or COMPLEX
    */
   public KeyType getKeyType() {

@@ -4,11 +4,11 @@ import java.util.List;
 
 public class EdmAssociation extends EdmItem {
 
-  public final String namespace;
-  public final String alias;
-  public final String name;
-  public final EdmAssociationEnd end1;
-  public final EdmAssociationEnd end2;
+  private final String namespace;
+  private final String alias;
+  private final String name;
+  private final EdmAssociationEnd end1;
+  private final EdmAssociationEnd end2;
 
   public EdmAssociation(String namespace, String alias, String name, EdmAssociationEnd end1, EdmAssociationEnd end2) {
     this(namespace, alias, name, end1, end2, null, null);
@@ -22,6 +22,26 @@ public class EdmAssociation extends EdmItem {
     this.name = name;
     this.end1 = end1;
     this.end2 = end2;
+  }
+
+  public String getNamespace() {
+    return namespace;
+  }
+
+  public String getAlias() {
+    return alias;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public EdmAssociationEnd getEnd1() {
+    return end1;
+  }
+
+  public EdmAssociationEnd getEnd2() {
+    return end2;
   }
 
   public String getFQNamespaceName() {
@@ -46,4 +66,5 @@ public class EdmAssociation extends EdmItem {
     rt.append(']');
     return rt.toString();
   }
+
 }

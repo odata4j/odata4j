@@ -8,8 +8,8 @@ import org.odata4j.core.OPredicates;
 
 public class EdmEntityType extends EdmStructuralType {
 
-  public final String alias;
-  public final Boolean hasStream;
+  private final String alias;
+  private final Boolean hasStream;
   private final List<String> keys;
   private final List<EdmNavigationProperty> navigationProperties;
 
@@ -21,34 +21,31 @@ public class EdmEntityType extends EdmStructuralType {
   }
 
   public EdmEntityType(String namespace, String alias, String name, Boolean hasStream, List<String> keys,
-          List<EdmProperty> properties, List<EdmNavigationProperty> navigationProperties,
-          String baseTypeNameFQ, EdmDocumentation doc, List<EdmAnnotation<?>> annotations, Boolean isAbstract) {
+      List<EdmProperty> properties, List<EdmNavigationProperty> navigationProperties,
+      String baseTypeNameFQ, EdmDocumentation doc, List<EdmAnnotation<?>> annotations, Boolean isAbstract) {
     this(namespace, alias, name, hasStream, keys, null, properties, navigationProperties, doc, annotations, isAbstract);
     // during schema parsing we may not have the base type object yet...
     this.baseTypeNameFQ = baseTypeNameFQ;
   }
 
-
-
   public EdmEntityType(String namespace, String alias, String name, Boolean hasStream,
-          List<String> keys, EdmEntityType baseType, List<EdmProperty> properties,
-          List<EdmNavigationProperty> navigationProperties) {
+      List<String> keys, EdmEntityType baseType, List<EdmProperty> properties,
+      List<EdmNavigationProperty> navigationProperties) {
     this(namespace, alias, name, hasStream, keys, baseType, properties, navigationProperties, null, null, null);
   }
 
   public EdmEntityType(String namespace, String alias, String name, Boolean hasStream,
-          List<String> keys, EdmEntityType baseType, List<EdmProperty> properties,
-          List<EdmNavigationProperty> navigationProperties,
-          EdmDocumentation doc, List<EdmAnnotation<?>> annotations) {
+      List<String> keys, EdmEntityType baseType, List<EdmProperty> properties,
+      List<EdmNavigationProperty> navigationProperties,
+      EdmDocumentation doc, List<EdmAnnotation<?>> annotations) {
     this(namespace, alias, name, hasStream, keys, baseType, properties,
             navigationProperties, doc, annotations, null);
   }
 
   public EdmEntityType(String namespace, String alias, String name, Boolean hasStream,
-          List<String> keys, EdmEntityType baseType, List<EdmProperty> properties,
-          List<EdmNavigationProperty> navigationProperties,
-          EdmDocumentation doc, List<EdmAnnotation<?>> annotations, Boolean isAbstract) {
-
+      List<String> keys, EdmEntityType baseType, List<EdmProperty> properties,
+      List<EdmNavigationProperty> navigationProperties,
+      EdmDocumentation doc, List<EdmAnnotation<?>> annotations, Boolean isAbstract) {
     super(baseType, namespace, name, properties, doc, annotations, isAbstract);
     this.alias = alias;
     this.hasStream = hasStream;
@@ -63,13 +60,21 @@ public class EdmEntityType extends EdmStructuralType {
     this.navigationProperties = navigationProperties == null ? new ArrayList<EdmNavigationProperty>() : navigationProperties;
   }
 
+  public String getAlias() {
+    return alias;
+  }
+
+  public Boolean getHasStream() {
+    return hasStream;
+  }
+
   public String getFQAliasName() {
-    return alias == null ? null : (alias + "." + name);
+    return alias == null ? null : (alias + "." + getName());
   }
 
   @Override
   public String toString() {
-    return String.format("EdmEntityType[%s.%s,alias=%s]", namespace, name, alias);
+    return String.format("EdmEntityType[%s.%s,alias=%s]", getNamespace(), getName(), alias);
   }
 
   /**
@@ -124,4 +129,5 @@ public class EdmEntityType extends EdmStructuralType {
     this.navigationProperties.clear();
     this.navigationProperties.addAll(navProperties.toList());
   }
+
 }

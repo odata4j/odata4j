@@ -17,9 +17,9 @@ import org.odata4j.core.OProperty;
 import org.odata4j.core.ORelatedEntitiesLinkInline;
 import org.odata4j.core.ORelatedEntityLinkInline;
 import org.odata4j.core.OSimpleObject;
-import org.odata4j.edm.EdmType;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmSimpleType;
+import org.odata4j.edm.EdmType;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
 import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
@@ -48,7 +48,7 @@ public class XmlFormatWriter {
   protected void writeProperty(XMLWriter2 writer, OProperty<?> prop, boolean isDocumentElement) {
     writeProperty(writer, prop.getName(), prop.getType(), prop.getValue(), isDocumentElement, true);
   }
-  
+
   @SuppressWarnings("unchecked")
   protected void writeProperty(XMLWriter2 writer, String name, EdmType type, Object value, boolean isDocumentElement, boolean writeType) {
     if (isDocumentElement)
@@ -217,7 +217,7 @@ public class XmlFormatWriter {
     } else {
       // for requests we include only the provided links
         // Note: It seems that OLinks for responses are only built using the
-        // title and OLinks for requests have the additional info in them 
+        // title and OLinks for requests have the additional info in them
         // alread.  I'm leaving that inconsistency in place for now but this
         // else and its preceding if could probably be unified.
         for (OLink olink : entityLinks) {
@@ -239,9 +239,9 @@ public class XmlFormatWriter {
         }
       }
     } // else entityLinks null
-    
+
     writeElement(writer, "category", null,
-        "term", ees.type.getFullyQualifiedTypeName(),
+        "term", ees.getType().getFullyQualifiedTypeName(),
         "scheme", scheme);
 
     writer.startElement("content");
@@ -291,7 +291,7 @@ public class XmlFormatWriter {
           writer.startElement("entry");
           writeEntry(writer, entity,
               entity.getProperties(), entity.getLinks(),
-              entity.getEntitySet().name,
+              entity.getEntitySet().getName(),
               baseUri, updated,
               entity.getEntitySet(), isResponse);
 
@@ -305,7 +305,7 @@ public class XmlFormatWriter {
         writer.startElement("entry");
         writeEntry(writer, entity,
               entity.getProperties(), entity.getLinks(),
-              entity.getEntitySet().name,
+              entity.getEntitySet().getName(),
               baseUri, updated,
               entity.getEntitySet(), isResponse);
 

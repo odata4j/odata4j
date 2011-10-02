@@ -2,9 +2,9 @@ package org.odata4j.edm;
 
 public class EdmNavigationProperty extends EdmPropertyBase {
 
-  public final EdmAssociation relationship;
-  public final EdmAssociationEnd fromRole;
-  public final EdmAssociationEnd toRole;
+  private final EdmAssociation relationship;
+  private final EdmAssociationEnd fromRole;
+  private final EdmAssociationEnd toRole;
 
   public EdmNavigationProperty(
       String name,
@@ -17,8 +17,21 @@ public class EdmNavigationProperty extends EdmPropertyBase {
     this.toRole = toRole;
   }
 
+  public EdmAssociation getRelationship() {
+    return relationship;
+  }
+
+  public EdmAssociationEnd getFromRole() {
+    return fromRole;
+  }
+
+  public EdmAssociationEnd getToRole() {
+    return toRole;
+  }
+
   @Override
   public String toString() {
     return String.format("EdmNavigationProperty[%s,rel=%s,from=%s,to=%s]", name, relationship, fromRole, toRole);
   }
+
 }

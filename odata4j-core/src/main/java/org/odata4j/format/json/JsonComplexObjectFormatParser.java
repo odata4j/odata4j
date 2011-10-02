@@ -3,6 +3,7 @@ package org.odata4j.format.json;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.odata4j.core.OComplexObject;
 import org.odata4j.core.OComplexObjects;
 import org.odata4j.core.ODataVersion;
@@ -117,9 +118,9 @@ public class JsonComplexObjectFormatParser extends JsonFormatParser implements F
         throw new IllegalArgumentException("unknown property " + name + " for " + returnType.getFullyQualifiedTypeName());
       }
       // TODO support complex type properties
-      if (!ep.type.isSimple())
+      if (!ep.getType().isSimple())
         throw new UnsupportedOperationException("Only simple properties supported");
-      props.add(JsonTypeConverter.parse(name, (EdmSimpleType) ep.type, event.asEndProperty().getValue()));
+      props.add(JsonTypeConverter.parse(name, (EdmSimpleType) ep.getType(), event.asEndProperty().getValue()));
     }
     else {
       throw new JsonParseException("expecting endproperty, got: " + event.toString());

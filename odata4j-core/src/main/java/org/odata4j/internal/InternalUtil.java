@@ -250,7 +250,7 @@ public class InternalUtil {
 
   public static String getEntityRelId(EdmEntitySet entitySet, OEntityKey entityKey) {
     String key = entityKey.toKeyString();
-    return entitySet.name + key;
+    return entitySet.getName() + key;
   }
 
   public static String toString(DateTime utc) {

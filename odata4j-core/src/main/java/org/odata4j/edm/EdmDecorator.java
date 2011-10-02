@@ -74,4 +74,5 @@ public interface EdmDecorator {
    */
   void decorateEntity(EdmEntitySet entitySet, EdmItem item, EdmItem originalQueryItem,
       List<OProperty<?>> props, boolean flatten, Locale locale, Map<String, String> options);
+
 }

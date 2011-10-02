@@ -32,7 +32,7 @@ public class AtomEntryFormatWriter extends XmlFormatWriter implements FormatWrit
     writer.startElement(new QName2("entry"), atom);
     writer.writeNamespace("d", d);
     writer.writeNamespace("m", m);
-    
+
     OEntity entity = entry.getEntity();
     writeEntry(writer, null, entity.getProperties(), entity.getLinks(),
         null, null, updated, entity.getEntitySet(), false);
@@ -50,7 +50,7 @@ public class AtomEntryFormatWriter extends XmlFormatWriter implements FormatWrit
     String baseUri = uriInfo.getBaseUri().toString();
     EdmEntitySet ees = target.getEntity().getEntitySet();
 
-    String entitySetName = ees.name;
+    String entitySetName = ees.getName();
     DateTime utc = new DateTime().withZone(DateTimeZone.UTC);
     String updated = InternalUtil.toString(utc);
 

@@ -55,7 +55,7 @@ class ConsumerFunctionCallRequest<T extends OObject>
 
   private final List<OFunctionParameter> params = new LinkedList<OFunctionParameter>();
   private final EdmFunctionImport function;
-  
+
   protected ConsumerFunctionCallRequest(ODataClient client, String serviceRootUri,
       EdmDataServices metadata, String lastSegment) {
     super(client, serviceRootUri, metadata, lastSegment);
@@ -80,17 +80,17 @@ class ConsumerFunctionCallRequest<T extends OObject>
         });
     return (Enumerable<T>) results;
   }
-  
+
   private static String toUriString(OFunctionParameter p) {
     OObject obj = p.getValue();
     if (obj instanceof OSimpleObject) {
       LiteralExpression le = Expression.literal(((OSimpleObject<?>)obj).getValue());
       return Expression.asFilterString(le);
-  
+
     }
     throw new UnsupportedOperationException("type not supported: " + obj.getType().getFullyQualifiedTypeName());
   }
-  
+
 
   // set parameters to the function call
   @Override
@@ -173,7 +173,7 @@ class ConsumerFunctionCallRequest<T extends OObject>
   public OFunctionRequest<T> pTime(String name, LocalDateTime value) {
     return parameter(name, OSimpleObjects.create(value, EdmSimpleType.TIME));
   }
-  
+
   @Override
   public OFunctionRequest<T> pString(String name, String value) {
     return parameter(name, OSimpleObjects.create(value, EdmSimpleType.STRING));
@@ -209,7 +209,7 @@ class ConsumerFunctionCallRequest<T extends OObject>
         ODataVersion version = InternalUtil.getDataServiceVersion(response.getHeaders().getFirst(ODataConstants.Headers.DATA_SERVICE_VERSION));
 
         parser = FormatParserFactory.getParser(
-            OFunctionParameters.getResultClass(function.returnType),
+            OFunctionParameters.getResultClass(function.getReturnType()),
             client.getFormatType(),
             new Settings(
                 version,
@@ -218,10 +218,10 @@ class ConsumerFunctionCallRequest<T extends OObject>
                 null, // entitykey
                 null, // fcMapping
                 true, // isResponse
-                function.returnType));
+                function.getReturnType()));
 
         current = parser.parse(client.getFeedReader(response));
-        if (function.returnType instanceof EdmCollectionType) {
+        if (function.getReturnType() instanceof EdmCollectionType) {
           iter = ((OCollection<OObject>) current).iterator();
         } else {
           done = true;

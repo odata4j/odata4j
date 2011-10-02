@@ -27,7 +27,7 @@ public class JsonServiceDocumentFormatWriter extends JsonFormatWriter<EdmDataSer
           else
             jw.writeSeparator();
 
-          jw.writeString(ees.name);
+          jw.writeString(ees.getName());
         }
 
       }

@@ -69,11 +69,11 @@ public class PropertyRequestResource extends BaseResource {
       // determine the expected entity set
       EdmDataServices metadata = producer.getMetadata();
       EdmEntitySet ees = metadata
-          .getEdmEntitySet(metadata.getEdmEntitySet(entitySetName).type
-              .findNavigationProperty(navProp).toRole.type);
+          .getEdmEntitySet(metadata.getEdmEntitySet(entitySetName).getType()
+              .findNavigationProperty(navProp).getToRole().getType());
 
-      // parse the request entity 
-      OEntity entity = getRequestEntity(context.getRequest(), metadata, ees.name, OEntityKey.parse(id));
+      // parse the request entity
+      OEntity entity = getRequestEntity(context.getRequest(), metadata, ees.getName(), OEntityKey.parse(id));
 
       // execute the create
       EntityResponse response = producer.createEntity(entitySetName, OEntityKey.parse(id), navProp, entity);

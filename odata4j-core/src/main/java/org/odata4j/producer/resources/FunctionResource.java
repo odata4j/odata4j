@@ -100,7 +100,7 @@ public class FunctionResource extends BaseResource {
         .header(ODataConstants.Headers.DATA_SERVICE_VERSION, version.asString)
         .build();
   }
-  
+
   /**
    * Takes a Map<String,String> filled with the request URIs custom parameters and
    * turns them into a map of strongly-typed OFunctionParameter objects.
@@ -110,9 +110,9 @@ public class FunctionResource extends BaseResource {
    */
   private static Map<String, OFunctionParameter> getFunctionParameters(EdmFunctionImport function, Map<String, String> opts) {
     Map<String, OFunctionParameter> m = new HashMap<String, OFunctionParameter>();
-    for (EdmFunctionParameter p : function.parameters) {
-      String val = opts.get(p.name);
-      m.put(p.name, null == val ? null : OFunctionParameters.parse(p.name, p.type, val));
+    for (EdmFunctionParameter p : function.getParameters()) {
+      String val = opts.get(p.getName());
+      m.put(p.getName(), null == val ? null : OFunctionParameters.parse(p.getName(), p.getType(), val));
     }
     return m;
   }

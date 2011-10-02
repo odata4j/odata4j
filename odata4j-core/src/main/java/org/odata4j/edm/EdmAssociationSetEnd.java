@@ -4,8 +4,8 @@ import java.util.List;
 
 public class EdmAssociationSetEnd extends EdmItem {
 
-  public final EdmAssociationEnd role;
-  public final EdmEntitySet entitySet;
+  private final EdmAssociationEnd role;
+  private final EdmEntitySet entitySet;
 
   public EdmAssociationSetEnd(EdmAssociationEnd role, EdmEntitySet entitySet) {
     this(role, entitySet, null, null);
@@ -17,4 +17,13 @@ public class EdmAssociationSetEnd extends EdmItem {
     this.role = role;
     this.entitySet = entitySet;
   }
+
+  public EdmAssociationEnd getRole() {
+    return role;
+  }
+
+  public EdmEntitySet getEntitySet() {
+    return entitySet;
+  }
+
 }

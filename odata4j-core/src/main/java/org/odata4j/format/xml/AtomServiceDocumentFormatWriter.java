@@ -37,8 +37,8 @@ public class AtomServiceDocumentFormatWriter extends XmlFormatWriter implements 
     for (EdmEntitySet ees : target.getEntitySets()) {
 
       writer.startElement("collection");
-      writer.writeAttribute("href", ees.name);
-      writeAtomTitle(writer, atom, ees.name);
+      writer.writeAttribute("href", ees.getName());
+      writeAtomTitle(writer, atom, ees.getName());
 
       writer.endElement("collection");
 

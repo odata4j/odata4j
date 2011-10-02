@@ -21,4 +21,5 @@ public enum EdmMultiplicity {
     }
     throw new IllegalArgumentException("Invalid symbolString " + symbolString);
   }
+
 }

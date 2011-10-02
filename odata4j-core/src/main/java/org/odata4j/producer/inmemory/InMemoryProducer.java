@@ -36,18 +36,18 @@ import org.odata4j.edm.EdmAssociationEnd;
 import org.odata4j.edm.EdmAssociationSet;
 import org.odata4j.edm.EdmAssociationSetEnd;
 import org.odata4j.edm.EdmDataServices;
+import org.odata4j.edm.EdmDecorator;
 import org.odata4j.edm.EdmEntityContainer;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmEntityType;
 import org.odata4j.edm.EdmFunctionImport;
+import org.odata4j.edm.EdmGenerator;
 import org.odata4j.edm.EdmMultiplicity;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmProperty.CollectionKind;
 import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmSimpleType;
-import org.odata4j.edm.EdmDecorator;
-import org.odata4j.edm.EdmGenerator;
 import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.OrderByExpression;
@@ -64,15 +64,15 @@ import org.odata4j.producer.edm.MetadataProducer;
 import org.odata4j.producer.exceptions.NotFoundException;
 import org.odata4j.producer.exceptions.NotImplementedException;
 
-/** 
+/**
  * An in-memory implementation of an ODATA Producer.  Uses the standard Java bean
- * and property model to access information within entities. 
+ * and property model to access information within entities.
  */
 public class InMemoryProducer implements ODataProducer, EdmGenerator {
 
   private final Logger log = Logger.getLogger(getClass().getName());
 
- 
+
 
   private static class EntityInfo<TEntity, TKey> {
     String entitySetName;
@@ -118,11 +118,11 @@ public class InMemoryProducer implements ODataProducer, EdmGenerator {
   private EdmDataServices metadata;
   private final EdmDecorator decorator;
   private final MetadataProducer metadataProducer;
-  
+
   private static final int DEFAULT_MAX_RESULTS = 100;
 
   /** Create a new instance of an in-memory POJO/JPA producer
-   * 
+   *
    * @param namespace - the namespace that the schema registrations will be in
    */
   public InMemoryProducer(String namespace) {
@@ -130,14 +130,14 @@ public class InMemoryProducer implements ODataProducer, EdmGenerator {
   }
 
   /** Create a new instance of an in-memory POJO/JPA producer
-   * 
+   *
    * @param namespace - the names apce that the schema registrations will be in
    * @param maxResults - the maximum number of entities to return
    */
   public InMemoryProducer(String namespace, int maxResults) {
     this(namespace, maxResults, null);
   }
-  
+
   public InMemoryProducer(String namespace, int maxResults, EdmDecorator decorator) {
     this.namespace = namespace;
     this.maxResults = maxResults;
@@ -152,7 +152,7 @@ public class InMemoryProducer implements ODataProducer, EdmGenerator {
     }
     return metadata;
   }
-  
+
   @Override
   public MetadataProducer getMetadataProducer() {
     return metadataProducer;
@@ -165,7 +165,7 @@ public class InMemoryProducer implements ODataProducer, EdmGenerator {
   public EdmDataServices generateEdm() {
     return null == metadata ? getMetadata() : metadata;
   }
-  
+
   private EdmDataServices buildMetadata() {
 
     List<EdmSchema> schemas = new ArrayList<EdmSchema>();
@@ -185,7 +185,7 @@ public class InMemoryProducer implements ODataProducer, EdmGenerator {
     Map<String, EdmEntityType> entityTypesByName = Enumerable.create(
             entityTypes).toMap(new Func1<EdmEntityType, String>() {
       public String apply(EdmEntityType input) {
-        return input.name;
+        return input.getName();
       }
     });
 
@@ -193,7 +193,7 @@ public class InMemoryProducer implements ODataProducer, EdmGenerator {
     Map<String, EdmEntitySet> entitySetByName = Enumerable.create(
             entitySets).toMap(new Func1<EdmEntitySet, String>() {
       public String apply(EdmEntitySet input) {
-        return input.name;
+        return input.getName();
       }
     });
 
@@ -214,7 +214,7 @@ public class InMemoryProducer implements ODataProducer, EdmGenerator {
             associations, containers,
             null == decorator ? null : decorator.getDocumentationForSchema(namespace, namespace),
             null == decorator ? null : decorator.getAnnotationsForSchema(namespace, namespace));
-    
+
     schemas.add(schema);
     EdmDataServices rt = new EdmDataServices(
             ODataConstants.DATA_SERVICE_VERSION, schemas,
@@ -233,15 +233,15 @@ public class InMemoryProducer implements ODataProducer, EdmGenerator {
       properties.addAll(toEdmProperties(entityInfo.properties, entitySetName));
 
       EdmEntityType eet = new EdmEntityType(
-              namespace, 
+              namespace,
               null,       // alias
-              entitySetName, 
+              entitySetName,
               null,     // hasSream
               Enumerable.create(ID_PROPNAME).toList(),  // keys
               null,     // basetype
-              properties, 
+              properties,
               null,     // nav props
-              null == this.decorator ? null : this.decorator.getDocumentationForEntityType(namespace, entitySetName), 
+              null == this.decorator ? null : this.decorator.getDocumentationForEntityType(namespace, entitySetName),
               null == this.decorator ? null : this.decorator.getAnnotationsForEntityType(namespace, entitySetName));
 
       EdmEntitySet ees = new EdmEntitySet(entitySetName, eet);
@@ -292,11 +292,11 @@ public class InMemoryProducer implements ODataProducer, EdmGenerator {
       EdmMultiplicity m1 = EdmMultiplicity.MANY;
       EdmMultiplicity m2 = EdmMultiplicity.ONE;
 
-      String assocName = String.format("FK_%s_%s", eet1.name, eet2.name);
-      EdmAssociationEnd assocEnd1 = new EdmAssociationEnd(eet1.name,
+      String assocName = String.format("FK_%s_%s", eet1.getName(), eet2.getName());
+      EdmAssociationEnd assocEnd1 = new EdmAssociationEnd(eet1.getName(),
               eet1, m1);
-      String assocEnd2Name = eet2.name;
-      if (assocEnd2Name.equals(eet1.name))
+      String assocEnd2Name = eet2.getName();
+      if (assocEnd2Name.equals(eet1.getName()))
           assocEnd2Name = assocEnd2Name + "1";
 
       EdmAssociationEnd assocEnd2 = new EdmAssociationEnd(assocEnd2Name, eet2, m2);
@@ -304,8 +304,8 @@ public class InMemoryProducer implements ODataProducer, EdmGenerator {
 
       associations.add(assoc);
 
-      EdmEntitySet ees1 = entitySetByName.get(eet1.name);
-      EdmEntitySet ees2 = entitySetByName.get(eet2.name);
+      EdmEntitySet ees1 = entitySetByName.get(eet1.getName());
+      EdmEntitySet ees2 = entitySetByName.get(eet2.getName());
       EdmAssociationSet eas = new EdmAssociationSet(assocName, assoc,
               new EdmAssociationSetEnd(assocEnd1, ees1),
               new EdmAssociationSetEnd(assocEnd2, ees2));
@@ -313,7 +313,7 @@ public class InMemoryProducer implements ODataProducer, EdmGenerator {
       associationSets.add(eas);
 
       EdmNavigationProperty np = new EdmNavigationProperty(assocProp,
-              assoc, assoc.end1, assoc.end2);
+              assoc, assoc.getEnd1(), assoc.getEnd2());
 
       eet1.addNavigationProperty(np);
     }
@@ -334,14 +334,14 @@ public class InMemoryProducer implements ODataProducer, EdmGenerator {
       String eetName2 = entityNameByClass.get(clazz2);
       if (eetName2 == null)
         continue;
-      
+
       final EdmEntityType eet2 = entityTypesByName.get(eetName2);
 
       try {
         EdmAssociation assoc = Enumerable.create(associations).firstOrNull(new Predicate1<EdmAssociation>() {
 
           public boolean apply(EdmAssociation input) {
-            return input.end1.type.equals(eet2) && input.end2.type.equals(eet1);
+            return input.getEnd1().getType().equals(eet2) && input.getEnd2().getType().equals(eet1);
           }
         });
 
@@ -364,26 +364,26 @@ public class InMemoryProducer implements ODataProducer, EdmGenerator {
             }
           }
 
-          String assocName = String.format("FK_%s_%s", eet1.name, eet2.name);
-          EdmAssociationEnd assocEnd1 = new EdmAssociationEnd(eet1.name, eet1, m1);
-          String assocEnd2Name = eet2.name;
-          if (assocEnd2Name.equals(eet1.name))
+          String assocName = String.format("FK_%s_%s", eet1.getName(), eet2.getName());
+          EdmAssociationEnd assocEnd1 = new EdmAssociationEnd(eet1.getName(), eet1, m1);
+          String assocEnd2Name = eet2.getName();
+          if (assocEnd2Name.equals(eet1.getName()))
               assocEnd2Name = assocEnd2Name + "1";
           EdmAssociationEnd assocEnd2 = new EdmAssociationEnd(assocEnd2Name, eet2, m2);
           assoc = new EdmAssociation(namespace, null, assocName, assocEnd1, assocEnd2);
 
           associations.add(assoc);
 
-          EdmEntitySet ees1 = entitySetByName.get(eet1.name);
-          EdmEntitySet ees2 = entitySetByName.get(eet2.name);
+          EdmEntitySet ees1 = entitySetByName.get(eet1.getName());
+          EdmEntitySet ees2 = entitySetByName.get(eet2.getName());
           EdmAssociationSet eas = new EdmAssociationSet(assocName, assoc, new EdmAssociationSetEnd(assocEnd1, ees1), new EdmAssociationSetEnd(assocEnd2, ees2));
           associationSets.add(eas);
 
-          fromRole = assoc.end1;
-          toRole = assoc.end2;
+          fromRole = assoc.getEnd1();
+          toRole = assoc.getEnd2();
         } else {
-          fromRole = assoc.end2;
-          toRole = assoc.end1;
+          fromRole = assoc.getEnd2();
+          toRole = assoc.getEnd1();
         }
 
         EdmNavigationProperty np = new EdmNavigationProperty(assocProp, assoc, fromRole, toRole);
@@ -423,7 +423,7 @@ public class InMemoryProducer implements ODataProducer, EdmGenerator {
   }
 
   /** Register a new ODATA endpoint for an entity set.
-   * 
+   *
    * @param entityClass the class of the entities that are to be stored in the set
    * @param keyClass the class of the key element of the set
    * @param entitySetName the alias the set will be known by; this is what is used in the ODATA URL
@@ -458,10 +458,10 @@ public class InMemoryProducer implements ODataProducer, EdmGenerator {
   }
 
   protected OEntity toOEntity(EdmEntitySet ees, Object obj, List<EntitySimpleProperty> expand) {
-    EntityInfo<?, ?> ei = eis.get(ees.name);
+    EntityInfo<?, ?> ei = eis.get(ees.getName());
     final List<OLink> links = new ArrayList<OLink>();
     final List<OProperty<?>> properties = new ArrayList<OProperty<?>>();
-    
+
     Object keyValue = ei.properties.getPropertyValue(obj, ID_PROPNAME);
 
     for (String propName : ei.properties.getPropertyNames()) {
@@ -475,7 +475,7 @@ public class InMemoryProducer implements ODataProducer, EdmGenerator {
     }
 
     if (expand != null && !expand.isEmpty()) {
-      EdmEntityType edmEntityType = ees.type;
+      EdmEntityType edmEntityType = ees.getType();
 
       for (final EntitySimpleProperty propPath : expand) {
 
@@ -487,7 +487,7 @@ public class InMemoryProducer implements ODataProducer, EdmGenerator {
 
         if (edmNavProperty == null) continue;
 
-        if (edmNavProperty.toRole.multiplicity == EdmMultiplicity.MANY) {
+        if (edmNavProperty.getToRole().getMultiplicity() == EdmMultiplicity.MANY) {
           List<OEntity> relatedEntities = new ArrayList<OEntity>();
           Iterable<?> values = ei.properties.getCollectionValue(obj, prop);
           if (values != null) {
@@ -532,7 +532,7 @@ public class InMemoryProducer implements ODataProducer, EdmGenerator {
 
     // for every navigation propety that we didn' expand we must place an deferred
     // OLink if the nav prop is selected
-    for (final EdmNavigationProperty ep : ees.type.getNavigationProperties()) {
+    for (final EdmNavigationProperty ep : ees.getType().getNavigationProperties()) {
       // if $select is ever supported, check here and only include nave props
       // that are selected
       boolean expanded = null != Enumerable.create(links).firstOrNull(new Predicate1<OLink>() {
@@ -545,7 +545,7 @@ public class InMemoryProducer implements ODataProducer, EdmGenerator {
 
       if (!expanded) {
         // defer
-        if (ep.toRole.multiplicity == EdmMultiplicity.MANY) {
+        if (ep.getToRole().getMultiplicity() == EdmMultiplicity.MANY) {
           links.add(OLinks.relatedEntities(null, ep.name, null));
         } else {
           links.add(OLinks.relatedEntity(null, ep.name, null));
@@ -667,8 +667,8 @@ public class InMemoryProducer implements ODataProducer, EdmGenerator {
       Class<?> propType = model.getPropertyType(propName);
       EdmSimpleType type = findEdmType(propType);
       if (type == null) continue;
-      rt.add(new EdmProperty(propName, type, true, null, null, null, null, null, null, null, null, null, CollectionKind.None, 
-              null == this.decorator ? null : this.decorator.getDocumentationForProperty(namespace, structuralTypename, propName), 
+      rt.add(new EdmProperty(propName, type, true, null, null, null, null, null, null, null, null, null, CollectionKind.NONE,
+              null == this.decorator ? null : this.decorator.getDocumentationForProperty(namespace, structuralTypename, propName),
               null == this.decorator ? null : this.decorator.getAnnotationsForProperty(namespace, structuralTypename, propName)));
     }
 
@@ -742,5 +742,5 @@ public class InMemoryProducer implements ODataProducer, EdmGenerator {
   public BaseResponse callFunction(EdmFunctionImport name, java.util.Map<String, OFunctionParameter> params, QueryInfo queryInfo) {
     throw new NotImplementedException();
   }
-  
+
 }

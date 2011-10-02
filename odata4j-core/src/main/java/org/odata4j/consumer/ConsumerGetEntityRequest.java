@@ -22,7 +22,7 @@ class ConsumerGetEntityRequest<T> extends ConsumerEntityRequestBase<T> implement
 
   private final Class<T> entityType;
   private final FeedCustomizationMapping fcMapping;
-  
+
   private String select;
   private String expand;
 
@@ -67,16 +67,16 @@ class ConsumerGetEntityRequest<T> extends ConsumerEntityRequestBase<T> implement
     //  the first segment contains the entitySetName we start from
     EdmEntitySet entitySet = getMetadata().getEdmEntitySet(getSegments().get(0).segment);
     for (EntitySegment segment : getSegments().subList(1, getSegments().size())) {
-      EdmNavigationProperty navProperty = entitySet.type.findNavigationProperty(segment.segment);
-      entitySet = getMetadata().getEdmEntitySet(navProperty.toRole.type);
+      EdmNavigationProperty navProperty = entitySet.getType().findNavigationProperty(segment.segment);
+      entitySet = getMetadata().getEdmEntitySet(navProperty.getToRole().getType());
     }
 
     OEntityKey key = Enumerable.create(getSegments()).last().key;
 
-    // TODO determine the service version from header (and metadata?) 
+    // TODO determine the service version from header (and metadata?)
     FormatParser<Feed> parser = FormatParserFactory
         .getParser(Feed.class, getClient().getFormatType(),
-            new Settings(ODataConstants.DATA_SERVICE_VERSION, getMetadata(), entitySet.name, key, fcMapping));
+            new Settings(ODataConstants.DATA_SERVICE_VERSION, getMetadata(), entitySet.getName(), key, fcMapping));
 
     Entry entry = Enumerable.create(parser.parse(getClient().getFeedReader(response)).getEntries())
         .firstOrNull();

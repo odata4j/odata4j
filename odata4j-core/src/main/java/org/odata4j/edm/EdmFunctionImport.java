@@ -4,11 +4,11 @@ import java.util.List;
 
 public class EdmFunctionImport extends EdmItem {
 
-  public final String name;
-  public final EdmEntitySet entitySet;
-  public final EdmType returnType;
-  public final String httpMethod;
-  public final List<EdmFunctionParameter> parameters;
+  private final String name;
+  private final EdmEntitySet entitySet;
+  private final EdmType returnType;
+  private final String httpMethod;
+  private final List<EdmFunctionParameter> parameters;
 
   public EdmFunctionImport(String name, EdmEntitySet entitySet, EdmType returnType,
       String httpMethod, List<EdmFunctionParameter> parameters) {
@@ -23,6 +23,26 @@ public class EdmFunctionImport extends EdmItem {
     this.returnType = returnType;
     this.httpMethod = httpMethod;
     this.parameters = parameters;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public EdmEntitySet getEntitySet() {
+    return entitySet;
+  }
+
+  public EdmType getReturnType() {
+    return returnType;
+  }
+
+  public String getHttpMethod() {
+    return httpMethod;
+  }
+
+  public List<EdmFunctionParameter> getParameters() {
+    return parameters;
   }
 
 }

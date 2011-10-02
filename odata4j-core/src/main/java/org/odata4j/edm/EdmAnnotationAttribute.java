@@ -11,7 +11,9 @@ package org.odata4j.edm;
  * @see <a href="http://msdn.microsoft.com/en-us/library/ee473438.aspx">[msdn] Annotation Attributes (CSDL)</a>
  */
 public class EdmAnnotationAttribute extends EdmAnnotation<String> {
+
   public EdmAnnotationAttribute(String namespaceUri, String namespacePrefix, String name, String value) {
     super(namespaceUri, namespacePrefix, name, String.class, value);
   }
+
 }

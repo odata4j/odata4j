@@ -24,7 +24,7 @@ public class OFuncs {
   public static Func1<EdmEntityType, String> edmEntityTypeName() {
     return new Func1<EdmEntityType, String>() {
       public String apply(EdmEntityType input) {
-        return input.name;
+        return input.getName();
       }
     };
   }
@@ -32,11 +32,11 @@ public class OFuncs {
   public static Func1<EdmEntitySet, String> edmEntitySetName() {
     return new Func1<EdmEntitySet, String>() {
       public String apply(EdmEntitySet input) {
-        return input.name;
+        return input.getName();
       }
     };
   }
-  
+
   public static Func1<EdmType, String> edmTypeFullyQualifiedTypeName() {
     return new Func1<EdmType, String>() {
       public String apply(EdmType input) {
@@ -69,7 +69,7 @@ public class OFuncs {
       }
     };
   }
-  
+
   public static Func1<EntitySetInfo, String> entitySetInfoTitle() {
     return new Func1<EntitySetInfo, String>() {
       public String apply(EntitySetInfo input) {

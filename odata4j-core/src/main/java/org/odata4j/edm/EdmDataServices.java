@@ -17,11 +17,11 @@ import org.odata4j.producer.exceptions.NotFoundException;
  */
 public class EdmDataServices {
 
+  public static final EdmDataServices EMPTY = new EdmDataServices(null, new ArrayList<EdmSchema>());
+
   private final ODataVersion version;
   private final List<EdmSchema> schemas;
   private final List<Namespace> namespaces; // for Annotations
-
-  public static final EdmDataServices EMPTY = new EdmDataServices(null, new ArrayList<EdmSchema>());
 
   public EdmDataServices(ODataVersion version, List<EdmSchema> schemas) {
     this(version, schemas, null);
@@ -60,21 +60,21 @@ public class EdmDataServices {
         .firstOrNull(new Predicate1<EdmEntitySet>() {
           @Override
           public boolean apply(EdmEntitySet input) {
-            return type == input.type;
+            return type == input.getType();
           }
         });
 
     if (ees != null) {
       return ees;
     }
-    throw new NotFoundException("EdmEntitySet " + type.name + " is not found");
+    throw new NotFoundException("EdmEntitySet " + type.getName() + " is not found");
   }
 
   public EdmEntitySet findEdmEntitySet(String entitySetName) {
     for (EdmSchema schema : this.schemas) {
-      for (EdmEntityContainer eec : schema.entityContainers) {
-        for (EdmEntitySet ees : eec.entitySets) {
-          if (ees.name.equals(entitySetName)) {
+      for (EdmEntityContainer eec : schema.getEntityContainers()) {
+        for (EdmEntitySet ees : eec.getEntitySets()) {
+          if (ees.getName().equals(entitySetName)) {
             return ees;
           }
         }
@@ -85,9 +85,9 @@ public class EdmDataServices {
 
   public EdmFunctionImport findEdmFunctionImport(String functionImportName) {
     for (EdmSchema schema : this.schemas) {
-      for (EdmEntityContainer eec : schema.entityContainers) {
-        for (EdmFunctionImport efi : eec.functionImports) {
-          if (efi.name.equals(functionImportName)) {
+      for (EdmEntityContainer eec : schema.getEntityContainers()) {
+        for (EdmFunctionImport efi : eec.getFunctionImports()) {
+          if (efi.getName().equals(functionImportName)) {
             return efi;
           }
         }
@@ -98,7 +98,7 @@ public class EdmDataServices {
 
   public EdmComplexType findEdmComplexType(String complexTypeFQName) {
     for (EdmSchema schema : this.schemas) {
-      for (EdmComplexType ect : schema.complexTypes) {
+      for (EdmComplexType ect : schema.getComplexTypes()) {
         if (ect.getFullyQualifiedTypeName().equals(complexTypeFQName)) {
           return ect;
         }
@@ -109,7 +109,7 @@ public class EdmDataServices {
 
   public EdmType findEdmEntityType(String fqName) {
     for (EdmSchema schema : this.schemas) {
-      for (EdmEntityType et : schema.entityTypes) {
+      for (EdmEntityType et : schema.getEntityTypes()) {
         if (et.getFullyQualifiedTypeName().equals(fqName)) {
           return et;
         }
@@ -120,14 +120,14 @@ public class EdmDataServices {
 
   public EdmPropertyBase findEdmProperty(String propName) {
     for (EdmSchema schema : this.schemas) {
-      for (EdmEntityContainer eec : schema.entityContainers) {
-        for (EdmEntitySet ees : eec.entitySets) {
-          for (EdmNavigationProperty ep : ees.type.getNavigationProperties()) {
+      for (EdmEntityContainer eec : schema.getEntityContainers()) {
+        for (EdmEntitySet ees : eec.getEntitySets()) {
+          for (EdmNavigationProperty ep : ees.getType().getNavigationProperties()) {
             if (ep.name.equals(propName)) {
               return ep;
             }
           }
-          for (final EdmProperty ep : ees.type.getProperties()) {
+          for (final EdmProperty ep : ees.getType().getProperties()) {
             if (ep.name.equals(propName)) {
               return ep;
             }
@@ -142,7 +142,7 @@ public class EdmDataServices {
   public Iterable<EdmEntityType> getEntityTypes() {
     List<EdmEntityType> rt = new ArrayList<EdmEntityType>();
     for (EdmSchema schema : this.schemas) {
-      rt.addAll(schema.entityTypes);
+      rt.addAll(schema.getEntityTypes());
     }
     return rt;
   }
@@ -150,7 +150,7 @@ public class EdmDataServices {
   public Iterable<EdmComplexType> getComplexTypes() {
     List<EdmComplexType> rt = new ArrayList<EdmComplexType>();
     for (EdmSchema schema : this.schemas) {
-      rt.addAll(schema.complexTypes);
+      rt.addAll(schema.getComplexTypes());
     }
     return rt;
   }
@@ -163,7 +163,7 @@ public class EdmDataServices {
   public Iterable<EdmAssociation> getAssociations() {
     List<EdmAssociation> rt = new ArrayList<EdmAssociation>();
     for (EdmSchema schema : this.schemas) {
-      rt.addAll(schema.associations);
+      rt.addAll(schema.getAssociations());
     }
     return rt;
   }
@@ -171,8 +171,8 @@ public class EdmDataServices {
   public Iterable<EdmEntitySet> getEntitySets() {
     List<EdmEntitySet> rt = new ArrayList<EdmEntitySet>();
     for (EdmSchema schema : this.schemas) {
-      for (EdmEntityContainer eec : schema.entityContainers) {
-        rt.addAll(eec.entitySets);
+      for (EdmEntityContainer eec : schema.getEntityContainers()) {
+        rt.addAll(eec.getEntitySets());
       }
     }
     return rt;
@@ -180,7 +180,7 @@ public class EdmDataServices {
 
   public EdmSchema findSchema(String namespace) {
     for (EdmSchema schema : this.schemas) {
-      if (schema.namespace.equals(namespace)) {
+      if (schema.getNamespace().equals(namespace)) {
         return schema;
       }
     }

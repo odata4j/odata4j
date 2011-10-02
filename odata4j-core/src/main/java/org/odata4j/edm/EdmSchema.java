@@ -6,12 +6,12 @@ import org.core4j.Enumerable;
 
 public class EdmSchema extends EdmItem {
 
-  public final String namespace;
-  public final String alias;
-  public final List<EdmEntityType> entityTypes;
-  public final List<EdmComplexType> complexTypes;
-  public final List<EdmAssociation> associations;
-  public final List<EdmEntityContainer> entityContainers;
+  private final String namespace;
+  private final String alias;
+  private final List<EdmEntityType> entityTypes;
+  private final List<EdmComplexType> complexTypes;
+  private final List<EdmAssociation> associations;
+  private final List<EdmEntityContainer> entityContainers;
 
   public EdmSchema(String namespace, String alias, List<EdmEntityType> entityTypes,
       List<EdmComplexType> complexTypes, List<EdmAssociation> associations,
@@ -32,9 +32,33 @@ public class EdmSchema extends EdmItem {
     this.entityContainers = entityContainers == null ? Enumerable.empty(EdmEntityContainer.class).toList() : entityContainers;
   }
 
+  public String getNamespace() {
+    return namespace;
+  }
+
+  public String getAlias() {
+    return alias;
+  }
+
+  public List<EdmEntityType> getEntityTypes() {
+    return entityTypes;
+  }
+
+  public List<EdmComplexType> getComplexTypes() {
+    return complexTypes;
+  }
+
+  public List<EdmAssociation> getAssociations() {
+    return associations;
+  }
+
+  public List<EdmEntityContainer> getEntityContainers() {
+    return entityContainers;
+  }
+
   public EdmEntityContainer findEntityContainer(String name) {
     for (EdmEntityContainer ec : entityContainers) {
-      if (ec.name.equals(name)) {
+      if (ec.getName().equals(name)) {
         return ec;
       }
     }

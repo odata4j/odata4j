@@ -28,7 +28,7 @@ import org.odata4j.internal.FeedCustomizationMapping;
 
 /**
  * <code>ODataConsumer</code> is the client-side interface to an OData service.
- * 
+ *
  * <p>Use {@link #create(String)} or one of the other static factory methods to connect to an existing OData service.</p>
  */
 public class ODataConsumer {
@@ -161,9 +161,9 @@ public class ODataConsumer {
   }
 
   /**
-   * Gets the OData service uri.  
+   * Gets the OData service uri.
    * <p>e.g. <code>http://services.odata.org/Northwind/Northwind.svc/</code></p>
-   * 
+   *
    * @return the service uri
    */
   public String getServiceRootUri() {
@@ -188,7 +188,7 @@ public class ODataConsumer {
 
     /**
      * Sets a preferred {@link FormatType}. Defaults to {@code FormatType.ATOM}.
-     * 
+     *
      * @param formatType  the format type
      * @return this builder
      */
@@ -199,7 +199,7 @@ public class ODataConsumer {
 
     /**
      * Sets a specific {@link ClientFactory}.
-     * 
+     *
      * @param clientFactory  the jersey client factory
      * @return this builder
      */
@@ -210,9 +210,9 @@ public class ODataConsumer {
 
     /**
      * Sets one or more client behaviors.
-     * 
+     *
      * Client behaviors transform http requests to interact with services that require custom extensions.
-     * 
+     *
      * @param clientBehaviors  the client behaviors
      * @return this builder
      */
@@ -223,7 +223,7 @@ public class ODataConsumer {
 
     /**
      * Builds the {@link ODataConsumer} object.
-     * 
+     *
      * @return a new OData consumer
      */
     public ODataConsumer build() {
@@ -236,7 +236,7 @@ public class ODataConsumer {
 
   /**
    * Constructs a new builder for an {@link ODataConsumer} object.
-   * 
+   *
    * @param serviceRootUri  the OData service root uri
    */
   public static Builder newBuilder(String serviceRootUri) {
@@ -245,9 +245,9 @@ public class ODataConsumer {
 
   /**
    * Creates a new consumer for the given OData service uri.
-   * 
+   *
    * Wrapper for {@code ODataConsumer.newBuilder(serviceRootUri).build()}.
-   * 
+   *
    * @param serviceRootUri  the service uri <p>e.g. <code>http://services.odata.org/Northwind/Northwind.svc/</code></p>
    * @return a new OData consumer
    */
@@ -257,7 +257,7 @@ public class ODataConsumer {
 
   /**
    * Lists all top-level entity-sets for the OData service.
-   * 
+   *
    * @return the entity-set information
    */
   public Enumerable<EntitySetInfo> getEntitySets() {
@@ -267,7 +267,7 @@ public class ODataConsumer {
 
   /**
    * Gets the OData service metadata.
-   * 
+   *
    * @return the service metadata
    * @see <a href="http://msdn.microsoft.com/en-us/library/dd541087(v=prot.10).aspx">[msdn] 2.2 &lt;edmx:DataServices&gt;</a>
    */
@@ -280,7 +280,7 @@ public class ODataConsumer {
   /**
    * Gets entities referred to by the given related-entities link.
    * <p>The query-request builder returned can be used for further server-side filtering.  Call {@link OQueryRequest#execute()} or simply iterate to issue request.</p>
-   * 
+   *
    * @param link  the link
    * @return a new query-request builder
    */
@@ -292,7 +292,7 @@ public class ODataConsumer {
   /**
    * Gets entities from the given entity-set.
    * <p>The query-request builder returned can be used for further server-side filtering.  Call {@link OQueryRequest#execute()} or simply iterate to issue request.</p>
-   * 
+   *
    * @param entitySetHref  the entity-set href
    * @return a new query-request builder
    */
@@ -303,7 +303,7 @@ public class ODataConsumer {
   /**
    * Gets entities from the given entity-set.  The entities will be represented as the given java-type.
    * <p>The query-request builder returned can be used for further server-side filtering.  Call {@link OQueryRequest#execute()} or simply iterate to issue request.</p>
-   *  
+   *
    * @param <T>  the entity representation as a java type
    * @param entityType  the entity representation as a java type
    * @param entitySetHref  the entity-set href
@@ -317,7 +317,7 @@ public class ODataConsumer {
   /**
    * Gets the entity referred to by the given related entity link.
    * <p>The entity-request builder returned can be used for further navigation.  Call {@link OEntityRequest#execute()} to issue request.</p>
-   * 
+   *
    * @param link  the link
    * @return a new entity-request builder
    */
@@ -329,7 +329,7 @@ public class ODataConsumer {
   /**
    * Gets the entity by entity-set name and entity-key value.
    * <p>The entity-request builder returned can be used for further navigation.  Call {@link OEntityRequest#execute()} to issue request.</p>
-   * 
+   *
    * @param entitySetName  the name of the entity-set
    * @param keyValue  the entity-key value
    * @return a new entity-request builder
@@ -341,18 +341,18 @@ public class ODataConsumer {
   /**
    * Gets the latest version of an entity using the given entity as a template.
    * <p>The entity-request builder returned can be used for further navigation.  Call {@link OEntityRequest#execute()} to issue request.</p>
-   *  
+   *
    * @param entity  an existing entity to use as a template, using its entity-set and entity-key
    * @return a new entity-request builder
    */
   public OEntityGetRequest<OEntity> getEntity(OEntity entity) {
-    return getEntity(entity.getEntitySet().name, entity.getEntityKey());
+    return getEntity(entity.getEntitySet().getName(), entity.getEntityKey());
   }
 
   /**
    * Gets the entity by entity-set name and entity-key.
    * <p>The entity-request builder returned can be used for further navigation.  Call {@link OEntityRequest#execute()} to issue request.</p>
-   * 
+   *
    * @param entitySetName  the name of the entity-set
    * @param key  the entity-key
    * @return a new entity-request builder
@@ -364,7 +364,7 @@ public class ODataConsumer {
   /**
    * Gets the entity by entity-set name and entity-key value.  The entity will be represented as the given java-type.
    * <p>The entity-request builder returned can be used for further navigation.  Call {@link OEntityRequest#execute()} to issue request.</p>
-   * 
+   *
    * @param <T>  the entity representation as a java type
    * @param entityType  the entity representation as a java type
    * @param entitySetName  the name of the entity-set
@@ -378,7 +378,7 @@ public class ODataConsumer {
   /**
    * Gets the entity by entity-set name and entity-key.  The entity will be represented as the given java-type.
    * <p>The entity-request builder returned can be used for further navigation.  Call {@link OEntityRequest#execute()} to issue request.</p>
-   * 
+   *
    * @param <T>  the entity representation as a java type
    * @param entityType   the entity representation as a java type
    * @param entitySetName  the name of the entity-set
@@ -395,7 +395,7 @@ public class ODataConsumer {
   /**
    * Creates a new entity in the given entity-set.
    * <p>The create-request builder returned can be used to construct the new entity.  Call {@link OCreateRequest#execute()} to issue request.</p>
-   * 
+   *
    * @param entitySetName  the name of the entity-set
    * @return a new create-request builder
    */
@@ -408,30 +408,30 @@ public class ODataConsumer {
   /**
    * Modifies an existing entity using update semantics.
    * <p>The modification-request builder returned can be used to redefine the new entity.  Call {@link OModifyRequest#execute()} to issue request.</p>
-   * 
+   *
    * @param entity  the entity identity
    * @return a new modification-request builder
    */
   public OModifyRequest<OEntity> updateEntity(OEntity entity) {
     return new ConsumerEntityModificationRequest<OEntity>(entity, client, serviceRootUri, getMetadata(),
-        entity.getEntitySet().name, entity.getEntityKey());
+        entity.getEntitySet().getName(), entity.getEntityKey());
   }
 
   /**
    * Modifies an existing entity using merge semantics.
    * <p>The modification-request builder returned can be used to modify the new entity.  Call {@link OModifyRequest#execute()} to issue request.</p>
-   * 
+   *
    * @param entity  the entity identity
    * @return a new modification-request builder
    */
   public OModifyRequest<OEntity> mergeEntity(OEntity entity) {
-    return mergeEntity(entity.getEntitySet().name, entity.getEntityKey());
+    return mergeEntity(entity.getEntitySet().getName(), entity.getEntityKey());
   }
 
   /**
    * Modifies an existing entity using merge semantics.
    * <p>The modification-request builder returned can be used to modify the new entity.  Call {@link OModifyRequest#execute()} to issue request.</p>
-   *  
+   *
    * @param entitySetName  the entity identity entity-set name
    * @param keyValue  the entity identity key value
    * @return a new modification-request builder
@@ -443,7 +443,7 @@ public class ODataConsumer {
   /**
    * Modifies an existing entity using merge semantics.
    * <p>The modification-request builder returned can be used to modify the new entity.  Call {@link OModifyRequest#execute()} to issue request.</p>
-   * 
+   *
    * @param entitySetName  the entity identity entity-set name
    * @param key  the entity identity key
    * @return a new modification-request builder
@@ -456,7 +456,7 @@ public class ODataConsumer {
   /**
    * Deletes an existing entity.
    * <p>The entity-request builder returned can be used for further navigation.  Call {@link OEntityRequest#execute()} to issue request.</p>
-   * 
+   *
    * @param entity  the entity identity
    * @return a new entity-request builder
    */
@@ -467,7 +467,7 @@ public class ODataConsumer {
   /**
    * Deletes an existing entity.
    * <p>The entity-request builder returned can be used for further navigation.  Call {@link OEntityRequest#execute()} to issue request.</p>
-   * 
+   *
    * @param entitySetName  the entity identity entity-set name
    * @param keyValue  the entity identity key value
    * @return a new entity-request builder
@@ -479,7 +479,7 @@ public class ODataConsumer {
   /**
    * Deletes an existing entity.
    * <p>The entity-request builder returned can be used for further navigation.  Call {@link OEntityRequest#execute()} to issue request.</p>
-   * 
+   *
    * @param entitySetName  the entity identity entity-set name
    * @param key  the entity identity key
    * @return a new entity-request builder
@@ -497,11 +497,11 @@ public class ODataConsumer {
         if (ees == null) {
           rt = null;
         } else {
-          EdmEntityType eet = ees.type;
+          EdmEntityType eet = ees.getType();
           for (EdmProperty ep : eet.getProperties()) {
-            if ("SyndicationTitle".equals(ep.fcTargetPath) && "false".equals(ep.fcKeepInContent))
+            if ("SyndicationTitle".equals(ep.getFcTargetPath()) && "false".equals(ep.getFcKeepInContent()))
               rt.titlePropName = ep.name;
-            if ("SyndicationSummary".equals(ep.fcTargetPath) && "false".equals(ep.fcKeepInContent))
+            if ("SyndicationSummary".equals(ep.getFcTargetPath()) && "false".equals(ep.getFcKeepInContent()))
               rt.summaryPropName = ep.name;
           }
         }
@@ -540,12 +540,12 @@ public class ODataConsumer {
       return rt;
     }
   }
-  
+
   //TODO(0.5) javadoc
   public OQueryRequest<OEntityId> getLinks(OEntityId sourceEntity, String targetNavProp) {
     return new ConsumerQueryLinksRequest(client, serviceRootUri, getMetadata(), sourceEntity, targetNavProp);
   }
-  
+
   public OEntityRequest<Void> createLink(OEntityId sourceEntity, String targetNavProp, OEntityId targetEntity) {
     return new ConsumerCreateLinkRequest(client, serviceRootUri, getMetadata(), sourceEntity, targetNavProp, targetEntity);
   }

@@ -118,7 +118,7 @@ public class MetadataEdmGenerator implements EdmGenerator {
             //new EdmCollectionType(getCollectionOfType(propertyRef), propertyRef), // EdmType type,
             propertyRef,
             false, // boolean nullable,
-            CollectionKind.List,
+            CollectionKind.LIST,
             null, // documentation
             null); // annotations
     props.add(ep);
@@ -134,7 +134,7 @@ public class MetadataEdmGenerator implements EdmGenerator {
             Edm.Documentation.Summary,
             EdmSimpleType.STRING,
             true, // boolean nullable,
-            CollectionKind.None,
+            CollectionKind.NONE,
             null, // documentation
             null); // annotations
     props.add(ep);
@@ -143,7 +143,7 @@ public class MetadataEdmGenerator implements EdmGenerator {
             Edm.Documentation.LongDescription,
             EdmSimpleType.STRING,
             true, // boolean nullable,
-            CollectionKind.None,
+            CollectionKind.NONE,
             null, // documentation
             null); // annotations
     props.add(ep);
@@ -417,10 +417,10 @@ public class MetadataEdmGenerator implements EdmGenerator {
             entitySet);
 
     EdmNavigationProperty navigationProperty = new EdmNavigationProperty(
-            assoc.name,
+            assoc.getName(),
             assoc,
-            assoc.end1,
-            assoc.end2);
+            assoc.getEnd1(),
+            assoc.getEnd2());
 
     schemaType.addNavigationProperty(navigationProperty);
 
@@ -435,10 +435,10 @@ public class MetadataEdmGenerator implements EdmGenerator {
             complexSet);
 
     navigationProperty = new EdmNavigationProperty(
-            assoc.name,
+            assoc.getName(),
             assoc,
-            assoc.end1,
-            assoc.end2);
+            assoc.getEnd1(),
+            assoc.getEnd2());
 
     schemaType.addNavigationProperty(navigationProperty);
 
@@ -453,10 +453,10 @@ public class MetadataEdmGenerator implements EdmGenerator {
             propertySet);
 
     navigationProperty = new EdmNavigationProperty(
-            assoc.name,
+            assoc.getName(),
             assoc,
-            assoc.end1,
-            assoc.end2);
+            assoc.getEnd1(),
+            assoc.getEnd2());
 
     structuralType.addNavigationProperty(navigationProperty);
 
@@ -472,10 +472,10 @@ public class MetadataEdmGenerator implements EdmGenerator {
             entitySet);
 
     navigationProperty = new EdmNavigationProperty(
-            assoc.name,
+            assoc.getName(),
             assoc,
-            assoc.end1,
-            assoc.end2);
+            assoc.getEnd1(),
+            assoc.getEnd2());
 
     structuralType.addNavigationProperty(navigationProperty);
 
@@ -491,10 +491,10 @@ public class MetadataEdmGenerator implements EdmGenerator {
             entitySet);
 
     navigationProperty = new EdmNavigationProperty(
-            assoc.name,
+            assoc.getName(),
             assoc,
-            assoc.end1,
-            assoc.end2);
+            assoc.getEnd1(),
+            assoc.getEnd2());
 
     structuralType.addNavigationProperty(navigationProperty);
   }
@@ -509,9 +509,9 @@ public class MetadataEdmGenerator implements EdmGenerator {
           EdmEntitySet toEntitySet) {
 
     // add EdmAssociation
-    EdmAssociationEnd fromAssociationEnd = new EdmAssociationEnd(fromEntityType.name, fromEntityType, fromMult);
-    String toAssociationRole = toEntityType.name;
-    if (toAssociationRole.equals(fromEntityType.name)) {
+    EdmAssociationEnd fromAssociationEnd = new EdmAssociationEnd(fromEntityType.getName(), fromEntityType, fromMult);
+    String toAssociationRole = toEntityType.getName();
+    if (toAssociationRole.equals(fromEntityType.getName())) {
       toAssociationRole = toAssociationRole + "1";
     }
     EdmAssociationEnd toAssociationEnd = new EdmAssociationEnd(toAssociationRole, toEntityType, toMult);

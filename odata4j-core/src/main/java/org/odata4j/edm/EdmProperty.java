@@ -5,48 +5,45 @@ import java.util.List;
 
 public class EdmProperty extends EdmPropertyBase {
 
-  public final EdmType type;
-  public final boolean nullable;
-  public final Integer maxLength;
-  public final Boolean unicode;
-  public final Boolean fixedLength;
-  public final String storeGeneratedPattern;
-  public final CollectionKind collectionKind;
-  public final String defaultValue;
-  private EdmStructuralType structuralType = null;
-  public final Integer precision;
-  public final Integer scale;
+  private final EdmType type;
+  private final boolean nullable;
+  private final Integer maxLength;
+  private final Boolean unicode;
+  private final Boolean fixedLength;
+  private final String storeGeneratedPattern;
+  private final CollectionKind collectionKind;
+  private final String defaultValue;
+  private EdmStructuralType structuralType;
+  private final Integer precision;
+  private final Integer scale;
 
-  public final String fcTargetPath;
-  public final String fcContentKind;
-  public final String fcKeepInContent;
-  public final String fcEpmContentKind;
-  public final String fcEpmKeepInContent;
-
+  private final String fcTargetPath;
+  private final String fcContentKind;
+  private final String fcKeepInContent;
+  private final String fcEpmContentKind;
+  private final String fcEpmKeepInContent;
 
   public enum CollectionKind {
-    None,
-    List,
-    Bag
+    NONE,
+    LIST,
+    BAG
   }
 
   public EdmProperty(String name, EdmType type, boolean nullable) {
-    this(name, type, nullable, null, null, null, null, null, null, null, null, null, CollectionKind.None, null, null);
+    this(name, type, nullable, null, null, null, null, null, null, null, null, null, CollectionKind.NONE, null, null);
   }
 
   public EdmProperty(String name, EdmType type, boolean nullable, CollectionKind collectionKind, EdmDocumentation documentation, List<EdmAnnotation<?>> annotations) {
     this(name, type, nullable, null, null, null, null, null, null, null, null, null, collectionKind, documentation, annotations);
   }
 
-
   public EdmProperty(String name, EdmType type, boolean nullable, Integer maxLength, Boolean unicode, Boolean fixedLength,
       String storeGeneratedPattern,
       String fcTargetPath, String fcContentKind, String fcKeepInContent, String fcEpmContentKind, String fcEpmKeepInContent,
       CollectionKind collectionKind, EdmDocumentation documentation, List<EdmAnnotation<?>> annotations) {
-
     this(name, type, nullable, maxLength, unicode, fixedLength, storeGeneratedPattern,
-            fcTargetPath, fcContentKind, fcKeepInContent, fcEpmContentKind,
-            fcEpmKeepInContent, collectionKind, documentation, annotations, null, null, null);
+        fcTargetPath, fcContentKind, fcKeepInContent, fcEpmContentKind,
+        fcEpmKeepInContent, collectionKind, documentation, annotations, null, null, null);
   }
 
   public EdmProperty(String name, EdmType type, boolean nullable, Integer maxLength, Boolean unicode, Boolean fixedLength,
@@ -74,11 +71,70 @@ public class EdmProperty extends EdmPropertyBase {
     this.fcEpmKeepInContent = fcEpmKeepInContent;
   }
 
+  public EdmType getType() {
+    return type;
+  }
+
+  public boolean isNullable() {
+    return nullable;
+  }
+
+  public Integer getMaxLength() {
+    return maxLength;
+  }
+
+  public Boolean getUnicode() {
+    return unicode;
+  }
+
+  public Boolean getFixedLength() {
+    return fixedLength;
+  }
+
+  public String getStoreGeneratedPattern() {
+    return storeGeneratedPattern;
+  }
+
+  public CollectionKind getCollectionKind() {
+    return collectionKind;
+  }
+
+  public String getDefaultValue() {
+    return defaultValue;
+  }
+
+  public Integer getPrecision() {
+    return precision;
+  }
+
+  public Integer getScale() {
+    return scale;
+  }
+
+  public String getFcTargetPath() {
+    return fcTargetPath;
+  }
+
+  public String getFcContentKind() {
+    return fcContentKind;
+  }
+
+  public String getFcKeepInContent() {
+    return fcKeepInContent;
+  }
+
+  public String getFcEpmContentKind() {
+    return fcEpmContentKind;
+  }
+
+  public String getFcEpmKeepInContent() {
+    return fcEpmKeepInContent;
+  }
+
   @Override
   public String toString() {
     return String.format("EdmProperty[%s,%s]", name, type);
   }
-
 
   /**
    * Design Note (Tony Rozga):
@@ -96,4 +152,5 @@ public class EdmProperty extends EdmPropertyBase {
   public EdmStructuralType getStructuralType() {
     return this.structuralType;
   }
+
 }

@@ -40,18 +40,18 @@ public class EdmxFormatParser extends XmlFormatParser {
   public static EdmDataServices parseMetadata(XMLEventReader2 reader) {
     List<EdmSchema> schemas = new ArrayList<EdmSchema>();
     List<Namespace> namespaces = null;
-    
+
     ODataVersion version = null;
     boolean foundDataServices = false;
     while (reader.hasNext()) {
       XMLEvent2 event = reader.nextEvent();
 
       boolean shouldReturn = false;
-      
+
       if (isStartElement(event, XmlFormatParser.EDMX_EDMX)) {
         // should extract the declared namespaces here...
       }
-      
+
       if (isStartElement(event, EDMX_DATASERVICES)) {
         foundDataServices = true;
         String str = getAttributeValueIfExists(event.asStartElement(), new QName2(NS_METADATA, "DataServiceVersion"));
@@ -95,23 +95,23 @@ public class EdmxFormatParser extends XmlFormatParser {
     for (EdmSchema edmSchema : metadata.getSchemas()) {
 
       // resolve associations
-      for (int i = 0; i < edmSchema.associations.size(); i++) {
-        EdmAssociation tmpAssociation = edmSchema.associations.get(i);
+      for (int i = 0; i < edmSchema.getAssociations().size(); i++) {
+        EdmAssociation tmpAssociation = edmSchema.getAssociations().get(i);
 
-        List<EdmAssociationEnd> finalEnds = Enumerable.create(tmpAssociation.end1, tmpAssociation.end2).select(new Func1<EdmAssociationEnd, EdmAssociationEnd>() {
+        List<EdmAssociationEnd> finalEnds = Enumerable.create(tmpAssociation.getEnd1(), tmpAssociation.getEnd2()).select(new Func1<EdmAssociationEnd, EdmAssociationEnd>() {
           public EdmAssociationEnd apply(final EdmAssociationEnd tempEnd) {
             EdmEntityType eet = allEetsByFQName.get(((TempEdmAssociationEnd) tempEnd).typeName);
-            return new EdmAssociationEnd(tempEnd.role, eet, tempEnd.multiplicity);
+            return new EdmAssociationEnd(tempEnd.getRole(), eet, tempEnd.getMultiplicity());
           }
         }).toList();
-        EdmAssociation ea = new EdmAssociation(tmpAssociation.namespace, tmpAssociation.alias, tmpAssociation.name, finalEnds.get(0), finalEnds.get(1));
-        edmSchema.associations.set(i, ea);
+        EdmAssociation ea = new EdmAssociation(tmpAssociation.getNamespace(), tmpAssociation.getAlias(), tmpAssociation.getName(), finalEnds.get(0), finalEnds.get(1));
+        edmSchema.getAssociations().set(i, ea);
         allEasByFQName.put(ea.getFQAliasName() != null ? ea.getFQAliasName() : ea.getFQNamespaceName(), ea);
 
       }
 
       // resolve navproperties
-      for (EdmEntityType eet : edmSchema.entityTypes) {
+      for (EdmEntityType eet : edmSchema.getEntityTypes()) {
         List<EdmNavigationProperty> navProps = eet.getDeclaredNavigationProperties().toList();
         for (int i = 0; i < navProps.size(); i++) {
           final TempEdmNavigationProperty tmp = (TempEdmNavigationProperty) navProps.get(i);
@@ -119,10 +119,10 @@ public class EdmxFormatParser extends XmlFormatParser {
 
           List<EdmAssociationEnd> finalEnds = Enumerable.create(tmp.fromRoleName, tmp.toRoleName).select(new Func1<String, EdmAssociationEnd>() {
             public EdmAssociationEnd apply(String input) {
-              if (ea.end1.role.equals(input))
-                return ea.end1;
-              if (ea.end2.role.equals(input))
-                return ea.end2;
+              if (ea.getEnd1().getRole().equals(input))
+                return ea.getEnd1();
+              if (ea.getEnd2().getRole().equals(input))
+                return ea.getEnd2();
               throw new IllegalArgumentException("Invalid role name " + input);
             }
           }).toList();
@@ -131,57 +131,57 @@ public class EdmxFormatParser extends XmlFormatParser {
           navProps.set(i, enp);
         }
         eet.setDeclaredNavigationProperties(Enumerable.create(navProps));
-        
+
       }
 
       // resolve entitysets
-      for (EdmEntityContainer edmEntityContainer : edmSchema.entityContainers) {
-        for (int i = 0; i < edmEntityContainer.entitySets.size(); i++) {
-          final TempEdmEntitySet tmpEes = (TempEdmEntitySet) edmEntityContainer.entitySets.get(i);
+      for (EdmEntityContainer edmEntityContainer : edmSchema.getEntityContainers()) {
+        for (int i = 0; i < edmEntityContainer.getEntitySets().size(); i++) {
+          final TempEdmEntitySet tmpEes = (TempEdmEntitySet) edmEntityContainer.getEntitySets().get(i);
           EdmEntityType eet = allEetsByFQName.get(tmpEes.entityTypeName);
 
           if (eet == null)
                         throw new IllegalArgumentException("Invalid entity type " + tmpEes.entityTypeName);
-          edmEntityContainer.entitySets.set(i, new EdmEntitySet(tmpEes.name, eet));
+          edmEntityContainer.getEntitySets().set(i, new EdmEntitySet(tmpEes.getName(), eet));
         }
       }
 
       // resolve associationsets
-      for (final EdmEntityContainer edmEntityContainer : edmSchema.entityContainers) {
-        for (int i = 0; i < edmEntityContainer.associationSets.size(); i++) {
-          final TempEdmAssociationSet tmpEas = (TempEdmAssociationSet) edmEntityContainer.associationSets.get(i);
+      for (final EdmEntityContainer edmEntityContainer : edmSchema.getEntityContainers()) {
+        for (int i = 0; i < edmEntityContainer.getAssociationSets().size(); i++) {
+          final TempEdmAssociationSet tmpEas = (TempEdmAssociationSet) edmEntityContainer.getAssociationSets().get(i);
           final EdmAssociation ea = allEasByFQName.get(tmpEas.associationName);
 
-          List<EdmAssociationSetEnd> finalEnds = Enumerable.create(tmpEas.end1, tmpEas.end2).select(new Func1<EdmAssociationSetEnd, EdmAssociationSetEnd>() {
+          List<EdmAssociationSetEnd> finalEnds = Enumerable.create(tmpEas.getEnd1(), tmpEas.getEnd2()).select(new Func1<EdmAssociationSetEnd, EdmAssociationSetEnd>() {
             public EdmAssociationSetEnd apply(EdmAssociationSetEnd input) {
               final TempEdmAssociationSetEnd tmpEase = (TempEdmAssociationSetEnd) input;
 
-              EdmAssociationEnd eae = ea.end1.role.equals(tmpEase.roleName) ? ea.end1
-                                    : ea.end2.role.equals(tmpEase.roleName) ? ea.end2 : null;
+              EdmAssociationEnd eae = ea.getEnd1().getRole().equals(tmpEase.roleName) ? ea.getEnd1()
+                                    : ea.getEnd2().getRole().equals(tmpEase.roleName) ? ea.getEnd2() : null;
 
               if (eae == null)
                                 throw new IllegalArgumentException("Invalid role name " + tmpEase.roleName);
 
-              EdmEntitySet ees = Enumerable.create(edmEntityContainer.entitySets).first(new Predicate1<EdmEntitySet>() {
+              EdmEntitySet ees = Enumerable.create(edmEntityContainer.getEntitySets()).first(new Predicate1<EdmEntitySet>() {
                 public boolean apply(EdmEntitySet input) {
-                  return input.name.equals(tmpEase.entitySetName);
+                  return input.getName().equals(tmpEase.entitySetName);
                 }
               });
               return new EdmAssociationSetEnd(eae, ees);
             }
           }).toList();
 
-          edmEntityContainer.associationSets.set(i, new EdmAssociationSet(tmpEas.name, ea, finalEnds.get(0), finalEnds.get(1)));
+          edmEntityContainer.getAssociationSets().set(i, new EdmAssociationSet(tmpEas.getName(), ea, finalEnds.get(0), finalEnds.get(1)));
         }
       }
 
       // resolve functionimports
-      for (final EdmEntityContainer edmEntityContainer : edmSchema.entityContainers) {
-        for (int i = 0; i < edmEntityContainer.functionImports.size(); i++) {
-          final TempEdmFunctionImport tmpEfi = (TempEdmFunctionImport) edmEntityContainer.functionImports.get(i);
-          EdmEntitySet ees = Enumerable.create(edmEntityContainer.entitySets).firstOrNull(new Predicate1<EdmEntitySet>() {
+      for (final EdmEntityContainer edmEntityContainer : edmSchema.getEntityContainers()) {
+        for (int i = 0; i < edmEntityContainer.getFunctionImports().size(); i++) {
+          final TempEdmFunctionImport tmpEfi = (TempEdmFunctionImport) edmEntityContainer.getFunctionImports().get(i);
+          EdmEntitySet ees = Enumerable.create(edmEntityContainer.getEntitySets()).firstOrNull(new Predicate1<EdmEntitySet>() {
             public boolean apply(EdmEntitySet input) {
-              return input.name.equals(tmpEfi.entitySetName);
+              return input.getName().equals(tmpEfi.entitySetName);
             }
           });
 
@@ -200,13 +200,13 @@ public class EdmxFormatParser extends XmlFormatParser {
           }
           if (type == null)
             throw new RuntimeException("Edm-type not found: " + tmpEfi.returnTypeName);
-        
+
           if (tmpEfi.isCollection) {
             type = new EdmCollectionType(tmpEfi.returnTypeName, type);
           }
 
-          edmEntityContainer.functionImports.set(i,
-            new EdmFunctionImport(tmpEfi.name, ees, type, tmpEfi.httpMethod, tmpEfi.parameters));
+          edmEntityContainer.getFunctionImports().set(i,
+            new EdmFunctionImport(tmpEfi.getName(), ees, type, tmpEfi.getHttpMethod(), tmpEfi.getParameters()));
         }
       }
 
@@ -298,7 +298,7 @@ public class EdmxFormatParser extends XmlFormatParser {
     String entitySet = getAttributeValueIfExists(functionImportElement, "EntitySet");
     Attribute2 returnTypeAttr = functionImportElement.getAttributeByName("ReturnType");
     String returnType = returnTypeAttr != null ? returnTypeAttr.getValue() : null;
-    
+
     // strict parsing
     boolean isCollection = null != returnType && returnType.matches("^Collection\\(.*\\)$");
     if (isCollection) {
@@ -375,14 +375,14 @@ public class EdmxFormatParser extends XmlFormatParser {
     String unicode = getAttributeValueIfExists(event.asStartElement(), "Unicode");
     String fixedLength = getAttributeValueIfExists(event.asStartElement(), "FixedLength");
     String collectionKindS = getAttributeValueIfExists(event.asStartElement(), "CollectionKind");
-    CollectionKind ckind = CollectionKind.None;
+    CollectionKind ckind = CollectionKind.NONE;
     if (null != collectionKindS) {
       ckind = Enum.valueOf(CollectionKind.class, collectionKindS);
     }
     String defaultValue = getAttributeValueIfExists(event.asStartElement(), "DefaultValue");
     String precision = getAttributeValueIfExists(event.asStartElement(), "Precision");
     String scale = getAttributeValueIfExists(event.asStartElement(), "Scale");
-    
+
     String storeGeneratedPattern = getAttributeValueIfExists(event.asStartElement(), new QName2(NS_EDMANNOTATION, "StoreGeneratedPattern"));
 
     String fcTargetPath = getAttributeValueIfExists(event.asStartElement(), M_FC_TARGETPATH);
@@ -406,8 +406,8 @@ public class EdmxFormatParser extends XmlFormatParser {
                 ckind,
                 null,  // documentation TODO
                 null, // annoations TODO
-                defaultValue, 
-                precision == null ? null : Integer.parseInt(precision), 
+                defaultValue,
+                precision == null ? null : Integer.parseInt(precision),
                 scale == null ? null : Integer.parseInt(scale));
   }
 
@@ -441,7 +441,7 @@ public class EdmxFormatParser extends XmlFormatParser {
     Boolean hasStream = hasStreamValue == null ? null : hasStreamValue.equals("true");
     String baseType = getAttributeValueIfExists(entityTypeElement, "BaseType");
     String isAbstractS = getAttributeValueIfExists(entityTypeElement, "Abstract");
-    
+
     List<String> keys = new ArrayList<String>();
     List<EdmProperty> edmProperties = new ArrayList<EdmProperty>();
     List<EdmNavigationProperty> edmNavigationProperties = new ArrayList<EdmNavigationProperty>();
@@ -468,13 +468,13 @@ public class EdmxFormatParser extends XmlFormatParser {
 
       if (isEndElement(event, entityTypeElement.getName())) {
         return new EdmEntityType(
-                schemaNamespace, 
-                schemaAlias, 
-                name, 
-                hasStream, 
-                keys, 
-                edmProperties, 
-                edmNavigationProperties, 
+                schemaNamespace,
+                schemaAlias,
+                name,
+                hasStream,
+                keys,
+                edmProperties,
+                edmNavigationProperties,
                 baseType,
                 null, // documentation, TODO
                 null, // annotations, TODO

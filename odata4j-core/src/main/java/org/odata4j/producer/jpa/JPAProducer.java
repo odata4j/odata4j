@@ -45,6 +45,7 @@ import org.odata4j.core.ORelatedEntitiesLinkInline;
 import org.odata4j.core.ORelatedEntityLink;
 import org.odata4j.core.ORelatedEntityLinkInline;
 import org.odata4j.edm.EdmDataServices;
+import org.odata4j.edm.EdmDecorator;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.edm.EdmMultiplicity;
@@ -52,7 +53,6 @@ import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmPropertyBase;
 import org.odata4j.edm.EdmSimpleType;
-import org.odata4j.edm.EdmDecorator;
 import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.OrderByExpression;
@@ -77,7 +77,7 @@ public class JPAProducer implements ODataProducer {
   private final EdmDataServices metadata;
   private final int maxResults;
   private final MetadataProducer metadataProducer;
-  
+
   public JPAProducer(
       EntityManagerFactory emf,
       EdmDataServices metadata,
@@ -89,7 +89,7 @@ public class JPAProducer implements ODataProducer {
     this.metadata = metadata;
     this.metadataProducer = new MetadataProducer(this, metadataDecorator);
   }
-  
+
    public JPAProducer(
       EntityManagerFactory emf,
       EdmDataServices metadata,
@@ -113,7 +113,7 @@ public class JPAProducer implements ODataProducer {
   public EdmDataServices getMetadata() {
     return metadata;
   }
-  
+
   @Override
   public MetadataProducer getMetadataProducer() {
     return this.metadataProducer;
@@ -158,7 +158,7 @@ public class JPAProducer implements ODataProducer {
         });
   }
 
-  
+
   private static class Context {
     EntityManager em;
     EdmEntitySet ees;
@@ -234,7 +234,7 @@ public class JPAProducer implements ODataProducer {
       context.ees = metadata.getEdmEntitySet(entitySetName);
       context.jpaEntityType = getJPAEntityType(
           context.em,
-          context.ees.type.name);
+          context.ees.getType().getName());
 
       context.keyAttributeName = JPAEdmGenerator.getIdAttribute(context.jpaEntityType).getName();
       context.typeSafeEntityKey = typeSafeEntityKey(
@@ -266,7 +266,7 @@ public class JPAProducer implements ODataProducer {
           idAtt.getPersistentAttributeType() == PersistentAttributeType.EMBEDDED;
 
       // get properties
-      for (EdmProperty ep : ees.type.getProperties()) {
+      for (EdmProperty ep : ees.getType().getProperties()) {
 
         if (!isSelected(ep.name, select)) {
           continue;
@@ -274,12 +274,12 @@ public class JPAProducer implements ODataProducer {
 
         // we have a embedded composite key and we want a property from
         // that key
-        if (hasEmbeddedCompositeKey && ees.type.getKeys().contains(ep.name)) {
+        if (hasEmbeddedCompositeKey && ees.getType().getKeys().contains(ep.name)) {
           Object value = getIdValue(jpaEntity, idAtt, ep.name);
 
           properties.add(OProperties.simple(
               ep.name,
-              (EdmSimpleType) ep.type,
+              (EdmSimpleType) ep.getType(),
               value,
               true));
 
@@ -291,7 +291,7 @@ public class JPAProducer implements ODataProducer {
 
           properties.add(OProperties.simple(
               ep.name,
-              (EdmSimpleType) ep.type,
+              (EdmSimpleType) ep.getType(),
               value,
               true));
         }
@@ -376,7 +376,7 @@ public class JPAProducer implements ODataProducer {
 
       // for every navigation propety that we didn' expand we must place an deferred
       // OLink if the nav prop is selected
-      for (final EdmNavigationProperty ep : ees.type.getNavigationProperties()) {
+      for (final EdmNavigationProperty ep : ees.getType().getNavigationProperties()) {
         if (isSelected(ep.name, select)) {
           boolean expanded = null != Enumerable.create(links).firstOrNull(new Predicate1<OLink>() {
             @Override
@@ -384,10 +384,10 @@ public class JPAProducer implements ODataProducer {
               return t.getTitle().equals(ep.name);
             }
           });
-          
+
           if (!expanded) {
             // defer
-            if (ep.toRole.multiplicity == EdmMultiplicity.MANY) {
+            if (ep.getToRole().getMultiplicity() == EdmMultiplicity.MANY) {
               links.add(OLinks.relatedEntities(null, ep.name, null));
             } else {
               links.add(OLinks.relatedEntity(null, ep.name, null));
@@ -550,12 +550,12 @@ public class JPAProducer implements ODataProducer {
       // top=0: don't even hit jpa, return a response with zero entities
       if (context.query.top.equals(0)) {
     	// returning null from this function would cause the FormatWriters to throw
-      	// a null reference exception as the entities collection is expected to be empty and 
+      	// a null reference exception as the entities collection is expected to be empty and
       	// not null. This prevents us from being able to successfully respond to $top=0 requests.
-    	List<OEntity> emptyList = Collections.emptyList(); 
+    	List<OEntity> emptyList = Collections.emptyList();
         return DynamicEntitiesResponse.entities(emptyList, inlineCount, null);
       }
-      
+
       if (context.query.top < maxResults)
         queryMaxResults = context.query.top;
     }
@@ -579,7 +579,7 @@ public class JPAProducer implements ODataProducer {
       Object value = results.get(0);
       OProperty<?> op = OProperties.simple(
           ((EdmProperty) propInfo).name,
-          (EdmSimpleType) ((EdmProperty) propInfo).type,
+          (EdmSimpleType) ((EdmProperty) propInfo).getType(),
           value);
       return DynamicEntitiesResponse.property(op);
     }
@@ -604,7 +604,7 @@ public class JPAProducer implements ODataProducer {
 
     if (context.edmPropertyBase instanceof EdmNavigationProperty) {
       EdmNavigationProperty edmNavProp = (EdmNavigationProperty) context.edmPropertyBase;
-      if (edmNavProp.toRole.multiplicity == EdmMultiplicity.ONE || edmNavProp.toRole.multiplicity == EdmMultiplicity.ZERO_TO_ONE) {
+      if (edmNavProp.getToRole().getMultiplicity() == EdmMultiplicity.ONE || edmNavProp.getToRole().getMultiplicity() == EdmMultiplicity.ZERO_TO_ONE) {
         if (entities.size() != 1)
           throw new RuntimeException("Expected only one entity, found " + entities.size());
         return DynamicEntitiesResponse.entity(entities.get(0));
@@ -647,7 +647,7 @@ public class JPAProducer implements ODataProducer {
 
           context.jpaEntityType = getJPAEntityType(
               context.em,
-              propInfo.toRole.type.name);
+              propInfo.getToRole().getType().getName());
 
           context.ees = metadata.findEdmEntitySet(JPAEdmGenerator.getEntitySetName(context.jpaEntityType));
 
@@ -907,7 +907,7 @@ public class JPAProducer implements ODataProducer {
     EntityManager em = emf.createEntityManager();
     try {
       em.getTransaction().begin();
-      EntityType<?> jpaEntityType = getJPAEntityType(em, ees.type.name);
+      EntityType<?> jpaEntityType = getJPAEntityType(em, ees.getType().getName());
       Object jpaEntity = createNewJPAEntity(
           em,
           jpaEntityType,
@@ -918,7 +918,7 @@ public class JPAProducer implements ODataProducer {
       em.getTransaction().commit();
 
       // reread the entity in case we had links. This should insure
-      // we get the implicitly set foreign keys. E.g in the Northwind model 
+      // we get the implicitly set foreign keys. E.g in the Northwind model
       // creating a new Product with a link to the Category should return
       // the CategoryID.
       if (entity.getLinks() != null
@@ -954,11 +954,11 @@ public class JPAProducer implements ODataProducer {
     final EdmEntitySet ees = metadata.getEdmEntitySet(entitySetName);
 
     // get the navigation property
-    EdmNavigationProperty edmNavProperty = ees.type.findNavigationProperty(navProp);
+    EdmNavigationProperty edmNavProperty = ees.getType().findNavigationProperty(navProp);
 
     // check whether the navProperty is valid
     if (edmNavProperty == null
-        || edmNavProperty.toRole.multiplicity != EdmMultiplicity.MANY) {
+        || edmNavProperty.getToRole().getMultiplicity() != EdmMultiplicity.MANY) {
       throw new IllegalArgumentException("unknown navigation property "
           + navProp + " or navigation property toRole Multiplicity is not '*'");
     }
@@ -968,12 +968,12 @@ public class JPAProducer implements ODataProducer {
       em.getTransaction().begin();
 
       // get the entity we want the new entity add to
-      EntityType<?> jpaEntityType = getJPAEntityType(em, ees.type.name);
+      EntityType<?> jpaEntityType = getJPAEntityType(em, ees.getType().getName());
       Object typeSafeEntityKey = typeSafeEntityKey(em, jpaEntityType, entityKey);
       Object jpaEntity = em.find(jpaEntityType.getJavaType(), typeSafeEntityKey);
 
       // create the new entity
-      EntityType<?> newJpaEntityType = getJPAEntityType(em, edmNavProperty.toRole.type.name);
+      EntityType<?> newJpaEntityType = getJPAEntityType(em, edmNavProperty.getToRole().getType().getName());
       Object newJpaEntity = createNewJPAEntity(em, newJpaEntityType, entity, true);
 
       // get the collection attribute and add the new entity to the parent entity
@@ -1014,7 +1014,7 @@ public class JPAProducer implements ODataProducer {
 
       // prepare the response
       EdmEntitySet toRoleees = getMetadata()
-          .getEdmEntitySet(edmNavProperty.toRole.type);
+          .getEdmEntitySet(edmNavProperty.getToRole().getType());
       OEntity responseEntity = jpaEntityToOEntity(toRoleees,
           newJpaEntityType, newJpaEntity, null, null);
 
@@ -1034,7 +1034,7 @@ public class JPAProducer implements ODataProducer {
     EntityManager em = emf.createEntityManager();
     try {
       em.getTransaction().begin();
-      EntityType<?> jpaEntityType = getJPAEntityType(em, ees.type.name);
+      EntityType<?> jpaEntityType = getJPAEntityType(em, ees.getType().getName());
       Object typeSafeEntityKey = typeSafeEntityKey(
           em,
           jpaEntityType,
@@ -1060,7 +1060,7 @@ public class JPAProducer implements ODataProducer {
     EntityManager em = emf.createEntityManager();
     try {
       em.getTransaction().begin();
-      EntityType<?> jpaEntityType = getJPAEntityType(em, ees.type.name);
+      EntityType<?> jpaEntityType = getJPAEntityType(em, ees.getType().getName());
       Object typeSafeEntityKey = typeSafeEntityKey(
           em,
           jpaEntityType,
@@ -1088,7 +1088,7 @@ public class JPAProducer implements ODataProducer {
     EntityManager em = emf.createEntityManager();
     try {
       em.getTransaction().begin();
-      EntityType<?> jpaEntityType = getJPAEntityType(em, ees.type.name);
+      EntityType<?> jpaEntityType = getJPAEntityType(em, ees.getType().getName());
       Object jpaEntity = createNewJPAEntity(
           em,
           jpaEntityType,

@@ -1,6 +1,7 @@
 package org.odata4j.format.json;
 
 import java.io.Writer;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -8,28 +9,27 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.odata4j.core.Guid;
+import org.odata4j.core.OCollection;
+import org.odata4j.core.OComplexObject;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OLink;
+import org.odata4j.core.OObject;
 import org.odata4j.core.OProperty;
 import org.odata4j.core.ORelatedEntitiesLinkInline;
 import org.odata4j.core.ORelatedEntityLinkInline;
+import org.odata4j.core.OSimpleObject;
+import org.odata4j.edm.EdmCollectionType;
+import org.odata4j.edm.EdmComplexType;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmSimpleType;
+import org.odata4j.edm.EdmType;
 import org.odata4j.format.FormatWriter;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
 import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
 
 import com.sun.jersey.api.core.ExtendedUriInfo;
-import java.util.Iterator;
-import org.odata4j.core.OCollection;
-import org.odata4j.core.OComplexObject;
-import org.odata4j.core.OObject;
-import org.odata4j.core.OSimpleObject;
-import org.odata4j.edm.EdmCollectionType;
-import org.odata4j.edm.EdmType;
-import org.odata4j.edm.EdmComplexType;
 
 /** Write content to an HTTP stream in JSON format.
  *
@@ -225,7 +225,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
           jw.writeString(absId);
           jw.writeSeparator();
           jw.writeName("type");
-          jw.writeString(ees.type.getFullyQualifiedTypeName());
+          jw.writeString(ees.getType().getFullyQualifiedTypeName());
         }
         jw.endObject();
         jw.writeSeparator();

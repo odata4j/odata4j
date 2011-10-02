@@ -108,14 +108,14 @@ class ConsumerCreateEntityRequest<T> extends ConsumerEntityPayloadRequestBase im
   @Override
   public OCreateRequest<T> inline(String navProperty, OEntity... entities) {
     EdmEntitySet entitySet = metadata.getEdmEntitySet(entitySetName);
-    EdmNavigationProperty navProp = entitySet.type.findNavigationProperty(navProperty);
-    if (navProp == null) 
+    EdmNavigationProperty navProp = entitySet.getType().findNavigationProperty(navProperty);
+    if (navProp == null)
       throw new IllegalArgumentException("unknown navigation property " + navProperty);
-    
+
     // TODO get rid of XmlFormatWriter
     String rel = XmlFormatWriter.related + navProperty;
     String href = entitySetName + "/" + navProperty;
-    if (navProp.toRole.multiplicity == EdmMultiplicity.MANY) {
+    if (navProp.getToRole().getMultiplicity() == EdmMultiplicity.MANY) {
       links.add(OLinks.relatedEntitiesInline(rel, navProperty, href, Arrays.asList(entities)));
     } else {
       if (entities.length > 1)

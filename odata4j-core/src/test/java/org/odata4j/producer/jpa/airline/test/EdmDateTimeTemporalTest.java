@@ -64,8 +64,8 @@ public class EdmDateTimeTemporalTest extends AirlineJPAProducerTestBase {
 
     EdmDataServices metadata = consumer.getMetadata();
 
-    Assert.assertEquals(EdmSimpleType.DATETIME, metadata.findEdmEntitySet("FlightSchedule").type.findProperty("departureTime").type);
-    Assert.assertEquals(EdmSimpleType.DATETIME, metadata.findEdmEntitySet("FlightSchedule").type.findProperty("arrivalTime").type);
+    Assert.assertEquals(EdmSimpleType.DATETIME, metadata.findEdmEntitySet("FlightSchedule").getType().findProperty("departureTime").getType());
+    Assert.assertEquals(EdmSimpleType.DATETIME, metadata.findEdmEntitySet("FlightSchedule").getType().findProperty("arrivalTime").getType());
   }
 
   @Test

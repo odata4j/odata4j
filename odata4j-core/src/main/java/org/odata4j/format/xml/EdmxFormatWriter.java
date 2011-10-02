@@ -46,32 +46,32 @@ public class EdmxFormatWriter extends XmlFormatWriter {
     for (EdmSchema schema : services.getSchemas()) {
 
       writer.startElement(new QName2("Schema"), edm);
-      writer.writeAttribute("Namespace", schema.namespace);
+      writer.writeAttribute("Namespace", schema.getNamespace());
       writeAnnotationAttributes(schema, writer);
       writeDocumentation(schema, writer);
 
       // ComplexType
-      for (EdmComplexType ect : schema.complexTypes) {
+      for (EdmComplexType ect : schema.getComplexTypes()) {
         writer.startElement(new QName2("ComplexType"));
 
-        writer.writeAttribute("Name", ect.name);
-        if (null != ect.isAbstract) {
-          writer.writeAttribute("Abstract", ect.isAbstract.toString());
+        writer.writeAttribute("Name", ect.getName());
+        if (null != ect.getIsAbstract()) {
+          writer.writeAttribute("Abstract", ect.getIsAbstract().toString());
         }
         writeAnnotationAttributes(ect, writer);
         writeDocumentation(ect, writer);
 
-        write(ect.properties, writer);
+        write(ect.getProperties(), writer);
         writeAnnotationElements(ect, writer);
         writer.endElement("ComplexType");
       }
       // EntityType
-      for (EdmEntityType eet : schema.entityTypes) {
+      for (EdmEntityType eet : schema.getEntityTypes()) {
         writer.startElement(new QName2("EntityType"));
 
-        writer.writeAttribute("Name", eet.name);
-        if (null != eet.isAbstract) {
-          writer.writeAttribute("Abstract", eet.isAbstract.toString());
+        writer.writeAttribute("Name", eet.getName());
+        if (null != eet.getIsAbstract()) {
+          writer.writeAttribute("Abstract", eet.getIsAbstract().toString());
         }
 
         // keys only on base types
@@ -99,9 +99,9 @@ public class EdmxFormatWriter extends XmlFormatWriter {
 
           writer.startElement(new QName2("NavigationProperty"));
           writer.writeAttribute("Name", np.name);
-          writer.writeAttribute("Relationship", np.relationship.getFQNamespaceName());
-          writer.writeAttribute("FromRole", np.fromRole.role);
-          writer.writeAttribute("ToRole", np.toRole.role);
+          writer.writeAttribute("Relationship", np.getRelationship().getFQNamespaceName());
+          writer.writeAttribute("FromRole", np.getFromRole().getRole());
+          writer.writeAttribute("ToRole", np.getToRole().getRole());
           writeAnnotationAttributes(np, writer);
           writeDocumentation(np, writer);
           writeAnnotationElements(np, writer);
@@ -115,23 +115,23 @@ public class EdmxFormatWriter extends XmlFormatWriter {
       }
 
       // Association
-      for (EdmAssociation assoc : schema.associations) {
+      for (EdmAssociation assoc : schema.getAssociations()) {
         writer.startElement(new QName2("Association"));
 
-        writer.writeAttribute("Name", assoc.name);
+        writer.writeAttribute("Name", assoc.getName());
         writeAnnotationAttributes(assoc, writer);
         writeDocumentation(assoc, writer);
 
         writer.startElement(new QName2("End"));
-        writer.writeAttribute("Role", assoc.end1.role);
-        writer.writeAttribute("Type", assoc.end1.type.getFullyQualifiedTypeName());
-        writer.writeAttribute("Multiplicity", assoc.end1.multiplicity.getSymbolString());
+        writer.writeAttribute("Role", assoc.getEnd1().getRole());
+        writer.writeAttribute("Type", assoc.getEnd1().getType().getFullyQualifiedTypeName());
+        writer.writeAttribute("Multiplicity", assoc.getEnd1().getMultiplicity().getSymbolString());
         writer.endElement("End");
 
         writer.startElement(new QName2("End"));
-        writer.writeAttribute("Role", assoc.end2.role);
-        writer.writeAttribute("Type", assoc.end2.type.getFullyQualifiedTypeName());
-        writer.writeAttribute("Multiplicity", assoc.end2.multiplicity.getSymbolString());
+        writer.writeAttribute("Role", assoc.getEnd2().getRole());
+        writer.writeAttribute("Type", assoc.getEnd2().getType().getFullyQualifiedTypeName());
+        writer.writeAttribute("Multiplicity", assoc.getEnd2().getMultiplicity().getSymbolString());
         writer.endElement("End");
 
         writeAnnotationElements(assoc, writer);
@@ -139,42 +139,42 @@ public class EdmxFormatWriter extends XmlFormatWriter {
       }
 
       // EntityContainer
-      for (EdmEntityContainer container : schema.entityContainers) {
+      for (EdmEntityContainer container : schema.getEntityContainers()) {
         writer.startElement(new QName2("EntityContainer"));
 
-        writer.writeAttribute("Name", container.name);
-        writer.writeAttribute(new QName2(m, "IsDefaultEntityContainer", "m"), Boolean.toString(container.isDefault));
+        writer.writeAttribute("Name", container.getName());
+        writer.writeAttribute(new QName2(m, "IsDefaultEntityContainer", "m"), Boolean.toString(container.isDefault()));
         writeAnnotationAttributes(container, writer);
         writeDocumentation(container, writer);
 
-        for (EdmEntitySet ees : container.entitySets) {
+        for (EdmEntitySet ees : container.getEntitySets()) {
           writer.startElement(new QName2("EntitySet"));
-          writer.writeAttribute("Name", ees.name);
-          writer.writeAttribute("EntityType", ees.type.getFullyQualifiedTypeName());
+          writer.writeAttribute("Name", ees.getName());
+          writer.writeAttribute("EntityType", ees.getType().getFullyQualifiedTypeName());
           writeAnnotationAttributes(ees, writer);
           writeDocumentation(ees, writer);
           writeAnnotationElements(ees, writer);
           writer.endElement("EntitySet");
         }
 
-        for (EdmFunctionImport fi : container.functionImports) {
+        for (EdmFunctionImport fi : container.getFunctionImports()) {
           writer.startElement(new QName2("FunctionImport"));
-          writer.writeAttribute("Name", fi.name);
-          if (null != fi.entitySet) {
-            writer.writeAttribute("EntitySet", fi.entitySet.name);
+          writer.writeAttribute("Name", fi.getName());
+          if (null != fi.getEntitySet()) {
+            writer.writeAttribute("EntitySet", fi.getEntitySet().getName());
           }
           // TODO: how to differentiate inline ReturnType vs embedded ReturnType?
-          writer.writeAttribute("ReturnType", fi.returnType.getFullyQualifiedTypeName());
-          writer.writeAttribute(new QName2(m, "HttpMethod", "m"), fi.httpMethod);
+          writer.writeAttribute("ReturnType", fi.getReturnType().getFullyQualifiedTypeName());
+          writer.writeAttribute(new QName2(m, "HttpMethod", "m"), fi.getHttpMethod());
           writeAnnotationAttributes(fi, writer);
           writeDocumentation(fi, writer);
 
-          for (EdmFunctionParameter param : fi.parameters) {
+          for (EdmFunctionParameter param : fi.getParameters()) {
               writer.startElement(new QName2("Parameter"));
-              writer.writeAttribute("Name", param.name);
-              writer.writeAttribute("Type", param.type.getFullyQualifiedTypeName());
-              if (param.mode != null)
-                writer.writeAttribute("Mode", param.mode.toString());
+              writer.writeAttribute("Name", param.getName());
+              writer.writeAttribute("Type", param.getType().getFullyQualifiedTypeName());
+              if (param.getMode() != null)
+                writer.writeAttribute("Mode", param.getMode().toString());
               writeAnnotationAttributes(param, writer);
               writeDocumentation(param, writer);
               writeAnnotationElements(param, writer);
@@ -184,21 +184,21 @@ public class EdmxFormatWriter extends XmlFormatWriter {
           writer.endElement("FunctionImport");
         }
 
-        for (EdmAssociationSet eas : container.associationSets) {
+        for (EdmAssociationSet eas : container.getAssociationSets()) {
           writer.startElement(new QName2("AssociationSet"));
-          writer.writeAttribute("Name", eas.name);
-          writer.writeAttribute("Association", eas.association.getFQNamespaceName());
+          writer.writeAttribute("Name", eas.getName());
+          writer.writeAttribute("Association", eas.getAssociation().getFQNamespaceName());
           writeAnnotationAttributes(eas, writer);
           writeDocumentation(eas, writer);
 
           writer.startElement(new QName2("End"));
-          writer.writeAttribute("Role", eas.end1.role.role);
-          writer.writeAttribute("EntitySet", eas.end1.entitySet.name);
+          writer.writeAttribute("Role", eas.getEnd1().getRole().getRole());
+          writer.writeAttribute("EntitySet", eas.getEnd1().getEntitySet().getName());
           writer.endElement("End");
 
           writer.startElement(new QName2("End"));
-          writer.writeAttribute("Role", eas.end2.role.role);
-          writer.writeAttribute("EntitySet", eas.end2.entitySet.name);
+          writer.writeAttribute("Role", eas.getEnd2().getRole().getRole());
+          writer.writeAttribute("EntitySet", eas.getEnd2().getEntitySet().getName());
           writer.endElement("End");
 
           writeAnnotationElements(eas, writer);
@@ -236,22 +236,22 @@ public class EdmxFormatWriter extends XmlFormatWriter {
       writer.startElement(new QName2("Property"));
 
       writer.writeAttribute("Name", prop.name);
-      writer.writeAttribute("Type", prop.type.getFullyQualifiedTypeName());
-      writer.writeAttribute("Nullable", Boolean.toString(prop.nullable));
-      if (prop.maxLength != null) {
-        writer.writeAttribute("MaxLength", Integer.toString(prop.maxLength));
+      writer.writeAttribute("Type", prop.getType().getFullyQualifiedTypeName());
+      writer.writeAttribute("Nullable", Boolean.toString(prop.isNullable()));
+      if (prop.getMaxLength() != null) {
+        writer.writeAttribute("MaxLength", Integer.toString(prop.getMaxLength()));
       }
-      if (!prop.collectionKind.equals(CollectionKind.None)) {
-        writer.writeAttribute("CollectionKind", prop.collectionKind.toString());
+      if (!prop.getCollectionKind().equals(CollectionKind.NONE)) {
+        writer.writeAttribute("CollectionKind", prop.getCollectionKind().toString());
       }
-      if (prop.defaultValue != null) {
-        writer.writeAttribute("DefaultValue", prop.defaultValue);
+      if (prop.getDefaultValue() != null) {
+        writer.writeAttribute("DefaultValue", prop.getDefaultValue());
       }
-      if (prop.precision != null) {
-        writer.writeAttribute("Precision", Integer.toString(prop.precision));
+      if (prop.getPrecision() != null) {
+        writer.writeAttribute("Precision", Integer.toString(prop.getPrecision()));
       }
-      if (prop.scale != null) {
-        writer.writeAttribute("Scale", Integer.toString(prop.precision));
+      if (prop.getScale() != null) {
+        writer.writeAttribute("Scale", Integer.toString(prop.getPrecision()));
       }
       writeAnnotationAttributes(prop, writer);
       writeAnnotationElements(prop, writer);

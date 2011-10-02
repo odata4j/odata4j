@@ -9,15 +9,8 @@ import java.util.List;
  */
 public class EdmEntitySet extends EdmItem {
 
-  /**
-   * The name of the entity set.
-   */
-  public final String name;
-
-  /**
-   * The entity type for which the entity set contains instances.
-   */
-  public final EdmEntityType type;
+  private final String name;
+  private final EdmEntityType type;
 
   /**
    * Creates a new <code>EdmEntitySet</code>.
@@ -36,8 +29,23 @@ public class EdmEntitySet extends EdmItem {
     this.type = type;
   }
 
+  /**
+   * The name of the entity set.
+   */
+  public String getName() {
+    return name;
+  }
+
+  /**
+   * The entity type for which the entity set contains instances.
+   */
+  public EdmEntityType getType() {
+    return type;
+  }
+
   @Override
   public String toString() {
     return String.format("EdmEntitySet[%s,%s]", name, type);
   }
+
 }

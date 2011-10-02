@@ -52,11 +52,11 @@ abstract class ConsumerEntityPayloadRequestBase {
 
   private <T> T link(T rt, String navProperty, EdmEntitySet targetEntitySet, OEntityKey targetKey) {
     EdmEntitySet entitySet = metadata.getEdmEntitySet(entitySetName);
-    EdmNavigationProperty navProp = entitySet.type.findNavigationProperty(navProperty);
+    EdmNavigationProperty navProp = entitySet.getType().findNavigationProperty(navProperty);
     if (navProp == null)
       throw new IllegalArgumentException("unknown navigation property " + navProperty);
 
-    if (navProp.toRole.multiplicity == EdmMultiplicity.MANY)
+    if (navProp.getToRole().getMultiplicity() == EdmMultiplicity.MANY)
       throw new IllegalArgumentException("many associations are not supported");
 
     StringBuilder href = new StringBuilder(serviceRootUri);
@@ -64,7 +64,7 @@ abstract class ConsumerEntityPayloadRequestBase {
       href.append("/");
 
     if (targetEntitySet == null)
-      targetEntitySet = metadata.getEdmEntitySet(navProp.toRole.type);
+      targetEntitySet = metadata.getEdmEntitySet(navProp.getToRole().getType());
 
     href.append(InternalUtil.getEntityRelId(targetEntitySet, targetKey));
 

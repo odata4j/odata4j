@@ -13,13 +13,13 @@ import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OLink;
 import org.odata4j.core.OLinks;
 import org.odata4j.core.OProperty;
-import org.odata4j.edm.EdmType;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmMultiplicity;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSimpleType;
+import org.odata4j.edm.EdmType;
 import org.odata4j.format.Entry;
 import org.odata4j.format.Feed;
 import org.odata4j.format.Settings;
@@ -65,7 +65,7 @@ public class JsonFormatParser {
     this.entitySetName = settings == null ? null : settings.entitySetName;
     this.entityKey = settings == null ? null : settings.entityKey;
     this.isResponse = settings == null ? false : settings.isResponse;
-    this.parseType = settings == null ? null : settings.parseType; 
+    this.parseType = settings == null ? null : settings.parseType;
   }
 
   protected JsonFeed parseFeed(EdmEntitySet ees, JsonStreamReader jsr) {
@@ -180,24 +180,24 @@ public class JsonFormatParser {
 
     if (event.isEndProperty()) {
       // scalar property
-      EdmProperty ep = ees.type.findProperty(name);
+      EdmProperty ep = ees.getType().findProperty(name);
       if (ep == null) {
         // a navigation property with muliplicty 1 and a null associated element looks
         // like a scalar property here with a null value
         if (null == event.asEndProperty().getValue()) {
-          EdmNavigationProperty navProp = ees.type.findNavigationProperty(name);
+          EdmNavigationProperty navProp = ees.getType().findNavigationProperty(name);
           if (null != navProp) {
             // aha
             entry.links.add(OLinks.relatedEntityInline(name, name, entry.getUri() + "/" + name, null));
             return;
           }
         }
-        throw new IllegalArgumentException("unknown property " + name + " for " + ees.name);
+        throw new IllegalArgumentException("unknown property " + name + " for " + ees.getName());
       }
       // TODO support complex type properties
-      if (!ep.type.isSimple())
+      if (!ep.getType().isSimple())
         throw new UnsupportedOperationException("Only simple properties supported");
-      entry.properties.add(JsonTypeConverter.parse(name, (EdmSimpleType) ep.type, event.asEndProperty().getValue()));
+      entry.properties.add(JsonTypeConverter.parse(name, (EdmSimpleType) ep.getType(), event.asEndProperty().getValue()));
     } else if (event.isStartObject()) {
       // reference deferred or inlined
 
@@ -206,8 +206,8 @@ public class JsonFormatParser {
       if (val.uri != null) {
         // lookup the cardinality of the relationship so we can insert the correct
         // link type.
-        EdmNavigationProperty navProp = ees.type.findNavigationProperty(name);
-        if (navProp.toRole.multiplicity == EdmMultiplicity.MANY) {
+        EdmNavigationProperty navProp = ees.getType().findNavigationProperty(name);
+        if (navProp.getToRole().getMultiplicity() == EdmMultiplicity.MANY) {
           entry.links.add(OLinks.relatedEntities(name, name, val.uri));
         } else {
         entry.links.add(OLinks.relatedEntity(name, name, val.uri));
@@ -224,10 +224,10 @@ public class JsonFormatParser {
       event = jsr.nextEvent();
 
       if (event.isValue()) {
-        throw new IllegalArgumentException("arrays of primitive types not supported! property " + ees.name + "." + name);
+        throw new IllegalArgumentException("arrays of primitive types not supported! property " + ees.getName() + "." + name);
       } else if (event.isStartObject()) {
-        EdmNavigationProperty navProp = ees.type.findNavigationProperty(name);
-        ees = metadata.getEdmEntitySet(navProp.toRole.type);
+        EdmNavigationProperty navProp = ees.getType().findNavigationProperty(name);
+        ees = metadata.getEdmEntitySet(navProp.getToRole().getType());
         List<OEntity> entities = new ArrayList<OEntity>();
         do {
           entities.add(parseEntry(ees, jsr).getEntity());
@@ -251,7 +251,7 @@ public class JsonFormatParser {
     event = jsr.nextEvent();
     ensureStartProperty(event);
 
-    // "__deferred": 
+    // "__deferred":
     if (DEFERRED_PROPERTY.equals(event.asStartProperty().getName())) {
       // deferred feed or entity
 
@@ -275,7 +275,7 @@ public class JsonFormatParser {
 
       // "results" :
     } else if (RESULTS_PROPERTY.equals(event.asStartProperty().getName())) {
-      
+
       // if we support V1, put this in again
       /*
       if (version == ODataVersion.V1) {
@@ -283,12 +283,12 @@ public class JsonFormatParser {
       }*/
 
       // inlined feed
-      EdmNavigationProperty navProp = ees.type.findNavigationProperty(name);
+      EdmNavigationProperty navProp = ees.getType().findNavigationProperty(name);
 
       // [
       ensureStartArray(jsr.nextEvent());
 
-      Feed feed = parseFeed(metadata.getEdmEntitySet(navProp.toRole.type), jsr);
+      Feed feed = parseFeed(metadata.getEdmEntitySet(navProp.getToRole().getType()), jsr);
 
       rt.entities = Enumerable.create(feed.getEntries())
           .cast(JsonEntry.class)
@@ -304,12 +304,12 @@ public class JsonFormatParser {
 
     } else if (METADATA_PROPERTY.equals(event.asStartProperty().getName())) {
       // inlined entity or link starting with meta data
-      EdmNavigationProperty navProp = ees.type.findNavigationProperty(name);
+      EdmNavigationProperty navProp = ees.getType().findNavigationProperty(name);
       JsonEntryMetaData jemd = parseMetadata(jsr);
-      JsonEntry refentry = parseEntry(jemd, metadata.getEdmEntitySet(navProp.toRole.type), jsr);
+      JsonEntry refentry = parseEntry(jemd, metadata.getEdmEntitySet(navProp.getToRole().getType()), jsr);
 
-      // if we are parsing a request, the links to existing 
-      //  entities are represented as the inline representation 
+      // if we are parsing a request, the links to existing
+      //  entities are represented as the inline representation
       //  of an entity with only the __metadata and no properties
       if (isResponse) {
         rt.entity = refentry.getEntity();
@@ -324,8 +324,8 @@ public class JsonFormatParser {
     } else if (event.isStartProperty()) {
       // inlined entity
 
-      EdmNavigationProperty navProp = ees.type.findNavigationProperty(name);
-      ees = metadata.getEdmEntitySet(navProp.toRole.type);
+      EdmNavigationProperty navProp = ees.getType().findNavigationProperty(name);
+      ees = metadata.getEdmEntitySet(navProp.getToRole().getType());
 
       JsonEntry refentry = new JsonEntry();
       refentry.properties = new ArrayList<OProperty<?>>();
@@ -386,11 +386,11 @@ public class JsonFormatParser {
       throw new IllegalArgumentException("no valid OData JSON format expected StartArray got " + event + ")");
     }
   }
-  
+
   protected void ensureEndArray(JsonEvent event) {
     if (!event.isEndArray()) {
       throw new IllegalArgumentException("no valid OData JSON format expected EndArray got " + event + ")");
     }
   }
-   
+
 }

@@ -74,8 +74,8 @@ public class EdmxFormatParserTest {
     }
 
     private void checkTypeHierarchy(EdmDataServices d) {
-      EdmEntityType airport = d.findEdmEntitySet("Airport").type;
-      EdmEntityType badAirport = d.findEdmEntitySet("BadAirport").type;
+      EdmEntityType airport = d.findEdmEntitySet("Airport").getType();
+      EdmEntityType badAirport = d.findEdmEntitySet("BadAirport").getType();
       assertTrue(badAirport.getBaseType().equals(airport));
       assertTrue(badAirport.getKeys().equals(airport.getKeys()));
       assertTrue(badAirport.getDeclaredNavigationProperties().count() == 0);
@@ -92,8 +92,8 @@ public class EdmxFormatParserTest {
       assertTrue(badAirport.findProperty("rating") != null);
       assertTrue(badAirport.findProperty("prop2") != null);
 
-      EdmEntityType schedule = d.findEdmEntitySet("FlightSchedule").type;
-      EdmEntityType subSchedule = d.findEdmEntitySet("SubFlightSchedule").type;
+      EdmEntityType schedule = d.findEdmEntitySet("FlightSchedule").getType();
+      EdmEntityType subSchedule = d.findEdmEntitySet("SubFlightSchedule").getType();
       assertTrue(subSchedule.getBaseType().equals(schedule));
       assertTrue(subSchedule.getKeys().equals(schedule.getKeys()));
       assertTrue(subSchedule.getDeclaredNavigationProperties().count() == 0);
@@ -119,7 +119,7 @@ public class EdmxFormatParserTest {
       assertTrue(subSchedule.findProperty("prop4") != null);
       assertTrue(subSchedule.findProperty("prop5") != null);
 
-      EdmEntityType subsubSchedule = d.findEdmEntitySet("SubSubFlightSchedule").type;
+      EdmEntityType subsubSchedule = d.findEdmEntitySet("SubSubFlightSchedule").getType();
       assertTrue(subsubSchedule.getBaseType().equals(subSchedule));
       assertTrue(subsubSchedule.getKeys().equals(subSchedule.getKeys()));
       assertTrue(subsubSchedule.getDeclaredNavigationProperties().count() == 1);

@@ -16,7 +16,7 @@ public class OEntities {
 
   /**
    * Creates a new entity.
-   * 
+   *
    * @param entitySet  the entity-set
    * @param entityKey  the entity-key
    * @param properties  the entity properties, if any
@@ -28,9 +28,9 @@ public class OEntities {
   }
 
   /**
-   * Creates a new request-entity.  
+   * Creates a new request-entity.
    * <p>A request-entity is a new entity that has not yet been created in an OData service, and therefore allowed to not have an entity-key.</p>
-   * 
+   *
    * @param entitySet  the entity-set
    * @param properties  the entity properties, if any
    * @param links  the entity links, if any
@@ -42,7 +42,7 @@ public class OEntities {
 
   /**
    * Creates a new entity with additional Atom information.
-   * 
+   *
    * @param entitySet  the entity-set
    * @param entityKey  the entity-key
    * @param properties  the entity properties, if any
@@ -56,9 +56,9 @@ public class OEntities {
   }
 
   /**
-   * Creates a new request-entity with additional Atom information.  
+   * Creates a new request-entity with additional Atom information.
    * <p>A request-entity is a new entity that has not yet been created in an OData service, and therefore allowed to not have an entity-key.</p>
-   * 
+   *
    * @param entitySet  the entity-set
    * @param properties  the entity properties, if any
    * @param links  the entity links, if any
@@ -123,7 +123,7 @@ public class OEntities {
 
     @Override
     public String getEntitySetName() {
-      return entitySet.name;
+      return entitySet.getName();
     }
 
     @Override
@@ -163,7 +163,7 @@ public class OEntities {
 
     @Override
     public EdmType getType() {
-      return this.entitySet.type;
+      return this.entitySet.getType();
     }
 
   }

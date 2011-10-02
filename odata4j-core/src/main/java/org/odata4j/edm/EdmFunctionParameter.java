@@ -5,12 +5,12 @@ import java.util.List;
 public class EdmFunctionParameter extends EdmItem {
 
   public enum Mode {
-    In, Out, InOut;
+    IN, OUT, IN_OUT;
   };
 
-  public final String name;
-  public final EdmType type;
-  public final Mode mode;
+  private final String name;
+  private final EdmType type;
+  private final Mode mode;
 
   public EdmFunctionParameter(String name, EdmType type, Mode mode) {
     this(name, type, mode, null, null);
@@ -21,6 +21,18 @@ public class EdmFunctionParameter extends EdmItem {
     this.name = name;
     this.type = type;
     this.mode = mode;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public EdmType getType() {
+    return type;
+  }
+
+  public Mode getMode() {
+    return mode;
   }
 
 }
