@@ -367,7 +367,7 @@ public class EdmxFormatParser extends XmlFormatParser {
 
   }
 
-  private static EdmProperty parseEdmProperty(XMLEvent2 event) {
+  private static EdmProperty.Builder parseEdmProperty(XMLEvent2 event) {
     String propertyName = getAttributeValueIfExists(event.asStartElement(), "Name");
     String propertyType = getAttributeValueIfExists(event.asStartElement(), "Type");
     String propertyNullable = getAttributeValueIfExists(event.asStartElement(), "Nullable");
@@ -391,30 +391,28 @@ public class EdmxFormatParser extends XmlFormatParser {
     String fcEpmContentKind = getAttributeValueIfExists(event.asStartElement(), M_FC_EPMCONTENTKIND);
     String fcEpmKeepInContent = getAttributeValueIfExists(event.asStartElement(), M_FC_EPMKEEPINCONTENT);
 
-    return new EdmProperty(propertyName,
-                EdmType.get(propertyType),
-                "false".equals(propertyNullable),
-                maxLength == null ? null : maxLength.equals("Max") ? Integer.MAX_VALUE : Integer.parseInt(maxLength),
-                "false".equals(unicode),
-                "false".equals(fixedLength),
-                storeGeneratedPattern,
-                fcTargetPath,
-                fcContentKind,
-                fcKeepInContent,
-                fcEpmContentKind,
-                fcEpmKeepInContent,
-                ckind,
-                null,  // documentation TODO
-                null, // annoations TODO
-                defaultValue,
-                precision == null ? null : Integer.parseInt(precision),
-                scale == null ? null : Integer.parseInt(scale));
+    return EdmProperty.newBuilder(propertyName)
+        .setType(EdmType.get(propertyType))
+        .setNullable("false".equals(propertyNullable))
+        .setMaxLength(maxLength == null ? null : maxLength.equals("Max") ? Integer.MAX_VALUE : Integer.parseInt(maxLength))
+        .setUnicode("false".equals(unicode))
+        .setFixedLength("false".equals(fixedLength))
+        .setStoreGeneratedPattern(storeGeneratedPattern)
+        .setFcTargetPath(fcTargetPath)
+        .setFcContentKind(fcContentKind)
+        .setFcKeepInContent(fcKeepInContent)
+        .setFcEpmContentKind(fcEpmContentKind)
+        .setFcEpmKeepInContent(fcEpmKeepInContent)
+        .setCollectionKind(ckind)
+        .setDefaultValue(defaultValue)
+        .setPrecision(precision == null ? null : Integer.parseInt(precision))
+        .setScale(scale == null ? null : Integer.parseInt(scale));
   }
 
   private static EdmComplexType parseEdmComplexType(XMLEventReader2 reader, String schemaNamespace, StartElement2 complexTypeElement) {
     String name = complexTypeElement.getAttributeByName("Name").getValue();
     String isAbstractS = getAttributeValueIfExists(complexTypeElement, "Abstract");
-    List<EdmProperty> edmProperties = new ArrayList<EdmProperty>();
+    List<EdmProperty.Builder> edmProperties = new ArrayList<EdmProperty.Builder>();
 
     while (reader.hasNext()) {
       XMLEvent2 event = reader.nextEvent();
@@ -443,7 +441,7 @@ public class EdmxFormatParser extends XmlFormatParser {
     String isAbstractS = getAttributeValueIfExists(entityTypeElement, "Abstract");
 
     List<String> keys = new ArrayList<String>();
-    List<EdmProperty> edmProperties = new ArrayList<EdmProperty>();
+    List<EdmProperty.Builder> edmProperties = new ArrayList<EdmProperty.Builder>();
     List<EdmNavigationProperty> edmNavigationProperties = new ArrayList<EdmNavigationProperty>();
 
     while (reader.hasNext()) {

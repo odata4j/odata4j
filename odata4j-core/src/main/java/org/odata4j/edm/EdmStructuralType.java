@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.core4j.Enumerable;
+import org.odata4j.core.Named;
 import org.odata4j.core.OPredicates;
 
-public abstract class EdmStructuralType extends EdmNonSimpleType {
+public abstract class EdmStructuralType extends EdmNonSimpleType implements Named {
 
   private final String namespace;
   private final String name;
@@ -14,26 +15,27 @@ public abstract class EdmStructuralType extends EdmNonSimpleType {
   private final Boolean isAbstract;
   private EdmEntityType baseType;
 
-  protected EdmStructuralType(EdmEntityType baseType, String namespace, String name, List<EdmProperty> declaredProperties) {
+  protected EdmStructuralType(EdmEntityType baseType, String namespace, String name, List<EdmProperty.Builder> declaredProperties) {
     this(baseType, namespace, name, declaredProperties, null, null, null);
   }
 
-  protected EdmStructuralType(EdmEntityType baseType, String namespace, String name, List<EdmProperty> declaredProperties,
+  protected EdmStructuralType(EdmEntityType baseType, String namespace, String name, List<EdmProperty.Builder> declaredProperties,
       EdmDocumentation doc, List<EdmAnnotation<?>> annotations) {
     this(baseType, namespace, name, declaredProperties, doc, annotations, null);
   }
 
-  protected EdmStructuralType(EdmEntityType baseType, String namespace, String name, List<EdmProperty> declaredProperties,
+  protected EdmStructuralType(EdmEntityType baseType, String namespace, String name, List<EdmProperty.Builder> declaredProperties,
       EdmDocumentation doc, List<EdmAnnotation<?>> annotations, Boolean isAbstract) {
     super(namespace + "." + name, doc, annotations);
     this.baseType = baseType;
     this.namespace = namespace;
     this.name = name;
     this.isAbstract = isAbstract;
-    this.declaredProperties = declaredProperties == null ? new ArrayList<EdmProperty>() : declaredProperties;
-
-    for (EdmProperty prop : this.declaredProperties) {
-      prop.setStructuralType(this);
+    this.declaredProperties = new ArrayList<EdmProperty>();
+    if (declaredProperties != null) {
+      for (EdmProperty.Builder declaredProperty : declaredProperties) {
+        this.declaredProperties.add(declaredProperty.setDeclaringType(this).build());
+      }
     }
   }
 

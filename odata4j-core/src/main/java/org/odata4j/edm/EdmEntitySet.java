@@ -2,12 +2,14 @@ package org.odata4j.edm;
 
 import java.util.List;
 
+import org.odata4j.core.Named;
+
 /**
  * The EntitySet element in conceptual schema definition language is a logical container for instances of an entity type and instances of any type that is derived from that entity type.
  *
  * @see <a href="http://msdn.microsoft.com/en-us/library/bb386874.aspx">[msdn] Entity Sets (EDM)</a>
  */
-public class EdmEntitySet extends EdmItem {
+public class EdmEntitySet extends EdmItem implements Named {
 
   private final String name;
   private final EdmEntityType type;

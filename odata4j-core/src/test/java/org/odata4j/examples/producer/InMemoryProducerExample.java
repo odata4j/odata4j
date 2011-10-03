@@ -25,6 +25,7 @@ import org.odata4j.core.OSimpleObjects;
 import org.odata4j.edm.EdmAnnotation;
 import org.odata4j.edm.EdmAnnotationAttribute;
 import org.odata4j.edm.EdmComplexType;
+import org.odata4j.edm.EdmDecorator;
 import org.odata4j.edm.EdmDocumentation;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmEntityType;
@@ -32,7 +33,6 @@ import org.odata4j.edm.EdmItem;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.edm.EdmStructuralType;
-import org.odata4j.edm.EdmDecorator;
 import org.odata4j.producer.Path;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.resources.ODataProducerProvider;
@@ -174,18 +174,12 @@ public class InMemoryProducerExample {
     }
 
     private EdmComplexType createSchemaInfoType() {
-        List<EdmProperty> props = new ArrayList<EdmProperty>();
+        List<EdmProperty.Builder> props = new ArrayList<EdmProperty.Builder>();
 
-        EdmProperty ep = new EdmProperty(
-                "Author",
-                EdmSimpleType.STRING, // EdmType type,
-                false); // boolean nullable,
+        EdmProperty.Builder ep = EdmProperty.newBuilder("Author").setType(EdmSimpleType.STRING);
         props.add(ep);
 
-        ep = new EdmProperty(
-                "SeeAlso",
-                EdmSimpleType.STRING, // EdmType type,
-                false); // boolean nullable,
+        ep = EdmProperty.newBuilder("SeeAlso").setType(EdmSimpleType.STRING);
         props.add(ep);
 
         return new EdmComplexType(namespace, "SchemaInfo", props);

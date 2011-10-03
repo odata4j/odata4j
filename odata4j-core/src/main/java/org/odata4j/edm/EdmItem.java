@@ -3,8 +3,8 @@ package org.odata4j.edm;
 
 import java.util.List;
 
-import org.odata4j.core.Annotation;
 import org.odata4j.core.Annotated;
+import org.odata4j.core.Annotation;
 
 /**
  * Constructs in the CSDL that we model in the org.odata4j.edm package
@@ -38,6 +38,37 @@ public class EdmItem implements Annotated {
       }
     }
     return null;
+  }
+
+  public static class Builder<T> {
+
+    private EdmDocumentation documentation;
+    private List<EdmAnnotation<?>> annotations;
+
+    Builder() {
+
+    }
+
+    public EdmDocumentation getDocumentation() {
+      return documentation;
+    }
+
+    public List<EdmAnnotation<?>> getAnnotations() {
+      return annotations;
+    }
+
+    @SuppressWarnings("unchecked")
+    public T setDocumentation(EdmDocumentation documentation) {
+      this.documentation = documentation;
+      return (T) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public T setAnnotations(List<EdmAnnotation<?>> annotations) {
+      this.annotations = annotations;
+      return (T) this;
+    }
+
   }
 
 }

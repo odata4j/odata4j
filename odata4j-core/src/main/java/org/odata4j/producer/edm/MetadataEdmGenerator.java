@@ -98,12 +98,9 @@ public class MetadataEdmGenerator implements EdmGenerator {
 
   private void createComplexTypes() {
     // ----------------------------- PropertyRef --------------------------
-    List<EdmProperty> props = new ArrayList<EdmProperty>();
+    List<EdmProperty.Builder> props = new ArrayList<EdmProperty.Builder>();
 
-    EdmProperty ep = new EdmProperty(
-            Edm.PropertyRef.Name,
-            EdmSimpleType.STRING, // EdmType type,
-            false); // boolean nullable,
+    EdmProperty.Builder ep = EdmProperty.newBuilder(Edm.PropertyRef.Name).setType(EdmSimpleType.STRING);
     props.add(ep);
 
     EdmComplexType propertyRef = new EdmComplexType(Edm.namespace,
@@ -111,16 +108,9 @@ public class MetadataEdmGenerator implements EdmGenerator {
     ctypes.add(propertyRef);
 
     // ----------------------------- EntityKey --------------------------
-    props = new ArrayList<EdmProperty>();
+    props = new ArrayList<EdmProperty.Builder>();
 
-    ep = new EdmProperty(
-            Edm.EntityKey.Keys,
-            //new EdmCollectionType(getCollectionOfType(propertyRef), propertyRef), // EdmType type,
-            propertyRef,
-            false, // boolean nullable,
-            CollectionKind.LIST,
-            null, // documentation
-            null); // annotations
+    ep = EdmProperty.newBuilder(Edm.EntityKey.Keys).setType(propertyRef).setCollectionKind(CollectionKind.LIST);
     props.add(ep);
 
     entityKeyType = new EdmComplexType(Edm.namespace, Edm.EntityKey.name(), props);
@@ -128,24 +118,12 @@ public class MetadataEdmGenerator implements EdmGenerator {
 
     // ----------------------------- Documentation --------------------------
 
-    props = new ArrayList<EdmProperty>();
+    props = new ArrayList<EdmProperty.Builder>();
 
-    ep = new EdmProperty(
-            Edm.Documentation.Summary,
-            EdmSimpleType.STRING,
-            true, // boolean nullable,
-            CollectionKind.NONE,
-            null, // documentation
-            null); // annotations
+    ep = EdmProperty.newBuilder(Edm.Documentation.Summary).setType(EdmSimpleType.STRING).setNullable(true);
     props.add(ep);
 
-    ep = new EdmProperty(
-            Edm.Documentation.LongDescription,
-            EdmSimpleType.STRING,
-            true, // boolean nullable,
-            CollectionKind.NONE,
-            null, // documentation
-            null); // annotations
+    ep = EdmProperty.newBuilder(Edm.Documentation.LongDescription).setType(EdmSimpleType.STRING).setNullable(true);
     props.add(ep);
 
     documentationType = new EdmComplexType(Edm.namespace, Edm.Documentation.name(), props);
@@ -155,21 +133,15 @@ public class MetadataEdmGenerator implements EdmGenerator {
 
   private void createEntityTypes() {
     // --------------------------- Schema ------------------------------
-    List<EdmProperty> props = new ArrayList<EdmProperty>();
+    List<EdmProperty.Builder> props = new ArrayList<EdmProperty.Builder>();
     List<EdmNavigationProperty> navprops = new ArrayList<EdmNavigationProperty>();
 
-    EdmProperty ep = null;
+    EdmProperty.Builder ep = null;
 
-    ep = new EdmProperty(
-            Edm.Schema.Namespace,
-            EdmSimpleType.STRING, // EdmType type,
-            false); // boolean nullable,
+    ep = EdmProperty.newBuilder(Edm.Schema.Namespace).setType(EdmSimpleType.STRING);
     props.add(ep);
 
-    ep = new EdmProperty(
-            Edm.Schema.Alias,
-            EdmSimpleType.STRING, // EdmType type,
-            true); // boolean nullable,
+    ep = EdmProperty.newBuilder(Edm.Schema.Alias).setType(EdmSimpleType.STRING).setNullable(true);
     props.add(ep);
 
     List<String> keys = new ArrayList<String>();
@@ -192,31 +164,19 @@ public class MetadataEdmGenerator implements EdmGenerator {
     esets.add(schemaSet);
 
     // --------------------------- StructuralType ------------------------------
-    props = new ArrayList<EdmProperty>();
+    props = new ArrayList<EdmProperty.Builder>();
     navprops = new ArrayList<EdmNavigationProperty>();
 
-    ep = new EdmProperty(
-            Edm.StructuralType.Namespace,
-            EdmSimpleType.STRING, // EdmType type,
-            false); // boolean nullable,
+    ep = EdmProperty.newBuilder(Edm.StructuralType.Namespace).setType(EdmSimpleType.STRING);
     props.add(ep);
 
-    ep = new EdmProperty(
-            Edm.StructuralType.Name,
-            EdmSimpleType.STRING, // EdmType type,
-            false); // boolean nullable,
+    ep = EdmProperty.newBuilder(Edm.StructuralType.Name).setType(EdmSimpleType.STRING);
     props.add(ep);
 
-    ep = new EdmProperty(
-            Edm.StructuralType.BaseType,
-            EdmSimpleType.STRING, // EdmType type,
-            true); // boolean nullable,
+    ep = EdmProperty.newBuilder(Edm.StructuralType.BaseType).setType(EdmSimpleType.STRING).setNullable(true);
     props.add(ep);
 
-    ep = new EdmProperty(
-            Edm.StructuralType.Abstract,
-            EdmSimpleType.BOOLEAN, // EdmType type,
-            true); // boolean nullable,
+    ep = EdmProperty.newBuilder(Edm.StructuralType.Abstract).setType(EdmSimpleType.BOOLEAN).setNullable(true);
     props.add(ep);
 
     keys = new ArrayList<String>();
@@ -242,7 +202,7 @@ public class MetadataEdmGenerator implements EdmGenerator {
 
     // --------------------------- ComplexType ------------------------------
 
-    props = Collections.<EdmProperty>emptyList();
+    props = Collections.<EdmProperty.Builder>emptyList();
     navprops = new ArrayList<EdmNavigationProperty>();
 
     EdmEntityType complexType = new EdmEntityType(
@@ -270,13 +230,11 @@ public class MetadataEdmGenerator implements EdmGenerator {
     // adds the notion of Key
     // key is nullable because only base types specifiy the key
 
-    props = new ArrayList<EdmProperty>();
+    props = new ArrayList<EdmProperty.Builder>();
     navprops = new ArrayList<EdmNavigationProperty>();
 
-    ep = new EdmProperty(
-            Edm.EntityType.Key,
-            this.entityKeyType, // EdmType type,
-            true); // boolean nullable,
+    ep = EdmProperty.newBuilder(Edm.EntityType.Key).setType(this.entityKeyType).setNullable(true);
+
     props.add(ep);
 
     EdmEntityType entityType = new EdmEntityType(
@@ -303,85 +261,46 @@ public class MetadataEdmGenerator implements EdmGenerator {
     // --------------------------- Property ------------------------------
     // model Property as an Entity so we can use the $expand mechanism to get
     // a lightweight view of the hierarchy or one that has all of the properties.
-    props = new ArrayList<EdmProperty>();
+    props = new ArrayList<EdmProperty.Builder>();
     navprops = new ArrayList<EdmNavigationProperty>();
 
-    ep = new EdmProperty(
-            Edm.Property.Namespace,
-            EdmSimpleType.STRING, // EdmType type,
-            false); // boolean nullable,
+    ep = EdmProperty.newBuilder(Edm.Property.Namespace).setType(EdmSimpleType.STRING);
     props.add(ep);
 
-    ep = new EdmProperty(
-            Edm.Property.EntityTypeName,
-            EdmSimpleType.STRING, // EdmType type,
-            false); // boolean nullable,
+    ep = EdmProperty.newBuilder(Edm.Property.EntityTypeName).setType(EdmSimpleType.STRING);
     props.add(ep);
 
-    ep = new EdmProperty(
-            Edm.Property.Name,
-            EdmSimpleType.STRING, // EdmType type,
-            false); // boolean nullable,
+    ep = EdmProperty.newBuilder(Edm.Property.Name).setType(EdmSimpleType.STRING);
     props.add(ep);
 
-    ep = new EdmProperty(
-            Edm.Property.Type,
-            EdmSimpleType.STRING, // EdmType type,
-            false); // boolean nullable,
+    ep = EdmProperty.newBuilder(Edm.Property.Type).setType(EdmSimpleType.STRING);
     props.add(ep);
 
-    ep = new EdmProperty(
-            Edm.Property.Nullable,
-            EdmSimpleType.BOOLEAN, // EdmType type,
-            true); // boolean nullable,
+    ep = EdmProperty.newBuilder(Edm.Property.Nullable).setType(EdmSimpleType.BOOLEAN).setNullable(true);
     props.add(ep);
 
-    ep = new EdmProperty(
-            Edm.Property.DefaultValue,
-            EdmSimpleType.STRING, // EdmType type,
-            true); // boolean nullable,
+    ep = EdmProperty.newBuilder(Edm.Property.DefaultValue).setType(EdmSimpleType.STRING).setNullable(true);
     props.add(ep);
 
-    ep = new EdmProperty(
-            Edm.Property.MaxLength,
-            EdmSimpleType.INT32, // EdmType type,
-            true); // boolean nullable,
+    ep = EdmProperty.newBuilder(Edm.Property.MaxLength).setType(EdmSimpleType.INT32).setNullable(true);
     props.add(ep);
 
-    ep = new EdmProperty(
-            Edm.Property.FixedLength,
-            EdmSimpleType.BOOLEAN, // EdmType type,
-            true); // boolean nullable,
+    ep = EdmProperty.newBuilder(Edm.Property.FixedLength).setType(EdmSimpleType.BOOLEAN).setNullable(true);
     props.add(ep);
 
-    ep = new EdmProperty(
-            Edm.Property.Precision,
-            EdmSimpleType.INT16, // EdmType type,
-            true); // boolean nullable,
+    ep = EdmProperty.newBuilder(Edm.Property.Precision).setType(EdmSimpleType.INT16).setNullable(true);
     props.add(ep);
 
-    ep = new EdmProperty(
-            Edm.Property.Scale,
-            EdmSimpleType.INT16, // EdmType type,
-            true); // boolean nullable,
+    ep = EdmProperty.newBuilder(Edm.Property.Scale).setType(EdmSimpleType.INT16).setNullable(true);
     props.add(ep);
 
-    ep = new EdmProperty(
-            Edm.Property.Unicode,
-            EdmSimpleType.BOOLEAN, // EdmType type,
-            true); // boolean nullable,
+    ep = EdmProperty.newBuilder(Edm.Property.Unicode).setType(EdmSimpleType.BOOLEAN).setNullable(true);
     props.add(ep);
 
-    ep = new EdmProperty(
-            Edm.Property.Collation,
-            EdmSimpleType.STRING, // EdmType type,
-            true); // boolean nullable,
+    ep = EdmProperty.newBuilder(Edm.Property.Collation).setType(EdmSimpleType.STRING).setNullable(true);
     props.add(ep);
 
-    ep = new EdmProperty(
-            Edm.Property.ConcurrencyMode,
-            EdmSimpleType.STRING, // EdmType type,
-            true); // boolean nullable,
+    ep = EdmProperty.newBuilder(Edm.Property.ConcurrencyMode).setType(EdmSimpleType.STRING).setNullable(true);
     props.add(ep);
 
     keys = new ArrayList<String>();

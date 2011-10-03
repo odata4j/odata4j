@@ -232,7 +232,7 @@ public class MetadataProducer implements ODataProducer {
         } else if (Edm.Property.CollectionKind.equals(name)) {
           return prop.getCollectionKind().toString();
         } else if (Edm.Property.EntityTypeName.equals(name)) {
-          return prop.getStructuralType().getName();
+          return prop.getDeclaringType().getName();
         } else if (Edm.Property.FixedLength.equals(name)) {
           return null != prop.getFixedLength() ? prop.getFixedLength().toString() : null;
         } else if (Edm.Property.MaxLength.equals(name)) {
@@ -240,7 +240,7 @@ public class MetadataProducer implements ODataProducer {
         } else if (Edm.Property.Name.equals(name)) {
           return prop.getName();
         } else if (Edm.Property.Namespace.equals(name)) {
-          return prop.getStructuralType().getNamespace();
+          return prop.getDeclaringType().getNamespace();
         } else if (Edm.Property.Nullable.equals(name)) {
           return prop.isNullable() ? "true" : "false";
         } else if (Edm.Property.Type.equals(name)) {

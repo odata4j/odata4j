@@ -45,7 +45,6 @@ import org.odata4j.edm.EdmGenerator;
 import org.odata4j.edm.EdmMultiplicity;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
-import org.odata4j.edm.EdmProperty.CollectionKind;
 import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.expression.BoolCommonExpression;
@@ -228,7 +227,7 @@ public class InMemoryProducer implements ODataProducer, EdmGenerator {
     for (String entitySetName : eis.keySet()) {
       EntityInfo<?, ?> entityInfo = eis.get(entitySetName);
 
-      List<EdmProperty> properties = new ArrayList<EdmProperty>();
+      List<EdmProperty.Builder> properties = new ArrayList<EdmProperty.Builder>();
 
       properties.addAll(toEdmProperties(entityInfo.properties, entitySetName));
 
@@ -660,16 +659,21 @@ public class InMemoryProducer implements ODataProducer, EdmGenerator {
     return Responses.entity(oe);
   }
 
-  private Collection<EdmProperty> toEdmProperties(PropertyModel model, String structuralTypename) {
-    List<EdmProperty> rt = new ArrayList<EdmProperty>();
+  private Collection<EdmProperty.Builder> toEdmProperties(PropertyModel model, String structuralTypename) {
+    List<EdmProperty.Builder> rt = new ArrayList<EdmProperty.Builder>();
 
     for (String propName : model.getPropertyNames()) {
       Class<?> propType = model.getPropertyType(propName);
       EdmSimpleType type = findEdmType(propType);
-      if (type == null) continue;
-      rt.add(new EdmProperty(propName, type, true, null, null, null, null, null, null, null, null, null, CollectionKind.NONE,
-              null == this.decorator ? null : this.decorator.getDocumentationForProperty(namespace, structuralTypename, propName),
-              null == this.decorator ? null : this.decorator.getAnnotationsForProperty(namespace, structuralTypename, propName)));
+      if (type == null)
+        continue;
+
+      EdmProperty.Builder ep = EdmProperty.newBuilder(propName).setType(type).setNullable(true);
+      if (this.decorator != null) {
+        ep.setDocumentation(this.decorator.getDocumentationForProperty(namespace, structuralTypename, propName));
+        ep.setAnnotations(this.decorator.getAnnotationsForProperty(namespace, structuralTypename, propName));
+      }
+      rt.add(ep);
     }
 
     return rt;

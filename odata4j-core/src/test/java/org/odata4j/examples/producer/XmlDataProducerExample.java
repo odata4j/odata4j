@@ -8,8 +8,8 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import java.util.Map;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -124,17 +124,17 @@ public class XmlDataProducerExample {
       // one would probably generate it from xsd schema or something else
       String namespace = "XmlExample";
 
-      List<EdmProperty> properties = new ArrayList<EdmProperty>();
-      properties.add(new EdmProperty("address", EdmSimpleType.STRING, false));
-      properties.add(new EdmProperty("city", EdmSimpleType.STRING, false));
-      properties.add(new EdmProperty("companyName", EdmSimpleType.STRING, false));
-      properties.add(new EdmProperty("contactName", EdmSimpleType.STRING, false));
-      properties.add(new EdmProperty("contactTitle", EdmSimpleType.STRING, false));
-      properties.add(new EdmProperty("country", EdmSimpleType.STRING, false));
-      properties.add(new EdmProperty("customerID", EdmSimpleType.STRING, false));
-      properties.add(new EdmProperty("fax", EdmSimpleType.STRING, false));
-      properties.add(new EdmProperty("phone", EdmSimpleType.STRING, false));
-      properties.add(new EdmProperty("postalCode", EdmSimpleType.STRING, false));
+      List<EdmProperty.Builder> properties = new ArrayList<EdmProperty.Builder>();
+      properties.add(EdmProperty.newBuilder("address").setType(EdmSimpleType.STRING));
+      properties.add(EdmProperty.newBuilder("city").setType(EdmSimpleType.STRING));
+      properties.add(EdmProperty.newBuilder("companyName").setType(EdmSimpleType.STRING));
+      properties.add(EdmProperty.newBuilder("contactName").setType(EdmSimpleType.STRING));
+      properties.add(EdmProperty.newBuilder("contactTitle").setType(EdmSimpleType.STRING));
+      properties.add(EdmProperty.newBuilder("country").setType(EdmSimpleType.STRING));
+      properties.add(EdmProperty.newBuilder("customerID").setType(EdmSimpleType.STRING));
+      properties.add(EdmProperty.newBuilder("fax").setType(EdmSimpleType.STRING));
+      properties.add(EdmProperty.newBuilder("phone").setType(EdmSimpleType.STRING));
+      properties.add(EdmProperty.newBuilder("postalCode").setType(EdmSimpleType.STRING));
 
       List<EdmEntityType> entityTypes = new ArrayList<EdmEntityType>();
       EdmEntityType type = new EdmEntityType(namespace, null, "Customers", null, Arrays.asList("customerID"), properties, null);

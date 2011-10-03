@@ -47,7 +47,6 @@ import org.odata4j.edm.EdmEntityType;
 import org.odata4j.edm.EdmMultiplicity;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
-import org.odata4j.edm.EdmProperty.CollectionKind;
 import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.edm.EdmType;
@@ -91,7 +90,7 @@ public class JPAEdmGenerator {
     throw new UnsupportedOperationException(javaType.toString());
   }
 
-  protected EdmProperty toEdmProperty(String modelNamespace, SingularAttribute<?, ?> sa) {
+  protected EdmProperty.Builder toEdmProperty(String modelNamespace, SingularAttribute<?, ?> sa) {
     String name = sa.getName();
     EdmType type;
     if (sa.getPersistentAttributeType() == PersistentAttributeType.EMBEDDED) {
@@ -112,11 +111,11 @@ public class JPAEdmGenerator {
         maxLength = col.length();
     }
 
-    return new EdmProperty(name, type, nullable, maxLength, null, null, null, null, null, null, null, null, CollectionKind.NONE, null, null);
+    return EdmProperty.newBuilder(name).setType(type).setNullable(nullable).setMaxLength(maxLength);
   }
 
-  protected List<EdmProperty> getProperties(String modelNamespace, ManagedType<?> et) {
-    List<EdmProperty> properties = new ArrayList<EdmProperty>();
+  protected List<EdmProperty.Builder> getProperties(String modelNamespace, ManagedType<?> et) {
+    List<EdmProperty.Builder> properties = new ArrayList<EdmProperty.Builder>();
     for (Attribute<?, ?> att : et.getAttributes()) {
 
       if (att.isCollection()) {} else {
@@ -128,7 +127,7 @@ public class JPAEdmGenerator {
         if (sa.isId() && type.getPersistenceType() == PersistenceType.EMBEDDABLE) {
           properties.addAll(getProperties(modelNamespace, (ManagedType<?>) sa.getType()));
         } else if (type.getPersistenceType().equals(PersistenceType.BASIC) || type.getPersistenceType().equals(PersistenceType.EMBEDDABLE)) {
-          EdmProperty prop = toEdmProperty(modelNamespace, sa);
+          EdmProperty.Builder prop = toEdmProperty(modelNamespace, sa);
           properties.add(prop);
         }
       }
@@ -153,7 +152,7 @@ public class JPAEdmGenerator {
     for (EmbeddableType<?> et : mm.getEmbeddables()) {
 
       String name = et.getJavaType().getSimpleName();
-      List<EdmProperty> properties = getProperties(modelNamespace, et);
+      List<EdmProperty.Builder> properties = getProperties(modelNamespace, et);
 
       EdmComplexType ect = new EdmComplexType(modelNamespace, name, properties);
       edmComplexTypes.add(ect);
@@ -171,7 +170,7 @@ public class JPAEdmGenerator {
         // handle composite embedded keys (@EmbeddedId)
         if (idAttribute.getPersistentAttributeType() == PersistentAttributeType.EMBEDDED) {
           keys = Enumerable.create(getProperties(modelNamespace, (ManagedType<?>) idAttribute.getType()))
-                          .select(OFuncs.edmPropertyName()).toList();
+                          .select(OFuncs.name(EdmProperty.Builder.class)).toList();
         } else {
           keys = Enumerable.create(idAttribute.getName()).toList();
         }
@@ -179,7 +178,7 @@ public class JPAEdmGenerator {
         throw new IllegalArgumentException("IdClass not yet supported");
       }
 
-      List<EdmProperty> properties = getProperties(modelNamespace, et);
+      List<EdmProperty.Builder> properties = getProperties(modelNamespace, et);
       List<EdmNavigationProperty> navigationProperties = new ArrayList<EdmNavigationProperty>();
 
       EdmEntityType eet = new EdmEntityType(modelNamespace, null, name, null, keys, properties, navigationProperties);
@@ -189,8 +188,8 @@ public class JPAEdmGenerator {
       entitySets.add(ees);
     }
 
-    Map<String, EdmEntityType> eetsByName = Enumerable.create(edmEntityTypes).toMap(OFuncs.edmEntityTypeName());
-    Map<String, EdmEntitySet> eesByName = Enumerable.create(entitySets).toMap(OFuncs.edmEntitySetName());
+    Map<String, EdmEntityType> eetsByName = Enumerable.create(edmEntityTypes).toMap(OFuncs.name(EdmEntityType.class));
+    Map<String, EdmEntitySet> eesByName = Enumerable.create(entitySets).toMap(OFuncs.name(EdmEntitySet.class));
 
     // associations + navigationproperties on the non-collection side
     for (EntityType<?> et : mm.getEntities()) {

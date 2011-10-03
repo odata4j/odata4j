@@ -1,9 +1,6 @@
 package org.odata4j.core;
 
 import org.core4j.Func1;
-import org.odata4j.edm.EdmEntitySet;
-import org.odata4j.edm.EdmEntityType;
-import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmType;
 
 /**
@@ -13,25 +10,9 @@ public class OFuncs {
 
   private OFuncs() {}
 
-  public static Func1<EdmProperty, String> edmPropertyName() {
-    return new Func1<EdmProperty, String>() {
-      public String apply(EdmProperty input) {
-        return input.getName();
-      }
-    };
-  }
-
-  public static Func1<EdmEntityType, String> edmEntityTypeName() {
-    return new Func1<EdmEntityType, String>() {
-      public String apply(EdmEntityType input) {
-        return input.getName();
-      }
-    };
-  }
-
-  public static Func1<EdmEntitySet, String> edmEntitySetName() {
-    return new Func1<EdmEntitySet, String>() {
-      public String apply(EdmEntitySet input) {
+  public static <T extends Named> Func1<T, String> name(Class<T> namedType) {
+    return new Func1<T, String>() {
+      public String apply(T input) {
         return input.getName();
       }
     };

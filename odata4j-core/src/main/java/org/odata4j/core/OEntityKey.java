@@ -13,6 +13,7 @@ import org.core4j.Enumerable;
 import org.core4j.Func1;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmEntityType;
+import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.expression.CommonExpression;
 import org.odata4j.expression.Expression;
@@ -104,7 +105,9 @@ public class OEntityKey {
       throw new IllegalArgumentException("EdmEntityType cannot be null");
     List<String> keys = eet.getKeys();
     if (keys.size() == 0) {
-      String idProp = Enumerable.create(eet.getProperties()).select(OFuncs.edmPropertyName()).firstOrNull(OPredicates.equalsIgnoreCase("id"));
+      String idProp = Enumerable.create(eet.getProperties())
+          .select(OFuncs.name(EdmProperty.class))
+          .firstOrNull(OPredicates.equalsIgnoreCase("id"));
       if (idProp != null)
         keys.add(idProp);
     }
