@@ -3,6 +3,7 @@ package org.odata4j.test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.odata4j.format.xml.EdmxFormatParserTest;
+import org.odata4j.format.xml.EdmxFormatWriterTest;
 import org.odata4j.format.xml.MultipleWorkspacesTest;
 import org.odata4j.producer.jpa.airline.test.CreateWithLinkTest;
 import org.odata4j.producer.jpa.airline.test.EdmDateTimeTemporalTest;
@@ -74,6 +75,7 @@ import org.odata4j.test.issues.Issue16;
     AtomFeedFormatParserTest.class,
     LinksTest.class,
     EdmxFormatParserTest.class,
+    EdmxFormatWriterTest.class,
     FunctionTest.class,
     EdmSimpleTypeTest.class,
     EdmTypeTest.class,
