@@ -188,12 +188,12 @@ public class EdmxFormatWriterTest implements EdmDecorator {
 
   @Override
   public EdmDocumentation getDocumentationForSchema(String namespace, String typeName) {
-    throw new UnsupportedOperationException("Not supported yet.");
+    return null;
   }
 
   @Override
   public List<EdmAnnotation<?>> getAnnotationsForSchema(String namespace, String typeName) {
-    throw new UnsupportedOperationException("Not supported yet.");
+    return null;
   }
 
   public static class ComplexAnnot {

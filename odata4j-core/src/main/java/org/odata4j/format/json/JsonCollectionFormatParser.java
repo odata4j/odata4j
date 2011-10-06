@@ -8,14 +8,20 @@ import org.odata4j.core.OComplexObject;
 import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OFunctionParameters;
 import org.odata4j.core.OObject;
+import org.odata4j.core.OSimpleObjects;
 import org.odata4j.edm.EdmType;
 import org.odata4j.edm.EdmCollectionType;
 import org.odata4j.edm.EdmComplexType;
+import org.odata4j.edm.EdmDataServices;
+import org.odata4j.edm.EdmNonSimpleType;
+import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.format.FormatParser;
 import org.odata4j.format.FormatParserFactory;
 import org.odata4j.format.FormatType;
 import org.odata4j.format.Settings;
 import org.odata4j.format.json.JsonStreamReaderFactory.JsonStreamReader;
+import org.odata4j.format.json.JsonStreamReaderFactory.JsonStreamReader.JsonEvent;
+import org.odata4j.format.json.JsonStreamReaderFactory.JsonStreamReader.JsonValueEvent;
 import org.odata4j.producer.exceptions.NotImplementedException;
 
 /**
@@ -34,6 +40,12 @@ public class JsonCollectionFormatParser extends JsonFormatParser implements Form
   public JsonCollectionFormatParser(Settings s) {
     super(s);
     returnType = (EdmCollectionType) (null == s ? null : s.parseType);
+  }
+  
+  public JsonCollectionFormatParser(EdmCollectionType collectionType, EdmDataServices md) {
+    super(null);
+    this.metadata = md;
+    returnType = collectionType;
   }
 
   @Override
@@ -90,25 +102,29 @@ public class JsonCollectionFormatParser extends JsonFormatParser implements Form
 
     OCollection.Builder<OObject> c = newCollectionBuilder();
 
-    FormatParser<? extends OObject> parser = createItemParser(this.returnType.getCollectionType());
+    if (this.returnType.getCollectionType().isSimple()) {
+      parseCollectionOfSimple(c, jsr);
+    } else {
+      FormatParser<? extends OObject> parser = createItemParser(this.returnType.getCollectionType());
 
-    while (jsr.hasNext()) {
-      // this is what I really want to do next:
-      // OObject o = parser.parse(jsr);
-      // however, the FormatParser api would have to be genericized, we would need an interface for 
-      // the event-oriented parsers (JsonStreamReader, XMLStreamReader).
-      // I just don't have the time at this momement...
+      while (jsr.hasNext()) {
+        // this is what I really want to do next:
+        // OObject o = parser.parse(jsr);
+        // however, the FormatParser api would have to be genericized, we would need an interface for 
+        // the event-oriented parsers (JsonStreamReader, XMLStreamReader).
+        // I just don't have the time at this momement...
 
-      if (parser instanceof JsonComplexObjectFormatParser) {
-        OComplexObject obj = ((JsonComplexObjectFormatParser) parser).parseSingleObject(jsr);
-        // null if not there
-        if (null != obj) {
-          c = c.add(obj);
+        if (parser instanceof JsonComplexObjectFormatParser) {
+          OComplexObject obj = ((JsonComplexObjectFormatParser) parser).parseSingleObject(jsr);
+          // null if not there
+          if (null != obj) {
+            c = c.add(obj);
+          } else {
+            break;
+          }
         } else {
-          break;
+          throw new NotImplementedException("collections of type: " + this.returnType.getCollectionType().getFullyQualifiedTypeName() + " not implemented");
         }
-      } else {
-        throw new NotImplementedException("collections of type: " + this.returnType.getCollectionType().getFullyQualifiedTypeName() + " not implemented");
       }
     }
 
@@ -117,17 +133,35 @@ public class JsonCollectionFormatParser extends JsonFormatParser implements Form
 
     return c.build();
   }
+  
+  protected void parseCollectionOfSimple(OCollection.Builder<OObject> builder, JsonStreamReader jsr) {
+    while (jsr.hasNext()) {
+      JsonEvent e = jsr.nextEvent();
+      if (e.isValue()) {
+        JsonValueEvent ve = e.asValue();
+        builder.add(OSimpleObjects.parse(ve.getValue(), (EdmSimpleType)this.returnType.getCollectionType()));
+      } else if (e.isEndArray()) {
+        break;
+      } else {
+        throw new RuntimeException("invalid JSON content");
+      }
+    }
+  }
 
   protected OCollection.Builder<OObject> newCollectionBuilder() {
     // hmmh...design issue?...
-    if (this.returnType.getCollectionType() instanceof EdmComplexType) {
+    //if (this.returnType.getCollectionType() instanceof EdmComplexType) {
       return OCollections.<OObject> newBuilder(this.returnType.getCollectionType());
-    }
+    //}
 
-    throw new NotImplementedException("unsupported collection type " + this.returnType.getCollectionType().getFullyQualifiedTypeName());
+    //throw new NotImplementedException("unsupported collection type " + this.returnType.getCollectionType().getFullyQualifiedTypeName());
   }
 
   protected FormatParser<? extends OObject> createItemParser(EdmType edmType) {
+    // TODO: hack until Edm.getType() is resolved to not return an EdmNonSimpleType
+    if (edmType instanceof EdmNonSimpleType) {
+      edmType = metadata.findEdmComplexType(edmType.getFullyQualifiedTypeName());
+    }
     // each item is parsed as a standalone item, not a response item
     Settings s = new Settings(
         this.version,

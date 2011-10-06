@@ -13,10 +13,7 @@
         <Property Name="EntityId" Type="Edm.String" Nullable="true"></Property>
         <Property Name="Name" Type="Edm.String" Nullable="true"></Property>
         <Property Name="Country" Type="Edm.String" Nullable="true"></Property>
-        <Property Name="Code" Type="Edm.String" Nullable="true" od4j:localizedName="Kode">
-          <od4j:perms>TODO</od4j:perms>
-        </Property>
-        <od4j:foo>TODO</od4j:foo>
+        <Property Name="Code" Type="Edm.String" Nullable="true" od4j:localizedName="Kode"></Property>
       </EntityType>
       <EntityContainer Name="Container" m:IsDefaultEntityContainer="true">
         <EntitySet Name="Airports" EntityType="flights.Airports"></EntitySet>

@@ -6,18 +6,25 @@ import java.util.List;
 
 import org.core4j.Enumerable;
 import org.core4j.Func1;
+import org.odata4j.core.OCollection;
+import org.odata4j.core.OComplexObject;
 import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OLink;
 import org.odata4j.core.OLinks;
+import org.odata4j.core.OObject;
+import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
+import org.odata4j.edm.EdmCollectionType;
+import org.odata4j.edm.EdmComplexType;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmMultiplicity;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
+import org.odata4j.edm.EdmProperty.CollectionKind;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.edm.EdmType;
 import org.odata4j.format.Entry;
@@ -40,6 +47,9 @@ public class JsonFormatParser {
     String uri;
     OEntity entity;
     List<OEntity> entities;
+    OCollection<? extends OObject> collection;
+    EdmCollectionType collectionType;
+    OComplexObject complexObject;
   }
 
   protected static final String METADATA_PROPERTY = "__metadata";
@@ -215,9 +225,14 @@ public class JsonFormatParser {
       } else if (val.entity != null) {
         entry.links.add(OLinks.relatedEntityInline(name, name, entry.getUri() + "/" + name,
             val.entity));
-      } else {
+      } else if (val.entities != null) {
         entry.links.add(OLinks.relatedEntitiesInline(name, name, entry.getUri() + "/" + name,
             val.entities));
+      } else if (val.collection != null) {
+        entry.properties.add(OProperties.collection(name, val.collectionType, val.collection));
+      } else if (val.complexObject != null) {
+        entry.properties.add(OProperties.complex(name, (EdmComplexType)val.complexObject.getType(), 
+                val.complexObject.getProperties()));
       }
     } else if (event.isStartArray()) {
       ensureNext(jsr);
@@ -282,22 +297,35 @@ public class JsonFormatParser {
         throw new IllegalArgumentException("no valid OData JSON format results not expected");
       }*/
 
-      // inlined feed
+      // inlined feed or a collection property
       EdmNavigationProperty navProp = ees.getType().findNavigationProperty(name);
+      
+     
+      if (null != navProp) {
+        // [
+        ensureStartArray(jsr.nextEvent());
 
-      // [
-      ensureStartArray(jsr.nextEvent());
+        Feed feed = parseFeed(metadata.getEdmEntitySet(navProp.getToRole().getType()), jsr);
 
-      Feed feed = parseFeed(metadata.getEdmEntitySet(navProp.getToRole().getType()), jsr);
-
-      rt.entities = Enumerable.create(feed.getEntries())
-          .cast(JsonEntry.class)
-          .select(new Func1<JsonEntry, OEntity>() {
-            @Override
-            public OEntity apply(JsonEntry input) {
-              return input.getEntity();
-            }
-          }).toList();
+        rt.entities = Enumerable.create(feed.getEntries())
+            .cast(JsonEntry.class)
+            .select(new Func1<JsonEntry, OEntity>() {
+              @Override
+              public OEntity apply(JsonEntry input) {
+                return input.getEntity();
+              }
+            }).toList();
+      } else {
+        EdmProperty eprop = ees.getType().findProperty(name);
+        if (null != eprop && eprop.getCollectionKind() != CollectionKind.NONE) {
+          rt.collectionType = new EdmCollectionType(eprop.getCollectionKind().toString() + 
+                  "(" + eprop.getType().getFullyQualifiedTypeName() + ")", eprop.getType());
+          JsonCollectionFormatParser cfp = new JsonCollectionFormatParser(rt.collectionType, this.metadata);
+          rt.collection = cfp.parseCollection(jsr);
+        } else {
+          throw new RuntimeException("unhandled results type: " + eprop.getType().getFullyQualifiedTypeName());
+        }
+      }
 
       ensureEndProperty(jsr.nextEvent());
       ensureEndObject(jsr.nextEvent());
@@ -322,19 +350,39 @@ public class JsonFormatParser {
         }
       }
     } else if (event.isStartProperty()) {
-      // inlined entity
+      // inlined entity or complex object
 
       EdmNavigationProperty navProp = ees.getType().findNavigationProperty(name);
-      ees = metadata.getEdmEntitySet(navProp.getToRole().getType());
+      if (null != navProp) {
+        ees = metadata.getEdmEntitySet(navProp.getToRole().getType());
 
-      JsonEntry refentry = new JsonEntry();
-      refentry.properties = new ArrayList<OProperty<?>>();
-      refentry.links = new ArrayList<OLink>();
-      do {
-        addProperty(refentry, ees, event.asStartProperty().getName(), jsr);
-        event = jsr.nextEvent();
-      } while (!event.isEndObject());
-      rt.entity = toOEntity(ees, refentry.getEntityKey(), refentry.properties, refentry.links);
+        JsonEntry refentry = new JsonEntry();
+        refentry.properties = new ArrayList<OProperty<?>>();
+        refentry.links = new ArrayList<OLink>();
+        do {
+          addProperty(refentry, ees, event.asStartProperty().getName(), jsr);
+          event = jsr.nextEvent();
+        } while (!event.isEndObject());
+        rt.entity = toOEntity(ees, refentry.getEntityKey(), refentry.properties, refentry.links);
+      } else {
+        EdmProperty eprop = ees.getType().findProperty(name);
+        if (null == eprop) {
+          throw new RuntimeException("can't find property: " + name + " on type: " + ees.getType().getName());
+        } else  {
+          // why the lookup?  well, duing metadata parsing, currently, EdmProperties with type=EdmComplexType are created
+          // by using EdmType.get(typname).  This results in a useless instance of EdmNonSimpleType.  To fix,
+          // someone is going to have to make EdmxFormatParser resolve property types at parse time.
+          EdmComplexType ct = (eprop.getType() instanceof EdmComplexType) ? ((EdmComplexType)eprop.getType())
+                  : metadata.findEdmComplexType(eprop.getType().getFullyQualifiedTypeName());
+          
+          if (null != ct) {
+            JsonComplexObjectFormatParser cofp = new JsonComplexObjectFormatParser(ct);
+            rt.complexObject = cofp.parseSingleObject(jsr, event);
+          } else {
+            throw new RuntimeException("unhandled property type: " + eprop.getType().getFullyQualifiedTypeName());
+          }
+        }
+      }
     } else {
       throw new IllegalArgumentException("What's that?");
     }
