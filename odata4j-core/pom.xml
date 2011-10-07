@@ -12,6 +12,12 @@
   <url>http://odata4j.org</url>
   <inceptionYear>2010</inceptionYear>
 
+  <parent>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>7</version>
+  </parent>
+
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
@@ -238,8 +244,9 @@
         <configuration>
           <instructions>
             <Import-Package>
-              com.sun.net.httpserver.*;resolution:=optional,
-              com.sun.jersey.*;resolution:=optional,
+              !com.sun.net.httpserver.*,
+              com.sun.jersey.*;version="0.0.0",
+              javax.ws.rs.*;version="0.0.0",
               *
             </Import-Package>
             <Export-Package>
