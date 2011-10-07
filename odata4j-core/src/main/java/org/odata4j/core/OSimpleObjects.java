@@ -14,6 +14,12 @@ public class OSimpleObjects {
   public static <V> OSimpleObject<V> create(V value, EdmSimpleType type) {
     return new OSimpleObjectImpl<V>(OProperties.simple(null, type, value, true));
   }
+  
+  public static OSimpleObject<Object> parse(String value, EdmSimpleType type) {
+    // hmmh, this is awkward...
+    OProperty<?> prop = OProperties.parse("", type.getFullyQualifiedTypeName(), value);
+    return create(prop.getValue(), type);
+  }
 
   private static class OSimpleObjectImpl<V> implements OSimpleObject<V> {
 

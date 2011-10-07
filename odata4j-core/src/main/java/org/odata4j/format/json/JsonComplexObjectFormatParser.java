@@ -26,6 +26,11 @@ public class JsonComplexObjectFormatParser extends JsonFormatParser implements F
     super(s);
     returnType = (EdmComplexType) (null == s ? null : s.parseType);
   }
+  
+  public JsonComplexObjectFormatParser(EdmComplexType type) {
+    super(null);
+    returnType = type;
+  }
 
   private EdmComplexType returnType = null;
 
@@ -51,7 +56,7 @@ public class JsonComplexObjectFormatParser extends JsonFormatParser implements F
         }
       }
 
-      // parse the entry
+      // parse the entry, should start with startObject
       OComplexObject o = parseSingleObject(jsr);
 
       if (isResponse) {
@@ -87,9 +92,28 @@ public class JsonComplexObjectFormatParser extends JsonFormatParser implements F
     if (event.isStartObject()) {
 
       List<OProperty<?>> props = new ArrayList<OProperty<?>>();
-
-      while (jsr.hasNext()) {
-        event = jsr.nextEvent();
+      return eatProps(props, jsr);
+    } else {
+      // not a start object.
+      return null;
+    }
+  }
+  
+  public OComplexObject parseSingleObject(JsonStreamReader jsr, JsonEvent startPropertyEvent) {
+    
+    // the current JsonFormatParser implemenation, when parsing a complex object property value
+    // has already eaten the startobject and the startproperty.
+    
+    List<OProperty<?>> props = new ArrayList<OProperty<?>>();
+    addProperty(props, startPropertyEvent.asStartProperty().getName(), jsr);
+    return eatProps(props, jsr);
+  }
+  
+  private OComplexObject eatProps(List<OProperty<?>> props, JsonStreamReader jsr) {
+    
+    ensureNext(jsr);
+    while (jsr.hasNext()) {
+        JsonEvent event = jsr.nextEvent();
 
         if (event.isStartProperty()) {
           addProperty(props, event.asStartProperty().getName(), jsr);
@@ -100,10 +124,6 @@ public class JsonComplexObjectFormatParser extends JsonFormatParser implements F
         }
       }
       return OComplexObjects.create(returnType, props);
-    } else {
-      // not a start object.
-      return null;
-    }
   }
 
   protected void addProperty(List<OProperty<?>> props, String name, JsonStreamReader jsr) {

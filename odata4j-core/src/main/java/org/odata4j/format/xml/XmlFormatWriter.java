@@ -17,6 +17,7 @@ import org.odata4j.core.OProperty;
 import org.odata4j.core.ORelatedEntitiesLinkInline;
 import org.odata4j.core.ORelatedEntityLinkInline;
 import org.odata4j.core.OSimpleObject;
+import org.odata4j.edm.EdmCollectionType;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.edm.EdmType;
@@ -62,7 +63,8 @@ public class XmlFormatWriter {
       if (writeType) {
         String typename = type.getFullyQualifiedTypeName();
         if (value instanceof OCollection) {
-          typename = "Bag(" + typename + ")";
+          EdmCollectionType collectionType = (EdmCollectionType) type;
+          typename = "Bag(" + collectionType.getCollectionType().getFullyQualifiedTypeName() + ")";
         }
         writer.writeAttribute(new QName2(m, "type", "m"), typename);
       }

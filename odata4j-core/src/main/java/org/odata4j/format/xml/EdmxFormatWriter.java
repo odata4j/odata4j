@@ -275,8 +275,11 @@ public class EdmxFormatWriter extends XmlFormatWriter {
     if (null != item.getAnnotations()) {
       for (Annotation<?> a : item.getAnnotations()) {
         if (a instanceof EdmAnnotationElement) {
-          // TODO
-          throw new UnsupportedOperationException("Implement element annotations");
+          // TODO: please don't throw an exception here.
+          // this totally breaks ODataConsumer even thought it doesn't rely
+          // on annotations.  A no-op is a interim approach that allows work
+          // to proceed by those using queryable metadata to access annotations.
+          // throw new UnsupportedOperationException("Implement element annotations");
         }
       }
     }
