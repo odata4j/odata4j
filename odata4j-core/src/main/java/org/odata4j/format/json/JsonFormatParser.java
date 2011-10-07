@@ -55,6 +55,7 @@ public class JsonFormatParser {
   protected static final String METADATA_PROPERTY = "__metadata";
   protected static final String DEFERRED_PROPERTY = "__deferred";
   protected static final String NEXT_PROPERTY = "__next";
+  protected static final String COUNT_PROPERTY = "__count";
 
   protected static final String URI_PROPERTY = "uri";
   protected static final String TYPE_PROPERTY = "type";

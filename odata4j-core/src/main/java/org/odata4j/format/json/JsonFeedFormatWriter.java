@@ -4,6 +4,7 @@ import org.odata4j.core.OEntity;
 import org.odata4j.producer.EntitiesResponse;
 
 import com.sun.jersey.api.core.ExtendedUriInfo;
+import javax.ws.rs.core.UriBuilder;
 
 /**
  *  Write an RSS Feed in JSON format
@@ -45,9 +46,26 @@ public class JsonFeedFormatWriter extends JsonFormatWriter<EntitiesResponse> {
       }
 
       if (target.getSkipToken() != null) {
-        String nextHref = uriInfo.getRequestUriBuilder().replaceQueryParam(
-            "$skiptoken",
-            target.getSkipToken()).build().toString();
+        
+        // $skip only applies to the first page of results.
+        // if $top was given, we have to reduce it by the number of entities
+        // we are returning now.
+        String tops = uriInfo.getQueryParameters().getFirst("$top");
+        int top = -1;
+        if (null != tops) {
+          // query param value already validated
+          top = Integer.parseInt(tops);
+          top -= target.getEntities().size();
+        }
+        UriBuilder uri = uriInfo.getRequestUriBuilder();
+        if (top > 0) {
+          uri.replaceQueryParam("$top", top);
+        } else {
+          uri.replaceQueryParam("$top");
+        }
+        String nextHref = uri
+            .replaceQueryParam("$skiptoken", target.getSkipToken())
+            .replaceQueryParam("$skip").build().toString();
 
         jw.writeSeparator();
         jw.writeName("__next");

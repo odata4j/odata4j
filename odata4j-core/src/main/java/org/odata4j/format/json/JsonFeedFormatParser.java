@@ -23,6 +23,7 @@ public class JsonFeedFormatParser extends JsonFormatParser implements FormatPars
   static class JsonFeed implements Feed {
     List<Entry> entries;
     String next;
+    Integer inlineCount;
 
     @Override
     public String getNext() {
@@ -110,11 +111,16 @@ public class JsonFeedFormatParser extends JsonFormatParser implements FormatPars
       }
 
       event = jsr.nextEvent();
-      if (event.isStartProperty()
-          && NEXT_PROPERTY.equals(event.asStartProperty().getName())) {
+      
+      while (event.isStartProperty()) {
+        String pname = event.asStartProperty().getName();
         ensureNext(jsr);
         ensureEndProperty(event = jsr.nextEvent());
-        feed.next = event.asEndProperty().getValue();
+        if (NEXT_PROPERTY.equals(pname)) {
+          feed.next = event.asEndProperty().getValue();
+        } else if (COUNT_PROPERTY.equals(pname)) {
+          feed.inlineCount = Integer.parseInt(event.asEndProperty().getValue());
+        }
         ensureNext(jsr);
         event = jsr.nextEvent();
       }
