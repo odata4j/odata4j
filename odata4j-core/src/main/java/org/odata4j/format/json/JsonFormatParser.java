@@ -208,7 +208,7 @@ public class JsonFormatParser {
       // TODO support complex type properties
       if (!ep.getType().isSimple())
         throw new UnsupportedOperationException("Only simple properties supported");
-      entry.properties.add(JsonTypeConverter.parse(name, (EdmSimpleType) ep.getType(), event.asEndProperty().getValue()));
+      entry.properties.add(JsonTypeConverter.parse(name, (EdmSimpleType<?>) ep.getType(), event.asEndProperty().getValue()));
     } else if (event.isStartObject()) {
       // reference deferred or inlined
 
@@ -232,7 +232,7 @@ public class JsonFormatParser {
       } else if (val.collection != null) {
         entry.properties.add(OProperties.collection(name, val.collectionType, val.collection));
       } else if (val.complexObject != null) {
-        entry.properties.add(OProperties.complex(name, (EdmComplexType)val.complexObject.getType(), 
+        entry.properties.add(OProperties.complex(name, (EdmComplexType)val.complexObject.getType(),
                 val.complexObject.getProperties()));
       }
     } else if (event.isStartArray()) {
@@ -300,8 +300,8 @@ public class JsonFormatParser {
 
       // inlined feed or a collection property
       EdmNavigationProperty navProp = ees.getType().findNavigationProperty(name);
-      
-     
+
+
       if (null != navProp) {
         // [
         ensureStartArray(jsr.nextEvent());
@@ -319,7 +319,7 @@ public class JsonFormatParser {
       } else {
         EdmProperty eprop = ees.getType().findProperty(name);
         if (null != eprop && eprop.getCollectionKind() != CollectionKind.NONE) {
-          rt.collectionType = new EdmCollectionType(eprop.getCollectionKind().toString() + 
+          rt.collectionType = new EdmCollectionType(eprop.getCollectionKind().toString() +
                   "(" + eprop.getType().getFullyQualifiedTypeName() + ")", eprop.getType());
           JsonCollectionFormatParser cfp = new JsonCollectionFormatParser(rt.collectionType, this.metadata);
           rt.collection = cfp.parseCollection(jsr);
@@ -375,7 +375,7 @@ public class JsonFormatParser {
           // someone is going to have to make EdmxFormatParser resolve property types at parse time.
           EdmComplexType ct = (eprop.getType() instanceof EdmComplexType) ? ((EdmComplexType)eprop.getType())
                   : metadata.findEdmComplexType(eprop.getType().getFullyQualifiedTypeName());
-          
+
           if (null != ct) {
             JsonComplexObjectFormatParser cofp = new JsonComplexObjectFormatParser(ct);
             rt.complexObject = cofp.parseSingleObject(jsr, event);

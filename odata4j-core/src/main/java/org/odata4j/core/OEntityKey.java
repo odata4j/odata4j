@@ -333,8 +333,8 @@ public class OEntityKey {
   }
 
   private static final Set<Class<?>> EDM_SIMPLE_JAVA_TYPES =
-      Enumerable.create(EdmSimpleType.ALL).selectMany(new Func1<EdmSimpleType, Enumerable<Class<?>>>() {
-        public Enumerable<Class<?>> apply(EdmSimpleType input) {
+      Enumerable.create(EdmSimpleType.ALL).selectMany(new Func1<EdmSimpleType<?>, Enumerable<Class<?>>>() {
+        public Enumerable<Class<?>> apply(EdmSimpleType<?> input) {
           return Enumerable.create(input.getJavaTypes());
         }
       }).toSet();

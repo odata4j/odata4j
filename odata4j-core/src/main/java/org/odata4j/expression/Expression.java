@@ -6,8 +6,8 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.odata4j.core.Guid;
-import org.odata4j.core.OProperties;
-import org.odata4j.core.OProperty;
+import org.odata4j.core.OSimpleObject;
+import org.odata4j.core.OSimpleObjects;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.expression.OrderByExpression.Direction;
 
@@ -268,16 +268,21 @@ public class Expression {
   }
 
   public static LiteralExpression literal(Object value) {
-    if (value == null)
-      throw new IllegalArgumentException("Cannot infer literal expression type for a null value");
+    return literal(null, value);
+  }
 
-    EdmSimpleType edmType = EdmSimpleType.forJavaType(value.getClass());
-    if (edmType == null)
-      throw new IllegalArgumentException("Cannot infer literal expression type for java type: " + value.getClass().getName());
+  public static LiteralExpression literal(EdmSimpleType<?> edmType, Object value) {
+    if (edmType == null) {
+      if (value == null)
+        throw new IllegalArgumentException("Cannot infer literal expression type for a null value");
 
-    // use OProperties for java type normalization
-    boolean throwOnException = true;
-    OProperty<?> prop = OProperties.simple("temp", edmType, value, throwOnException);
+      edmType = EdmSimpleType.forJavaType(value.getClass());
+      if (edmType == null)
+        throw new IllegalArgumentException("Cannot infer literal expression type for java type: " + value.getClass().getName());
+    }
+
+    // use OSimpleObject for java type normalization
+    OSimpleObject<?> prop = OSimpleObjects.create(edmType, value);
 
     if (edmType.equals(EdmSimpleType.BINARY))
       return binary((byte[]) prop.getValue());

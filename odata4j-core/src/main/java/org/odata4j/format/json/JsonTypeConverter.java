@@ -14,7 +14,7 @@ import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
 
 public class JsonTypeConverter {
 
-  public static OProperty<?> parse(String name, EdmSimpleType type, String value) {
+  public static OProperty<?> parse(String name, EdmSimpleType<?> type, String value) {
 
     if (EdmSimpleType.GUID.equals(type)) {
       Guid uValue = value == null ? null : Guid.fromString(value.substring(5, value.length() - 1));

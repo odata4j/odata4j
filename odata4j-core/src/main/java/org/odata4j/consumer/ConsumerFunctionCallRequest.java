@@ -84,7 +84,8 @@ class ConsumerFunctionCallRequest<T extends OObject>
   private static String toUriString(OFunctionParameter p) {
     OObject obj = p.getValue();
     if (obj instanceof OSimpleObject) {
-      LiteralExpression le = Expression.literal(((OSimpleObject<?>)obj).getValue());
+      OSimpleObject<?> simple = (OSimpleObject<?>) obj;
+      LiteralExpression le = Expression.literal(simple.getType(), simple.getValue());
       return Expression.asFilterString(le);
 
     }
@@ -101,82 +102,82 @@ class ConsumerFunctionCallRequest<T extends OObject>
 
   @Override
   public OFunctionRequest<T> pBoolean(String name, boolean value) {
-    return parameter(name, OSimpleObjects.create(value, EdmSimpleType.BOOLEAN));
+    return parameter(name, OSimpleObjects.create(EdmSimpleType.BOOLEAN, value));
   }
 
   @Override
   public OFunctionRequest<T> pByte(String name, byte value) {
-    return parameter(name, OSimpleObjects.create(value, EdmSimpleType.BYTE));
+    return parameter(name, OSimpleObjects.create(EdmSimpleType.BYTE, value));
   }
 
   @Override
   public OFunctionRequest<T> pDateTime(String name, Calendar value) {
-    return parameter(name, OSimpleObjects.create(value, EdmSimpleType.DATETIME));
+    return parameter(name, OSimpleObjects.create(EdmSimpleType.DATETIME, value));
   }
 
   @Override
   public OFunctionRequest<T> pDateTime(String name, Date value) {
-    return parameter(name, OSimpleObjects.create(value, EdmSimpleType.DATETIME));
+    return parameter(name, OSimpleObjects.create(EdmSimpleType.DATETIME, value));
   }
 
   @Override
   public OFunctionRequest<T> pDateTime(String name, LocalDateTime value) {
-    return parameter(name, OSimpleObjects.create(value, EdmSimpleType.DATETIME));
+    return parameter(name, OSimpleObjects.create(EdmSimpleType.DATETIME, value));
   }
 
   @Override
   public OFunctionRequest<T> pDecimal(String name, BigDecimal value) {
-    return parameter(name, OSimpleObjects.create(value, EdmSimpleType.DECIMAL));
+    return parameter(name, OSimpleObjects.create(EdmSimpleType.DECIMAL, value));
   }
 
   @Override
   public OFunctionRequest<T> pDouble(String name, double value) {
-    return parameter(name, OSimpleObjects.create(value, EdmSimpleType.DOUBLE));
+    return parameter(name, OSimpleObjects.create(EdmSimpleType.DOUBLE, value));
   }
 
   @Override
   public OFunctionRequest<T> pGuid(String name, Guid value) {
-    return parameter(name, OSimpleObjects.create(value, EdmSimpleType.GUID));
+    return parameter(name, OSimpleObjects.create(EdmSimpleType.GUID, value));
   }
 
   @Override
   public OFunctionRequest<T> pInt16(String name, short value) {
-    return parameter(name, OSimpleObjects.create(value, EdmSimpleType.INT16));
+    return parameter(name, OSimpleObjects.create(EdmSimpleType.INT16, value));
   }
 
   @Override
   public OFunctionRequest<T> pInt32(String name, int value) {
-    return parameter(name, OSimpleObjects.create(value, EdmSimpleType.INT32));
+    return parameter(name, OSimpleObjects.create(EdmSimpleType.INT32, value));
   }
 
   @Override
   public OFunctionRequest<T> pInt64(String name, long value) {
-    return parameter(name, OSimpleObjects.create(value, EdmSimpleType.INT64));
+    return parameter(name, OSimpleObjects.create(EdmSimpleType.INT64, value));
   }
 
   @Override
   public OFunctionRequest<T> pSingle(String name, float value) {
-    return parameter(name, OSimpleObjects.create(value, EdmSimpleType.SINGLE));
+    return parameter(name, OSimpleObjects.create(EdmSimpleType.SINGLE, value));
   }
 
   @Override
   public OFunctionRequest<T> pTime(String name, Calendar value) {
-    return parameter(name, OSimpleObjects.create(value, EdmSimpleType.TIME));
+    return parameter(name, OSimpleObjects.create(EdmSimpleType.TIME, value));
   }
 
   @Override
   public OFunctionRequest<T> pTime(String name, Date value) {
-    return parameter(name, OSimpleObjects.create(value, EdmSimpleType.TIME));
+    return parameter(name, OSimpleObjects.create(EdmSimpleType.TIME, value));
   }
 
   @Override
   public OFunctionRequest<T> pTime(String name, LocalDateTime value) {
-    return parameter(name, OSimpleObjects.create(value, EdmSimpleType.TIME));
+    return parameter(name, OSimpleObjects.create(EdmSimpleType.TIME, value));
   }
 
   @Override
   public OFunctionRequest<T> pString(String name, String value) {
-    return parameter(name, OSimpleObjects.create(value, EdmSimpleType.STRING));
+    return parameter(name, OSimpleObjects.create(EdmSimpleType.STRING, value));
   }
 
 

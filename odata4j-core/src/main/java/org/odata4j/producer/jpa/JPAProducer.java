@@ -279,9 +279,8 @@ public class JPAProducer implements ODataProducer {
 
           properties.add(OProperties.simple(
               ep.getName(),
-              (EdmSimpleType) ep.getType(),
-              value,
-              true));
+              (EdmSimpleType<?>) ep.getType(),
+              value));
 
         } else {
           // get the simple attribute
@@ -291,9 +290,8 @@ public class JPAProducer implements ODataProducer {
 
           properties.add(OProperties.simple(
               ep.getName(),
-              (EdmSimpleType) ep.getType(),
-              value,
-              true));
+              (EdmSimpleType<?>) ep.getType(),
+              value));
         }
       }
 
@@ -579,7 +577,7 @@ public class JPAProducer implements ODataProducer {
       Object value = results.get(0);
       OProperty<?> op = OProperties.simple(
           ((EdmProperty) propInfo).getName(),
-          (EdmSimpleType) ((EdmProperty) propInfo).getType(),
+          (EdmSimpleType<?>) ((EdmProperty) propInfo).getType(),
           value);
       return DynamicEntitiesResponse.property(op);
     }

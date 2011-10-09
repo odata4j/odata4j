@@ -84,19 +84,19 @@ public class CustomProducer implements ODataProducer, EdmGenerator {
     
     builder = OCollections.newBuilder(EdmSimpleType.STRING);
     for (int j = 0; j < 3; j++) {
-      builder.add(OSimpleObjects.create("bagstring-" + j, EdmSimpleType.STRING));
+      builder.add(OSimpleObjects.create(EdmSimpleType.STRING, "bagstring-" + j));
     }
     props.add(OProperties.collection("BagOStrings", new EdmCollectionType("Bag(" + EdmSimpleType.STRING + ")", EdmSimpleType.STRING), builder.build()));
     
     builder = OCollections.newBuilder(EdmSimpleType.STRING);
     for (int j = 0; j < 5; j++) {
-      builder.add(OSimpleObjects.create("liststring-" + j, EdmSimpleType.STRING));
+      builder.add(OSimpleObjects.create(EdmSimpleType.STRING, "liststring-" + j));
     }
     props.add(OProperties.collection("ListOStrings", new EdmCollectionType("List(" + EdmSimpleType.STRING + ")", EdmSimpleType.STRING), builder.build()));
     
     builder = OCollections.newBuilder(EdmSimpleType.INT32);
     for (int j = 0; j < 5; j++) {
-      builder.add(OSimpleObjects.create(j, EdmSimpleType.INT32));
+      builder.add(OSimpleObjects.create(EdmSimpleType.INT32, j));
     }
     props.add(OProperties.collection("BagOInts", new EdmCollectionType("List(" + EdmSimpleType.INT32 + ")", EdmSimpleType.INT32), builder.build()));
     

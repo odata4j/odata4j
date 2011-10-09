@@ -202,7 +202,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
         if (isComplexType) {
           op = OProperties.complex(name, (EdmComplexType)et, isNull ? null : Enumerable.create(parseProperties(reader, event.asStartElement())).toList());
         } else {
-          op = OProperties.parse(name, type, isNull ? null : reader.getElementText());
+          op = OProperties.parseSimple(name, type, isNull ? null : reader.getElementText());
         }
         rt.add(op);
 

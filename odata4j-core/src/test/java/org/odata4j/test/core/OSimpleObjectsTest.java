@@ -14,14 +14,14 @@ public class OSimpleObjectsTest {
 
   @Test
   public void stringToStringTest() {
-    OSimpleObject<String> simpleObject = OSimpleObjects.create(VALUE, EdmSimpleType.STRING);
+    OSimpleObject<String> simpleObject = OSimpleObjects.create(EdmSimpleType.STRING, VALUE);
     String toString = simpleObject.toString();
     Assert.assertTrue(toString.contains(VALUE));
   }
 
   @Test
   public void binaryToStringTest() {
-    OSimpleObject<byte[]> simpleObject = OSimpleObjects.create(VALUE.getBytes(), EdmSimpleType.BINARY);
+    OSimpleObject<byte[]> simpleObject = OSimpleObjects.create(EdmSimpleType.BINARY, VALUE.getBytes());
     String toString = simpleObject.toString();
     Assert.assertTrue(toString.contains(HEX_VALUE));
   }

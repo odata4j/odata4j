@@ -42,7 +42,7 @@ public class EdmDateTimeTemporalTest extends AirlineJPAProducerTestBase {
     emf = Persistence.createEntityManagerFactory(persistenceUnitName);
 
     JPAProducer producer = new JPAProducer(emf, new JPAEdmGenerator() {
-      protected EdmSimpleType toEdmType(SingularAttribute<?, ?> sa) {
+      protected EdmSimpleType<?> toEdmType(SingularAttribute<?, ?> sa) {
         Class<?> javaType = sa.getType().getJavaType();
         if (javaType.equals(Date.class)
             || javaType.equals(Calendar.class)

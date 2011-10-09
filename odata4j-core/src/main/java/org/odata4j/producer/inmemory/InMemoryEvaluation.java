@@ -4,8 +4,8 @@ import java.math.BigDecimal;
 import java.util.Set;
 
 import org.core4j.Enumerable;
-import org.odata4j.edm.EdmType;
 import org.odata4j.edm.EdmSimpleType;
+import org.odata4j.edm.EdmType;
 import org.odata4j.expression.AddExpression;
 import org.odata4j.expression.AndExpression;
 import org.odata4j.expression.BinaryCommonExpression;
@@ -81,7 +81,7 @@ public class InMemoryEvaluation {
       EdmType t = EdmType.get(castExpression.getType());
       if (!t.isSimple())
         throw new UnsupportedOperationException("Only simple types supported");
-      Class<?> javaType = ((EdmSimpleType)t).getJavaTypes().iterator().next();
+      Class<?> javaType = ((EdmSimpleType<?>) t).getJavaTypes().iterator().next();
       return TypeConverter.convert(evaluate(castExpression.getExpression(), target, properties), javaType);
     }
 

@@ -73,6 +73,20 @@ public class TypeConverter {
       } else if (objClass.equals(LocalDateTime.class)) {
         return (T) new Timestamp(((LocalDateTime) obj).toDateTime().getMillis());
       }
+    } else if (desiredClass.equals(LocalDateTime.class)) {
+      if (objClass.equals(Time.class)) {
+        return (T) new LocalDateTime(obj);
+      }
+      if (Date.class.isAssignableFrom(objClass)) {
+        return (T) LocalDateTime.fromDateFields((Date) obj);
+      }
+      if (Calendar.class.isAssignableFrom(objClass)) {
+        return (T) LocalDateTime.fromCalendarFields((Calendar) obj);
+      }
+    } else if (desiredClass.equals(LocalTime.class)) {
+      if (Date.class.isAssignableFrom(objClass)) {
+        return (T) LocalTime.fromDateFields((Date) obj);
+      }
     }
 
     throw new UnsupportedOperationException(String.format("Unable to convert %s into %s", objClass.getName(), desiredClass.getName()));

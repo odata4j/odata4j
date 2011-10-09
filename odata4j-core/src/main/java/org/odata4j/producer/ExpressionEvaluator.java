@@ -102,7 +102,7 @@ public class ExpressionEvaluator {
       if (!t.isSimple()) {
         throw new UnsupportedOperationException("Only simple types supported");
       }
-      Class<?> javaType = ((EdmSimpleType) t).getJavaTypes().iterator().next();
+      Class<?> javaType = ((EdmSimpleType<?>) t).getJavaTypes().iterator().next();
       return TypeConverter.convert(evaluate(castExpression.getExpression()), javaType);
     }
 

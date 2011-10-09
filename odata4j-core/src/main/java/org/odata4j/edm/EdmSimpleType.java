@@ -17,51 +17,57 @@ import org.odata4j.core.Guid;
  *
  * @see <a href="http://msdn.microsoft.com/en-us/library/bb399213.aspx">[msdn] Simple Types (EDM)</a>
  */
-public class EdmSimpleType extends EdmType {
+public class EdmSimpleType<V> extends EdmType {
 
-  private static Set<EdmSimpleType> all = new HashSet<EdmSimpleType>();
-  
+  private static Set<EdmSimpleType<?>> all = new HashSet<EdmSimpleType<?>>();
+
   // http://msdn.microsoft.com/en-us/library/bb399213.aspx
-  public static final EdmSimpleType BINARY = newSimple("Edm.Binary", byte[].class, Byte[].class);
-  public static final EdmSimpleType BOOLEAN = newSimple("Edm.Boolean", boolean.class, Boolean.class);
-  public static final EdmSimpleType BYTE = newSimple("Edm.Byte", byte.class, Byte.class);
-  public static final EdmSimpleType DATETIME = newSimple("Edm.DateTime", LocalDateTime.class);
-  public static final EdmSimpleType DATETIMEOFFSET = newSimple("Edm.DateTimeOffset", DateTime.class);
-  public static final EdmSimpleType DECIMAL = newSimple("Edm.Decimal", BigDecimal.class);
-  public static final EdmSimpleType DOUBLE = newSimple("Edm.Double", double.class, Double.class);
-  public static final EdmSimpleType GUID = newSimple("Edm.Guid", Guid.class);
-  public static final EdmSimpleType INT16 = newSimple("Edm.Int16", short.class, Short.class);
-  public static final EdmSimpleType INT32 = newSimple("Edm.Int32", int.class, Integer.class);
-  public static final EdmSimpleType INT64 = newSimple("Edm.Int64", long.class, Long.class);
-  public static final EdmSimpleType SINGLE = newSimple("Edm.Single", float.class, Float.class);
-  public static final EdmSimpleType STRING = newSimple("Edm.String", char.class, Character.class, String.class);
-  public static final EdmSimpleType TIME = newSimple("Edm.Time", LocalTime.class);
+  public static final EdmSimpleType<byte[]> BINARY = newSimple("Edm.Binary", byte[].class, Byte[].class);
+  public static final EdmSimpleType<Boolean> BOOLEAN = newSimple("Edm.Boolean", Boolean.class, boolean.class);
+  public static final EdmSimpleType<Byte> BYTE = newSimple("Edm.Byte", Byte.class, byte.class);
+  public static final EdmSimpleType<LocalDateTime> DATETIME = newSimple("Edm.DateTime", LocalDateTime.class);
+  public static final EdmSimpleType<DateTime> DATETIMEOFFSET = newSimple("Edm.DateTimeOffset", DateTime.class);
+  public static final EdmSimpleType<BigDecimal> DECIMAL = newSimple("Edm.Decimal", BigDecimal.class);
+  public static final EdmSimpleType<Double> DOUBLE = newSimple("Edm.Double", Double.class, double.class);
+  public static final EdmSimpleType<Guid> GUID = newSimple("Edm.Guid", Guid.class);
+  public static final EdmSimpleType<Short> INT16 = newSimple("Edm.Int16", Short.class, short.class);
+  public static final EdmSimpleType<Integer> INT32 = newSimple("Edm.Int32", Integer.class, int.class);
+  public static final EdmSimpleType<Long> INT64 = newSimple("Edm.Int64", Long.class, long.class);
+  public static final EdmSimpleType<Float> SINGLE = newSimple("Edm.Single", Float.class, float.class);
+  public static final EdmSimpleType<String> STRING = newSimple("Edm.String", String.class, char.class, Character.class);
+  public static final EdmSimpleType<LocalTime> TIME = newSimple("Edm.Time", LocalTime.class);
 
-  private static EdmSimpleType newSimple(String typeString, Class<?>... javaTypes) {
-    EdmSimpleType rt = new EdmSimpleType(typeString, Collections.unmodifiableSet(Enumerable.create(javaTypes).toSet()));
+  private static <V> EdmSimpleType<V> newSimple(String typeString, Class<V> canonicalJavaType, Class<?>... alternateJavaTypes) {
+    EdmSimpleType<V> rt = new EdmSimpleType<V>(typeString, canonicalJavaType, alternateJavaTypes);
     all.add(rt);
     return rt;
   }
-  
+
   /**
    * Immutable set of all edm simple types.
    */
-  public static final Set<EdmSimpleType> ALL = Collections.unmodifiableSet(all);
+  public static final Set<EdmSimpleType<?>> ALL = Collections.unmodifiableSet(all);
 
+  private final Class<V> canonicalJavaType;
   private final Set<Class<?>> javaTypes;
 
-  private EdmSimpleType(String fullyQualifiedTypeName, Set<Class<?>> javaTypes) {
+  private EdmSimpleType(String fullyQualifiedTypeName, Class<V> canonicalJavaType, Class<?>... alternateJavaTypes) {
     super(fullyQualifiedTypeName);
-    this.javaTypes = javaTypes;
+    this.canonicalJavaType = canonicalJavaType;
+    this.javaTypes = Enumerable.<Class<?>>create(canonicalJavaType).concat(alternateJavaTypes).toSet();
   }
-  
+
   @Override
   public boolean isSimple() {
     return true;
   }
 
+  public Class<V> getCanonicalJavaType() {
+    return canonicalJavaType;
+  }
+
   /**
-   * Gets the java-types associated with this edm-type.
+   * Gets all java-types associated with this edm-type.
    *
    * @return the associated java-types.
    */
@@ -71,14 +77,15 @@ public class EdmSimpleType extends EdmType {
 
   /**
    * Finds the edm simple type for a given java-type.
-   * 
+   *
    * @param javaType  the java-type
    * @return the associated edm simple type, else null
    */
-  public static EdmSimpleType forJavaType(Class<?> javaType) {
-    for (EdmSimpleType simple : ALL)
+  @SuppressWarnings("unchecked")
+  public static <V> EdmSimpleType<V> forJavaType(Class<?> javaType) {
+    for (EdmSimpleType<?> simple : ALL)
       if (simple.getJavaTypes().contains(javaType))
-        return simple;
+        return (EdmSimpleType<V>) simple;
     return null;
   }
 

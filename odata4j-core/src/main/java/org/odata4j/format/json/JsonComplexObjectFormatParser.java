@@ -26,7 +26,7 @@ public class JsonComplexObjectFormatParser extends JsonFormatParser implements F
     super(s);
     returnType = (EdmComplexType) (null == s ? null : s.parseType);
   }
-  
+
   public JsonComplexObjectFormatParser(EdmComplexType type) {
     super(null);
     returnType = type;
@@ -98,19 +98,19 @@ public class JsonComplexObjectFormatParser extends JsonFormatParser implements F
       return null;
     }
   }
-  
+
   public OComplexObject parseSingleObject(JsonStreamReader jsr, JsonEvent startPropertyEvent) {
-    
+
     // the current JsonFormatParser implemenation, when parsing a complex object property value
     // has already eaten the startobject and the startproperty.
-    
+
     List<OProperty<?>> props = new ArrayList<OProperty<?>>();
     addProperty(props, startPropertyEvent.asStartProperty().getName(), jsr);
     return eatProps(props, jsr);
   }
-  
+
   private OComplexObject eatProps(List<OProperty<?>> props, JsonStreamReader jsr) {
-    
+
     ensureNext(jsr);
     while (jsr.hasNext()) {
         JsonEvent event = jsr.nextEvent();
@@ -140,7 +140,7 @@ public class JsonComplexObjectFormatParser extends JsonFormatParser implements F
       // TODO support complex type properties
       if (!ep.getType().isSimple())
         throw new UnsupportedOperationException("Only simple properties supported");
-      props.add(JsonTypeConverter.parse(name, (EdmSimpleType) ep.getType(), event.asEndProperty().getValue()));
+      props.add(JsonTypeConverter.parse(name, (EdmSimpleType<?>) ep.getType(), event.asEndProperty().getValue()));
     }
     else {
       throw new JsonParseException("expecting endproperty, got: " + event.toString());

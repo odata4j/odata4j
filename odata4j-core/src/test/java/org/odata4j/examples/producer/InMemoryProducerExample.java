@@ -200,8 +200,8 @@ public class InMemoryProducerExample {
 
       annots.add(EdmAnnotation.element(namespace, prefix, "Tags", OCollection.class,
           OCollections.newBuilder(EdmSimpleType.STRING)
-              .add(OSimpleObjects.create("tag1", EdmSimpleType.STRING))
-              .add(OSimpleObjects.create("tag2", EdmSimpleType.STRING))
+              .add(OSimpleObjects.create(EdmSimpleType.STRING, "tag1"))
+              .add(OSimpleObjects.create(EdmSimpleType.STRING, "tag2"))
               .build()));
       return annots;
     }

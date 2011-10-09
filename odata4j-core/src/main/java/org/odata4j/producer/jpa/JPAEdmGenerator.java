@@ -55,7 +55,7 @@ public class JPAEdmGenerator {
 
   private final Logger log = Logger.getLogger(getClass().getName());
 
-  protected EdmSimpleType toEdmType(SingularAttribute<?, ?> sa) {
+  protected EdmSimpleType<?> toEdmType(SingularAttribute<?, ?> sa) {
 
     Class<?> javaType = sa.getType().getJavaType();
 
@@ -83,9 +83,9 @@ public class JPAEdmGenerator {
       return EdmSimpleType.DATETIME;
     }
 
-    EdmSimpleType rt = EdmSimpleType.forJavaType(javaType);
+    EdmSimpleType<?> rt = EdmSimpleType.forJavaType(javaType);
     if (rt != null)
-          return rt;
+      return rt;
 
     throw new UnsupportedOperationException(javaType.toString());
   }
@@ -292,7 +292,7 @@ public class JPAEdmGenerator {
     EdmSchema modelSchema = new EdmSchema(modelNamespace, null, edmEntityTypes, edmComplexTypes, associations, null);
     EdmSchema containerSchema = new EdmSchema(namespace + "Container", null, null, null, null, Enumerable.create(container).toList());
 
-    EdmDataServices services = new EdmDataServices(ODataConstants.DATA_SERVICE_VERSION, Enumerable.create(modelSchema, containerSchema).toList());
+    EdmDataServices services = new EdmDataServices(ODataConstants.DATA_SERVICE_VERSION, Enumerable.create(containerSchema, modelSchema).toList());
     return services;
   }
 

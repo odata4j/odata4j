@@ -84,7 +84,7 @@ public class InMemoryProducer implements ODataProducer, EdmGenerator {
 
   private static final String ID_PROPNAME = "EntityId";
   private static final String CONTAINER_NAME = "Container";
-  private static final Map<Class<?>, EdmSimpleType> SUPPORTED_TYPES = new HashMap<Class<?>, EdmSimpleType>();
+  private static final Map<Class<?>, EdmSimpleType<?>> SUPPORTED_TYPES = new HashMap<Class<?>, EdmSimpleType<?>>();
   static {
     SUPPORTED_TYPES.put(byte[].class, EdmSimpleType.BINARY);
     SUPPORTED_TYPES.put(Boolean.class, EdmSimpleType.BOOLEAN);
@@ -464,7 +464,7 @@ public class InMemoryProducer implements ODataProducer, EdmGenerator {
     Object keyValue = ei.properties.getPropertyValue(obj, ID_PROPNAME);
 
     for (String propName : ei.properties.getPropertyNames()) {
-      EdmSimpleType type;
+      EdmSimpleType<?> type;
       Object value = ei.properties.getPropertyValue(obj, propName);
       Class<?> propType = ei.properties.getPropertyType(propName);
       type = findEdmType(propType);
@@ -664,7 +664,7 @@ public class InMemoryProducer implements ODataProducer, EdmGenerator {
 
     for (String propName : model.getPropertyNames()) {
       Class<?> propType = model.getPropertyType(propName);
-      EdmSimpleType type = findEdmType(propType);
+      EdmSimpleType<?> type = findEdmType(propType);
       if (type == null)
         continue;
 
@@ -680,14 +680,14 @@ public class InMemoryProducer implements ODataProducer, EdmGenerator {
   }
 
   @SuppressWarnings("unused")
-  private EdmSimpleType getEdmType(Class<?> clazz) {
-    EdmSimpleType type = findEdmType(clazz);
+  private EdmSimpleType<?> getEdmType(Class<?> clazz) {
+    EdmSimpleType<?> type = findEdmType(clazz);
     if (type != null) return type;
     throw new UnsupportedOperationException(clazz.getName());
   }
 
-  private EdmSimpleType findEdmType(Class<?> clazz) {
-    EdmSimpleType type = SUPPORTED_TYPES.get(clazz);
+  private EdmSimpleType<?> findEdmType(Class<?> clazz) {
+    EdmSimpleType<?> type = SUPPORTED_TYPES.get(clazz);
     if (type != null) return type;
     return null;
   }

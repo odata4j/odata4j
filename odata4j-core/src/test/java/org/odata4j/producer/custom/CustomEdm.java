@@ -4,6 +4,7 @@ package org.odata4j.producer.custom;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
 import org.core4j.Enumerable;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.edm.EdmAssociation;
@@ -35,7 +36,7 @@ public class CustomEdm implements EdmGenerator {
   }
 
   public static final String namespace = "myns";
-  
+
   @Override
   public EdmDataServices generateEdm() {
     createComplexTypes();
@@ -62,19 +63,19 @@ public class CustomEdm implements EdmGenerator {
             Enumerable.create(schema).toList());
     return services;
   }
-  
+
   private EdmComplexType ct1 = null;
-  
+
   private void createComplexTypes() {
     // ----------------------------- ComplexType1 --------------------------
     List<EdmProperty.Builder> props = new ArrayList<EdmProperty.Builder>();
 
     EdmProperty.Builder ep = EdmProperty.newBuilder("Prop1").setType(EdmSimpleType.STRING);
     props.add(ep);
-    
+
     ep = EdmProperty.newBuilder("Prop2").setType(EdmSimpleType.STRING);
     props.add(ep);
-    
+
 
     ct1 = new EdmComplexType(namespace, "ComplexType1", props);
     ctypes.add(ct1);
@@ -92,19 +93,19 @@ public class CustomEdm implements EdmGenerator {
 
     ep = EdmProperty.newBuilder("ListOStrings").setType(EdmSimpleType.STRING).setCollectionKind(CollectionKind.LIST);
     props.add(ep);
-    
+
     ep = EdmProperty.newBuilder("BagOStrings").setType(EdmSimpleType.STRING).setCollectionKind(CollectionKind.BAG);
     props.add(ep);
-    
+
     ep = EdmProperty.newBuilder("BagOInts").setType(EdmSimpleType.INT32).setCollectionKind(CollectionKind.BAG);
     props.add(ep);
-    
+
     ep = EdmProperty.newBuilder("Complex1").setType(ct1);
     props.add(ep);
-    
+
     ep = EdmProperty.newBuilder("ListOComplex").setType(ct1).setCollectionKind(CollectionKind.LIST);
     props.add(ep);
-    
+
     ep = EdmProperty.newBuilder("Id").setType(EdmSimpleType.STRING).setNullable(false);
     props.add(ep);
 
@@ -129,6 +130,7 @@ public class CustomEdm implements EdmGenerator {
 
   }
 
+  @SuppressWarnings("unused")
   private EdmAssociation defineAssociation(
           String assocName,
           EdmMultiplicity fromMult,
@@ -165,5 +167,5 @@ public class CustomEdm implements EdmGenerator {
   private List<EdmEntityType> etypes = new LinkedList<EdmEntityType>();
   private List<EdmEntitySet> esets = new LinkedList<EdmEntitySet>();
   private List<EdmAssociationSet> asets = new LinkedList<EdmAssociationSet>();
-  
+
 }

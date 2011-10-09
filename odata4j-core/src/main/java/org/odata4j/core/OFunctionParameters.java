@@ -20,7 +20,7 @@ public class OFunctionParameters {
 
   /**
    * Creates a new OFunctionParameter, inferring the edm-type from the value provided, which cannot be null.
-   * 
+   *
    * @param <T>  the property value's java-type
    * @param name  the property name
    * @param value  the property value
@@ -34,19 +34,8 @@ public class OFunctionParameters {
       return new FunctionParameterImpl(name, (OObject) value);
     }
 
-    EdmType type = EdmSimpleType.forJavaType(value.getClass());
-    if (type == null) {
-      // it is not a simple property type.
-      // TODO:
-      // support: OEntity, OComplexObject, Collection<OEntity|OComplexObject|EdmSimpleType>
-      throw new IllegalArgumentException("Cannot infer EdmType for java type: " + value.getClass().getName());
-    }
-
-    //if (type instanceof EdmSimpleType) {
-      return new FunctionParameterImpl(name, OSimpleObjects.create(value, (EdmSimpleType) type));
-    //} else {
-    //  throw new IllegalArgumentException("type not supported for function parameter: " + type.getFullyQualifiedTypeName());
-    //}
+    EdmSimpleType<?> type = EdmSimpleType.forJavaType(value.getClass());
+    return new FunctionParameterImpl(name, OSimpleObjects.create(type, value));
   }
 
   public static OFunctionParameter parse(String name, EdmType type, String value) {
@@ -54,15 +43,15 @@ public class OFunctionParameters {
       CommonExpression ce = ExpressionParser.parse(value);
       if (ce instanceof LiteralExpression) {
         // may have to case the literalValue based on type...
-        Object val = convert(Expression.literalValue((LiteralExpression) ce), (EdmSimpleType) type);
-        return new FunctionParameterImpl(name, OSimpleObjects.create(val, (EdmSimpleType) type));
+        Object val = convert(Expression.literalValue((LiteralExpression) ce), (EdmSimpleType<?>) type);
+        return new FunctionParameterImpl(name, OSimpleObjects.create((EdmSimpleType<?>) type, val));
       }
     }
     // TODO for other types
     throw new NotImplementedException();
   }
 
-  private static Object convert(Object val, EdmSimpleType type) {
+  private static Object convert(Object val, EdmSimpleType<?> type) {
 
     Object v = val;
     if (type.equals(EdmSimpleType.INT16) && (!(val instanceof Short))) {

@@ -9,12 +9,11 @@ import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OFunctionParameters;
 import org.odata4j.core.OObject;
 import org.odata4j.core.OSimpleObjects;
-import org.odata4j.edm.EdmType;
 import org.odata4j.edm.EdmCollectionType;
-import org.odata4j.edm.EdmComplexType;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmNonSimpleType;
 import org.odata4j.edm.EdmSimpleType;
+import org.odata4j.edm.EdmType;
 import org.odata4j.format.FormatParser;
 import org.odata4j.format.FormatParserFactory;
 import org.odata4j.format.FormatType;
@@ -26,22 +25,22 @@ import org.odata4j.producer.exceptions.NotImplementedException;
 
 /**
  * Parses an OCollection in JSON format.
- * 
+ *
  * Collection types handled so far:
  * - OComplexObject
- * 
+ *
  * TODO:
  * - all other types
  */
 public class JsonCollectionFormatParser extends JsonFormatParser implements FormatParser<OCollection<? extends OObject>> {
 
   private final EdmCollectionType returnType;
-  
+
   public JsonCollectionFormatParser(Settings s) {
     super(s);
     returnType = (EdmCollectionType) (null == s ? null : s.parseType);
   }
-  
+
   public JsonCollectionFormatParser(EdmCollectionType collectionType, EdmDataServices md) {
     super(null);
     this.metadata = md;
@@ -110,7 +109,7 @@ public class JsonCollectionFormatParser extends JsonFormatParser implements Form
       while (jsr.hasNext()) {
         // this is what I really want to do next:
         // OObject o = parser.parse(jsr);
-        // however, the FormatParser api would have to be genericized, we would need an interface for 
+        // however, the FormatParser api would have to be genericized, we would need an interface for
         // the event-oriented parsers (JsonStreamReader, XMLStreamReader).
         // I just don't have the time at this momement...
 
@@ -133,13 +132,13 @@ public class JsonCollectionFormatParser extends JsonFormatParser implements Form
 
     return c.build();
   }
-  
+
   protected void parseCollectionOfSimple(OCollection.Builder<OObject> builder, JsonStreamReader jsr) {
     while (jsr.hasNext()) {
       JsonEvent e = jsr.nextEvent();
       if (e.isValue()) {
         JsonValueEvent ve = e.asValue();
-        builder.add(OSimpleObjects.parse(ve.getValue(), (EdmSimpleType)this.returnType.getCollectionType()));
+        builder.add(OSimpleObjects.parse((EdmSimpleType<?>) this.returnType.getCollectionType(), ve.getValue()));
       } else if (e.isEndArray()) {
         break;
       } else {

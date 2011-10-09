@@ -147,7 +147,7 @@ public class XmlDataProducerExample {
       EdmSchema modelSchema = new EdmSchema(namespace + "Model", null, entityTypes, null, null, null);
       EdmSchema containerSchema = new EdmSchema(namespace + "Container", null, null, null, null, Enumerable.create(container).toList());
 
-      metadata = new EdmDataServices(ODataConstants.DATA_SERVICE_VERSION, Enumerable.create(modelSchema, containerSchema).toList());
+      metadata = new EdmDataServices(ODataConstants.DATA_SERVICE_VERSION, Enumerable.create(containerSchema, modelSchema).toList());
 
       xmlInputFactory = XMLInputFactory.newInstance();
     }
