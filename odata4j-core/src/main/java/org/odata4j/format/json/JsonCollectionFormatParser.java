@@ -148,12 +148,7 @@ public class JsonCollectionFormatParser extends JsonFormatParser implements Form
   }
 
   protected OCollection.Builder<OObject> newCollectionBuilder() {
-    // hmmh...design issue?...
-    //if (this.returnType.getCollectionType() instanceof EdmComplexType) {
       return OCollections.<OObject> newBuilder(this.returnType.getCollectionType());
-    //}
-
-    //throw new NotImplementedException("unsupported collection type " + this.returnType.getCollectionType().getFullyQualifiedTypeName());
   }
 
   protected FormatParser<? extends OObject> createItemParser(EdmType edmType) {
