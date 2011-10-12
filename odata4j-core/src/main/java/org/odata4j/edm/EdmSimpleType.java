@@ -89,4 +89,26 @@ public class EdmSimpleType<V> extends EdmType {
     return null;
   }
 
+  public static EdmType.Builder<?, ?> newBuilder(EdmType type) {
+    return new Builder(type);
+  }
+
+  private static class Builder extends EdmType.Builder<EdmType, Builder> {
+
+    private final EdmType type;
+    private Builder(EdmType type) {
+      this.type = type;
+    }
+
+    @Override
+    Builder newBuilder(EdmType type, BuilderContext context) {
+      return new Builder(type);
+    }
+    @Override
+    public EdmType build() {
+      return type;
+    }
+
+  }
+
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.core4j.Enumerable;
+import org.odata4j.core.ImmutableList;
 import org.odata4j.core.Named;
 import org.odata4j.core.OPredicates;
 
@@ -15,17 +16,8 @@ public abstract class EdmStructuralType extends EdmNonSimpleType implements Name
   private final Boolean isAbstract;
   private EdmEntityType baseType;
 
-  protected EdmStructuralType(EdmEntityType baseType, String namespace, String name, List<EdmProperty.Builder> declaredProperties) {
-    this(baseType, namespace, name, declaredProperties, null, null, null);
-  }
-
   protected EdmStructuralType(EdmEntityType baseType, String namespace, String name, List<EdmProperty.Builder> declaredProperties,
-      EdmDocumentation doc, List<EdmAnnotation<?>> annotations) {
-    this(baseType, namespace, name, declaredProperties, doc, annotations, null);
-  }
-
-  protected EdmStructuralType(EdmEntityType baseType, String namespace, String name, List<EdmProperty.Builder> declaredProperties,
-      EdmDocumentation doc, List<EdmAnnotation<?>> annotations, Boolean isAbstract) {
+      EdmDocumentation doc, ImmutableList<EdmAnnotation<?>> annotations, Boolean isAbstract) {
     super(namespace + "." + name, doc, annotations);
     this.baseType = baseType;
     this.namespace = namespace;
@@ -89,9 +81,58 @@ public abstract class EdmStructuralType extends EdmNonSimpleType implements Name
     return baseType == null;
   }
 
-  // TODO remove!
-  public void setBaseType(EdmEntityType baseType) {
-    this.baseType = baseType;
+  public abstract static class Builder<T, TBuilder> extends EdmType.Builder<T, TBuilder> {
+
+    protected String namespace;
+    protected String name;
+    protected final List<EdmProperty.Builder> properties = new ArrayList<EdmProperty.Builder>();
+    protected Boolean isAbstract;
+    protected EdmEntityType baseType;
+
+    protected void fillBuilder(EdmStructuralType structuralType, BuilderContext context) {
+      List<EdmProperty.Builder> properties = new ArrayList<EdmProperty.Builder>();
+      for(EdmProperty property : structuralType.declaredProperties)
+        properties.add(EdmProperty.newBuilder(property, context));
+      this.namespace = structuralType.namespace;
+      this.name = structuralType.name;
+      this.properties.addAll(properties);
+      this.isAbstract = structuralType.isAbstract;
+      this.baseType = structuralType.baseType;
+    }
+
+    @SuppressWarnings("unchecked")
+    public TBuilder setNamespace(String namespace) {
+      this.namespace = namespace;
+      return (TBuilder) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public TBuilder setName(String name) {
+      this.name = name;
+      return (TBuilder) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public TBuilder addProperties(List<EdmProperty.Builder> properties) {
+      this.properties.addAll(properties);
+      return (TBuilder) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public TBuilder setIsAbstract(Boolean isAbstract) {
+      this.isAbstract = isAbstract;
+      return (TBuilder) this;
+    }
+
+    public String getFullyQualifiedTypeName() {
+      return namespace + "." + name;
+    }
+
+    public EdmProperty.Builder findProperty(String name) {
+      // TODO share or remove
+      return Enumerable.create(properties).firstOrNull(OPredicates.nameEquals(EdmProperty.Builder.class, name));
+    }
+
   }
 
 }

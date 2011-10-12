@@ -33,8 +33,8 @@ import javax.persistence.metamodel.Type.PersistenceType;
 import org.core4j.Enumerable;
 import org.core4j.Predicate1;
 import org.joda.time.Instant;
-import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OFuncs;
+import org.odata4j.core.OPredicates;
 import org.odata4j.edm.EdmAssociation;
 import org.odata4j.edm.EdmAssociationEnd;
 import org.odata4j.edm.EdmAssociationSet;
@@ -139,12 +139,12 @@ public class JPAEdmGenerator {
 
     String modelNamespace = namespace + "Model";
 
-    List<EdmEntityType> edmEntityTypes = new ArrayList<EdmEntityType>();
-    List<EdmComplexType> edmComplexTypes = new ArrayList<EdmComplexType>();
-    List<EdmAssociation> associations = new ArrayList<EdmAssociation>();
+    List<EdmEntityType.Builder> edmEntityTypes = new ArrayList<EdmEntityType.Builder>();
+    List<EdmComplexType.Builder> edmComplexTypes = new ArrayList<EdmComplexType.Builder>();
+    List<EdmAssociation.Builder> associations = new ArrayList<EdmAssociation.Builder>();
 
-    List<EdmEntitySet> entitySets = new ArrayList<EdmEntitySet>();
-    List<EdmAssociationSet> associationSets = new ArrayList<EdmAssociationSet>();
+    List<EdmEntitySet.Builder> entitySets = new ArrayList<EdmEntitySet.Builder>();
+    List<EdmAssociationSet.Builder> associationSets = new ArrayList<EdmAssociationSet.Builder>();
 
     Metamodel mm = emf.getMetamodel();
 
@@ -154,7 +154,7 @@ public class JPAEdmGenerator {
       String name = et.getJavaType().getSimpleName();
       List<EdmProperty.Builder> properties = getProperties(modelNamespace, et);
 
-      EdmComplexType ect = new EdmComplexType(modelNamespace, name, properties);
+      EdmComplexType.Builder ect = EdmComplexType.newBuilder().setNamespace(modelNamespace).setName(name).addProperties(properties);
       edmComplexTypes.add(ect);
     }
 
@@ -179,17 +179,17 @@ public class JPAEdmGenerator {
       }
 
       List<EdmProperty.Builder> properties = getProperties(modelNamespace, et);
-      List<EdmNavigationProperty> navigationProperties = new ArrayList<EdmNavigationProperty>();
+      List<EdmNavigationProperty.Builder> navigationProperties = new ArrayList<EdmNavigationProperty.Builder>();
 
-      EdmEntityType eet = new EdmEntityType(modelNamespace, null, name, null, keys, properties, navigationProperties);
+      EdmEntityType.Builder eet = EdmEntityType.newBuilder().setNamespace(modelNamespace).setName(name).addKeys(keys).addProperties(properties).addNavigationProperties(navigationProperties);
       edmEntityTypes.add(eet);
 
-      EdmEntitySet ees = new EdmEntitySet(name, eet);
+      EdmEntitySet.Builder ees = EdmEntitySet.newBuilder().setName(name).setEntityType(eet);
       entitySets.add(ees);
     }
 
-    Map<String, EdmEntityType> eetsByName = Enumerable.create(edmEntityTypes).toMap(OFuncs.name(EdmEntityType.class));
-    Map<String, EdmEntitySet> eesByName = Enumerable.create(entitySets).toMap(OFuncs.name(EdmEntitySet.class));
+    Map<String, EdmEntityType.Builder> eetsByName = Enumerable.create(edmEntityTypes).toMap(OFuncs.name(EdmEntityType.Builder.class));
+    Map<String, EdmEntitySet.Builder> eesByName = Enumerable.create(entitySets).toMap(OFuncs.name(EdmEntitySet.Builder.class));
 
     // associations + navigationproperties on the non-collection side
     for (EntityType<?> et : mm.getEntities()) {
@@ -207,19 +207,18 @@ public class JPAEdmGenerator {
             // create an edm many-to-one relationship  (* 0..1)
             EntityType<?> singularAttEntityType = (EntityType<?>) singularAttType;
 
-            EdmEntityType fromEntityType = eetsByName.get(getEntitySetName(et));
-            EdmEntityType toEntityType = eetsByName.get(getEntitySetName(singularAttEntityType));
+            EdmEntityType.Builder fromEntityType = eetsByName.get(getEntitySetName(et));
+            EdmEntityType.Builder toEntityType = eetsByName.get(getEntitySetName(singularAttEntityType));
 
             // add EdmAssociation, EdmAssociationSet
-            EdmAssociation association = defineManyTo(EdmMultiplicity.ZERO_TO_ONE, associations, fromEntityType, toEntityType, modelNamespace, eesByName, associationSets);
+            EdmAssociation.Builder association = defineManyTo(EdmMultiplicity.ZERO_TO_ONE, associations, fromEntityType, toEntityType, modelNamespace, eesByName, associationSets);
 
             // add EdmNavigationProperty
-            EdmNavigationProperty navigationProperty = new EdmNavigationProperty(
-                singularAtt.getName(),
-                association,
-                association.getEnd1(),
+            EdmNavigationProperty.Builder navigationProperty = EdmNavigationProperty.newBuilder(singularAtt.getName())
+                .setRelationship(association)
+                .setFromTo(association.getEnd1(),
                 association.getEnd2());
-            fromEntityType.addNavigationProperty(navigationProperty);
+            fromEntityType.addNavigationProperties(navigationProperty);
           }
         }
       }
@@ -239,17 +238,18 @@ public class JPAEdmGenerator {
 
           EntityType<?> pluralAttEntityType = (EntityType<?>) pluralAtt.getElementType();
 
-          final EdmEntityType fromEntityType = eetsByName.get(getEntitySetName(et));
-          final EdmEntityType toEntityType = eetsByName.get(getEntitySetName(pluralAttEntityType));
+          final EdmEntityType.Builder fromEntityType = eetsByName.get(getEntitySetName(et));
+          final EdmEntityType.Builder toEntityType = eetsByName.get(getEntitySetName(pluralAttEntityType));
 
           try {
-            EdmAssociation association = Enumerable.create(associations).firstOrNull(new Predicate1<EdmAssociation>() {
-              public boolean apply(EdmAssociation input) {
-                return input.getEnd1().getType().equals(toEntityType) && input.getEnd2().getType().equals(fromEntityType);
+            EdmAssociation.Builder association = Enumerable.create(associations).firstOrNull(new Predicate1<EdmAssociation.Builder>() {
+              public boolean apply(EdmAssociation.Builder input) {
+                return input.getEnd1().getType().getFullyQualifiedTypeName().equals(toEntityType.getFullyQualifiedTypeName())
+                    && input.getEnd2().getType().getFullyQualifiedTypeName().equals(fromEntityType.getFullyQualifiedTypeName());
               }
             });
 
-            EdmAssociationEnd fromRole, toRole;
+            EdmAssociationEnd.Builder fromRole, toRole;
 
             if (association == null) {
               // no EdmAssociation, EdmAssociationSet defined, backfill!
@@ -271,12 +271,11 @@ public class JPAEdmGenerator {
             }
 
             // add EdmNavigationProperty
-            EdmNavigationProperty navigationProperty = new EdmNavigationProperty(
-                            pluralAtt.getName(),
-                            association,
-                            fromRole,
+            EdmNavigationProperty.Builder navigationProperty = EdmNavigationProperty.newBuilder(pluralAtt.getName())
+                            .setRelationship(association)
+                            .setFromTo(fromRole,
                             toRole);
-            fromEntityType.addNavigationProperty(navigationProperty);
+            fromEntityType.addNavigationProperties(navigationProperty);
 
           } catch (Exception e) {
             log.log(Level.WARNING, "Exception building Edm associations: " + e.getMessage(), e);
@@ -287,42 +286,42 @@ public class JPAEdmGenerator {
 
     }
 
-    EdmEntityContainer container = new EdmEntityContainer(namespace + "Entities", true, null, entitySets, associationSets, null);
+    EdmEntityContainer.Builder container = EdmEntityContainer.newBuilder().setName(namespace + "Entities").setIsDefault(true).addEntitySets(entitySets).addAssociationSets(associationSets);
 
-    EdmSchema modelSchema = new EdmSchema(modelNamespace, null, edmEntityTypes, edmComplexTypes, associations, null);
-    EdmSchema containerSchema = new EdmSchema(namespace + "Container", null, null, null, null, Enumerable.create(container).toList());
+    EdmSchema.Builder modelSchema = EdmSchema.newBuilder().setNamespace(modelNamespace).addEntityTypes(edmEntityTypes).addComplexTypes(edmComplexTypes).addAssociations(associations);
+    EdmSchema.Builder containerSchema = EdmSchema.newBuilder().setNamespace(namespace + "Container").addEntityContainers(container);
 
-    EdmDataServices services = new EdmDataServices(ODataConstants.DATA_SERVICE_VERSION, Enumerable.create(containerSchema, modelSchema).toList());
-    return services;
+    return EdmDataServices.newBuilder().addSchemas(containerSchema, modelSchema).build();
   }
 
-  private static EdmAssociation defineManyTo(EdmMultiplicity toMult, List<EdmAssociation> associations, EdmEntityType fromEntityType, EdmEntityType toEntityType,
-      String modelNamespace, Map<String, EdmEntitySet> eesByName, List<EdmAssociationSet> associationSets) {
+  private static EdmAssociation.Builder defineManyTo(EdmMultiplicity toMult, List<EdmAssociation.Builder> associations, EdmEntityType.Builder fromEntityType, EdmEntityType.Builder toEntityType,
+      String modelNamespace, Map<String, EdmEntitySet.Builder> eesByName, List<EdmAssociationSet.Builder> associationSets) {
     EdmMultiplicity fromMult = EdmMultiplicity.MANY;
 
     String assocName = getAssociationName(associations, fromEntityType, toEntityType);
 
     // add EdmAssociation
-    EdmAssociationEnd fromAssociationEnd = new EdmAssociationEnd(fromEntityType.getName(), fromEntityType, fromMult);
+    EdmAssociationEnd.Builder fromAssociationEnd = EdmAssociationEnd.newBuilder().setRole(fromEntityType.getName()).setType(fromEntityType).setMultiplicity(fromMult);
     String toAssociationEndName = toEntityType.getName();
     if (toAssociationEndName.equals(fromEntityType.getName())) {
       toAssociationEndName = toAssociationEndName + "1";
     }
-    EdmAssociationEnd toAssociationEnd = new EdmAssociationEnd(toAssociationEndName, toEntityType, toMult);
-    EdmAssociation association = new EdmAssociation(modelNamespace, null, assocName, fromAssociationEnd, toAssociationEnd);
+    EdmAssociationEnd.Builder toAssociationEnd = EdmAssociationEnd.newBuilder().setRole(toAssociationEndName).setType(toEntityType).setMultiplicity(toMult);
+    EdmAssociation.Builder association = EdmAssociation.newBuilder().setNamespace(modelNamespace).setName(assocName).setEnds(fromAssociationEnd, toAssociationEnd);
     associations.add(association);
 
     // add EdmAssociationSet
-    EdmEntitySet fromEntitySet = eesByName.get(fromEntityType.getName());
-    EdmEntitySet toEntitySet = eesByName.get(toEntityType.getName());
-    EdmAssociationSet associationSet = new EdmAssociationSet(
-        assocName,
-        association,
-        new EdmAssociationSetEnd(fromAssociationEnd, fromEntitySet),
-        new EdmAssociationSetEnd(toAssociationEnd, toEntitySet));
+    EdmEntitySet.Builder fromEntitySet = eesByName.get(fromEntityType.getName());
+    EdmEntitySet.Builder toEntitySet = eesByName.get(toEntityType.getName());
+    EdmAssociationSet.Builder associationSet = EdmAssociationSet.newBuilder()
+        .setName(assocName)
+        .setAssociation(association).setEnds(
+            EdmAssociationSetEnd.newBuilder().setRole(fromAssociationEnd).setEntitySet(fromEntitySet),
+            EdmAssociationSetEnd.newBuilder().setRole(toAssociationEnd).setEntitySet(toEntitySet));
     associationSets.add(associationSet);
 
     return association;
+
   }
 
   public static <X> SingularAttribute<? super X, ?> getIdAttribute(EntityType<X> et) {
@@ -341,17 +340,13 @@ public class JPAEdmGenerator {
         : name;
   }
 
-  protected static String getAssociationName(List<EdmAssociation> associations, EdmEntityType fromEntityType, EdmEntityType toEntityType) {
+  protected static String getAssociationName(List<EdmAssociation.Builder> associations, EdmEntityType.Builder fromEntityType, EdmEntityType.Builder toEntityType) {
     for (int i = 0;; i++) {
-      final String assocName = i == 0
+      String assocName = i == 0
           ? String.format("FK_%s_%s", fromEntityType.getName(), toEntityType.getName())
           : String.format("FK_%s_%s_%d", fromEntityType.getName(), toEntityType.getName(), i);
 
-      boolean exists = Enumerable.create(associations).where(new Predicate1<EdmAssociation>() {
-        public boolean apply(EdmAssociation input) {
-          return assocName.equals(input.getName());
-        }
-      }).count() > 0;
+      boolean exists = Enumerable.create(associations).where(OPredicates.nameEquals(EdmAssociation.Builder.class, assocName)).count() > 0;
 
       if (!exists)
         return assocName;

@@ -1,5 +1,6 @@
 package org.odata4j.format.xml;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
@@ -77,9 +78,10 @@ public class EdmxFormatParserTest {
       EdmEntityType airport = d.findEdmEntitySet("Airport").getType();
       EdmEntityType badAirport = d.findEdmEntitySet("BadAirport").getType();
       assertTrue(badAirport.getBaseType().equals(airport));
-      assertTrue(badAirport.getKeys().equals(airport.getKeys()));
+      assertTrue("" + badAirport.getKeys() + ":" + airport.getKeys(), badAirport.getKeys().equals(airport.getKeys()));
       assertTrue(badAirport.getDeclaredNavigationProperties().count() == 0);
-      assertTrue(badAirport.getNavigationProperties().count() == airport.getDeclaredNavigationProperties().count() +
+      assertEquals(badAirport.getNavigationProperties().count(),
+          airport.getDeclaredNavigationProperties().count() +
           badAirport.getDeclaredNavigationProperties().count());
       assertTrue(badAirport.getDeclaredProperties().count() == 2);
       assertTrue(badAirport.findDeclaredProperty("rating") != null);
@@ -97,7 +99,7 @@ public class EdmxFormatParserTest {
       assertTrue(subSchedule.getBaseType().equals(schedule));
       assertTrue(subSchedule.getKeys().equals(schedule.getKeys()));
       assertTrue(subSchedule.getDeclaredNavigationProperties().count() == 0);
-      assertTrue(subSchedule.getNavigationProperties().count() == 2);
+      assertEquals(2, subSchedule.getNavigationProperties().count());
       assertTrue(subSchedule.getNavigationProperties().count() == schedule.getDeclaredNavigationProperties().count() +
           subSchedule.getDeclaredNavigationProperties().count());
 

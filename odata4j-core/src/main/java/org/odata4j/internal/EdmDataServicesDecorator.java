@@ -1,7 +1,7 @@
 package org.odata4j.internal;
 
-import java.util.List;
-
+import org.odata4j.core.ImmutableList;
+import org.odata4j.core.Namespace;
 import org.odata4j.edm.EdmAssociation;
 import org.odata4j.edm.EdmComplexType;
 import org.odata4j.edm.EdmDataServices;
@@ -10,13 +10,15 @@ import org.odata4j.edm.EdmEntityType;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.edm.EdmPropertyBase;
 import org.odata4j.edm.EdmSchema;
+import org.odata4j.edm.EdmStructuralType;
+import org.odata4j.edm.EdmType;
 
 public abstract class EdmDataServicesDecorator extends EdmDataServices {
 
   protected abstract EdmDataServices getDelegate();
 
   public EdmDataServicesDecorator() {
-    super(null, null);
+    super(null, null, null);
   }
 
   @Override
@@ -25,7 +27,7 @@ public abstract class EdmDataServicesDecorator extends EdmDataServices {
   }
 
   @Override
-  public List<EdmSchema> getSchemas() {
+  public ImmutableList<EdmSchema> getSchemas() {
     return getDelegate().getSchemas();
   }
 
@@ -77,6 +79,36 @@ public abstract class EdmDataServicesDecorator extends EdmDataServices {
   @Override
   public Iterable<EdmEntitySet> getEntitySets() {
     return getDelegate().getEntitySets();
+  }
+
+  @Override
+  public EdmType findEdmEntityType(String fqName) {
+    return getDelegate().findEdmEntityType(fqName);
+  }
+
+  @Override
+  public EdmSchema findSchema(String namespace) {
+    return getDelegate().findSchema(namespace);
+  }
+
+  @Override
+  public Iterable<EdmStructuralType> getStructuralTypes() {
+    return getDelegate().getStructuralTypes();
+  }
+
+  @Override
+  public ImmutableList<Namespace> getNamespaces() {
+    return getDelegate().getNamespaces();
+  }
+
+  @Override
+  public Iterable<EdmStructuralType> getSubTypes(EdmStructuralType t) {
+    return getDelegate().getSubTypes(t);
+  }
+
+  @Override
+  public String toString() {
+    return getDelegate().toString();
   }
 
 }

@@ -1,6 +1,6 @@
 package org.odata4j.edm;
 
-import java.util.List;
+import org.odata4j.core.ImmutableList;
 
 /**
  * Non-primitive type in the EDM type system.
@@ -12,7 +12,7 @@ public class EdmNonSimpleType extends EdmType {
   }
 
   public EdmNonSimpleType(String fullyQualifiedTypeName, EdmDocumentation documentation,
-      List<EdmAnnotation<?>> annotations) {
+      ImmutableList<EdmAnnotation<?>> annotations) {
     super(fullyQualifiedTypeName, documentation, annotations);
   }
 

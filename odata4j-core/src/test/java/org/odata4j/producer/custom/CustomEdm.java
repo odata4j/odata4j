@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.core4j.Enumerable;
-import org.odata4j.core.ODataConstants;
 import org.odata4j.edm.EdmAssociation;
 import org.odata4j.edm.EdmAssociationEnd;
 import org.odata4j.edm.EdmAssociationSet;
@@ -24,11 +22,22 @@ import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmProperty.CollectionKind;
 import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmSimpleType;
+import org.odata4j.producer.edm.Edm;
 
 /**
  *
  */
 public class CustomEdm implements EdmGenerator {
+
+
+  private EdmDecorator decorator = null;
+  private EdmSchema.Builder schema = null;
+  private EdmEntityContainer.Builder container = null;
+  private List<EdmAssociation.Builder> assocs = new LinkedList<EdmAssociation.Builder>();
+  private List<EdmComplexType.Builder> ctypes = new LinkedList<EdmComplexType.Builder>();
+  private List<EdmEntityType.Builder> etypes = new LinkedList<EdmEntityType.Builder>();
+  private List<EdmEntitySet.Builder> esets = new LinkedList<EdmEntitySet.Builder>();
+  private List<EdmAssociationSet.Builder> asets = new LinkedList<EdmAssociationSet.Builder>();
 
   @Override
   public EdmDecorator getDecorator() {
@@ -42,29 +51,24 @@ public class CustomEdm implements EdmGenerator {
     createComplexTypes();
     createEntityTypes();
 
-    container = new EdmEntityContainer(
-            "Container1", // name
-            true, // boolean isDefault,
-            Boolean.TRUE, // Boolean lazyLoadingEnabled,
-            esets, // List<EdmEntitySet> entitySets,
-            asets, // List<EdmAssociationSet> associationSets, a
-            null);          // List<EdmFunctionImport> functionImports) {
+    container = EdmEntityContainer.newBuilder()
+            .setName("Container1")
+            .setIsDefault(true)
+            .setLazyLoadingEnabled(Boolean.TRUE)
+            .addEntitySets(esets)
+            .addAssociationSets(asets);
 
-    schema = new EdmSchema(
-            namespace,
-            null, // String alias,
-            etypes,
-            ctypes,
-            assocs,
-            Enumerable.create(container).toList());
+    schema = EdmSchema.newBuilder()
+        .setNamespace(namespace)
+        .addEntityTypes(etypes)
+        .addComplexTypes(ctypes)
+        .addAssociations(assocs)
+        .addEntityContainers(container);
 
-
-    EdmDataServices services = new EdmDataServices(ODataConstants.DATA_SERVICE_VERSION,
-            Enumerable.create(schema).toList());
-    return services;
+    return EdmDataServices.newBuilder().addSchemas(schema).build();
   }
 
-  private EdmComplexType ct1 = null;
+  private EdmComplexType.Builder ct1 = null;
 
   private void createComplexTypes() {
     // ----------------------------- ComplexType1 --------------------------
@@ -77,14 +81,14 @@ public class CustomEdm implements EdmGenerator {
     props.add(ep);
 
 
-    ct1 = new EdmComplexType(namespace, "ComplexType1", props);
+    ct1 = EdmComplexType.newBuilder().setNamespace(namespace).setName("ComplexType1").addProperties(props);
     ctypes.add(ct1);
   }
 
   private void createEntityTypes() {
     // --------------------------- Type1 ------------------------------
     List<EdmProperty.Builder> props = new ArrayList<EdmProperty.Builder>();
-    List<EdmNavigationProperty> navprops = new ArrayList<EdmNavigationProperty>();
+    List<EdmNavigationProperty.Builder> navprops = new ArrayList<EdmNavigationProperty.Builder>();
 
     EdmProperty.Builder ep = null;
 
@@ -111,61 +115,52 @@ public class CustomEdm implements EdmGenerator {
 
     List<String> keys = new ArrayList<String>();
     keys.add("Id");
-    EdmEntityType type1Type = new EdmEntityType(
-            namespace,
-            null, // alias
-            "Type1",
-            null, // hasStream
-            keys,
-            null, // baseType,
-            props,
-            navprops,
-            null, // null == decorator ? null : decorator.getDocumentationForEntityType(Edm.namespace, Edm.EntityType.name()),
-            null == decorator ? null : decorator.getAnnotationsForEntityType(namespace, "Type1"));
+    EdmEntityType.Builder type1Type = EdmEntityType.newBuilder()
+            .setNamespace(namespace)
+            .setName("Type1")
+            .addKeys(keys)
+            .addProperties(props)
+            .addNavigationProperties(navprops);
+    if (decorator != null) {
+      type1Type.setDocumentation(decorator.getDocumentationForEntityType(Edm.namespace, Edm.EntityType.name()));
+      type1Type.setAnnotations(decorator.getAnnotationsForEntityType(namespace, "Type1"));
+    }
 
     etypes.add(type1Type);
 
-    EdmEntitySet type1Set = new EdmEntitySet("Type1s", type1Type);
+    EdmEntitySet.Builder type1Set = EdmEntitySet.newBuilder().setName("Type1s").setEntityType(type1Type);
     esets.add(type1Set);
 
   }
 
   @SuppressWarnings("unused")
-  private EdmAssociation defineAssociation(
+  private EdmAssociation.Builder defineAssociation(
           String assocName,
           EdmMultiplicity fromMult,
           EdmMultiplicity toMult,
-          EdmEntityType fromEntityType,
-          EdmEntitySet fromEntitySet,
-          EdmEntityType toEntityType,
-          EdmEntitySet toEntitySet) {
+          EdmEntityType.Builder fromEntityType,
+          EdmEntitySet.Builder fromEntitySet,
+          EdmEntityType.Builder toEntityType,
+          EdmEntitySet.Builder toEntitySet) {
 
     // add EdmAssociation
-    EdmAssociationEnd fromAssociationEnd = new EdmAssociationEnd(fromEntityType.getName(), fromEntityType, fromMult);
+    EdmAssociationEnd.Builder fromAssociationEnd = EdmAssociationEnd.newBuilder().setRole(fromEntityType.getName()).setType(fromEntityType).setMultiplicity(fromMult);
     String toAssociationRole = toEntityType.getName();
     if (toAssociationRole.equals(fromEntityType.getName())) {
       toAssociationRole = toAssociationRole + "1";
     }
-    EdmAssociationEnd toAssociationEnd = new EdmAssociationEnd(toAssociationRole, toEntityType, toMult);
-    EdmAssociation association = new EdmAssociation(namespace, null, assocName, fromAssociationEnd, toAssociationEnd);
+    EdmAssociationEnd.Builder toAssociationEnd = EdmAssociationEnd.newBuilder().setRole(toAssociationRole).setType(toEntityType).setMultiplicity(toMult);
+    EdmAssociation.Builder association = EdmAssociation.newBuilder().setNamespace(namespace).setName( assocName).setEnds(fromAssociationEnd, toAssociationEnd);
 
     // add EdmAssociationSet
-    EdmAssociationSet associationSet = new EdmAssociationSet(
-            assocName,
-            association,
-            new EdmAssociationSetEnd(fromAssociationEnd, fromEntitySet),
-            new EdmAssociationSetEnd(toAssociationEnd, toEntitySet));
+    EdmAssociationSet.Builder associationSet = EdmAssociationSet.newBuilder()
+            .setName(assocName)
+            .setAssociation(association).setEnds(
+            EdmAssociationSetEnd.newBuilder().setRole(fromAssociationEnd).setEntitySet(fromEntitySet),
+            EdmAssociationSetEnd.newBuilder().setRole(toAssociationEnd).setEntitySet(toEntitySet));
     asets.add(associationSet);
     assocs.add(association);
     return association;
   }
-  private EdmDecorator decorator = null;
-  private EdmSchema schema = null;
-  private EdmEntityContainer container = null;
-  private List<EdmAssociation> assocs = new LinkedList<EdmAssociation>();
-  private List<EdmComplexType> ctypes = new LinkedList<EdmComplexType>();
-  private List<EdmEntityType> etypes = new LinkedList<EdmEntityType>();
-  private List<EdmEntitySet> esets = new LinkedList<EdmEntitySet>();
-  private List<EdmAssociationSet> asets = new LinkedList<EdmAssociationSet>();
 
 }

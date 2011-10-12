@@ -160,7 +160,7 @@ public class InMemoryProducerExample {
 
     public MyEdmDecorator() {
       namespaces.add(new Namespace(namespace, prefix));
-      this.schemaInfoType = createSchemaInfoType();
+      this.schemaInfoType = createSchemaInfoType().build();
     }
 
     @Override
@@ -173,7 +173,7 @@ public class InMemoryProducerExample {
       return new EdmDocumentation("InMemoryProducerExample", "This schema exposes a few example types to demonstrate the InMemoryProducer");
     }
 
-    private EdmComplexType createSchemaInfoType() {
+    private EdmComplexType.Builder createSchemaInfoType() {
         List<EdmProperty.Builder> props = new ArrayList<EdmProperty.Builder>();
 
         EdmProperty.Builder ep = EdmProperty.newBuilder("Author").setType(EdmSimpleType.STRING);
@@ -182,7 +182,7 @@ public class InMemoryProducerExample {
         ep = EdmProperty.newBuilder("SeeAlso").setType(EdmSimpleType.STRING);
         props.add(ep);
 
-        return new EdmComplexType(namespace, "SchemaInfo", props);
+        return EdmComplexType.newBuilder().setNamespace(namespace).setName("SchemaInfo").addProperties(props);
 
     }
 

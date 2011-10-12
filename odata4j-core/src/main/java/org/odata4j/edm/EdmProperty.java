@@ -1,7 +1,6 @@
 package org.odata4j.edm;
 
-import java.util.List;
-
+import org.odata4j.core.ImmutableList;
 import org.odata4j.core.Named;
 
 
@@ -31,7 +30,7 @@ public class EdmProperty extends EdmPropertyBase {
   private final String fcEpmContentKind;
   private final String fcEpmKeepInContent;
 
-  public EdmProperty(EdmDocumentation documentation, List<EdmAnnotation<?>> annotations, String name,
+  private EdmProperty(EdmDocumentation documentation, ImmutableList<EdmAnnotation<?>> annotations, String name,
       EdmStructuralType declaringType, EdmType type, boolean nullable, Integer maxLength, Boolean unicode, Boolean fixedLength,
       String storeGeneratedPattern,
       String fcTargetPath, String fcContentKind, String fcKeepInContent, String fcEpmContentKind, String fcEpmKeepInContent,
@@ -130,16 +129,21 @@ public class EdmProperty extends EdmPropertyBase {
     return new Builder(name);
   }
 
-  public static class Builder extends EdmPropertyBase.Builder<Builder> implements Named {
+  public static Builder newBuilder(EdmProperty property, BuilderContext context) {
+    return context.newBuilder(property, new Builder(property.getName()));
+  }
+
+  public static class Builder extends EdmPropertyBase.Builder<EdmProperty, Builder> implements Named {
 
     private EdmStructuralType declaringType;
     private EdmType type;
+    private EdmType.Builder<?, ?> typeBuilder;
     private boolean nullable;
     private Integer maxLength;
     private Boolean unicode;
     private Boolean fixedLength;
     private String storeGeneratedPattern;
-    private CollectionKind collectionKind;
+    private CollectionKind collectionKind = CollectionKind.NONE;
     private String defaultValue;
     private Integer precision;
     private Integer scale;
@@ -152,17 +156,45 @@ public class EdmProperty extends EdmPropertyBase {
 
     private Builder(String name) {
       super(name);
-      this.collectionKind = CollectionKind.NONE;
+    }
+
+    @Override
+    Builder newBuilder(EdmProperty property, BuilderContext context) {
+      this.declaringType = property.declaringType;
+      this.type = property.type;
+      this.nullable = property.nullable;
+      this.maxLength = property.maxLength;
+      this.unicode = property.unicode;
+      this.fixedLength = property.fixedLength;
+      this.storeGeneratedPattern = property.storeGeneratedPattern;
+      this.collectionKind = property.collectionKind;
+      this.defaultValue = property.defaultValue;
+      this.precision = property.precision;
+      this.scale = property.scale;
+
+      this.fcTargetPath = property.fcTargetPath;
+      this.fcContentKind = property.fcContentKind;
+      this.fcKeepInContent = property.fcKeepInContent;
+      this.fcEpmContentKind = property.fcEpmContentKind;
+      this.fcEpmKeepInContent = property.fcEpmKeepInContent;
+      return this;
     }
 
     public EdmProperty build() {
-      return new EdmProperty(getDocumentation(), getAnnotations(), getName(), declaringType, type, nullable, maxLength, unicode, fixedLength, storeGeneratedPattern,
+      EdmType type = this.type != null ? this.type : typeBuilder.build();
+      return new EdmProperty(getDocumentation(), ImmutableList.copyOf(getAnnotations()),
+          getName(), declaringType, type, nullable, maxLength, unicode, fixedLength, storeGeneratedPattern,
           fcTargetPath, fcContentKind, fcKeepInContent, fcEpmContentKind, fcEpmKeepInContent, collectionKind,
           defaultValue, precision, scale);
     }
 
     public Builder setType(EdmType type) {
       this.type = type;
+      return this;
+    }
+
+    public Builder setType(EdmType.Builder<?, ?> type) {
+      this.typeBuilder = type;
       return this;
     }
 

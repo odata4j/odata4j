@@ -1,9 +1,9 @@
 package org.odata4j.edm;
 
-import java.util.List;
 import java.util.Map;
 
 import org.core4j.Enumerable;
+import org.odata4j.core.ImmutableList;
 import org.odata4j.core.OFuncs;
 
 /**
@@ -21,12 +21,11 @@ public abstract class EdmType extends EdmItem {
 
   private final String fullyQualifiedTypeName;
 
-  public EdmType(String fullyQualifiedTypeName) {
-    super(null, null);
-    this.fullyQualifiedTypeName = fullyQualifiedTypeName;
+  protected EdmType(String fullyQualifiedTypeName) {
+    this(fullyQualifiedTypeName, null, null);
   }
 
-  public EdmType(String fullyQualifiedTypeName, EdmDocumentation documentation, List<EdmAnnotation<?>> annotations) {
+  protected EdmType(String fullyQualifiedTypeName, EdmDocumentation documentation, ImmutableList<EdmAnnotation<?>> annotations) {
     super(documentation, annotations);
     this.fullyQualifiedTypeName = fullyQualifiedTypeName;
   }
@@ -68,5 +67,11 @@ public abstract class EdmType extends EdmItem {
   }
 
   public abstract boolean isSimple();
+
+  public abstract static class Builder<T, TBuilder> extends EdmItem.Builder<T, TBuilder> {
+
+    public abstract EdmType build();
+
+  }
 
 }

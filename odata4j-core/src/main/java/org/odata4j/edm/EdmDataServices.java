@@ -5,9 +5,12 @@ import java.util.List;
 
 import org.core4j.Enumerable;
 import org.core4j.Predicate1;
+import org.odata4j.core.ImmutableList;
 import org.odata4j.core.Namespace;
+import org.odata4j.core.ODataConstants;
 import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OPredicates;
+import org.odata4j.edm.EdmItem.BuilderContext;
 import org.odata4j.producer.exceptions.NotFoundException;
 
 /**
@@ -17,17 +20,13 @@ import org.odata4j.producer.exceptions.NotFoundException;
  */
 public class EdmDataServices {
 
-  public static final EdmDataServices EMPTY = new EdmDataServices(null, new ArrayList<EdmSchema>());
+  public static final EdmDataServices EMPTY = new EdmDataServices(null, ImmutableList.<EdmSchema>create(), ImmutableList.<Namespace>create());
 
   private final ODataVersion version;
-  private final List<EdmSchema> schemas;
-  private final List<Namespace> namespaces; // for Annotations
+  private final ImmutableList<EdmSchema> schemas;
+  private final ImmutableList<Namespace> namespaces;
 
-  public EdmDataServices(ODataVersion version, List<EdmSchema> schemas) {
-    this(version, schemas, null);
-  }
-
-  public EdmDataServices(ODataVersion version, List<EdmSchema> schemas, List<Namespace> namespaces) {
+  protected EdmDataServices(ODataVersion version, ImmutableList<EdmSchema> schemas, ImmutableList<Namespace> namespaces) {
     this.version = version;
     this.schemas = schemas;
     this.namespaces = namespaces;
@@ -37,12 +36,12 @@ public class EdmDataServices {
     return version != null ? version.asString : null;
   }
 
-  public List<EdmSchema> getSchemas() {
+  public ImmutableList<EdmSchema> getSchemas() {
     return schemas;
   }
 
-  public List<Namespace> getNamespaces() {
-    return this.namespaces;
+  public ImmutableList<Namespace> getNamespaces() {
+    return namespaces;
   }
 
   public EdmEntitySet getEdmEntitySet(String entitySetName) {
@@ -60,7 +59,7 @@ public class EdmDataServices {
         .firstOrNull(new Predicate1<EdmEntitySet>() {
           @Override
           public boolean apply(EdmEntitySet input) {
-            return type == input.getType();
+            return type.equals(input.getType());
           }
         });
 
@@ -135,7 +134,6 @@ public class EdmDataServices {
         }
       }
     }
-
     return null;
   }
 
@@ -189,6 +187,111 @@ public class EdmDataServices {
 
   public Iterable<EdmStructuralType> getSubTypes(EdmStructuralType t) {
     return Enumerable.create(getStructuralTypes()).where(OPredicates.edmSubTypeOf(t));
+  }
+
+  public static Builder newBuilder() {
+    return new Builder();
+  }
+
+  public static Builder newBuilder(EdmDataServices metadata) {
+    BuilderContext context = new BuilderContext();
+    List<EdmSchema.Builder> schemas = new ArrayList<EdmSchema.Builder>();
+    for(EdmSchema schema : metadata.schemas)
+      schemas.add(EdmSchema.newBuilder(schema, context));
+    return new Builder().setVersion(metadata.version).addSchemas(schemas).addNamespaces(metadata.namespaces);
+  }
+
+  public static class Builder {
+
+    private ODataVersion version = ODataConstants.DATA_SERVICE_VERSION;
+    private final List<EdmSchema.Builder> schemas = new ArrayList<EdmSchema.Builder>();
+    private final List<Namespace> namespaces = new ArrayList<Namespace>();
+
+    public EdmDataServices build() {
+      List<EdmSchema> schemas = new ArrayList<EdmSchema>(this.schemas.size());
+      for(EdmSchema.Builder schema : this.schemas)
+        schemas.add(schema.build());
+      return new EdmDataServices(version, ImmutableList.copyOf(schemas), ImmutableList.copyOf(namespaces));
+    }
+
+    public Builder setVersion(ODataVersion version) {
+      this.version = version;
+      return this;
+    }
+
+    public Builder addSchemas(List<EdmSchema.Builder> schemas) {
+      this.schemas.addAll(schemas);
+      return this;
+    }
+
+    public Builder addNamespaces(List<Namespace> namespaces) {
+      if (namespaces != null)
+        this.namespaces.addAll(namespaces);
+      return this;
+    }
+
+    public Builder addSchemas(EdmSchema.Builder... schemas) {
+      for(EdmSchema.Builder schema : schemas)
+        this.schemas.add(schema);
+      return this;
+    }
+
+    public List<EdmSchema.Builder> getSchemas() {
+      return schemas;
+    }
+
+    public EdmComplexType.Builder findEdmComplexType(String complexTypeFQName) {
+      // TODO share or remove
+      for (EdmSchema.Builder schema : this.schemas) {
+        for (EdmComplexType.Builder ect : schema.getComplexTypes()) {
+          if (ect.getFullyQualifiedTypeName().equals(complexTypeFQName)) {
+            return ect;
+          }
+        }
+      }
+      return null;
+    }
+
+    public Iterable<EdmEntityType.Builder> getEntityTypes() {
+      // TODO share or remove
+      List<EdmEntityType.Builder> rt = new ArrayList<EdmEntityType.Builder>();
+      for (EdmSchema.Builder schema : this.schemas) {
+        rt.addAll(schema.getEntityTypes());
+      }
+      return rt;
+    }
+
+    public Iterable<EdmAssociation.Builder> getAssociations() {
+      // TODO share or remove
+      List<EdmAssociation.Builder> rt = new ArrayList<EdmAssociation.Builder>();
+      for (EdmSchema.Builder schema : this.schemas) {
+        rt.addAll(schema.getAssociations());
+      }
+      return rt;
+    }
+
+    public EdmEntityType.Builder findEdmEntityType(String fqName) {
+      // TODO share or remove
+      for (EdmSchema.Builder schema : this.schemas) {
+        for (EdmEntityType.Builder et : schema.getEntityTypes()) {
+          if (et.getFullyQualifiedTypeName().equals(fqName)) {
+            return et;
+          }
+        }
+      }
+      return null;
+    }
+
+    public EdmSchema.Builder findSchema(String namespace) {
+       // TODO share or remove
+      for (EdmSchema.Builder schema : this.schemas) {
+        if (schema.getNamespace().equals(namespace)) {
+          return schema;
+        }
+      }
+      return null;
+    }
+
   }
 
 }

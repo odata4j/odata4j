@@ -17,7 +17,6 @@ import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntityContainer;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.edm.EdmFunctionParameter;
-import org.odata4j.edm.EdmFunctionParameter.Mode;
 import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.producer.BaseResponse;
@@ -34,15 +33,21 @@ import org.odata4j.producer.jpa.JPAProducer;
 public class NorthwindProducerWithFunctions extends ODataProducerDelegate {
 
   private final JPAProducer producer;
+  private final EdmDataServices metadata;
 
   public NorthwindProducerWithFunctions(JPAProducer p) {
     producer = p;
-    extendModel();
+    metadata = extendModel(p.getMetadata());
   }
 
   @Override
   public ODataProducer getDelegate() {
     return producer;
+  }
+
+  @Override
+  public EdmDataServices getMetadata() {
+    return metadata;
   }
 
   @Override
@@ -54,7 +59,6 @@ public class NorthwindProducerWithFunctions extends ODataProducerDelegate {
     } else {
       throw new RuntimeException("unknown function"); // TODO 404?
     }
-
   }
 
   private BaseResponse testFunction1(EdmFunctionImport function, java.util.Map<String, OFunctionParameter> params, QueryInfo queryInfo) {
@@ -89,100 +93,46 @@ public class NorthwindProducerWithFunctions extends ODataProducerDelegate {
     return Responses.collection(c.build());
   }
 
-  private void extendModel() {
+  private static EdmDataServices extendModel(EdmDataServices metadata) {
     // add some functions to the edm
-    EdmDataServices ds = this.getMetadata();
+    EdmDataServices.Builder ds = EdmDataServices.newBuilder(metadata);
 
-    EdmSchema schema = ds.findSchema("NorthwindContainer");
-    EdmEntityContainer container = schema.findEntityContainer("NorthwindEntities");
+    EdmSchema.Builder schema = ds.findSchema("NorthwindContainer");
+    EdmEntityContainer.Builder container = schema.findEntityContainer("NorthwindEntities");
 
-    EdmComplexType ct = ds.findEdmComplexType("NorthwindModel.Order_DetailsPK");
-    List<EdmFunctionParameter> params = new ArrayList<EdmFunctionParameter>(15);
-    params.add(new EdmFunctionParameter(
-        "PBoolean", // String name,
-        EdmSimpleType.BOOLEAN, // EdmBaseType type,
-        Mode.IN));
+    EdmComplexType.Builder ct = ds.findEdmComplexType("NorthwindModel.Order_DetailsPK");
+    List<EdmFunctionParameter.Builder> params = new ArrayList<EdmFunctionParameter.Builder>(15);
+    params.add(EdmFunctionParameter.newBuilder().input("PBoolean", EdmSimpleType.BOOLEAN));
+    params.add(EdmFunctionParameter.newBuilder().input("PByte", EdmSimpleType.BYTE));
+    params.add(EdmFunctionParameter.newBuilder().input("PDateTime", EdmSimpleType.DATETIME));
+    params.add(EdmFunctionParameter.newBuilder().input("PDateTimeOffset", EdmSimpleType.DATETIMEOFFSET));
+    params.add(EdmFunctionParameter.newBuilder().input("PDecimal", EdmSimpleType.DECIMAL));
+    params.add(EdmFunctionParameter.newBuilder().input("PDouble", EdmSimpleType.DOUBLE));
+    params.add(EdmFunctionParameter.newBuilder().input("PGuid", EdmSimpleType.GUID));
+    params.add(EdmFunctionParameter.newBuilder().input("PInt16", EdmSimpleType.INT16));
+    params.add(EdmFunctionParameter.newBuilder().input("PInt32", EdmSimpleType.INT32));
+    params.add(EdmFunctionParameter.newBuilder().input("PInt64", EdmSimpleType.INT64));
+    params.add(EdmFunctionParameter.newBuilder().input("PSingle", EdmSimpleType.SINGLE));
+    params.add(EdmFunctionParameter.newBuilder().input("PString", EdmSimpleType.STRING));
+    params.add(EdmFunctionParameter.newBuilder().input("PTime", EdmSimpleType.TIME));
 
-    params.add(new EdmFunctionParameter(
-        "PByte", // String name,
-        EdmSimpleType.BYTE, // EdmBaseType type,
-        Mode.IN));
+    EdmFunctionImport.Builder f = EdmFunctionImport.newBuilder()
+        .setName("TestFunction1")
+        .setReturnType(ct)
+        .setHttpMethod("GET")
+        .addParameters(params);
+    container.addFunctionImports(f);
 
-    params.add(new EdmFunctionParameter(
-        "PDateTime", // String name,
-        EdmSimpleType.DATETIME, // EdmBaseType type,
-        Mode.IN));
+    params = new ArrayList<EdmFunctionParameter.Builder>(1);
+    params.add(EdmFunctionParameter.newBuilder().input("NResults", EdmSimpleType.INT16));
 
-    params.add(new EdmFunctionParameter(
-        "PDateTimeOffset", // String name,
-        EdmSimpleType.DATETIMEOFFSET, // EdmBaseType type,
-        Mode.IN));
-
-    params.add(new EdmFunctionParameter(
-        "PDecimal", // String name,
-        EdmSimpleType.DECIMAL, // EdmBaseType type,
-        Mode.IN));
-
-    params.add(new EdmFunctionParameter(
-        "PDouble", // String name,
-        EdmSimpleType.DOUBLE, // EdmBaseType type,
-        Mode.IN));
-
-    params.add(new EdmFunctionParameter(
-        "PGuid", // String name,
-        EdmSimpleType.GUID, // EdmBaseType type,
-        Mode.IN));
-
-    params.add(new EdmFunctionParameter(
-        "PInt16", // String name,
-        EdmSimpleType.INT16, // EdmBaseType type,
-        Mode.IN));
-
-    params.add(new EdmFunctionParameter(
-        "PInt32", // String name,
-        EdmSimpleType.INT32, // EdmBaseType type,
-        Mode.IN));
-
-    params.add(new EdmFunctionParameter(
-        "PInt64", // String name,
-        EdmSimpleType.INT64, // EdmBaseType type,
-        Mode.IN));
-
-    params.add(new EdmFunctionParameter(
-        "PSingle", // String name,
-        EdmSimpleType.SINGLE, // EdmBaseType type,
-        Mode.IN));
-
-    params.add(new EdmFunctionParameter(
-        "PString", // String name,
-        EdmSimpleType.STRING, // EdmBaseType type,
-        Mode.IN));
-
-    params.add(new EdmFunctionParameter(
-        "PTime", // String name,
-        EdmSimpleType.TIME, // EdmBaseType type,
-        Mode.IN));
-
-    EdmFunctionImport f = new EdmFunctionImport(
-        "TestFunction1", //String name,
-        null, // EdmEntitySet entitySet,
-        ct, // EdmBaseType returnType,
-        "GET", // String httpMethod,
-        params); //List<EdmFunctionParameter> parameters)
-    container.getFunctionImports().add(f);
-
-    params = new ArrayList<EdmFunctionParameter>(1);
-    params.add(new EdmFunctionParameter(
-        "NResults", // String name,
-        EdmSimpleType.INT16, // EdmBaseType type,
-        Mode.IN));
-
-    f = new EdmFunctionImport(
-        "TestFunction2", //String name,
-        null, // EdmEntitySet entitySet,
-        new EdmCollectionType("Collection(" + ct.getFullyQualifiedTypeName() + ")", ct), // EdmBaseType returnType,
-        "GET", // String httpMethod,
-        params); //List<EdmFunctionParameter> parameters)
-    container.getFunctionImports().add(f);
+    f = EdmFunctionImport.newBuilder()
+        .setName("TestFunction2")
+        .setReturnType(new EdmCollectionType("Collection(" + ct.getFullyQualifiedTypeName() + ")", ct.build()))
+        .setHttpMethod("GET")
+        .addParameters(params);
+    container.addFunctionImports(f);
+    return ds.build();
   }
+  
 }

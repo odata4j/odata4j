@@ -1,14 +1,13 @@
 package org.odata4j.edm;
 
-import java.util.List;
-
+import org.odata4j.core.ImmutableList;
 import org.odata4j.core.Named;
 
 public abstract class EdmPropertyBase extends EdmItem implements Named {
 
   private final String name;
 
-  protected EdmPropertyBase(EdmDocumentation documentation, List<EdmAnnotation<?>> annotations, String name) {
+  protected EdmPropertyBase(EdmDocumentation documentation, ImmutableList<EdmAnnotation<?>> annotations, String name) {
     super(documentation, annotations);
     this.name = name;
   }
@@ -17,7 +16,7 @@ public abstract class EdmPropertyBase extends EdmItem implements Named {
     return name;
   }
 
-  public static class Builder<T> extends EdmItem.Builder<T> implements Named {
+  public abstract static class Builder<T, TBuilder> extends EdmItem.Builder<T, TBuilder> implements Named {
 
     private String name;
 
@@ -31,9 +30,9 @@ public abstract class EdmPropertyBase extends EdmItem implements Named {
     }
 
     @SuppressWarnings("unchecked")
-    public T setName(String name) {
+    public TBuilder setName(String name) {
       this.name = name;
-      return (T) this;
+      return (TBuilder) this;
     }
 
   }

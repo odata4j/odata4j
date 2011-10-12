@@ -1,7 +1,6 @@
 package org.odata4j.core;
 
 import org.core4j.Predicate1;
-import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmStructuralType;
 
@@ -56,9 +55,9 @@ public class OPredicates {
     };
   }
 
-  public static Predicate1<EdmNavigationProperty> edmNavigationPropertyNameEquals(final String name) {
-    return new Predicate1<EdmNavigationProperty>() {
-      public boolean apply(EdmNavigationProperty input) {
+  public static <T extends Named> Predicate1<T> nameEquals(Class<T> namedType, final String name) {
+    return new Predicate1<T>() {
+      public boolean apply(T input) {
         return input.getName().equals(name);
       }
     };

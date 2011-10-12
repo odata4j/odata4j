@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -23,8 +22,6 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 
-import org.core4j.Enumerable;
-import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityId;
@@ -136,18 +133,18 @@ public class XmlDataProducerExample {
       properties.add(EdmProperty.newBuilder("phone").setType(EdmSimpleType.STRING));
       properties.add(EdmProperty.newBuilder("postalCode").setType(EdmSimpleType.STRING));
 
-      List<EdmEntityType> entityTypes = new ArrayList<EdmEntityType>();
-      EdmEntityType type = new EdmEntityType(namespace, null, "Customers", null, Arrays.asList("customerID"), properties, null);
+      List<EdmEntityType.Builder> entityTypes = new ArrayList<EdmEntityType.Builder>();
+      EdmEntityType.Builder type = EdmEntityType.newBuilder().setNamespace(namespace).setName("Customers").addKeys("customerID").addProperties(properties);
       entityTypes.add(type);
 
-      List<EdmEntitySet> entitySets = new ArrayList<EdmEntitySet>();
-      entitySets.add(new EdmEntitySet("Customers", type));
+      List<EdmEntitySet.Builder> entitySets = new ArrayList<EdmEntitySet.Builder>();
+      entitySets.add(EdmEntitySet.newBuilder().setName("Customers").setEntityType(type));
 
-      EdmEntityContainer container = new EdmEntityContainer(namespace + "Entities", true, null, entitySets, null, null);
-      EdmSchema modelSchema = new EdmSchema(namespace + "Model", null, entityTypes, null, null, null);
-      EdmSchema containerSchema = new EdmSchema(namespace + "Container", null, null, null, null, Enumerable.create(container).toList());
+      EdmEntityContainer.Builder container = EdmEntityContainer.newBuilder().setName(namespace + "Entities").setIsDefault(true).addEntitySets( entitySets);
+      EdmSchema.Builder modelSchema = EdmSchema.newBuilder().setNamespace(namespace + "Model").addEntityTypes(entityTypes);
+      EdmSchema.Builder containerSchema = EdmSchema.newBuilder().setNamespace(namespace + "Container").addEntityContainers(container);
 
-      metadata = new EdmDataServices(ODataConstants.DATA_SERVICE_VERSION, Enumerable.create(containerSchema, modelSchema).toList());
+      metadata = EdmDataServices.newBuilder().addSchemas(containerSchema, modelSchema).build();
 
       xmlInputFactory = XMLInputFactory.newInstance();
     }
