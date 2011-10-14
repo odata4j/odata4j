@@ -17,7 +17,7 @@ import org.odata4j.producer.server.JerseyServer;
 public class CustomTestBase {
     protected static final String endpointUri = "http://localhost:8810/CustomTest.svc/";
     protected static JerseyServer server;
-    
+    protected static CustomProducer producer;
 
     public static void setUpClass(int maxResults) throws Exception {
         setUpClass(maxResults, null);
@@ -25,13 +25,14 @@ public class CustomTestBase {
 
     public static void setUpClass(int maxResults, Func1<ODataProducer, ODataProducer> producerModification) throws Exception {
         
-        ODataProducer producer = new CustomProducer();
+        producer = new CustomProducer();
 
+        ODataProducer p = producer;
         if (producerModification != null) {
-            producer = producerModification.apply(producer);
+            p = producerModification.apply(producer);
         }
 
-        ODataProducerProvider.setInstance(producer);
+        ODataProducerProvider.setInstance(p);
         server = ProducerUtil.startODataServer(endpointUri);
     }
 
@@ -49,5 +50,6 @@ public class CustomTestBase {
             server.stop();
             server = null;
         }
+        producer = null;
     }
 }

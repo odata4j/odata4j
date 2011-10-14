@@ -92,22 +92,22 @@ public class CustomEdm implements EdmGenerator {
 
     EdmProperty.Builder ep = null;
 
-    ep = EdmProperty.newBuilder("EmptyStrings").setType(EdmSimpleType.STRING).setCollectionKind(CollectionKind.LIST);
+    ep = EdmProperty.newBuilder("EmptyStrings").setType(EdmSimpleType.STRING).setCollectionKind(CollectionKind.List);
     props.add(ep);
 
-    ep = EdmProperty.newBuilder("ListOStrings").setType(EdmSimpleType.STRING).setCollectionKind(CollectionKind.LIST);
+    ep = EdmProperty.newBuilder("ListOStrings").setType(EdmSimpleType.STRING).setCollectionKind(CollectionKind.List);
     props.add(ep);
 
-    ep = EdmProperty.newBuilder("BagOStrings").setType(EdmSimpleType.STRING).setCollectionKind(CollectionKind.BAG);
+    ep = EdmProperty.newBuilder("BagOStrings").setType(EdmSimpleType.STRING).setCollectionKind(CollectionKind.Bag);
     props.add(ep);
 
-    ep = EdmProperty.newBuilder("BagOInts").setType(EdmSimpleType.INT32).setCollectionKind(CollectionKind.BAG);
+    ep = EdmProperty.newBuilder("BagOInts").setType(EdmSimpleType.INT32).setCollectionKind(CollectionKind.Bag);
     props.add(ep);
 
     ep = EdmProperty.newBuilder("Complex1").setType(ct1);
     props.add(ep);
 
-    ep = EdmProperty.newBuilder("ListOComplex").setType(ct1).setCollectionKind(CollectionKind.LIST);
+    ep = EdmProperty.newBuilder("ListOComplex").setType(ct1).setCollectionKind(CollectionKind.List);
     props.add(ep);
 
     ep = EdmProperty.newBuilder("Id").setType(EdmSimpleType.STRING).setNullable(false);

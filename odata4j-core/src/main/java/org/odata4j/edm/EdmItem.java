@@ -46,7 +46,16 @@ public class EdmItem implements Annotated {
   static class BuilderContext {
 
     private final Map<Object, Builder<?, ?>> newBuilders = new HashMap<Object, Builder<?, ?>>();
-
+    private final EdmDataServices.Builder dataServices;
+    
+    public BuilderContext(EdmDataServices.Builder ds) {
+      this.dataServices = ds;
+    }
+    
+    public EdmDataServices.Builder getDataServices() {
+      return this.dataServices;
+    }
+    
     @SuppressWarnings("unchecked")
     public <T, TBuilder> TBuilder newBuilder(T item, Builder<T, TBuilder> builder) {
       if (!newBuilders.containsKey(item)) {

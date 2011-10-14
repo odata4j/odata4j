@@ -53,14 +53,25 @@ public class OProperties {
   }
 
   /**
-   * Creates a new OData property of the given edm-type with a null value.
+   * Creates a new OData property of the given edm simple type with a null value.
    *
    * @param name  the property name
-   * @param type  the property edm-type
+   * @param type  the property edm simple type
    * @return a new OData property instance
    */
-  public static OProperty<?> null_(String name, String type) {
-    return new Impl<Object>(name, EdmType.get(type), null);
+  public static OProperty<?> null_(String name, EdmSimpleType type) {
+    return new Impl<Object>(name, type, null);
+  }
+  
+   /**
+   * Creates a new OData property of the given edm simple type with a null value.
+   *
+   * @param name  the property name
+   * @param fqSimpleTypeName  the property edm simple type
+   * @return a new OData property instance
+   */
+  public static OProperty<?> null_(String name, String fqSimpleTypeName) {
+    return new Impl<Object>(name, EdmType.getSimple(fqSimpleTypeName), null);
   }
 
   /**
@@ -97,7 +108,7 @@ public class OProperties {
    */
   @SuppressWarnings({ "unchecked", "rawtypes" })
   public static OProperty<?> parseSimple(String name, String type, String value) {
-    EdmSimpleType edmType = type == null ? EdmSimpleType.STRING : (EdmSimpleType) EdmType.get(type);
+    EdmSimpleType edmType = type == null ? EdmSimpleType.STRING : EdmType.getSimple(type);
     OSimpleObject<?> simple = OSimpleObjects.parse(edmType, value);
     return new Impl(name, edmType, simple.getValue());
   }

@@ -5,7 +5,7 @@ import org.odata4j.core.ImmutableList;
 /**
  * Non-primitive type in the EDM type system.
  */
-public class EdmNonSimpleType extends EdmType {
+public abstract class EdmNonSimpleType extends EdmType {
 
   public EdmNonSimpleType(String fullyQualifiedTypeName) {
     this(fullyQualifiedTypeName, null, null);

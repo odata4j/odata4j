@@ -29,7 +29,6 @@ import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmProperty.CollectionKind;
 import org.odata4j.edm.EdmSchema;
-import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.edm.EdmType;
 import org.odata4j.stax2.Attribute2;
 import org.odata4j.stax2.QName2;
@@ -39,7 +38,11 @@ import org.odata4j.stax2.XMLEventReader2;
 
 public class EdmxFormatParser extends XmlFormatParser {
 
-  public static EdmDataServices parseMetadata(XMLEventReader2 reader) {
+  private final EdmDataServices.Builder dataServices = EdmDataServices.newBuilder();
+  
+  public EdmxFormatParser() {}
+  
+  public EdmDataServices parseMetadata(XMLEventReader2 reader) {
     List<EdmSchema.Builder> schemas = new ArrayList<EdmSchema.Builder>();
     List<Namespace> namespaces = null;
 
@@ -72,29 +75,29 @@ public class EdmxFormatParser extends XmlFormatParser {
         shouldReturn = true;
 
       if (shouldReturn) {
-        EdmDataServices.Builder rt = EdmDataServices.newBuilder().setVersion(version).addSchemas(schemas).addNamespaces(namespaces);
-        resolve(rt);
-        return rt.build();
+        dataServices.setVersion(version).addSchemas(schemas).addNamespaces(namespaces);
+        resolve();
+        return dataServices.build();
       }
     }
 
     throw new UnsupportedOperationException();
   }
 
-  private static void resolve(EdmDataServices.Builder metadata) {
+  private void resolve() {
 
-    final Map<String, EdmEntityType.Builder> allEetsByFQName = Enumerable.create(metadata.getEntityTypes()).toMap(new Func1<EdmEntityType.Builder, String>() {
+    final Map<String, EdmEntityType.Builder> allEetsByFQName = Enumerable.create(dataServices.getEntityTypes()).toMap(new Func1<EdmEntityType.Builder, String>() {
       public String apply(EdmEntityType.Builder input) {
         return input.getFQAliasName() != null ? input.getFQAliasName() : input.getFullyQualifiedTypeName();
       }
     });
-    final Map<String, EdmAssociation.Builder> allEasByFQName = Enumerable.create(metadata.getAssociations()).toMap(new Func1<EdmAssociation.Builder, String>() {
+    final Map<String, EdmAssociation.Builder> allEasByFQName = Enumerable.create(dataServices.getAssociations()).toMap(new Func1<EdmAssociation.Builder, String>() {
       public String apply(EdmAssociation.Builder input) {
         return input.getFQAliasName() != null ? input.getFQAliasName() : input.getFQNamespaceName();
       }
     });
 
-    for (EdmSchema.Builder edmSchema : metadata.getSchemas()) {
+    for (EdmSchema.Builder edmSchema : dataServices.getSchemas()) {
 
       // resolve associations
       for (int i = 0; i < edmSchema.getAssociations().size(); i++) {
@@ -162,6 +165,12 @@ public class EdmxFormatParser extends XmlFormatParser {
         }
       }
 
+      // every structured type property has 
+      // resolve complex type properties
+      for (final EdmComplexType.Builder ct : edmSchema.getComplexTypes()) {
+        
+      }
+      
       // resolve functionimports
       for (final EdmEntityContainer.Builder edmEntityContainer : edmSchema.getEntityContainers()) {
         for (int i = 0; i < edmEntityContainer.getFunctionImports().size(); i++) {
@@ -172,25 +181,12 @@ public class EdmxFormatParser extends XmlFormatParser {
             }
           });
 
-          EdmType.Builder<?, ?> typeBuilder = null;
-          // type resolution:
-          // NOTE: this will likely change if RowType is ever implemented. I'm
-          //       guessing that in that case, the TempEdmFunctionImport will already
-          //       have a EdmRowType instance it built during parsing.
-          // first, try to resolve the type name as a simple or complex type
-          EdmType type = EdmType.get(tmpEfi.getReturnTypeName());
-          if (type.isSimple()) {
-            typeBuilder = EdmSimpleType.newBuilder(type);
-          } else {
-            typeBuilder = metadata.findEdmEntityType(tmpEfi.getReturnTypeName());
-            if (typeBuilder == null)
-              typeBuilder = metadata.findEdmComplexType(tmpEfi.getReturnTypeName());
-          }
+          EdmType.Builder<?, ?> typeBuilder = dataServices.resolveType(tmpEfi.getReturnTypeName());
           if (typeBuilder == null)
             throw new RuntimeException("Edm-type not found: " + tmpEfi.getReturnTypeName());
 
           if (tmpEfi.isCollection()) {
-            typeBuilder = EdmCollectionType.newBuilder().setFullyQualifiedTypeName(tmpEfi.getReturnTypeName()).setCollectionType(typeBuilder);
+            typeBuilder = EdmCollectionType.newBuilder().setKind(CollectionKind.Collection).setCollectionType(typeBuilder);
           }
 
           edmEntityContainer.getFunctionImports().set(i,
@@ -219,7 +215,7 @@ public class EdmxFormatParser extends XmlFormatParser {
 
   }
 
-  private static EdmSchema.Builder parseEdmSchema(XMLEventReader2 reader, StartElement2 schemaElement) {
+  private EdmSchema.Builder parseEdmSchema(XMLEventReader2 reader, StartElement2 schemaElement) {
 
     String schemaNamespace = schemaElement.getAttributeByName(new QName2("Namespace")).getValue();
     String schemaAlias = getAttributeValueIfExists(schemaElement, new QName2("Alias"));
@@ -260,7 +256,7 @@ public class EdmxFormatParser extends XmlFormatParser {
 
   }
 
-  private static EdmEntityContainer.Builder parseEdmEntityContainer(XMLEventReader2 reader, String schemaNamespace, StartElement2 entityContainerElement) {
+  private EdmEntityContainer.Builder parseEdmEntityContainer(XMLEventReader2 reader, String schemaNamespace, StartElement2 entityContainerElement) {
     String name = entityContainerElement.getAttributeByName("Name").getValue();
     boolean isDefault = "true".equals(getAttributeValueIfExists(entityContainerElement, new QName2(NS_METADATA, "IsDefaultEntityContainer")));
     String lazyLoadingEnabledValue = getAttributeValueIfExists(entityContainerElement, new QName2(NS_EDMANNOTATION, "LazyLoadingEnabled"));
@@ -291,7 +287,9 @@ public class EdmxFormatParser extends XmlFormatParser {
 
   }
 
-  private static EdmFunctionImport.Builder parseEdmFunctionImport(XMLEventReader2 reader, String schemaNamespace, StartElement2 functionImportElement) {
+  
+  
+  private EdmFunctionImport.Builder parseEdmFunctionImport(XMLEventReader2 reader, String schemaNamespace, StartElement2 functionImportElement) {
     String name = functionImportElement.getAttributeByName("Name").getValue();
     String entitySet = getAttributeValueIfExists(functionImportElement, "EntitySet");
     Attribute2 returnTypeAttr = functionImportElement.getAttributeByName("ReturnType");
@@ -314,7 +312,8 @@ public class EdmxFormatParser extends XmlFormatParser {
         Attribute2 modeAttribute = event.asStartElement().getAttributeByName("Mode");
         parameters.add(EdmFunctionParameter.newBuilder()
             .setName(event.asStartElement().getAttributeByName("Name").getValue())
-            .setType(EdmType.get(event.asStartElement().getAttributeByName("Type").getValue()))
+            //.setType(EdmType.get(event.asStartElement().getAttributeByName("Type").getValue()))
+            .setType(EdmType.newDeferredBuilder(event.asStartElement().getAttributeByName("Type").getValue(), dataServices))
             .setMode(modeAttribute != null ? Mode.valueOf(modeAttribute.getValue()) : null));
       }
 
@@ -327,7 +326,7 @@ public class EdmxFormatParser extends XmlFormatParser {
 
   }
 
-  private static EdmAssociationSet.Builder parseEdmAssociationSet(XMLEventReader2 reader, String schemaNamespace, StartElement2 associationSetElement) {
+  private EdmAssociationSet.Builder parseEdmAssociationSet(XMLEventReader2 reader, String schemaNamespace, StartElement2 associationSetElement) {
     String name = associationSetElement.getAttributeByName("Name").getValue();
     String associationName = associationSetElement.getAttributeByName("Association").getValue();
 
@@ -349,7 +348,7 @@ public class EdmxFormatParser extends XmlFormatParser {
 
   }
 
-  private static EdmAssociation.Builder parseEdmAssociation(XMLEventReader2 reader, String schemaNamespace, String schemaAlias, StartElement2 associationElement) {
+  private EdmAssociation.Builder parseEdmAssociation(XMLEventReader2 reader, String schemaNamespace, String schemaAlias, StartElement2 associationElement) {
     String name = associationElement.getAttributeByName("Name").getValue();
 
     List<EdmAssociationEnd.Builder> ends = new ArrayList<EdmAssociationEnd.Builder>();
@@ -371,7 +370,7 @@ public class EdmxFormatParser extends XmlFormatParser {
 
   }
 
-  private static EdmProperty.Builder parseEdmProperty(XMLEvent2 event) {
+  private EdmProperty.Builder parseEdmProperty(XMLEvent2 event) {
     String propertyName = getAttributeValueIfExists(event.asStartElement(), "Name");
     String propertyType = getAttributeValueIfExists(event.asStartElement(), "Type");
     String propertyNullable = getAttributeValueIfExists(event.asStartElement(), "Nullable");
@@ -396,7 +395,7 @@ public class EdmxFormatParser extends XmlFormatParser {
     String fcEpmKeepInContent = getAttributeValueIfExists(event.asStartElement(), M_FC_EPMKEEPINCONTENT);
 
     return EdmProperty.newBuilder(propertyName)
-        .setType(EdmType.get(propertyType))
+        .setType(EdmType.newDeferredBuilder(propertyType, dataServices))
         .setNullable("false".equals(propertyNullable))
         .setMaxLength(maxLength == null ? null : maxLength.equals("Max") ? Integer.MAX_VALUE : Integer.parseInt(maxLength))
         .setUnicode("false".equals(unicode))
@@ -413,7 +412,7 @@ public class EdmxFormatParser extends XmlFormatParser {
         .setScale(scale == null ? null : Integer.parseInt(scale));
   }
 
-  private static EdmComplexType.Builder parseEdmComplexType(XMLEventReader2 reader, String schemaNamespace, StartElement2 complexTypeElement) {
+  private EdmComplexType.Builder parseEdmComplexType(XMLEventReader2 reader, String schemaNamespace, StartElement2 complexTypeElement) {
     String name = complexTypeElement.getAttributeByName("Name").getValue();
     String isAbstractS = getAttributeValueIfExists(complexTypeElement, "Abstract");
     List<EdmProperty.Builder> edmProperties = new ArrayList<EdmProperty.Builder>();
@@ -437,7 +436,7 @@ public class EdmxFormatParser extends XmlFormatParser {
 
   }
 
-  private static EdmEntityType.Builder parseEdmEntityType(XMLEventReader2 reader, String schemaNamespace, String schemaAlias, StartElement2 entityTypeElement) {
+  private EdmEntityType.Builder parseEdmEntityType(XMLEventReader2 reader, String schemaNamespace, String schemaAlias, StartElement2 entityTypeElement) {
     String name = entityTypeElement.getAttributeByName("Name").getValue();
     String hasStreamValue = getAttributeValueIfExists(entityTypeElement, new QName2(NS_METADATA, "HasStream"));
     Boolean hasStream = hasStreamValue == null ? null : hasStreamValue.equals("true");

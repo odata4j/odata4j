@@ -115,7 +115,7 @@ public class MetadataEdmGenerator implements EdmGenerator {
     // ----------------------------- EntityKey --------------------------
     props = new ArrayList<EdmProperty.Builder>();
 
-    ep = EdmProperty.newBuilder(Edm.EntityKey.Keys).setType(propertyRef).setCollectionKind(CollectionKind.LIST);
+    ep = EdmProperty.newBuilder(Edm.EntityKey.Keys).setType(propertyRef).setCollectionKind(CollectionKind.List);
     props.add(ep);
 
     entityKeyType = EdmComplexType.newBuilder().setNamespace(Edm.namespace).setName(Edm.EntityKey.name()).addProperties(props);

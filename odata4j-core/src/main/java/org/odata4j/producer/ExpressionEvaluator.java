@@ -98,11 +98,11 @@ public class ExpressionEvaluator {
 
     if (expression instanceof CastExpression) {
       CastExpression castExpression = (CastExpression) expression;
-      EdmType t = EdmType.get(castExpression.getType());
-      if (!t.isSimple()) {
+      EdmSimpleType<?> t = EdmType.getSimple(castExpression.getType());
+      if (null == t) {
         throw new UnsupportedOperationException("Only simple types supported");
       }
-      Class<?> javaType = ((EdmSimpleType<?>) t).getJavaTypes().iterator().next();
+      Class<?> javaType = t.getJavaTypes().iterator().next();
       return TypeConverter.convert(evaluate(castExpression.getExpression()), javaType);
     }
 

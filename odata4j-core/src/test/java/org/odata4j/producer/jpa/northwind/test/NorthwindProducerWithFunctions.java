@@ -17,6 +17,7 @@ import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntityContainer;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.edm.EdmFunctionParameter;
+import org.odata4j.edm.EdmProperty.CollectionKind;
 import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.producer.BaseResponse;
@@ -128,7 +129,7 @@ public class NorthwindProducerWithFunctions extends ODataProducerDelegate {
 
     f = EdmFunctionImport.newBuilder()
         .setName("TestFunction2")
-        .setReturnType(new EdmCollectionType("Collection(" + ct.getFullyQualifiedTypeName() + ")", ct.build()))
+        .setReturnType(new EdmCollectionType(CollectionKind.Collection, ct.build()))
         .setHttpMethod("GET")
         .addParameters(params);
     container.addFunctionImports(f);

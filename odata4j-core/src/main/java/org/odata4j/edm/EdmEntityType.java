@@ -118,19 +118,20 @@ public class EdmEntityType extends EdmStructuralType {
       return this;
     }
 
-    private EdmEntityType e;
-
     @Override
     public EdmEntityType build() {
-      if (e == null) {
-        EdmEntityType baseType = this.baseType != null ? this.baseType.build() : null;
-        List<EdmNavigationProperty> navigationProperties = new ArrayList<EdmNavigationProperty>();
-        for(EdmNavigationProperty.Builder navigationProperty : this.navigationProperties)
-          navigationProperties.add(navigationProperty.build());
-        e = new EdmEntityType(namespace, alias, name, hasStream, ImmutableList.copyOf(keys), baseType,
-            properties, ImmutableList.copyOf(navigationProperties), getDocumentation(), ImmutableList.copyOf(getAnnotations()), isAbstract);
+      return (EdmEntityType) _build();
+    }
+    
+    @Override
+    protected EdmEntityType buildImpl() {
+      List<EdmNavigationProperty> builtNavProps = new ArrayList<EdmNavigationProperty>();
+      for (EdmNavigationProperty.Builder navigationProperty : this.navigationProperties) {
+        builtNavProps.add(navigationProperty.build());
       }
-      return e;
+      return new EdmEntityType(namespace, alias, name, hasStream, ImmutableList.copyOf(keys), 
+              (EdmEntityType) (this.baseType != null ? this.baseType.build() : null),
+              properties, ImmutableList.copyOf(builtNavProps), getDocumentation(), ImmutableList.copyOf(getAnnotations()), isAbstract);
     }
 
     public Builder addNavigationProperties(EdmNavigationProperty.Builder... navigationProperties) {
@@ -195,7 +196,7 @@ public class EdmEntityType extends EdmStructuralType {
       return new Func<EdmEntityType>(){
         @Override
         public EdmEntityType apply() {
-          return build();
+          return (EdmEntityType) build();
         }};
     }
 

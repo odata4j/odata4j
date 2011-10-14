@@ -43,6 +43,7 @@ public class EdmFunctionParameter extends EdmItem {
     
     private String name;
     private EdmType type;
+    private EdmType.Builder<?, ?> typeBuilder;
     private Mode mode;
 
     @Override
@@ -51,7 +52,8 @@ public class EdmFunctionParameter extends EdmItem {
     }
     
     public EdmFunctionParameter build() {
-      return new EdmFunctionParameter(name, type, mode, getDocumentation(), ImmutableList.copyOf(getAnnotations()));
+      return new EdmFunctionParameter(name, null != typeBuilder ? typeBuilder.build() : type, 
+          mode, getDocumentation(), ImmutableList.copyOf(getAnnotations()));
     }
 
     public Builder setName(String name) {
@@ -61,6 +63,11 @@ public class EdmFunctionParameter extends EdmItem {
 
     public Builder setType(EdmType type) {
       this.type = type;
+      return this;
+    }
+    
+    public Builder setType(EdmType.Builder<?, ?> typeBuilder) {
+      this.typeBuilder = typeBuilder;
       return this;
     }
 

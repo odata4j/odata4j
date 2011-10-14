@@ -1,8 +1,10 @@
 package org.odata4j.edm;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import java.util.Map;
 import org.core4j.Enumerable;
 import org.core4j.Predicate1;
 import org.odata4j.core.ImmutableList;
@@ -194,11 +196,25 @@ public class EdmDataServices {
   }
 
   public static Builder newBuilder(EdmDataServices metadata) {
-    BuilderContext context = new BuilderContext();
+    Builder builder = new Builder();
+    BuilderContext context = new BuilderContext(builder);
     List<EdmSchema.Builder> schemas = new ArrayList<EdmSchema.Builder>();
     for(EdmSchema schema : metadata.schemas)
       schemas.add(EdmSchema.newBuilder(schema, context));
-    return new Builder().setVersion(metadata.version).addSchemas(schemas).addNamespaces(metadata.namespaces);
+    return builder.setVersion(metadata.version).addSchemas(schemas).addNamespaces(metadata.namespaces);
+  }
+
+  public EdmType resolveType(String fqTypeName) {
+    EdmType t = EdmType.getSimple(fqTypeName);
+    if (null == t) {
+      // not simple, try complex
+      t = this.findEdmComplexType(fqTypeName);
+      if (null == t) {
+        // try entity type
+        t = this.findEdmEntityType(fqTypeName);
+      }
+    }
+    return t;
   }
 
   public static class Builder {
@@ -206,7 +222,7 @@ public class EdmDataServices {
     private ODataVersion version = ODataConstants.DATA_SERVICE_VERSION;
     private final List<EdmSchema.Builder> schemas = new ArrayList<EdmSchema.Builder>();
     private final List<Namespace> namespaces = new ArrayList<Namespace>();
-
+    
     public EdmDataServices build() {
       List<EdmSchema> schemas = new ArrayList<EdmSchema>(this.schemas.size());
       for(EdmSchema.Builder schema : this.schemas)
@@ -290,6 +306,26 @@ public class EdmDataServices {
         }
       }
       return null;
+    }
+
+    public EdmType.Builder<?, ?> resolveType(String fqTypeName) {
+      // type resolution:
+      // NOTE: this will likely change if RowType is ever implemented. I'm
+      //       guessing that in that case, the TempEdmFunctionImport will already
+      //       have a EdmRowType instance it built during parsing.
+      // first, try to resolve the type name as a simple or complex type
+      EdmType type = EdmType.getSimple(fqTypeName);
+      EdmType.Builder<?, ?> builder = null;
+      
+      if (null != type) {
+        builder = EdmSimpleType.newBuilder(type);
+      } else {
+        builder = findEdmEntityType(fqTypeName);
+        if (null == builder) {
+          builder = findEdmComplexType(fqTypeName);
+        }
+      }
+      return builder;
     }
 
   }

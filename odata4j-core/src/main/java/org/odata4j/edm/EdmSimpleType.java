@@ -95,18 +95,24 @@ public class EdmSimpleType<V> extends EdmType {
 
   private static class Builder extends EdmType.Builder<EdmType, Builder> {
 
-    private final EdmType type;
     private Builder(EdmType type) {
-      this.type = type;
+      super(type);
     }
 
     @Override
     Builder newBuilder(EdmType type, BuilderContext context) {
       return new Builder(type);
     }
+    
     @Override
     public EdmType build() {
-      return type;
+      return (EdmType) _build();
+    }
+    
+    @Override
+    protected EdmType buildImpl() {
+      // should never get here
+      return null;
     }
 
   }

@@ -95,7 +95,13 @@ public class JPAEdmGenerator {
     EdmType type;
     if (sa.getPersistentAttributeType() == PersistentAttributeType.EMBEDDED) {
       String simpleName = sa.getJavaType().getSimpleName();
-      type = EdmType.get(modelNamespace + "." + simpleName);
+      // this will map to an edm complex.  If anyone ever im;plements this you
+      // should not create an EdmComplexType.  Instead, you should maintain
+      // a cache of EdmComplexType.Builders and re-use instances with the same
+      // namespace.name.  (multiple Entity classes may have properties of this 
+      // type and we don't wan't lots of instances of EdmComplex type floating
+      // around that are the same conceptual type)
+      type = EdmComplexType.newBuilder().setNamespace(modelNamespace).setName(simpleName).build();
     } else if (sa.getBindableJavaType().isEnum()) {
       // TODO assume string mapping for now, @Enumerated info not avail in metamodel?
       type = EdmSimpleType.STRING;

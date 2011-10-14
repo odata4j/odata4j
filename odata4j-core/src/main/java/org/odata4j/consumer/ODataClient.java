@@ -67,7 +67,7 @@ class ODataClient {
     if (response.getStatus() == 404 || response.getStatus() == 400)
       return null;
     XMLEventReader2 reader = doXmlRequest(response);
-    return EdmxFormatParser.parseMetadata(reader);
+    return new EdmxFormatParser().parseMetadata(reader);
   }
 
   public Iterable<AtomCollectionInfo> getCollections(ODataClientRequest request) {

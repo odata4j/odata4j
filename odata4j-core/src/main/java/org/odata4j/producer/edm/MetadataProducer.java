@@ -439,8 +439,9 @@ public class MetadataProducer implements ODataProducer {
 
 
       List<OProperty<?>> keyProps = new ArrayList<OProperty<?>>();
+      EdmProperty keysProp = entityKeyType.findProperty(Edm.EntityKey.Keys);
       EdmType collectionItemType = entityKeyType.findProperty(Edm.EntityKey.Keys).getType();
-      keyProps.add(OProperties.collection(Edm.EntityKey.Keys, new EdmCollectionType(collectionItemType.getFullyQualifiedTypeName(), collectionItemType), builder.build()));
+      keyProps.add(OProperties.collection(Edm.EntityKey.Keys, new EdmCollectionType(keysProp.getCollectionKind(), collectionItemType), builder.build()));
 
       OComplexObject key = OComplexObjects.create(entityKeyType, keyProps);
 
@@ -571,7 +572,7 @@ public class MetadataProducer implements ODataProducer {
                 props.add(OProperties.complex(propName, (EdmComplexType) co.getType(), co.getProperties()));
               } else if (ov instanceof OCollection) {
                 OCollection<?> co = (OCollection<?>) ov;
-                props.add(OProperties.collection(propName, new EdmCollectionType("", co.getType()), co));
+                props.add(OProperties.collection(propName, new EdmCollectionType(CollectionKind.Bag, co.getType()), co));
               }
             }
           }

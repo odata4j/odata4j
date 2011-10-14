@@ -1,39 +1,51 @@
 package org.odata4j.edm;
 
+import org.odata4j.edm.EdmProperty.CollectionKind;
+
 /**
  * Describes a homogeneous collection of instances of a specific type.
  */
 public class EdmCollectionType extends EdmNonSimpleType {
 
-  private final EdmType collectionType;
-
-  public EdmCollectionType(String fullyQualifiedTypeName, EdmType collectionType) {
-    super(fullyQualifiedTypeName);
-    if (collectionType == null) throw new IllegalArgumentException("collectionType cannot be null");
-    this.collectionType = collectionType;
+  private final EdmType itemType;
+  private final CollectionKind collectionKind;
+  
+  public EdmCollectionType(CollectionKind kind, EdmType itemType) {
+    super(getCollectionTypeString(kind, itemType));
+    if (itemType == null) throw new IllegalArgumentException("itemType cannot be null");
+    this.itemType = itemType;
+    this.collectionKind = kind;
   }
 
-  public EdmType getCollectionType() {
-    return collectionType;
+  public CollectionKind getCollectionKind() {
+    return this.collectionKind;
+  }
+  
+  public EdmType getItemType() {
+    return itemType;
   }
 
+  public static String getCollectionTypeString(CollectionKind kind, EdmType itemType) {
+    return kind.toString() + "(" + itemType.getFullyQualifiedTypeName() + ")";
+  }
+  
   public static Builder newBuilder() {
     return new Builder();
   }
 
   public static class Builder extends EdmType.Builder<EdmCollectionType, Builder> {
     
-    private String fullyQualifiedTypeName;
+    private CollectionKind kind;
     private EdmType.Builder<?, ?> collectionType;
 
     @Override
     Builder newBuilder(EdmCollectionType type, BuilderContext context) {
-      this.fullyQualifiedTypeName = type.getFullyQualifiedTypeName();
+      this.kind = type.getCollectionKind();
       return this;
     }
     
-    public Builder setFullyQualifiedTypeName(String fullyQualifiedTypeName) {
-      this.fullyQualifiedTypeName = fullyQualifiedTypeName;
+    public Builder setKind(CollectionKind kind) {
+      this.kind = kind;
       return this;
     }
 
@@ -43,8 +55,13 @@ public class EdmCollectionType extends EdmNonSimpleType {
     }
 
     @Override
-    public EdmType build() {
-      return new EdmCollectionType(fullyQualifiedTypeName, collectionType.build());
+    public EdmCollectionType build() {
+      return (EdmCollectionType) _build();
+    }
+    
+    @Override
+    protected EdmType buildImpl() {
+      return new EdmCollectionType(kind, collectionType.build());
     }
 
   }

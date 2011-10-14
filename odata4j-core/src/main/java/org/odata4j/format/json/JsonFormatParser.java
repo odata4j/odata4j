@@ -319,8 +319,7 @@ public class JsonFormatParser {
       } else {
         EdmProperty eprop = ees.getType().findProperty(name);
         if (null != eprop && eprop.getCollectionKind() != CollectionKind.NONE) {
-          rt.collectionType = new EdmCollectionType(eprop.getCollectionKind().toString() +
-                  "(" + eprop.getType().getFullyQualifiedTypeName() + ")", eprop.getType());
+          rt.collectionType = new EdmCollectionType(eprop.getCollectionKind(), eprop.getType());
           JsonCollectionFormatParser cfp = new JsonCollectionFormatParser(rt.collectionType, this.metadata);
           rt.collection = cfp.parseCollection(jsr);
         } else {

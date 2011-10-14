@@ -9,7 +9,7 @@ public class EdmTypeTest {
 
   @Test
   public void edmTypeTests() {
-    Assert.assertTrue(EdmType.get("Edm.String").isSimple());  // keep this test first, or at least before EdmSimpleType is loaded
-    Assert.assertTrue(!EdmType.get("My.Custom.Type").isSimple());
+    Assert.assertTrue(EdmType.getSimple("Edm.String").isSimple());  // keep this test first, or at least before EdmSimpleType is loaded
+    Assert.assertTrue(null == EdmType.getSimple("My.Custom.Type"));
   }
 }

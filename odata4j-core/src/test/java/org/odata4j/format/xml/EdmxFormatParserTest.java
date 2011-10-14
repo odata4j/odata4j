@@ -51,7 +51,7 @@ public class EdmxFormatParserTest {
       // do the raw xml first...
       XMLEventReader2 reader =  InternalUtil.newXMLEventReader(new BufferedReader(
           new InputStreamReader(getClass().getResourceAsStream(edmxFile))));
-      EdmDataServices d = EdmxFormatParser.parseMetadata(reader);
+      EdmDataServices d = new EdmxFormatParser().parseMetadata(reader);
       assertTrue("parsed", null != d);
 
       checkTypeHierarchy(d);
@@ -60,7 +60,7 @@ public class EdmxFormatParserTest {
       StringWriter sw = new StringWriter();
       EdmxFormatWriter.write(d, sw);
 
-      EdmDataServices d2 = EdmxFormatParser.parseMetadata(InternalUtil.newXMLEventReader(new StringReader(sw.toString())));
+      EdmDataServices d2 = new EdmxFormatParser().parseMetadata(InternalUtil.newXMLEventReader(new StringReader(sw.toString())));
       assertTrue("parsed", null != d2);
 
       checkTypeHierarchy(d2);
@@ -70,7 +70,7 @@ public class EdmxFormatParserTest {
     public void parseSapDsSample() {
       XMLEventReader2 reader =  InternalUtil.newXMLEventReader(new BufferedReader(
           new InputStreamReader(getClass().getResourceAsStream(sapDsSampleEdmxFile))));
-      EdmDataServices d = EdmxFormatParser.parseMetadata(reader);
+      EdmDataServices d = new EdmxFormatParser().parseMetadata(reader);
       assertTrue("parsed", null != d);
     }
 

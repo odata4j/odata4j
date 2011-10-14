@@ -101,10 +101,10 @@ public class JsonCollectionFormatParser extends JsonFormatParser implements Form
 
     OCollection.Builder<OObject> c = newCollectionBuilder();
 
-    if (this.returnType.getCollectionType().isSimple()) {
+    if (this.returnType.getItemType().isSimple()) {
       parseCollectionOfSimple(c, jsr);
     } else {
-      FormatParser<? extends OObject> parser = createItemParser(this.returnType.getCollectionType());
+      FormatParser<? extends OObject> parser = createItemParser(this.returnType.getItemType());
 
       while (jsr.hasNext()) {
         // this is what I really want to do next:
@@ -122,7 +122,7 @@ public class JsonCollectionFormatParser extends JsonFormatParser implements Form
             break;
           }
         } else {
-          throw new NotImplementedException("collections of type: " + this.returnType.getCollectionType().getFullyQualifiedTypeName() + " not implemented");
+          throw new NotImplementedException("collections of type: " + this.returnType.getItemType().getFullyQualifiedTypeName() + " not implemented");
         }
       }
     }
@@ -138,7 +138,7 @@ public class JsonCollectionFormatParser extends JsonFormatParser implements Form
       JsonEvent e = jsr.nextEvent();
       if (e.isValue()) {
         JsonValueEvent ve = e.asValue();
-        builder.add(OSimpleObjects.parse((EdmSimpleType<?>) this.returnType.getCollectionType(), ve.getValue()));
+        builder.add(OSimpleObjects.parse((EdmSimpleType<?>) this.returnType.getItemType(), ve.getValue()));
       } else if (e.isEndArray()) {
         break;
       } else {
@@ -148,7 +148,7 @@ public class JsonCollectionFormatParser extends JsonFormatParser implements Form
   }
 
   protected OCollection.Builder<OObject> newCollectionBuilder() {
-      return OCollections.<OObject> newBuilder(this.returnType.getCollectionType());
+      return OCollections.<OObject> newBuilder(this.returnType.getItemType());
   }
 
   protected FormatParser<? extends OObject> createItemParser(EdmType edmType) {

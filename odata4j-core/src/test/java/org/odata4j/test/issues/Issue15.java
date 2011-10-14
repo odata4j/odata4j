@@ -32,7 +32,7 @@ public class Issue15 {
     reader.nextEvent();
     StartElement2 propertiesElement = reader.nextEvent().asStartElement();
     for (OProperty<?> prop : AtomFeedFormatParser.parseProperties(reader,
-        propertiesElement)) {
+        propertiesElement, null)) {
       if (prop.getName().equals("update_date")) {
         Assert.assertEquals("2010-11-21T12:21:51.000", prop.getValue()
             .toString());

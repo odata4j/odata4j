@@ -24,6 +24,7 @@ import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmDecorator;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.edm.EdmGenerator;
+import org.odata4j.edm.EdmProperty.CollectionKind;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.producer.BaseResponse;
 import org.odata4j.producer.EntitiesResponse;
@@ -80,25 +81,25 @@ public class CustomProducer implements ODataProducer, EdmGenerator {
     props.add(OProperties.string("Id", id));
     
     Builder<OObject> builder = OCollections.newBuilder(EdmSimpleType.STRING);
-    props.add(OProperties.collection("EmptyStrings", new EdmCollectionType("Bag(" + EdmSimpleType.STRING + ")", EdmSimpleType.STRING), builder.build()));
+    props.add(OProperties.collection("EmptyStrings", new EdmCollectionType(CollectionKind.Bag, EdmSimpleType.STRING), builder.build()));
     
     builder = OCollections.newBuilder(EdmSimpleType.STRING);
     for (int j = 0; j < 3; j++) {
       builder.add(OSimpleObjects.create(EdmSimpleType.STRING, "bagstring-" + j));
     }
-    props.add(OProperties.collection("BagOStrings", new EdmCollectionType("Bag(" + EdmSimpleType.STRING + ")", EdmSimpleType.STRING), builder.build()));
+    props.add(OProperties.collection("BagOStrings", new EdmCollectionType(CollectionKind.Bag, EdmSimpleType.STRING), builder.build()));
     
     builder = OCollections.newBuilder(EdmSimpleType.STRING);
     for (int j = 0; j < 5; j++) {
       builder.add(OSimpleObjects.create(EdmSimpleType.STRING, "liststring-" + j));
     }
-    props.add(OProperties.collection("ListOStrings", new EdmCollectionType("List(" + EdmSimpleType.STRING + ")", EdmSimpleType.STRING), builder.build()));
+    props.add(OProperties.collection("ListOStrings", new EdmCollectionType(CollectionKind.List, EdmSimpleType.STRING), builder.build()));
     
     builder = OCollections.newBuilder(EdmSimpleType.INT32);
     for (int j = 0; j < 5; j++) {
       builder.add(OSimpleObjects.create(EdmSimpleType.INT32, j));
     }
-    props.add(OProperties.collection("BagOInts", new EdmCollectionType("List(" + EdmSimpleType.INT32 + ")", EdmSimpleType.INT32), builder.build()));
+    props.add(OProperties.collection("BagOInts", new EdmCollectionType(CollectionKind.List, EdmSimpleType.INT32), builder.build()));
     
     EdmComplexType ct1 = this.getMetadata().findEdmComplexType("myns.ComplexType1");
     OComplexObject.Builder cb = OComplexObjects.newBuilder(ct1);
@@ -113,7 +114,7 @@ public class CustomProducer implements ODataProducer, EdmGenerator {
       
       builder.add(cb.build());
     }
-    props.add(OProperties.collection("ListOComplex", new EdmCollectionType("List(" + ct1.getFullyQualifiedTypeName() + ")", ct1), builder.build()));
+    props.add(OProperties.collection("ListOComplex", new EdmCollectionType(CollectionKind.List, ct1), builder.build()));
     
     return OEntities.create(
             edm.findEdmEntitySet("Type1s"),

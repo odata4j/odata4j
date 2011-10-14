@@ -28,7 +28,13 @@ public class EdmComplexType extends EdmStructuralType {
       return this;
     }
 
+    @Override
     public EdmComplexType build() {
+      return (EdmComplexType) _build();
+    }
+    
+    @Override
+    protected EdmType buildImpl() {
       return new EdmComplexType(namespace, name, properties, getDocumentation(), ImmutableList.copyOf(getAnnotations()), isAbstract);
     }
 

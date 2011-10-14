@@ -23,6 +23,7 @@ import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.edm.EdmNavigationProperty;
+import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.edm.EdmType;
 import org.odata4j.format.Entry;
 import org.odata4j.format.Feed;
@@ -168,7 +169,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
 
   }
 
-  public static Iterable<OProperty<?>> parseProperties(XMLEventReader2 reader, StartElement2 propertiesElement) {
+  public static Iterable<OProperty<?>> parseProperties(XMLEventReader2 reader, StartElement2 propertiesElement, EdmDataServices metadata) {
     List<OProperty<?>> rt = new ArrayList<OProperty<?>>();
 
     while (reader.hasNext()) {
@@ -189,18 +190,17 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
 
         String type = null;
         EdmType et = null;
-        boolean isComplexType = false;
         if (typeAttribute != null) {
           type = typeAttribute.getValue();
-          // TODO: the proper way to resolve the type is to use the Edm type of
-          // the thing we are parsing to figure out the type of the property.
-          // This way the proper form of OProperties.complex can be used below.
-          et = EdmType.get(type);
-          isComplexType = !et.isSimple();
-        }
+          et = metadata.resolveType(type);
+          if (null == et) {
+            // property arrived with an unknown type
+            throw new RuntimeException("unknown property type: " + type);
+          }
+        } 
 
-        if (isComplexType) {
-          op = OProperties.complex(name, (EdmComplexType)et, isNull ? null : Enumerable.create(parseProperties(reader, event.asStartElement())).toList());
+        if (null != et && (!et.isSimple())) {
+          op = OProperties.complex(name, (EdmComplexType)et, isNull ? null : Enumerable.create(parseProperties(reader, event.asStartElement(), metadata)).toList());
         } else {
           op = OProperties.parseSimple(name, type, isNull ? null : reader.getElementText());
         }
@@ -247,7 +247,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
   private DataServicesAtomEntry parseDSAtomEntry(String etag, XMLEventReader2 reader, XMLEvent2 event) {
     DataServicesAtomEntry dsae = new DataServicesAtomEntry();
     dsae.etag = etag;
-    dsae.properties = Enumerable.create(parseProperties(reader, event.asStartElement())).toList();
+    dsae.properties = Enumerable.create(parseProperties(reader, event.asStartElement(), this.metadata)).toList();
     return dsae;
   }
 

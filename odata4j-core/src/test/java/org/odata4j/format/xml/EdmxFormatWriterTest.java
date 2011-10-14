@@ -102,7 +102,7 @@ public class EdmxFormatWriterTest implements EdmDecorator {
 
     assertXMLEqual("bad $metadata", myDiff, true);
 
-    EdmDataServices pds = EdmxFormatParser.parseMetadata(InternalUtil.newXMLEventReader(new StringReader(metadata)));
+    EdmDataServices pds = new EdmxFormatParser().parseMetadata(InternalUtil.newXMLEventReader(new StringReader(metadata)));
     Assert.assertTrue(null != pds); // we parsed it!
 
     // TODO: once EdmxFormatParser supports doc and annotations we can check pds
