@@ -5,7 +5,7 @@ import org.odata4j.core.ImmutableList;
 public class EdmFunctionParameter extends EdmItem {
 
   public enum Mode {
-    IN, OUT, IN_OUT;
+    In, Out, InOut;
   };
 
   private final String name;
@@ -77,7 +77,7 @@ public class EdmFunctionParameter extends EdmItem {
     }
 
     public Builder input(String name, EdmType type) {
-      this.mode = Mode.IN;
+      this.mode = Mode.In;
       this.name = name;
       this.type = type;
       return this;

@@ -477,13 +477,32 @@ public class InMemoryProducer implements ODataProducer, EdmGenerator {
 
     if (expand != null && !expand.isEmpty()) {
       EdmEntityType edmEntityType = ees.getType();
+      
+      HashMap<String, List<EntitySimpleProperty>> expandedProps=new HashMap<String, List<EntitySimpleProperty>>();
+      
+      //process all the expanded properties and add them to map
+      for(final EntitySimpleProperty propPath:expand) {
+    	  String[] props = propPath.getPropertyName().split("/", 2);
+          String prop = props[0];          
+          String remainingPropPath = props.length > 1 ? props[1] : null;         
+          //if link is already set to be expanded, add other remaining prop path to the list          
+          if(expandedProps.containsKey(prop)) {   
+        	  if(remainingPropPath!=null) {
+        		List<EntitySimpleProperty> remainingPropPaths=expandedProps.get(prop);        	  
+        	  	remainingPropPaths.add(org.odata4j.expression.Expression.simpleProperty(remainingPropPath));
+        	  }
+          }
+          else {
+        	  List<EntitySimpleProperty> remainingPropPaths=new ArrayList<EntitySimpleProperty>();
+        	  if(remainingPropPath!=null)
+        		  remainingPropPaths.add(org.odata4j.expression.Expression.simpleProperty(remainingPropPath));
+        	  expandedProps.put(prop, remainingPropPaths);
+          }          
+      }
 
-      for (final EntitySimpleProperty propPath : expand) {
-
-        String[] props = propPath.getPropertyName().split("/", 2);
-        String prop = props[0];
-        List<EntitySimpleProperty> remainingPropPath = props.length > 1 ? Arrays.asList(org.odata4j.expression.Expression.simpleProperty(props[1])) : null;
-
+      for (final String prop : expandedProps.keySet()) {
+    	List<EntitySimpleProperty> remainingPropPath=expandedProps.get(prop);
+    	  
         EdmNavigationProperty edmNavProperty = edmEntityType.findNavigationProperty(prop);
 
         if (edmNavProperty == null) continue;
