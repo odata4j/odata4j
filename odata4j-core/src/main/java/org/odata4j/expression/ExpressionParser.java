@@ -52,6 +52,8 @@ public class ExpressionParser {
       Methods.TOLOWER, Methods.TOUPPER, Methods.TRIM, Methods.SUBSTRING, Methods.CONCAT, Methods.LENGTH,
       Methods.YEAR, Methods.MONTH, Methods.DAY, Methods.HOUR, Methods.MINUTE, Methods.SECOND, Methods.ROUND, Methods.FLOOR, Methods.CEILING).toSet();
 
+  public enum AggregateFunction { none, any, all };
+  
   public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormat.forPattern("HH:mm:ss");
   public static boolean DUMP_EXPRESSION_INFO = false;
 
@@ -282,23 +284,71 @@ public class ExpressionParser {
     return rt;
   }
 
-  private static List<Token> processParentheses(List<Token> tokens) {
+  public static List<Token> processParentheses(List<Token> tokens) {
+    
     List<Token> rt = new ArrayList<Token>();
 
     for (int i = 0; i < tokens.size(); i++) {
       Token openToken = tokens.get(i);
       if (openToken.type == TokenType.OPENPAREN) {
-
-        // is this a method call?
+        int afterParenIdx = i + 1;
+        // is this a method call or any/all aggregate function?
         String methodName = null;
+        String aggregateSource = null;
+        String aggregateVariable = null;
+        AggregateFunction aggregateFunction = AggregateFunction.none;
+        boolean isAggregate = false;
         int k = i - 1;
         while (k > 0 && tokens.get(k).type == TokenType.WHITESPACE) {
           k--;
         }
         if (k >= 0) {
           Token methodNameToken = tokens.get(k);
-          if (methodNameToken.type == TokenType.WORD && METHODS.contains(methodNameToken.value)) {
-            methodName = methodNameToken.value;
+          if (methodNameToken.type == TokenType.WORD) {
+            if (METHODS.contains(methodNameToken.value)) {
+              methodName = methodNameToken.value;
+              
+              // this isn't strictly correct.  I think the parser has issues
+              // with sequences of WORD, WHITESPACE, WORD, etc.  I'm not sure I've
+              // ever seen a token type of WHITESPACE producer by a lexer..
+            } else if (methodNameToken.value.endsWith("/any") || methodNameToken.value.endsWith("/all")) {
+              isAggregate = true;
+              aggregateSource = methodNameToken.value.substring(0, methodNameToken.value.length() - 4);
+              aggregateFunction = Enum.valueOf(AggregateFunction.class, methodNameToken.value.substring(methodNameToken.value.length() - 3));
+              // to get things rolling I'm going to lookahead and require a very strict
+              // sequence of tokens:
+              // i + 1 must be a WORD
+              // i + 2 must be a SYMBOL ':'
+              // or, for any, i + 1 can be CLOSEPAREN
+              int ni = i + 1;
+              Token ntoken = ni < tokens.size() ? tokens.get(ni) : null;
+              if (null == ntoken || 
+                  (aggregateFunction == AggregateFunction.all && ntoken.type != TokenType.WORD) ||
+                  (aggregateFunction == AggregateFunction.any && ntoken.type != TokenType.WORD && ntoken.type != TokenType.CLOSEPAREN)) {
+                throw new RuntimeException("unexpected token: " + (null == ntoken ? "eof" : ntoken.toString()));
+              }
+              if (ntoken.type == TokenType.WORD) {
+                aggregateVariable = ntoken.value;
+                ni += 1;
+                ntoken = ni < tokens.size() ? tokens.get(ni) : null;
+                if (null == ntoken || ntoken.type != TokenType.SYMBOL || !ntoken.value.equals(":")) {
+                  throw new RuntimeException("expected ':', found: " + (null == ntoken ? "eof" : ntoken.toString()));
+                }
+                // now we can parse the predicate, starting after the ':'
+                afterParenIdx = ni + 1;
+              } else {
+                // any(), easiest to early out here
+                List<Token> tokensIncludingParens = tokens.subList(k, ni + 1);
+                CommonExpression any = Expression.any(
+                        Expression.simpleProperty(aggregateSource));
+
+                ExpressionToken et = new ExpressionToken(any, tokensIncludingParens);
+                rt.subList(rt.size() - (i - k), rt.size()).clear();
+                rt.add(et);
+                return rt;
+              }
+              
+            }
           }
         }
 
@@ -306,7 +356,7 @@ public class ExpressionParser {
         int stack = 0;
         int start = i;
         List<CommonExpression> methodArguments = new ArrayList<CommonExpression>();
-        for (int j = i + 1; j < tokens.size(); j++) {
+        for (int j = afterParenIdx; j < tokens.size(); j++) {
           Token closeToken = tokens.get(j);
           if (closeToken.type == TokenType.OPENPAREN) {
             stack++;
@@ -334,10 +384,26 @@ public class ExpressionParser {
               rt.subList(rt.size() - (i - k), rt.size()).clear();
               rt.add(et);
 
+            } else if (aggregateVariable != null) {
+              List<Token> tokensIncludingParens = tokens.subList(k, j + 1);
+              List<Token> tokensInsideParens = tokens.subList(afterParenIdx, j);
+              CommonExpression expressionInsideParens = readExpression(tokensInsideParens);
+              if (!(expressionInsideParens instanceof BoolCommonExpression)) {
+                throw new RuntimeException("illegal any predicate");
+              }
+              CommonExpression any = Expression.aggregate(
+                  aggregateFunction,
+                  Expression.simpleProperty(aggregateSource),
+                  aggregateVariable, 
+                  (BoolCommonExpression)expressionInsideParens);
+
+              ExpressionToken et = new ExpressionToken(any, tokensIncludingParens);
+              rt.subList(rt.size() - (i - k), rt.size()).clear();
+              rt.add(et);
             } else {
+             
               List<Token> tokensIncludingParens = tokens.subList(i, j + 1);
               List<Token> tokensInsideParens = tokens.subList(i + 1, j);
-
               // paren expression: replace t ( t t t ) t with t et t
               CommonExpression expressionInsideParens = readExpression(tokensInsideParens);
               CommonExpression exp = null;
@@ -680,7 +746,7 @@ public class ExpressionParser {
   }
 
   // tokenizer
-  private static List<Token> tokenize(String value) {
+  public static List<Token> tokenize(String value) {
     List<Token> rt = new ArrayList<Token>();
     int current = 0;
     int end = 0;
@@ -721,16 +787,23 @@ public class ExpressionParser {
           rt.add(new Token(TokenType.SYMBOL, Character.toString(c)));
           current++;
         }
-      } else if (",.+=".indexOf(c) > -1) {
+      } else if (",.+=:".indexOf(c) > -1) {
         rt.add(new Token(TokenType.SYMBOL, Character.toString(c)));
         current++;
       } else {
-        throw new RuntimeException("Unable to tokenize: " + value);
+        dumpTokens(rt);
+        throw new RuntimeException("Unable to tokenize: " + value + " current: " + current + " rem: " + value.substring(current));
       }
     }
 
   }
 
+  public static void dumpTokens(List<Token> tokens) {
+    for (Token t : tokens) {
+      System.out.println(t.type.toString() + t.toString());
+    }
+  }
+  
   private static int readDigits(String value, int start) {
     int rt = start;
     while (rt < value.length() && Character.isDigit(value.charAt(rt))) {
@@ -769,11 +842,11 @@ public class ExpressionParser {
     return rt;
   }
 
-  private static enum TokenType {
+  public static enum TokenType {
     UNKNOWN, WHITESPACE, QUOTED_STRING, WORD, SYMBOL, NUMBER, OPENPAREN, CLOSEPAREN, EXPRESSION;
   }
 
-  private static class Token {
+  public static class Token {
 
     public final TokenType type;
     public final String value;

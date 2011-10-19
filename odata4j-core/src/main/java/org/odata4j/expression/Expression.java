@@ -9,6 +9,7 @@ import org.odata4j.core.Guid;
 import org.odata4j.core.OSimpleObject;
 import org.odata4j.core.OSimpleObjects;
 import org.odata4j.edm.EdmSimpleType;
+import org.odata4j.expression.ExpressionParser.AggregateFunction;
 import org.odata4j.expression.OrderByExpression.Direction;
 
 public class Expression {
@@ -347,6 +348,28 @@ public class Expression {
     throw new UnsupportedOperationException("Implement " + expression);
   }
 
+  public static AggregateAnyFunction any(CommonExpression source) {
+    return new AggregateAnyFunctionImpl(source, null, null);
+  }
+  
+  public static AggregateAnyFunction any(CommonExpression source, String var, BoolCommonExpression predicate) {
+    return new AggregateAnyFunctionImpl(source, var, predicate);
+  }
+  
+  public static AggregateAllFunction all(CommonExpression source, String var, BoolCommonExpression predicate) {
+    return new AggregateAllFunctionImpl(source, var, predicate);
+  }
+  
+  public static AggregateBoolFunction aggregate(AggregateFunction function, CommonExpression source, String var, BoolCommonExpression predicate) {
+    switch(function) {
+      case all: return all(source, var, predicate);
+      case any: return any(source, var, predicate);
+      case none: return null;
+      default:
+        throw new RuntimeException("unexpected AggregateFunction: " + function);
+    }
+  }
+  
   private abstract static class ExpressionImpl implements CommonExpression {
     private final Class<?> interfaceType;
     protected ExpressionImpl(Class<?> interfaceType) {
@@ -1181,4 +1204,72 @@ public class Expression {
     }
   }
 
+  private abstract static class AggregateBoolFunctionImpl extends ExpressionImpl implements AggregateBoolFunction {
+    private final CommonExpression source;
+    private final String variable;
+    private final BoolCommonExpression predicate;
+    
+    public AggregateBoolFunctionImpl(CommonExpression source, String variable, BoolCommonExpression predicate) {
+      super(AggregateAnyFunction.class);
+      this.source = source;
+      this.variable = variable;
+      this.predicate = predicate;
+    }
+    @Override
+    public CommonExpression getSource() {
+      return source;
+    }
+    @Override
+    public BoolCommonExpression getPredicate() {
+      return predicate;
+    }
+    @Override
+    public void visit(ExpressionVisitor visitor) {
+      visitThis(visitor);
+      visitor.beforeDescend();
+      getSource().visit(visitor);
+      visitor.betweenDescend();
+      if (null != getPredicate()) {
+        getPredicate().visit(visitor);
+      }
+      visitor.afterDescend();
+    }
+
+    @Override
+    public String getVariable() {
+      return variable;
+    }
+  }
+  
+  private static class AggregateAnyFunctionImpl extends AggregateBoolFunctionImpl implements AggregateAnyFunction  {
+    public AggregateAnyFunctionImpl(CommonExpression source, String variable, BoolCommonExpression predicate) {
+      super(source, variable, predicate);
+    }
+
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+
+    @Override
+    public ExpressionParser.AggregateFunction getFunctionType() {
+      return ExpressionParser.AggregateFunction.any;
+    }
+  }
+  
+  private static class AggregateAllFunctionImpl extends AggregateBoolFunctionImpl implements AggregateAllFunction {
+    public AggregateAllFunctionImpl(CommonExpression source, String variable, BoolCommonExpression predicate) {
+      super(source, variable, predicate);
+    }
+
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+    
+    @Override
+    public ExpressionParser.AggregateFunction getFunctionType() {
+      return ExpressionParser.AggregateFunction.all;
+    }
+  }
 }

@@ -323,5 +323,18 @@ public class PrintExpressionVisitor implements ExpressionVisitor {
   public void visit(ByteLiteral expr) {
     append("byte(%s)", expr.getValue());
   }
-
+  
+  @Override
+  public void visit(AggregateAnyFunction expr) {
+    if (null != expr.getVariable()) {
+      append("any:(%s =>)", expr.getVariable());   
+    } else {
+      append("any()");         
+    }
+  }
+  
+  @Override
+  public void visit(AggregateAllFunction expr) {
+    append("all:%s =>", expr.getVariable());   
+  }
 }

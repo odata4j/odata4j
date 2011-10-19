@@ -122,4 +122,7 @@ public interface ExpressionVisitor {
 
   void visit(CeilingMethodCallExpression expr);
 
+  void visit(AggregateAnyFunction expr);
+  
+  void visit(AggregateAllFunction expr);
 }

@@ -1,10 +1,15 @@
 package org.odata4j.producer.jpa.northwind.test;
 
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.odata4j.producer.jpa.northwind.Customers;
+import org.odata4j.producer.jpa.northwind.Orders;
 
 public class QueryOptionTest extends JPAProducerTestBase {
 
@@ -299,6 +304,77 @@ public class QueryOptionTest extends JPAProducerTestBase {
     NorthwindTestUtils.testJSONResult(endpointUri, uri, inp);
   }
 
+  /*
+   * Note on the All/Any tests:
+   * - They are just placeholders until someone implements this in JPA producer.
+   * - The expected results files are checked in.  I got them by hosting a
+   *   V3 OData service built using the June11 EF CTP
+   */
+  
+  @Ignore("TODO")
+  @Test
+  public void SystemQueryOptionFilterAnyTest() {
+    // get all Customers who have 1 or more Orders
+    // some SQL to run against Northwind:
+    // select count(*) from Customers -- 91 customers
+    // select distinct c.CustomerID  from Customers c left outer join Orders o on c.CustomerID = o.CustomerID
+    //    where o.OrderID is not null -- 'FISSA', 'PARIS' are the two customers w/out Orders
+    String uri =
+        "Customers?$filter=Orders/any()&$select=CustomerID";
+  }
+  
+  @Ignore("TODO")
+  @Test
+  public void SystemQueryOptionFilterAllTest() {
+    // all Orders whose every associated Order_Details has a Quantity >= 60
+    /*
+     * select o.OrderID, count(od.Quantity) as thecount,  min(od.Quantity) as themin, avg(od.Quantity) as theavg, max(od.Quantity) as themax
+       from Orders as o inner join [Order Details] od on o.OrderID = od.OrderID
+       group by o.OrderID
+       having min(od.Quantity) >= 60 
+     * 
+     * Interesting: that query shows 7 Orders that meet the criteria.  However, the .NET
+     * data service returns 8, OrderID=11078 is included even though it has 0 Order_Details!  Bug!
+     */
+    String uri =
+        "Orders?$filter=Order_Details/all(od:od/Quantity ge 60)&$select=OrderID";
+  }
+  
+  @Ignore("TODO")
+  @Test
+  public void SystemQueryOptionFilterAnyPredicateTest() {
+    // all Orders who have one or more associated Order_Details objects with Quantity < 3
+    
+    /*
+     * select o.OrderID, count(od.Quantity) as thecount,  min(od.Quantity) as themin, avg(od.Quantity) as theavg, max(od.Quantity) as themax
+       from Orders as o inner join [Order Details] od on o.OrderID = od.OrderID
+       group by o.OrderID
+       having min(od.Quantity) < 3
+     */
+    String uri =
+        "Orders?$filter=Order_Details/any(od:od/Quantity lt 3)&$select=OrderID";
+  }
+  
+  @Ignore("TODO")
+  @Test
+  public void SystemQueryOptionFilterAnyAllTest() {
+    
+    // all Customers who have Orders whose every associated Order_Details has a Quantity >= 60
+    /*
+     * select distinct c.CustomerID  from Customers c left outer join Orders o on c.CustomerID = o.CustomerID
+       where o.OrderID in (
+           select o2.OrderID
+           from Orders as o2 inner join [Order Details] od on o2.OrderID = od.OrderID
+           group by o2.OrderID
+           having min(od.Quantity) >= 60 )
+       order by c.CustomerID
+     */
+    String uri =
+        "Customers?$filter=Orders/any(o:o/Order_Details/all(od:od/Quantity ge 60))&$select=CustomerID";
+  }
+  
+  
+  
   // TODO: date time
 
   // @Test

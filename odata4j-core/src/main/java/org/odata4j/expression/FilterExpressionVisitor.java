@@ -322,4 +322,13 @@ public class FilterExpressionVisitor implements ExpressionVisitor {
     throw new UnsupportedOperationException();
   }
 
+  @Override
+  public void visit(AggregateAnyFunction expr) {
+    throw new UnsupportedOperationException();    
+  }
+  
+  @Override
+  public void visit(AggregateAllFunction expr) {
+    throw new UnsupportedOperationException();    
+  }
 }
