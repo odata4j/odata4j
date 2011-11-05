@@ -95,7 +95,7 @@ public class MetadataProducer implements ODataProducer {
   public MetadataProducer(ODataProducer dataProducer, EdmDecorator edmDecorator) {
     this.dataProducer = dataProducer;
     this.decorator = edmDecorator;
-    edm = new MetadataEdmGenerator(edmDecorator).generateEdm();
+    edm = new MetadataEdmGenerator().generateEdm(edmDecorator);
   }
   private ODataProducer dataProducer = null;
   private EdmDataServices edm = null;

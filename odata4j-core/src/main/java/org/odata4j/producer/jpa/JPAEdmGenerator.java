@@ -41,9 +41,11 @@ import org.odata4j.edm.EdmAssociationSet;
 import org.odata4j.edm.EdmAssociationSetEnd;
 import org.odata4j.edm.EdmComplexType;
 import org.odata4j.edm.EdmDataServices;
+import org.odata4j.edm.EdmDecorator;
 import org.odata4j.edm.EdmEntityContainer;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmEntityType;
+import org.odata4j.edm.EdmGenerator;
 import org.odata4j.edm.EdmMultiplicity;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
@@ -51,99 +53,34 @@ import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.edm.EdmType;
 
-public class JPAEdmGenerator {
+public class JPAEdmGenerator implements EdmGenerator {
 
   private final Logger log = Logger.getLogger(getClass().getName());
 
-  protected EdmSimpleType<?> toEdmType(SingularAttribute<?, ?> sa) {
+  private final EntityManagerFactory emf;
+  private final String namespace;
 
-    Class<?> javaType = sa.getType().getJavaType();
-
-    if (javaType.equals(Date.class) || javaType.equals(Calendar.class)) {
-      TemporalType temporal = getTemporalType(sa);
-      if (temporal == null) {
-        return EdmSimpleType.DATETIME;
-      } else {
-        switch (temporal) {
-        case DATE:
-        case TIMESTAMP:
-          return EdmSimpleType.DATETIME;
-        case TIME:
-          return EdmSimpleType.TIME;
-        }
-      }
-    }
-    if (javaType.equals(Time.class)) {
-      return EdmSimpleType.TIME;
-    }
-    if (javaType.equals(Instant.class)) {
-      return EdmSimpleType.DATETIME;
-    }
-    if (javaType.equals(Timestamp.class)) {
-      return EdmSimpleType.DATETIME;
-    }
-
-    EdmSimpleType<?> rt = EdmSimpleType.forJavaType(javaType);
-    if (rt != null)
-      return rt;
-
-    throw new UnsupportedOperationException(javaType.toString());
+  public JPAEdmGenerator(EntityManagerFactory emf, String namespace) {
+    this.emf = emf;
+    this.namespace = namespace;
   }
 
-  protected EdmProperty.Builder toEdmProperty(String modelNamespace, SingularAttribute<?, ?> sa) {
-    String name = sa.getName();
-    EdmType type;
-    if (sa.getPersistentAttributeType() == PersistentAttributeType.EMBEDDED) {
-      String simpleName = sa.getJavaType().getSimpleName();
-      // this will map to an edm complex.  If anyone ever im;plements this you
-      // should not create an EdmComplexType.  Instead, you should maintain
-      // a cache of EdmComplexType.Builders and re-use instances with the same
-      // namespace.name.  (multiple Entity classes may have properties of this 
-      // type and we don't wan't lots of instances of EdmComplex type floating
-      // around that are the same conceptual type)
-      type = EdmComplexType.newBuilder().setNamespace(modelNamespace).setName(simpleName).build();
-    } else if (sa.getBindableJavaType().isEnum()) {
-      // TODO assume string mapping for now, @Enumerated info not avail in metamodel?
-      type = EdmSimpleType.STRING;
-    } else {
-      type = toEdmType(sa);
-    }
-    boolean nullable = sa.isOptional();
-
-    Integer maxLength = null;
-    if (sa.getJavaMember() instanceof AnnotatedElement) {
-      Column col = ((AnnotatedElement) sa.getJavaMember()).getAnnotation(Column.class);
-      if (col != null && Enumerable.<EdmType>create(EdmSimpleType.BINARY, EdmSimpleType.STRING).contains(type))
-        maxLength = col.length();
-    }
-
-    return EdmProperty.newBuilder(name).setType(type).setNullable(nullable).setMaxLength(maxLength);
+  protected String getEntityContainerName() {
+    return namespace + "Entities";
   }
 
-  protected List<EdmProperty.Builder> getProperties(String modelNamespace, ManagedType<?> et) {
-    List<EdmProperty.Builder> properties = new ArrayList<EdmProperty.Builder>();
-    for (Attribute<?, ?> att : et.getAttributes()) {
-
-      if (att.isCollection()) {} else {
-        SingularAttribute<?, ?> sa = (SingularAttribute<?, ?>) att;
-
-        Type<?> type = sa.getType();
-        // Do we have an embedded composite key here? If so, we have to flatten the @EmbeddedId since
-        // only any set of non-nullable, immutable, <EDMSimpleType> declared properties MAY serve as the key.
-        if (sa.isId() && type.getPersistenceType() == PersistenceType.EMBEDDABLE) {
-          properties.addAll(getProperties(modelNamespace, (ManagedType<?>) sa.getType()));
-        } else if (type.getPersistenceType().equals(PersistenceType.BASIC) || type.getPersistenceType().equals(PersistenceType.EMBEDDABLE)) {
-          EdmProperty.Builder prop = toEdmProperty(modelNamespace, sa);
-          properties.add(prop);
-        }
-      }
-    }
-    return properties;
+  protected String getModelSchemaNamespace() {
+    return namespace + "Model";
   }
 
-  public EdmDataServices buildEdm(EntityManagerFactory emf, String namespace) {
+  protected String getContainerSchemaNamespace() {
+    return namespace + "Container";
+  }
 
-    String modelNamespace = namespace + "Model";
+  @Override
+  public EdmDataServices generateEdm(EdmDecorator decorator) {
+
+    String modelNamespace = getModelSchemaNamespace();
 
     List<EdmEntityType.Builder> edmEntityTypes = new ArrayList<EdmEntityType.Builder>();
     List<EdmComplexType.Builder> edmComplexTypes = new ArrayList<EdmComplexType.Builder>();
@@ -292,12 +229,98 @@ public class JPAEdmGenerator {
 
     }
 
-    EdmEntityContainer.Builder container = EdmEntityContainer.newBuilder().setName(namespace + "Entities").setIsDefault(true).addEntitySets(entitySets).addAssociationSets(associationSets);
+    EdmEntityContainer.Builder container = EdmEntityContainer.newBuilder().setName(getEntityContainerName()).setIsDefault(true).addEntitySets(entitySets).addAssociationSets(associationSets);
 
     EdmSchema.Builder modelSchema = EdmSchema.newBuilder().setNamespace(modelNamespace).addEntityTypes(edmEntityTypes).addComplexTypes(edmComplexTypes).addAssociations(associations);
-    EdmSchema.Builder containerSchema = EdmSchema.newBuilder().setNamespace(namespace + "Container").addEntityContainers(container);
+    EdmSchema.Builder containerSchema = EdmSchema.newBuilder().setNamespace(getContainerSchemaNamespace()).addEntityContainers(container);
 
     return EdmDataServices.newBuilder().addSchemas(containerSchema, modelSchema).build();
+  }
+
+  protected EdmSimpleType<?> toEdmType(SingularAttribute<?, ?> sa) {
+
+    Class<?> javaType = sa.getType().getJavaType();
+
+    if (javaType.equals(Date.class) || javaType.equals(Calendar.class)) {
+      TemporalType temporal = getTemporalType(sa);
+      if (temporal == null) {
+        return EdmSimpleType.DATETIME;
+      } else {
+        switch (temporal) {
+        case DATE:
+        case TIMESTAMP:
+          return EdmSimpleType.DATETIME;
+        case TIME:
+          return EdmSimpleType.TIME;
+        }
+      }
+    }
+    if (javaType.equals(Time.class)) {
+      return EdmSimpleType.TIME;
+    }
+    if (javaType.equals(Instant.class)) {
+      return EdmSimpleType.DATETIME;
+    }
+    if (javaType.equals(Timestamp.class)) {
+      return EdmSimpleType.DATETIME;
+    }
+
+    EdmSimpleType<?> rt = EdmSimpleType.forJavaType(javaType);
+    if (rt != null)
+      return rt;
+
+    throw new UnsupportedOperationException(javaType.toString());
+  }
+
+  protected EdmProperty.Builder toEdmProperty(String modelNamespace, SingularAttribute<?, ?> sa) {
+    String name = sa.getName();
+    EdmType type;
+    if (sa.getPersistentAttributeType() == PersistentAttributeType.EMBEDDED) {
+      String simpleName = sa.getJavaType().getSimpleName();
+      // this will map to an edm complex.  If anyone ever im;plements this you
+      // should not create an EdmComplexType.  Instead, you should maintain
+      // a cache of EdmComplexType.Builders and re-use instances with the same
+      // namespace.name.  (multiple Entity classes may have properties of this
+      // type and we don't wan't lots of instances of EdmComplex type floating
+      // around that are the same conceptual type)
+      type = EdmComplexType.newBuilder().setNamespace(modelNamespace).setName(simpleName).build();
+    } else if (sa.getBindableJavaType().isEnum()) {
+      // TODO assume string mapping for now, @Enumerated info not avail in metamodel?
+      type = EdmSimpleType.STRING;
+    } else {
+      type = toEdmType(sa);
+    }
+    boolean nullable = sa.isOptional();
+
+    Integer maxLength = null;
+    if (sa.getJavaMember() instanceof AnnotatedElement) {
+      Column col = ((AnnotatedElement) sa.getJavaMember()).getAnnotation(Column.class);
+      if (col != null && Enumerable.<EdmType>create(EdmSimpleType.BINARY, EdmSimpleType.STRING).contains(type))
+        maxLength = col.length();
+    }
+
+    return EdmProperty.newBuilder(name).setType(type).setNullable(nullable).setMaxLength(maxLength);
+  }
+
+  protected List<EdmProperty.Builder> getProperties(String modelNamespace, ManagedType<?> et) {
+    List<EdmProperty.Builder> properties = new ArrayList<EdmProperty.Builder>();
+    for (Attribute<?, ?> att : et.getAttributes()) {
+
+      if (att.isCollection()) {} else {
+        SingularAttribute<?, ?> sa = (SingularAttribute<?, ?>) att;
+
+        Type<?> type = sa.getType();
+        // Do we have an embedded composite key here? If so, we have to flatten the @EmbeddedId since
+        // only any set of non-nullable, immutable, <EDMSimpleType> declared properties MAY serve as the key.
+        if (sa.isId() && type.getPersistenceType() == PersistenceType.EMBEDDABLE) {
+          properties.addAll(getProperties(modelNamespace, (ManagedType<?>) sa.getType()));
+        } else if (type.getPersistenceType().equals(PersistenceType.BASIC) || type.getPersistenceType().equals(PersistenceType.EMBEDDABLE)) {
+          EdmProperty.Builder prop = toEdmProperty(modelNamespace, sa);
+          properties.add(prop);
+        }
+      }
+    }
+    return properties;
   }
 
   private static EdmAssociation.Builder defineManyTo(EdmMultiplicity toMult, List<EdmAssociation.Builder> associations, EdmEntityType.Builder fromEntityType, EdmEntityType.Builder toEntityType,

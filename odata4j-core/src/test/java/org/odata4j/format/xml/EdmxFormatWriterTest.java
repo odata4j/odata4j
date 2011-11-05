@@ -119,7 +119,7 @@ public class EdmxFormatWriterTest implements EdmDecorator {
 
   private EdmDataServices buildModel() {
 
-    InMemoryProducer p = new InMemoryProducer("flights", 50, this);
+    InMemoryProducer p = new InMemoryProducer("flights", 50, this, null);
 
     final List<Airport> airports = new ArrayList<Airport>();
     Airport denver = new Airport();

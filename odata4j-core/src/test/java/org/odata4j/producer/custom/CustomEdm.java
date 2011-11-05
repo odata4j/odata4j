@@ -39,15 +39,10 @@ public class CustomEdm implements EdmGenerator {
   private List<EdmEntitySet.Builder> esets = new LinkedList<EdmEntitySet.Builder>();
   private List<EdmAssociationSet.Builder> asets = new LinkedList<EdmAssociationSet.Builder>();
 
-  @Override
-  public EdmDecorator getDecorator() {
-    return null;
-  }
-
   public static final String namespace = "myns";
 
   @Override
-  public EdmDataServices generateEdm() {
+  public EdmDataServices generateEdm(EdmDecorator decorator) {
     createComplexTypes();
     createEntityTypes();
 

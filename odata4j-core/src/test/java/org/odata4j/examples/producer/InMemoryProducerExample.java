@@ -46,7 +46,7 @@ public class InMemoryProducerExample {
 
     // InMemoryProducer is a readonly odata provider that serves up POJOs as entities using bean properties
     // call InMemoryProducer.register to declare a new entity-set, providing a entity source function and a propertyname to serve as the key
-    final InMemoryProducer producer = new InMemoryProducer("InMemoryProducerExample", 100, new MyEdmDecorator());
+    final InMemoryProducer producer = new InMemoryProducer("InMemoryProducerExample", 100, new MyEdmDecorator(), null);
 
     // expose this jvm's thread information (Thread instances) as an entity-set called "Threads"
     producer.register(Thread.class, Long.class, "Threads", new Func<Iterable<Thread>>() {

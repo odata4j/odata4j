@@ -41,7 +41,7 @@ public class EdmDateTimeTemporalTest extends AirlineJPAProducerTestBase {
 
     emf = Persistence.createEntityManagerFactory(persistenceUnitName);
 
-    JPAProducer producer = new JPAProducer(emf, new JPAEdmGenerator() {
+    JPAProducer producer = new JPAProducer(emf, new JPAEdmGenerator(emf, namespace) {
       protected EdmSimpleType<?> toEdmType(SingularAttribute<?, ?> sa) {
         Class<?> javaType = sa.getType().getJavaType();
         if (javaType.equals(Date.class)
@@ -52,7 +52,7 @@ public class EdmDateTimeTemporalTest extends AirlineJPAProducerTestBase {
           return super.toEdmType(sa);
         }
       }
-    }.buildEdm(emf, namespace), 20);
+    }.generateEdm(null), 20);
 
     ODataProducerProvider.setInstance(producer);
     server = ProducerUtil.startODataServer(endpointUri);
