@@ -258,9 +258,10 @@ public class JPQLGenerator {
 
     if (expression instanceof NotExpression) {
       NotExpression e = (NotExpression) expression;
-      return String.format(
-          "NOT (%s = TRUE)",
-          toJpql(e.getExpression()));
+      if (e.getExpression() instanceof BoolParenExpression) {
+        return String.format("NOT %s", toJpql(e.getExpression()));
+      }
+      return String.format("NOT (%s = TRUE)", toJpql(e.getExpression()));
     }
 
     if (expression instanceof SubstringOfMethodCallExpression) {
