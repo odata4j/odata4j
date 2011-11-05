@@ -101,19 +101,19 @@ public class JPQLGenerator {
     }
 
     if (expression instanceof AddExpression)
-      return bceToJpql("%s + %s", (AddExpression) expression);
+      return binaryCommonExpressionToJpql("%s + %s", (AddExpression) expression);
 
     if (expression instanceof SubExpression)
-      return bceToJpql("%s - %s", (SubExpression) expression);
+      return binaryCommonExpressionToJpql("%s - %s", (SubExpression) expression);
 
     if (expression instanceof MulExpression)
-      return bceToJpql("%s * %s", (MulExpression) expression);
+      return binaryCommonExpressionToJpql("%s * %s", (MulExpression) expression);
 
     if (expression instanceof DivExpression)
-      return bceToJpql("%s / %s", (DivExpression) expression);
+      return binaryCommonExpressionToJpql("%s / %s", (DivExpression) expression);
 
     if (expression instanceof ModExpression)
-      return bceToJpql("MOD(%s, %s)", (ModExpression) expression);
+      return binaryCommonExpressionToJpql("MOD(%s, %s)", (ModExpression) expression);
 
     if (expression instanceof LengthMethodCallExpression) {
       LengthMethodCallExpression e = (LengthMethodCallExpression) expression;
@@ -220,10 +220,10 @@ public class JPQLGenerator {
 
   public String toJpql(BoolCommonExpression expression) {
     if (expression instanceof EqExpression)
-      return bceToJpql("%s = %s", (EqExpression) expression);
+      return binaryCommonExpressionToJpql("%s = %s", "%2s IS NULL", "%1s IS NULL", (EqExpression) expression);
 
     if (expression instanceof NeExpression)
-      return bceToJpql("%s <> %s", (NeExpression) expression);
+      return binaryCommonExpressionToJpql("%s <> %s", "%2s IS NOT NULL", "%1s IS NOT NULL", (NeExpression) expression);
 
     if (expression instanceof AndExpression) {
       AndExpression e = (AndExpression) expression;
@@ -245,16 +245,16 @@ public class JPQLGenerator {
       return Boolean.toString(((BooleanLiteral) expression).getValue());
 
     if (expression instanceof GtExpression)
-      return bceToJpql("%s > %s", (GtExpression) expression);
+      return binaryCommonExpressionToJpql("%s > %s", (GtExpression) expression);
 
     if (expression instanceof LtExpression)
-      return bceToJpql("%s < %s", (LtExpression) expression);
+      return binaryCommonExpressionToJpql("%s < %s", (LtExpression) expression);
 
     if (expression instanceof GeExpression)
-      return bceToJpql("%s >= %s", (GeExpression) expression);
+      return binaryCommonExpressionToJpql("%s >= %s", (GeExpression) expression);
 
     if (expression instanceof LeExpression)
-      return bceToJpql("%s <= %s", (LeExpression) expression);
+      return binaryCommonExpressionToJpql("%s <= %s", (LeExpression) expression);
 
     if (expression instanceof NotExpression) {
       NotExpression e = (NotExpression) expression;
@@ -328,7 +328,15 @@ public class JPQLGenerator {
     throw new UnsupportedOperationException("unsupported expression " + expression);
   }
 
-  private String bceToJpql(String format, BinaryCommonExpression bce) {
+  private String binaryCommonExpressionToJpql(String format, BinaryCommonExpression bce) {
+    return binaryCommonExpressionToJpql(format, null, null, bce);
+  }
+
+  private String binaryCommonExpressionToJpql(String format, String formatIfLeftNull, String formatIfRightNull, BinaryCommonExpression bce) {
+    if (formatIfLeftNull != null && bce.getLHS() instanceof NullLiteral)
+      format = formatIfLeftNull;
+    else if (formatIfRightNull != null && bce.getRHS() instanceof NullLiteral)
+      format = formatIfRightNull;
     return String.format(format, toJpql(bce.getLHS()), toJpql(bce.getRHS()));
   }
 }

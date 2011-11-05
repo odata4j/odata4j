@@ -102,6 +102,20 @@ public class QueryOptionTest extends JPAProducerTestBase {
   }
 
   @Test
+  public void SystemQueryOptionFilterEqualNullTest() {
+    String inp = "SystemQueryOptionFilterEqualNullTest";
+    String uri = "Suppliers?$filter=Region eq null";
+    NorthwindTestUtils.testJSONResult(endpointUri, uri, inp);
+  }
+
+  @Test
+  public void SystemQueryOptionFilterNotEqualNullTest() {
+    String inp = "SystemQueryOptionFilterNotEqualNullTest";
+    String uri = "Suppliers?$filter=Region ne null";
+    NorthwindTestUtils.testJSONResult(endpointUri, uri, inp);
+  }
+
+  @Test
   public void SystemQueryOptionFilterEqualTest() {
     String inp = "SystemQueryOptionFilterEqualTest";
     String uri = "Suppliers?$filter=Country eq 'Brazil'";
