@@ -1,6 +1,6 @@
 package org.odata4j.format.json;
 
-import com.sun.jersey.api.core.ExtendedUriInfo;
+import javax.ws.rs.core.UriInfo;
 
 import org.odata4j.core.OCollection;
 import org.odata4j.edm.EdmType;
@@ -16,7 +16,7 @@ public class JsonCollectionFormatWriter extends JsonFormatWriter<CollectionRespo
   }
 
   @Override
-  protected void writeContent(ExtendedUriInfo uriInfo, JsonWriter jw, CollectionResponse<?> target) {
+  protected void writeContent(UriInfo uriInfo, JsonWriter jw, CollectionResponse<?> target) {
     OCollection<?> c = target.getCollection();
     EdmType ctype = c.getType();
     jw.startArray();

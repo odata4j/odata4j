@@ -1,8 +1,8 @@
 package org.odata4j.format.json;
 
-import org.odata4j.format.SingleLink;
+import javax.ws.rs.core.UriInfo;
 
-import com.sun.jersey.api.core.ExtendedUriInfo;
+import org.odata4j.format.SingleLink;
 
 public class JsonSingleLinkFormatWriter extends JsonFormatWriter<SingleLink> {
 
@@ -11,10 +11,10 @@ public class JsonSingleLinkFormatWriter extends JsonFormatWriter<SingleLink> {
   }
 
   @Override
-  protected void writeContent(ExtendedUriInfo uriInfo, JsonWriter jw, SingleLink link) {
+  protected void writeContent(UriInfo uriInfo, JsonWriter jw, SingleLink link) {
     writeUri(jw, link);
   }
-  
+
   static void writeUri(JsonWriter jw, SingleLink link) {
     jw.startObject();
     {
@@ -23,6 +23,7 @@ public class JsonSingleLinkFormatWriter extends JsonFormatWriter<SingleLink> {
     }
     jw.endObject();
   }
+
 }
 
 /*

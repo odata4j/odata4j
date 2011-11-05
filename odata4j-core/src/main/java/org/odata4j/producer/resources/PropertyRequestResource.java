@@ -16,6 +16,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.ODataVersion;
@@ -34,8 +35,6 @@ import org.odata4j.producer.PropertyResponse;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.exceptions.NotImplementedException;
 
-import com.sun.jersey.api.core.HttpContext;
-
 public class PropertyRequestResource extends BaseResource {
 
   private static final Logger log =
@@ -43,7 +42,6 @@ public class PropertyRequestResource extends BaseResource {
 
   @PUT
   public Response updateEntity(
-      @Context HttpContext context,
       @Context ODataProducer producer,
       @PathParam("entitySetName") String entitySetName,
       final @PathParam("id") String id,
@@ -56,15 +54,16 @@ public class PropertyRequestResource extends BaseResource {
 
   @POST
   public Response mergeEntity(
-      @Context HttpContext context,
+      @Context HttpHeaders httpHeaders,
+      @Context UriInfo uriInfo,
       @Context ODataProducer producer,
-      @Context HttpHeaders headers,
       final @PathParam("entitySetName") String entitySetName,
       final @PathParam("id") String id,
-      final @PathParam("navProp") String navProp) throws Exception {
+      final @PathParam("navProp") String navProp,
+      String payload) throws Exception {
 
-    if (!"MERGE".equals(context.getRequest().getHeaderValue(
-        ODataConstants.Headers.X_HTTP_METHOD))) {
+    String method = httpHeaders.getRequestHeaders().getFirst(ODataConstants.Headers.X_HTTP_METHOD);
+    if (!"MERGE".equals(method)) {
 
       // determine the expected entity set
       EdmDataServices metadata = producer.getMetadata();
@@ -73,7 +72,7 @@ public class PropertyRequestResource extends BaseResource {
               .findNavigationProperty(navProp).getToRole().getType());
 
       // parse the request entity
-      OEntity entity = getRequestEntity(context.getRequest(), metadata, ees.getName(), OEntityKey.parse(id));
+      OEntity entity = getRequestEntity(httpHeaders, uriInfo, payload, metadata, ees.getName(), OEntityKey.parse(id));
 
       // execute the create
       EntityResponse response = producer.createEntity(entitySetName, OEntityKey.parse(id), navProp, entity);
@@ -85,12 +84,12 @@ public class PropertyRequestResource extends BaseResource {
       // get the FormatWriter for the accepted media types requested by client
       StringWriter sw = new StringWriter();
       FormatWriter<EntityResponse> fw = FormatWriterFactory
-          .getFormatWriter(EntityResponse.class, headers.getAcceptableMediaTypes(), null, null);
-      fw.write(context.getUriInfo(), sw, response);
+          .getFormatWriter(EntityResponse.class, httpHeaders.getAcceptableMediaTypes(), null, null);
+      fw.write(uriInfo, sw, response);
 
       // calculate the uri for the location header
       String relid = InternalUtil.getEntityRelId(response.getEntity());
-      String entryId = context.getUriInfo().getBaseUri().toString() + relid;
+      String entryId = uriInfo.getBaseUri().toString() + relid;
 
       // create the response
       String responseEntity = sw.toString();
@@ -108,7 +107,6 @@ public class PropertyRequestResource extends BaseResource {
 
   @DELETE
   public Response deleteEntity(
-      @Context HttpContext context,
       @Context ODataProducer producer,
       final @PathParam("entitySetName") String entitySetName,
       final @PathParam("id") String id,
@@ -124,7 +122,8 @@ public class PropertyRequestResource extends BaseResource {
       ODataConstants.TEXT_JAVASCRIPT_CHARSET_UTF8,
       ODataConstants.APPLICATION_JAVASCRIPT_CHARSET_UTF8 })
   public Response getNavProperty(
-      @Context HttpContext context,
+      @Context HttpHeaders httpHeaders,
+      @Context UriInfo uriInfo,
       @Context ODataProducer producer,
       final @PathParam("entitySetName") String entitySetName,
       final @PathParam("id") String id,
@@ -147,7 +146,7 @@ public class PropertyRequestResource extends BaseResource {
         OptionsQueryParser.parseFilter(filter),
         OptionsQueryParser.parseOrderBy(orderBy),
         OptionsQueryParser.parseSkipToken(skipToken),
-        OptionsQueryParser.parseCustomOptions(context),
+        OptionsQueryParser.parseCustomOptions(uriInfo),
         OptionsQueryParser.parseSelect(expand),
         OptionsQueryParser.parseSelect(select));
 
@@ -169,31 +168,31 @@ public class PropertyRequestResource extends BaseResource {
       FormatWriter<PropertyResponse> fw =
           FormatWriterFactory.getFormatWriter(
               PropertyResponse.class,
-              context.getRequest().getAcceptableMediaTypes(),
+              httpHeaders.getAcceptableMediaTypes(),
               format,
               callback);
 
-      fw.write(context.getUriInfo(), sw, (PropertyResponse) response);
+      fw.write(uriInfo, sw, (PropertyResponse) response);
       fwBase = fw;
     } else if (response instanceof EntityResponse) {
       FormatWriter<EntityResponse> fw =
           FormatWriterFactory.getFormatWriter(
               EntityResponse.class,
-              context.getRequest().getAcceptableMediaTypes(),
+              httpHeaders.getAcceptableMediaTypes(),
               format,
               callback);
 
-      fw.write(context.getUriInfo(), sw, (EntityResponse) response);
+      fw.write(uriInfo, sw, (EntityResponse) response);
       fwBase = fw;
     } else if (response instanceof EntitiesResponse) {
       FormatWriter<EntitiesResponse> fw =
           FormatWriterFactory.getFormatWriter(
               EntitiesResponse.class,
-              context.getRequest().getAcceptableMediaTypes(),
+              httpHeaders.getAcceptableMediaTypes(),
               format,
               callback);
 
-      fw.write(context.getUriInfo(), sw, (EntitiesResponse) response);
+      fw.write(uriInfo, sw, (EntitiesResponse) response);
       fwBase = fw;
 
       // TODO remove this hack, check whether we are Version 2.0 compatible anyway

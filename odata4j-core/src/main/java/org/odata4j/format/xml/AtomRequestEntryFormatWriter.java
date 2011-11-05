@@ -2,16 +2,16 @@ package org.odata4j.format.xml;
 
 import java.io.Writer;
 
+import javax.ws.rs.core.UriInfo;
+
 import org.odata4j.core.ODataConstants;
 import org.odata4j.format.Entry;
 import org.odata4j.format.FormatWriter;
 
-import com.sun.jersey.api.core.ExtendedUriInfo;
-
 public class AtomRequestEntryFormatWriter implements FormatWriter<Entry> {
 
   @Override
-  public void write(ExtendedUriInfo uriInfo, Writer w, Entry target) {
+  public void write(UriInfo uriInfo, Writer w, Entry target) {
     new AtomEntryFormatWriter().writeRequestEntry(w, target);
   }
 

@@ -1,9 +1,9 @@
 package org.odata4j.format.json;
 
+import javax.ws.rs.core.UriInfo;
+
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
-
-import com.sun.jersey.api.core.ExtendedUriInfo;
 
 public class JsonServiceDocumentFormatWriter extends JsonFormatWriter<EdmDataServices> {
 
@@ -13,7 +13,7 @@ public class JsonServiceDocumentFormatWriter extends JsonFormatWriter<EdmDataSer
   }
 
   @Override
-  public void writeContent(ExtendedUriInfo uriInfo, JsonWriter jw, EdmDataServices target) {
+  public void writeContent(UriInfo uriInfo, JsonWriter jw, EdmDataServices target) {
 
     jw.startObject();
     {

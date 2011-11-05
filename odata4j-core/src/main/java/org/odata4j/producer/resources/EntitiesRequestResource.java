@@ -18,6 +18,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
 import org.odata4j.core.Guid;
 import org.odata4j.core.ODataConstants;
@@ -31,8 +32,6 @@ import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
 
-import com.sun.jersey.api.core.HttpContext;
-
 @Path("{entitySetName}{optionalParens: ((\\(\\))?)}")
 public class EntitiesRequestResource extends BaseResource {
 
@@ -41,28 +40,29 @@ public class EntitiesRequestResource extends BaseResource {
   @POST
   @Produces({ ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8, ODataConstants.TEXT_JAVASCRIPT_CHARSET_UTF8, ODataConstants.APPLICATION_JAVASCRIPT_CHARSET_UTF8 })
   public Response createEntity(
-      @Context HttpContext context,
-      @Context HttpHeaders headers,
+      @Context HttpHeaders httpHeaders,
+      @Context UriInfo uriInfo,
       @Context ODataProducer producer,
-      final @PathParam("entitySetName") String entitySetName) throws Exception {
+      final @PathParam("entitySetName") String entitySetName,
+      String payload) throws Exception {
 
     // visual studio will send a soap mex request
-    if (entitySetName.equals("mex") && headers.getMediaType() != null && headers.getMediaType().toString().startsWith("application/soap+xml"))
+    if (entitySetName.equals("mex") && httpHeaders.getMediaType() != null && httpHeaders.getMediaType().toString().startsWith("application/soap+xml"))
       return Response.status(405).build();
 
     log.info(String.format("createEntity(%s)", entitySetName));
 
-    OEntity entity = this.getRequestEntity(context.getRequest(), producer.getMetadata(), entitySetName, null);
+    OEntity entity = this.getRequestEntity(httpHeaders, uriInfo, payload, producer.getMetadata(), entitySetName, null);
 
     EntityResponse response = producer.createEntity(entitySetName, entity);
 
     FormatWriter<EntityResponse> writer = FormatWriterFactory
-        .getFormatWriter(EntityResponse.class, headers.getAcceptableMediaTypes(), null, null);
+        .getFormatWriter(EntityResponse.class, httpHeaders.getAcceptableMediaTypes(), null, null);
     StringWriter sw = new StringWriter();
-    writer.write(context.getUriInfo(), sw, response);
+    writer.write(uriInfo, sw, response);
 
     String relid = InternalUtil.getEntityRelId(response.getEntity());
-    String entryId = context.getUriInfo().getBaseUri().toString() + relid;
+    String entryId = uriInfo.getBaseUri().toString() + relid;
 
     String responseEntity = sw.toString();
 
@@ -79,7 +79,9 @@ public class EntitiesRequestResource extends BaseResource {
   @Produces({ ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8,
       ODataConstants.TEXT_JAVASCRIPT_CHARSET_UTF8,
       ODataConstants.APPLICATION_JAVASCRIPT_CHARSET_UTF8 })
-  public Response getEntities(@Context HttpContext context,
+  public Response getEntities(
+      @Context HttpHeaders httpHeaders,
+      @Context UriInfo uriInfo,
       @Context ODataProducer producer,
       @PathParam("entitySetName") String entitySetName,
       @QueryParam("$inlinecount") String inlineCount,
@@ -107,7 +109,7 @@ public class EntitiesRequestResource extends BaseResource {
     // the OData URI scheme makes it impossible to have unique @Paths that refer
     // to functions and entity sets
     if (producer.getMetadata().findEdmFunctionImport(entitySetName) != null) {
-      return FunctionResource.callFunction(context, producer, entitySetName, format, callback, skipToken);
+      return FunctionResource.callFunction(httpHeaders, uriInfo, producer, entitySetName, format, callback, skipToken);
     }
 
     QueryInfo query = new QueryInfo(
@@ -117,7 +119,7 @@ public class EntitiesRequestResource extends BaseResource {
         OptionsQueryParser.parseFilter(filter),
         OptionsQueryParser.parseOrderBy(orderBy),
         OptionsQueryParser.parseSkipToken(skipToken),
-        OptionsQueryParser.parseCustomOptions(context),
+        OptionsQueryParser.parseCustomOptions(uriInfo),
         OptionsQueryParser.parseExpand(expand),
         OptionsQueryParser.parseSelect(select));
 
@@ -127,12 +129,11 @@ public class EntitiesRequestResource extends BaseResource {
     FormatWriter<EntitiesResponse> fw =
         FormatWriterFactory.getFormatWriter(
             EntitiesResponse.class,
-            context.getRequest()
-                .getAcceptableMediaTypes(),
+            httpHeaders.getAcceptableMediaTypes(),
             format,
             callback);
 
-    fw.write(context.getUriInfo(), sw, response);
+    fw.write(uriInfo, sw, response);
     String entity = sw.toString();
 
     // TODO remove this hack, check whether we are Version 2.0 compatible anyway
@@ -172,27 +173,28 @@ public class EntitiesRequestResource extends BaseResource {
     batchResponse.append('\n');
 
     for (BatchBodyPart bodyPart : bodyParts) {
-      HttpContext context = bodyPart.createHttpContext();
+      HttpHeaders httpHeaders = bodyPart.getHttpHeaders();
+      UriInfo uriInfo = bodyPart.getUriInfo();
       String entitySetName = bodyPart.getEntitySetName();
       String entityId = bodyPart.getEntityKey();
+      String entity = bodyPart.getEntity();
       Response response = null;
 
       switch (bodyPart.getHttpMethod()) {
       case POST:
-        response = this.createEntity(context, headers, producer,
-              entitySetName);
+        response = this.createEntity(httpHeaders, uriInfo, producer,
+              entitySetName, entity);
         break;
       case PUT:
-        response = er.updateEntity(context, producer,
-              entitySetName, entityId);
+        response = er.updateEntity(httpHeaders, uriInfo, producer,
+              entitySetName, entityId, entity);
         break;
       case MERGE:
-        response = er.mergeEntity(context, producer, entitySetName,
-              entityId);
+        response = er.mergeEntity(httpHeaders, uriInfo, producer, entitySetName,
+              entityId, entity);
         break;
       case DELETE:
-        response = er.deleteEntity(context, producer,
-              entitySetName, entityId);
+        response = er.deleteEntity(producer, entitySetName, entityId);
         break;
       case GET:
         throw new UnsupportedOperationException("Not supported yet.");

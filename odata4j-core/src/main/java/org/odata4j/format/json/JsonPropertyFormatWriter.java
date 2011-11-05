@@ -1,8 +1,8 @@
 package org.odata4j.format.json;
 
-import org.odata4j.producer.PropertyResponse;
+import javax.ws.rs.core.UriInfo;
 
-import com.sun.jersey.api.core.ExtendedUriInfo;
+import org.odata4j.producer.PropertyResponse;
 
 public class JsonPropertyFormatWriter extends JsonFormatWriter<PropertyResponse> {
 
@@ -11,7 +11,7 @@ public class JsonPropertyFormatWriter extends JsonFormatWriter<PropertyResponse>
   }
 
   @Override
-  protected void writeContent(ExtendedUriInfo uriInfo, JsonWriter jw, PropertyResponse target) {
+  protected void writeContent(UriInfo uriInfo, JsonWriter jw, PropertyResponse target) {
     jw.startObject();
     {
       writeProperty(jw, target.getProperty());

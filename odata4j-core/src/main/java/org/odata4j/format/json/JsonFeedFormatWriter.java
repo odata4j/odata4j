@@ -1,10 +1,10 @@
 package org.odata4j.format.json;
 
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
+
 import org.odata4j.core.OEntity;
 import org.odata4j.producer.EntitiesResponse;
-
-import com.sun.jersey.api.core.ExtendedUriInfo;
-import javax.ws.rs.core.UriBuilder;
 
 /**
  *  Write an RSS Feed in JSON format
@@ -16,7 +16,7 @@ public class JsonFeedFormatWriter extends JsonFormatWriter<EntitiesResponse> {
   }
 
   @Override
-  public void writeContent(ExtendedUriInfo uriInfo, JsonWriter jw, EntitiesResponse target) {
+  public void writeContent(UriInfo uriInfo, JsonWriter jw, EntitiesResponse target) {
 
     jw.startObject();
     {
@@ -46,7 +46,7 @@ public class JsonFeedFormatWriter extends JsonFormatWriter<EntitiesResponse> {
       }
 
       if (target.getSkipToken() != null) {
-        
+
         // $skip only applies to the first page of results.
         // if $top was given, we have to reduce it by the number of entities
         // we are returning now.

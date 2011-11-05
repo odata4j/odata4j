@@ -2,6 +2,8 @@ package org.odata4j.format.xml;
 
 import java.io.Writer;
 
+import javax.ws.rs.core.UriInfo;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.odata4j.core.ODataConstants;
@@ -14,8 +16,6 @@ import org.odata4j.producer.EntityResponse;
 import org.odata4j.stax2.QName2;
 import org.odata4j.stax2.XMLFactoryProvider2;
 import org.odata4j.stax2.XMLWriter2;
-
-import com.sun.jersey.api.core.ExtendedUriInfo;
 
 public class AtomEntryFormatWriter extends XmlFormatWriter implements FormatWriter<EntityResponse> {
 
@@ -46,7 +46,7 @@ public class AtomEntryFormatWriter extends XmlFormatWriter implements FormatWrit
   }
 
   @Override
-  public void write(ExtendedUriInfo uriInfo, Writer w, EntityResponse target) {
+  public void write(UriInfo uriInfo, Writer w, EntityResponse target) {
     String baseUri = uriInfo.getBaseUri().toString();
     EdmEntitySet ees = target.getEntity().getEntitySet();
 

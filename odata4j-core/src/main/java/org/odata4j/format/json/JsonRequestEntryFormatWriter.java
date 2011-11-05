@@ -3,10 +3,9 @@ package org.odata4j.format.json;
 import java.io.Writer;
 
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 
 import org.odata4j.format.Entry;
-
-import com.sun.jersey.api.core.ExtendedUriInfo;
 
 public class JsonRequestEntryFormatWriter extends JsonFormatWriter<Entry> {
 
@@ -20,7 +19,7 @@ public class JsonRequestEntryFormatWriter extends JsonFormatWriter<Entry> {
   }
 
   @Override
-  public void write(ExtendedUriInfo uriInfo, Writer w, Entry target) {
+  public void write(UriInfo uriInfo, Writer w, Entry target) {
 
     JsonWriter jw = new JsonWriter(w);
     if (getJsonpCallback() != null) {
@@ -31,7 +30,7 @@ public class JsonRequestEntryFormatWriter extends JsonFormatWriter<Entry> {
   }
 
   @Override
-  protected void writeContent(ExtendedUriInfo uriInfo, JsonWriter jw, Entry target) {
+  protected void writeContent(UriInfo uriInfo, JsonWriter jw, Entry target) {
     writeOEntity(uriInfo, jw, target.getEntity(),
         target.getEntity().getEntitySet(), false);
   }

@@ -4,8 +4,10 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.ODataVersion;
@@ -20,8 +22,6 @@ import org.odata4j.producer.CollectionResponse;
 import org.odata4j.producer.ComplexObjectResponse;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.exceptions.NotImplementedException;
-
-import com.sun.jersey.api.core.HttpContext;
 
 /**
  * Handles function calls.  Unfortunately the OData URI scheme makes it
@@ -42,14 +42,15 @@ public class FunctionResource extends BaseResource {
    * the request and delegating to the producer.
    */
   @SuppressWarnings("rawtypes")
-  public static Response callFunction(HttpContext context,
+  public static Response callFunction(HttpHeaders httpHeaders,
+      UriInfo uriInfo,
       ODataProducer producer,
       String functionName,
       String format,
       String callback,
       String skipToken) throws Exception {
 
-    Map<String, String> opts = OptionsQueryParser.parseCustomOptions(context);
+    Map<String, String> opts = OptionsQueryParser.parseCustomOptions(uriInfo);
 
     // do we have this function?
     EdmFunctionImport function = producer.getMetadata().findEdmFunctionImport(functionName);
@@ -74,21 +75,21 @@ public class FunctionResource extends BaseResource {
       FormatWriter<ComplexObjectResponse> fw =
           FormatWriterFactory.getFormatWriter(
               ComplexObjectResponse.class,
-              context.getRequest().getAcceptableMediaTypes(),
+              httpHeaders.getAcceptableMediaTypes(),
               format,
               callback);
 
-      fw.write(context.getUriInfo(), sw, (ComplexObjectResponse) response);
+      fw.write(uriInfo, sw, (ComplexObjectResponse) response);
       fwBase = fw;
     } else if (response instanceof CollectionResponse) {
       FormatWriter<CollectionResponse> fw =
           FormatWriterFactory.getFormatWriter(
               CollectionResponse.class,
-              context.getRequest().getAcceptableMediaTypes(),
+              httpHeaders.getAcceptableMediaTypes(),
               format,
               callback);
 
-      fw.write(context.getUriInfo(), sw, (CollectionResponse<?>) response);
+      fw.write(uriInfo, sw, (CollectionResponse<?>) response);
       fwBase = fw;
     } else {
       // TODO add in other response types.

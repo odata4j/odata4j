@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import javax.ws.rs.core.UriInfo;
+
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
@@ -29,7 +31,6 @@ import org.odata4j.internal.InternalUtil;
 import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
 import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
 
-import com.sun.jersey.api.core.ExtendedUriInfo;
 
 /** Write content to an HTTP stream in JSON format.
  *
@@ -60,7 +61,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
    * @param jw the JSON writer object
    * @param target the content value to be written
    */
-  abstract protected void writeContent(ExtendedUriInfo uriInfo, JsonWriter jw, T target);
+  abstract protected void writeContent(UriInfo uriInfo, JsonWriter jw, T target);
 
   @Override
   public String getContentType() {
@@ -74,7 +75,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
   }
 
   @Override
-  public void write(ExtendedUriInfo uriInfo, Writer w, T target) {
+  public void write(UriInfo uriInfo, Writer w, T target) {
 
     JsonWriter jw = new JsonWriter(w);
     if (getJsonpCallback() != null) {
@@ -173,7 +174,6 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
           }
           //else if (obj instanceof OEntity) {
           //  I think the FormatWriter sig is going to have to change:
-          //  1.  passing around a Jersey type like ExtendedUriInfo is not a good idea imo
           //  2.  why does JSON write absolute uris (http://blah/blah) for every entity?  The Atom
           //      equivalent parts have the relative uri in many places.  Hmmh, a JSON feed representation
           //      doesn't carry the xml:base uri like in Atom...weird...protocol seems inconsistent.
@@ -208,7 +208,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
     jw.endObject();
   }
 
-  protected void writeOEntity(ExtendedUriInfo uriInfo, JsonWriter jw, OEntity oe, EdmEntitySet ees, boolean isResponse) {
+  protected void writeOEntity(UriInfo uriInfo, JsonWriter jw, OEntity oe, EdmEntitySet ees, boolean isResponse) {
 
     jw.startObject();
     {
@@ -237,7 +237,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
     jw.endObject();
   }
 
-  protected void writeLinks(JsonWriter jw, OEntity oe, ExtendedUriInfo uriInfo, boolean isResponse) {
+  protected void writeLinks(JsonWriter jw, OEntity oe, UriInfo uriInfo, boolean isResponse) {
 
     if (oe.getLinks() != null) {
       for (OLink link : oe.getLinks()) {
@@ -250,7 +250,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
     }
   }
 
-  protected void writeResponseLink(JsonWriter jw, OLink link, OEntity oe, ExtendedUriInfo uriInfo) {
+  protected void writeResponseLink(JsonWriter jw, OLink link, OEntity oe, UriInfo uriInfo) {
     jw.writeSeparator();
     jw.writeName(link.getTitle());
     if (link.isInline()) {
@@ -312,7 +312,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
     }
   }
 
-  protected void writeRequestLink(JsonWriter jw, OLink link, OEntity oe, ExtendedUriInfo uriInfo) {
+  protected void writeRequestLink(JsonWriter jw, OLink link, OEntity oe, UriInfo uriInfo) {
     jw.writeSeparator();
 
     jw.writeName(link.getTitle());

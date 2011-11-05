@@ -4,14 +4,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.core.UriInfo;
+
 import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.CommonExpression;
 import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.ExpressionParser;
 import org.odata4j.expression.OrderByExpression;
 import org.odata4j.producer.InlineCount;
-
-import com.sun.jersey.api.core.HttpContext;
 
 public class OptionsQueryParser {
 
@@ -55,11 +55,11 @@ public class OptionsQueryParser {
     return skipToken;
   }
 
-  public static Map<String, String> parseCustomOptions(HttpContext context) {
+  public static Map<String, String> parseCustomOptions(UriInfo uriInfo) {
     Map<String, String> rt = new HashMap<String, String>();
-    for (String qp : context.getRequest().getQueryParameters().keySet()) {
+    for (String qp : uriInfo.getQueryParameters().keySet()) {
       if (!qp.startsWith("$")) {
-        rt.put(qp, context.getRequest().getQueryParameters().getFirst(qp));
+        rt.put(qp, uriInfo.getQueryParameters().getFirst(qp));
 
       }
     }

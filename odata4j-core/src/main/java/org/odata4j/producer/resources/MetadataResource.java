@@ -8,8 +8,10 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.odata4j.core.ODataConstants;
 import org.odata4j.edm.EdmDataServices;
@@ -68,7 +70,8 @@ public class MetadataResource {
       ODataConstants.TEXT_JAVASCRIPT_CHARSET_UTF8,
       ODataConstants.APPLICATION_JAVASCRIPT_CHARSET_UTF8 })
   public Response getMetadataEntities(
-          @Context HttpContext context,
+          @Context HttpHeaders httpHeaders,
+          @Context UriInfo uriInfo,
           @Context ODataProducer producer,
           final @PathParam("entitySetName") String entitySetName,
           final @PathParam("optionalId") String optionalId,
@@ -89,7 +92,7 @@ public class MetadataResource {
     }
 
     EntitiesRequestResource r = new EntitiesRequestResource();
-    return r.getEntities(context, md, entitySetName, inlineCount, top, skip, filter, orderBy, format, callback, skipToken, expand, select);
+    return r.getEntities(httpHeaders, uriInfo, md, entitySetName, inlineCount, top, skip, filter, orderBy, format, callback, skipToken, expand, select);
     // return Response.ok("getMetadataEntities: " + entitySetName + " optionalId: " + optionalId, "text/plain").build();
   }
 
@@ -99,7 +102,8 @@ public class MetadataResource {
     ODataConstants.TEXT_JAVASCRIPT_CHARSET_UTF8,
     ODataConstants.APPLICATION_JAVASCRIPT_CHARSET_UTF8 })
   public Response getMetadataEntity(
-          @Context HttpContext context,
+          @Context HttpHeaders httpHeaders,
+          @Context UriInfo uriInfo,
           @Context ODataProducer producer,
           final @PathParam("entitySetName") String entitySetName,
           final @PathParam("id") String id,
@@ -114,7 +118,7 @@ public class MetadataResource {
     }
 
     EntityRequestResource r = new EntityRequestResource();
-    return r.getEntity(context, md, entitySetName, id, format, callback, expand, select);
+    return r.getEntity(httpHeaders, uriInfo, md, entitySetName, id, format, callback, expand, select);
     //return Response.ok("getMetadataEntity: " + entitySetName + " id: " + id, "text/plain").build();
   }
 
