@@ -47,7 +47,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
   }
 
   @Override
-  public EdmDataServices generateEdm(EdmDecorator decorator) {
+  public EdmDataServices.Builder generateEdm(EdmDecorator decorator) {
 
     List<EdmSchema.Builder> schemas = new ArrayList<EdmSchema.Builder>();
     List<EdmEntityContainer.Builder> containers = new ArrayList<EdmEntityContainer.Builder>();
@@ -102,7 +102,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
     EdmDataServices.Builder rt = EdmDataServices.newBuilder().addSchemas(schemas);
     if (decorator != null)
       rt.addNamespaces(decorator.getNamespaces());
-    return rt.build();
+    return rt;
   }
 
   private void createStructuralEntities(EdmDecorator decorator, List<EdmEntitySet.Builder> entitySets,

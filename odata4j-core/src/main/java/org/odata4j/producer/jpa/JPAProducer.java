@@ -101,7 +101,7 @@ public class JPAProducer implements ODataProducer {
       EntityManagerFactory emf,
       String namespace,
       int maxResults) {
-    this(emf, new JPAEdmGenerator(emf, namespace).generateEdm(null), maxResults);
+    this(emf, new JPAEdmGenerator(emf, namespace).generateEdm(null).build(), maxResults);
   }
 
   @Override

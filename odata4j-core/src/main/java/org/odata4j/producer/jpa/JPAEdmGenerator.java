@@ -78,7 +78,7 @@ public class JPAEdmGenerator implements EdmGenerator {
   }
 
   @Override
-  public EdmDataServices generateEdm(EdmDecorator decorator) {
+  public EdmDataServices.Builder generateEdm(EdmDecorator decorator) {
 
     String modelNamespace = getModelSchemaNamespace();
 
@@ -234,7 +234,7 @@ public class JPAEdmGenerator implements EdmGenerator {
     EdmSchema.Builder modelSchema = EdmSchema.newBuilder().setNamespace(modelNamespace).addEntityTypes(edmEntityTypes).addComplexTypes(edmComplexTypes).addAssociations(associations);
     EdmSchema.Builder containerSchema = EdmSchema.newBuilder().setNamespace(getContainerSchemaNamespace()).addEntityContainers(container);
 
-    return EdmDataServices.newBuilder().addSchemas(containerSchema, modelSchema).build();
+    return EdmDataServices.newBuilder().addSchemas(containerSchema, modelSchema);
   }
 
   protected EdmSimpleType<?> toEdmType(SingularAttribute<?, ?> sa) {

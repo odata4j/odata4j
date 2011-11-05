@@ -7,6 +7,6 @@ package org.odata4j.edm;
  */
 public interface EdmGenerator {
 
-  EdmDataServices generateEdm(EdmDecorator decorator);
+  EdmDataServices.Builder generateEdm(EdmDecorator decorator);
 
 }

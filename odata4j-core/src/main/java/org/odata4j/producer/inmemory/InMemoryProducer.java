@@ -89,7 +89,7 @@ public class InMemoryProducer implements ODataProducer {
   @Override
   public EdmDataServices getMetadata() {
     if (metadata == null) {
-      metadata = newEdmGenerator(namespace, typeMapping, ID_PROPNAME, eis).generateEdm(decorator);
+      metadata = newEdmGenerator(namespace, typeMapping, ID_PROPNAME, eis).generateEdm(decorator).build();
     }
     return metadata;
   }

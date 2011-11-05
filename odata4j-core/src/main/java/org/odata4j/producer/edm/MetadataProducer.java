@@ -84,6 +84,10 @@ public class MetadataProducer implements ODataProducer {
     public static final String Flatten = "flatten";
   }
 
+  private final ODataProducer dataProducer;
+  private final EdmDataServices edm;
+  private final EdmDecorator decorator;
+
   /**
    * create
    * @param dataProducer - the data producer who defines the $metadata we will expose
@@ -95,11 +99,8 @@ public class MetadataProducer implements ODataProducer {
   public MetadataProducer(ODataProducer dataProducer, EdmDecorator edmDecorator) {
     this.dataProducer = dataProducer;
     this.decorator = edmDecorator;
-    edm = new MetadataEdmGenerator().generateEdm(edmDecorator);
+    edm = new MetadataEdmGenerator().generateEdm(edmDecorator).build();
   }
-  private ODataProducer dataProducer = null;
-  private EdmDataServices edm = null;
-  private EdmDecorator decorator = null;
 
   /**
    * Get the EDM model that this producer exposes.

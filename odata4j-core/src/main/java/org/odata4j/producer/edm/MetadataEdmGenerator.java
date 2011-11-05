@@ -61,7 +61,7 @@ public class MetadataEdmGenerator implements EdmGenerator {
    * Generate the meta EDM data serivces
    * @return - the model.
    */
-  public EdmDataServices generateEdm(EdmDecorator decorator) {
+  public EdmDataServices.Builder generateEdm(EdmDecorator decorator) {
 
     createComplexTypes();
     createEntityTypes();
@@ -81,7 +81,7 @@ public class MetadataEdmGenerator implements EdmGenerator {
         .addEntityContainers(container);
 
 
-    return EdmDataServices.newBuilder().addSchemas(schema).build();
+    return EdmDataServices.newBuilder().addSchemas(schema);
   }
 
   private void createComplexTypes() {

@@ -52,7 +52,7 @@ public class EdmDateTimeTemporalTest extends AirlineJPAProducerTestBase {
           return super.toEdmType(sa);
         }
       }
-    }.generateEdm(null), 20);
+    }.generateEdm(null).build(), 20);
 
     ODataProducerProvider.setInstance(producer);
     server = ProducerUtil.startODataServer(endpointUri);

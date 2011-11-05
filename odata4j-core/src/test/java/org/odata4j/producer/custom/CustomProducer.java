@@ -22,9 +22,7 @@ import org.odata4j.core.OSimpleObjects;
 import org.odata4j.edm.EdmCollectionType;
 import org.odata4j.edm.EdmComplexType;
 import org.odata4j.edm.EdmDataServices;
-import org.odata4j.edm.EdmDecorator;
 import org.odata4j.edm.EdmFunctionImport;
-import org.odata4j.edm.EdmGenerator;
 import org.odata4j.edm.EdmProperty.CollectionKind;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.producer.BaseResponse;
@@ -40,12 +38,14 @@ import org.odata4j.producer.exceptions.NotFoundException;
 /**
  * A custom producer for various test scenarios that aren't possible with
  * stock producers
- *
  */
-public class CustomProducer implements ODataProducer, EdmGenerator {
+public class CustomProducer implements ODataProducer {
+
+  private final EdmDataServices edm = new CustomEdm().generateEdm(null).build();
+  private final MetadataProducer metadataProducer;
 
   public CustomProducer() {
-    this.mdProducer = new MetadataProducer(this, null);
+    this.metadataProducer = new MetadataProducer(this, null);
   }
 
   @Override
@@ -55,7 +55,7 @@ public class CustomProducer implements ODataProducer, EdmGenerator {
 
   @Override
   public MetadataProducer getMetadataProducer() {
-    return mdProducer;
+    return metadataProducer;
   }
 
   @Override
@@ -66,7 +66,6 @@ public class CustomProducer implements ODataProducer, EdmGenerator {
       throw new NotFoundException("Unknown entity set: " + entitySetName);
     }
   }
-
 
   private List<OEntity> getType1s() {
     List<OEntity> l = new ArrayList<OEntity>(3);
@@ -118,10 +117,10 @@ public class CustomProducer implements ODataProducer, EdmGenerator {
     props.add(OProperties.collection("ListOComplex", new EdmCollectionType(CollectionKind.List, ct1), builder.build()));
 
     return OEntities.create(
-            edm.findEdmEntitySet("Type1s"),
-            OEntityKey.create("Id", id),
-            props,
-            new ArrayList<OLink>());
+        edm.findEdmEntitySet("Type1s"),
+        OEntityKey.create("Id", id),
+        props,
+        new ArrayList<OLink>());
   }
 
   @Override
@@ -193,12 +192,4 @@ public class CustomProducer implements ODataProducer, EdmGenerator {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
-
-  @Override
-  public EdmDataServices generateEdm(EdmDecorator decorator) {
-    return edm;
-  }
-
-  private EdmDataServices edm = new CustomEdm().generateEdm(null);
-  private MetadataProducer mdProducer = null;
 }
