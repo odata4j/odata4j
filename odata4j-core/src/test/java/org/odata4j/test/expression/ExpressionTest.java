@@ -13,10 +13,9 @@ import org.odata4j.core.Guid;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.expression.AddExpression;
 import org.odata4j.expression.AggregateAllFunction;
-import org.odata4j.expression.AndExpression;
 import org.odata4j.expression.AggregateAnyFunction;
+import org.odata4j.expression.AndExpression;
 import org.odata4j.expression.BinaryLiteral;
-import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.BooleanLiteral;
 import org.odata4j.expression.CastExpression;
 import org.odata4j.expression.CeilingMethodCallExpression;
@@ -33,7 +32,6 @@ import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.EqExpression;
 import org.odata4j.expression.Expression;
 import org.odata4j.expression.ExpressionParser;
-import org.odata4j.expression.ExpressionParser.Token;
 import org.odata4j.expression.FloorMethodCallExpression;
 import org.odata4j.expression.GeExpression;
 import org.odata4j.expression.GtExpression;
@@ -56,6 +54,7 @@ import org.odata4j.expression.NotExpression;
 import org.odata4j.expression.NullLiteral;
 import org.odata4j.expression.OrExpression;
 import org.odata4j.expression.OrderByExpression;
+import org.odata4j.expression.OrderByExpression.Direction;
 import org.odata4j.expression.ParenExpression;
 import org.odata4j.expression.ReplaceMethodCallExpression;
 import org.odata4j.expression.RoundMethodCallExpression;
@@ -71,7 +70,6 @@ import org.odata4j.expression.ToLowerMethodCallExpression;
 import org.odata4j.expression.ToUpperMethodCallExpression;
 import org.odata4j.expression.TrimMethodCallExpression;
 import org.odata4j.expression.YearMethodCallExpression;
-import org.odata4j.expression.OrderByExpression.Direction;
 
 public class ExpressionTest {
 
@@ -104,6 +102,14 @@ public class ExpressionTest {
     t(Expression.double_(2E-1), "2E-1");
     t(Expression.double_(-2.1E+1), "-2.1E+1");
     t(Expression.double_(-2.1E-1), "-2.1E-1");
+    t(Expression.decimal(new BigDecimal("2")), "2M");
+    t(Expression.decimal(new BigDecimal("2.34")), "2.34M");
+    t(Expression.decimal(new BigDecimal("2")), "2m");
+    t(Expression.decimal(new BigDecimal("2.34")), "2.34m");
+    t(Expression.decimal(new BigDecimal("-2")), "-2M");
+    t(Expression.decimal(new BigDecimal("-2.34")), "-2.34M");
+    t(Expression.decimal(new BigDecimal("-2")), "-2m");
+    t(Expression.decimal(new BigDecimal("-2.34")), "-2.34m");
     t(Expression.dateTime(new LocalDateTime("2008-10-13")), "datetime'2008-10-13T00:00:00'");
     t(Expression.dateTimeOffset(new DateTime("2008-10-13T00:00:00-04:00")), "datetimeoffset'2008-10-13T00:00:00-04:00'");
     t(Expression.time(new LocalTime("13:20:00")), "time'PT13H20M'");
@@ -168,7 +174,7 @@ public class ExpressionTest {
     t(Expression.substring(Expression.string("aba"), Expression.integral(1), Expression.integral(2)), "substring('aba',1,2)");
     t(Expression.concat(Expression.string("a"), Expression.string("b")), "concat('a','b')");
     t(Expression.length(Expression.string("aba")), "length('aba')");
-    
+
     t(Expression.substringOf(Expression.simpleProperty("Name"), Expression.string("Boris")), "substringof(Name, 'Boris')");
 
     t(Expression.year(Expression.string("aba")), "year('aba')");
@@ -180,7 +186,7 @@ public class ExpressionTest {
     t(Expression.round(Expression.string("aba")), "round('aba')");
     t(Expression.ceiling(Expression.string("aba")), "ceiling('aba')");
     t(Expression.floor(Expression.string("aba")), "floor('aba')");
-    
+
     o("a desc", Expression.orderBy(Expression.simpleProperty("a"), Direction.DESCENDING));
     o("a", Expression.orderBy(Expression.simpleProperty("a"), Direction.ASCENDING));
     o("b desc, a", Expression.orderBy(Expression.simpleProperty("b"), Direction.DESCENDING), Expression.orderBy(Expression.simpleProperty("a"), Direction.ASCENDING));
@@ -395,12 +401,12 @@ public class ExpressionTest {
     } else if (expected instanceof CeilingMethodCallExpression) {
       assertInstanceOf(CeilingMethodCallExpression.class, actual);
       assertSame(((CeilingMethodCallExpression) actual).getTarget(), ((CeilingMethodCallExpression) expected).getTarget());
-    } else if (expected instanceof AggregateAnyFunction) { 
+    } else if (expected instanceof AggregateAnyFunction) {
       assertInstanceOf(AggregateAnyFunction.class, actual);
       assertSame(((AggregateAnyFunction)expected).getSource(), ((AggregateAnyFunction)actual).getSource());
       assertSame(((AggregateAnyFunction)expected).getVariable(), ((AggregateAnyFunction)actual).getVariable());
       assertSame(((AggregateAnyFunction)expected).getPredicate(), ((AggregateAnyFunction)actual).getPredicate());
-    } else if (expected instanceof AggregateAllFunction) { 
+    } else if (expected instanceof AggregateAllFunction) {
       assertInstanceOf(AggregateAllFunction.class, actual);
       assertSame(((AggregateAllFunction)expected).getSource(), ((AggregateAllFunction)actual).getSource());
       assertSame(((AggregateAllFunction)expected).getVariable(), ((AggregateAllFunction)actual).getVariable());
@@ -417,7 +423,7 @@ public class ExpressionTest {
       Assert.assertNotNull(actual);
     }
   }
-  
+
   private <T> void assertArrayEqual(byte[] expected, byte[] actual) {
     Assert.assertEquals(expected.length, actual.length);
     for (int i = 0; i < expected.length; i++) {
@@ -429,107 +435,107 @@ public class ExpressionTest {
     Assert.assertTrue("e:" + expected.getSimpleName() + " a:" + actual.getClass().getSimpleName(), expected.isAssignableFrom(actual.getClass()));
   }
 
-  
+
   @Test
   public void testAny() {
     t(Expression.any(Expression.simpleProperty("Actors")), "Actors/any()");
   }
-  
+
   @Test
   public void testAnyPredicate() {
     t(Expression.any(
-        Expression.simpleProperty("Actors"), 
-        "a", 
+        Expression.simpleProperty("Actors"),
+        "a",
         Expression.eq(
-            Expression.simpleProperty("a/FirstName"), 
-            Expression.string("Charlize"))), 
+            Expression.simpleProperty("a/FirstName"),
+            Expression.string("Charlize"))),
       "Actors/any(a:a/FirstName eq 'Charlize')");
   }
-  
+
   @Test
   public void testAnyNestedPredicate() {
     t(Expression.any(
-        Expression.simpleProperty("Actors"), 
-        "a", 
+        Expression.simpleProperty("Actors"),
+        "a",
         Expression.any(
-            Expression.simpleProperty("a/Awards"), 
-            "w", 
+            Expression.simpleProperty("a/Awards"),
+            "w",
             Expression.eq(
-                Expression.simpleProperty("w/Name"), 
+                Expression.simpleProperty("w/Name"),
                 Expression.string("Oscar")))),
       "Actors/any(a:a/Awards/any(w:w/Name eq 'Oscar'))");
   }
-  
+
   @Test
   public void testAllPredicate() {
     // it could happen...
     t(Expression.all(
-        Expression.simpleProperty("Actors"), 
-        "a", 
+        Expression.simpleProperty("Actors"),
+        "a",
         Expression.eq(
-            Expression.simpleProperty("a/FirstName"), 
-            Expression.string("Charlize"))), 
+            Expression.simpleProperty("a/FirstName"),
+            Expression.string("Charlize"))),
       "Actors/all(a:a/FirstName eq 'Charlize')");
   }
-  
+
   @Test
   public void testAllNestedPredicate() {
     // now that is a cast..
     t(Expression.all(
-        Expression.simpleProperty("Actors"), 
-        "a", 
+        Expression.simpleProperty("Actors"),
+        "a",
         Expression.all(
-            Expression.simpleProperty("a/Awards"), 
-            "w", 
+            Expression.simpleProperty("a/Awards"),
+            "w",
             Expression.eq(
-                Expression.simpleProperty("w/Name"), 
+                Expression.simpleProperty("w/Name"),
                 Expression.string("Oscar")))),
       "Actors/all(a:a/Awards/all(w:w/Name eq 'Oscar'))");
   }
-  
+
   @Test
   public void testAnyAllNestedPredicate() {
     t(Expression.any(
-        Expression.simpleProperty("Actors"), 
-        "a", 
+        Expression.simpleProperty("Actors"),
+        "a",
         Expression.all(
-            Expression.simpleProperty("a/Awards"), 
-            "w", 
+            Expression.simpleProperty("a/Awards"),
+            "w",
             Expression.eq(
-                Expression.simpleProperty("w/Name"), 
+                Expression.simpleProperty("w/Name"),
                 Expression.string("Oscar")))),
       "Actors/any(a:a/Awards/all(w:w/Name eq 'Oscar'))");
   }
-  
+
   @Test
   public void testAnyAllNestedPredicate2() {
     t(Expression.any(
-        Expression.simpleProperty("Actors"), 
-        "a", 
+        Expression.simpleProperty("Actors"),
+        "a",
         Expression.or(
           Expression.all(
-              Expression.simpleProperty("a/Awards"), 
-              "w", 
+              Expression.simpleProperty("a/Awards"),
+              "w",
               Expression.eq(
-                  Expression.simpleProperty("w/Name"), 
+                  Expression.simpleProperty("w/Name"),
                   Expression.string("Oscar"))),
           Expression.any(
-              Expression.simpleProperty("a/Houses"), 
-              "h", 
+              Expression.simpleProperty("a/Houses"),
+              "h",
               Expression.eq(
-                  Expression.simpleProperty("h/City"), 
+                  Expression.simpleProperty("h/City"),
                   Expression.string("Malibu"))))),
       "Actors/any(a:a/Awards/all(w:w/Name eq 'Oscar') or a/Houses/any(h:h/City eq 'Malibu'))");
   }
-  
+
   @Test
   public void testAnyPredicateOnCollectionProperty() {
     t(Expression.any(
-        Expression.simpleProperty("Tags"), 
-        "t", 
+        Expression.simpleProperty("Tags"),
+        "t",
         Expression.eq(
-            Expression.simpleProperty("t"), 
-            Expression.string("Beautiful"))), 
+            Expression.simpleProperty("t"),
+            Expression.string("Beautiful"))),
       "Tags/any(t:t eq 'Beautiful')");
   }
 }

@@ -53,7 +53,7 @@ public class ExpressionParser {
       Methods.YEAR, Methods.MONTH, Methods.DAY, Methods.HOUR, Methods.MINUTE, Methods.SECOND, Methods.ROUND, Methods.FLOOR, Methods.CEILING).toSet();
 
   public enum AggregateFunction { none, any, all };
-  
+
   public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormat.forPattern("HH:mm:ss");
   public static boolean DUMP_EXPRESSION_INFO = false;
 
@@ -285,7 +285,7 @@ public class ExpressionParser {
   }
 
   public static List<Token> processParentheses(List<Token> tokens) {
-    
+
     List<Token> rt = new ArrayList<Token>();
 
     for (int i = 0; i < tokens.size(); i++) {
@@ -307,7 +307,7 @@ public class ExpressionParser {
           if (methodNameToken.type == TokenType.WORD) {
             if (METHODS.contains(methodNameToken.value)) {
               methodName = methodNameToken.value;
-              
+
               // this isn't strictly correct.  I think the parser has issues
               // with sequences of WORD, WHITESPACE, WORD, etc.  I'm not sure I've
               // ever seen a token type of WHITESPACE producer by a lexer..
@@ -322,7 +322,7 @@ public class ExpressionParser {
               // or, for any, i + 1 can be CLOSEPAREN
               int ni = i + 1;
               Token ntoken = ni < tokens.size() ? tokens.get(ni) : null;
-              if (null == ntoken || 
+              if (null == ntoken ||
                   (aggregateFunction == AggregateFunction.all && ntoken.type != TokenType.WORD) ||
                   (aggregateFunction == AggregateFunction.any && ntoken.type != TokenType.WORD && ntoken.type != TokenType.CLOSEPAREN)) {
                 throw new RuntimeException("unexpected token: " + (null == ntoken ? "eof" : ntoken.toString()));
@@ -347,7 +347,7 @@ public class ExpressionParser {
                 rt.add(et);
                 return rt;
               }
-              
+
             }
           }
         }
@@ -394,14 +394,14 @@ public class ExpressionParser {
               CommonExpression any = Expression.aggregate(
                   aggregateFunction,
                   Expression.simpleProperty(aggregateSource),
-                  aggregateVariable, 
+                  aggregateVariable,
                   (BoolCommonExpression)expressionInsideParens);
 
               ExpressionToken et = new ExpressionToken(any, tokensIncludingParens);
               rt.subList(rt.size() - (i - k), rt.size()).clear();
               rt.add(et);
             } else {
-             
+
               List<Token> tokensIncludingParens = tokens.subList(i, j + 1);
               List<Token> tokensInsideParens = tokens.subList(i + 1, j);
               // paren expression: replace t ( t t t ) t with t et t
@@ -530,6 +530,11 @@ public class ExpressionParser {
         double doubleValue = Double.parseDouble(tokens.get(0).value + "." + tokens.get(2).value + "E" + tokens.get(4).value);
         return Expression.double_(doubleValue);
       }
+    }
+    // decimal literal: 1234M or 1234m
+    if (tokens.size() == 2 && tokens.get(0).type == TokenType.NUMBER && tokens.get(1).type == TokenType.WORD && tokens.get(1).value.equalsIgnoreCase("M")) {
+        BigDecimal decimalValue = new BigDecimal(tokens.get(0).value);
+        return Expression.decimal(decimalValue);
     }
     // decimal literal: 2.0m
     if (tokens.size() == 4 && tokens.get(0).type == TokenType.NUMBER && tokens.get(1).type == TokenType.SYMBOL && tokens.get(1).value.equals(".") && tokens.get(2).type == TokenType.NUMBER && tokens.get(3).value.equalsIgnoreCase("m")) {
@@ -803,7 +808,7 @@ public class ExpressionParser {
       System.out.println(t.type.toString() + t.toString());
     }
   }
-  
+
   private static int readDigits(String value, int start) {
     int rt = start;
     while (rt < value.length() && Character.isDigit(value.charAt(rt))) {
