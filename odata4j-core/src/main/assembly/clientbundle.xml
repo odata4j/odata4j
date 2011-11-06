@@ -10,7 +10,7 @@
   <dependencySets>
     <dependencySet>
       <includes>
-        <include>org.odata4j:odata4j:jar:${project.version}</include>
+        <include>*:odata4j:</include>
         <include>*:core4j:*</include>
         <include>*:joda-time:*</include>
         <include>*:jersey-core:*</include>
