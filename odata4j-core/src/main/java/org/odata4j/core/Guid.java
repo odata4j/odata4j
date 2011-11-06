@@ -16,7 +16,7 @@ public class Guid {
 
   /**
    * Return a Guid for a given string.
-   * 
+   *
    * @param value  the guid's string representation.
    * @return a new Guid
    */
@@ -24,9 +24,13 @@ public class Guid {
     return new Guid(value);
   }
 
+  public static Guid fromUUID(UUID uuid) {
+    return new Guid(uuid.toString());
+  }
+
   /**
    * Generate a new Guid.
-   * 
+   *
    * @return a new Guid
    */
   public static Guid randomGuid() {
@@ -47,4 +51,5 @@ public class Guid {
   public String toString() {
     return value;
   }
+
 }

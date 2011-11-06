@@ -64,7 +64,7 @@ public class OSimpleObjects {
       Float fValue = (Float) value;
       return (OSimpleObject<TOut>) Impl.create(EdmSimpleType.SINGLE, fValue);
     } else if (type == EdmSimpleType.GUID) {
-      Guid gValue = (Guid) value;
+      Guid gValue = TypeConverter.convert(value, Guid.class);
       return (OSimpleObject<TOut>) Impl.create(EdmSimpleType.GUID, gValue);
     } else if (type == EdmSimpleType.DATETIMEOFFSET) {
       DateTime dtValue = (DateTime) value;

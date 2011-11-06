@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import org.core4j.Enumerable;
 import org.joda.time.DateTime;
@@ -29,7 +30,7 @@ public class EdmSimpleType<V> extends EdmType {
   public static final EdmSimpleType<DateTime> DATETIMEOFFSET = newSimple("Edm.DateTimeOffset", DateTime.class);
   public static final EdmSimpleType<BigDecimal> DECIMAL = newSimple("Edm.Decimal", BigDecimal.class);
   public static final EdmSimpleType<Double> DOUBLE = newSimple("Edm.Double", Double.class, double.class);
-  public static final EdmSimpleType<Guid> GUID = newSimple("Edm.Guid", Guid.class);
+  public static final EdmSimpleType<Guid> GUID = newSimple("Edm.Guid", Guid.class, UUID.class);
   public static final EdmSimpleType<Short> INT16 = newSimple("Edm.Int16", Short.class, short.class);
   public static final EdmSimpleType<Integer> INT32 = newSimple("Edm.Int32", Integer.class, int.class);
   public static final EdmSimpleType<Long> INT64 = newSimple("Edm.Int64", Long.class, long.class);
@@ -103,12 +104,12 @@ public class EdmSimpleType<V> extends EdmType {
     Builder newBuilder(EdmType type, BuilderContext context) {
       return new Builder(type);
     }
-    
+
     @Override
     public EdmType build() {
       return (EdmType) _build();
     }
-    
+
     @Override
     protected EdmType buildImpl() {
       // should never get here

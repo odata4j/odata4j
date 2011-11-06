@@ -4,10 +4,12 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.UUID;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
+import org.odata4j.core.Guid;
 
 public class TypeConverter {
 
@@ -86,6 +88,14 @@ public class TypeConverter {
     } else if (desiredClass.equals(LocalTime.class)) {
       if (Date.class.isAssignableFrom(objClass)) {
         return (T) LocalTime.fromDateFields((Date) obj);
+      }
+    } else if (desiredClass.equals(UUID.class)) {
+      if (objClass.equals(Guid.class) || objClass.equals(String.class)) {
+        return (T) UUID.fromString(obj.toString());
+      }
+    } else if (desiredClass.equals(Guid.class)) {
+      if (objClass.equals(UUID.class)) {
+        return (T) Guid.fromUUID((UUID) obj);
       }
     }
 
