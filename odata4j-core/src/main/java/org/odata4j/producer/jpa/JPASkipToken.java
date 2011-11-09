@@ -123,13 +123,13 @@ public class JPASkipToken {
         BoolCommonExpression eq = Expression.eq(orderBy.getExpression(), orderByValues.get(j));
         predicate = Expression.and(eq, predicate);
       }
-      predicates.set(i, predicate);
+      predicates.set(i, Expression.boolParen(predicate));
     }
 
     // return all predicates OR'ed together
     BoolCommonExpression rt = predicates.get(0);
     for (int i = 1; i < predicates.size(); i++)
       rt = Expression.or(rt, predicates.get(i));
-    return rt;
+    return Expression.boolParen(rt);
   }
 }
