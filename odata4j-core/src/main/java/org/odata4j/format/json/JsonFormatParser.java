@@ -21,6 +21,7 @@ import org.odata4j.edm.EdmCollectionType;
 import org.odata4j.edm.EdmComplexType;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.edm.EdmEntityType;
 import org.odata4j.edm.EdmMultiplicity;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
@@ -97,8 +98,31 @@ public class JsonFormatParser {
     return feed;
   }
 
+  protected EdmEntitySet getEntitySetForType(JsonEntryMetaData jemd, EdmEntitySet baseSet) {
+    // does the metadata refine the type of entity to expect?
+    if (null != jemd && jemd.type != null && !baseSet.getType().getFullyQualifiedTypeName().equals(jemd.type)) {
+      // yes it does.  Now we run into the next issue:  We don't have an EdmEntitySet foreach
+      // subclass that may show up.  This bleeds all the way out to the OEntity interface.
+      // It has a single getEntitySet() when it really needs getEntitySet() and getEntityType() that are not coupled.
+      // how about creating a temp EdmEntitySet...
+
+      EdmEntityType refinedType = (EdmEntityType) this.metadata.findEdmEntityType(jemd.type);
+      if (null == refinedType) {
+        throw new IllegalArgumentException("failed resolving type: " + jemd.type);
+      }
+
+      // god this builder stuff is going to drive me nuts.
+      return EdmEntitySet.newBuilder(refinedType.getFullyQualifiedTypeName(), this.metadata).setName(baseSet.getName()).build();
+    } else {
+      return baseSet;
+    }
+  }
+  
   protected JsonEntry parseEntry(JsonEntryMetaData jemd, EdmEntitySet ees, JsonStreamReader jsr) {
-    JsonEntry entry = new JsonEntry();
+    
+    ees = getEntitySetForType(jemd, ees);
+    
+    JsonEntry entry = new JsonEntry(ees);
     entry.properties = new ArrayList<OProperty<?>>();
     entry.links = new ArrayList<OLink>();
     while (jsr.hasNext()) {
@@ -115,7 +139,7 @@ public class JsonFormatParser {
   }
 
   protected JsonEntry parseEntry(EdmEntitySet ees, JsonStreamReader jsr) {
-    JsonEntry entry = new JsonEntry();
+    JsonEntry entry = new JsonEntry(ees);
     entry.properties = new ArrayList<OProperty<?>>();
     entry.links = new ArrayList<OLink>();
 
@@ -123,7 +147,7 @@ public class JsonFormatParser {
       JsonEvent event = jsr.nextEvent();
 
       if (event.isStartProperty()) {
-        addProperty(entry, ees, event.asStartProperty().getName(), jsr);
+        ees = addProperty(entry, ees, event.asStartProperty().getName(), jsr);
       } else if (event.isEndObject()) {
         break;
       }
@@ -176,7 +200,7 @@ public class JsonFormatParser {
    * case a link will be added. If it's the meta data the information will be
    * added to the entry too.
    */
-  protected void addProperty(JsonEntry entry, EdmEntitySet ees, String name, JsonStreamReader jsr) {
+  protected EdmEntitySet addProperty(JsonEntry entry, EdmEntitySet ees, String name, JsonStreamReader jsr) {
 
     if (METADATA_PROPERTY.equals(name)) {
       JsonEntryMetaData jemd = parseMetadata(jsr);
@@ -185,6 +209,9 @@ public class JsonFormatParser {
       JsonEvent event = jsr.nextEvent();
       ensureStartProperty(event);
       name = event.asStartProperty().getName();
+      
+      // did the metadata point call out a refined type for this entry?
+      ees = getEntitySetForType(jemd, ees);
     }
 
     JsonEvent event = jsr.nextEvent();
@@ -200,7 +227,7 @@ public class JsonFormatParser {
           if (null != navProp) {
             // aha
             entry.links.add(OLinks.relatedEntityInline(name, name, entry.getUri() + "/" + name, null));
-            return;
+            return ees;
           }
         }
         throw new IllegalArgumentException("unknown property " + name + " for " + ees.getName());
@@ -257,6 +284,7 @@ public class JsonFormatParser {
 
       ensureEndProperty(jsr.nextEvent());
     }
+    return ees;
   }
 
   protected JsonObjectPropertyValue getValue(JsonEvent event, EdmEntitySet ees, String name, JsonStreamReader jsr) {
@@ -334,6 +362,16 @@ public class JsonFormatParser {
       // inlined entity or link starting with meta data
       EdmNavigationProperty navProp = ees.getType().findNavigationProperty(name);
       JsonEntryMetaData jemd = parseMetadata(jsr);
+      
+      /*
+       * Entity Inheritance Hierarchy Issue:  the navigation property ToRole.type
+       * may reference a base entity type.  The object(s) on the to end of the
+       * actual relationship can be of that type or any sub-type.
+       * The __metadata section just parsed should have a type: property that gives
+       * the actual type of the object we need to parse next.
+       * 
+       * 
+       */
       JsonEntry refentry = parseEntry(jemd, metadata.getEdmEntitySet(navProp.getToRole().getType()), jsr);
 
       // if we are parsing a request, the links to existing
@@ -356,7 +394,7 @@ public class JsonFormatParser {
       if (null != navProp) {
         ees = metadata.getEdmEntitySet(navProp.getToRole().getType());
 
-        JsonEntry refentry = new JsonEntry();
+        JsonEntry refentry = new JsonEntry(ees);
         refentry.properties = new ArrayList<OProperty<?>>();
         refentry.links = new ArrayList<OLink>();
         do {

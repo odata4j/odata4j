@@ -47,12 +47,16 @@ public class EdmEntitySet extends EdmItem implements Named {
   public static Builder newBuilder(EdmEntitySet entitySet, BuilderContext context) {
     return context.newBuilder(entitySet, new Builder());
   }
+  
+  public static Builder newBuilder(String fqName, EdmDataServices ds) {
+    return new TempBuilder(fqName, ds);
+  }
 
   public static class Builder extends EdmItem.Builder<EdmEntitySet, Builder> implements Named {
 
-    private String name;
-    private String entityTypeName;
-    private EdmEntityType.Builder entityType;
+    protected String name;
+    protected String entityTypeName;
+    protected EdmEntityType.Builder entityType;
 
     @Override
     Builder newBuilder(EdmEntitySet entitySet, BuilderContext context) {
@@ -89,6 +93,33 @@ public class EdmEntitySet extends EdmItem implements Named {
       return this;
     }
 
+  }
+  /**
+   * This is temporary (hopefully), @see JsonFormatParser for why
+   */
+  public static class TempBuilder extends Builder {
+    private final EdmDataServices dataServices;
+    
+    public TempBuilder(String fqName, EdmDataServices ds) {
+      dataServices = ds;
+      this.entityTypeName = fqName;
+    }
+    
+    @Override
+    public EdmEntitySet build() {
+      return new EdmEntitySet(name, 
+          new Func<EdmEntityType>() {
+
+              @Override
+              public EdmEntityType apply() {
+                return (EdmEntityType) dataServices.findEdmEntityType(entityTypeName);
+              }
+
+            }, 
+          getDocumentation(), 
+          ImmutableList.copyOf(getAnnotations()));
+              
+    }
   }
 
 }

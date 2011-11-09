@@ -214,7 +214,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
     {
       String baseUri = null;
 
-      if (isResponse && ees != null) {
+      if (isResponse && (oe.getEntitySet() != null || ees != null)) {
         baseUri = uriInfo.getBaseUri().toString();
 
         jw.writeName("__metadata");
@@ -225,7 +225,8 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
           jw.writeString(absId);
           jw.writeSeparator();
           jw.writeName("type");
-          jw.writeString(ees.getType().getFullyQualifiedTypeName());
+          // an OEntity can have a different type that the type of the entity set it was queried under..consider a subtype for example
+          jw.writeString(null != oe.getEntitySet() ? oe.getEntitySet().getType().getFullyQualifiedTypeName() : ees.getType().getFullyQualifiedTypeName());
         }
         jw.endObject();
         jw.writeSeparator();
