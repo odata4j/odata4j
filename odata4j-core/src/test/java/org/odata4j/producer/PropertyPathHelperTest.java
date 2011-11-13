@@ -16,9 +16,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.odata4j.expression.EntitySimpleProperty;
 
-public class PathHelperTest {
+public class PropertyPathHelperTest {
 
-  public PathHelperTest() {
+  public PropertyPathHelperTest() {
   }
 
   @BeforeClass
@@ -45,7 +45,7 @@ public class PathHelperTest {
   //                                             |---------------(0..8) Properties-------Property
   @Test
   public void testEmpty() {
-    PathHelper h = new PathHelper(Collections.<EntitySimpleProperty>emptyList(), Collections.<EntitySimpleProperty>emptyList());
+    PropertyPathHelper h = new PropertyPathHelper(Collections.<EntitySimpleProperty>emptyList(), Collections.<EntitySimpleProperty>emptyList());
 
     // Path: "" type: Schema
     assertFalse(h.isSelectionLimited());
@@ -87,7 +87,7 @@ public class PathHelperTest {
 
   @Test
   public void testOne() {
-    PathHelper h = new PathHelper("Name", "EntityTypes");
+    PropertyPathHelper h = new PropertyPathHelper("Name", "EntityTypes");
 
     // Path: "" type: Schema
     assertTrue(h.isSelectionLimited());
@@ -129,7 +129,7 @@ public class PathHelperTest {
 
   @Test
   public void testMulti() {
-    PathHelper h = new PathHelper("Name,EntityTypes/Name", "EntityTypes,EntityTypes/SubTypes/Properties");
+    PropertyPathHelper h = new PropertyPathHelper("Name,EntityTypes/Name", "EntityTypes,EntityTypes/SubTypes/Properties");
 
     // Path: "" type: Schema
     assertTrue(h.isSelectionLimited());
@@ -173,7 +173,7 @@ public class PathHelperTest {
 
   @Test
   public void testRecursive() {
-    PathHelper h = new PathHelper(
+    PropertyPathHelper h = new PropertyPathHelper(
             "Name,Alias", // $select
             "EntityTypes",
             "SubTypes/Namespace,SubTypes/Name", // $selectR
@@ -222,7 +222,7 @@ public class PathHelperTest {
 
   @Test
   public void testRecursiveOverride() {
-    PathHelper h = new PathHelper(
+    PropertyPathHelper h = new PropertyPathHelper(
             "Name,Alias,EntityTypes/SubTypes/Prop1", // $select
             "EntityTypes", // $expand
             "SubTypes/Namespace,SubTypes/Name", // $selectR

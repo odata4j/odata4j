@@ -8,21 +8,25 @@ import org.core4j.Enumerable;
 import org.odata4j.core.OCollection.Builder;
 import org.odata4j.edm.EdmType;
 
+/**
+ * A static factory to create immutable {@link OCollection} instances.
+ */
 public class OCollections {
 
+  /** Starts a new {@link OCollection} builder using a given edm type. */
   public static <T extends OObject> OCollection.Builder<T> newBuilder(EdmType type) {
     return new BuilderImpl<T>(type);
   }
-  
+
   private static class BuilderImpl<T extends OObject> implements OCollection.Builder<T> {
 
     private final EdmType type;
     private final List<T> values = new LinkedList<T>();
-    
+
     BuilderImpl(EdmType type) {
       this.type = type;
     }
-    
+
     @Override
     public Builder<T> add(T value) {
       values.add(value);
@@ -33,9 +37,9 @@ public class OCollections {
     public OCollection<T> build() {
       return new OCollectionImpl<T>(type, values);
     }
-    
+
   }
-  
+
   private static class OCollectionImpl<T extends OObject> implements OCollection<T> {
 
     private final EdmType type;
@@ -64,5 +68,5 @@ public class OCollections {
       return String.format("OCollection[%s,%s]", type, Enumerable.create(values).join(","));
     }
   }
-  
+
 }

@@ -25,7 +25,7 @@ public class NamedValues {
 
   /**
    * Create multiple named-values from a string->object map.
-   * 
+   *
    * @param values  names and values
    * @return a set of new named-value instances
    */
@@ -38,7 +38,7 @@ public class NamedValues {
 
   /**
    * Create a copy of a named-value.
-   * 
+   *
    * @param <T>  the value's java-type
    * @param value  the named-value to copy
    * @return a new named-value instance with the same name and value
@@ -73,4 +73,5 @@ public class NamedValues {
     }
 
   }
+
 }

@@ -24,16 +24,18 @@ import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.exceptions.NotImplementedException;
 
 /**
- * Handles function calls.  Unfortunately the OData URI scheme makes it
+ * Handles function calls.
+ *
+ * <p>Unfortunately the OData URI scheme makes it
  * impossible to differentiate a function call "resource" from an EntitySet.
  * So, we hack:  EntitiesRequestResource delegates to this class if it determines
  * that a function is being referenced.
  *
- * TODO:
- *  - function parameter facets (required, value ranges, etc).  For now, all
+ * <ul>TODO:
+ *   <li>function parameter facets (required, value ranges, etc).  For now, all
  *    validation is up to the function handler in the producer.
- *  - non-simple function parameter types
- *  - make sure this works for GET and POST
+ *   <li>non-simple function parameter types
+ *   <li>make sure this works for GET and POST
  */
 public class FunctionResource extends BaseResource {
 
@@ -117,4 +119,5 @@ public class FunctionResource extends BaseResource {
     }
     return m;
   }
+
 }

@@ -297,7 +297,6 @@ public class ExpressionParser {
         String aggregateSource = null;
         String aggregateVariable = null;
         AggregateFunction aggregateFunction = AggregateFunction.none;
-        boolean isAggregate = false;
         int k = i - 1;
         while (k > 0 && tokens.get(k).type == TokenType.WHITESPACE) {
           k--;
@@ -312,7 +311,6 @@ public class ExpressionParser {
               // with sequences of WORD, WHITESPACE, WORD, etc.  I'm not sure I've
               // ever seen a token type of WHITESPACE producer by a lexer..
             } else if (methodNameToken.value.endsWith("/any") || methodNameToken.value.endsWith("/all")) {
-              isAggregate = true;
               aggregateSource = methodNameToken.value.substring(0, methodNameToken.value.length() - 4);
               aggregateFunction = Enum.valueOf(AggregateFunction.class, methodNameToken.value.substring(methodNameToken.value.length() - 3));
               // to get things rolling I'm going to lookahead and require a very strict

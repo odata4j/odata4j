@@ -16,7 +16,7 @@ public class OClientBehaviors {
 
   /**
    * Creates a behavior that does http basic authentication.
-   * 
+   *
    * @param user  the basic auth user
    * @param password  the basic auth password
    * @return a behavior that does http basic authentication
@@ -27,7 +27,7 @@ public class OClientBehaviors {
 
   /**
    * Creates a behavior that allows for https services with self-signed certificates.
-   * 
+   *
    * @return a behavior that allows for https services with self-signed certificates
    */
   public static OClientBehavior allowSelfSignedCerts() {
@@ -36,7 +36,7 @@ public class OClientBehaviors {
 
   /**
    * Creates a behavior that signs requests properly for the Azure Table Storage service.
-   * 
+   *
    * @param account  azure account key
    * @param key  azure secret key
    * @return a behavior that signs requests properly for the Azure Table Storage service
@@ -47,17 +47,17 @@ public class OClientBehaviors {
 
   /**
    * Creates a behavior that tunnels specific http request methods through POST.
-   * 
+   *
    * @param methodsToTunnel  the methods to tunnel.  e.g. <code>MERGE</code>
    * @return a behavior that tunnels specific http request methods through POST
    */
   public static OClientBehavior methodTunneling(String... methodsToTunnel) {
     return new MethodTunnelingBehavior(methodsToTunnel);
   }
-  
+
   /**
    * Creates a behavior that sleeps a specified amount of time before each client request.
-   * 
+   *
    * @param millis  the time to sleep in milliseconds
    * @return a behavior that sleeps a specified amount of time before each client request
    */
@@ -74,4 +74,5 @@ public class OClientBehaviors {
       }
     };
   }
+
 }

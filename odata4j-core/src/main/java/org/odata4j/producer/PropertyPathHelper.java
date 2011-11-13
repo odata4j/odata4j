@@ -7,18 +7,19 @@ import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.ExpressionParser;
 
 /**
- * helps producers determine if a property is $selected and/or $expanded
+ * Helps producers determine if a property is $selected and/or $expanded.
  *
- * Note on recursive extensions:
+ * <p>Note on recursive extensions:
  * The idea here is that when one has an object graph that is a tree of like
  * nodes (such as a class hierarchy), it should be possible to specify a $expand
  * that is applied recursively.
  *
- * Two new custom options are proposed:
+ * <p>Two new custom options are proposed:
  *
- * expandR and selectR
+ * <p>expandR and selectR
  *
- * ABNF:
+ * <p>ABNF:
+ * <pre>
  * expandRQueryOp = "expandR=" recursiveExpandClause *("," recursiveExpandClause)
  * recursiveExpandClause = entityNavProperty "/" expandDepth
  * expandDepth = integer
@@ -27,24 +28,25 @@ import org.odata4j.expression.ExpressionParser;
  * recursiveSelectClause = rSelectItem *("," recursiveSelectClause)
  * rSelectItem = selectedNavProperty "/" rPropItem
  * rPropItem = "*" / selectedProperty
+ * </pre>
  *
- * expandDepth drives the number of traversal iterations.  An expandDepth of 0 is
+ * <p>expandDepth drives the number of traversal iterations.  An expandDepth of 0 is
  * unlimited.  During query processing, the max expandDepth of all recursivExpandClauses
  * is computed and drives processing.
  *
- * example:
+ * <p>example:
  *  expandR=SubTypes/0,Properties/1
  *
- * This says that at each position in the object graph traversal
- *  during query we will expand the SubTypes navigation property.  At the first
- *  level we will also expand the Properties navigation property
- *
- *  selectR=SubTypes/Namespace,SubTypes/Type
- *
- *  This says that whenever we expand the SubTypes navigation property we will only
+ * <p>This says that at each position in the object graph traversal
+ * during query we will expand the SubTypes navigation property.  At the first
+ * level we will also expand the Properties navigation property
+ * <pre>
+ * selectR=SubTypes/Namespace,SubTypes/Type
+ * </pre>
+ * <p>This says that whenever we expand the SubTypes navigation property we will only
  *  include Namespace and Type properties.
  */
-public class PathHelper {
+public class PropertyPathHelper {
 
   public static final String OptionExpandR = "expandR";
   public static final String OptionSelectR = "selectR";
@@ -53,58 +55,58 @@ public class PathHelper {
    * Our current path in the navigation.  An empty path means we are currently
    * at the root object.
    */
-  private Path currentNavPath = new Path("");
-  protected List<Path> selectPaths = null;
-  protected List<Path> expandPaths = null;
-  protected List<Path> selectRPaths = null;
-  protected List<RecursivePath> expandRPaths = null;
+  private PropertyPath currentNavPath = new PropertyPath("");
+  protected List<PropertyPath> selectPaths;
+  protected List<PropertyPath> expandPaths;
+  protected List<PropertyPath> selectRPaths;
+  protected List<RecursivePropertyPath> expandRPaths;
 
-  public PathHelper(String select, String expand) {
+  public PropertyPathHelper(String select, String expand) {
     setup(select, expand, null, null);
   }
 
-  public PathHelper(String select, String expand, String selectR, String expandR) {
+  public PropertyPathHelper(String select, String expand, String selectR, String expandR) {
     setup(select, expand, selectR, expandR);
   }
 
-  public PathHelper(List<EntitySimpleProperty> select, List<EntitySimpleProperty> expand) {
+  public PropertyPathHelper(List<EntitySimpleProperty> select, List<EntitySimpleProperty> expand) {
     setup(select, expand, null, null);
   }
 
-  public PathHelper(List<EntitySimpleProperty> select, List<EntitySimpleProperty> expand, String selectR, String expandR) {
+  public PropertyPathHelper(List<EntitySimpleProperty> select, List<EntitySimpleProperty> expand, String selectR, String expandR) {
     setup(select,
-            expand,
-            null != selectR && selectR.length() > 0 ? ExpressionParser.parseExpand(selectR) : null,
-            null != expandR && expandR.length() > 0 ? ExpressionParser.parseExpand(expandR) : null);
+        expand,
+        null != selectR && selectR.length() > 0 ? ExpressionParser.parseExpand(selectR) : null,
+        null != expandR && expandR.length() > 0 ? ExpressionParser.parseExpand(expandR) : null);
   }
 
   private void setup(String select, String expand, String selectR, String expandR) {
     setup(null != select && select.length() > 0 ? ExpressionParser.parseExpand(select) : null,
-            null != expand && expand.length() > 0 ? ExpressionParser.parseExpand(expand) : null,
-            null != selectR && selectR.length() > 0 ? ExpressionParser.parseExpand(selectR) : null,
-            null != expandR && expandR.length() > 0 ? ExpressionParser.parseExpand(expandR) : null);
+        null != expand && expand.length() > 0 ? ExpressionParser.parseExpand(expand) : null,
+        null != selectR && selectR.length() > 0 ? ExpressionParser.parseExpand(selectR) : null,
+        null != expandR && expandR.length() > 0 ? ExpressionParser.parseExpand(expandR) : null);
   }
 
   private void setup(List<EntitySimpleProperty> select, List<EntitySimpleProperty> expand,
-          List<EntitySimpleProperty> selectR, List<EntitySimpleProperty> expandR) {
+      List<EntitySimpleProperty> selectR, List<EntitySimpleProperty> expandR) {
     if (null != select && select.size() > 0) {
-      selectPaths = new ArrayList<Path>(select.size());
+      selectPaths = new ArrayList<PropertyPath>(select.size());
       for (EntitySimpleProperty p : select) {
-        selectPaths.add(new Path(p.getPropertyName()));
+        selectPaths.add(new PropertyPath(p.getPropertyName()));
       }
     }
 
     if (null != expand && expand.size() > 0) {
-      expandPaths = new ArrayList<Path>(expand.size());
+      expandPaths = new ArrayList<PropertyPath>(expand.size());
       for (EntitySimpleProperty p : expand) {
-        expandPaths.add(new Path(p.getPropertyName()));
+        expandPaths.add(new PropertyPath(p.getPropertyName()));
       }
     }
 
     if (null != selectR && selectR.size() > 0) {
-      selectRPaths = new ArrayList<Path>(selectR.size());
+      selectRPaths = new ArrayList<PropertyPath>(selectR.size());
       for (EntitySimpleProperty p : selectR) {
-        Path path = new Path(p.getPropertyName());
+        PropertyPath path = new PropertyPath(p.getPropertyName());
         // must have 2 components
         if (path.getNComponents() != 2) {
           throw new RuntimeException("selectR clause must have 2 components: " + p.getPropertyName());
@@ -114,9 +116,9 @@ public class PathHelper {
     }
 
     if (null != expandR && expandR.size() > 0) {
-      expandRPaths = new ArrayList<RecursivePath>(expandR.size());
+      expandRPaths = new ArrayList<RecursivePropertyPath>(expandR.size());
       for (EntitySimpleProperty p : expandR) {
-        Path path = new Path(p.getPropertyName());
+        PropertyPath path = new PropertyPath(p.getPropertyName());
         // must have 2 components
         if (path.getNComponents() != 2) {
           throw new RuntimeException("expandR clause must have 2 components: " + p.getPropertyName());
@@ -127,30 +129,26 @@ public class PathHelper {
         } catch (Exception ex) {
           throw new RuntimeException("2nd component of expandR clause must be the integer depth: " + p.getPropertyName());
         }
-
-        expandRPaths.add(new RecursivePath(path.removeLastComponent(), depth));
+        expandRPaths.add(new RecursivePropertyPath(path.removeLastComponent(), depth));
       }
     }
   }
 
   /**
-   * returns true if the $select contains any limiting items on the current
-   * navPath
+   * Returns true if the $select contains any limiting items on the current navPath.
+   *
    * @return true if select is limited, false if not
    */
   protected boolean isSelectionLimited() {
-
     // selection is only limited if the $select explicitly says so.
     if (null == this.selectPaths) {
       return false;
     }
-
     // a match starts with navPath and has a single additional component.
     int nComponentsToMatch = currentNavPath.getNComponents() + 1;
-
     // we search the entire list, a wild match can occur anywhere and trumps
     // any other matches
-    for (Path p : selectPaths) {
+    for (PropertyPath p : selectPaths) {
       if (p.getNComponents() == nComponentsToMatch) {
         // this is a candidate path that matches in length
         if (p.isWild()) {
@@ -162,24 +160,20 @@ public class PathHelper {
         }
       }
     }
-
     return false;
   }
 
   protected boolean isSelectionLimitedRecursive() {
-
     // selection is only limited if the selectR explicitly says so.
     if (null == this.selectRPaths) {
       return false;
     }
-
     // empty current nav paths:  see design notes.  These are a problem.
     // for now we force them to use $select redundantly...not perfect..
     if (this.currentNavPath.isEmpty()) {
       return false;
     }
-
-    for (Path p : selectRPaths) {
+    for (PropertyPath p : selectRPaths) {
       // blat/<propname> matches foo/bar/blat matches
       if (p.getFirstComponent().equals(this.currentNavPath.getLastComponent())) {
         // this is a candidate path that matches in length
@@ -191,45 +185,41 @@ public class PathHelper {
         }
       }
     }
-
     return false;
   }
 
   /**
-   * determines if the given property is selected on the current navigation path.
-   * @param propName - name of a regular property or a navigation property
+   * Determines if the given property is selected on the current navigation path.
+   *
+   * @param propName  name of a regular property or a navigation property
    * @return true if property is selected, false if not
    */
   public boolean isSelected(String propName) {
-
-
     boolean limited = false;
     if (this.isSelectionLimited()) {
       limited = true;
-      Path checkPath = currentNavPath.addComponent(propName);
-      for (Path p : selectPaths) {
+      PropertyPath checkPath = currentNavPath.addComponent(propName);
+      for (PropertyPath p : selectPaths) {
         if (p.equals(checkPath)) {
           return true;
         }
       }
     }
-
     // allow the selectR to override the $select limiters
     if (this.isSelectionLimitedRecursive()) {
       limited = true;
-      for (Path p : this.selectRPaths) {
+      for (PropertyPath p : this.selectRPaths) {
         // p of:
         //     blat/<propname>
         // matches current of:
         //     .../blat
         if (p.getLastComponent().equals(propName)
-                && this.currentNavPath.getNComponents() >= 1
-                && this.currentNavPath.getLastComponent().equals(p.getFirstComponent())) {
+            && this.currentNavPath.getNComponents() >= 1
+            && this.currentNavPath.getLastComponent().equals(p.getFirstComponent())) {
           return true;
         }
       }
     }
-
     if (limited) {
       // found one or more limiters but did not find a match
       return false;
@@ -239,21 +229,14 @@ public class PathHelper {
     }
   }
 
-  /**
-   * determines if the given navigation property is expanded on the current navigation path
-   * @param navPropName - name of a navigation property
-   * @return
-   */
+  /** determines if the given navigation property is expanded on the current navigation path */
   protected boolean isExpandedExplicit(String navPropName) {
-
     // expand paths don't have wildcarding...hmmh...why not?
     if (null == this.expandPaths) {
       return false;
     }
-
-    Path checkPath = currentNavPath.addComponent(navPropName);
-
-    for (Path p : expandPaths) {
+    PropertyPath checkPath = currentNavPath.addComponent(navPropName);
+    for (PropertyPath p : expandPaths) {
       if (p.equals(checkPath)) {
         return true;
       }
@@ -262,13 +245,11 @@ public class PathHelper {
   }
 
   protected boolean isExpandedRecursive(String navPropName) {
-
     if (null == this.expandRPaths) {
       return false;
     }
-
-    /// recursive expansion doesn't care about the current navigation path.
-    for (RecursivePath p : this.expandRPaths) {
+    // recursive expansion doesn't care about the current navigation path.
+    for (RecursivePropertyPath p : this.expandRPaths) {
       if (p.getFirstComponent().equals(navPropName) && p.isValidAtDepth(this.getCurrentDepth())) {
         return true;
       }
@@ -288,7 +269,7 @@ public class PathHelper {
     this.currentNavPath = this.currentNavPath.removeLastComponent();
   }
 
-  public Path getCurrentNavPath() {
+  public PropertyPath getCurrentNavPath() {
     return currentNavPath;
   }
 

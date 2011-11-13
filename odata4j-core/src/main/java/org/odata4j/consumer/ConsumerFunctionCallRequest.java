@@ -25,6 +25,7 @@ import org.odata4j.edm.EdmCollectionType;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.edm.EdmSimpleType;
+import org.odata4j.edm.EdmType;
 import org.odata4j.expression.Expression;
 import org.odata4j.expression.LiteralExpression;
 import org.odata4j.format.FormatParser;
@@ -34,21 +35,6 @@ import org.odata4j.internal.InternalUtil;
 
 import com.sun.jersey.api.client.ClientResponse;
 
-/**
- * A builder for consumer function calls.
- * Usage example:
- * <pre>
- * {@code
- * Enumerable<OObject> e = myConsumer.callFunction("AFunction")
- *     .pBoolean("Parameter1", false)
- *     .pInt32("Parameter2", 55)
- *     .execute();
- * }
- * </pre>
- * Note:
- * OData functions can return single instances or collections of instances.
- * To keep the interface simple, callFunction always returns an Enumerable.
- */
 class ConsumerFunctionCallRequest<T extends OObject>
     extends ConsumerQueryRequestBase<T>
     implements OFunctionRequest<T> {
@@ -56,7 +42,7 @@ class ConsumerFunctionCallRequest<T extends OObject>
   private final List<OFunctionParameter> params = new LinkedList<OFunctionParameter>();
   private final EdmFunctionImport function;
 
-  protected ConsumerFunctionCallRequest(ODataClient client, String serviceRootUri,
+  ConsumerFunctionCallRequest(ODataClient client, String serviceRootUri,
       EdmDataServices metadata, String lastSegment) {
     super(client, serviceRootUri, metadata, lastSegment);
     // lastSegment is the function call name.
@@ -91,7 +77,6 @@ class ConsumerFunctionCallRequest<T extends OObject>
     }
     throw new UnsupportedOperationException("type not supported: " + obj.getType().getFullyQualifiedTypeName());
   }
-
 
   // set parameters to the function call
   @Override
@@ -180,7 +165,6 @@ class ConsumerFunctionCallRequest<T extends OObject>
     return parameter(name, OSimpleObjects.create(EdmSimpleType.STRING, value));
   }
 
-
   private class FunctionResultsIterator extends ReadOnlyIterator<OObject> {
 
     private ODataClient client;
@@ -210,7 +194,7 @@ class ConsumerFunctionCallRequest<T extends OObject>
         ODataVersion version = InternalUtil.getDataServiceVersion(response.getHeaders().getFirst(ODataConstants.Headers.DATA_SERVICE_VERSION));
 
         parser = FormatParserFactory.getParser(
-            OFunctionParameters.getResultClass(function.getReturnType()),
+            EdmType.getInstanceType(function.getReturnType()),
             client.getFormatType(),
             new Settings(
                 version,

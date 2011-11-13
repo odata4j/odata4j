@@ -1,7 +1,7 @@
 package org.odata4j.internal;
 
 import org.odata4j.core.ImmutableList;
-import org.odata4j.core.Namespace;
+import org.odata4j.core.PrefixedNamespace;
 import org.odata4j.edm.EdmAssociation;
 import org.odata4j.edm.EdmComplexType;
 import org.odata4j.edm.EdmDataServices;
@@ -97,7 +97,7 @@ public abstract class EdmDataServicesDecorator extends EdmDataServices {
   }
 
   @Override
-  public ImmutableList<Namespace> getNamespaces() {
+  public ImmutableList<PrefixedNamespace> getNamespaces() {
     return getDelegate().getNamespaces();
   }
 

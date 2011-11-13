@@ -47,9 +47,9 @@ public class OProperties {
    * @param value  the property value
    * @return a new OData property instance
    */
-  public static <TIn, TOut> OProperty<TOut> simple(String name, EdmSimpleType<TOut> type, TIn value) {
-     OSimpleObject<TOut> simple = OSimpleObjects.create(type, value);
-     return new Impl<TOut>(name, type, simple.getValue());
+  public static <T> OProperty<T> simple(String name, EdmSimpleType<T> type, Object value) {
+     OSimpleObject<T> simple = OSimpleObjects.create(type, value);
+     return new Impl<T>(name, type, simple.getValue());
   }
 
   /**
@@ -59,10 +59,10 @@ public class OProperties {
    * @param type  the property edm simple type
    * @return a new OData property instance
    */
-  public static OProperty<?> null_(String name, EdmSimpleType type) {
+  public static OProperty<?> null_(String name, EdmSimpleType<?> type) {
     return new Impl<Object>(name, type, null);
   }
-  
+
    /**
    * Creates a new OData property of the given edm simple type with a null value.
    *

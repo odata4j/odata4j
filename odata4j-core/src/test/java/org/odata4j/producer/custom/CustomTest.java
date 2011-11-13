@@ -1,9 +1,9 @@
 
 package org.odata4j.producer.custom;
 
-import java.util.ArrayList;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.After;
@@ -20,7 +20,6 @@ import org.odata4j.edm.EdmCollectionType;
 import org.odata4j.edm.EdmComplexType;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntityContainer;
-import org.odata4j.edm.EdmEntityType;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.edm.EdmFunctionParameter;
 import org.odata4j.edm.EdmProperty;
@@ -31,9 +30,6 @@ import org.odata4j.edm.EdmStructuralType;
 import org.odata4j.edm.EdmType;
 import org.odata4j.format.FormatType;
 
-/**
- *
- */
 public class CustomTest extends CustomTestBase {
 
   public CustomTest() {
@@ -65,18 +61,18 @@ public class CustomTest extends CustomTestBase {
     // TODO when the xml parsers/writers support Bag properties
     // testProperties(FormatType.ATOM);
   }
-  
+
   // TODO this probably belongs in a more comprehensize metadata test class...
-  
+
   @Test
   public void testEdmxCreationTypeResolution() {
-    
+
     // when producers create EdmDataServices, there should not be multiple
     // instances of an EdmType object representing the same type.
     checkForDups(producer.getMetadata());
     checkForDups(producer.getMetadataProducer().getMetadata());
   }
-  
+
   private void checkForDups(EdmDataServices md) {
     for (EdmStructuralType st : md.getStructuralTypes()) {
       for (EdmProperty p : st.getDeclaredProperties()) {
@@ -84,7 +80,7 @@ public class CustomTest extends CustomTestBase {
         checkType(p.getType(), md);
       }
     }
-    
+
     for (EdmSchema s : md.getSchemas()) {
       for (EdmEntityContainer c : s.getEntityContainers()) {
         for (EdmFunctionImport f : c.getFunctionImports()) {
@@ -96,7 +92,7 @@ public class CustomTest extends CustomTestBase {
       }
     }
   }
-  
+
   private void checkType(EdmType type, EdmDataServices md) {
     EdmType checkType = null;
     if (type.isSimple()) {
@@ -111,7 +107,7 @@ public class CustomTest extends CustomTestBase {
       assertTrue("two instances of type: " + checkType.getFullyQualifiedTypeName(), type == checkType);
     }
   }
-  
+
   @Test
   public void testEdmxFormatParserTypeResolution() {
     // when consumers parse an edm, they should only create one type object
@@ -119,7 +115,7 @@ public class CustomTest extends CustomTestBase {
     ODataConsumer c = createConsumer(FormatType.JSON);
     checkForDups(c.getMetadata());
   }
-  
+
   @Test
   public void testEdmxBuilderContext() {
     // add some functions to the edm

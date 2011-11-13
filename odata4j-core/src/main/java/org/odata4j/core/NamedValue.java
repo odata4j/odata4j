@@ -11,13 +11,6 @@ package org.odata4j.core;
 public interface NamedValue<T> extends Named {
 
   /**
-   * Gets the name.
-   *
-   * @return the name
-   */
-  String getName();
-
-  /**
    * Gets the value.
    *
    * @return the value

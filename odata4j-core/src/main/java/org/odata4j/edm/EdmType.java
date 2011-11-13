@@ -5,7 +5,11 @@ import java.util.Map;
 import org.core4j.Enumerable;
 import org.core4j.Func1;
 import org.odata4j.core.ImmutableList;
-import org.odata4j.core.OFuncs;
+import org.odata4j.core.OCollection;
+import org.odata4j.core.OComplexObject;
+import org.odata4j.core.OEntity;
+import org.odata4j.core.OObject;
+import org.odata4j.producer.exceptions.NotImplementedException;
 
 /**
  * A type in the EDM type system.
@@ -48,6 +52,19 @@ public abstract class EdmType extends EdmItem {
     return LazyInit.POOL.get(fullyQualifiedTypeName);
   }
 
+  /** Gets the corresponding instance type of a given edm type. e.g. {@code OEntity} for {@code EdmEntityType} */
+  public static Class<? extends OObject> getInstanceType(EdmType edmType) {
+    if (edmType instanceof EdmComplexType) {
+      return OComplexObject.class;
+    } else if (edmType instanceof EdmCollectionType) {
+      return OCollection.class;
+    } else if (edmType instanceof EdmEntityType) {
+      return OEntity.class;
+    } else {
+      throw new NotImplementedException("Unable to determine instance type for edm type: " + edmType.getFullyQualifiedTypeName());
+    }
+  }
+
   /**
    * Gets the fully-qualified type name for this edm-type.
    */
@@ -75,40 +92,41 @@ public abstract class EdmType extends EdmItem {
   public abstract static class Builder<T, TBuilder> extends EdmItem.Builder<T, TBuilder> {
 
     private EdmType builtType = null;
-    
+
     public Builder() {}
-    
+
     public Builder(EdmType type) {
       this.builtType = type;
     }
-    
+
     public abstract EdmType build();
-    
+
     protected final EdmType _build() {
       if (null == builtType) {
         builtType = buildImpl();
-      }  
+      }
       return builtType;
     }
-    
+
     protected abstract EdmType buildImpl();
 
   }
-  
+
+  @SuppressWarnings("rawtypes")
   public static DeferredBuilder<?, ?> newDeferredBuilder(String fqTypeName, EdmDataServices.Builder dataServices) {
     return new DeferredBuilder(fqTypeName, dataServices);
   }
-  
+
   public static class DeferredBuilder<T, TBuilder> extends Builder<T, TBuilder> {
 
     private final String fqTypeName;
     private final EdmDataServices.Builder dataServices;
-    
+
     private DeferredBuilder(String fqTypeName, EdmDataServices.Builder dataServices) {
       this.fqTypeName = fqTypeName;
       this.dataServices = dataServices;
     }
-    
+
     @Override
     public EdmType build() {
       return _build();
@@ -124,10 +142,10 @@ public abstract class EdmType extends EdmItem {
     }
 
     @Override
-    Object newBuilder(Object item, BuilderContext context) {
+    TBuilder newBuilder(Object item, BuilderContext context) {
       throw new UnsupportedOperationException("Not supported yet.");
     }
-    
+
   }
 
 }

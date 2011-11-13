@@ -23,7 +23,6 @@ import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.edm.EdmNavigationProperty;
-import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.edm.EdmType;
 import org.odata4j.format.Entry;
 import org.odata4j.format.Feed;
@@ -197,7 +196,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
             // property arrived with an unknown type
             throw new RuntimeException("unknown property type: " + type);
           }
-        } 
+        }
 
         if (null != et && (!et.isSimple())) {
           op = OProperties.complex(name, (EdmComplexType)et, isNull ? null : Enumerable.create(parseProperties(reader, event.asStartElement(), metadata)).toList());

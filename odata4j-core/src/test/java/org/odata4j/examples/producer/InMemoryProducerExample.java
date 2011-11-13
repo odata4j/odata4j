@@ -13,8 +13,8 @@ import org.core4j.Func;
 import org.core4j.Func1;
 import org.core4j.Funcs;
 import org.core4j.ThrowingFunc;
-import org.odata4j.core.Annotation;
-import org.odata4j.core.Namespace;
+import org.odata4j.core.NamespacedAnnotation;
+import org.odata4j.core.PrefixedNamespace;
 import org.odata4j.core.OCollection;
 import org.odata4j.core.OCollections;
 import org.odata4j.core.OComplexObject;
@@ -33,7 +33,7 @@ import org.odata4j.edm.EdmItem;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.edm.EdmStructuralType;
-import org.odata4j.producer.Path;
+import org.odata4j.producer.PropertyPath;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.resources.ODataProducerProvider;
 
@@ -155,21 +155,21 @@ public class InMemoryProducerExample {
     public static final String namespace = "http://tempuri.org";
     public static final String prefix = "inmem";
 
-    private final List<Namespace> namespaces = new ArrayList<Namespace>(1);
+    private final List<PrefixedNamespace> namespaces = new ArrayList<PrefixedNamespace>(1);
     private final EdmComplexType schemaInfoType;
 
     public MyEdmDecorator() {
-      namespaces.add(new Namespace(namespace, prefix));
+      namespaces.add(new PrefixedNamespace(namespace, prefix));
       this.schemaInfoType = createSchemaInfoType().build();
     }
 
     @Override
-    public List<Namespace> getNamespaces() {
+    public List<PrefixedNamespace> getNamespaces() {
       return namespaces;
     }
 
     @Override
-    public EdmDocumentation getDocumentationForSchema(String namespace, String typeName) {
+    public EdmDocumentation getDocumentationForSchema(String namespace) {
       return new EdmDocumentation("InMemoryProducerExample", "This schema exposes a few example types to demonstrate the InMemoryProducer");
     }
 
@@ -187,7 +187,7 @@ public class InMemoryProducerExample {
     }
 
     @Override
-    public List<EdmAnnotation<?>> getAnnotationsForSchema(String namespace, String typeName) {
+    public List<EdmAnnotation<?>> getAnnotationsForSchema(String namespace) {
       List<EdmAnnotation<?>> annots = new ArrayList<EdmAnnotation<?>>();
       annots.add(new EdmAnnotationAttribute(namespace, prefix, "Version", "1.0 early experience pre-alpha"));
 
@@ -217,7 +217,7 @@ public class InMemoryProducerExample {
     }
 
     @Override
-    public Object resolveStructuralTypeProperty(EdmStructuralType st, Path path) throws IllegalArgumentException {
+    public Object resolveStructuralTypeProperty(EdmStructuralType st, PropertyPath path) throws IllegalArgumentException {
       return null;
     }
 
@@ -232,12 +232,12 @@ public class InMemoryProducerExample {
     }
 
     @Override
-    public Object resolvePropertyProperty(EdmProperty st, Path path) throws IllegalArgumentException {
+    public Object resolvePropertyProperty(EdmProperty st, PropertyPath path) throws IllegalArgumentException {
       return null;
     }
 
     @Override
-    public Object getAnnotationValueOverride(EdmItem item, Annotation<?> annot, boolean flatten, Locale locale, Map<String, String> options) {
+    public Object getAnnotationValueOverride(EdmItem item, NamespacedAnnotation<?> annot, boolean flatten, Locale locale, Map<String, String> options) {
       return null;
     }
 

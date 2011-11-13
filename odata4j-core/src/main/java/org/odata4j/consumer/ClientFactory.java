@@ -7,8 +7,9 @@ public interface ClientFactory {
 
   /**
    * Creates a jersey client.
-   * 
+   *
    * @param clientConfig  the jersey client api configuration
    */
   Client createClient(ClientConfig clientConfig);
+
 }

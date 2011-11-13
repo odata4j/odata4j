@@ -4,18 +4,20 @@ package org.odata4j.producer;
 /**
  * A recursive path has an associated depth limiter.
  *
- * The last component of the path is a number indicating the maximum depth
+ * <p>The last component of the path is a number indicating the maximum depth
  * to recurse.  0 means do not limit the recursion.
  *
- * Examples:
+ * <p>Examples:
+ * <pre>
  * Properties/0
  * SubTypes/1
+ * </pre>
  */
-public class RecursivePath extends Path {
+public class RecursivePropertyPath extends PropertyPath {
 
   private final int depth;
 
-  public RecursivePath(Path path, int depth) {
+  public RecursivePropertyPath(PropertyPath path, int depth) {
     super(path);
     this.depth = depth;
   }
@@ -34,7 +36,7 @@ public class RecursivePath extends Path {
 
   @Override
   public boolean equals(Object obj) {
-    return super.equals(obj) && obj instanceof RecursivePath && ((RecursivePath) obj).depth == this.depth;
+    return super.equals(obj) && obj instanceof RecursivePropertyPath && ((RecursivePropertyPath) obj).depth == this.depth;
   }
 
   @Override

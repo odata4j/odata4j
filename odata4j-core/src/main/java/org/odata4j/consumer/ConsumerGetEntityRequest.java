@@ -26,7 +26,7 @@ class ConsumerGetEntityRequest<T> extends ConsumerEntityRequestBase<T> implement
   private String select;
   private String expand;
 
-  public ConsumerGetEntityRequest(ODataClient client, Class<T> entityType, String serviceRootUri,
+  ConsumerGetEntityRequest(ODataClient client, Class<T> entityType, String serviceRootUri,
       EdmDataServices metadata, String entitySetName, OEntityKey key, FeedCustomizationMapping fcMapping) {
     super(client, serviceRootUri, metadata, entitySetName, key);
     this.entityType = entityType;

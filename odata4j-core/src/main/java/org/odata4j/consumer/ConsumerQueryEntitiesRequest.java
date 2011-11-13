@@ -25,12 +25,12 @@ class ConsumerQueryEntitiesRequest<T> extends ConsumerQueryRequestBase<T> {
   private final Class<T> entityType;
   private final FeedCustomizationMapping fcMapping;
 
-  public ConsumerQueryEntitiesRequest(ODataClient client, Class<T> entityType, String serviceRootUri, EdmDataServices metadata, String entitySetName, FeedCustomizationMapping fcMapping) {
+  ConsumerQueryEntitiesRequest(ODataClient client, Class<T> entityType, String serviceRootUri, EdmDataServices metadata, String entitySetName, FeedCustomizationMapping fcMapping) {
     super(client, serviceRootUri, metadata, entitySetName);
     this.entityType = entityType;
     this.fcMapping = fcMapping;
   }
-  
+
   @Override
   public Enumerable<T> execute() {
     ODataClientRequest request = buildRequest(null);
@@ -97,7 +97,7 @@ class ConsumerQueryEntitiesRequest<T> extends ConsumerQueryRequestBase<T> {
 
         request = request.queryParam("$page", Integer.toString(page + 1));
       }
-      
+
       // new-style paging: $skiptoken
       else {
         if (feed.getNext() == null)

@@ -329,6 +329,7 @@ public class QueryOptionTest extends JPAProducerTestBase {
    */
 
   @Ignore("TODO")
+  @SuppressWarnings("unused")
   @Test
   public void SystemQueryOptionFilterAnyTest() {
     // get all Customers who have 1 or more Orders
@@ -341,6 +342,7 @@ public class QueryOptionTest extends JPAProducerTestBase {
   }
 
   @Ignore("TODO")
+  @SuppressWarnings("unused")
   @Test
   public void SystemQueryOptionFilterAllTest() {
     // all Orders whose every associated Order_Details has a Quantity >= 60
@@ -358,6 +360,7 @@ public class QueryOptionTest extends JPAProducerTestBase {
   }
 
   @Ignore("TODO")
+  @SuppressWarnings("unused")
   @Test
   public void SystemQueryOptionFilterAnyPredicateTest() {
     // all Orders who have one or more associated Order_Details objects with Quantity < 3
@@ -373,6 +376,7 @@ public class QueryOptionTest extends JPAProducerTestBase {
   }
 
   @Ignore("TODO")
+  @SuppressWarnings("unused")
   @Test
   public void SystemQueryOptionFilterAnyAllTest() {
 

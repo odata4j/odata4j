@@ -9,14 +9,14 @@ public interface OEntityRequest<T> {
 
   /**
    * Sends the entity-request to the OData service and returns the response.
-   * 
+   *
    * @return the operation response
    */
   T execute();
 
   /**
-   * Navigate to a related entity using a collection navigation property.
-   * 
+   * Navigates to a related entity using a collection navigation property.
+   *
    * @param navProperty  the collection navigation property
    * @param key  the entity-key within the collection
    * @return the entity-request builder
@@ -24,11 +24,11 @@ public interface OEntityRequest<T> {
   OEntityRequest<T> nav(String navProperty, OEntityKey key);
 
   /**
-   * Navigate to a related entity using a single-valued navigation property.
-   * 
+   * Navigates to a related entity using a single-valued navigation property.
+   *
    * @param navProperty  the single-valued collection navigation property.
    * @return the entity-request builder
    */
   OEntityRequest<T> nav(String navProperty);
-  
+
 }

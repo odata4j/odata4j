@@ -20,7 +20,7 @@ abstract class ConsumerEntityRequestBase<T> implements OEntityRequest<T> {
   private final String serviceRootUri;
   private final List<EntitySegment> segments = new ArrayList<EntitySegment>();
 
-  public ConsumerEntityRequestBase(ODataClient client, String serviceRootUri,
+  ConsumerEntityRequestBase(ODataClient client, String serviceRootUri,
       EdmDataServices metadata, String entitySetName, OEntityKey key) {
 
     this.client = client;
@@ -29,19 +29,19 @@ abstract class ConsumerEntityRequestBase<T> implements OEntityRequest<T> {
 
     segments.add(new EntitySegment(entitySetName, key));
   }
-  
+
   protected ODataClient getClient() {
     return client;
   }
-  
+
   protected EdmDataServices getMetadata() {
     return metadata;
   }
-  
+
   protected List<EntitySegment> getSegments() {
     return segments;
   }
-  
+
   protected String getServiceRootUri() {
     return serviceRootUri;
   }
@@ -57,8 +57,8 @@ abstract class ConsumerEntityRequestBase<T> implements OEntityRequest<T> {
     segments.add(new EntitySegment(navProperty, null));
     return this;
   }
-  
-  
+
+
   protected SingleLink toSingleLink(OEntityId entity) {
     String uri = getServiceRootUri();
     if (!uri.endsWith("/"))

@@ -1,8 +1,5 @@
 package org.odata4j.core;
 
-import org.odata4j.edm.EdmCollectionType;
-import org.odata4j.edm.EdmComplexType;
-import org.odata4j.edm.EdmEntityType;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.edm.EdmType;
 import org.odata4j.expression.CommonExpression;
@@ -38,6 +35,7 @@ public class OFunctionParameters {
     return new FunctionParameterImpl(name, OSimpleObjects.create(type, value));
   }
 
+  /** Creates a new OFunctionParameter by parsing a string value */
   public static OFunctionParameter parse(String name, EdmType type, String value) {
     if (type instanceof EdmSimpleType) {
       CommonExpression ce = ExpressionParser.parse(value);
@@ -52,7 +50,6 @@ public class OFunctionParameters {
   }
 
   private static Object convert(Object val, EdmSimpleType<?> type) {
-
     Object v = val;
     if (type.equals(EdmSimpleType.INT16) && (!(val instanceof Short))) {
       // parser gave us an Integer
@@ -64,7 +61,6 @@ public class OFunctionParameters {
       // parser gave us an Double
       v = Byte.valueOf(((Number) val).byteValue());
     }
-
     return v;
   }
 
@@ -99,17 +95,4 @@ public class OFunctionParameters {
     }
   }
 
-  // TODO: this doesn't belong here..not sure where it goes yet...
-  public static Class<? extends OObject> getResultClass(EdmType edmType) {
-    // this prolly belongs elsewhere...TODO
-    if (edmType instanceof EdmComplexType) {
-      return OComplexObject.class;
-    } else if (edmType instanceof EdmCollectionType) {
-      return OCollection.class;
-    } else if (edmType instanceof EdmEntityType) {
-      return OEntity.class;
-    } else {
-      throw new NotImplementedException("function return type " + edmType.getFullyQualifiedTypeName() + " not supported");
-    }
-  }
 }

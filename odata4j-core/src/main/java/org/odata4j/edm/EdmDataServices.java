@@ -1,14 +1,12 @@
 package org.odata4j.edm;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import java.util.Map;
 import org.core4j.Enumerable;
 import org.core4j.Predicate1;
 import org.odata4j.core.ImmutableList;
-import org.odata4j.core.Namespace;
+import org.odata4j.core.PrefixedNamespace;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OPredicates;
@@ -22,13 +20,13 @@ import org.odata4j.producer.exceptions.NotFoundException;
  */
 public class EdmDataServices {
 
-  public static final EdmDataServices EMPTY = new EdmDataServices(null, ImmutableList.<EdmSchema>create(), ImmutableList.<Namespace>create());
+  public static final EdmDataServices EMPTY = new EdmDataServices(null, ImmutableList.<EdmSchema>create(), ImmutableList.<PrefixedNamespace>create());
 
   private final ODataVersion version;
   private final ImmutableList<EdmSchema> schemas;
-  private final ImmutableList<Namespace> namespaces;
+  private final ImmutableList<PrefixedNamespace> namespaces;
 
-  protected EdmDataServices(ODataVersion version, ImmutableList<EdmSchema> schemas, ImmutableList<Namespace> namespaces) {
+  protected EdmDataServices(ODataVersion version, ImmutableList<EdmSchema> schemas, ImmutableList<PrefixedNamespace> namespaces) {
     this.version = version;
     this.schemas = schemas;
     this.namespaces = namespaces;
@@ -42,7 +40,7 @@ public class EdmDataServices {
     return schemas;
   }
 
-  public ImmutableList<Namespace> getNamespaces() {
+  public ImmutableList<PrefixedNamespace> getNamespaces() {
     return namespaces;
   }
 
@@ -221,8 +219,8 @@ public class EdmDataServices {
 
     private ODataVersion version = ODataConstants.DATA_SERVICE_VERSION;
     private final List<EdmSchema.Builder> schemas = new ArrayList<EdmSchema.Builder>();
-    private final List<Namespace> namespaces = new ArrayList<Namespace>();
-    
+    private final List<PrefixedNamespace> namespaces = new ArrayList<PrefixedNamespace>();
+
     public EdmDataServices build() {
       List<EdmSchema> schemas = new ArrayList<EdmSchema>(this.schemas.size());
       for(EdmSchema.Builder schema : this.schemas)
@@ -240,7 +238,7 @@ public class EdmDataServices {
       return this;
     }
 
-    public Builder addNamespaces(List<Namespace> namespaces) {
+    public Builder addNamespaces(List<PrefixedNamespace> namespaces) {
       if (namespaces != null)
         this.namespaces.addAll(namespaces);
       return this;
@@ -316,7 +314,7 @@ public class EdmDataServices {
       // first, try to resolve the type name as a simple or complex type
       EdmType type = EdmType.getSimple(fqTypeName);
       EdmType.Builder<?, ?> builder = null;
-      
+
       if (null != type) {
         builder = EdmSimpleType.newBuilder(type);
       } else {

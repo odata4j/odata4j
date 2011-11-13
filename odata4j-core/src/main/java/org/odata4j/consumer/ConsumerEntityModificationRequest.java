@@ -23,7 +23,7 @@ class ConsumerEntityModificationRequest<T> extends ConsumerEntityPayloadRequestB
 
   private EdmEntitySet entitySet;
 
-  public ConsumerEntityModificationRequest(T updateRoot, ODataClient client, String serviceRootUri, EdmDataServices metadata, String entitySetName, OEntityKey key) {
+  ConsumerEntityModificationRequest(T updateRoot, ODataClient client, String serviceRootUri, EdmDataServices metadata, String entitySetName, OEntityKey key) {
     super(entitySetName, serviceRootUri, metadata);
     this.updateRoot = updateRoot;
     this.client = client;

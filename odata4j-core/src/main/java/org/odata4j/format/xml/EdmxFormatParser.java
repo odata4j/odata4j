@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 import org.core4j.Enumerable;
 import org.core4j.Func1;
 import org.core4j.Predicate1;
-import org.odata4j.core.Namespace;
+import org.odata4j.core.PrefixedNamespace;
 import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OPredicates;
 import org.odata4j.edm.EdmAssociation;
@@ -39,12 +39,12 @@ import org.odata4j.stax2.XMLEventReader2;
 public class EdmxFormatParser extends XmlFormatParser {
 
   private final EdmDataServices.Builder dataServices = EdmDataServices.newBuilder();
-  
+
   public EdmxFormatParser() {}
-  
+
   public EdmDataServices parseMetadata(XMLEventReader2 reader) {
     List<EdmSchema.Builder> schemas = new ArrayList<EdmSchema.Builder>();
-    List<Namespace> namespaces = null;
+    List<PrefixedNamespace> namespaces = null;
 
     ODataVersion version = null;
     boolean foundDataServices = false;
@@ -165,12 +165,6 @@ public class EdmxFormatParser extends XmlFormatParser {
         }
       }
 
-      // every structured type property has 
-      // resolve complex type properties
-      for (final EdmComplexType.Builder ct : edmSchema.getComplexTypes()) {
-        
-      }
-      
       // resolve functionimports
       for (final EdmEntityContainer.Builder edmEntityContainer : edmSchema.getEntityContainers()) {
         for (int i = 0; i < edmEntityContainer.getFunctionImports().size(); i++) {
@@ -287,8 +281,8 @@ public class EdmxFormatParser extends XmlFormatParser {
 
   }
 
-  
-  
+
+
   private EdmFunctionImport.Builder parseEdmFunctionImport(XMLEventReader2 reader, String schemaNamespace, StartElement2 functionImportElement) {
     String name = functionImportElement.getAttributeByName("Name").getValue();
     String entitySet = getAttributeValueIfExists(functionImportElement, "EntitySet");

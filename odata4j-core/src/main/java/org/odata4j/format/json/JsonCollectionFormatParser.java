@@ -6,12 +6,10 @@ import org.odata4j.core.OCollection;
 import org.odata4j.core.OCollections;
 import org.odata4j.core.OComplexObject;
 import org.odata4j.core.ODataVersion;
-import org.odata4j.core.OFunctionParameters;
 import org.odata4j.core.OObject;
 import org.odata4j.core.OSimpleObjects;
 import org.odata4j.edm.EdmCollectionType;
 import org.odata4j.edm.EdmDataServices;
-import org.odata4j.edm.EdmNonSimpleType;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.edm.EdmType;
 import org.odata4j.format.FormatParser;
@@ -152,10 +150,6 @@ public class JsonCollectionFormatParser extends JsonFormatParser implements Form
   }
 
   protected FormatParser<? extends OObject> createItemParser(EdmType edmType) {
-    // TODO: hack until Edm.getType() is resolved to not return an EdmNonSimpleType
-    if (edmType instanceof EdmNonSimpleType) {
-      edmType = metadata.findEdmComplexType(edmType.getFullyQualifiedTypeName());
-    }
     // each item is parsed as a standalone item, not a response item
     Settings s = new Settings(
         this.version,
@@ -166,6 +160,6 @@ public class JsonCollectionFormatParser extends JsonFormatParser implements Form
         false, // boolean isResponse);
         edmType); // expected type
 
-    return FormatParserFactory.getParser(OFunctionParameters.getResultClass(edmType), FormatType.JSON, s);
+    return FormatParserFactory.getParser(EdmType.getInstanceType(edmType), FormatType.JSON, s);
   }
 }

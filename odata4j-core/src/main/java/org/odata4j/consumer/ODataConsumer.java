@@ -211,7 +211,7 @@ public class ODataConsumer {
     /**
      * Sets one or more client behaviors.
      *
-     * Client behaviors transform http requests to interact with services that require custom extensions.
+     * <p>Client behaviors transform http requests to interact with services that require custom extensions.
      *
      * @param clientBehaviors  the client behaviors
      * @return this builder
@@ -246,7 +246,7 @@ public class ODataConsumer {
   /**
    * Creates a new consumer for the given OData service uri.
    *
-   * Wrapper for {@code ODataConsumer.newBuilder(serviceRootUri).build()}.
+   * <p>Wrapper for {@code ODataConsumer.newBuilder(serviceRootUri).build()}.
    *
    * @param serviceRootUri  the service uri <p>e.g. <code>http://services.odata.org/Northwind/Northwind.svc/</code></p>
    * @return a new OData consumer
@@ -393,6 +393,58 @@ public class ODataConsumer {
   }
 
   /**
+   * Gets related entity links for a given source entity by navigation property.
+   * <p>The entityid-request builder returned can be used for further server-side filtering.  Call {@link OQueryRequest#execute()} to issue request.</p>
+   *
+   * @param sourceEntity  the entity to start from
+   * @param targetNavProp  the relationship navigation property
+   * @return a new entityid-request builder
+   */
+  public OQueryRequest<OEntityId> getLinks(OEntityId sourceEntity, String targetNavProp) {
+    return new ConsumerQueryLinksRequest(client, serviceRootUri, getMetadata(), sourceEntity, targetNavProp);
+  }
+
+  /**
+   * Creates a new related entity link between two entities.
+   * <p>Call {@link OEntityRequest#execute()} on the returned request builder to issue request.</p>
+   *
+   * @param sourceEntity  the entity to start from
+   * @param targetNavProp  the relationship navigation property
+   * @param targetEntity  the entity to use as the target of the relationship
+   * @return a request builder
+   */
+  public OEntityRequest<Void> createLink(OEntityId sourceEntity, String targetNavProp, OEntityId targetEntity) {
+    return new ConsumerCreateLinkRequest(client, serviceRootUri, getMetadata(), sourceEntity, targetNavProp, targetEntity);
+  }
+
+  /**
+   * Deletes related entity links between two entities by navigation property.
+   * <p>Call {@link OEntityRequest#execute()} on the returned request builder to issue request.</p>
+   *
+   * @param sourceEntity  the entity to start from
+   * @param targetNavProp  the relationship navigation property
+   * @param targetKeyValues  the target entity-key, applicable if the navigation property represents a collection
+   * @return a request builder
+   */
+  public OEntityRequest<Void> deleteLink(OEntityId sourceEntity, String targetNavProp, Object... targetKeyValues) {
+    return new ConsumerDeleteLinkRequest(client, serviceRootUri, getMetadata(), sourceEntity, targetNavProp, targetKeyValues);
+  }
+
+  /**
+   * Updates related entity links between two entities by navigation property.
+   * <p>Call {@link OEntityRequest#execute()} on the returned request builder to issue request.</p>
+   *
+   * @param sourceEntity  the entity to start from
+   * @param newTargetEntity  the entity to use as the new target of the relationship
+   * @param targetNavProp  the relationship navigation property
+   * @param oldTargetKeyValues  the target entity-key, applicable if the navigation property represents a collection
+   * @return a request builder
+   */
+  public OEntityRequest<Void> updateLink(OEntityId sourceEntity, OEntityId newTargetEntity, String targetNavProp, Object... oldTargetKeyValues) {
+    return new ConsumerUpdateLinkRequest(client, serviceRootUri, getMetadata(), sourceEntity, newTargetEntity, targetNavProp, oldTargetKeyValues);
+  }
+
+  /**
    * Creates a new entity in the given entity-set.
    * <p>The create-request builder returned can be used to construct the new entity.  Call {@link OCreateRequest#execute()} to issue request.</p>
    *
@@ -488,6 +540,17 @@ public class ODataConsumer {
     return new ConsumerDeleteEntityRequest(client, serviceRootUri, getMetadata(), entitySetName, key);
   }
 
+  /**
+   * Call a server-side function (also known as a service operation).
+   * <p>The functioncall-request builder returned can be used to add parameters.  Call {@link OFunctionRequest#execute()} to issue request.</p>
+   *
+   * @param functionName  the function name
+   * @return the functioncall-builder
+   */
+  public OFunctionRequest<OObject> callFunction(String functionName) {
+    return new ConsumerFunctionCallRequest<OObject>(client, serviceRootUri, getMetadata(), functionName);
+  }
+
   private FeedCustomizationMapping getFeedCustomizationMapping(String entitySetName) {
     if (!cachedMappings.containsKey(entitySetName)) {
       FeedCustomizationMapping rt = new FeedCustomizationMapping();
@@ -539,27 +602,6 @@ public class ODataConsumer {
       }
       return rt;
     }
-  }
-
-  //TODO(0.5) javadoc
-  public OQueryRequest<OEntityId> getLinks(OEntityId sourceEntity, String targetNavProp) {
-    return new ConsumerQueryLinksRequest(client, serviceRootUri, getMetadata(), sourceEntity, targetNavProp);
-  }
-
-  public OEntityRequest<Void> createLink(OEntityId sourceEntity, String targetNavProp, OEntityId targetEntity) {
-    return new ConsumerCreateLinkRequest(client, serviceRootUri, getMetadata(), sourceEntity, targetNavProp, targetEntity);
-  }
-
-  public OEntityRequest<Void> deleteLink(OEntityId sourceEntity, String targetNavProp, Object... targetKeyValues) {
-    return new ConsumerDeleteLinkRequest(client, serviceRootUri, getMetadata(), sourceEntity, targetNavProp, targetKeyValues);
-  }
-
-  public OEntityRequest<Void> updateLink(OEntityId sourceEntity, OEntityId newTargetEntity, String targetNavProp, Object... oldTargetKeyValues) {
-    return new ConsumerUpdateLinkRequest(client, serviceRootUri, getMetadata(), sourceEntity, newTargetEntity, targetNavProp, oldTargetKeyValues);
-  }
-
-  public OFunctionRequest<OObject> callFunction(String functionName) {
-    return new ConsumerFunctionCallRequest<OObject>(client, serviceRootUri, getMetadata(), functionName);
   }
 
 }

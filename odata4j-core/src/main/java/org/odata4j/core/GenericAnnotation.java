@@ -2,38 +2,33 @@
 package org.odata4j.core;
 
 /**
- * Implementation of {@link Annotation}
+ * Generic implementation of {@link NamespacedAnnotation}.
  */
-public class GenericAnnotation<T> implements Annotation<T> {
+public class GenericAnnotation<T> implements NamespacedAnnotation<T> {
 
-  private String namespaceUri;
-  private String namespacePrefix;
-  private String localName;
-  private Class<T> valueType;
-  private T value;
+  private final PrefixedNamespace namespace;
+  private final String localName;
+  private final Class<T> valueType;
+  private final T value;
 
   public GenericAnnotation(String namespaceUri, String namespacePrefix, String localName, Class<T> valueType, T value) {
-    this.namespaceUri = namespaceUri;
+    this.namespace = new PrefixedNamespace(namespaceUri, namespacePrefix);
     this.localName = localName;
-    this.namespacePrefix = namespacePrefix;
     this.valueType = valueType;
     this.value = value;
   }
 
-  public String getNamespaceUri() {
-    return namespaceUri;
+  @Override
+  public PrefixedNamespace getNamespace() {
+    return namespace;
   }
 
-  public String getNamespacePrefix() {
-    return namespacePrefix;
-  }
-
-  public String getLocalName() {
+  public String getName() {
     return localName;
   }
 
   public String getFullyQualifiedName() {
-    return namespaceUri + ":" + localName;
+    return namespace.getPrefix() + ":" + localName;
   }
 
   public Class<T> getValueType() {

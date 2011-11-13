@@ -11,8 +11,8 @@ import org.odata4j.format.SingleLink;
 class ConsumerQueryLinksRequest extends ConsumerQueryRequestBase<OEntityId> {
 
   private final String targetNavProp;
-  
-  protected ConsumerQueryLinksRequest(ODataClient client, String serviceRootUri, EdmDataServices metadata, OEntityId sourceEntity, String targetNavProp) {
+
+  ConsumerQueryLinksRequest(ODataClient client, String serviceRootUri, EdmDataServices metadata, OEntityId sourceEntity, String targetNavProp) {
     super(client, serviceRootUri, metadata, OEntityIds.toKeyString(sourceEntity));
     this.targetNavProp = targetNavProp;
   }
@@ -25,7 +25,7 @@ class ConsumerQueryLinksRequest extends ConsumerQueryRequestBase<OEntityId> {
         return input + "/$links/" + targetNavProp + keyString;
       }};
   }
-  
+
   @Override
   public Enumerable<OEntityId> execute() {
     ODataClientRequest request = buildRequest(linksPath(targetNavProp, null));

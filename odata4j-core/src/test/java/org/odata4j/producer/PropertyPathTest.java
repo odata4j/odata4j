@@ -10,11 +10,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * Tests for {@link Path}
+ * Tests for {@link PropertyPath}
  */
-public class PathTest {
+public class PropertyPathTest {
 
-  public PathTest() {
+  public PropertyPathTest() {
   }
 
   @BeforeClass
@@ -35,102 +35,102 @@ public class PathTest {
 
   @Test
   public void testEmptyPath() {
-    Path p = new Path("");
+    PropertyPath p = new PropertyPath("");
     assertTrue(p.isEmpty());
     assertTrue(p.getNComponents() == 0);
     assertTrue(p.getLastComponent() == null);
     assertTrue(p.getPath().equals(""));
     assertFalse(p.isWild());
-    assertTrue(p.equals(new Path("")));
+    assertTrue(p.equals(new PropertyPath("")));
     p = p.addComponent("blar");
-    assertTrue(p.equals(new Path("blar")));
+    assertTrue(p.equals(new PropertyPath("blar")));
 
-    assertTrue(p.startsWith(new Path("")));
-    assertFalse(p.startsWith(new Path("foo/bar")));
+    assertTrue(p.startsWith(new PropertyPath("")));
+    assertFalse(p.startsWith(new PropertyPath("foo/bar")));
   }
 
   @Test
   public void testOnePath() {
-    Path p = new Path("foo");
+    PropertyPath p = new PropertyPath("foo");
     assertFalse(p.isEmpty());
     assertTrue(p.getNComponents() == 1);
     assertTrue(p.getLastComponent().equals("foo"));
     assertTrue(p.getPath().equals("foo"));
     assertFalse(p.isWild());
-    assertTrue(p.equals(new Path("foo")));
+    assertTrue(p.equals(new PropertyPath("foo")));
     p = p.addComponent("blar");
-    assertTrue(p.equals(new Path("foo/blar")));
+    assertTrue(p.equals(new PropertyPath("foo/blar")));
 
-    assertTrue(p.startsWith(new Path("")));
-    assertTrue(p.startsWith(new Path("foo")));
-    assertTrue(p.startsWith(new Path("foo/blar")));
-    assertFalse(p.startsWith(new Path("foobar/blar")));
+    assertTrue(p.startsWith(new PropertyPath("")));
+    assertTrue(p.startsWith(new PropertyPath("foo")));
+    assertTrue(p.startsWith(new PropertyPath("foo/blar")));
+    assertFalse(p.startsWith(new PropertyPath("foobar/blar")));
   }
 
   @Test
   public void testMultiPath() {
-    Path p = new Path("foo/bar");
+    PropertyPath p = new PropertyPath("foo/bar");
     assertFalse(p.isEmpty());
     assertTrue(p.getNComponents() == 2);
     assertTrue(p.getLastComponent().equals("bar"));
     assertTrue(p.getPath().equals("foo/bar"));
     assertFalse(p.isWild());
-    assertTrue(p.equals(new Path("foo/bar")));
+    assertTrue(p.equals(new PropertyPath("foo/bar")));
     p = p.addComponent("blar");
-    assertTrue(p.equals(new Path("foo/bar/blar")));
+    assertTrue(p.equals(new PropertyPath("foo/bar/blar")));
   }
 
   @Test
   public void testOneWild() {
-    Path p = new Path("*");
+    PropertyPath p = new PropertyPath("*");
     assertFalse(p.isEmpty());
     assertTrue(p.getNComponents() == 1);
     assertTrue(p.getLastComponent().equals("*"));
     assertTrue(p.getPath().equals("*"));
     assertTrue(p.isWild());
-    assertTrue(p.equals(new Path("*")));
+    assertTrue(p.equals(new PropertyPath("*")));
   }
 
   @Test
   public void testMultiWild() {
-    Path p = new Path("foo/bar/*");
+    PropertyPath p = new PropertyPath("foo/bar/*");
     assertFalse(p.isEmpty());
     assertTrue(p.getNComponents() == 3);
     assertTrue(p.getLastComponent().equals("*"));
     assertTrue(p.getPath().equals("foo/bar/*"));
     assertTrue(p.isWild());
-    assertTrue(p.equals(new Path("foo/bar/*")));
+    assertTrue(p.equals(new PropertyPath("foo/bar/*")));
   }
 
   @Test
   public void testRemoveFirst() {
-    Path p = new Path("");
+    PropertyPath p = new PropertyPath("");
     p = p.removeFirstComponent();
     assertTrue(p.isEmpty());
 
-    p = new Path("foobar");
+    p = new PropertyPath("foobar");
     p = p.removeFirstComponent();
     assertTrue(p.isEmpty());
 
-    p = new Path("foo/bar/blat");
+    p = new PropertyPath("foo/bar/blat");
     p = p.removeFirstComponent();
     assertFalse(p.isEmpty());
-    assertTrue(p.equals(new Path("bar/blat")));
+    assertTrue(p.equals(new PropertyPath("bar/blat")));
   }
 
   @Test
   public void testRemoveLast() {
-    Path p = new Path("");
+    PropertyPath p = new PropertyPath("");
     p = p.removeLastComponent();
     assertTrue(p.isEmpty());
 
-    p = new Path("foobar");
+    p = new PropertyPath("foobar");
     p = p.removeLastComponent();
     assertTrue(p.isEmpty());
 
-    p = new Path("foo/bar/blat");
+    p = new PropertyPath("foo/bar/blat");
     p = p.removeLastComponent();
     assertFalse(p.isEmpty());
-    assertTrue(p.equals(new Path("foo/bar")));
+    assertTrue(p.equals(new PropertyPath("foo/bar")));
   }
 }

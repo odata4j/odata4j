@@ -3,6 +3,7 @@ package org.odata4j.core;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+
 import org.core4j.Enumerable;
 import org.odata4j.edm.EdmComplexType;
 
@@ -13,19 +14,25 @@ public class OComplexObjects {
 
   private OComplexObjects() {}
 
+  /** Starts a new {@link OComplexObject} builder of a given edm complex type. */
   public static OComplexObject.Builder newBuilder(EdmComplexType type) {
     return new BuilderImpl(type);
   }
-  
+
+  /** Creates a new {@link OComplexObject} of a given edm complex type using the properties provided. */
+  public static OComplexObject create(EdmComplexType type, List<OProperty<?>> properties) {
+    return new OComplexObjectImpl(type, properties);
+  }
+
   private static class BuilderImpl implements OComplexObject.Builder {
 
     private final EdmComplexType type;
     private final List<OProperty<?>> values = new LinkedList<OProperty<?>>();
-    
+
     BuilderImpl(EdmComplexType type) {
       this.type = type;
     }
-    
+
     @Override
     public OComplexObject.Builder add(OProperty<?> value) {
       values.add(value);
@@ -41,10 +48,6 @@ public class OComplexObjects {
     public EdmComplexType getType() {
       return type;
     }
-  }
-  
-  public static OComplexObject create(EdmComplexType type, List<OProperty<?>> properties) {
-    return new OComplexObjectImpl(type, properties);
   }
 
   private static class OComplexObjectImpl implements OComplexObject {
@@ -87,4 +90,5 @@ public class OComplexObjects {
     }
 
   }
+
 }

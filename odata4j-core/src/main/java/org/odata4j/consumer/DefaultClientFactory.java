@@ -5,7 +5,7 @@ import com.sun.jersey.api.client.config.ClientConfig;
 
 /**
  * The default factory for jersey clients.
- * 
+ *
  * <p>Use {@link #INSTANCE} to obtain a reference to the singleton implementation of this factory.</p>
  */
 public class DefaultClientFactory implements ClientFactory {
@@ -18,4 +18,5 @@ public class DefaultClientFactory implements ClientFactory {
   public Client createClient(ClientConfig clientConfig) {
     return Client.create(clientConfig);
   }
+
 }

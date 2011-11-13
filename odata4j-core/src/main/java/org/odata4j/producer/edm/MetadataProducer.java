@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Stack;
 
 import org.core4j.Enumerable;
-import org.odata4j.core.Annotation;
+import org.odata4j.core.NamespacedAnnotation;
 import org.odata4j.core.OCollection;
 import org.odata4j.core.OCollection.Builder;
 import org.odata4j.core.OCollections;
@@ -48,17 +48,17 @@ import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.ExpressionEvaluator;
 import org.odata4j.producer.ExpressionEvaluator.VariableResolver;
 import org.odata4j.producer.ODataProducer;
-import org.odata4j.producer.Path;
-import org.odata4j.producer.PathHelper;
+import org.odata4j.producer.PropertyPath;
+import org.odata4j.producer.PropertyPathHelper;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.Responses;
 import org.odata4j.producer.exceptions.NotFoundException;
 import org.odata4j.producer.exceptions.NotImplementedException;
 
 /**
- * a producer for $metadata.
+ * A producer for $metadata.
  *
- * This is somewhat brute-forceish.  There is maybe a world where an enhanced
+ * <p>This is somewhat brute-forceish.  There is maybe a world where an enhanced
  * InMemoryProducer and the org.odata4j.edm pojos together are sufficient to
  * implement much of this...I'm not sure.
  */
@@ -90,8 +90,8 @@ public class MetadataProducer implements ODataProducer {
 
   /**
    * create
-   * @param dataProducer - the data producer who defines the $metadata we will expose
-   * @param edmDecorator - an optional decorator.  the decorator provides
+   * @param dataProducer  the data producer who defines the $metadata we will expose
+   * @param edmDecorator  an optional decorator.  the decorator provides
    *                       context for evaluating $filter expressions, custom
    *                       runtime overrides for annotation values and overrides
    *                       for other metadata properties
@@ -102,18 +102,12 @@ public class MetadataProducer implements ODataProducer {
     edm = new MetadataEdmGenerator().generateEdm(edmDecorator).build();
   }
 
-  /**
-   * Get the EDM model that this producer exposes.
-   * @return - the model
-   */
+  /** Get the EDM model that this producer exposes. */
   public EdmDataServices getModel() {
     return this.dataProducer.getMetadata();
   }
 
-  /**
-   * Get the EDM that defines the queryable metadata, the meta-EDM
-   * @return
-   */
+  /** Get the EDM that defines the queryable metadata, the meta-EDM */
   @Override
   public EdmDataServices getMetadata() {
     return edm;
@@ -131,7 +125,7 @@ public class MetadataProducer implements ODataProducer {
       this.queryInfo = queryInfo;
       this.entityKey = key;
       setLocale();
-      pathHelper = new PathHelper(queryInfo.select, queryInfo.expand, getCustomOption(PathHelper.OptionSelectR), getCustomOption(PathHelper.OptionExpandR));
+      pathHelper = new PropertyPathHelper(queryInfo.select, queryInfo.expand, getCustomOption(PropertyPathHelper.OptionSelectR), getCustomOption(PropertyPathHelper.OptionExpandR));
       flatten = getCustomBoolean(CustomOptions.Flatten, false);
     }
 
@@ -178,13 +172,13 @@ public class MetadataProducer implements ODataProducer {
     QueryInfo queryInfo;
     OEntityKey entityKey;
     Locale locale = Locale.ENGLISH;
-    PathHelper pathHelper;
+    PropertyPathHelper pathHelper;
     List<OEntity> entities = new LinkedList<OEntity>();
     boolean flatten = false;    // flatten properties for structural types
 
     @Override
     public Object resolveVariable(String path) {
-      Path p = new Path(path);
+      PropertyPath p = new PropertyPath(path);
       EdmItem i = resolverContext.isEmpty() ? null : this.peekResolver();
 
       if (null != i) {
@@ -198,7 +192,7 @@ public class MetadataProducer implements ODataProducer {
       throw new NotImplementedException("unhandled EdmItem type in resolveVariable: " + (null == i ? "null" : i.getClass().getName()));
     }
 
-    private Object resolveStructuralTypeVariable(EdmStructuralType et, Path path) {
+    private Object resolveStructuralTypeVariable(EdmStructuralType et, PropertyPath path) {
       if (path.getNComponents() == 1) {
         String name = path.getLastComponent();
         if (Edm.EntityType.Abstract.equals(name)) {
@@ -225,7 +219,7 @@ public class MetadataProducer implements ODataProducer {
       }
     }
 
-    private Object resolvePropertyVariable(EdmProperty prop, Path path) {
+    private Object resolvePropertyVariable(EdmProperty prop, PropertyPath path) {
       if (path.getNComponents() == 1) {
         String name = path.getLastComponent();
         if (Edm.Property.DefaultValue.equals(name)) {
@@ -548,7 +542,7 @@ public class MetadataProducer implements ODataProducer {
 
   private void addAnnotationProperties(Context c, EdmItem item, List<OProperty<?>> props) {
     if (null != item.getAnnotations()) {
-      for (Annotation<?> a : item.getAnnotations()) {
+      for (NamespacedAnnotation<?> a : item.getAnnotations()) {
         if (a.getValue() != null) {
           /*
            * property naming: so...annotations live in a namespace.  JSON doesn't have the concept of namespaces,
@@ -559,7 +553,7 @@ public class MetadataProducer implements ODataProducer {
            * the queryable metadata property names different than the names one would see from $metadata...not
            * sure we can do anything about that.
            */
-          String propName = a.getNamespacePrefix() + "_" + a.getLocalName();
+          String propName = a.getNamespace().getPrefix() + "_" + a.getName();
           if (c.pathHelper.isSelected(propName)) {
             Object override = null != this.decorator ? this.decorator.getAnnotationValueOverride(item, a, c.flatten, c.locale,
                     null == c.queryInfo ? null : c.queryInfo.customOptions) : null;

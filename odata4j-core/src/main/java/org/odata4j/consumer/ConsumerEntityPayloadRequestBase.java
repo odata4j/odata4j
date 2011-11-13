@@ -24,7 +24,7 @@ abstract class ConsumerEntityPayloadRequestBase {
   protected final String serviceRootUri;
   protected final EdmDataServices metadata;
 
-  protected ConsumerEntityPayloadRequestBase(String entitySetName, String serviceRootUri, EdmDataServices metadata) {
+  ConsumerEntityPayloadRequestBase(String entitySetName, String serviceRootUri, EdmDataServices metadata) {
     this.entitySetName = entitySetName;
     this.serviceRootUri = serviceRootUri;
     this.metadata = metadata;

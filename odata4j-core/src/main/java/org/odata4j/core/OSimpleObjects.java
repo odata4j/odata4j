@@ -18,8 +18,9 @@ public class OSimpleObjects {
 
   private OSimpleObjects() {}
 
+  /** Creates a new {@link OSimpleObject} instance given a type and value. */
   @SuppressWarnings("unchecked")
-  public static <TIn, TOut> OSimpleObject<TOut> create(EdmSimpleType<TOut> type, TIn value) {
+  public static <T> OSimpleObject<T> create(EdmSimpleType<T> type, Object value) {
     if (type == EdmSimpleType.STRING) {
       String sValue = null;
       if (value != null) {
@@ -29,51 +30,52 @@ public class OSimpleObjects {
           sValue = (String) value;
         }
       }
-      return (OSimpleObject<TOut>) Impl.create(EdmSimpleType.STRING, sValue);
+      return (OSimpleObject<T>) Impl.create(EdmSimpleType.STRING, sValue);
     } else if (type == EdmSimpleType.BOOLEAN) {
       Boolean bValue = (Boolean) value;
-      return (OSimpleObject<TOut>) Impl.create(EdmSimpleType.BOOLEAN, bValue);
+      return (OSimpleObject<T>) Impl.create(EdmSimpleType.BOOLEAN, bValue);
     } else if (type == EdmSimpleType.INT16) {
       Short sValue = (Short) value;
-      return (OSimpleObject<TOut>) Impl.create(EdmSimpleType.INT16, sValue);
+      return (OSimpleObject<T>) Impl.create(EdmSimpleType.INT16, sValue);
     } else if (type == EdmSimpleType.INT32) {
       Integer iValue = (Integer) value;
-      return (OSimpleObject<TOut>) Impl.create(EdmSimpleType.INT32, iValue);
+      return (OSimpleObject<T>) Impl.create(EdmSimpleType.INT32, iValue);
     } else if (type == EdmSimpleType.INT64) {
       Long iValue = (Long) value;
-      return (OSimpleObject<TOut>) Impl.create(EdmSimpleType.INT64, iValue);
+      return (OSimpleObject<T>) Impl.create(EdmSimpleType.INT64, iValue);
     } else if (type == EdmSimpleType.BYTE) {
       Byte bValue = (Byte) value;
-      return (OSimpleObject<TOut>) Impl.create(EdmSimpleType.BYTE, bValue);
+      return (OSimpleObject<T>) Impl.create(EdmSimpleType.BYTE, bValue);
     } else if (type == EdmSimpleType.DECIMAL) {
       BigDecimal dValue = (BigDecimal) value;
-      return (OSimpleObject<TOut>) Impl.create(EdmSimpleType.DECIMAL, dValue);
+      return (OSimpleObject<T>) Impl.create(EdmSimpleType.DECIMAL, dValue);
     } else if (type == EdmSimpleType.DATETIME) {
       LocalDateTime ldtValue = TypeConverter.convert(value, LocalDateTime.class);
-      return (OSimpleObject<TOut>) Impl.create(EdmSimpleType.DATETIME, ldtValue);
+      return (OSimpleObject<T>) Impl.create(EdmSimpleType.DATETIME, ldtValue);
     } else if (type == EdmSimpleType.TIME) {
       LocalTime ltValue = TypeConverter.convert(value, LocalTime.class);
-      return (OSimpleObject<TOut>) Impl.create(EdmSimpleType.TIME, ltValue);
+      return (OSimpleObject<T>) Impl.create(EdmSimpleType.TIME, ltValue);
     } else if (type == EdmSimpleType.BINARY) {
       byte[] bValue = (byte[]) value;
-      return (OSimpleObject<TOut>) Impl.create(EdmSimpleType.BINARY, bValue);
+      return (OSimpleObject<T>) Impl.create(EdmSimpleType.BINARY, bValue);
     } else if (type == EdmSimpleType.DOUBLE) {
       Double dValue = (Double) value;
-      return (OSimpleObject<TOut>) Impl.create(EdmSimpleType.DOUBLE, dValue);
+      return (OSimpleObject<T>) Impl.create(EdmSimpleType.DOUBLE, dValue);
     } else if (type == EdmSimpleType.SINGLE) {
       Float fValue = (Float) value;
-      return (OSimpleObject<TOut>) Impl.create(EdmSimpleType.SINGLE, fValue);
+      return (OSimpleObject<T>) Impl.create(EdmSimpleType.SINGLE, fValue);
     } else if (type == EdmSimpleType.GUID) {
       Guid gValue = TypeConverter.convert(value, Guid.class);
-      return (OSimpleObject<TOut>) Impl.create(EdmSimpleType.GUID, gValue);
+      return (OSimpleObject<T>) Impl.create(EdmSimpleType.GUID, gValue);
     } else if (type == EdmSimpleType.DATETIMEOFFSET) {
       DateTime dtValue = (DateTime) value;
-      return (OSimpleObject<TOut>) Impl.create(EdmSimpleType.DATETIMEOFFSET, dtValue);
+      return (OSimpleObject<T>) Impl.create(EdmSimpleType.DATETIMEOFFSET, dtValue);
     } else {
       throw new UnsupportedOperationException("Implement " + type);
     }
   }
 
+  /** Parses a string value into a new {@link OSimpleObject} given an edm type. */
   @SuppressWarnings("unchecked")
   public static <V> OSimpleObject<V> parse(EdmSimpleType<V> type, String value) {
     if (EdmSimpleType.GUID.equals(type)) {
@@ -122,6 +124,7 @@ public class OSimpleObjects {
     throw new UnsupportedOperationException("type:" + type);
   }
 
+  /** Returns a human-readable string value for a given object. */
   public static String getValueDisplayString(Object value) {
     if (value instanceof byte[])
       value = "0x" + Hex.encodeHexString((byte[]) value);
@@ -156,6 +159,7 @@ public class OSimpleObjects {
     public String toString() {
       return getValueDisplayString(value);
     }
+
   }
 
 }

@@ -10,15 +10,6 @@ public class OLinks {
   private OLinks() {}
 
   /**
-   * Creates a new {@link OLink} where the link sub-type is unknown or undefined.
-   * 
-   * Nobody calls this, seems safe to nuke as it has no semantic value.
-   */
-  //public static OLink link(String relation, String title, String href) {
-  //  return new OLinkImpl(OLink.class, relation, title, href);
-  //}
-
-  /**
    * Creates a new {@link OLink} of sub-type {@link ORelatedEntitiesLink}.
    */
   public static ORelatedEntitiesLink relatedEntities(final String relation, final String title, final String href) {

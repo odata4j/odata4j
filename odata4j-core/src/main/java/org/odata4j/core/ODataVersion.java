@@ -20,7 +20,7 @@ public enum ODataVersion {
 
   /**
    * Identify a version by version string.
-   * 
+   *
    * @param str  the version string
    * @return the version enum
    */
@@ -33,12 +33,15 @@ public enum ODataVersion {
       throw new IllegalArgumentException("Unknown ODataVersion " + str);
     }
   }
-  
+
+  /** Returns true if the version v is greater than the target version */
   public static boolean isVersionGreaterThan(ODataVersion v, ODataVersion target) {
     return v.compareTo(target) > 0;
   }
-  
+
+  /** Returns true if the version v is greater than or equal to the target version */
   public static boolean isVersionGreaterThanOrEqualTo(ODataVersion v, ODataVersion target) {
     return v.compareTo(target) >= 0;
   }
+
 }

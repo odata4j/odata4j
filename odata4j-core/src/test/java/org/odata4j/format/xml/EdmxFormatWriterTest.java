@@ -21,8 +21,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.odata4j.core.Annotation;
-import org.odata4j.core.Namespace;
+import org.odata4j.core.NamespacedAnnotation;
+import org.odata4j.core.PrefixedNamespace;
 import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmAnnotation;
 import org.odata4j.edm.EdmAnnotationAttribute;
@@ -35,7 +35,7 @@ import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmStructuralType;
 import org.odata4j.examples.producer.ProducerUtil;
 import org.odata4j.internal.InternalUtil;
-import org.odata4j.producer.Path;
+import org.odata4j.producer.PropertyPath;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.jpa.airline.Airport;
 import org.odata4j.producer.jpa.northwind.test.NorthwindTestUtils;
@@ -153,9 +153,9 @@ public class EdmxFormatWriterTest implements EdmDecorator {
   public static final String prefix = "od4j";
 
   @Override
-  public List<Namespace> getNamespaces() {
-    List<Namespace> l = new ArrayList<Namespace>();
-    l.add(new Namespace(namespaceUri, prefix));
+  public List<PrefixedNamespace> getNamespaces() {
+    List<PrefixedNamespace> l = new ArrayList<PrefixedNamespace>();
+    l.add(new PrefixedNamespace(namespaceUri, prefix));
     return l;
   }
 
@@ -169,17 +169,17 @@ public class EdmxFormatWriterTest implements EdmDecorator {
   }
 
   @Override
-  public Object resolveStructuralTypeProperty(EdmStructuralType st, Path path) {
+  public Object resolveStructuralTypeProperty(EdmStructuralType st, PropertyPath path) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override
-  public Object resolvePropertyProperty(EdmProperty st, Path path) {
+  public Object resolvePropertyProperty(EdmProperty st, PropertyPath path) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override
-  public Object getAnnotationValueOverride(EdmItem item, Annotation<?> annot, boolean flatten, Locale locale, Map<String, String> options) {
+  public Object getAnnotationValueOverride(EdmItem item, NamespacedAnnotation<?> annot, boolean flatten, Locale locale, Map<String, String> options) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
@@ -189,12 +189,12 @@ public class EdmxFormatWriterTest implements EdmDecorator {
   }
 
   @Override
-  public EdmDocumentation getDocumentationForSchema(String namespace, String typeName) {
+  public EdmDocumentation getDocumentationForSchema(String namespace) {
     return null;
   }
 
   @Override
-  public List<EdmAnnotation<?>> getAnnotationsForSchema(String namespace, String typeName) {
+  public List<EdmAnnotation<?>> getAnnotationsForSchema(String namespace) {
     return null;
   }
 

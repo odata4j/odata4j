@@ -8,8 +8,8 @@ class ConsumerCreateLinkRequest extends ConsumerEntityRequestBase<Void> {
 
   private final String targetNavProp;
   private final OEntityId targetEntity;
-  
-  public ConsumerCreateLinkRequest(ODataClient client, String serviceRootUri,
+
+  ConsumerCreateLinkRequest(ODataClient client, String serviceRootUri,
       EdmDataServices metadata, OEntityId sourceEntity, String targetNavProp, OEntityId targetEntity) {
     super(client, serviceRootUri, metadata, sourceEntity.getEntitySetName(), sourceEntity.getEntityKey());
     this.targetNavProp = targetNavProp;
@@ -20,7 +20,7 @@ class ConsumerCreateLinkRequest extends ConsumerEntityRequestBase<Void> {
   public Void execute() {
     String path = Enumerable.create(getSegments()).join("/");
     path = ConsumerQueryLinksRequest.linksPath(targetNavProp, null).apply(path);
-    
+
     ODataClientRequest request = ODataClientRequest.post(getServiceRootUri() + path, toSingleLink(targetEntity));
     getClient().createLink(request);
     return null;

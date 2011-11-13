@@ -94,8 +94,8 @@ public class InMemoryEdmGenerator implements EdmGenerator {
     EdmSchema.Builder schema = EdmSchema.newBuilder().setNamespace(namespace).addEntityTypes(entityTypes)
             .addAssociations(associations).addEntityContainers(containers);
     if (decorator != null) {
-      schema.setDocumentation(decorator.getDocumentationForSchema(namespace, namespace));
-      schema.setAnnotations(decorator.getAnnotationsForSchema(namespace, namespace));
+      schema.setDocumentation(decorator.getDocumentationForSchema(namespace));
+      schema.setAnnotations(decorator.getAnnotationsForSchema(namespace));
     }
 
     schemas.add(schema);

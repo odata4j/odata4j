@@ -32,7 +32,7 @@ class ConsumerCreateEntityRequest<T> extends ConsumerEntityPayloadRequestBase im
 
   private final FeedCustomizationMapping fcMapping;
 
-  public ConsumerCreateEntityRequest(ODataClient client, String serviceRootUri, EdmDataServices metadata, String entitySetName, FeedCustomizationMapping fcMapping) {
+  ConsumerCreateEntityRequest(ODataClient client, String serviceRootUri, EdmDataServices metadata, String entitySetName, FeedCustomizationMapping fcMapping) {
     super(entitySetName, serviceRootUri, metadata);
     this.client = client;
     this.fcMapping = fcMapping;

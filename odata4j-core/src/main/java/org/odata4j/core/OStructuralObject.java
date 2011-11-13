@@ -28,4 +28,5 @@ public interface OStructuralObject extends OObject {
    * @return the property
    */
   <T> OProperty<T> getProperty(String propName, Class<T> propClass);
+
 }

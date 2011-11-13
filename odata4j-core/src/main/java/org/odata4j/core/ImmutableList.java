@@ -8,6 +8,13 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.RandomAccess;
 
+/**
+ * A List implementation whose structure is immutable after construction.
+ * <p>Useful for apis that assume a returned list remains unmodified.
+ * <p>All mutation methods throw <code>UnsupportedOperationException</code>
+ *
+ * @param <T>  the list item type
+ */
 public class ImmutableList<T> implements List<T>, RandomAccess {
 
   private final List<T> values;

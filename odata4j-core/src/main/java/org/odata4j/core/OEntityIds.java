@@ -1,14 +1,31 @@
 package org.odata4j.core;
 
 
-// TODO(0.5) javadoc
+/**
+ * A static factory to create immutable {@link OEntityId} instances.
+ */
 public class OEntityIds {
 
   private OEntityIds() {}
 
+  /**
+   * Creates an entity-id.
+   *
+   * @param entitySetName  the entity-set
+   * @param entityKeyValues  the entity-key as one or more values
+   * @return the entity-id
+   */
   public static OEntityId create(String entitySetName, Object... entityKeyValues) {
     return create(entitySetName, OEntityKey.create(entityKeyValues));
   }
+
+  /**
+   * Creates an entity-id.
+   *
+   * @param entitySetName  the entity-set
+   * @param entityKey  the entity-key
+   * @return the entity-id
+   */
   public static OEntityId create(String entitySetName, OEntityKey entityKey) {
     if (entitySetName == null)
       throw new NullPointerException("Must provide entity-set name");
@@ -18,6 +35,12 @@ public class OEntityIds {
     return new OEntityIdImpl(entitySetName, entityKey);
   }
 
+  /**
+   * Parses an entity-id from a "key string" representation.
+   * <p>e.g. {@code Customers(15)}
+   * @param entityId  the entity-id as a string representation
+   * @return the parsed entity-id
+   */
   public static OEntityId parse(String entityId) {
     if (entityId == null)
       throw new NullPointerException("Must provide entity-id");
@@ -31,6 +54,12 @@ public class OEntityIds {
     return create(entitySetName, entityKey);
   }
 
+  /**
+   * Parses an entity-id of an entity at an OData uri given its service root uri.
+   * @param serviceRootUri  the service root uri
+   * @param uri  the entity uri
+   * @return the parsed entity-id
+   */
   public static OEntityId parse(String serviceRootUri, String uri) {
     if (serviceRootUri == null)
       throw new NullPointerException("Must provide service-root-uri");
@@ -45,13 +74,26 @@ public class OEntityIds {
 
     return parse(entityId);
   }
-  
+
+  /**
+   * Computes the "key string" representation of an entity.
+   *
+   * @param entity  the entity
+   * @return the "key string" representation e.g. {@code Customers(15)}
+   */
   public static String toKeyString(OEntityId entity) {
     if (entity == null)
       return null;
     return entity.getEntitySetName() + entity.getEntityKey().toKeyString();
   }
-  
+
+  /**
+   * Determines equality of two entity ids.  Ids are equal if their key strings are equal.
+   *
+   * @param lhs  the first entity id
+   * @param rhs  the second entity id
+   * @return whether or not the ids are equal
+   */
   public static boolean equals(OEntityId lhs, OEntityId rhs) {
     if (lhs == null)
       return rhs == null;
@@ -82,6 +124,7 @@ public class OEntityIds {
     public String toString() {
       return String.format("OEntityId[%s%s]", entitySetName, entityKey.toKeyString());
     }
+
   }
 
 }

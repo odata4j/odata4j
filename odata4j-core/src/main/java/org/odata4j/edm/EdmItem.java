@@ -5,9 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.odata4j.core.Annotated;
-import org.odata4j.core.Annotation;
 import org.odata4j.core.ImmutableList;
+import org.odata4j.core.NamespacedAnnotation;
 
 /**
  * Constructs in the CSDL that we model in the org.odata4j.edm package
@@ -15,10 +14,10 @@ import org.odata4j.core.ImmutableList;
  * <li>Documentation
  * <li>Annotation (attributes and elements)
  */
-public class EdmItem implements Annotated {
+public class EdmItem {
 
   private final EdmDocumentation documentation;
-  private final ImmutableList<? extends Annotation<?>> annotations;
+  private final ImmutableList<? extends NamespacedAnnotation<?>> annotations;
 
   protected EdmItem(EdmDocumentation documentation, ImmutableList<EdmAnnotation<?>> annotations) {
     this.documentation = documentation;
@@ -29,14 +28,14 @@ public class EdmItem implements Annotated {
     return documentation;
   }
 
-  public Iterable<? extends Annotation<?>> getAnnotations() {
+  public Iterable<? extends NamespacedAnnotation<?>> getAnnotations() {
     return annotations;
   }
 
-  public Annotation<?> findAnnotation(String namespaceUri, String localName) {
+  public NamespacedAnnotation<?> findAnnotation(String namespaceUri, String localName) {
     if (annotations != null) {
-      for(Annotation<?> annotation : annotations) {
-        if (annotation.getNamespaceUri().equals(namespaceUri) && annotation.getLocalName().equals(localName))
+      for(NamespacedAnnotation<?> annotation : annotations) {
+        if (annotation.getNamespace().getUri().equals(namespaceUri) && annotation.getName().equals(localName))
           return annotation;
       }
     }
@@ -47,15 +46,15 @@ public class EdmItem implements Annotated {
 
     private final Map<Object, Builder<?, ?>> newBuilders = new HashMap<Object, Builder<?, ?>>();
     private final EdmDataServices.Builder dataServices;
-    
+
     public BuilderContext(EdmDataServices.Builder ds) {
       this.dataServices = ds;
     }
-    
+
     public EdmDataServices.Builder getDataServices() {
       return this.dataServices;
     }
-    
+
     @SuppressWarnings("unchecked")
     public <T, TBuilder> TBuilder newBuilder(T item, Builder<T, TBuilder> builder) {
       if (!newBuilders.containsKey(item)) {

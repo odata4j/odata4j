@@ -58,4 +58,15 @@ public class OFuncs {
       }
     };
   }
+
+  public static <T1, T2> Func1<Object, T2> widen(final Func1<T1, T2> fn) {
+    return new Func1<Object, T2>() {
+      @SuppressWarnings("unchecked")
+      @Override
+      public T2 apply(Object input) {
+        return fn.apply((T1) input);
+      }
+    };
+  }
+
 }

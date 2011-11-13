@@ -3,20 +3,20 @@ package org.odata4j.producer;
 import java.util.Arrays;
 
 /**
- * A path in an object graph
+ * A path in an object graph made up of property names.
  */
-public class Path {
+public class PropertyPath {
 
   private String[] pathComponents;
-  private String spath;
+  private String pathString;
 
-  public Path(String path) {
-    this.spath = path;
+  public PropertyPath(String path) {
+    this.pathString = path;
     this.pathComponents = path.isEmpty() ? null : path.split("/");
   }
 
-  public Path(Path path) {
-    this.spath = path.spath;
+  public PropertyPath(PropertyPath path) {
+    this.pathString = path.pathString;
     this.pathComponents = path.isEmpty() ? null : Arrays.<String>copyOf(path.pathComponents, path.pathComponents.length);
   }
 
@@ -37,38 +37,38 @@ public class Path {
   }
 
   public String getPath() {
-    return spath;
+    return pathString;
   }
 
-  public Path addComponent(String component) {
-    return new Path(spath.isEmpty() ? component : (spath + "/" + component));
+  public PropertyPath addComponent(String component) {
+    return new PropertyPath(pathString.isEmpty() ? component : (pathString + "/" + component));
   }
 
-  public Path removeLastComponent() {
+  public PropertyPath removeLastComponent() {
     if (isEmpty()) {
       return this;
     } else if (this.getNComponents() == 1) {
-      return new Path("");
+      return new PropertyPath("");
     } else {
       StringBuilder sb = new StringBuilder(pathComponents[0]);
       for (int i = 1; i < pathComponents.length - 1; i++) {
         sb.append("/").append(pathComponents[i]);
       }
-      return new Path(sb.toString());
+      return new PropertyPath(sb.toString());
     }
   }
 
-  public Path removeFirstComponent() {
+  public PropertyPath removeFirstComponent() {
     if (isEmpty()) {
       return this;
     } else if (this.getNComponents() == 1) {
-      return new Path("");
+      return new PropertyPath("");
     } else {
       StringBuilder sb = new StringBuilder(pathComponents[1]);
       for (int i = 2; i < pathComponents.length; i++) {
         sb.append("/").append(pathComponents[i]);
       }
-      return new Path(sb.toString());
+      return new PropertyPath(sb.toString());
     }
   }
 
@@ -87,25 +87,25 @@ public class Path {
 
   @Override
   public boolean equals(Object rhso) {
-    if (rhso == null || !(rhso instanceof Path)) {
+    if (rhso == null || !(rhso instanceof PropertyPath)) {
       return false;
     }
-    Path rhs = (Path) rhso;
+    PropertyPath rhs = (PropertyPath) rhso;
 
-    return spath.equals(rhs.spath);
+    return pathString.equals(rhs.pathString);
   }
 
   @Override
   public int hashCode() {
-    return spath.hashCode();
+    return pathString.hashCode();
   }
 
   @Override
   public String toString() {
-    return spath;
+    return pathString;
   }
 
-  public boolean startsWith(Path p) {
+  public boolean startsWith(PropertyPath p) {
     if (this.getNComponents() < p.getNComponents()) { return false; }
 
     for (int i = 0; i < p.getNComponents(); i++) {

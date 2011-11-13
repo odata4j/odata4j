@@ -14,6 +14,7 @@ import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityId;
 import org.odata4j.core.OEntityKey;
+import org.odata4j.core.OFuncs;
 import org.odata4j.core.OFunctionParameter;
 import org.odata4j.core.OLink;
 import org.odata4j.core.OLinks;
@@ -61,23 +62,33 @@ public class InMemoryProducer implements ODataProducer {
 
   private static final int DEFAULT_MAX_RESULTS = 100;
 
-  /** Create a new instance of an in-memory POJO/JPA producer
+  /**
+   * Creates a new instance of an in-memory POJO producer.
    *
-   * @param namespace - the namespace that the schema registrations will be in
+   * @param namespace  the namespace of the schema registrations
    */
   public InMemoryProducer(String namespace) {
     this(namespace, DEFAULT_MAX_RESULTS);
   }
 
-  /** Create a new instance of an in-memory POJO/JPA producer
+  /**
+   * Creates a new instance of an in-memory POJO producer.
    *
-   * @param namespace - the names apce that the schema registrations will be in
-   * @param maxResults - the maximum number of entities to return
+   * @param namespace  the namespace of the schema registrations
+   * @param maxResults  the maximum number of entities to return in a single call
    */
   public InMemoryProducer(String namespace, int maxResults) {
     this(namespace, maxResults, null, null);
   }
 
+  /**
+   * Creates a new instance of an in-memory POJO producer.
+   *
+   * @param namespace  the namespace of the schema registrations
+   * @param maxResults  the maximum number of entities to return in a single call
+   * @param decorator  a decorator to use for edm customizations
+   * @param typeMapping  optional mapping between java types and edm types, null for default
+   */
   public InMemoryProducer(String namespace, int maxResults, EdmDecorator decorator, InMemoryTypeMapping typeMapping) {
     this.namespace = namespace;
     this.maxResults = maxResults;
@@ -108,20 +119,13 @@ public class InMemoryProducer implements ODataProducer {
 
   }
 
-  private static <T1, T2> Func1<Object, T2> widen(final Func1<T1, T2> fn) {
-    return new Func1<Object, T2>() {
-
-      @SuppressWarnings("unchecked")
-      @Override
-      public T2 apply(Object input) {
-        return fn.apply((T1) input);
-      }
-    };
-  }
-
+  /**
+   * Registers a new entity set based on a POJO type using the default property model and a given ID property.
+   *
+   * <p>@see {@link #register(Class, PropertyModel, Class, String, Func, Func1)} for parameter docs.
+   */
   public <TEntity, TKey> void register(final Class<TEntity> entityClass, Class<TKey> keyClass, final String entitySetName, Func<Iterable<TEntity>> get, final String idPropertyName) {
     register(entityClass, keyClass, entitySetName, get, new Func1<TEntity, TKey>() {
-
       @SuppressWarnings("unchecked")
       @Override
       public TKey apply(TEntity input) {
@@ -130,13 +134,10 @@ public class InMemoryProducer implements ODataProducer {
     });
   }
 
-  /** Register a new ODATA endpoint for an entity set.
+  /**
+   * Registers a new entity set based on a POJO type using the default property model.
    *
-   * @param entityClass the class of the entities that are to be stored in the set
-   * @param keyClass the class of the key element of the set
-   * @param entitySetName the alias the set will be known by; this is what is used in the ODATA URL
-   * @param get a function to iterate over the elements in the set
-   * @param id a function to extract the id from any given element in the set
+   * <p>@see {@link #register(Class, PropertyModel, Class, String, Func, Func1)} for parameter docs.
    */
   public <TEntity, TKey> void register(Class<TEntity> entityClass, Class<TKey> keyClass, String entitySetName, Func<Iterable<TEntity>> get, Func1<TEntity, TKey> id) {
     PropertyModel model = new BeanBasedPropertyModel(entityClass);
@@ -145,6 +146,16 @@ public class InMemoryProducer implements ODataProducer {
     register(entityClass, model, keyClass, entitySetName, get, id);
   }
 
+  /**
+   * Registers a new entity set based on a POJO type and a property model.
+   *
+   * @param entityClass  the class of the entities that are to be stored in the set
+   * @param propertyModel a way to get/set properties on the POJO
+   * @param keyClass  the class of the key element of the set
+   * @param entitySetName  the alias the set will be known by; this is what is used in the ODATA URL
+   * @param get  a function to iterate over the elements in the set
+   * @param id  a function to extract the id from any given element in the set
+   */
   public <TEntity, TKey> void register(
       Class<TEntity> entityClass,
       PropertyModel propertyModel,
@@ -157,7 +168,7 @@ public class InMemoryProducer implements ODataProducer {
     ei.entitySetName = entitySetName;
     ei.properties = propertyModel;
     ei.get = get;
-    ei.id = widen(id);
+    ei.id = OFuncs.widen(id);
     ei.keyClass = keyClass;
     ei.entityClass = entityClass;
 

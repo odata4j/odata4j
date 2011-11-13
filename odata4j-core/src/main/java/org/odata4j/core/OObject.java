@@ -3,7 +3,7 @@ package org.odata4j.core;
 import org.odata4j.edm.EdmType;
 
 /**
- * OData value/instance object with the given {@link EdmType}.
+ * OData instance object of the given {@link EdmType}.
  *
  * @see OEntity
  * @see OSimpleObject
@@ -12,6 +12,7 @@ import org.odata4j.edm.EdmType;
  */
 public interface OObject {
 
+  /** Gets the edm type of this object */
   EdmType getType();
 
 }

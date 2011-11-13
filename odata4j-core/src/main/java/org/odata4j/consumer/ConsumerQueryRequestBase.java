@@ -30,7 +30,7 @@ abstract class ConsumerQueryRequestBase<T> implements OQueryRequest<T> {
   private final List<EntitySegment> segments = new ArrayList<EntitySegment>();
   private final Map<String, String> customs = new HashMap<String, String>();
 
-  protected ConsumerQueryRequestBase(ODataClient client, String serviceRootUri, EdmDataServices metadata, String lastSegment) {
+  ConsumerQueryRequestBase(ODataClient client, String serviceRootUri, EdmDataServices metadata, String lastSegment) {
     this.client = client;
     this.serviceRootUri = serviceRootUri;
     this.metadata = metadata;
@@ -58,7 +58,7 @@ abstract class ConsumerQueryRequestBase<T> implements OQueryRequest<T> {
     path += (path.length() == 0 ? "" : "/") + lastSegment;
     if (pathModification != null)
       path = pathModification.apply(path);
-    
+
     ODataClientRequest request = ODataClientRequest.get(serviceRootUri + path);
 
     if (top != null) {
