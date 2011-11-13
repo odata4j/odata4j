@@ -184,7 +184,7 @@ class ConsumerFunctionCallRequest<T extends OObject>
     @Override
     protected IterationResult<OObject> advance() throws Exception {
 
-      if (done) {
+      if (done || function.getReturnType() == null) {
         return IterationResult.done();
       }
 

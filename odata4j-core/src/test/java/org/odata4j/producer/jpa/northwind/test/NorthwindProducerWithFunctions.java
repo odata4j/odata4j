@@ -57,6 +57,8 @@ public class NorthwindProducerWithFunctions extends ODataProducerDelegate {
       return testFunction1(function, params, queryInfo);
     } else if (function.getName().equals("TestFunction2")) {
       return testFunction2(function, params, queryInfo);
+    } else if (function.getName().equals("TestFunction3")) {
+      return testFunction3(function, params, queryInfo);
     } else {
       throw new RuntimeException("unknown function"); // TODO 404?
     }
@@ -94,6 +96,11 @@ public class NorthwindProducerWithFunctions extends ODataProducerDelegate {
     return Responses.collection(c.build());
   }
 
+  private BaseResponse testFunction3(EdmFunctionImport function, java.util.Map<String, OFunctionParameter> params, QueryInfo queryInfo) {
+
+    return null;
+  }
+
   private static EdmDataServices extendModel(EdmDataServices metadata) {
     // add some functions to the edm
     EdmDataServices.Builder ds = EdmDataServices.newBuilder(metadata);
@@ -117,23 +124,31 @@ public class NorthwindProducerWithFunctions extends ODataProducerDelegate {
     params.add(EdmFunctionParameter.newBuilder().input("PString", EdmSimpleType.STRING));
     params.add(EdmFunctionParameter.newBuilder().input("PTime", EdmSimpleType.TIME));
 
-    EdmFunctionImport.Builder f = EdmFunctionImport.newBuilder()
+    EdmFunctionImport.Builder testFunction1 = EdmFunctionImport.newBuilder()
         .setName("TestFunction1")
         .setReturnType(ct)
         .setHttpMethod("GET")
         .addParameters(params);
-    container.addFunctionImports(f);
+    container.addFunctionImports(testFunction1);
 
     params = new ArrayList<EdmFunctionParameter.Builder>(1);
     params.add(EdmFunctionParameter.newBuilder().input("NResults", EdmSimpleType.INT16));
 
-    f = EdmFunctionImport.newBuilder()
+    EdmFunctionImport.Builder testFunction2 = EdmFunctionImport.newBuilder()
         .setName("TestFunction2")
         .setReturnType(new EdmCollectionType(CollectionKind.Collection, ct.build()))
         .setHttpMethod("GET")
         .addParameters(params);
-    container.addFunctionImports(f);
+    container.addFunctionImports(testFunction2);
+
+    // no return type
+    EdmFunctionImport.Builder testFunction3 = EdmFunctionImport.newBuilder()
+        .setName("TestFunction3")
+        .setHttpMethod("POST")
+        .addParameters(EdmFunctionParameter.newBuilder().input("PString", EdmSimpleType.STRING));
+    container.addFunctionImports(testFunction3);
+
     return ds.build();
   }
-  
+
 }

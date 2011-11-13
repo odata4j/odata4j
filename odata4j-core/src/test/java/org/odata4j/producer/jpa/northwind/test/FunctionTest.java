@@ -20,7 +20,7 @@ import org.odata4j.producer.jpa.JPAProducer;
 
 /**
  * Some basic tests for functions.
- * 
+ *
  */
 public class FunctionTest extends JPAProducerTestBase {
 
@@ -111,6 +111,17 @@ public class FunctionTest extends JPAProducerTestBase {
       productid += 2;
     }
     Assert.assertEquals(count, 3);
+  }
+
+  @Test
+  public void functionWithNoReturnTypeTest() {
+    // test client call JSON
+    ODataConsumer c = ODataConsumer.newBuilder(endpointUri).setFormatType(FormatType.JSON).build();
+
+    Enumerable<OObject> results = c.callFunction("TestFunction3")
+        .pString("PString", "hello world")
+        .execute();
+    Assert.assertEquals(0, results.count());
   }
 
   private static NorthwindProducerWithFunctions p;

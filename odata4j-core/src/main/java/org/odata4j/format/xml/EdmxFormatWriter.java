@@ -163,8 +163,10 @@ public class EdmxFormatWriter extends XmlFormatWriter {
           if (null != fi.getEntitySet()) {
             writer.writeAttribute("EntitySet", fi.getEntitySet().getName());
           }
-          // TODO: how to differentiate inline ReturnType vs embedded ReturnType?
-          writer.writeAttribute("ReturnType", fi.getReturnType().getFullyQualifiedTypeName());
+          if (fi.getReturnType() != null) {
+            // TODO: how to differentiate inline ReturnType vs embedded ReturnType?
+            writer.writeAttribute("ReturnType", fi.getReturnType().getFullyQualifiedTypeName());
+          }
           writer.writeAttribute(new QName2(m, "HttpMethod", "m"), fi.getHttpMethod());
           writeAnnotationAttributes(fi, writer);
           writeDocumentation(fi, writer);

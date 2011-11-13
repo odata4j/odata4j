@@ -70,12 +70,14 @@ public class EdmFunctionImport extends EdmItem {
       return new Builder().setName(functionImport.name).setEntitySet(EdmEntitySet.newBuilder(functionImport.entitySet, context)).setReturnType(functionImport.returnType).setHttpMethod(functionImport.httpMethod)
           .addParameters(functionParameters);
     }
-    
+
     public EdmFunctionImport build() {
       List<EdmFunctionParameter> parameters = new ArrayList<EdmFunctionParameter>();
       for(EdmFunctionParameter.Builder parameter : this.parameters)
         parameters.add(parameter.build());
-      EdmType returnType = this.returnType != null ? this.returnType : returnTypeBuilder.build();
+      EdmType returnType =
+          this.returnType != null ? this.returnType
+              : returnTypeBuilder != null ? returnTypeBuilder.build() : null;
       return new EdmFunctionImport(name, entitySet == null ? null : entitySet.build(), returnType, httpMethod, ImmutableList.copyOf(parameters), getDocumentation(), ImmutableList.copyOf(getAnnotations()));
     }
 
@@ -101,6 +103,13 @@ public class EdmFunctionImport extends EdmItem {
 
     public Builder setHttpMethod(String httpMethod) {
       this.httpMethod = httpMethod;
+      return this;
+    }
+
+    public Builder addParameters(EdmFunctionParameter.Builder... parameters) {
+      for (EdmFunctionParameter.Builder parameter : parameters) {
+        this.parameters.add(parameter);
+      }
       return this;
     }
 

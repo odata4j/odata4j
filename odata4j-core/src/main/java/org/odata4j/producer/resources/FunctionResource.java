@@ -56,15 +56,15 @@ public class FunctionResource extends BaseResource {
 
     // do we have this function?
     EdmFunctionImport function = producer.getMetadata().findEdmFunctionImport(functionName);
-    if (null == function) {
+    if (function == null) {
       return Response.status(Status.NOT_FOUND).build();
     }
 
-    final BaseResponse response = producer.callFunction(
+    BaseResponse response = producer.callFunction(
         function, getFunctionParameters(function, opts), null);
 
     if (response == null) {
-      return Response.status(Status.NOT_FOUND).build();
+      return Response.status(Status.NO_CONTENT).build();
     }
 
     ODataVersion version = ODataConstants.DATA_SERVICE_VERSION;

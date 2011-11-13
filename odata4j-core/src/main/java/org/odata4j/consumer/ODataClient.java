@@ -31,9 +31,9 @@ import org.odata4j.format.FormatWriterFactory;
 import org.odata4j.format.SingleLink;
 import org.odata4j.format.xml.AtomCollectionInfo;
 import org.odata4j.format.xml.AtomServiceDocumentFormatParser;
+import org.odata4j.format.xml.AtomSingleLinkFormatParser;
 import org.odata4j.format.xml.AtomWorkspaceInfo;
 import org.odata4j.format.xml.EdmxFormatParser;
-import org.odata4j.format.xml.AtomSingleLinkFormatParser;
 import org.odata4j.internal.BOMWorkaroundReader;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.stax2.XMLEventReader2;
@@ -82,7 +82,7 @@ class ODataClient {
     XMLEventReader2 reader = doXmlRequest(response);
     return AtomSingleLinkFormatParser.parseLinks(reader);
   }
-  
+
   public ClientResponse getEntity(ODataClientRequest request) {
     ClientResponse response = doRequest(type, request, 404, 200, 204);
     if (response.getStatus() == 404)
@@ -97,9 +97,9 @@ class ODataClient {
     ClientResponse response = doRequest(type, request, 200);
     return response;
   }
-  
+
   public ClientResponse callFunction(ODataClientRequest request) {
-    ClientResponse response = doRequest(type, request, 200);
+    ClientResponse response = doRequest(type, request, 200, 204);
     return response;
   }
 
@@ -116,15 +116,15 @@ class ODataClient {
     doRequest(type, request, 200, 204, 404);
     return true;
   }
-  
+
   public void deleteLink(ODataClientRequest request) {
     doRequest(type, request, 204);
   }
-  
+
   public void createLink(ODataClientRequest request) {
     doRequest(type, request, 204);
   }
-  
+
   public void updateLink(ODataClientRequest request) {
     doRequest(type, request, 204);
   }
@@ -192,7 +192,7 @@ class ODataClient {
         payloadClass = SingleLink.class;
       else
         throw new UnsupportedOperationException("Unsupported payload: " + request.getPayload());
-     
+
       StringWriter sw = new StringWriter();
       FormatWriter<Object> fw = (FormatWriter<Object>)(Object)
           FormatWriterFactory.getFormatWriter(payloadClass, null, type.toString(), null);

@@ -8,9 +8,9 @@ import java.util.Map.Entry;
 import org.core4j.Enumerable;
 import org.core4j.Func1;
 import org.core4j.Predicate1;
-import org.odata4j.core.PrefixedNamespace;
 import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OPredicates;
+import org.odata4j.core.PrefixedNamespace;
 import org.odata4j.edm.EdmAssociation;
 import org.odata4j.edm.EdmAssociationEnd;
 import org.odata4j.edm.EdmAssociationSet;
@@ -175,12 +175,15 @@ public class EdmxFormatParser extends XmlFormatParser {
             }
           });
 
-          EdmType.Builder<?, ?> typeBuilder = dataServices.resolveType(tmpEfi.getReturnTypeName());
-          if (typeBuilder == null)
-            throw new RuntimeException("Edm-type not found: " + tmpEfi.getReturnTypeName());
+          EdmType.Builder<?, ?> typeBuilder = null;
+          if (tmpEfi.getReturnTypeName() != null) {
+            typeBuilder = dataServices.resolveType(tmpEfi.getReturnTypeName());
+            if (typeBuilder == null)
+              throw new RuntimeException("Edm-type not found: " + tmpEfi.getReturnTypeName());
 
-          if (tmpEfi.isCollection()) {
-            typeBuilder = EdmCollectionType.newBuilder().setKind(CollectionKind.Collection).setCollectionType(typeBuilder);
+            if (tmpEfi.isCollection()) {
+              typeBuilder = EdmCollectionType.newBuilder().setKind(CollectionKind.Collection).setCollectionType(typeBuilder);
+            }
           }
 
           edmEntityContainer.getFunctionImports().set(i,
