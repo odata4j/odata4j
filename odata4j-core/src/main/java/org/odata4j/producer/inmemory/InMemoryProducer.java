@@ -310,23 +310,31 @@ public class InMemoryProducer implements ODataProducer {
     Enumerable<Object> objects = Enumerable.create(ei.get.apply()).cast(Object.class);
 
     // apply filter
-    if (queryInfo.filter != null) objects = objects.where(filterToPredicate(queryInfo.filter, ei.properties));
+    if (queryInfo != null && queryInfo.filter != null) {
+      objects = objects.where(filterToPredicate(queryInfo.filter, ei.properties));
+    }
 
-    // compute inlineCount
-    Integer inlineCount = queryInfo.inlineCount == InlineCount.ALLPAGES ? objects.count() : null;
+    // compute inlineCount, must be done after applying filter
+    Integer inlineCount = null;
+    if (queryInfo != null && queryInfo.inlineCount == InlineCount.ALLPAGES) {
+      objects = Enumerable.create(objects.toList());  // materialize up front, since we're about to count
+      inlineCount = objects.count();
+    }
 
     // apply ordering
-    if (queryInfo.orderBy != null) objects = orderBy(objects, queryInfo.orderBy, ei.properties);
+    if (queryInfo != null && queryInfo.orderBy != null) {
+      objects = orderBy(objects, queryInfo.orderBy, ei.properties);
+    }
 
     // work with oentities
     Enumerable<OEntity> entities = objects.select(new Func1<Object, OEntity>() {
       public OEntity apply(Object input) {
-        return toOEntity(ees, input, queryInfo.expand);
+        return toOEntity(ees, input, queryInfo != null ? queryInfo.expand : null);
       }
     });
 
     // skip records by $skipToken
-    if (queryInfo.skipToken != null) {
+    if (queryInfo != null && queryInfo.skipToken != null) {
       final Boolean[] skipping = new Boolean[] { true };
       entities = entities.skipWhile(new Predicate1<OEntity>() {
         public boolean apply(OEntity input) {
@@ -341,11 +349,15 @@ public class InMemoryProducer implements ODataProducer {
     }
 
     // skip records by $skip amount
-    if (queryInfo.skip != null) entities = entities.skip(queryInfo.skip);
+    if (queryInfo != null && queryInfo.skip != null) {
+      entities = entities.skip(queryInfo.skip);
+    }
 
     // apply limit
     int limit = this.maxResults;
-    if (queryInfo.top != null && queryInfo.top < limit) limit = queryInfo.top;
+    if (queryInfo != null && queryInfo.top != null && queryInfo.top < limit) {
+      limit = queryInfo.top;
+    }
     entities = entities.take(limit + 1);
 
     // materialize OEntities

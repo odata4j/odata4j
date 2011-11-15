@@ -5,6 +5,7 @@ import org.junit.runners.Suite;
 import org.odata4j.format.xml.EdmxFormatParserTest;
 import org.odata4j.format.xml.EdmxFormatWriterTest;
 import org.odata4j.format.xml.MultipleWorkspacesTest;
+import org.odata4j.producer.inmemory.InMemoryProducerTest;
 import org.odata4j.producer.jpa.airline.test.CreateWithLinkTest;
 import org.odata4j.producer.jpa.airline.test.EdmDateTimeTemporalTest;
 import org.odata4j.producer.jpa.airline.test.EdmTimeTemporalTest;
@@ -84,7 +85,8 @@ import org.odata4j.test.issues.Issue16;
     OFunctionParametersTest.class,
     OCollectionsTest.class,
     OPropertiesTest.class,
-    OSimpleObjectsTest.class })
+    OSimpleObjectsTest.class,
+    InMemoryProducerTest.class })
 public class OData4jTestSuite {
 
   public static enum JPAProvider {
