@@ -272,8 +272,7 @@
     <repository>
       <id>eclipselink</id>
       <name>eclipselink</name>
-      <!-- <url>http://www.gtlib.gatech.edu/pub/eclipse/rt/eclipselink/maven.repo/</url> -->
-      <url>http://eclipse.ialto.org/rt/eclipselink/maven.repo/</url>
+      <url>http://download.eclipse.org/rt/eclipselink/maven.repo</url>
       <snapshots>
         <enabled>true</enabled>   <!-- for javax.persistence -->
       </snapshots>
