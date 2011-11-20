@@ -11,7 +11,7 @@ public class ServerErrorException extends ODataException {
   }
 
   public ServerErrorException(String message) {
-    super(Response.status(501).entity(message).build());
+    super(Response.status(500).entity(message).build());
   }
 
 }

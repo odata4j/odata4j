@@ -55,6 +55,7 @@ import org.odata4j.edm.EdmPropertyBase;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.EntitySimpleProperty;
+import org.odata4j.expression.Expression;
 import org.odata4j.expression.OrderByExpression;
 import org.odata4j.expression.OrderByExpression.Direction;
 import org.odata4j.internal.TypeConverter;
@@ -90,7 +91,7 @@ public class JPAProducer implements ODataProducer {
     this.metadataProducer = new MetadataProducer(this, metadataDecorator);
   }
 
-   public JPAProducer(
+  public JPAProducer(
       EntityManagerFactory emf,
       EdmDataServices metadata,
       int maxResults) {
@@ -157,7 +158,6 @@ public class JPAProducer implements ODataProducer {
           }
         });
   }
-
 
   private static class Context {
     EntityManager em;
@@ -295,35 +295,34 @@ public class JPAProducer implements ODataProducer {
         }
       }
 
-
       // get the collections if necessary
       if (expand != null && !expand.isEmpty()) {
 
-    	HashMap<String, List<EntitySimpleProperty>> expandedProps=new HashMap<String, List<EntitySimpleProperty>>();
+        HashMap<String, List<EntitySimpleProperty>> expandedProps = new HashMap<String, List<EntitySimpleProperty>>();
 
-    	//process all the expanded properties and add them to map
- 	    for(final EntitySimpleProperty propPath:expand) {
+        //process all the expanded properties and add them to map
+        for (final EntitySimpleProperty propPath : expand) {
           // split the property path into the first and remaining
           // parts
- 	      String[] props = propPath.getPropertyName().split("/", 2);
- 	      String prop = props[0];
- 	      String remainingPropPath = props.length > 1 ? props[1] : null;
- 	      //if link is already set to be expanded, add other remaining prop path to the list
- 	      if(expandedProps.containsKey(prop)) {
- 	        if(remainingPropPath!=null) {
- 	    	   List<EntitySimpleProperty> remainingPropPaths=expandedProps.get(prop);
- 	    	   remainingPropPaths.add(org.odata4j.expression.Expression.simpleProperty(remainingPropPath));
- 	        }
- 	      }else {
- 	        List<EntitySimpleProperty> remainingPropPaths=new ArrayList<EntitySimpleProperty>();
- 	        if(remainingPropPath!=null)
- 	          remainingPropPaths.add(org.odata4j.expression.Expression.simpleProperty(remainingPropPath));
- 	        expandedProps.put(prop, remainingPropPaths);
- 	      }
- 	    }
+          String[] props = propPath.getPropertyName().split("/", 2);
+          String prop = props[0];
+          String remainingPropPath = props.length > 1 ? props[1] : null;
+          //if link is already set to be expanded, add other remaining prop path to the list
+          if (expandedProps.containsKey(prop)) {
+            if (remainingPropPath != null) {
+              List<EntitySimpleProperty> remainingPropPaths = expandedProps.get(prop);
+              remainingPropPaths.add(Expression.simpleProperty(remainingPropPath));
+            }
+          } else {
+            List<EntitySimpleProperty> remainingPropPaths = new ArrayList<EntitySimpleProperty>();
+            if (remainingPropPath != null)
+              remainingPropPaths.add(Expression.simpleProperty(remainingPropPath));
+            expandedProps.put(prop, remainingPropPaths);
+          }
+        }
 
- 	    for (final String prop : expandedProps.keySet()) {
- 	      List<EntitySimpleProperty> remainingPropPath=expandedProps.get(prop);
+        for (final String prop : expandedProps.keySet()) {
+          List<EntitySimpleProperty> remainingPropPath = expandedProps.get(prop);
 
           Attribute<?, ?> att = entityType.getAttribute(prop);
           if (att.getPersistentAttributeType() == PersistentAttributeType.ONE_TO_MANY
@@ -410,7 +409,6 @@ public class JPAProducer implements ODataProducer {
           }
         }
       }
-
 
       return OEntities.create(ees, toOEntityKey(jpaEntity, idAtt), properties, links);
 
@@ -564,10 +562,10 @@ public class JPAProducer implements ODataProducer {
 
       // top=0: don't even hit jpa, return a response with zero entities
       if (context.query.top.equals(0)) {
-    	// returning null from this function would cause the FormatWriters to throw
-      	// a null reference exception as the entities collection is expected to be empty and
-      	// not null. This prevents us from being able to successfully respond to $top=0 requests.
-    	List<OEntity> emptyList = Collections.emptyList();
+        // returning null from this function would cause the FormatWriters to throw
+        // a null reference exception as the entities collection is expected to be empty and
+        // not null. This prevents us from being able to successfully respond to $top=0 requests.
+        List<OEntity> emptyList = Collections.emptyList();
         return DynamicEntitiesResponse.entities(emptyList, inlineCount, null);
       }
 

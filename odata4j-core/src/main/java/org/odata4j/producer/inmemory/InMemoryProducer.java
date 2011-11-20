@@ -30,6 +30,7 @@ import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.EntitySimpleProperty;
+import org.odata4j.expression.Expression;
 import org.odata4j.expression.OrderByExpression;
 import org.odata4j.expression.OrderByExpression.Direction;
 import org.odata4j.producer.BaseResponse;
@@ -196,30 +197,29 @@ public class InMemoryProducer implements ODataProducer {
     if (expand != null && !expand.isEmpty()) {
       EdmEntityType edmEntityType = ees.getType();
 
-      HashMap<String, List<EntitySimpleProperty>> expandedProps=new HashMap<String, List<EntitySimpleProperty>>();
+      HashMap<String, List<EntitySimpleProperty>> expandedProps = new HashMap<String, List<EntitySimpleProperty>>();
 
       //process all the expanded properties and add them to map
-      for(final EntitySimpleProperty propPath:expand) {
-    	  String[] props = propPath.getPropertyName().split("/", 2);
-          String prop = props[0];
-          String remainingPropPath = props.length > 1 ? props[1] : null;
-          //if link is already set to be expanded, add other remaining prop path to the list
-          if(expandedProps.containsKey(prop)) {
-        	  if(remainingPropPath!=null) {
-        		List<EntitySimpleProperty> remainingPropPaths=expandedProps.get(prop);
-        	  	remainingPropPaths.add(org.odata4j.expression.Expression.simpleProperty(remainingPropPath));
-        	  }
+      for (final EntitySimpleProperty propPath : expand) {
+        String[] props = propPath.getPropertyName().split("/", 2);
+        String prop = props[0];
+        String remainingPropPath = props.length > 1 ? props[1] : null;
+        //if link is already set to be expanded, add other remaining prop path to the list
+        if (expandedProps.containsKey(prop)) {
+          if (remainingPropPath != null) {
+            List<EntitySimpleProperty> remainingPropPaths = expandedProps.get(prop);
+            remainingPropPaths.add(Expression.simpleProperty(remainingPropPath));
           }
-          else {
-        	  List<EntitySimpleProperty> remainingPropPaths=new ArrayList<EntitySimpleProperty>();
-        	  if(remainingPropPath!=null)
-        		  remainingPropPaths.add(org.odata4j.expression.Expression.simpleProperty(remainingPropPath));
-        	  expandedProps.put(prop, remainingPropPaths);
-          }
+        } else {
+          List<EntitySimpleProperty> remainingPropPaths = new ArrayList<EntitySimpleProperty>();
+          if (remainingPropPath != null)
+              remainingPropPaths.add(Expression.simpleProperty(remainingPropPath));
+          expandedProps.put(prop, remainingPropPaths);
+        }
       }
 
       for (final String prop : expandedProps.keySet()) {
-    	List<EntitySimpleProperty> remainingPropPath=expandedProps.get(prop);
+        List<EntitySimpleProperty> remainingPropPath = expandedProps.get(prop);
 
         EdmNavigationProperty edmNavProperty = edmEntityType.findNavigationProperty(prop);
 
@@ -278,7 +278,7 @@ public class InMemoryProducer implements ODataProducer {
         @Override
         public boolean apply(OLink t) {
           return t.getTitle().equals(ep.getName());
-          }
+        }
       });
 
       if (!expanded) {
@@ -317,7 +317,7 @@ public class InMemoryProducer implements ODataProducer {
     // compute inlineCount, must be done after applying filter
     Integer inlineCount = null;
     if (queryInfo != null && queryInfo.inlineCount == InlineCount.ALLPAGES) {
-      objects = Enumerable.create(objects.toList());  // materialize up front, since we're about to count
+      objects = Enumerable.create(objects.toList()); // materialize up front, since we're about to count
       inlineCount = objects.count();
     }
 
@@ -436,7 +436,7 @@ public class InMemoryProducer implements ODataProducer {
   }
 
   @Override
-  public EntitiesResponse getNavProperty(String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
+  public BaseResponse getNavProperty(String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
     throw new NotImplementedException();
   }
 
