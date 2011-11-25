@@ -80,6 +80,9 @@
     <built.by>${project.name}</built.by>
     <odata4j.skip.javadoc>false</odata4j.skip.javadoc>
     <odata4j.sign.artifacts.phase>verify</odata4j.sign.artifacts.phase>
+    <odata4j.clientbundle>${project.name}-clientbundle-${project.version}</odata4j.clientbundle>
+    <odata4j.nojpabundle>${project.name}-nojpabundle-${project.version}</odata4j.nojpabundle>
+    <odata4j.bundle>${project.name}-bundle-${project.version}</odata4j.bundle>
   </properties>
 
   <build>
@@ -121,6 +124,22 @@
         <version>2.2.1</version>
         <executions>
 
+          <!-- core: odata4j-core only -->
+          <execution>
+            <id>core</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <appendAssemblyId>false</appendAssemblyId>
+              <skipAssembly>false</skipAssembly>
+              <descriptors>
+                <descriptor>src/main/assembly/core.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </execution>
+          
           <!-- clientbundle: minimum to run on a constrained client (android) -->
           <execution>
             <id>clientbundle</id>
@@ -131,7 +150,7 @@
             <configuration>
               <appendAssemblyId>false</appendAssemblyId>
               <skipAssembly>false</skipAssembly>
-              <finalName>${project.name}-clientbundle-${project.version}</finalName>
+              <finalName>${odata4j.clientbundle}</finalName>
               <descriptors>
                 <descriptor>src/main/assembly/clientbundle.xml</descriptor>
               </descriptors>
@@ -148,7 +167,7 @@
             <configuration>
               <appendAssemblyId>false</appendAssemblyId>
               <skipAssembly>false</skipAssembly>
-              <finalName>${project.name}-nojpabundle-${project.version}</finalName>
+              <finalName>${odata4j.nojpabundle}</finalName>
               <descriptors>
                 <descriptor>src/main/assembly/nojpabundle.xml</descriptor>
               </descriptors>
@@ -165,7 +184,7 @@
             <configuration>
               <appendAssemblyId>false</appendAssemblyId>
               <skipAssembly>false</skipAssembly>
-              <finalName>${project.name}-bundle-${project.version}</finalName>
+              <finalName>${odata4j.bundle}</finalName>
               <descriptors>
                 <descriptor>src/main/assembly/bundle.xml</descriptor>
               </descriptors>
@@ -238,6 +257,7 @@
           </archive>
         </configuration>
       </plugin>
+      
       <!-- OSGi bundle support -->
       <plugin>
         <groupId>org.apache.felix</groupId>
@@ -260,6 +280,41 @@
           </instructions>
         </configuration>
       </plugin>
+      
+      <!-- Deploy attached bundles -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-artifacts</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attach-artifact</goal>
+            </goals>
+            <configuration>
+              <artifacts>
+                <artifact>
+                  <file>${project.build.directory}/${odata4j.clientbundle}.jar</file>
+                  <type>jar</type>
+                  <classifier>clientbundle</classifier>
+                </artifact>
+                <artifact>
+                  <file>${project.build.directory}/${odata4j.nojpabundle}.jar</file>
+                  <type>jar</type>
+                  <classifier>nojpabundle</classifier>
+                </artifact>
+                <artifact>
+                  <file>${project.build.directory}/${odata4j.bundle}.jar</file>
+                  <type>jar</type>
+                  <classifier>bundle</classifier>
+                </artifact>
+              </artifacts>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      
     </plugins>
   </build>
 
