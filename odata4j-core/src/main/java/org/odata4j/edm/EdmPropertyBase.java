@@ -3,6 +3,7 @@ package org.odata4j.edm;
 import org.odata4j.core.ImmutableList;
 import org.odata4j.core.Named;
 
+/** Shared base class for {@link Property} and {@link NavigationProperty} */
 public abstract class EdmPropertyBase extends EdmItem implements Named {
 
   private final String name;

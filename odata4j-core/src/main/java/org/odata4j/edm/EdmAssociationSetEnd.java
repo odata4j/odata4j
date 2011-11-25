@@ -2,6 +2,15 @@ package org.odata4j.edm;
 
 import org.odata4j.core.ImmutableList;
 
+/**
+ * A CSDL End element (as a child of the AssociationSet element)
+ *
+ * <p>The End element specifies one end of an association set. The AssociationSet element must contain two
+ * End elements. The information contained in an End element is used in mapping an association set to a data
+ * source.
+ *
+ * @see <a href="http://msdn.microsoft.com/en-us/library/bb896235.aspx">[msdn] End Element (CSDL)</a>
+ */
 public class EdmAssociationSetEnd extends EdmItem {
 
   private final EdmAssociationEnd role;
@@ -25,7 +34,7 @@ public class EdmAssociationSetEnd extends EdmItem {
   public static Builder newBuilder() {
     return new Builder();
   }
-  
+
   public static Builder newBuilder(EdmAssociationSetEnd associationSetEnd, BuilderContext context) {
     return context.newBuilder(associationSetEnd, new Builder());
   }

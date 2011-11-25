@@ -5,9 +5,18 @@ import org.odata4j.core.ImmutableList;
 import org.odata4j.core.Named;
 
 /**
- * The EntitySet element in conceptual schema definition language is a logical container for instances of an entity type and instances of any type that is derived from that entity type.
+ * A CSDL EntitySet element.
  *
- * @see <a href="http://msdn.microsoft.com/en-us/library/bb386874.aspx">[msdn] Entity Sets (EDM)</a>
+ * <p>The EntitySet element in conceptual schema definition language is a logical container for instances
+ * of an entity type and instances of any type that is derived from that entity type. The relationship
+ * between an entity type and an entity set is analogous to the relationship between a row and a table in
+ * a relational database. Like a row, an entity type defines a set of related data, and, like a table,
+ * an entity set contains instances of that definition. An entity set provides a construct for grouping
+ * entity type instances so that they can be mapped to related data structures in a data source.
+ *
+ * <p>More than one entity set for a particular entity type may be defined.
+ *
+ * @see <a href="http://msdn.microsoft.com/en-us/library/bb387139.aspx">[msdn] EntitySet Element (CSDL)</a>
  */
 public class EdmEntitySet extends EdmItem implements Named {
 

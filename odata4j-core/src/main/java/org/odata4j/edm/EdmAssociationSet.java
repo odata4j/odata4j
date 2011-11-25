@@ -2,6 +2,15 @@ package org.odata4j.edm;
 
 import org.odata4j.core.ImmutableList;
 
+/**
+ * A CSDL AnnotationSet element.
+ *
+ * <p>The AssociationSet element in conceptual schema definition language (CSDL) is a logical container for
+ * association instances of the same type. An association set provides a definition for grouping association
+ * instances so that they can be mapped to a data source.
+ *
+ * @see <a href="http://msdn.microsoft.com/en-us/library/bb386894.aspx">[msdn] AnnotationSet Element (CSDL)</a>
+ */
 public class EdmAssociationSet extends EdmItem {
 
   private final String name;
@@ -37,11 +46,11 @@ public class EdmAssociationSet extends EdmItem {
   public static Builder newBuilder() {
     return new Builder();
   }
-  
+
   public static Builder newBuilder(EdmAssociationSet associationSet, BuilderContext context) {
     return context.newBuilder(associationSet, new Builder());
   }
-  
+
   public static class Builder extends EdmItem.Builder<EdmAssociationSet, Builder> {
 
     private String name;
@@ -58,7 +67,7 @@ public class EdmAssociationSet extends EdmItem {
       this.end2 = EdmAssociationSetEnd.newBuilder(associationSet.end2, context);
       return this;
     }
-    
+
     public EdmAssociationSet build() {
       return new EdmAssociationSet(name, association.build(), end1.build(), end2.build(), getDocumentation(), ImmutableList.copyOf(getAnnotations()));
     }

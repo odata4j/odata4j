@@ -10,6 +10,24 @@ import org.odata4j.core.ImmutableList;
 import org.odata4j.core.Named;
 import org.odata4j.core.OPredicates;
 
+/**
+ * A CSDL EntityType element.
+ *
+ * <p>The EntityType element represents the structure of a top-level concept, such as a customer or order,
+ * in a conceptual model. An entity type is a template for instances of entity types in an application.
+ * Each template contains the following information:
+ * <li>A unique name. (Required.)
+ * <li>An entity key that is defined by one or more properties. (Required.)
+ * <li>Properties for containing data. (Optional.)
+ * <li>Navigation properties that allow for navigation from one end of an association to the other end. (Optional.)
+ *
+ * <p>In an application, an instance of an entity type represents a specific object (such as a specific customer or order).
+ * Each instance of an entity type must have a unique entity key within an entity set.
+ *
+ * <p>Two entity type instances are considered equal only if they are of the same type and the values of their entity keys are the same.
+ *
+ * @see <a href="http://msdn.microsoft.com/en-us/library/bb399206.aspx">[msdn] EntityType Element (CSDL)</a>
+ */
 public class EdmEntityType extends EdmStructuralType {
 
   private final String alias;
@@ -122,14 +140,14 @@ public class EdmEntityType extends EdmStructuralType {
     public EdmEntityType build() {
       return (EdmEntityType) _build();
     }
-    
+
     @Override
     protected EdmEntityType buildImpl() {
       List<EdmNavigationProperty> builtNavProps = new ArrayList<EdmNavigationProperty>();
       for (EdmNavigationProperty.Builder navigationProperty : this.navigationProperties) {
         builtNavProps.add(navigationProperty.build());
       }
-      return new EdmEntityType(namespace, alias, name, hasStream, ImmutableList.copyOf(keys), 
+      return new EdmEntityType(namespace, alias, name, hasStream, ImmutableList.copyOf(keys),
               (EdmEntityType) (this.baseType != null ? this.baseType.build() : null),
               properties, ImmutableList.copyOf(builtNavProps), getDocumentation(), ImmutableList.copyOf(getAnnotations()), isAbstract);
     }

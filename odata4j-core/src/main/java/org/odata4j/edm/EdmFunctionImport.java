@@ -5,6 +5,15 @@ import java.util.List;
 
 import org.odata4j.core.ImmutableList;
 
+/**
+ * A CSDL FunctionImport element.
+ *
+ * <p>The FunctionImport element in conceptual schema definition language (CSDL) represents a function that is
+ * defined in the data source but available to objects through the conceptual model. For example, a Function element
+ * in the storage model can be used to represent a stored procedure in a database.
+ *
+ * @see <a href="http://msdn.microsoft.com/en-us/library/cc716710.aspx">[msdn] FunctionImport Element (CSDL)</a>
+ */
 public class EdmFunctionImport extends EdmItem {
 
   private final String name;

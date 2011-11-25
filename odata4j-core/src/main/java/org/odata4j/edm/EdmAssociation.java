@@ -3,6 +3,16 @@ package org.odata4j.edm;
 import org.odata4j.core.ImmutableList;
 import org.odata4j.core.Named;
 
+/**
+ * A CSDL Association element.
+ *
+ * <p>An Association element defines a relationship between two entity types. An association must specify the entity types
+ * that are involved in the relationship and the possible number of entity types at each end of the relationship, which is
+ * known as the multiplicity. The multiplicity of an association end can have a value of one (1), zero or one (0..1), or
+ * many (*). This information is specified in two child End elements.
+ *
+ * @see <a href="http://msdn.microsoft.com/en-us/library/bb399734.aspx">[msdn] Association Element (CSDL)</a>
+ */
 public class EdmAssociation extends EdmItem {
 
   private final String namespace;
@@ -89,11 +99,11 @@ public class EdmAssociation extends EdmItem {
       this.end2 = EdmAssociationEnd.newBuilder(association.end2, context);
       return this;
     }
-    
+
     public EdmAssociation build() {
       return new EdmAssociation(namespace, alias, name, end1.build(), end2.build(), getDocumentation(), ImmutableList.copyOf(getAnnotations()));
     }
-    
+
     public EdmAssociationEnd.Builder getEnd1() {
       return end1;
     }
@@ -101,30 +111,30 @@ public class EdmAssociation extends EdmItem {
     public EdmAssociationEnd.Builder getEnd2() {
       return end2;
     }
-    
+
     public String getNamespace() {
       return namespace;
     }
-    
+
     public String getAlias() {
       return alias;
     }
-    
+
     public Builder setNamespace(String namespace) {
       this.namespace = namespace;
       return this;
     }
-    
+
     public Builder setName(String name) {
       this.name = name;
       return this;
     }
-    
+
     public Builder setAlias(String alias) {
       this.alias = alias;
       return this;
     }
-    
+
     public String getFQNamespaceName() {
       // TODO share or remove
       return namespace + "." + name;
@@ -134,13 +144,13 @@ public class EdmAssociation extends EdmItem {
    // TODO share or remove
       return alias == null ? null : (alias + "." + name);
     }
-    
+
     public Builder setEnds(EdmAssociationEnd.Builder end1, EdmAssociationEnd.Builder end2) {
       this.end1 = end1;
       this.end2 = end2;
       return this;
     }
-    
+
     public String getName() {
       return name;
     }

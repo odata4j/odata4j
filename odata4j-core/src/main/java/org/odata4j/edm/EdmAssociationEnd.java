@@ -3,6 +3,17 @@ package org.odata4j.edm;
 import org.core4j.Func;
 import org.odata4j.core.ImmutableList;
 
+/**
+ * A CSDL End element (as a child of the Association element)
+ *
+ * <p>An End element (as a child of the Association element) identifies the entity type on one end of
+ * an association and the number of entity type instances that can exist at that end of an association.
+ * Association ends are defined as part of an association; an association must have exactly two association
+ * ends. Entity type instances at one end of an association can be accessed through navigation properties
+ * or foreign keys if they are exposed on an entity type.
+ *
+ * @see <a href="http://msdn.microsoft.com/en-us/library/bb896235.aspx">[msdn] End Element (CSDL)</a>
+ */
 public class EdmAssociationEnd extends EdmItem {
 
   private final String role;

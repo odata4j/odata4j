@@ -6,6 +6,14 @@ import java.util.List;
 
 import org.odata4j.core.ImmutableList;
 
+/**
+ * A CSDL Schema element.
+ *
+ * <p>The Schema element is the root element of a conceptual model definition. It contains definitions
+ * for the objects, functions, and containers that make up a conceptual model.
+ *
+ * @see <a href="http://msdn.microsoft.com/en-us/library/bb399276.aspx">[msdn] Schema Element (CSDL)</a>
+ */
 public class EdmSchema extends EdmItem {
 
   private final String namespace;

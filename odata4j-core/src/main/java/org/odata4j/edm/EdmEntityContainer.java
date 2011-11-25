@@ -6,6 +6,14 @@ import java.util.List;
 
 import org.odata4j.core.ImmutableList;
 
+/**
+ * A CSDL EntityContainer element.
+ *
+ * <p>The EntityContainer element in conceptual schema definition language (CSDL) is a logical container for
+ * entity sets, association sets, and function imports.
+ *
+ * @see <a href="http://msdn.microsoft.com/en-us/library/bb399169.aspx">[msdn] EntityContainer Element (CSDL)</a>
+ */
 public class EdmEntityContainer extends EdmItem {
 
   private final String name;
@@ -155,7 +163,7 @@ public class EdmEntityContainer extends EdmItem {
     public String getName() {
       return name;
     }
-    
+
   }
 
 }

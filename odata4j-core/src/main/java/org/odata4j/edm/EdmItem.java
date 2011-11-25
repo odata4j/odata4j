@@ -11,8 +11,8 @@ import org.odata4j.core.NamespacedAnnotation;
 /**
  * Constructs in the CSDL that we model in the org.odata4j.edm package
  * share some common functionality:
- * <li>Documentation
- * <li>Annotation (attributes and elements)
+ * <li>Documentation (see {@link EdmDocumentation})
+ * <li>Annotation (attributes and elements, see {@link EdmAnnotation})
  */
 public class EdmItem {
 

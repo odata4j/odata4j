@@ -7,6 +7,7 @@ package org.odata4j.edm;
  */
 public interface EdmGenerator {
 
+  /** Produces a new mutable {@link EdmDataServices} model given an optional decorator. */
   EdmDataServices.Builder generateEdm(EdmDecorator decorator);
 
 }

@@ -6,16 +6,18 @@ import java.util.List;
 import org.core4j.Enumerable;
 import org.core4j.Predicate1;
 import org.odata4j.core.ImmutableList;
-import org.odata4j.core.PrefixedNamespace;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OPredicates;
+import org.odata4j.core.PrefixedNamespace;
 import org.odata4j.edm.EdmItem.BuilderContext;
 import org.odata4j.producer.exceptions.NotFoundException;
 
 /**
  * The &lt;edmx:DataServices&gt; element contains the service metadata of a Data Service. This service metadata contains zero or more EDM conceptual schemas.
+ *
  * <p>Since this is the root of a large metadata tree, convenience methods are included to help locate child metadata elements.</p>
+ *
  * @see <a href="http://msdn.microsoft.com/en-us/library/dd541087(v=prot.10).aspx">[msdn] 2.2 &lt;edmx:DataServices&gt;</a>
  */
 public class EdmDataServices {

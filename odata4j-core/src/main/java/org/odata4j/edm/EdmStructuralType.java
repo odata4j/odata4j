@@ -8,6 +8,17 @@ import org.odata4j.core.ImmutableList;
 import org.odata4j.core.Named;
 import org.odata4j.core.OPredicates;
 
+/**
+ * In the Entity Data Model (EDM), structural types are EDM types that have members. Members define the content
+ * of the types derived from the StructuralType class. The StructuralType class has several derived types,
+ * such as the {@link EdmEntityType} and the {@link EdmComplexType}.
+ *
+ * <p>The EntityType represents a top-level concept, such as a customer or an order in the EDM.
+ *
+ * <p>The ComplexType represents a type that includes a set of properties like an entity type but does not include a key property.
+ *
+ * @see <a href="http://msdn.microsoft.com/en-us/library/bb399725.aspx">[msdn] Structural Types (Metadata)</a>
+ */
 public abstract class EdmStructuralType extends EdmNonSimpleType implements Named {
 
   private final String namespace;
