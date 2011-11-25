@@ -90,7 +90,7 @@ public class Responses {
   }
 
   /**
-   * Creates a new <code>EntityIdResponse</code> instance for payloads with a cardinality of {@link EdmMultiplicity.ONE}.
+   * Creates a new <code>EntityIdResponse</code> instance for payloads with a cardinality of {@link EdmMultiplicity#ONE}.
    *
    * @param entityId  the payload entity
    * @return a new <code>EntityIdResponse</code> instance
@@ -112,7 +112,7 @@ public class Responses {
   }
 
   /**
-   * Creates a new <code>EntityIdResponse</code> instance for payloads with a cardinality of {@link EdmMultiplicity.MANY}.
+   * Creates a new <code>EntityIdResponse</code> instance for payloads with a cardinality of {@link EdmMultiplicity#MANY}.
    *
    * @param entityIds  the payload entities
    * @return a new <code>EntityIdResponse</code> instance

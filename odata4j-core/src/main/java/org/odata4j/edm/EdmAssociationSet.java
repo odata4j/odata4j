@@ -51,6 +51,7 @@ public class EdmAssociationSet extends EdmItem {
     return context.newBuilder(associationSet, new Builder());
   }
 
+  /** Mutable builder for {@link EdmAssociationSet} objects. */
   public static class Builder extends EdmItem.Builder<EdmAssociationSet, Builder> {
 
     private String name;

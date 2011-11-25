@@ -11,6 +11,7 @@ import org.odata4j.core.ImmutableList;
  */
 public class EdmFunctionParameter extends EdmItem {
 
+  /** Parameter type: In, Out, or InOut */
   public enum Mode {
     In, Out, InOut;
   };
@@ -46,6 +47,7 @@ public class EdmFunctionParameter extends EdmItem {
     return context.newBuilder(functionParameter, new Builder());
   }
 
+  /** Mutable builder for {@link EdmFunctionParameter} objects. */
   public static class Builder extends EdmItem.Builder<EdmFunctionParameter, Builder> {
 
     private String name;

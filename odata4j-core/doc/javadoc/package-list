@@ -8,6 +8,8 @@ org.odata4j.format.json
 org.odata4j.format.xml
 org.odata4j.internal
 org.odata4j.producer
+org.odata4j.producer.edm
+org.odata4j.producer.exceptions
 org.odata4j.producer.inmemory
 org.odata4j.producer.jpa
 org.odata4j.producer.jpa.eclipselink

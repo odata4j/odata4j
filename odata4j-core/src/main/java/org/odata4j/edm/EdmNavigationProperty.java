@@ -61,6 +61,7 @@ public class EdmNavigationProperty extends EdmPropertyBase {
     return context.newBuilder(navigationProperty, new Builder(navigationProperty.getName()));
   }
 
+  /** Mutable builder for {@link EdmNavigationProperty} objects. */
   public static class Builder extends EdmPropertyBase.Builder<EdmNavigationProperty, Builder> {
 
     private EdmAssociation.Builder relationship;

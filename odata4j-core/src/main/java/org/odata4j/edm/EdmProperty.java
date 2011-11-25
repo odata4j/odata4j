@@ -15,6 +15,7 @@ import org.odata4j.core.Named;
  */
 public class EdmProperty extends EdmPropertyBase {
 
+  /** Kind of collection: List, Bag, or Collection */
   public enum CollectionKind {
     NONE,
     // note that the toString() of these enum values is used in $metadata generation
@@ -147,6 +148,7 @@ public class EdmProperty extends EdmPropertyBase {
     return context.newBuilder(property, new Builder(property.getName()));
   }
 
+  /** Mutable builder for {@link EdmProperty} objects. */
   public static class Builder extends EdmPropertyBase.Builder<EdmProperty, Builder> implements Named {
 
     private EdmStructuralType declaringType;

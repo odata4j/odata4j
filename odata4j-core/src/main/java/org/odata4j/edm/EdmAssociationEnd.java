@@ -53,6 +53,7 @@ public class EdmAssociationEnd extends EdmItem {
     return context.newBuilder(associationEnd, new Builder());
   }
 
+  /** Mutable builder for {@link EdmAssociationEnd} objects. */
   public static class Builder extends EdmItem.Builder<EdmAssociationEnd, Builder> {
 
     private String role;

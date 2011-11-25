@@ -82,6 +82,7 @@ public class EdmAssociation extends EdmItem {
     return context.newBuilder(association, new Builder());
   }
 
+  /** Mutable builder for {@link EdmAssociation} objects. */
   public static class Builder extends EdmItem.Builder<EdmAssociation, Builder> implements Named{
 
     private String namespace;

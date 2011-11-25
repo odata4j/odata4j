@@ -217,6 +217,7 @@ public class EdmDataServices {
     return t;
   }
 
+  /** Mutable builder for {@link EdmDataServices} objects. */
   public static class Builder {
 
     private ODataVersion version = ODataConstants.DATA_SERVICE_VERSION;

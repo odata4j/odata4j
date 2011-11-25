@@ -115,6 +115,7 @@ public class EdmEntityType extends EdmStructuralType {
     return context.newBuilder(entityType, new Builder());
   }
 
+  /** Mutable builder for {@link EdmEntityType} objects. */
   public static class Builder extends EdmStructuralType.Builder<EdmEntityType, Builder> implements Named {
 
     private String alias;

@@ -35,6 +35,7 @@ public class EdmComplexType extends EdmStructuralType {
     return context.newBuilder(complexType, new Builder());
   }
 
+  /** Mutable builder for {@link EdmComplexType} objects. */
   public static class Builder extends EdmStructuralType.Builder<EdmComplexType, Builder> {
 
     @Override

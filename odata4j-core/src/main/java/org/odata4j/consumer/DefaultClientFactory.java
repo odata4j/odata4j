@@ -4,9 +4,9 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.config.ClientConfig;
 
 /**
- * The default factory for jersey clients.
+ * The default factory implementation for Jersey clients.
  *
- * <p>Use {@link #INSTANCE} to obtain a reference to the singleton implementation of this factory.</p>
+ * <p>Use {@link #INSTANCE} to obtain a reference to the singleton instance of this factory.</p>
  */
 public class DefaultClientFactory implements ClientFactory {
 
@@ -14,6 +14,9 @@ public class DefaultClientFactory implements ClientFactory {
 
   private DefaultClientFactory() {}
 
+  /**
+   * Creates a new default {@link Client} by calling: <code>Client.create(clientConfig)</code>
+   */
   @Override
   public Client createClient(ClientConfig clientConfig) {
     return Client.create(clientConfig);

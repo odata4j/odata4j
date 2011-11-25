@@ -27,7 +27,7 @@ public class Guid {
   /**
    * Return a Guid for a given UUID.
    *
-   * @param value  an existing UUID
+   * @param uuid  an existing UUID
    * @return a new Guid
    */
   public static Guid fromUUID(UUID uuid) {

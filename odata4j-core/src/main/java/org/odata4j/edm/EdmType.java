@@ -89,6 +89,7 @@ public abstract class EdmType extends EdmItem {
 
   public abstract boolean isSimple();
 
+  /** Mutable builder for {@link EdmType} objects. */
   public abstract static class Builder<T, TBuilder> extends EdmItem.Builder<T, TBuilder> {
 
     private EdmType builtType = null;
@@ -117,6 +118,7 @@ public abstract class EdmType extends EdmItem {
     return new DeferredBuilder(fqTypeName, dataServices);
   }
 
+  /** Mutable builder for {@link EdmType} objects with deferred resolution. */
   public static class DeferredBuilder<T, TBuilder> extends Builder<T, TBuilder> {
 
     private final String fqTypeName;

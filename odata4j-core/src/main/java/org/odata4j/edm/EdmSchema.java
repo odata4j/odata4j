@@ -77,6 +77,7 @@ public class EdmSchema extends EdmItem {
     return context.newBuilder(schema, new Builder());
   }
 
+  /** Mutable builder for {@link EdmSchema} objects. */
   public static class Builder extends EdmItem.Builder<EdmSchema, Builder> {
 
     private String namespace;

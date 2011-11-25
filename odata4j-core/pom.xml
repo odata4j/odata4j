@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.odata4j</groupId>
   <artifactId>odata4j</artifactId>
-  <version>0.5-SNAPSHOT</version>
+  <version>0.5</version>
   <packaging>bundle</packaging>
 
   <name>odata4j</name>
@@ -293,7 +293,7 @@
     <dependency>
       <groupId>org.core4j</groupId>
       <artifactId>core4j</artifactId>
-      <version>0.5-SNAPSHOT</version>
+      <version>0.5</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.persistence</groupId>

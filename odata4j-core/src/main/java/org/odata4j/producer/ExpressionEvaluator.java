@@ -43,6 +43,7 @@ import org.odata4j.internal.TypeConverter;
  */
 public class ExpressionEvaluator {
 
+  /** Resolves variables during expression evaluation. */
   public interface VariableResolver {
     Object resolveVariable(String path);
   }

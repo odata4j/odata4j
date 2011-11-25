@@ -92,6 +92,7 @@ public abstract class EdmStructuralType extends EdmNonSimpleType implements Name
     return baseType == null;
   }
 
+  /** Mutable builder for {@link EdmStructuralType} objects. */
   public abstract static class Builder<T, TBuilder> extends EdmType.Builder<T, TBuilder> {
 
     protected String namespace;

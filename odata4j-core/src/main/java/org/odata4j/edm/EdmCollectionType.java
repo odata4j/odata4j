@@ -38,6 +38,7 @@ public class EdmCollectionType extends EdmNonSimpleType {
     return new Builder();
   }
 
+  /** Mutable builder for {@link EdmCollectionType} objects. */
   public static class Builder extends EdmType.Builder<EdmCollectionType, Builder> {
 
     private CollectionKind kind;

@@ -69,7 +69,7 @@ public class EdmItem {
 
   }
 
-
+  /** Mutable builder for {@link EdmItem} objects. */
   protected abstract static class Builder<T, TBuilder> {
 
     private EdmDocumentation documentation;

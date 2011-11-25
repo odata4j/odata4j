@@ -67,6 +67,7 @@ public class EdmEntityContainer extends EdmItem {
     return context.newBuilder(entityContainer, new Builder());
   }
 
+  /** Mutable builder for {@link EdmEntityContainer} objects. */
   public static class Builder extends EdmItem.Builder<EdmEntityContainer, Builder> {
 
     private String name;

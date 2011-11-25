@@ -18,7 +18,7 @@ public interface OEntityGetRequest<T> extends OEntityRequest<T> {
   /**
    * Specifies related entities to expand inline as part of the response.
    *
-   * @param select  a comma-separated list of navigation properties
+   * @param expand  a comma-separated list of navigation properties
    * @return the entity-request builder
    */
   OEntityRequest<T> expand(String expand);

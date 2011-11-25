@@ -11,6 +11,7 @@ import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.producer.edm.MetadataProducer;
 
+/** Abstract base {@link Delegate} for {@link ODataProducer}. */
 public abstract class ODataProducerDelegate implements Delegate<ODataProducer>, ODataProducer {
 
   @Override

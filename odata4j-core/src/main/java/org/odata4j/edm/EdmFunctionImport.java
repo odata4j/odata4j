@@ -60,6 +60,7 @@ public class EdmFunctionImport extends EdmItem {
     return context.newBuilder(functionImport, new Builder());
   }
 
+  /** Mutable builder for {@link EdmFunctionImport} objects. */
   public static class Builder extends EdmItem.Builder<EdmFunctionImport, Builder> {
     private String name;
     private EdmEntitySet.Builder entitySet;
