@@ -105,4 +105,5 @@ public class TypeConverter {
   private static long getMillis(LocalTime localTime) {
     return new LocalDateTime(localTime.getMillisOfDay(), DateTimeZone.UTC).toDateTime().getMillis();
   }
+
 }

@@ -7,4 +7,5 @@ public interface StartElement2 {
   Attribute2 getAttributeByName(QName2 name);
 
   Attribute2 getAttributeByName(String name);
+
 }

@@ -220,10 +220,8 @@ public class EdmxFormatWriter extends XmlFormatWriter {
   }
 
   /**
-   * extensions to CSDL like Annotations appear in an application specific set
+   * Extensions to CSDL like Annotations appear in an application specific set
    * of namespaces.
-   * @param services
-   * @param writer
    */
   private static void writeExtensionNamespaces(EdmDataServices services, XMLWriter2 writer) {
     if (null != services.getNamespaces()) {
@@ -309,6 +307,5 @@ public class EdmxFormatWriter extends XmlFormatWriter {
       writer.endElement(d.getLocalPart());
     }
   }
-
 
 }

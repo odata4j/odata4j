@@ -394,4 +394,5 @@ public class JPAEdmGenerator implements EdmGenerator {
 
     return temporal == null ? null : temporal.value();
   }
+
 }

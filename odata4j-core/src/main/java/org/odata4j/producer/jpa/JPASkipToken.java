@@ -7,8 +7,8 @@ import java.util.List;
 import org.core4j.Enumerable;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
-import org.odata4j.core.OProperty;
 import org.odata4j.core.OEntityKey.KeyType;
+import org.odata4j.core.OProperty;
 import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.Expression;
@@ -132,4 +132,5 @@ public class JPASkipToken {
       rt = Expression.or(rt, predicates.get(i));
     return Expression.boolParen(rt);
   }
+
 }

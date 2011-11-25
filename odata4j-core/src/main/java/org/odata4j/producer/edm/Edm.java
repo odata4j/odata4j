@@ -23,6 +23,7 @@ public class Edm {
     public static String fqName() {
       return Edm.namespace + "." + PropertyRef.class.getSimpleName();
     }
+
   }
 
   public static class EntityKey {
@@ -36,6 +37,7 @@ public class Edm {
     public static String fqName() {
       return Edm.namespace + "." + EntityKey.class.getSimpleName();
     }
+
   }
 
   public static class Documentation {
@@ -50,6 +52,7 @@ public class Edm {
     public static String fqName() {
       return Edm.namespace + "." + Documentation.class.getSimpleName();
     }
+
   }
 
   // ------------------------------------------------------------------------
@@ -71,18 +74,17 @@ public class Edm {
     }
 
     public static class NavProps {
-
       public static final String EntityTypes = "EntityTypes";
       public static final String ComplexTypes = "ComplexTypes";
     }
+
   }
 
   public static class Item {
 
-    /**
-     * the Name is one of an Item's key properties
-     */
+    /** The Name is one of an Item's key properties */
     public static final String Name = "Name";
+
   }
 
   public static class StructuralType extends Item {
@@ -96,11 +98,11 @@ public class Edm {
     }
 
     public static class NavProps {
-
       public static final String Properties = "Properties";
       public static final String SubTypes = "SubTypes";
       public static final String SuperType = "SuperType";
     }
+
   }
 
   public static class EntityType extends StructuralType {
@@ -115,6 +117,7 @@ public class Edm {
     public static String fqName() {
       return Edm.namespace + "." + EntityType.class.getSimpleName();
     }
+
   }
 
   public static class ComplexType extends StructuralType {
@@ -126,6 +129,7 @@ public class Edm {
     public static String fqName() {
       return Edm.namespace + "." + ComplexType.class.getSimpleName();
     }
+
   }
 
   public static class Property extends Item {
@@ -151,33 +155,24 @@ public class Edm {
     public static String fqName() {
       return Edm.namespace + "." + Property.class.getSimpleName();
     }
+
   }
 
   public static class EntitySets {
 
-    /**
-     * all of the Schemas
-     */
+    /** All of the Schemas */
     public static final String Schemas = "Schemas";
-    /**
-     * all EntityTypes
-     */
+    /** All EntityTypes */
     public static final String EntityTypes = "EntityTypes";
-    /**
-     * all EntityTypes that do *not* have a BaseType
-     */
+    /** All EntityTypes that do *not* have a BaseType */
     public static final String RootEntityTypes = "RootEntityTypes";
-    /**
-     * all Properties of all structural types
-     */
+    /** All Properties of all structural types */
     public static final String Properties = "Properties";
-    /**
-     * all ComplexTypes
-     */
+    /** All ComplexTypes */
     public static final String ComplexTypes = "ComplexTypes";
-    /**
-     * all ComplexTypes that do *not* have a BaseType
-     */
+    /** All ComplexTypes that do *not* have a BaseType */
     public static final String RootComplexTypes = "RootComplexTypes";
+
   }
+
 }

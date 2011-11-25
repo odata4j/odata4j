@@ -36,7 +36,6 @@ import org.odata4j.internal.TypeConverter;
 public class InMemoryEvaluation {
 
   public static Object evaluate(CommonExpression expression, Object target, PropertyModel properties) {
-
     if (expression instanceof LiteralExpression)
       return Expression.literalValue((LiteralExpression) expression);
 

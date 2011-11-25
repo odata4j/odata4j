@@ -7,4 +7,5 @@ public class CrossDomainResourceConfig extends DefaultResourceConfig {
   public CrossDomainResourceConfig() {
     super(CrossDomainXmlResource.class, ClientAccessPolicyXmlResource.class);
   }
+
 }

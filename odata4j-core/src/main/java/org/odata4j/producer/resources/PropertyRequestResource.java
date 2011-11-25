@@ -49,7 +49,6 @@ public class PropertyRequestResource extends BaseResource {
 
     log.info("NavProp: updateEntity Not supported yet.");
     throw new NotImplementedException("NavProp: updateEntity not supported yet.");
-
   }
 
   @POST
@@ -102,7 +101,6 @@ public class PropertyRequestResource extends BaseResource {
     }
 
     throw new NotImplementedException("Not supported yet.");
-
   }
 
   @DELETE
@@ -111,9 +109,7 @@ public class PropertyRequestResource extends BaseResource {
       final @PathParam("entitySetName") String entitySetName,
       final @PathParam("id") String id,
       final @PathParam("navProp") String navProp) {
-
     throw new NotImplementedException("Not supported yet.");
-
   }
 
   @GET
@@ -138,7 +134,6 @@ public class PropertyRequestResource extends BaseResource {
       final @QueryParam("$skiptoken") String skipToken,
       final @QueryParam("$expand") String expand,
       final @QueryParam("$select") String select) throws Exception {
-
     QueryInfo query = new QueryInfo(
         OptionsQueryParser.parseInlineCount(inlineCount),
         OptionsQueryParser.parseTop(top),
@@ -210,6 +205,6 @@ public class PropertyRequestResource extends BaseResource {
         fwBase.getContentType()).header(
         ODataConstants.Headers.DATA_SERVICE_VERSION,
         version.asString).build();
-
   }
+
 }

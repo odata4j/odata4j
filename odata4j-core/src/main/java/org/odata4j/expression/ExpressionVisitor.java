@@ -11,7 +11,7 @@ public interface ExpressionVisitor {
   void visit(String type);
 
   void visit(OrderByExpression expr);
-  
+
   void visit(OrderByExpression.Direction direction);
 
   void visit(AddExpression expr);
@@ -123,6 +123,7 @@ public interface ExpressionVisitor {
   void visit(CeilingMethodCallExpression expr);
 
   void visit(AggregateAnyFunction expr);
-  
+
   void visit(AggregateAllFunction expr);
+
 }

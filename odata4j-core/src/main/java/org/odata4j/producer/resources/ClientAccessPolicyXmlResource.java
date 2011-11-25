@@ -10,7 +10,6 @@ public class ClientAccessPolicyXmlResource {
   @GET
   @Produces("text/xml")
   public String getClientAccessPolicyXml() {
-
     String content = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
         "<access-policy>" +
         "  <cross-domain-access>" +
@@ -26,4 +25,5 @@ public class ClientAccessPolicyXmlResource {
         "</access-policy>";
     return content;
   }
+
 }

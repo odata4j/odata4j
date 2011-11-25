@@ -5,4 +5,5 @@ public interface StartsWithMethodCallExpression extends BoolMethodExpression {
   CommonExpression getTarget();
 
   CommonExpression getValue();
+
 }

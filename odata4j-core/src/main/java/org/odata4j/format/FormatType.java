@@ -3,7 +3,7 @@ package org.odata4j.format;
 import javax.ws.rs.core.MediaType;
 
 public enum FormatType {
-  
+
   ATOM(MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML),
   JSON(MediaType.APPLICATION_JSON);
 
@@ -24,4 +24,5 @@ public enum FormatType {
       return ATOM;
     throw new UnsupportedOperationException("Unsupported format " + format);
   }
+
 }

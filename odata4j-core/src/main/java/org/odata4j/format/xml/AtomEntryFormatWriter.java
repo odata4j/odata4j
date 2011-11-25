@@ -65,4 +65,5 @@ public class AtomEntryFormatWriter extends XmlFormatWriter implements FormatWrit
     writeEntry(writer, target.getEntity(), target.getEntity().getProperties(), target.getEntity().getLinks(), entitySetName, baseUri, updated, ees, true);
     writer.endDocument();
   }
+
 }

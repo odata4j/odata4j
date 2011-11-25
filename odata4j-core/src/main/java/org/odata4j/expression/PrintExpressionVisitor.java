@@ -293,7 +293,7 @@ public class PrintExpressionVisitor implements ExpressionVisitor {
   public void visit(OrderByExpression expr) {
     append("orderBy");
   }
-  
+
   @Override
   public void visit(Direction direction) {
     append(direction == Direction.ASCENDING ? "asc" : "desc");
@@ -323,18 +323,19 @@ public class PrintExpressionVisitor implements ExpressionVisitor {
   public void visit(ByteLiteral expr) {
     append("byte(%s)", expr.getValue());
   }
-  
+
   @Override
   public void visit(AggregateAnyFunction expr) {
     if (null != expr.getVariable()) {
-      append("any:(%s =>)", expr.getVariable());   
+      append("any:(%s =>)", expr.getVariable());
     } else {
-      append("any()");         
+      append("any()");
     }
   }
-  
+
   @Override
   public void visit(AggregateAllFunction expr) {
-    append("all:%s =>", expr.getVariable());   
+    append("all:%s =>", expr.getVariable());
   }
+
 }

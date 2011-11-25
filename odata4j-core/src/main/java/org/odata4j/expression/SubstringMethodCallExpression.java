@@ -7,4 +7,5 @@ public interface SubstringMethodCallExpression extends MethodCallExpression {
   CommonExpression getStart(); // optional
 
   CommonExpression getLength(); // optional
+
 }

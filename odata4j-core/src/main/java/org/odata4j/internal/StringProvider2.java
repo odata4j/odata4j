@@ -40,4 +40,5 @@ public final class StringProvider2 extends AbstractMessageReaderWriterProvider<S
     osw.write(t);
     osw.flush();
   }
+
 }

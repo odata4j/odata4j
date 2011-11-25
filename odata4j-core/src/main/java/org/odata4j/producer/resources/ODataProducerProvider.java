@@ -15,11 +15,11 @@ import com.sun.jersey.core.impl.provider.xml.LazySingletonContextProvider;
 @Provider
 public class ODataProducerProvider extends LazySingletonContextProvider<ODataProducer> {
 
-  private final Logger log = Logger.getLogger(getClass().getName());
   public static final String FACTORY_PROPNAME = "odata4j.producerfactory";
   private static ODataProducer STATIC;
-  @Context
-  private ResourceConfig resourceConfig;
+
+  private final Logger log = Logger.getLogger(getClass().getName());
+  @Context private ResourceConfig resourceConfig;
 
   public static void setInstance(ODataProducer producer) {
     STATIC = producer;
@@ -64,6 +64,6 @@ public class ODataProducerProvider extends LazySingletonContextProvider<ODataPro
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
-
   }
+
 }

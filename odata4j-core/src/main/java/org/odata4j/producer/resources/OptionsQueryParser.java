@@ -64,7 +64,6 @@ public class OptionsQueryParser {
       }
     }
     return rt;
-
   }
 
   public static List<EntitySimpleProperty> parseExpand(String expand) {
@@ -80,4 +79,5 @@ public class OptionsQueryParser {
     }
     return ExpressionParser.parseExpand(select);
   }
+
 }

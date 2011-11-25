@@ -5,6 +5,7 @@ import org.odata4j.internal.PlatformUtil;
 public abstract class XMLFactoryProvider2 {
 
   private static XMLFactoryProvider2 STAX;
+
   static {
     try {
       String clazz = PlatformUtil.runningOnAndroid() ? "org.odata4j.stax2.xppimpl.XmlPullXMLFactoryProvider2" : "org.odata4j.stax2.staximpl.StaxXMLFactoryProvider2";

@@ -339,4 +339,5 @@ public class JPQLGenerator {
       format = formatIfRightNull;
     return String.format(format, toJpql(bce.getLHS()), toJpql(bce.getRHS()));
   }
+
 }

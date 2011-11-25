@@ -82,7 +82,6 @@ public class ODataBatchProvider implements MessageBodyReader<List<BatchBodyPart>
         }
       }
     }
-
     return false;
   }
 
@@ -177,4 +176,5 @@ public class ODataBatchProvider implements MessageBodyReader<List<BatchBodyPart>
 
     return block;
   }
+
 }

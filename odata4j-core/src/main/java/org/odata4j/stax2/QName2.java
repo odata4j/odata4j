@@ -43,7 +43,6 @@ public class QName2 {
   public boolean equals(Object obj) {
     if (obj == null || !(obj instanceof QName2))
       return false;
-
     return fqName.equals(((QName2) obj).fqName);
   }
 
@@ -51,4 +50,5 @@ public class QName2 {
   public String toString() {
     return fqName;
   }
+
 }

@@ -111,7 +111,7 @@ public class FilterExpressionVisitor implements ExpressionVisitor {
   public void visit(String type) {
     throw new UnsupportedOperationException();
   }
-  
+
   @Override
   public void visit(Direction direction) {
     throw new UnsupportedOperationException();
@@ -324,11 +324,12 @@ public class FilterExpressionVisitor implements ExpressionVisitor {
 
   @Override
   public void visit(AggregateAnyFunction expr) {
-    throw new UnsupportedOperationException();    
+    throw new UnsupportedOperationException();
   }
-  
+
   @Override
   public void visit(AggregateAllFunction expr) {
-    throw new UnsupportedOperationException();    
+    throw new UnsupportedOperationException();
   }
+
 }

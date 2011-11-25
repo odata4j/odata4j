@@ -3,6 +3,7 @@ package org.odata4j.internal;
 import org.odata4j.core.OEntityKey;
 
 public class EntitySegment {
+
   public final String segment;
   public final OEntityKey key;
 
@@ -15,4 +16,5 @@ public class EntitySegment {
   public String toString() {
     return this.segment + (key == null ? "" : key.toKeyString());
   }
+
 }

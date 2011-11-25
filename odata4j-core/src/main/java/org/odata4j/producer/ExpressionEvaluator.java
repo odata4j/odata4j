@@ -38,12 +38,12 @@ import org.odata4j.internal.TypeConverter;
  * evaluator determines the context for evaluation.  The VariableResolver must
  * supply actual values for all EntitySimpleProperties referenced in the $filter.
  *
- * Note: this used to be class InMemoryEvaluation, I just factored out/de-coupled the
+ * <p>Note: this used to be class InMemoryEvaluation, I just factored out/de-coupled the
  * VariableResolver to make it reusable.
  */
 public class ExpressionEvaluator {
 
-  public static interface VariableResolver {
+  public interface VariableResolver {
     Object resolveVariable(String path);
   }
 
@@ -168,7 +168,7 @@ public class ExpressionEvaluator {
             + expression);
   }
 
-  private static interface BinaryFunction {
+  private interface BinaryFunction {
 
     BigDecimal apply(BigDecimal lhs, BigDecimal rhs);
 
@@ -179,6 +179,7 @@ public class ExpressionEvaluator {
     Integer apply(Integer lhs, Integer rhs);
 
     Long apply(Long lhs, Long rhs);
+
     public static final BinaryFunction ADD = new BinaryFunction() {
 
       public BigDecimal apply(BigDecimal lhs, BigDecimal rhs) {
@@ -201,6 +202,7 @@ public class ExpressionEvaluator {
         return lhs + rhs;
       }
     };
+
     public static final BinaryFunction SUB = new BinaryFunction() {
 
       public BigDecimal apply(BigDecimal lhs, BigDecimal rhs) {
@@ -223,6 +225,7 @@ public class ExpressionEvaluator {
         return lhs - rhs;
       }
     };
+
     public static final BinaryFunction MUL = new BinaryFunction() {
 
       public BigDecimal apply(BigDecimal lhs, BigDecimal rhs) {
@@ -245,6 +248,7 @@ public class ExpressionEvaluator {
         return lhs * rhs;
       }
     };
+
     public static final BinaryFunction DIV = new BinaryFunction() {
 
       public BigDecimal apply(BigDecimal lhs, BigDecimal rhs) {
@@ -267,6 +271,7 @@ public class ExpressionEvaluator {
         return lhs / rhs;
       }
     };
+
     public static final BinaryFunction MOD = new BinaryFunction() {
 
       public BigDecimal apply(BigDecimal lhs, BigDecimal rhs) {
@@ -289,6 +294,7 @@ public class ExpressionEvaluator {
         return lhs % rhs;
       }
     };
+
   }
 
   private class ObjectPair {
@@ -304,6 +310,7 @@ public class ExpressionEvaluator {
       this.lhs = lhs;
       this.rhs = rhs;
     }
+
   }
 
   private Object binaryFunction(BinaryCommonExpression be, BinaryFunction function) {
@@ -463,4 +470,5 @@ public class ExpressionEvaluator {
             + objClass.getSimpleName() + " to a "
             + targetType.getSimpleName());
   }
+
 }

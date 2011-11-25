@@ -55,6 +55,7 @@ public class InternalUtil {
       null /* illegal format @see parseDateTime */,
       DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ")
   };
+
   private static final DateTimeFormatter[] DATETIME_FORMATTER = new DateTimeFormatter[] {
       // formatter for formatting of dateTimeOffset
       DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm"),
@@ -160,9 +161,7 @@ public class InternalUtil {
   }
 
   public static <T> T toPojo(Class<T> pojoClass, OEntity oe) {
-
     try {
-
       Constructor<T> defaultCtor = findDefaultDeclaredConstructor(pojoClass);
       if (defaultCtor == null)
         throw new RuntimeException(
@@ -282,4 +281,5 @@ public class InternalUtil {
     }
     return version;
   }
+
 }

@@ -28,10 +28,8 @@ public class MetadataResource {
   @GET
   @Produces({ODataConstants.APPLICATION_XML_CHARSET_UTF8, ODataConstants.APPLICATION_ATOMSVC_XML_CHARSET_UTF8})
   public Response getMetadata(@Context HttpContext context,
-    @Context ODataProducer producer,
-    @QueryParam("$format") String format) {
-
-
+      @Context ODataProducer producer,
+      @QueryParam("$format") String format) {
 
     // a request for media type atomsvc+xml means give me the service document of the metadata producer
     if ("atomsvc".equals(format) || isAtomSvcRequest(context)) {
@@ -70,21 +68,21 @@ public class MetadataResource {
       ODataConstants.TEXT_JAVASCRIPT_CHARSET_UTF8,
       ODataConstants.APPLICATION_JAVASCRIPT_CHARSET_UTF8 })
   public Response getMetadataEntities(
-          @Context HttpHeaders httpHeaders,
-          @Context UriInfo uriInfo,
-          @Context ODataProducer producer,
-          final @PathParam("entitySetName") String entitySetName,
-          final @PathParam("optionalId") String optionalId,
-          @QueryParam("$inlinecount") String inlineCount,
-          @QueryParam("$top") String top,
-          @QueryParam("$skip") String skip,
-          @QueryParam("$filter") String filter,
-          @QueryParam("$orderby") String orderBy,
-          @QueryParam("$format") String format,
-          @QueryParam("$callback") String callback,
-          @QueryParam("$skiptoken") String skipToken,
-          @QueryParam("$expand") String expand,
-          @QueryParam("$select") String select) throws Exception {
+      @Context HttpHeaders httpHeaders,
+      @Context UriInfo uriInfo,
+      @Context ODataProducer producer,
+      final @PathParam("entitySetName") String entitySetName,
+      final @PathParam("optionalId") String optionalId,
+      @QueryParam("$inlinecount") String inlineCount,
+      @QueryParam("$top") String top,
+      @QueryParam("$skip") String skip,
+      @QueryParam("$filter") String filter,
+      @QueryParam("$orderby") String orderBy,
+      @QueryParam("$format") String format,
+      @QueryParam("$callback") String callback,
+      @QueryParam("$skiptoken") String skipToken,
+      @QueryParam("$expand") String expand,
+      @QueryParam("$select") String select) throws Exception {
 
     MetadataProducer md = producer.getMetadataProducer();
     if (null == md) {
@@ -102,15 +100,15 @@ public class MetadataResource {
     ODataConstants.TEXT_JAVASCRIPT_CHARSET_UTF8,
     ODataConstants.APPLICATION_JAVASCRIPT_CHARSET_UTF8 })
   public Response getMetadataEntity(
-          @Context HttpHeaders httpHeaders,
-          @Context UriInfo uriInfo,
-          @Context ODataProducer producer,
-          final @PathParam("entitySetName") String entitySetName,
-          final @PathParam("id") String id,
-          @QueryParam("$format") String format,
-          @QueryParam("$callback") String callback,
-          @QueryParam("$expand") String expand,
-          @QueryParam("$select") String select) {
+      @Context HttpHeaders httpHeaders,
+      @Context UriInfo uriInfo,
+      @Context ODataProducer producer,
+      final @PathParam("entitySetName") String entitySetName,
+      final @PathParam("id") String id,
+      @QueryParam("$format") String format,
+      @QueryParam("$callback") String callback,
+      @QueryParam("$expand") String expand,
+      @QueryParam("$select") String select) {
 
     MetadataProducer md = producer.getMetadataProducer();
     if (null == md) {
@@ -125,11 +123,11 @@ public class MetadataResource {
   public static final int HTTP_NOT_IMPLEMENTED = 501;
 
   private Response error(int status, String msg) {
-    return Response.status(status).
-                entity(msg).type("text/plain").build();
+    return Response.status(status).entity(msg).type("text/plain").build();
   }
 
   private Response noMetadata() {
     return error(HTTP_NOT_IMPLEMENTED, "Queryable metadata not implemented by this producer");
   }
+
 }

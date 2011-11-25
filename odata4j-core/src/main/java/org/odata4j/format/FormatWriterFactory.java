@@ -43,7 +43,7 @@ public class FormatWriterFactory {
     FormatWriter<Entry> getRequestEntryFormatWriter();
 
     FormatWriter<SingleLink> getSingleLinkFormatWriter();
-    
+
     FormatWriter<SingleLinks> getSingleLinksFormatWriter();
 
     FormatWriter<ComplexObjectResponse> getComplexObjectFormatWriter();
@@ -93,7 +93,7 @@ public class FormatWriterFactory {
 
     if (SingleLink.class.isAssignableFrom(targetType))
       return (FormatWriter<T>) formatWriters.getSingleLinkFormatWriter();
-    
+
     if (SingleLinks.class.isAssignableFrom(targetType))
       return (FormatWriter<T>) formatWriters.getSingleLinksFormatWriter();
 
@@ -209,5 +209,7 @@ public class FormatWriterFactory {
     public FormatWriter<CollectionResponse<?>> getCollectionFormatWriter() {
       throw new NotImplementedException();
     }
+
   }
+
 }

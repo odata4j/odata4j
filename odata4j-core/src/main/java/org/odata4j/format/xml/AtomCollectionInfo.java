@@ -3,6 +3,7 @@ package org.odata4j.format.xml;
 import org.odata4j.core.EntitySetInfo;
 
 public class AtomCollectionInfo implements EntitySetInfo {
+
   private final String href;
   private final String url;
   private final String title;
@@ -14,7 +15,7 @@ public class AtomCollectionInfo implements EntitySetInfo {
     this.title = title;
     this.accept = accept;
   }
-  
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
@@ -36,12 +37,13 @@ public class AtomCollectionInfo implements EntitySetInfo {
   public String getTitle() {
     return title;
   }
-  
+
   public String getUrl() {
     return url;
   }
-  
+
   public String getAccept() {
     return accept;
   }
+
 }

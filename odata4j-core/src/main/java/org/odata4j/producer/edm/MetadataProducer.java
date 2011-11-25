@@ -65,7 +65,7 @@ import org.odata4j.producer.exceptions.NotImplementedException;
 public class MetadataProducer implements ODataProducer {
 
   /**
-   * return this from your decorators annotation override method and the
+   * Return this from your decorators annotation override method and the
    * annotation will be removed.
    */
   public static final Object REMOVE_ANNOTATION_OVERRIDE = new Object();
@@ -73,12 +73,13 @@ public class MetadataProducer implements ODataProducer {
   public static class CustomOptions {
 
     /**
-     * locale will be parsed as a locale string ala java.util.Locale.
+     * Locale will be parsed as a locale string ala java.util.Locale.
      */
     public static final String Locale = "locale";
+
     /**
-     * if true, a query for a structural type will return a flattened
-     * representation of the type..i.e. it will contain inherited propeties
+     * If true, a query for a structural type will return a flattened
+     * representation of the type..i.e. it will contain inherited properties
      * as well.
      */
     public static final String Flatten = "flatten";
@@ -89,7 +90,8 @@ public class MetadataProducer implements ODataProducer {
   private final EdmDecorator decorator;
 
   /**
-   * create
+   * Creates a new MetadataProducer.
+   *
    * @param dataProducer  the data producer who defines the $metadata we will expose
    * @param edmDecorator  an optional decorator.  the decorator provides
    *                       context for evaluating $filter expressions, custom
@@ -514,7 +516,6 @@ public class MetadataProducer implements ODataProducer {
   }
 
   private void addProperties(EdmStructuralType queryType, EdmStructuralType st, List<OEntity> props, Context c) {
-
     for (EdmProperty p : st.getDeclaredProperties()) {
       props.add(getProperty(queryType, st, p, c));
     }
@@ -841,4 +842,5 @@ public class MetadataProducer implements ODataProducer {
   public MetadataProducer getMetadataProducer() {
     return null; // stop the brutal recursion :)
   }
+
 }

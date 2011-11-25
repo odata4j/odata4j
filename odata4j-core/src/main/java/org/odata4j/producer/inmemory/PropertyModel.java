@@ -13,4 +13,5 @@ public interface PropertyModel {
   Iterable<String> getCollectionNames();
 
   Class<?> getCollectionElementType(String collectionName);
+
 }

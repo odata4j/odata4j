@@ -24,11 +24,12 @@ import org.odata4j.producer.exceptions.NotImplementedException;
 /**
  * Parses an OCollection in JSON format.
  *
- * Collection types handled so far:
+ * <pre>Collection types handled so far:
  * - OComplexObject
  *
  * TODO:
  * - all other types
+ * </pre>
  */
 public class JsonCollectionFormatParser extends JsonFormatParser implements FormatParser<OCollection<? extends OObject>> {
 

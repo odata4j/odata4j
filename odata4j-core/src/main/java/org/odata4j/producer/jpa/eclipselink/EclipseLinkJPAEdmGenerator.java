@@ -28,4 +28,5 @@ public class EclipseLinkJPAEdmGenerator extends JPAEdmGenerator {
 
     return p.setMaxLength(maxLength);
   }
+
 }

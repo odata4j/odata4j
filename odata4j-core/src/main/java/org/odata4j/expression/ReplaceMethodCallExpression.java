@@ -7,4 +7,5 @@ public interface ReplaceMethodCallExpression extends MethodCallExpression {
   CommonExpression getFind();
 
   CommonExpression getReplace();
+
 }

@@ -32,12 +32,13 @@ import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
 import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
 
 
-/** Write content to an HTTP stream in JSON format.
+/**
+ * Write content to an output stream in JSON format.
  *
- * This class is abstract because it delegates the strategy pattern of writing
+ * <p>This class is abstract because it delegates the strategy pattern of writing
  * actual content elements to its (various) subclasses.
  *
- * Each element in the array to be written can be wrapped in a function call
+ * <p>Each element in the array to be written can be wrapped in a function call
  * on the JavaScript side by specifying the name of a function to call to the
  * constructor.
  *
@@ -47,7 +48,8 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
 
   private final String jsonpCallback;
 
-  /** Create a new JSON writer.
+  /**
+   * Creates a new JSON writer.
    *
    * @param jsonpCallback a function to call on the javascript side to act
    * on the data provided in the content.
@@ -56,7 +58,9 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
     this.jsonpCallback = jsonpCallback;
   }
 
-  /** A strategy method to actually write content objects
+  /**
+   * A strategy method to actually write content objects
+   *
    * @param uriInfo the base URI that indicates where in the schema we are
    * @param jw the JSON writer object
    * @param target the content value to be written

@@ -7,6 +7,7 @@ import org.w3c.dom.NodeList;
 public class PlatformUtil {
 
   private static boolean RUNNING_ON_ANDROID;
+
   static {
     try {
       Class.forName("android.app.Activity");
