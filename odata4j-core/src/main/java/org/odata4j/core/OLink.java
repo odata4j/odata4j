@@ -12,7 +12,7 @@ import java.util.List;
  *
  * @see OLinks
  */
-public interface OLink {
+public interface OLink extends Titled {
 
   /**
    * Gets the link title.

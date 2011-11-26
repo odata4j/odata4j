@@ -10,6 +10,7 @@ import org.odata4j.producer.jpa.airline.test.CreateWithLinkTest;
 import org.odata4j.producer.jpa.airline.test.EdmDateTimeTemporalTest;
 import org.odata4j.producer.jpa.airline.test.EdmTimeTemporalTest;
 import org.odata4j.producer.jpa.northwind.test.CompositeKeyEntityTest;
+import org.odata4j.producer.jpa.northwind.test.ConsumerLinksTest;
 import org.odata4j.producer.jpa.northwind.test.CreateTest;
 import org.odata4j.producer.jpa.northwind.test.CreateWithLink2Test;
 import org.odata4j.producer.jpa.northwind.test.DeleteTest;
@@ -86,7 +87,9 @@ import org.odata4j.test.issues.Issue16;
     OCollectionsTest.class,
     OPropertiesTest.class,
     OSimpleObjectsTest.class,
-    InMemoryProducerTest.class })
+    InMemoryProducerTest.class,
+    ConsumerLinksTest.class
+    })
 public class OData4jTestSuite {
 
   public static enum JPAProvider {

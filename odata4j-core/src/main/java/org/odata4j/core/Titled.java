@@ -1,17 +1,17 @@
 package org.odata4j.core;
 
 /**
- * An object with a name.
+ * An object with a title.
  *
  * <p>No behavior or semantics are implied, this is simply a convenient reusable interface.</p>
  */
-public interface Named {
+public interface Titled {
 
   /**
-   * Gets the name.
+   * Gets the title.
    *
-   * @return the name
+   * @return the title
    */
-  String getName();
+  String getTitle();
 
 }

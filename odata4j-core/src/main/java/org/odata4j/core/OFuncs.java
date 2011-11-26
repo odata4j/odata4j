@@ -18,6 +18,14 @@ public class OFuncs {
     };
   }
 
+  public static <T extends Titled> Func1<T, String> title(Class<T> titledType) {
+    return new Func1<T, String>() {
+      public String apply(T input) {
+        return input.getTitle();
+      }
+    };
+  }
+
   public static Func1<EdmType, String> edmTypeFullyQualifiedTypeName() {
     return new Func1<EdmType, String>() {
       public String apply(EdmType input) {
@@ -51,20 +59,20 @@ public class OFuncs {
     };
   }
 
-  public static Func1<EntitySetInfo, String> entitySetInfoTitle() {
-    return new Func1<EntitySetInfo, String>() {
-      public String apply(EntitySetInfo input) {
-        return input.getTitle();
-      }
-    };
-  }
-
   public static <T1, T2> Func1<Object, T2> widen(final Func1<T1, T2> fn) {
     return new Func1<Object, T2>() {
       @SuppressWarnings("unchecked")
       @Override
       public T2 apply(Object input) {
         return fn.apply((T1) input);
+      }
+    };
+  }
+
+  public static Func1<OLink, String> olinkTitle() {
+    return new Func1<OLink, String>() {
+      public String apply(OLink input) {
+        return input.getTitle();
       }
     };
   }
