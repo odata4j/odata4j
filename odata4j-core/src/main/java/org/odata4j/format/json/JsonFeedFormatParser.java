@@ -11,6 +11,7 @@ import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OLink;
 import org.odata4j.core.OProperty;
+import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.format.Entry;
 import org.odata4j.format.Feed;
 import org.odata4j.format.FormatParser;
@@ -40,10 +41,15 @@ public class JsonFeedFormatParser extends JsonFormatParser implements FormatPars
   static class JsonEntry implements Entry {
     String etag;
     String uri;
+    EdmEntitySet entitySet;
     List<OProperty<?>> properties;
     List<OLink> links;
     OEntity oentity;
 
+    public JsonEntry(EdmEntitySet eset) {
+      this.entitySet = eset;
+    }
+    
     public String getContentType() {
       return MediaType.APPLICATION_JSON;
     }

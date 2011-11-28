@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.core4j.CoreUtils;
@@ -29,6 +30,7 @@ import com.sun.net.httpserver.Filter;
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import java.util.concurrent.TimeUnit;
 
 public class JerseyServer {
 
@@ -108,10 +110,29 @@ public class JerseyServer {
   }
 
   public JerseyServer stop() {
-    server.stop(0);
+    return stop(0);
+  }
+  
+  /**
+   * stop synchronously, handy for unit test scenarios.
+   * @param delaySeconds
+   * @return 
+   */
+  public JerseyServer stop(int delaySeconds) {
+    server.stop(delaySeconds);
     Executor serverExecutor = server.getExecutor();
-    if (serverExecutor instanceof ThreadPoolExecutor)
+    if (serverExecutor instanceof ThreadPoolExecutor) {
       ((ThreadPoolExecutor) serverExecutor).shutdown();
+      if (delaySeconds > 0) {
+        try {
+          ((ThreadPoolExecutor) serverExecutor).awaitTermination(delaySeconds, TimeUnit.SECONDS);
+        } catch (InterruptedException ex) {
+          // oh well..
+        }
+      }
+    }
+    
+    
     return this;
   }
 

@@ -103,7 +103,8 @@ public class EntityRequestResource extends BaseResource {
       @QueryParam("$select") String select) {
 
     QueryInfo query = new QueryInfo(
-        null, null, null, null, null, null, null,
+        null, null, null, null, null, null, 
+        OptionsQueryParser.parseCustomOptions(uriInfo),
         OptionsQueryParser.parseExpand(expand),
         OptionsQueryParser.parseSelect(select));
 
