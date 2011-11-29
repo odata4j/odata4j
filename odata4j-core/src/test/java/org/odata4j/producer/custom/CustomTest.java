@@ -118,6 +118,7 @@ public class CustomTest extends CustomTestBase {
 
   @Test
   public void testEdmxBuilderContext() {
+    dumpResource("$metadata", FormatType.JSON);
     // add some functions to the edm
     EdmDataServices.Builder ds = EdmDataServices.newBuilder(producer.getMetadata());
 

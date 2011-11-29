@@ -243,7 +243,8 @@ public class XmlFormatWriter {
     } // else entityLinks null
 
     writeElement(writer, "category", null,
-        "term", ees.getType().getFullyQualifiedTypeName(),
+        // oe is null for creates
+        "term", null == oe ? ees.getType().getFullyQualifiedTypeName() : oe.getEntityType().getFullyQualifiedTypeName(),
         "scheme", scheme);
 
     writer.startElement("content");

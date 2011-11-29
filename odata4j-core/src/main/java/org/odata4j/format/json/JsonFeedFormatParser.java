@@ -12,6 +12,7 @@ import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OLink;
 import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.edm.EdmEntityType;
 import org.odata4j.format.Entry;
 import org.odata4j.format.Feed;
 import org.odata4j.format.FormatParser;
@@ -39,29 +40,54 @@ public class JsonFeedFormatParser extends JsonFormatParser implements FormatPars
   }
 
   static class JsonEntry implements Entry {
-    String etag;
-    String uri;
-    EdmEntitySet entitySet;
+    
+    private EdmEntitySet entitySet;
+    private EdmEntityType entityType;
+    
+    JsonEntryMetaData jemd;
     List<OProperty<?>> properties;
     List<OLink> links;
     OEntity oentity;
 
     public JsonEntry(EdmEntitySet eset) {
+      this(eset, null);
+    }
+    
+    public JsonEntry(EdmEntitySet eset, JsonEntryMetaData jemd) {
       this.entitySet = eset;
+      this.entityType = null != eset ? eset.getType() : null;
+      this.jemd = jemd;
     }
     
     public String getContentType() {
       return MediaType.APPLICATION_JSON;
     }
 
+    public JsonEntryMetaData getJemd() {
+      return this.jemd;
+    }
+    
+    public EdmEntitySet getEntitySet() { 
+      return this.entitySet;
+    }
+    
+    public EdmEntityType getEntityType() {
+      return this.entityType;
+    }
+    
+    public void setEntityType(EdmEntityType value) {
+      this.entityType = value;
+    }
+    
+    
     @Override
     public String getUri() {
-      return uri;
+      return null == jemd ? null : jemd.uri;
     }
 
     @Override
     public String getETag() {
-      return etag;
+      return null == jemd ? null : jemd.etag;
     }
 
     @Override
@@ -70,6 +96,7 @@ public class JsonFeedFormatParser extends JsonFormatParser implements FormatPars
     }
 
     public OEntityKey getEntityKey() {
+      String uri = getUri();
       if (uri == null)
         return null;
       return OEntityKey.parse(uri.substring(uri.lastIndexOf('(')));

@@ -122,7 +122,7 @@ public class EdmEntityType extends EdmStructuralType {
     private Boolean hasStream;
     private final List<String> keys =  new ArrayList<String>();
     private final List<EdmNavigationProperty.Builder> navigationProperties = new ArrayList<EdmNavigationProperty.Builder>();
-    private EdmEntityType.Builder baseType;
+    private EdmEntityType.Builder baseTypeBuilder;
     private String baseTypeNameFQ;
 
     @Override
@@ -131,7 +131,15 @@ public class EdmEntityType extends EdmStructuralType {
       context.register(entityType, this);
       this.alias = entityType.alias;
       this.hasStream = entityType.hasStream;
-      this.keys.addAll(entityType.keys);
+      if (null != entityType.keys) {
+        // subtypes don't have keys!
+        this.keys.addAll(entityType.keys);
+      }
+      
+      if (null != entityType.getBaseType()) {
+        baseTypeBuilder = EdmEntityType.newBuilder(entityType.getBaseType(), context);
+      }
+      
       for(EdmNavigationProperty navigationProperty : entityType.navigationProperties)
         this.navigationProperties.add(EdmNavigationProperty.newBuilder(navigationProperty, context));
       return this;
@@ -149,7 +157,7 @@ public class EdmEntityType extends EdmStructuralType {
         builtNavProps.add(navigationProperty.build());
       }
       return new EdmEntityType(namespace, alias, name, hasStream, ImmutableList.copyOf(keys),
-              (EdmEntityType) (this.baseType != null ? this.baseType.build() : null),
+              (EdmEntityType) (this.baseTypeBuilder != null ? this.baseTypeBuilder.build() : null),
               properties, ImmutableList.copyOf(builtNavProps), getDocumentation(), ImmutableList.copyOf(getAnnotations()), isAbstract);
     }
 
@@ -177,7 +185,7 @@ public class EdmEntityType extends EdmStructuralType {
     }
 
     public Builder setBaseType(EdmEntityType.Builder baseType) {
-      this.baseType = baseType;
+      this.baseTypeBuilder = baseType;
       return this;
     }
 

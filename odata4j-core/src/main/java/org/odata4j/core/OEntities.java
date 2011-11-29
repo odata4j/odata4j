@@ -6,6 +6,7 @@ import java.util.List;
 import org.core4j.Enumerable;
 import org.odata4j.edm.EdmType;
 import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.edm.EdmEntityType;
 
 /**
  * A static factory to create immutable {@link OEntity} instances.
@@ -25,6 +26,20 @@ public class OEntities {
    */
   public static OEntity create(EdmEntitySet entitySet, OEntityKey entityKey, List<OProperty<?>> properties, List<OLink> links) {
     return new OEntityImpl(entitySet, entityKey, true, properties, links);
+  }
+  
+  /**
+   * Creates a new entity.
+   *
+   * @param entitySet  the entity-set
+   * @param entityType the entity type
+   * @param entityKey  the entity-key
+   * @param properties  the entity properties, if any
+   * @param links  the entity links, if any
+   * @return the new entity
+   */
+  public static OEntity create(EdmEntitySet entitySet, EdmEntityType entityType, OEntityKey entityKey, List<OProperty<?>> properties, List<OLink> links) {
+    return new OEntityImpl(entitySet, entityType, entityKey, true, properties, links);
   }
 
   /**
@@ -51,8 +66,8 @@ public class OEntities {
    * @param categoryTerm  the Atom category term
    * @return the new entity
    */
-  public static OEntity create(EdmEntitySet entitySet, OEntityKey entityKey, List<OProperty<?>> properties, List<OLink> links, String title, String categoryTerm) {
-    return new OEntityAtomImpl(entitySet, entityKey, true, properties, links, title, categoryTerm);
+  public static OEntity create(EdmEntitySet entitySet, EdmEntityType entityType, OEntityKey entityKey, List<OProperty<?>> properties, List<OLink> links, String title, String categoryTerm) {
+    return new OEntityAtomImpl(entitySet, entityType, entityKey, true, properties, links, title, categoryTerm);
   }
 
   /**
@@ -67,7 +82,7 @@ public class OEntities {
    * @return the new entity
    */
   public static OEntity createRequest(EdmEntitySet entitySet, List<OProperty<?>> properties, List<OLink> links, String title, String categoryTerm) {
-    return new OEntityAtomImpl(entitySet, null, false, properties, links, title, categoryTerm);
+    return new OEntityAtomImpl(entitySet, null, null, false, properties, links, title, categoryTerm);
   }
 
   private static class OEntityAtomImpl extends OEntityImpl implements AtomInfo {
@@ -75,8 +90,8 @@ public class OEntities {
     private final String title;
     private final String categoryTerm;
 
-    public OEntityAtomImpl(EdmEntitySet entitySet, OEntityKey entityKey, boolean entityKeyRequired, List<OProperty<?>> properties, List<OLink> links, String title, String categoryTerm) {
-      super(entitySet, entityKey, entityKeyRequired, properties, links);
+    public OEntityAtomImpl(EdmEntitySet entitySet, EdmEntityType entityType, OEntityKey entityKey, boolean entityKeyRequired, List<OProperty<?>> properties, List<OLink> links, String title, String categoryTerm) {
+      super(entitySet, entityType, entityKey, entityKeyRequired, properties, links);
       this.title = title;
       this.categoryTerm = categoryTerm;
     }
@@ -95,17 +110,23 @@ public class OEntities {
   private static class OEntityImpl implements OEntity {
 
     private final EdmEntitySet entitySet;
+    private final EdmEntityType entityType;
     private final OEntityKey entityKey;
     private final List<OProperty<?>> properties;
     private final List<OLink> links;
 
     public OEntityImpl(EdmEntitySet entitySet, OEntityKey entityKey, boolean entityKeyRequired, List<OProperty<?>> properties, List<OLink> links) {
+      this(entitySet, null, entityKey, entityKeyRequired, properties, links);
+    }
+    
+    public OEntityImpl(EdmEntitySet entitySet, EdmEntityType entityType, OEntityKey entityKey, boolean entityKeyRequired, List<OProperty<?>> properties, List<OLink> links) {
       if (entitySet == null)
         throw new IllegalArgumentException("entitySet cannot be null");
       if (entityKeyRequired && entityKey == null)
         throw new IllegalArgumentException("entityKey cannot be null");
 
       this.entitySet = entitySet;
+      this.entityType = entityType;
       this.entityKey = entityKey;
       this.properties = Collections.unmodifiableList(properties);
       this.links = Collections.unmodifiableList(links);
@@ -121,6 +142,13 @@ public class OEntities {
       return entitySet;
     }
 
+    @Override 
+    public EdmEntityType getEntityType() {
+      return null == entityType 
+              ? (null == entitySet ? null : entitySet.getType())
+              : entityType;
+    }
+    
     @Override
     public String getEntitySetName() {
       return entitySet.getName();

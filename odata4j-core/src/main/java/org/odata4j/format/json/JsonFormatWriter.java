@@ -24,6 +24,7 @@ import org.odata4j.core.OSimpleObject;
 import org.odata4j.edm.EdmCollectionType;
 import org.odata4j.edm.EdmComplexType;
 import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.edm.EdmEntityType;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.edm.EdmType;
 import org.odata4j.format.FormatWriter;
@@ -218,7 +219,9 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
     {
       String baseUri = null;
 
-      if (isResponse && (oe.getEntitySet() != null || ees != null)) {
+      // TODO: I'm keeping this pattern of writing the __metadata if we have a non-null type..it seems like we could still
+      //       write the uri even if we don't have a type.  Also, are there any scenarios where the entity type would be null?  Not sure.
+      if (isResponse && null != oe.getEntityType()) {
         baseUri = uriInfo.getBaseUri().toString();
 
         jw.writeName("__metadata");
@@ -229,8 +232,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
           jw.writeString(absId);
           jw.writeSeparator();
           jw.writeName("type");
-          // an OEntity can have a different type that the type of the entity set it was queried under..consider a subtype for example
-          jw.writeString(null != oe.getEntitySet() ? oe.getEntitySet().getType().getFullyQualifiedTypeName() : ees.getType().getFullyQualifiedTypeName());
+          jw.writeString(oe.getEntityType().getFullyQualifiedTypeName());
         }
         jw.endObject();
         jw.writeSeparator();

@@ -2,6 +2,8 @@
 package org.odata4j.producer.custom;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +17,7 @@ import org.odata4j.core.OEntityId;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OFunctionParameter;
 import org.odata4j.core.OLink;
+import org.odata4j.core.OLinks;
 import org.odata4j.core.OObject;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
@@ -22,6 +25,7 @@ import org.odata4j.core.OSimpleObjects;
 import org.odata4j.edm.EdmCollectionType;
 import org.odata4j.edm.EdmComplexType;
 import org.odata4j.edm.EdmDataServices;
+import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.edm.EdmProperty.CollectionKind;
 import org.odata4j.edm.EdmSimpleType;
@@ -30,6 +34,7 @@ import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityIdResponse;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.ODataProducer;
+import org.odata4j.producer.PropertyPathHelper;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.Responses;
 import org.odata4j.producer.edm.MetadataProducer;
@@ -62,11 +67,106 @@ public class CustomProducer implements ODataProducer {
   public EntitiesResponse getEntities(String entitySetName, QueryInfo queryInfo) {
     if (entitySetName.equals("Type1s")) {
       return Responses.entities(getType1s(), edm.findEdmEntitySet(entitySetName), null, null);
+    } else if (entitySetName.equals("FileSystemItems")) {
+      return Responses.entities(getFileSystemItems(queryInfo), edm.findEdmEntitySet(entitySetName), null, null);
+    } else if (entitySetName.equals("Directories")) {
+      return Responses.entities(getDirectories(queryInfo), edm.findEdmEntitySet(entitySetName), null, null);
+    } else if (entitySetName.equals("Files")) {
+      return Responses.entities(getFiles(queryInfo), edm.findEdmEntitySet(entitySetName), null, null);
     } else {
       throw new NotFoundException("Unknown entity set: " + entitySetName);
     }
   }
-
+ 
+  
+  private int nDirs = 5;
+  private Map<String, OEntity> dirs = new HashMap<String, OEntity>();
+  private List<OEntity> getDirectories(QueryInfo queryInfo) {
+    
+    LinkedList<OEntity> l = new LinkedList<OEntity>();
+    for (int i = 0; i < nDirs; i++) {
+      getDirectory(i, queryInfo);
+    }
+    l.addAll(dirs.values());
+    return l;
+  }
+  
+  private boolean isExpanded(String navprop, QueryInfo q) {
+    if (null == q || null == q.expand) { return false; }
+    PropertyPathHelper h = new PropertyPathHelper(q.select, q.expand);
+    return h.isExpanded(navprop);
+  }
+  
+  private OEntity getDirectory(int n, QueryInfo queryInfo) {
+    
+      String name = "Dir-" + Integer.toString(n);
+      
+      List<OProperty<?>> props = new ArrayList<OProperty<?>>(2);
+      props.add(OProperties.string("Name", name));
+      props.add(OProperties.string("DirProp1", name + "-DirProp1Value"));
+      List<OLink> links = new ArrayList<OLink>();
+      
+      List<OEntity> items = null;
+      
+      if (isExpanded("Items", queryInfo)) {
+        items = getFiles(name, queryInfo);
+        int subdir = n * 2 + 1;
+        items.add(getDirectory(subdir, null));
+        items.add(getDirectory(subdir + 1, null));
+        links.add(OLinks.relatedEntitiesInline("Items", "Items", null, items));
+      } else {
+        links.add(OLinks.relatedEntities("Items", "Items", null));
+      }
+      
+      if (isExpanded("NewestItem", queryInfo)) {
+        links.add(OLinks.relatedEntityInline("NewestItem", "NewestItem", null, items.get(0)));
+      } else {
+        links.add(OLinks.relatedEntity("NewestItem", "NewestItem", null));
+      }
+      
+      OEntity e = OEntities.create(
+              edm.findEdmEntitySet("Directories"),
+              OEntityKey.create("Name", name),
+              props,
+              links == null ? new ArrayList<OLink>() : links);
+      dirs.put(name, e);
+      return e;
+  }
+  
+  private List<OEntity> getFileSystemItems(QueryInfo queryInfo) {
+    List<OEntity> l = new ArrayList<OEntity>();
+    for (OEntity dir : this.getDirectories(queryInfo)) {
+      l.add(dir);
+      l.addAll(getFiles(dir.getProperty("Name", String.class).getValue(), queryInfo));
+    }
+    return l;
+  }
+  
+  private List<OEntity> getFiles(String dirName, QueryInfo queryInfo) {
+    EdmEntitySet fileSet = edm.findEdmEntitySet("Files");
+    List<OEntity> l = new ArrayList<OEntity>();
+    for (int i = 0; i < 3; i++) {
+      List<OProperty<?>> props = new ArrayList<OProperty<?>>(2);
+      String name =  "File-" + Integer.toString(i) + "-" + dirName;
+      props.add(OProperties.string("Name", name));
+      props.add(OProperties.string("FileProp1", name + "-FileProp1Value"));
+      l.add(OEntities.create(
+        fileSet,
+        OEntityKey.create("Name", name),
+        props,
+        new ArrayList<OLink>()));
+    }
+    return l;
+  }
+  
+  private List<OEntity> getFiles(QueryInfo queryInfo) {
+    List<OEntity> l = new ArrayList<OEntity>();
+    for (OEntity dir : this.getDirectories(queryInfo)) {
+      l.addAll(getFiles(dir.getProperty("Name", String.class).getValue(), queryInfo));
+    }
+    return l;
+  }
+  
   private List<OEntity> getType1s() {
     List<OEntity> l = new ArrayList<OEntity>(3);
     for (int i = 0; i < 3; i++) {
@@ -123,10 +223,23 @@ public class CustomProducer implements ODataProducer {
         new ArrayList<OLink>());
   }
 
+  public OEntity getFileSystemItem(OEntityKey entityKey, QueryInfo queryInfo) {
+    List<OEntity> es = this.getFileSystemItems(queryInfo);
+    for (OEntity e : es) {
+      if (e.getEntityKey().equals(entityKey)) {
+        return e;
+      }
+    }
+    throw new NotFoundException("nope");
+  }
+  
+  
   @Override
   public EntityResponse getEntity(String entitySetName, OEntityKey entityKey, QueryInfo queryInfo) {
     if (entitySetName.equals("Type1s")) {
       return Responses.entity(getType1(Integer.parseInt((String)entityKey.asSingleValue())));
+    } if (entitySetName.equals("FileSystemItems")) {
+      return Responses.entity(getFileSystemItem(entityKey, queryInfo));
     } else {
       throw new NotFoundException("Unknown entity set: " + entitySetName);
     }

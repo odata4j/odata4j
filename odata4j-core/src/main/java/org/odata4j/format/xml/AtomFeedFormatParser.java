@@ -21,6 +21,7 @@ import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmComplexType;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.edm.EdmEntityType;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmType;
@@ -408,13 +409,23 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
       props = properties.toList();
     }
 
-    OEntityKey key = entityKey != null
-        ? entityKey
-        : dsae.id != null
-            ? dsae.id.endsWith(")")
-                ? parseEntityKey(dsae.id)
-                : OEntityKey.infer(entitySet, props)
-            : null;
+    EdmEntityType entityType = entitySet.getType();
+    if (null != dsae.categoryTerm) {
+      // The type of an entity set is polymorphic...
+      entityType = (EdmEntityType) metadata.findEdmEntityType(dsae.categoryTerm); 
+      if (null == entityType) {
+        throw new RuntimeException("Unable to resolve entity type " + dsae.categoryTerm);
+      }
+    }
+    // favor the key we just parsed.
+    
+    OEntityKey key = dsae.id != null
+        ? (dsae.id.endsWith(")")
+            ? parseEntityKey(dsae.id)
+            : OEntityKey.infer(entitySet, props))
+        : null;
+    
+    if (null == key) { key = entityKey; }
 
     if (key == null)
       return OEntities.createRequest(
@@ -426,6 +437,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
 
     return OEntities.create(
         entitySet,
+        entityType,
         key,
         props,
         toOLinks(metadata, entitySet, dsae.atomLinks, mapping),

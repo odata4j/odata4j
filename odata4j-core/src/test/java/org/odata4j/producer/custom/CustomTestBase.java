@@ -2,6 +2,8 @@
 package org.odata4j.producer.custom;
 
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
+import javax.ws.rs.core.MediaType;
 import org.core4j.Func1;
 import org.junit.AfterClass;
 import org.odata4j.consumer.ODataConsumer;
@@ -41,7 +43,17 @@ public class CustomTestBase {
     }
     
     public void dumpResourceJSON(String path) {
-        System.out.println(Client.create().resource(endpointUri + path).accept("application/json").get(String.class));
+      dumpResource(path, FormatType.JSON);
+    }
+    
+    public void dumpResource(String path, FormatType ft) {
+        WebResource r = Client.create().resource(endpointUri + path);
+        switch(ft) {
+          case JSON: r.accept(MediaType.APPLICATION_JSON_TYPE); break;
+          case ATOM: r.accept(MediaType.APPLICATION_ATOM_XML_TYPE); break;
+          default: break;
+        }
+        System.out.println(r.get(String.class));
     }
     
     @AfterClass

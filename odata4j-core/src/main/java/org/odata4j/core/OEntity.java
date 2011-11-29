@@ -3,6 +3,7 @@ package org.odata4j.core;
 import java.util.List;
 
 import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.edm.EdmEntityType;
 
 /**
  * An immutable OData entity instance, consisting of an identity (an entity-set and a unique entity-key within that set), 
@@ -18,6 +19,15 @@ public interface OEntity extends OEntityId, OStructuralObject {
    * @return the entity-set
    */
   EdmEntitySet getEntitySet();
+  
+  /**
+   * Get the entity type of this instance.  This will either be the declared
+   * entity type of the entity set associated with this instance *or* a sub-type
+   * of that entity type.
+   * 
+   * @return the entity type
+   */
+  EdmEntityType getEntityType();
 
   /**
    * Get all links of this instance.

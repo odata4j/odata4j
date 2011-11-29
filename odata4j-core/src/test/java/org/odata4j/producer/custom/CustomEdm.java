@@ -119,6 +119,86 @@ public class CustomEdm implements EdmGenerator {
 
     EdmEntitySet.Builder type1Set = EdmEntitySet.newBuilder().setName("Type1s").setEntityType(type1Type);
     entitySets.add(type1Set);
+    
+    // FileSystemItem
+    //   - Directory
+    //      nav Items: 0..* FileSystemItem
+    //      nav NewestItem: 0..1 FileSystemItem
+    //   - File
+    
+    // --------------------------- FileSystemItem ------------------------------
+    props = new ArrayList<EdmProperty.Builder>();
+    navprops = new ArrayList<EdmNavigationProperty.Builder>();
+
+    ep = null;
+
+    ep = EdmProperty.newBuilder("Name").setType(EdmSimpleType.STRING);
+    props.add(ep);
+    
+    ep = EdmProperty.newBuilder("Number").setType(EdmSimpleType.INT32);
+    props.add(ep);
+
+    keys = new ArrayList<String>();
+    keys.add("Name");
+    EdmEntityType.Builder fsiType = EdmEntityType.newBuilder()
+        .setNamespace(namespace)
+        .setName("FileSystemItem")
+        .addKeys(keys)
+        .addProperties(props)
+        .addNavigationProperties(navprops);
+   
+    entityTypes.add(fsiType);
+
+    EdmEntitySet.Builder fsiSet = EdmEntitySet.newBuilder().setName("FileSystemItems").setEntityType(fsiType);
+    entitySets.add(fsiSet);
+    
+    // --------------------------- Directory ------------------------------
+    props = new ArrayList<EdmProperty.Builder>();
+    navprops = new ArrayList<EdmNavigationProperty.Builder>();
+
+    ep = EdmProperty.newBuilder("DirProp1").setType(EdmSimpleType.STRING);
+    props.add(ep);
+    
+    EdmEntityType.Builder dirType = EdmEntityType.newBuilder()
+        .setNamespace(namespace)
+        .setName("Directory")
+        .setBaseType(fsiType)
+        .addProperties(props);
+   
+    entityTypes.add(dirType);
+
+    EdmEntitySet.Builder dirSet = EdmEntitySet.newBuilder().setName("Directories").setEntityType(dirType);
+    entitySets.add(dirSet);
+    
+    EdmAssociation.Builder assoc = this.defineAssociation("Items", EdmMultiplicity.ONE, EdmMultiplicity.MANY, dirType, dirSet, fsiType, fsiSet);
+    navprops.add(EdmNavigationProperty.newBuilder(assoc.getName())
+        .setRelationship(assoc)
+        .setFromTo(assoc.getEnd1(), assoc.getEnd2()));
+    
+    assoc = this.defineAssociation("NewestItem", EdmMultiplicity.ONE, EdmMultiplicity.ONE, dirType, dirSet, fsiType, fsiSet);
+    navprops.add(EdmNavigationProperty.newBuilder(assoc.getName())
+        .setRelationship(assoc)
+        .setFromTo(assoc.getEnd1(), assoc.getEnd2()));
+    
+    dirType.addNavigationProperties(navprops);
+    
+     // --------------------------- File ------------------------------
+    props = new ArrayList<EdmProperty.Builder>();
+    navprops = new ArrayList<EdmNavigationProperty.Builder>();
+
+    ep = EdmProperty.newBuilder("FileProp1").setType(EdmSimpleType.STRING);
+    props.add(ep);
+    
+    EdmEntityType.Builder fileType = EdmEntityType.newBuilder()
+        .setNamespace(namespace)
+        .setName("File")
+        .setBaseType(fsiType)
+        .addProperties(props);
+   
+    entityTypes.add(fileType);
+
+    EdmEntitySet.Builder fileSet = EdmEntitySet.newBuilder().setName("Files").setEntityType(fileType);
+    entitySets.add(fileSet); 
   }
 
   @SuppressWarnings("unused")
