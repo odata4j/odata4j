@@ -2,12 +2,14 @@ package org.odata4j.format.json;
 
 import java.math.BigDecimal;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.odata4j.core.Guid;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmSimpleType;
+import org.odata4j.internal.InternalUtil;
 import org.odata4j.repack.org.apache.commons.codec.DecoderException;
 import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
 import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
@@ -76,6 +78,8 @@ public class JsonTypeConverter {
         }
       }
       return OProperties.datetime(name, dValue);
+    } else if (EdmSimpleType.DATETIMEOFFSET.equals(type)) {
+      return OProperties.datetimeOffset(name, InternalUtil.parseDateTime(value.substring(value.indexOf('\'') + 1, value.length() - 1)));
     } else if (EdmSimpleType.TIME.equals(type)) {
       LocalTime tValue = value == null ? null : new LocalTime(value);
       return OProperties.time(name, tValue);

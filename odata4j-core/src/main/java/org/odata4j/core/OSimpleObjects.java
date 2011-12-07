@@ -113,6 +113,8 @@ public class OSimpleObjects {
           ? null
           : new LocalDateTime(InternalUtil.parseDateTime(value));
       return (OSimpleObject<V>) Impl.create(EdmSimpleType.DATETIME, dValue);
+    } else if (EdmSimpleType.DATETIMEOFFSET.equals(type)) {
+      return (OSimpleObject<V>) Impl.create(EdmSimpleType.DATETIMEOFFSET, InternalUtil.parseDateTime(value));
     } else if (EdmSimpleType.TIME.equals(type)) {
       LocalTime tValue = value == null
           ? null

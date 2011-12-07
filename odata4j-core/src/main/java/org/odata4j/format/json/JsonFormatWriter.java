@@ -140,7 +140,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
       LocalTime ldt = (LocalTime) pvalue;
       jw.writeString("time'" + ldt + "'");
     } else if (type.equals(EdmSimpleType.DATETIMEOFFSET)) {
-      jw.writeString("datetimeoffset'" + InternalUtil.toString((DateTime) pvalue) + "'");
+      jw.writeString("datetimeoffset'" + InternalUtil.formatDateTimeOffset((DateTime) pvalue) + "'");
     } else if (type instanceof EdmComplexType || (type instanceof EdmSimpleType && (!((EdmSimpleType<?>) type).isSimple()))) {
       // the OComplexObject value type is not in use everywhere yet, fix TODO
       if (pvalue instanceof OComplexObject) {

@@ -8,6 +8,7 @@ import junit.framework.Assert;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
+import org.joda.time.format.DateTimeFormat;
 import org.junit.Test;
 import org.odata4j.core.Guid;
 import org.odata4j.edm.EdmSimpleType;
@@ -111,7 +112,10 @@ public class ExpressionTest {
     t(Expression.decimal(new BigDecimal("-2")), "-2m");
     t(Expression.decimal(new BigDecimal("-2.34")), "-2.34m");
     t(Expression.dateTime(new LocalDateTime("2008-10-13")), "datetime'2008-10-13T00:00:00'");
-    t(Expression.dateTimeOffset(new DateTime("2008-10-13T00:00:00-04:00")), "datetimeoffset'2008-10-13T00:00:00-04:00'");
+    
+    // new DateTime(<string>) does *not* preserve the timezone!
+    DateTime dto = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ").withOffsetParsed().parseDateTime("2008-10-13T00:00:00-04:00");
+    t(Expression.dateTimeOffset(dto), "datetimeoffset'2008-10-13T00:00:00-04:00'");
     t(Expression.time(new LocalTime("13:20:00")), "time'PT13H20M'");
     t(Expression.guid(Guid.fromString("12345678-aaaa-bbbb-ccccddddffff")), "guid'12345678-aaaa-bbbb-ccccddddffff'");
     t(Expression.guid(Guid.fromString("bf4eeb4d-2ded-4aa6-a167-0571e1057e3b")), "guid'bf4eeb4d-2ded-4aa6-a167-0571e1057e3b'");

@@ -50,22 +50,22 @@ public class InternalUtil {
       DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss"),
       null /* illegal format @see parseDateTime */,
       DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"),
-      DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mmZZ"),
-      DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ"),
+      DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mmZZ").withOffsetParsed(),
+      DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ").withOffsetParsed(),
       null /* illegal format @see parseDateTime */,
-      DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ")
+      DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ").withOffsetParsed()
   };
 
   private static final DateTimeFormatter[] DATETIME_FORMATTER = new DateTimeFormatter[] {
       // formatter for formatting of dateTimeOffset
       DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm"),
       DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss"),
-      DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS0000"),
-      DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS0000"),
+      DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"),
+      DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"),
       DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mmZZ"),
       DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ"),
-      DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS0000ZZ"),
-      DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS0000ZZ")
+      DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ"),
+      DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ")
   };
 
   public static DateTime parseDateTime(String value) {

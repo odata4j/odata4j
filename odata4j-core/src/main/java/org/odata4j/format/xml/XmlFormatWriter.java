@@ -147,7 +147,7 @@ public class XmlFormatWriter {
         // Edm.DateTimeOffset '-'? yyyy '-' mm '-' dd 'T' hh ':' mm
         // ':' ss ('.' s+)? (zzzzzz)?
         if (value != null) {
-          sValue = InternalUtil.toString((DateTime) value);
+          sValue = InternalUtil.formatDateTimeOffset((DateTime) value);
         }
       } else {
         throw new UnsupportedOperationException("Implement " + type);

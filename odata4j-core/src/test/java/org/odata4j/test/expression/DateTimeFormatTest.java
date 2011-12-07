@@ -223,7 +223,7 @@ public class DateTimeFormatTest {
   @Test
   public void testFormatDateTimeyyyyMMddHHmmssfffffff() {
     LocalDateTime dt = new LocalDateTime(2010, 12, 20, 17, 34, 5, 123);
-    Assert.assertEquals("2010-12-20T17:34:05.1230000", InternalUtil.formatDateTime(dt));
+    Assert.assertEquals("2010-12-20T17:34:05.123", InternalUtil.formatDateTime(dt));
   }
 
   @Test
@@ -244,7 +244,36 @@ public class DateTimeFormatTest {
   public void testFormatDateTimeOffsetyyyyMMddHHmmssfffffff() {
     Chronology c = ISOChronology.getInstance(DateTimeZone.forOffsetHours(1));
     DateTime dt = new DateTime(2010, 12, 20, 17, 34, 5, 123, c);
-    Assert.assertEquals("2010-12-20T17:34:05.1230000+01:00", InternalUtil.formatDateTimeOffset(dt));
+    Assert.assertEquals("2010-12-20T17:34:05.123+01:00", InternalUtil.formatDateTimeOffset(dt));
+  }
+  
+  @Test
+  public void testDateTimeOffsetParseFormat() {
+    dtoCheck(new DateTime(1967, 01, 02, 03, 04, 05, 123, DateTimeZone.UTC), "+00:00", 0);
+    dtoCheck(new DateTime(1967, 01, 02, 03, 04, 05, 123, DateTimeZone.forOffsetHours(-7)), "-07:00", -7 * 60 * 60 * 1000);
+    dtoCheck(new DateTime(1967, 01, 02, 03, 04, 05, 123, DateTimeZone.forOffsetHours(+5)), "+05:00", 5 * 60 * 60 * 1000);
+    dtoCheck(new DateTime(1967, 01, 02, 03, 04, 05, 123, DateTimeZone.forOffsetHoursMinutes(3, 30)), "+03:30", ((3 * 60) + 30) * 60 * 1000);
+  }
+  
+  private void dtoCheck(DateTime lhs, String tzS, int tzOffsetMillis) {
+    // DateTime---->String
+    Assert.assertTrue(lhs.getZone().getOffset(0) == tzOffsetMillis);
+    String f = InternalUtil.formatDateTimeOffset(lhs);
+    //System.out.println("lhs : " + f);
+    Assert.assertTrue(f.endsWith(tzS));
+    
+    // back to DateTime
+    DateTime utcp = InternalUtil.parseDateTime(f);
+    f = InternalUtil.formatDateTimeOffset(lhs);
+    //System.out.println("rhs: " + f);
+    Assert.assertTrue(f.endsWith(tzS));
+    
+    // make sure the timezone was preserved.
+    //System.out.println(" lhs zone: " + utc.getZone().getID() + " rhs zone: " + utcp.getZone().getID());
+    Assert.assertTrue(utcp.getZone().getOffset(0) == tzOffsetMillis);
+    Assert.assertEquals(lhs.getMillis(), utcp.getMillis());
+    
+    // zomg, DateTime.equals is all messed up...
   }
 
   @Test
