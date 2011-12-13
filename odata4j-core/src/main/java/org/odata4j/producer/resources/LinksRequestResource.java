@@ -10,7 +10,9 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.core4j.Enumerable;
 import org.odata4j.core.ODataConstants;
@@ -28,9 +30,6 @@ import org.odata4j.producer.EntityIdResponse;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.exceptions.NotFoundException;
 
-import com.sun.jersey.api.core.HttpContext;
-import com.sun.jersey.api.core.HttpRequestContext;
-
 public class LinksRequestResource extends BaseResource {
 
   private static final Logger log = Logger.getLogger(LinksRequestResource.class.getName());
@@ -46,7 +45,7 @@ public class LinksRequestResource extends BaseResource {
   }
 
   @POST
-  public Response createLink(@Context HttpContext context, @Context ODataProducer producer) {
+  public Response createLink(@Context HttpHeaders httpHeaders, @Context UriInfo uriInfo, @Context ODataProducer producer, String payload) {
     log.info(String.format(
         "createLink(%s,%s,%s,%s)",
         sourceEntity.getEntitySetName(),
@@ -54,13 +53,13 @@ public class LinksRequestResource extends BaseResource {
         targetNavProp,
         targetEntityKey));
     
-    OEntityId newTargetEntity = parseRequestUri(context);
+    OEntityId newTargetEntity = parseRequestUri(httpHeaders, uriInfo, payload);
     producer.createLink(sourceEntity, targetNavProp, newTargetEntity);
     return noContent();
   }
   
   @PUT
-  public Response updateLink(@Context HttpContext context, @Context ODataProducer producer) {
+  public Response updateLink(@Context HttpHeaders httpHeaders, @Context UriInfo uriInfo, @Context ODataProducer producer, String payload) {
     log.info(String.format(
         "updateLink(%s,%s,%s,%s)",
         sourceEntity.getEntitySetName(),
@@ -68,17 +67,15 @@ public class LinksRequestResource extends BaseResource {
         targetNavProp,
         targetEntityKey));
     
-    OEntityId newTargetEntity = parseRequestUri(context);
+    OEntityId newTargetEntity = parseRequestUri(httpHeaders, uriInfo, payload);
     producer.updateLink(sourceEntity, targetNavProp, targetEntityKey, newTargetEntity);
     return noContent();
   }
   
-  private OEntityId parseRequestUri(HttpContext context) {
-    HttpRequestContext request = context.getRequest();
-    FormatParser<SingleLink> parser = FormatParserFactory.getParser(SingleLink.class, request.getMediaType(), null);
-    String payload = request.getEntity(String.class);
+  private OEntityId parseRequestUri(HttpHeaders httpHeaders, UriInfo uriInfo, String payload) {
+    FormatParser<SingleLink> parser = FormatParserFactory.getParser(SingleLink.class, httpHeaders.getMediaType(), null);
     SingleLink link = parser.parse(new StringReader(payload));
-    return OEntityIds.parse(context.getUriInfo().getBaseUri().toString(), link.getUri());
+    return OEntityIds.parse(uriInfo.getBaseUri().toString(), link.getUri());
   }
   
   private Response noContent() {
@@ -86,7 +83,7 @@ public class LinksRequestResource extends BaseResource {
   }
   
   @DELETE
-  public Response deleteLink(@Context HttpContext context, @Context ODataProducer producer) {
+  public Response deleteLink(@Context HttpHeaders httpHeaders, @Context UriInfo uriInfo, @Context ODataProducer producer) {
     log.info(String.format(
         "deleteLink(%s,%s,%s,%s)",
         sourceEntity.getEntitySetName(),
@@ -99,7 +96,7 @@ public class LinksRequestResource extends BaseResource {
   }
 
   @GET
-  public Response getLinks(@Context HttpContext context, @Context ODataProducer producer,
+  public Response getLinks(@Context HttpHeaders httpHeaders, @Context UriInfo uriInfo, @Context ODataProducer producer,
       @QueryParam("$format") String format,
       @QueryParam("$callback") String callback) {
 
@@ -113,12 +110,12 @@ public class LinksRequestResource extends BaseResource {
     EntityIdResponse response = producer.getLinks(sourceEntity, targetNavProp);
 
     StringWriter sw = new StringWriter();
-    String serviceRootUri = context.getUriInfo().getBaseUri().toString();
+    String serviceRootUri = uriInfo.getBaseUri().toString();
     String contentType;
     if (response.getMultiplicity() == EdmMultiplicity.MANY) {
       SingleLinks links = SingleLinks.create(serviceRootUri, response.getEntities());
-      FormatWriter<SingleLinks> fw = FormatWriterFactory.getFormatWriter(SingleLinks.class, context.getRequest().getAcceptableMediaTypes(), format, callback);
-      fw.write(context.getUriInfo(), sw, links);
+      FormatWriter<SingleLinks> fw = FormatWriterFactory.getFormatWriter(SingleLinks.class, httpHeaders.getAcceptableMediaTypes(), format, callback);
+      fw.write(uriInfo, sw, links);
       contentType = fw.getContentType();
     } else {
       OEntityId entityId = Enumerable.create(response.getEntities()).firstOrNull();
@@ -126,8 +123,8 @@ public class LinksRequestResource extends BaseResource {
         throw new NotFoundException();
 
       SingleLink link = SingleLinks.create(serviceRootUri, entityId);
-      FormatWriter<SingleLink> fw = FormatWriterFactory.getFormatWriter(SingleLink.class, context.getRequest().getAcceptableMediaTypes(), format, callback);
-      fw.write(context.getUriInfo(), sw, link);
+      FormatWriter<SingleLink> fw = FormatWriterFactory.getFormatWriter(SingleLink.class, httpHeaders.getAcceptableMediaTypes(), format, callback);
+      fw.write(uriInfo, sw, link);
       contentType = fw.getContentType();
     }
 

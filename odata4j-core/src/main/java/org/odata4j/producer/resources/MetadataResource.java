@@ -20,25 +20,25 @@ import org.odata4j.format.xml.EdmxFormatWriter;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.edm.MetadataProducer;
 
-import com.sun.jersey.api.core.HttpContext;
-
 @Path("{first: \\$}metadata")
 public class MetadataResource {
 
   @GET
   @Produces({ODataConstants.APPLICATION_XML_CHARSET_UTF8, ODataConstants.APPLICATION_ATOMSVC_XML_CHARSET_UTF8})
-  public Response getMetadata(@Context HttpContext context,
+  public Response getMetadata(
+      @Context HttpHeaders httpHeaders,
+      @Context UriInfo uriInfo,
       @Context ODataProducer producer,
       @QueryParam("$format") String format) {
 
     // a request for media type atomsvc+xml means give me the service document of the metadata producer
-    if ("atomsvc".equals(format) || isAtomSvcRequest(context)) {
+    if ("atomsvc".equals(format) || isAtomSvcRequest(httpHeaders)) {
       MetadataProducer md = producer.getMetadataProducer();
       if (null == md) {
         return noMetadata();
       }
       ServiceDocumentResource r = new ServiceDocumentResource();
-      return r.getServiceDocument(context, md, FormatType.ATOM.name(), null);
+      return r.getServiceDocument(httpHeaders, uriInfo, md, FormatType.ATOM.name(), null);
     } else {
       StringWriter w = new StringWriter();
       ODataProducer source = "metamodel".equals(format) ? producer.getMetadataProducer() : producer;
@@ -53,8 +53,8 @@ public class MetadataResource {
     }
   }
 
-  private boolean isAtomSvcRequest(HttpContext c) {
-    for (MediaType mt : c.getRequest().getAcceptableMediaTypes()) {
+  private boolean isAtomSvcRequest(HttpHeaders h) {
+    for (MediaType mt : h.getAcceptableMediaTypes()) {
       if (mt.equals(ODataConstants.APPLICATION_ATOMSVC_XML_TYPE)) {
         return true;
       }
