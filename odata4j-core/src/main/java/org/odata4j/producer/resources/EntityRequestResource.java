@@ -15,6 +15,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.ext.ContextResolver;
 
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OEntity;
@@ -32,12 +33,14 @@ public class EntityRequestResource extends BaseResource {
   private static final Logger log = Logger.getLogger(EntityRequestResource.class.getName());
 
   @PUT
-  public Response updateEntity(@Context HttpHeaders httpHeaders, @Context UriInfo uriInfo, @Context ODataProducer producer,
+  public Response updateEntity(@Context HttpHeaders httpHeaders, @Context UriInfo uriInfo, @Context ContextResolver<ODataProducer> producerResolver,
       @PathParam("entitySetName") String entitySetName,
       @PathParam("id") String id,
       String payload) {
 
     log.info(String.format("updateEntity(%s,%s)", entitySetName, id));
+
+    ODataProducer producer = producerResolver.getContext(ODataProducer.class);
 
     OEntity entity = this.getRequestEntity(httpHeaders, uriInfo, payload, producer.getMetadata(), entitySetName, OEntityKey.parse(id));
     producer.updateEntity(entitySetName, entity);
@@ -46,12 +49,14 @@ public class EntityRequestResource extends BaseResource {
   }
 
   @POST
-  public Response mergeEntity(@Context HttpHeaders httpHeaders, @Context UriInfo uriInfo, @Context ODataProducer producer,
+  public Response mergeEntity(@Context HttpHeaders httpHeaders, @Context UriInfo uriInfo, @Context ContextResolver<ODataProducer> producerResolver,
       @PathParam("entitySetName") String entitySetName,
       @PathParam("id") String id,
       String payload) {
 
     log.info(String.format("mergeEntity(%s,%s)", entitySetName, id));
+
+    ODataProducer producer = producerResolver.getContext(ODataProducer.class);
 
     OEntityKey entityKey = OEntityKey.parse(id);
 
@@ -80,11 +85,13 @@ public class EntityRequestResource extends BaseResource {
   }
 
   @DELETE
-  public Response deleteEntity(@Context ODataProducer producer,
+  public Response deleteEntity(@Context ContextResolver<ODataProducer> producerResolver,
       @PathParam("entitySetName") String entitySetName,
       @PathParam("id") String id) {
 
     log.info(String.format("getEntity(%s,%s)", entitySetName, id));
+
+    ODataProducer producer = producerResolver.getContext(ODataProducer.class);
 
     OEntityKey entityKey = OEntityKey.parse(id);
     producer.deleteEntity(entitySetName, entityKey);
@@ -94,7 +101,7 @@ public class EntityRequestResource extends BaseResource {
 
   @GET
   @Produces({ ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8, ODataConstants.TEXT_JAVASCRIPT_CHARSET_UTF8, ODataConstants.APPLICATION_JAVASCRIPT_CHARSET_UTF8 })
-  public Response getEntity(@Context HttpHeaders httpHeaders, @Context UriInfo uriInfo, @Context ODataProducer producer,
+  public Response getEntity(@Context HttpHeaders httpHeaders, @Context UriInfo uriInfo, @Context ContextResolver<ODataProducer> producerResolver,
       @PathParam("entitySetName") String entitySetName,
       @PathParam("id") String id,
       @QueryParam("$format") String format,
@@ -114,6 +121,8 @@ public class EntityRequestResource extends BaseResource {
         id,
         expand,
         select));
+
+    ODataProducer producer = producerResolver.getContext(ODataProducer.class);
 
     EntityResponse response = producer.getEntity(entitySetName, OEntityKey.parse(id), query);
 

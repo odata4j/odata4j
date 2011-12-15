@@ -13,6 +13,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.ext.ContextResolver;
 
 import org.core4j.Enumerable;
 import org.odata4j.core.ODataConstants;
@@ -45,28 +46,32 @@ public class LinksRequestResource extends BaseResource {
   }
 
   @POST
-  public Response createLink(@Context HttpHeaders httpHeaders, @Context UriInfo uriInfo, @Context ODataProducer producer, String payload) {
+  public Response createLink(@Context HttpHeaders httpHeaders, @Context UriInfo uriInfo, @Context ContextResolver<ODataProducer> producerResolver, String payload) {
     log.info(String.format(
         "createLink(%s,%s,%s,%s)",
         sourceEntity.getEntitySetName(),
         sourceEntity.getEntityKey(),
         targetNavProp,
         targetEntityKey));
-    
+
+    ODataProducer producer = producerResolver.getContext(ODataProducer.class);
+
     OEntityId newTargetEntity = parseRequestUri(httpHeaders, uriInfo, payload);
     producer.createLink(sourceEntity, targetNavProp, newTargetEntity);
     return noContent();
   }
   
   @PUT
-  public Response updateLink(@Context HttpHeaders httpHeaders, @Context UriInfo uriInfo, @Context ODataProducer producer, String payload) {
+  public Response updateLink(@Context HttpHeaders httpHeaders, @Context UriInfo uriInfo, @Context ContextResolver<ODataProducer> producerResolver, String payload) {
     log.info(String.format(
         "updateLink(%s,%s,%s,%s)",
         sourceEntity.getEntitySetName(),
         sourceEntity.getEntityKey(),
         targetNavProp,
         targetEntityKey));
-    
+
+    ODataProducer producer = producerResolver.getContext(ODataProducer.class);
+
     OEntityId newTargetEntity = parseRequestUri(httpHeaders, uriInfo, payload);
     producer.updateLink(sourceEntity, targetNavProp, targetEntityKey, newTargetEntity);
     return noContent();
@@ -83,7 +88,7 @@ public class LinksRequestResource extends BaseResource {
   }
   
   @DELETE
-  public Response deleteLink(@Context HttpHeaders httpHeaders, @Context UriInfo uriInfo, @Context ODataProducer producer) {
+  public Response deleteLink(@Context HttpHeaders httpHeaders, @Context UriInfo uriInfo, @Context ContextResolver<ODataProducer> producerResolver) {
     log.info(String.format(
         "deleteLink(%s,%s,%s,%s)",
         sourceEntity.getEntitySetName(),
@@ -91,12 +96,14 @@ public class LinksRequestResource extends BaseResource {
         targetNavProp,
         targetEntityKey));
 
+    ODataProducer producer = producerResolver.getContext(ODataProducer.class);
+
     producer.deleteLink(sourceEntity, targetNavProp, targetEntityKey);
     return noContent();
   }
 
   @GET
-  public Response getLinks(@Context HttpHeaders httpHeaders, @Context UriInfo uriInfo, @Context ODataProducer producer,
+  public Response getLinks(@Context HttpHeaders httpHeaders, @Context UriInfo uriInfo, @Context ContextResolver<ODataProducer> producerResolver,
       @QueryParam("$format") String format,
       @QueryParam("$callback") String callback) {
 
@@ -106,6 +113,8 @@ public class LinksRequestResource extends BaseResource {
         sourceEntity.getEntityKey(),
         targetNavProp,
         targetEntityKey));
+
+    ODataProducer producer = producerResolver.getContext(ODataProducer.class);
 
     EntityIdResponse response = producer.getLinks(sourceEntity, targetNavProp);
 

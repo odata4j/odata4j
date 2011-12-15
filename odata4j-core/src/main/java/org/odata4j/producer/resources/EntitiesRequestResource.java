@@ -19,6 +19,7 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.ext.ContextResolver;
 
 import org.odata4j.core.Guid;
 import org.odata4j.core.ODataConstants;
@@ -42,7 +43,7 @@ public class EntitiesRequestResource extends BaseResource {
   public Response createEntity(
       @Context HttpHeaders httpHeaders,
       @Context UriInfo uriInfo,
-      @Context ODataProducer producer,
+      @Context ContextResolver<ODataProducer> producerResolver,
       final @PathParam("entitySetName") String entitySetName,
       String payload) throws Exception {
 
@@ -51,6 +52,8 @@ public class EntitiesRequestResource extends BaseResource {
       return Response.status(405).build();
 
     log.info(String.format("createEntity(%s)", entitySetName));
+
+    ODataProducer producer = producerResolver.getContext(ODataProducer.class);
 
     OEntity entity = this.getRequestEntity(httpHeaders, uriInfo, payload, producer.getMetadata(), entitySetName, null);
 
@@ -82,7 +85,7 @@ public class EntitiesRequestResource extends BaseResource {
   public Response getEntities(
       @Context HttpHeaders httpHeaders,
       @Context UriInfo uriInfo,
-      @Context ODataProducer producer,
+      @Context ContextResolver<ODataProducer> producerResolver,
       @PathParam("entitySetName") String entitySetName,
       @QueryParam("$inlinecount") String inlineCount,
       @QueryParam("$top") String top,
@@ -105,6 +108,8 @@ public class EntitiesRequestResource extends BaseResource {
         orderBy,
         skipToken,
         expand));
+
+    ODataProducer producer = producerResolver.getContext(ODataProducer.class);
 
     // the OData URI scheme makes it impossible to have unique @Paths that refer
     // to functions and entity sets
@@ -151,7 +156,7 @@ public class EntitiesRequestResource extends BaseResource {
   @Consumes(ODataBatchProvider.MULTIPART_MIXED)
   @Produces(ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8)
   public Response processBatch(
-      @Context ODataProducer producer,
+      @Context ContextResolver<ODataProducer> producerResolver,
       @Context HttpHeaders headers,
       @Context Request request,
       final List<BatchBodyPart> bodyParts) throws Exception {
@@ -182,19 +187,19 @@ public class EntitiesRequestResource extends BaseResource {
 
       switch (bodyPart.getHttpMethod()) {
       case POST:
-        response = this.createEntity(httpHeaders, uriInfo, producer,
+        response = this.createEntity(httpHeaders, uriInfo, producerResolver,
               entitySetName, entity);
         break;
       case PUT:
-        response = er.updateEntity(httpHeaders, uriInfo, producer,
+        response = er.updateEntity(httpHeaders, uriInfo, producerResolver,
               entitySetName, entityId, entity);
         break;
       case MERGE:
-        response = er.mergeEntity(httpHeaders, uriInfo, producer, entitySetName,
+        response = er.mergeEntity(httpHeaders, uriInfo, producerResolver, entitySetName,
               entityId, entity);
         break;
       case DELETE:
-        response = er.deleteEntity(producer, entitySetName, entityId);
+        response = er.deleteEntity(producerResolver, entitySetName, entityId);
         break;
       case GET:
         throw new UnsupportedOperationException("Not supported yet.");

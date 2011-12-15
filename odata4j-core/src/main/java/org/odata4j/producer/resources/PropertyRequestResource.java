@@ -17,6 +17,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.ext.ContextResolver;
 
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.ODataVersion;
@@ -42,7 +43,7 @@ public class PropertyRequestResource extends BaseResource {
 
   @PUT
   public Response updateEntity(
-      @Context ODataProducer producer,
+      @Context ContextResolver<ODataProducer> producerResolver,
       @PathParam("entitySetName") String entitySetName,
       final @PathParam("id") String id,
       final @PathParam("navProp") String navProp) {
@@ -55,7 +56,7 @@ public class PropertyRequestResource extends BaseResource {
   public Response mergeEntity(
       @Context HttpHeaders httpHeaders,
       @Context UriInfo uriInfo,
-      @Context ODataProducer producer,
+      @Context ContextResolver<ODataProducer> producerResolver,
       final @PathParam("entitySetName") String entitySetName,
       final @PathParam("id") String id,
       final @PathParam("navProp") String navProp,
@@ -63,6 +64,8 @@ public class PropertyRequestResource extends BaseResource {
 
     String method = httpHeaders.getRequestHeaders().getFirst(ODataConstants.Headers.X_HTTP_METHOD);
     if (!"MERGE".equals(method)) {
+
+      ODataProducer producer = producerResolver.getContext(ODataProducer.class);
 
       // determine the expected entity set
       EdmDataServices metadata = producer.getMetadata();
@@ -105,7 +108,7 @@ public class PropertyRequestResource extends BaseResource {
 
   @DELETE
   public Response deleteEntity(
-      @Context ODataProducer producer,
+      @Context ContextResolver<ODataProducer> producerResolver,
       final @PathParam("entitySetName") String entitySetName,
       final @PathParam("id") String id,
       final @PathParam("navProp") String navProp) {
@@ -120,7 +123,7 @@ public class PropertyRequestResource extends BaseResource {
   public Response getNavProperty(
       @Context HttpHeaders httpHeaders,
       @Context UriInfo uriInfo,
-      @Context ODataProducer producer,
+      @Context ContextResolver<ODataProducer> producerResolver,
       final @PathParam("entitySetName") String entitySetName,
       final @PathParam("id") String id,
       final @PathParam("navProp") String navProp,
@@ -144,6 +147,8 @@ public class PropertyRequestResource extends BaseResource {
         OptionsQueryParser.parseCustomOptions(uriInfo),
         OptionsQueryParser.parseSelect(expand),
         OptionsQueryParser.parseSelect(select));
+
+    ODataProducer producer = producerResolver.getContext(ODataProducer.class);
 
     final BaseResponse response = producer.getNavProperty(
         entitySetName,

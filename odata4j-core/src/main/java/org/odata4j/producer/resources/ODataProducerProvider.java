@@ -4,16 +4,16 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 import javax.ws.rs.core.Context;
+import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.ODataProducerFactory;
 
 import com.sun.jersey.api.core.ResourceConfig;
-import com.sun.jersey.core.impl.provider.xml.LazySingletonContextProvider;
 
 @Provider
-public class ODataProducerProvider extends LazySingletonContextProvider<ODataProducer> {
+public class ODataProducerProvider implements ContextResolver<ODataProducer> {
 
   public static final String FACTORY_PROPNAME = "odata4j.producerfactory";
   private static ODataProducer STATIC;
@@ -27,12 +27,11 @@ public class ODataProducerProvider extends LazySingletonContextProvider<ODataPro
 
   private ODataProducer instance;
 
-  public ODataProducerProvider() {
-    super(ODataProducer.class);
-  }
-
   @Override
-  protected ODataProducer getInstance() {
+  public ODataProducer getContext(Class<?> type) {
+    if (!type.equals(ODataProducer.class))
+      return null;
+
     if (instance == null) {
       if (STATIC != null) {
         log.info("Setting producer instance to static instance: " + STATIC);
