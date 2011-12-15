@@ -6,11 +6,9 @@ import javax.ws.rs.core.UriInfo;
 
 import org.odata4j.producer.resources.ODataBatchProvider.HTTP_METHOD;
 
-import com.sun.jersey.core.util.StringKeyStringValueIgnoreCaseMultivaluedMap;
-
 public class BatchBodyPart {
 
-  private MultivaluedMap<String, String> headers = new StringKeyStringValueIgnoreCaseMultivaluedMap();
+  private MultivaluedMap<String, String> headers = new HeaderMap();
   private HTTP_METHOD httpMethod;
   private HttpHeaders httpHeaders;
   private UriInfo uriInfo;
