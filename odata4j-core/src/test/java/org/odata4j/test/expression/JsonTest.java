@@ -14,8 +14,8 @@ import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.Guid;
 import org.odata4j.producer.inmemory.InMemoryProducer;
+import org.odata4j.producer.resources.ODataApplication;
 import org.odata4j.producer.resources.ODataProducerProvider;
-import org.odata4j.producer.resources.ODataResourceConfig;
 import org.odata4j.producer.server.JerseyServer;
 
 import com.sun.jersey.api.client.Client;
@@ -31,7 +31,7 @@ public class JsonTest {
     ODataProducerProvider.setInstance(producer);
 
     JerseyServer server = new JerseyServer(uri);
-    server.addAppResourceClasses(new ODataResourceConfig().getClasses());
+    server.addAppResourceClasses(new ODataApplication().getClasses());
     server.start();
 
     try {
