@@ -19,8 +19,8 @@ import org.odata4j.core.OEntity;
 import org.odata4j.examples.producer.ProducerUtil;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.producer.inmemory.InMemoryProducer;
-import org.odata4j.producer.resources.ODataProducerProvider;
-import org.odata4j.producer.server.JerseyServer;
+import org.odata4j.producer.resources.DefaultODataProducerProvider;
+import org.odata4j.producer.server.ODataServer;
 
 public class DateTimeFormatTest {
 
@@ -290,8 +290,8 @@ public class DateTimeFormatTest {
             return Enumerable.create(new DateTimeRoundtrip(1, new Date(now)));
           }
         }, "Key");
-    ODataProducerProvider.setInstance(producer);
-    JerseyServer server = ProducerUtil.startODataServer(endpointUri);
+    DefaultODataProducerProvider.setInstance(producer);
+    ODataServer server = ProducerUtil.startODataServer(endpointUri);
     ODataConsumer c = ODataConsumer.create(endpointUri);
     List<OEntity> oentities = c.getEntities("DateTimeRoundtrip").execute().toList();
 

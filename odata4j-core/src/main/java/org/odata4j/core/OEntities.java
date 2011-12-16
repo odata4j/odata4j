@@ -4,9 +4,9 @@ import java.util.Collections;
 import java.util.List;
 
 import org.core4j.Enumerable;
-import org.odata4j.edm.EdmType;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmEntityType;
+import org.odata4j.edm.EdmType;
 
 /**
  * A static factory to create immutable {@link OEntity} instances.

@@ -5,7 +5,7 @@ import javax.persistence.Persistence;
 
 import org.odata4j.producer.jpa.JPAProducer;
 import org.odata4j.producer.jpa.northwind.test.NorthwindTestUtils;
-import org.odata4j.producer.resources.ODataProducerProvider;
+import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.test.OData4jTestSuite;
 
 public class JPAProducerExample {
@@ -26,7 +26,7 @@ public class JPAProducerExample {
     NorthwindTestUtils.fillDatabase(emf);
 
     // register the producer as the static instance, then launch the http server
-    ODataProducerProvider.setInstance(producer);
+    DefaultODataProducerProvider.setInstance(producer);
     ProducerUtil.hostODataServer(endpointUri);
 
   }

@@ -22,8 +22,8 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.odata4j.core.NamespacedAnnotation;
-import org.odata4j.core.PrefixedNamespace;
 import org.odata4j.core.OProperty;
+import org.odata4j.core.PrefixedNamespace;
 import org.odata4j.edm.EdmAnnotation;
 import org.odata4j.edm.EdmAnnotationAttribute;
 import org.odata4j.edm.EdmDataServices;
@@ -39,8 +39,8 @@ import org.odata4j.producer.PropertyPath;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.jpa.airline.Airport;
 import org.odata4j.producer.jpa.northwind.test.NorthwindTestUtils;
-import org.odata4j.producer.resources.ODataProducerProvider;
-import org.odata4j.producer.server.JerseyServer;
+import org.odata4j.producer.resources.DefaultODataProducerProvider;
+import org.odata4j.producer.server.ODataServer;
 import org.xml.sax.SAXException;
 
 import com.sun.jersey.api.client.Client;
@@ -66,7 +66,7 @@ public class EdmxFormatWriterTest implements EdmDecorator {
   public static void tearDownClass() throws Exception {
   }
 
-  private JerseyServer server = null;
+  private ODataServer server = null;
   @SuppressWarnings("unused")
   private EdmDataServices ds = null;
 
@@ -144,7 +144,7 @@ public class EdmxFormatWriterTest implements EdmDecorator {
     }, "Code");
 
      // register the producer as the static instance, then launch the http server
-    ODataProducerProvider.setInstance(p);
+    DefaultODataProducerProvider.setInstance(p);
     server = ProducerUtil.startODataServer(endpointUri);
     return p.getMetadata();
   }

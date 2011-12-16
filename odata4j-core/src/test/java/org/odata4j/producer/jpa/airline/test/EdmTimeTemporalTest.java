@@ -18,7 +18,7 @@ import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.examples.producer.ProducerUtil;
 import org.odata4j.producer.jpa.JPAProducer;
-import org.odata4j.producer.resources.ODataProducerProvider;
+import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.test.OData4jTestSuite;
 
 public class EdmTimeTemporalTest extends AirlineJPAProducerTestBase {
@@ -32,7 +32,7 @@ public class EdmTimeTemporalTest extends AirlineJPAProducerTestBase {
 
     JPAProducer producer = new JPAProducer(emf, namespace, 20);
 
-    ODataProducerProvider.setInstance(producer);
+    DefaultODataProducerProvider.setInstance(producer);
     server = ProducerUtil.startODataServer(endpointUri);
   }
 

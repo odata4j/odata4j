@@ -24,7 +24,6 @@ import org.odata4j.core.OSimpleObject;
 import org.odata4j.edm.EdmCollectionType;
 import org.odata4j.edm.EdmComplexType;
 import org.odata4j.edm.EdmEntitySet;
-import org.odata4j.edm.EdmEntityType;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.edm.EdmType;
 import org.odata4j.format.FormatWriter;

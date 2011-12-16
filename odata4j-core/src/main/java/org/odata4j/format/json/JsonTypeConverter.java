@@ -2,7 +2,6 @@ package org.odata4j.format.json;
 
 import java.math.BigDecimal;
 
-import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.odata4j.core.Guid;

@@ -48,7 +48,7 @@ import org.odata4j.producer.edm.MetadataProducer;
 import org.odata4j.producer.exceptions.NotImplementedException;
 import org.odata4j.producer.jpa.northwind.Customers;
 import org.odata4j.producer.jpa.northwind.test.NorthwindTestUtils;
-import org.odata4j.producer.resources.ODataProducerProvider;
+import org.odata4j.producer.resources.DefaultODataProducerProvider;
 
 /**
  * This example shows how to expose xml data as an atom feed.
@@ -62,7 +62,7 @@ public class XmlDataProducerExample {
     System.out.println("Please direct your browerser to " + endpointUri + "Customers");
 
     // register the producer as the static instance, then launch the http server
-    ODataProducerProvider.setInstance(new XmlDataProducer());
+    DefaultODataProducerProvider.setInstance(new XmlDataProducer());
     ProducerUtil.hostODataServer(endpointUri);
 
     // generateXmlTestData();

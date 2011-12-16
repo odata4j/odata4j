@@ -1,19 +1,18 @@
 
 package org.odata4j.producer.custom;
 
-import org.odata4j.core.ORelatedEntityLink;
-import org.odata4j.core.ORelatedEntitiesLink;
-import org.odata4j.core.ORelatedEntitiesLinkInline;
-import org.odata4j.consumer.ODataConsumer;
-import org.odata4j.core.OEntityKey;
-import org.odata4j.core.OEntity;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.core.OEntity;
+import org.odata4j.core.ORelatedEntitiesLink;
+import org.odata4j.core.ORelatedEntitiesLinkInline;
+import org.odata4j.core.ORelatedEntityLink;
 import org.odata4j.format.FormatType;
-import static org.junit.Assert.*;
 
 public class CustomTestInheritance extends CustomTestBase {
   

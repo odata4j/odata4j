@@ -8,8 +8,8 @@ import org.junit.AfterClass;
 import org.odata4j.examples.producer.ProducerUtil;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.jpa.JPAProducer;
-import org.odata4j.producer.resources.ODataProducerProvider;
-import org.odata4j.producer.server.JerseyServer;
+import org.odata4j.producer.resources.DefaultODataProducerProvider;
+import org.odata4j.producer.server.ODataServer;
 import org.odata4j.test.OData4jTestSuite;
 
 public abstract class JPAProducerTestBase {
@@ -17,7 +17,7 @@ public abstract class JPAProducerTestBase {
       "http://localhost:8810/northwind/Northwind.svc/";
 
   protected static EntityManagerFactory emf;
-  protected static JerseyServer server;
+  protected static ODataServer server;
 
   public static void setUpClass(int maxResults) throws Exception {
     setUpClass(maxResults, null);
@@ -41,7 +41,7 @@ public abstract class JPAProducerTestBase {
     if (producerModification != null)
       producer = producerModification.apply(producer);
     
-    ODataProducerProvider.setInstance(producer);
+    DefaultODataProducerProvider.setInstance(producer);
     server = ProducerUtil.startODataServer(endpointUri);
   }
 

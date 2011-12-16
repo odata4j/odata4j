@@ -23,7 +23,7 @@ import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.examples.producer.ProducerUtil;
 import org.odata4j.producer.jpa.JPAEdmGenerator;
 import org.odata4j.producer.jpa.JPAProducer;
-import org.odata4j.producer.resources.ODataProducerProvider;
+import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.test.OData4jTestSuite;
 
 /**
@@ -54,7 +54,7 @@ public class EdmDateTimeTemporalTest extends AirlineJPAProducerTestBase {
       }
     }.generateEdm(null).build(), 20);
 
-    ODataProducerProvider.setInstance(producer);
+    DefaultODataProducerProvider.setInstance(producer);
     server = ProducerUtil.startODataServer(endpointUri);
   }
 

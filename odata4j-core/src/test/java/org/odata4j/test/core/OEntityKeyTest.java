@@ -9,8 +9,8 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.odata4j.core.NamedValue;
 import org.odata4j.core.OEntityKey;
-import org.odata4j.core.OProperties;
 import org.odata4j.core.OEntityKey.KeyType;
+import org.odata4j.core.OProperties;
 
 public class OEntityKeyTest {
 

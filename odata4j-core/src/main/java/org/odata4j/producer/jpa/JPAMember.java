@@ -7,10 +7,10 @@ import java.lang.reflect.Method;
 
 import javax.persistence.Column;
 import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.EmbeddableType;
-import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Attribute.PersistentAttributeType;
+import javax.persistence.metamodel.EmbeddableType;
 import javax.persistence.metamodel.EntityType;
+import javax.persistence.metamodel.SingularAttribute;
 
 import org.core4j.CoreUtils;
 

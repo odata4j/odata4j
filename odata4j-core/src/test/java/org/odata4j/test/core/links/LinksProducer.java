@@ -6,7 +6,7 @@ import java.util.List;
 import org.core4j.Func;
 import org.odata4j.examples.producer.ProducerUtil;
 import org.odata4j.producer.inmemory.InMemoryProducer;
-import org.odata4j.producer.resources.ODataProducerProvider;
+import org.odata4j.producer.resources.DefaultODataProducerProvider;
 
 public class LinksProducer extends InMemoryProducer {
 
@@ -48,7 +48,7 @@ public class LinksProducer extends InMemoryProducer {
     final InMemoryProducer producer = new LinksProducer();
 
     // register the producer as the static instance, then launch the http server
-    ODataProducerProvider.setInstance(producer);
+    DefaultODataProducerProvider.setInstance(producer);
     ProducerUtil.hostODataServer(endpointUri);
   }
 

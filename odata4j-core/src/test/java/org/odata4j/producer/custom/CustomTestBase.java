@@ -1,24 +1,26 @@
 
 package org.odata4j.producer.custom;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
 import javax.ws.rs.core.MediaType;
+
 import org.core4j.Func1;
 import org.junit.AfterClass;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.examples.producer.ProducerUtil;
 import org.odata4j.format.FormatType;
 import org.odata4j.producer.ODataProducer;
-import org.odata4j.producer.resources.ODataProducerProvider;
-import org.odata4j.producer.server.JerseyServer;
+import org.odata4j.producer.resources.DefaultODataProducerProvider;
+import org.odata4j.producer.server.ODataServer;
+
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
 
 /**
  *
  */
 public class CustomTestBase {
     protected static final String endpointUri = "http://localhost:8810/CustomTest.svc/";
-    protected static JerseyServer server;
+    protected static ODataServer server;
     protected static CustomProducer producer;
 
     public static void setUpClass(int maxResults) throws Exception {
@@ -34,7 +36,7 @@ public class CustomTestBase {
             p = producerModification.apply(producer);
         }
 
-        ODataProducerProvider.setInstance(p);
+        DefaultODataProducerProvider.setInstance(p);
         server = ProducerUtil.startODataServer(endpointUri);
     }
 

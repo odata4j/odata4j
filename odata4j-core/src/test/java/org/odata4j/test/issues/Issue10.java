@@ -11,8 +11,8 @@ import org.odata4j.examples.producer.ProducerUtil;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.inmemory.InMemoryProducer;
-import org.odata4j.producer.resources.ODataProducerProvider;
-import org.odata4j.producer.server.JerseyServer;
+import org.odata4j.producer.resources.DefaultODataProducerProvider;
+import org.odata4j.producer.server.ODataServer;
 
 public class Issue10 {
 
@@ -34,8 +34,8 @@ public class Issue10 {
       }
     }, Funcs.identity(String.class));
 
-    ODataProducerProvider.setInstance(producer);
-    JerseyServer server = ProducerUtil.startODataServer(endpointUri);
+    DefaultODataProducerProvider.setInstance(producer);
+    ODataServer server = ProducerUtil.startODataServer(endpointUri);
 
     ODataConsumer c = ODataConsumer.create(endpointUri);
 

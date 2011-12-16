@@ -9,8 +9,8 @@ import javax.persistence.Persistence;
 import org.junit.AfterClass;
 import org.odata4j.examples.producer.ProducerUtil;
 import org.odata4j.producer.jpa.JPAProducer;
-import org.odata4j.producer.resources.ODataProducerProvider;
-import org.odata4j.producer.server.JerseyServer;
+import org.odata4j.producer.resources.DefaultODataProducerProvider;
+import org.odata4j.producer.server.ODataServer;
 import org.odata4j.test.OData4jTestSuite;
 import org.odata4j.test.OData4jTestSuite.JPAProvider;
 
@@ -19,7 +19,7 @@ public class OneoffTestBase {
   protected static String endpointUri;
 
   protected static EntityManagerFactory emf;
-  protected static JerseyServer server;
+  protected static ODataServer server;
 
   @AfterClass
   public static void tearDownClass() throws Exception {
@@ -69,7 +69,7 @@ public class OneoffTestBase {
         namespace,
         maxResults);
 
-    ODataProducerProvider.setInstance(producer);
+    DefaultODataProducerProvider.setInstance(producer);
     server = ProducerUtil.startODataServer(endpointUri);
   }
 

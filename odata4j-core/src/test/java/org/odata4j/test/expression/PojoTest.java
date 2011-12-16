@@ -8,10 +8,10 @@ import junit.framework.Assert;
 import org.core4j.Funcs;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.examples.producer.ProducerUtil;
 import org.odata4j.producer.inmemory.InMemoryProducer;
-import org.odata4j.producer.resources.ODataApplication;
-import org.odata4j.producer.resources.ODataProducerProvider;
-import org.odata4j.producer.server.JerseyServer;
+import org.odata4j.producer.resources.DefaultODataProducerProvider;
+import org.odata4j.producer.server.ODataServer;
 
 public class PojoTest {
 
@@ -21,11 +21,9 @@ public class PojoTest {
     String uri = "http://localhost:18889/";
 
     InMemoryProducer producer = new InMemoryProducer("PojoTest");
-    ODataProducerProvider.setInstance(producer);
+    DefaultODataProducerProvider.setInstance(producer);
 
-    JerseyServer server = new JerseyServer(uri);
-    server.addAppResourceClasses(new ODataApplication().getClasses());
-    server.start();
+    ODataServer server = ProducerUtil.startODataServer(uri);
 
     try {
       ODataConsumer c = ODataConsumer.create(uri);

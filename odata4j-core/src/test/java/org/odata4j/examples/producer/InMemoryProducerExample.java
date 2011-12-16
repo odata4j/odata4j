@@ -14,7 +14,6 @@ import org.core4j.Func1;
 import org.core4j.Funcs;
 import org.core4j.ThrowingFunc;
 import org.odata4j.core.NamespacedAnnotation;
-import org.odata4j.core.PrefixedNamespace;
 import org.odata4j.core.OCollection;
 import org.odata4j.core.OCollections;
 import org.odata4j.core.OComplexObject;
@@ -22,6 +21,7 @@ import org.odata4j.core.OComplexObjects;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
 import org.odata4j.core.OSimpleObjects;
+import org.odata4j.core.PrefixedNamespace;
 import org.odata4j.edm.EdmAnnotation;
 import org.odata4j.edm.EdmAnnotationAttribute;
 import org.odata4j.edm.EdmComplexType;
@@ -35,7 +35,7 @@ import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.edm.EdmStructuralType;
 import org.odata4j.producer.PropertyPath;
 import org.odata4j.producer.inmemory.InMemoryProducer;
-import org.odata4j.producer.resources.ODataProducerProvider;
+import org.odata4j.producer.resources.DefaultODataProducerProvider;
 
 public class InMemoryProducerExample {
 
@@ -96,7 +96,7 @@ public class InMemoryProducerExample {
     }, Funcs.method(Integer.class, Integer.class, "intValue"));
 
     // register the producer as the static instance, then launch the http server
-    ODataProducerProvider.setInstance(producer);
+    DefaultODataProducerProvider.setInstance(producer);
     ProducerUtil.hostODataServer(endpointUri);
   }
 

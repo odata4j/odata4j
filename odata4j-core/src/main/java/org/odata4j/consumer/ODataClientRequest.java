@@ -1,9 +1,9 @@
 package org.odata4j.consumer;
 
 import java.util.HashMap;
-import org.odata4j.core.OClientBehavior;
 import java.util.Map;
 
+import org.odata4j.core.OClientBehavior;
 import org.odata4j.format.Entry;
 import org.odata4j.format.SingleLink;
 

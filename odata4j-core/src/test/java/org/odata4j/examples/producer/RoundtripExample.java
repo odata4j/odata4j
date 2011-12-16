@@ -7,8 +7,8 @@ import org.core4j.Func;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.examples.BaseExample;
 import org.odata4j.producer.inmemory.InMemoryProducer;
-import org.odata4j.producer.resources.ODataProducerProvider;
-import org.odata4j.producer.server.JerseyServer;
+import org.odata4j.producer.resources.DefaultODataProducerProvider;
+import org.odata4j.producer.server.ODataServer;
 
 public class RoundtripExample extends BaseExample {
 
@@ -61,8 +61,8 @@ public class RoundtripExample extends BaseExample {
       }
     }, "Id");
 
-    ODataProducerProvider.setInstance(producer);
-    JerseyServer server = ProducerUtil.createODataServer(endpointUri).setJerseyTrace(true).start();
+    DefaultODataProducerProvider.setInstance(producer);
+    ODataServer server = ProducerUtil.startODataServer(endpointUri);
 
     try {
       // create the client

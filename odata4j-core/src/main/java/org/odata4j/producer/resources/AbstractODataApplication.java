@@ -5,7 +5,14 @@ import java.util.Set;
 
 import javax.ws.rs.core.Application;
 
-public class ODataApplication extends Application {
+/**
+ * Abstract OData application.
+ * 
+ * <p>Implementers should override the {@code getClasses} method, but call
+ * {@code super.getClasses()} before adding container-specific resources and providers as
+ * required.
+ */
+public abstract class AbstractODataApplication extends Application {
 
   @Override
   public Set<Class<?>> getClasses() {
@@ -14,7 +21,6 @@ public class ODataApplication extends Application {
     classes.add(EntityRequestResource.class);
     classes.add(MetadataResource.class);
     classes.add(ServiceDocumentResource.class);
-    classes.add(ODataProducerProvider.class);
     classes.add(ODataBatchProvider.class);
     return classes;
   }

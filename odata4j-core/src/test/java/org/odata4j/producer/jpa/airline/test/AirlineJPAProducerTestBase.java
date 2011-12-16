@@ -19,14 +19,14 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.odata4j.producer.jpa.northwind.test.NorthwindTestUtils;
-import org.odata4j.producer.server.JerseyServer;
+import org.odata4j.producer.server.ODataServer;
 
 public abstract class AirlineJPAProducerTestBase {
   protected static final String endpointUri =
       "http://localhost:8810/airline/Airline.svc/";
 
   protected static EntityManagerFactory emf;
-  protected static JerseyServer server;
+  protected static ODataServer server;
 
   protected void execute(ThrowingFunc1<Connection, Void> function) {
     try {

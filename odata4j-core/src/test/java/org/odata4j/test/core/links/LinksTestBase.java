@@ -17,7 +17,7 @@ import org.odata4j.examples.producer.ProducerUtil;
 import org.odata4j.format.FormatType;
 import org.odata4j.producer.jpa.northwind.Orders;
 import org.odata4j.producer.jpa.northwind.test.JPAProducerTestBase;
-import org.odata4j.producer.resources.ODataProducerProvider;
+import org.odata4j.producer.resources.DefaultODataProducerProvider;
 
 /**
  * Tests for new OLink semantics.
@@ -43,7 +43,7 @@ public class LinksTestBase extends JPAProducerTestBase {
     } else {
       LinksProducer producer = new LinksProducer();
 
-      ODataProducerProvider.setInstance(producer);
+      DefaultODataProducerProvider.setInstance(producer);
       server = ProducerUtil.startODataServer(endpointUri);
     }
   }

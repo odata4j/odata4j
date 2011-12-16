@@ -1,4 +1,4 @@
-package org.odata4j.producer.server;
+package org.odata4j.producer.server.jersey;
 
 import static com.sun.jersey.api.core.ResourceConfig.FEATURE_TRACE;
 import static com.sun.jersey.api.core.ResourceConfig.PROPERTY_CONTAINER_REQUEST_FILTERS;
@@ -12,14 +12,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.logging.Level;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
+
+import javax.ws.rs.core.Application;
 
 import org.core4j.CoreUtils;
 import org.core4j.Enumerable;
+import org.odata4j.producer.server.ODataServer;
 
 import com.sun.jersey.api.container.ContainerFactory;
 import com.sun.jersey.api.container.httpserver.HttpServerFactory;
+import com.sun.jersey.api.core.ApplicationAdapter;
 import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.spi.container.ContainerRequestFilter;
@@ -30,15 +34,17 @@ import com.sun.net.httpserver.Filter;
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import java.util.concurrent.TimeUnit;
 
-public class JerseyServer {
+/**
+ * OData server using the Jersey JAX-RS and Sun's HTTP server implementation.
+ */
+public class JerseyServer implements ODataServer {
 
   private static final Logger LOG = Logger.getLogger(JerseyServer.class.getName());
 
   private final String appBaseUri;
-  private final List<Class<?>> appResourceClasses = new ArrayList<Class<?>>();
-  private final List<Class<?>> rootResourceClasses = new ArrayList<Class<?>>();
+  private Class<? extends Application> odataApp;
+  private Class<? extends Application> rootApp;
   private final List<String> jerseyRequestFilters = new ArrayList<String>();
   private final List<String> jerseyResponseFilters = new ArrayList<String>();
   private final List<String> jerseyResourceFilters = new ArrayList<String>();
@@ -52,25 +58,21 @@ public class JerseyServer {
     this.appBaseUri = appBaseUri;
   }
 
-  public JerseyServer addAppResourceClass(Class<?> resourceClass) {
-    appResourceClasses.add(resourceClass);
+  public JerseyServer(String appBaseUri, Class<? extends Application> odataApp, Class<? extends Application> rootApp) {
+    this.appBaseUri = appBaseUri;
+    this.odataApp = odataApp;
+    this.rootApp = rootApp;
+  }
+
+  @Override
+  public ODataServer setODataApplication(Class<? extends Application> odataApp) {
+    this.odataApp = odataApp;
     return this;
   }
 
-  public JerseyServer addAppResourceClasses(Iterable<Class<?>> resourceClasses) {
-    for (Class<?> clazz : resourceClasses)
-      appResourceClasses.add(clazz);
-    return this;
-  }
-
-  public JerseyServer addRootResourceClass(Class<?> resourceClass) {
-    rootResourceClasses.add(resourceClass);
-    return this;
-  }
-
-  public JerseyServer addRootResourceClasses(Iterable<Class<?>> resourceClasses) {
-    for (Class<?> resourceClass : resourceClasses)
-      rootResourceClasses.add(resourceClass);
+  @Override
+  public ODataServer setRootApplication(Class<? extends Application> rootApp) {
+    this.rootApp = rootApp;
     return this;
   }
 
@@ -109,7 +111,8 @@ public class JerseyServer {
     return this;
   }
 
-  public JerseyServer stop() {
+  @Override
+  public ODataServer stop() {
     return stop(0);
   }
   
@@ -132,20 +135,21 @@ public class JerseyServer {
       }
     }
     
-    
     return this;
   }
 
-  public JerseyServer start() {
+  @Override
+  public ODataServer start() {
+    if (odataApp == null)
+      throw new RuntimeException("ODataApplication not set");
+
     try {
       // create resourceConfig for app context
-      ResourceConfig appResourceConfig = buildResourceConfig(appResourceClasses);
-      server = HttpServerFactory.create(appBaseUri, appResourceConfig);
+      server = HttpServerFactory.create(appBaseUri, new ApplicationAdapter(odataApp.newInstance()));
 
       // create resourceConfig for root context (if necessary)
-      if (!rootResourceClasses.isEmpty()) {
-        ResourceConfig rootResourceConfig = buildResourceConfig(rootResourceClasses);
-        HttpHandler rootHttpHandler = ContainerFactory.createContainer(HttpHandler.class, rootResourceConfig);
+      if (rootApp != null) {
+        HttpHandler rootHttpHandler = ContainerFactory.createContainer(HttpHandler.class, new ApplicationAdapter(rootApp.newInstance()));
         server.createContext("/", rootHttpHandler);
       }
 
@@ -159,6 +163,10 @@ public class JerseyServer {
       LOG.info(String.format("Jersey app started with WADL available at %sapplication.wadl\n", appBaseUri));
       return this;
     } catch (IOException e) {
+      throw new RuntimeException(e);
+    } catch (InstantiationException e) {
+      throw new RuntimeException(e);
+    } catch (IllegalAccessException e) {
       throw new RuntimeException(e);
     }
   }
@@ -201,5 +209,4 @@ public class JerseyServer {
     tmp = CoreUtils.getFieldValue(tmp, "list", Object.class);
     return (List<HttpContext>) tmp;
   }
-
 }

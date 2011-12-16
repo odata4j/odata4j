@@ -5,6 +5,9 @@ import java.util.Set;
 
 import javax.ws.rs.core.Application;
 
+/**
+ * Root application containing resources for cross domain and client access policies.
+ */
 public class RootApplication extends Application {
 
   @Override
