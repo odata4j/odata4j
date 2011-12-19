@@ -235,6 +235,7 @@
                 <link>http://download.oracle.com/javaee/6/api</link>
                 <link>http://core4j.googlecode.com/hg/core4j/doc/apidocs</link>
                 <link>http://www.xmlpull.org/v1/doc/api</link>
+                <link>http://cxf.apache.org/javadoc/latest-2.4.x/</link>
               </links>
               <archive>
                 <manifestEntries>
@@ -376,6 +377,16 @@
       <version>1.1.5</version>
     </dependency>
     <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-bundle-jaxrs</artifactId>
+      <version>2.4.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-servlet</artifactId>
+      <version>7.4.5.v20110725</version>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.8.2</version>
@@ -410,13 +421,19 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-jdk14</artifactId>
-      <version>1.5.8</version>
+      <version>1.6.1</version> <!--  to be compatible with slf4j-api referenced by cxf-bundle-jaxrs -->
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>xmlunit</groupId>
       <artifactId>xmlunit</artifactId>
       <version>1.3</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-client</artifactId>
+      <version>7.4.5.v20110725</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

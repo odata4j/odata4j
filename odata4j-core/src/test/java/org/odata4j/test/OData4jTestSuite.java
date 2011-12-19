@@ -45,6 +45,7 @@ import org.odata4j.test.issues.Issue10;
 import org.odata4j.test.issues.Issue13;
 import org.odata4j.test.issues.Issue15;
 import org.odata4j.test.issues.Issue16;
+import org.odata4j.test.producer.ServerSmokeTest;
 import org.odata4j.test.producer.resources.HeaderMapTest;
 
 @RunWith(Suite.class)
@@ -92,7 +93,8 @@ import org.odata4j.test.producer.resources.HeaderMapTest;
     InMemoryProducerTest.class,
     ConsumerLinksTest.class,
     ConsumerExpandTest.class,
-    HeaderMapTest.class
+    HeaderMapTest.class,
+    ServerSmokeTest.class
     })
 public class OData4jTestSuite {
 
