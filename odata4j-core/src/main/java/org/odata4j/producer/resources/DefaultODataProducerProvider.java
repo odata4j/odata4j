@@ -4,6 +4,7 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.Provider;
 
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.ODataProducerFactory;
@@ -20,6 +21,7 @@ import org.odata4j.producer.ODataProducerFactory;
  * Furthermore a subclass of {@link AbstractODataApplication} has to be created to make
  * the new provider available to the JAX-RS runtime.
  */
+@Provider
 public class DefaultODataProducerProvider implements ContextResolver<ODataProducer> {
 
   /**
