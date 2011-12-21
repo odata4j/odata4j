@@ -14,6 +14,7 @@ public interface OCollection<T extends OObject> extends OObject, Iterable<T> {
   /** Builds an {@link OCollection} instance. */
   public interface Builder<T extends OObject> {
     Builder<T> add(T value);
+
     OCollection<T> build();
   }
 

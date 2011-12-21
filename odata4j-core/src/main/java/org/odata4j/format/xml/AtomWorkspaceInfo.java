@@ -8,10 +8,11 @@ import org.core4j.Func1;
 public class AtomWorkspaceInfo {
 
   public static final Func1<AtomWorkspaceInfo, Enumerable<AtomCollectionInfo>> GET_COLLECTIONS =
-      new Func1<AtomWorkspaceInfo, Enumerable<AtomCollectionInfo>>(){
-    public Enumerable<AtomCollectionInfo> apply(AtomWorkspaceInfo workspace) {
-      return Enumerable.create(workspace.getCollections());
-    }};
+      new Func1<AtomWorkspaceInfo, Enumerable<AtomCollectionInfo>>() {
+        public Enumerable<AtomCollectionInfo> apply(AtomWorkspaceInfo workspace) {
+          return Enumerable.create(workspace.getCollections());
+        }
+      };
 
   private final String title;
   private final List<AtomCollectionInfo> collections;

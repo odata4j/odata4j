@@ -16,7 +16,7 @@ public interface OSimpleObject<V> extends OObject {
   V getValue();
 
   /** Gets the edm type, which will be an edm simple type */
-   @Override
-   EdmSimpleType<V> getType();
+  @Override
+  EdmSimpleType<V> getType();
 
 }

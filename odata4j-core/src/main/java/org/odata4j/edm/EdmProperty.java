@@ -22,9 +22,9 @@ public class EdmProperty extends EdmPropertyBase {
     // so case matters.
 
     // CSDL is inconsistent:
-    List,       // used in Property
-    Bag,        // used in Property
-    Collection  // used in FunctionImport return types and parameter types
+    List, // used in Property
+    Bag, // used in Property
+    Collection // used in FunctionImport return types and parameter types
   }
 
   private final EdmStructuralType declaringType;
@@ -138,7 +138,6 @@ public class EdmProperty extends EdmPropertyBase {
   public EdmStructuralType getDeclaringType() {
     return this.declaringType;
   }
-
 
   public static EdmProperty.Builder newBuilder(String name) {
     return new Builder(name);

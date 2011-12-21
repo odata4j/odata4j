@@ -200,7 +200,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
         }
 
         if (null != et && (!et.isSimple())) {
-          op = OProperties.complex(name, (EdmComplexType)et, isNull ? null : Enumerable.create(parseProperties(reader, event.asStartElement(), metadata)).toList());
+          op = OProperties.complex(name, (EdmComplexType) et, isNull ? null : Enumerable.create(parseProperties(reader, event.asStartElement(), metadata)).toList());
         } else {
           op = OProperties.parseSimple(name, type, isNull ? null : reader.getElementText());
         }
@@ -229,7 +229,6 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
 
     while (reader.hasNext()) {
       XMLEvent2 event = reader.nextEvent();
-
 
       if (event.isEndElement() && event.asEndElement().getName().equals(linkElement.getName())) {
         break;
@@ -273,7 +272,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
   public static String parseEntitySetName(String atomEntryId) {
     Matcher m = ENTITY_SET_NAME.matcher(atomEntryId);
     if (!m.find())
-        throw new RuntimeException("Unable to parse the entity-set name from atom entry id: " + atomEntryId);
+      throw new RuntimeException("Unable to parse the entity-set name from atom entry id: " + atomEntryId);
     return m.group(1);
 
   }
@@ -281,7 +280,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
   public static OEntityKey parseEntityKey(String atomEntryId) {
     Matcher m = ENTITY_SET_NAME.matcher(atomEntryId);
     if (!m.find())
-        throw new RuntimeException("Unable to parse the entity-key from atom entry id: " + atomEntryId);
+      throw new RuntimeException("Unable to parse the entity-key from atom entry id: " + atomEntryId);
     return OEntityKey.parse(atomEntryId.substring(m.end() - 1));
   }
 
@@ -412,20 +411,22 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
     EdmEntityType entityType = entitySet.getType();
     if (null != dsae.categoryTerm) {
       // The type of an entity set is polymorphic...
-      entityType = (EdmEntityType) metadata.findEdmEntityType(dsae.categoryTerm); 
+      entityType = (EdmEntityType) metadata.findEdmEntityType(dsae.categoryTerm);
       if (null == entityType) {
         throw new RuntimeException("Unable to resolve entity type " + dsae.categoryTerm);
       }
     }
     // favor the key we just parsed.
-    
+
     OEntityKey key = dsae.id != null
         ? (dsae.id.endsWith(")")
             ? parseEntityKey(dsae.id)
             : OEntityKey.infer(entitySet, props))
         : null;
-    
-    if (null == key) { key = entityKey; }
+
+    if (null == key) {
+      key = entityKey;
+    }
 
     if (key == null)
       return OEntities.createRequest(
@@ -457,29 +458,29 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
         if (link.type.equals(XmlFormatWriter.atom_feed_content_type)) {
 
           if (link.inlineContentExpected) {
-          List<OEntity> relatedEntities = null;
+            List<OEntity> relatedEntities = null;
 
-          if (link.inlineFeed != null && link.inlineFeed.entries != null) {
+            if (link.inlineFeed != null && link.inlineFeed.entries != null) {
 
-            // get the entity set belonging to the from role type
-            EdmNavigationProperty navProperty = fromRoleEntitySet != null
-                ? fromRoleEntitySet.getType().findNavigationProperty(link.title)
-                : null;
-            final EdmEntitySet toRoleEntitySet = metadata != null && navProperty != null
-                ? metadata.getEdmEntitySet(navProperty.getToRole().getType())
-                : null;
+              // get the entity set belonging to the from role type
+              EdmNavigationProperty navProperty = fromRoleEntitySet != null
+                  ? fromRoleEntitySet.getType().findNavigationProperty(link.title)
+                  : null;
+              final EdmEntitySet toRoleEntitySet = metadata != null && navProperty != null
+                  ? metadata.getEdmEntitySet(navProperty.getToRole().getType())
+                  : null;
 
-            // convert the atom feed entries to OEntitys
-            relatedEntities = Enumerable
-                .create(link.inlineFeed.entries)
-                .cast(DataServicesAtomEntry.class)
-                .select(new Func1<DataServicesAtomEntry, OEntity>() {
-                  @Override
-                  public OEntity apply(
-                      DataServicesAtomEntry input) {
-                    return entityFromAtomEntry(metadata, toRoleEntitySet, input, mapping);
-                  }
-                }).toList();
+              // convert the atom feed entries to OEntitys
+              relatedEntities = Enumerable
+                  .create(link.inlineFeed.entries)
+                  .cast(DataServicesAtomEntry.class)
+                  .select(new Func1<DataServicesAtomEntry, OEntity>() {
+                    @Override
+                    public OEntity apply(
+                        DataServicesAtomEntry input) {
+                      return entityFromAtomEntry(metadata, toRoleEntitySet, input, mapping);
+                    }
+                  }).toList();
             } // else empty feed.
             rt.add(OLinks.relatedEntitiesInline(
                 link.relation,
@@ -494,22 +495,22 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
           if (link.inlineContentExpected) {
             OEntity relatedEntity = null;
             if (null != link.inlineEntry) {
-            EdmNavigationProperty navProperty = fromRoleEntitySet != null
-                ? fromRoleEntitySet.getType().findNavigationProperty(link.title)
-                : null;
+              EdmNavigationProperty navProperty = fromRoleEntitySet != null
+                  ? fromRoleEntitySet.getType().findNavigationProperty(link.title)
+                  : null;
               EdmEntitySet toRoleEntitySet = metadata != null && navProperty != null
                   ? metadata.getEdmEntitySet(navProperty.getToRole().getType())
                   : null;
               relatedEntity = entityFromAtomEntry(metadata, toRoleEntitySet,
-                      (DataServicesAtomEntry) link.inlineEntry,
-                      mapping);
+                  (DataServicesAtomEntry) link.inlineEntry,
+                  mapping);
             }
-              rt.add(OLinks.relatedEntityInline(link.relation,
-                  link.title, link.href, relatedEntity));
+            rt.add(OLinks.relatedEntityInline(link.relation,
+                link.title, link.href, relatedEntity));
           } else {
             // no inlined entity
           rt.add(OLinks.relatedEntity(link.relation, link.title, link.href));
-          }
+        }
       }
     }
     return rt;

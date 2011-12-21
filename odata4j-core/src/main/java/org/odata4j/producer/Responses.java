@@ -104,6 +104,7 @@ public class Responses {
       public EdmMultiplicity getMultiplicity() {
         return EdmMultiplicity.ONE;
       }
+
       @Override
       public Collection<OEntityId> getEntities() {
         return entities;
@@ -127,6 +128,7 @@ public class Responses {
       public EdmMultiplicity getMultiplicity() {
         return EdmMultiplicity.MANY;
       }
+
       @Override
       public Collection<OEntityId> getEntities() {
         return entities;

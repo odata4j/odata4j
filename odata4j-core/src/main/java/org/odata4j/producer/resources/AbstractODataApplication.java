@@ -7,7 +7,7 @@ import javax.ws.rs.core.Application;
 
 /**
  * Abstract OData application.
- * 
+ *
  * <p>Implementers should override the {@code getClasses} method, but call
  * {@code super.getClasses()} before adding container-specific resources and providers as
  * required.

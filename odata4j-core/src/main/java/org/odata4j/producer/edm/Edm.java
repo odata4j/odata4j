@@ -134,8 +134,8 @@ public class Edm {
 
   public static class Property extends Item {
 
-    public static final String Namespace = "Namespace";             // key
-    public static final String EntityTypeName = "EntityTypeName";   // key
+    public static final String Namespace = "Namespace"; // key
+    public static final String EntityTypeName = "EntityTypeName"; // key
     public static final String Type = "Type";
     public static final String Nullable = "Nullable";
     public static final String DefaultValue = "DefaultValue";

@@ -88,7 +88,7 @@ public class MetadataEdmGenerator implements EdmGenerator {
     props.add(ep);
 
     EdmComplexType.Builder propertyRef = EdmComplexType.newBuilder().setNamespace(Edm.namespace).setName(
-        XmlFormatParser.EDM2008_PROPERTYREF.getLocalPart()).addProperties( props);
+        XmlFormatParser.EDM2008_PROPERTYREF.getLocalPart()).addProperties(props);
     ctypes.add(propertyRef);
 
     // ----------------------------- EntityKey --------------------------
@@ -183,7 +183,7 @@ public class MetadataEdmGenerator implements EdmGenerator {
 
     // --------------------------- ComplexType ------------------------------
 
-    props = Collections.<EdmProperty.Builder>emptyList();
+    props = Collections.<EdmProperty.Builder> emptyList();
     navprops = new ArrayList<EdmNavigationProperty.Builder>();
 
     EdmEntityType.Builder complexType = EdmEntityType.newBuilder()
@@ -203,7 +203,6 @@ public class MetadataEdmGenerator implements EdmGenerator {
 
     EdmEntitySet.Builder rootComplexTypesSet = EdmEntitySet.newBuilder().setName(Edm.EntitySets.RootComplexTypes).setEntityType(complexType);
     esets.add(rootComplexTypesSet);
-
 
     // ---------------------------- Entity Type ----------------------------
     // adds the notion of Key
@@ -234,7 +233,6 @@ public class MetadataEdmGenerator implements EdmGenerator {
 
     EdmEntitySet.Builder rootEntitiesSet = EdmEntitySet.newBuilder().setName(Edm.EntitySets.RootEntityTypes).setEntityType(entityType);
     esets.add(rootEntitiesSet);
-
 
     // --------------------------- Property ------------------------------
     // model Property as an Entity so we can use the $expand mechanism to get
@@ -282,7 +280,7 @@ public class MetadataEdmGenerator implements EdmGenerator {
     props.add(ep);
 
     keys = new ArrayList<String>();
-    keys.add(Edm.Property.Namespace);  // comes from the EntityType
+    keys.add(Edm.Property.Namespace); // comes from the EntityType
     keys.add(Edm.Property.EntityTypeName);
     keys.add(Edm.Property.Name);
     EdmEntityType.Builder propertyType = EdmEntityType.newBuilder()
@@ -292,7 +290,7 @@ public class MetadataEdmGenerator implements EdmGenerator {
         .addProperties(props)
         .addNavigationProperties(navprops);
     if (decorator != null) {
-      propertyType.setDocumentation( decorator.getDocumentationForEntityType(Edm.namespace, Edm.Property.name()));
+      propertyType.setDocumentation(decorator.getDocumentationForEntityType(Edm.namespace, Edm.Property.name()));
       propertyType.setAnnotations(decorator.getAnnotationsForEntityType(Edm.namespace, Edm.Property.name()));
     }
 
@@ -361,8 +359,8 @@ public class MetadataEdmGenerator implements EdmGenerator {
 
     navigationProperty = EdmNavigationProperty.newBuilder(assoc.getName()).setRelationship(assoc)
         .setFromTo(
-        assoc.getEnd1(),
-        assoc.getEnd2());
+            assoc.getEnd1(),
+            assoc.getEnd2());
 
     structuralType.addNavigationProperties(navigationProperty);
 

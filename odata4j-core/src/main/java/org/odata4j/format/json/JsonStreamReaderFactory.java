@@ -82,14 +82,14 @@ public class JsonStreamReaderFactory {
     boolean hasNext();
 
     JsonEvent nextEvent();
-    
+
     /**
      * returns the JsonEvent that the last call to nextEvent() returned.
      * 
      * @return the last JsonEvent returned by nextEvent()
      */
     JsonEvent previousEvent();
-    
+
     void close();
   }
 

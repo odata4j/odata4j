@@ -113,7 +113,7 @@ public class JPAEdmGenerator implements EdmGenerator {
         // handle composite embedded keys (@EmbeddedId)
         if (idAttribute.getPersistentAttributeType() == PersistentAttributeType.EMBEDDED) {
           keys = Enumerable.create(getProperties(modelNamespace, (ManagedType<?>) idAttribute.getType()))
-                          .select(OFuncs.name(EdmProperty.Builder.class)).toList();
+              .select(OFuncs.name(EdmProperty.Builder.class)).toList();
         } else {
           keys = Enumerable.create(idAttribute.getName()).toList();
         }
@@ -160,7 +160,7 @@ public class JPAEdmGenerator implements EdmGenerator {
             EdmNavigationProperty.Builder navigationProperty = EdmNavigationProperty.newBuilder(singularAtt.getName())
                 .setRelationship(association)
                 .setFromTo(association.getEnd1(),
-                association.getEnd2());
+                    association.getEnd2());
             fromEntityType.addNavigationProperties(navigationProperty);
           }
         }
@@ -215,9 +215,9 @@ public class JPAEdmGenerator implements EdmGenerator {
 
             // add EdmNavigationProperty
             EdmNavigationProperty.Builder navigationProperty = EdmNavigationProperty.newBuilder(pluralAtt.getName())
-                            .setRelationship(association)
-                            .setFromTo(fromRole,
-                            toRole);
+                .setRelationship(association)
+                .setFromTo(fromRole,
+                    toRole);
             fromEntityType.addNavigationProperties(navigationProperty);
 
           } catch (Exception e) {
@@ -295,7 +295,7 @@ public class JPAEdmGenerator implements EdmGenerator {
     Integer maxLength = null;
     if (sa.getJavaMember() instanceof AnnotatedElement) {
       Column col = ((AnnotatedElement) sa.getJavaMember()).getAnnotation(Column.class);
-      if (col != null && Enumerable.<EdmType>create(EdmSimpleType.BINARY, EdmSimpleType.STRING).contains(type))
+      if (col != null && Enumerable.<EdmType> create(EdmSimpleType.BINARY, EdmSimpleType.STRING).contains(type))
         maxLength = col.length();
     }
 

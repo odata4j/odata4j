@@ -25,7 +25,7 @@ import org.odata4j.producer.edm.MetadataProducer;
 public class MetadataResource {
 
   @GET
-  @Produces({ODataConstants.APPLICATION_XML_CHARSET_UTF8, ODataConstants.APPLICATION_ATOMSVC_XML_CHARSET_UTF8})
+  @Produces({ ODataConstants.APPLICATION_XML_CHARSET_UTF8, ODataConstants.APPLICATION_ATOMSVC_XML_CHARSET_UTF8 })
   public Response getMetadata(
       @Context HttpHeaders httpHeaders,
       @Context UriInfo uriInfo,
@@ -48,11 +48,11 @@ public class MetadataResource {
       if (null == source) {
         return noMetadata();
       }
-      EdmDataServices s =  source.getMetadata();
+      EdmDataServices s = source.getMetadata();
       EdmxFormatWriter.write(s, w);
 
       return Response.ok(w.toString(), ODataConstants.APPLICATION_XML_CHARSET_UTF8)
-              .header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
+          .header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
     }
   }
 
@@ -102,8 +102,8 @@ public class MetadataResource {
   @GET
   @Path("{entitySetName}{id: (\\(.+?\\))}")
   @Produces({ ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8,
-    ODataConstants.TEXT_JAVASCRIPT_CHARSET_UTF8,
-    ODataConstants.APPLICATION_JAVASCRIPT_CHARSET_UTF8 })
+      ODataConstants.TEXT_JAVASCRIPT_CHARSET_UTF8,
+      ODataConstants.APPLICATION_JAVASCRIPT_CHARSET_UTF8 })
   public Response getMetadataEntity(
       @Context HttpHeaders httpHeaders,
       @Context UriInfo uriInfo,

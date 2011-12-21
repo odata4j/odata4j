@@ -78,7 +78,7 @@ public class TypeConverter {
     } else if (desiredClass.equals(LocalDateTime.class)) {
       if (objClass.equals(Time.class) || objClass.equals(Timestamp.class)) {
         return (T) new LocalDateTime(obj);
-      } 
+      }
       if (Date.class.isAssignableFrom(objClass)) {
         return (T) LocalDateTime.fromDateFields((Date) obj);
       }

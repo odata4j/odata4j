@@ -150,6 +150,7 @@ public class ImmutableList<T> implements List<T>, RandomAccess {
   public boolean remove(Object paramObject) {
     throw new UnsupportedOperationException();
   }
+
   @Override
   public boolean addAll(Collection<? extends T> paramCollection) {
     throw new UnsupportedOperationException();

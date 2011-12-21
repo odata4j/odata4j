@@ -60,7 +60,7 @@ public class LinksRequestResource extends BaseResource {
     producer.createLink(sourceEntity, targetNavProp, newTargetEntity);
     return noContent();
   }
-  
+
   @PUT
   public Response updateLink(@Context HttpHeaders httpHeaders, @Context UriInfo uriInfo, @Context ContextResolver<ODataProducer> producerResolver, String payload) {
     log.info(String.format(
@@ -76,17 +76,17 @@ public class LinksRequestResource extends BaseResource {
     producer.updateLink(sourceEntity, targetNavProp, targetEntityKey, newTargetEntity);
     return noContent();
   }
-  
+
   private OEntityId parseRequestUri(HttpHeaders httpHeaders, UriInfo uriInfo, String payload) {
     FormatParser<SingleLink> parser = FormatParserFactory.getParser(SingleLink.class, httpHeaders.getMediaType(), null);
     SingleLink link = parser.parse(new StringReader(payload));
     return OEntityIds.parse(uriInfo.getBaseUri().toString(), link.getUri());
   }
-  
+
   private Response noContent() {
     return Response.noContent().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
   }
-  
+
   @DELETE
   public Response deleteLink(@Context HttpHeaders httpHeaders, @Context UriInfo uriInfo, @Context ContextResolver<ODataProducer> producerResolver) {
     log.info(String.format(

@@ -64,7 +64,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
     // --------------------------------------
     // create entityname:entityTypes
     Map<String, EdmEntityType.Builder> entityTypesByName = Enumerable.create(
-            entityTypes).toMap(new Func1<EdmEntityType.Builder, String>() {
+        entityTypes).toMap(new Func1<EdmEntityType.Builder, String>() {
       public String apply(EdmEntityType.Builder input) {
         return input.getName();
       }
@@ -72,7 +72,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
 
     // create entityname:entitySet
     Map<String, EdmEntitySet.Builder> entitySetByName = Enumerable.create(
-            entitySets).toMap(new Func1<EdmEntitySet.Builder, String>() {
+        entitySets).toMap(new Func1<EdmEntitySet.Builder, String>() {
       public String apply(EdmEntitySet.Builder input) {
         return input.getName();
       }
@@ -84,7 +84,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
       entityNameByClass.put(e.getValue().entityClass, e.getKey());
 
     createNavigationProperties(associations, associationSets,
-            entityTypesByName, entitySetByName, entityNameByClass);
+        entityTypesByName, entitySetByName, entityNameByClass);
 
     EdmEntityContainer.Builder container = EdmEntityContainer.newBuilder().setName(CONTAINER_NAME).setIsDefault(true)
         .addEntitySets(entitySets).addAssociationSets(associationSets);
@@ -92,7 +92,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
     containers.add(container);
 
     EdmSchema.Builder schema = EdmSchema.newBuilder().setNamespace(namespace).addEntityTypes(entityTypes)
-            .addAssociations(associations).addEntityContainers(containers);
+        .addAssociations(associations).addEntityContainers(containers);
     if (decorator != null) {
       schema.setDocumentation(decorator.getDocumentationForSchema(namespace));
       schema.setAnnotations(decorator.getAnnotationsForSchema(namespace));
@@ -143,12 +143,12 @@ public class InMemoryEdmGenerator implements EdmGenerator {
       Class<?> clazz1 = ei.entityClass;
 
       generateToOneNavProperties(associations, associationSets,
-              entityTypesByName, entitySetByName, entityNameByClass,
-              entitySetName, ei);
+          entityTypesByName, entitySetByName, entityNameByClass,
+          entitySetName, ei);
 
       generateToManyNavProperties(associations, associationSets,
-              entityTypesByName, entitySetByName, entityNameByClass,
-              entitySetName, ei, clazz1);
+          entityTypesByName, entitySetByName, entityNameByClass,
+          entitySetName, ei, clazz1);
     }
   }
 
@@ -176,10 +176,10 @@ public class InMemoryEdmGenerator implements EdmGenerator {
 
       String assocName = String.format("FK_%s_%s", eet1.getName(), eet2.getName());
       EdmAssociationEnd.Builder assocEnd1 = EdmAssociationEnd.newBuilder().setRole(eet1.getName())
-              .setType(eet1).setMultiplicity(m1);
+          .setType(eet1).setMultiplicity(m1);
       String assocEnd2Name = eet2.getName();
       if (assocEnd2Name.equals(eet1.getName()))
-          assocEnd2Name = assocEnd2Name + "1";
+        assocEnd2Name = assocEnd2Name + "1";
 
       EdmAssociationEnd.Builder assocEnd2 = EdmAssociationEnd.newBuilder().setRole(assocEnd2Name).setType(eet2).setMultiplicity(m2);
       EdmAssociation.Builder assoc = EdmAssociation.newBuilder().setNamespace(namespace).setName(assocName).setEnds(assocEnd1, assocEnd2);
@@ -250,7 +250,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
           EdmAssociationEnd.Builder assocEnd1 = EdmAssociationEnd.newBuilder().setRole(eet1.getName()).setType(eet1).setMultiplicity(m1);
           String assocEnd2Name = eet2.getName();
           if (assocEnd2Name.equals(eet1.getName()))
-              assocEnd2Name = assocEnd2Name + "1";
+            assocEnd2Name = assocEnd2Name + "1";
           EdmAssociationEnd.Builder assocEnd2 = EdmAssociationEnd.newBuilder().setRole(assocEnd2Name).setType(eet2).setMultiplicity(m2);
           assoc = EdmAssociation.newBuilder().setNamespace(namespace).setName(assocName).setEnds(assocEnd1, assocEnd2);
 
@@ -270,7 +270,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
           toRole = assoc.getEnd1();
         }
 
-        EdmNavigationProperty.Builder np = EdmNavigationProperty.newBuilder(assocProp).setRelationship(assoc).setFromTo( fromRole, toRole);
+        EdmNavigationProperty.Builder np = EdmNavigationProperty.newBuilder(assocProp).setRelationship(assoc).setFromTo(fromRole, toRole);
 
         eet1.addNavigationProperties(np);
       } catch (Exception e) {

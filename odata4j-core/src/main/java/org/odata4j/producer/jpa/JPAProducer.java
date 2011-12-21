@@ -333,7 +333,7 @@ public class JPAProducer implements ODataProducer {
             List<OEntity> relatedEntities = new ArrayList<OEntity>();
             for (Object relatedEntity : value) {
               EntityType<?> elementEntityType = (EntityType<?>) ((PluralAttribute<?, ?, ?>) att)
-                      .getElementType();
+                  .getElementType();
               EdmEntitySet elementEntitySet = metadata
                   .getEdmEntitySet(JPAEdmGenerator.getEntitySetName(elementEntityType));
 

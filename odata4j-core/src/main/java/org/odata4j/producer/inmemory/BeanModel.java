@@ -180,7 +180,7 @@ public class BeanModel {
   public <T> void setCollectionValue(Object target, String collectionName, Collection<T> collectionValue) {
     Method method = getSetter(collectionName);
     if (!method.isAccessible())
-        method.setAccessible(true);
+      method.setAccessible(true);
     try {
       Object value = null;
 

@@ -40,10 +40,10 @@ public class JsonFeedFormatParser extends JsonFormatParser implements FormatPars
   }
 
   static class JsonEntry implements Entry {
-    
+
     private EdmEntitySet entitySet;
     private EdmEntityType entityType;
-    
+
     JsonEntryMetaData jemd;
     List<OProperty<?>> properties;
     List<OLink> links;
@@ -52,13 +52,13 @@ public class JsonFeedFormatParser extends JsonFormatParser implements FormatPars
     public JsonEntry(EdmEntitySet eset) {
       this(eset, null);
     }
-    
+
     public JsonEntry(EdmEntitySet eset, JsonEntryMetaData jemd) {
       this.entitySet = eset;
       this.entityType = null != eset ? eset.getType() : null;
       this.jemd = jemd;
     }
-    
+
     public String getContentType() {
       return MediaType.APPLICATION_JSON;
     }
@@ -66,20 +66,19 @@ public class JsonFeedFormatParser extends JsonFormatParser implements FormatPars
     public JsonEntryMetaData getJemd() {
       return this.jemd;
     }
-    
-    public EdmEntitySet getEntitySet() { 
+
+    public EdmEntitySet getEntitySet() {
       return this.entitySet;
     }
-    
+
     public EdmEntityType getEntityType() {
       return this.entityType;
     }
-    
+
     public void setEntityType(EdmEntityType value) {
       this.entityType = value;
     }
-    
-    
+
     @Override
     public String getUri() {
       return null == jemd ? null : jemd.uri;
@@ -144,7 +143,7 @@ public class JsonFeedFormatParser extends JsonFormatParser implements FormatPars
       }
 
       event = jsr.nextEvent();
-      
+
       while (event.isStartProperty()) {
         String pname = event.asStartProperty().getName();
         ensureNext(jsr);

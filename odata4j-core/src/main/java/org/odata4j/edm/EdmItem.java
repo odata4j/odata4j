@@ -1,4 +1,3 @@
-
 package org.odata4j.edm;
 
 import java.util.HashMap;
@@ -34,7 +33,7 @@ public class EdmItem {
 
   public NamespacedAnnotation<?> findAnnotation(String namespaceUri, String localName) {
     if (annotations != null) {
-      for(NamespacedAnnotation<?> annotation : annotations) {
+      for (NamespacedAnnotation<?> annotation : annotations) {
         if (annotation.getNamespace().getUri().equals(namespaceUri) && annotation.getName().equals(localName))
           return annotation;
       }

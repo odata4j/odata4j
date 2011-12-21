@@ -147,7 +147,7 @@ public class JsonCollectionFormatParser extends JsonFormatParser implements Form
   }
 
   protected OCollection.Builder<OObject> newCollectionBuilder() {
-      return OCollections.<OObject> newBuilder(this.returnType.getItemType());
+    return OCollections.<OObject> newBuilder(this.returnType.getItemType());
   }
 
   protected FormatParser<? extends OObject> createItemParser(EdmType edmType) {

@@ -26,6 +26,6 @@ public class JsonSingleLinkFormatParser extends JsonFormatParser implements Form
     } finally {
       jsr.close();
     }
-  } 
+  }
 
 }

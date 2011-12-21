@@ -12,7 +12,7 @@ import org.odata4j.stax2.QName2;
 import org.odata4j.stax2.XMLFactoryProvider2;
 import org.odata4j.stax2.XMLWriter2;
 
-public class AtomSingleLinksFormatWriter implements FormatWriter<SingleLinks>{
+public class AtomSingleLinksFormatWriter implements FormatWriter<SingleLinks> {
 
   @Override
   public void write(UriInfo uriInfo, Writer w, SingleLinks target) {

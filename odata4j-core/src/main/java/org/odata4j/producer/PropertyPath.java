@@ -17,7 +17,7 @@ public class PropertyPath {
 
   public PropertyPath(PropertyPath path) {
     this.pathString = path.pathString;
-    this.pathComponents = path.isEmpty() ? null : Arrays.<String>copyOf(path.pathComponents, path.pathComponents.length);
+    this.pathComponents = path.isEmpty() ? null : Arrays.<String> copyOf(path.pathComponents, path.pathComponents.length);
   }
 
   public int getNComponents() {
@@ -106,7 +106,9 @@ public class PropertyPath {
   }
 
   public boolean startsWith(PropertyPath p) {
-    if (this.getNComponents() < p.getNComponents()) { return false; }
+    if (this.getNComponents() < p.getNComponents()) {
+      return false;
+    }
 
     for (int i = 0; i < p.getNComponents(); i++) {
       if (!this.pathComponents[i].equals(p.getNthComponent(i))) {

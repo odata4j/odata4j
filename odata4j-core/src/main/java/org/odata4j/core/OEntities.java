@@ -27,7 +27,7 @@ public class OEntities {
   public static OEntity create(EdmEntitySet entitySet, OEntityKey entityKey, List<OProperty<?>> properties, List<OLink> links) {
     return new OEntityImpl(entitySet, entityKey, true, properties, links);
   }
-  
+
   /**
    * Creates a new entity.
    *
@@ -118,7 +118,7 @@ public class OEntities {
     public OEntityImpl(EdmEntitySet entitySet, OEntityKey entityKey, boolean entityKeyRequired, List<OProperty<?>> properties, List<OLink> links) {
       this(entitySet, null, entityKey, entityKeyRequired, properties, links);
     }
-    
+
     public OEntityImpl(EdmEntitySet entitySet, EdmEntityType entityType, OEntityKey entityKey, boolean entityKeyRequired, List<OProperty<?>> properties, List<OLink> links) {
       if (entitySet == null)
         throw new IllegalArgumentException("entitySet cannot be null");
@@ -142,13 +142,13 @@ public class OEntities {
       return entitySet;
     }
 
-    @Override 
+    @Override
     public EdmEntityType getEntityType() {
-      return null == entityType 
-              ? (null == entitySet ? null : entitySet.getType())
-              : entityType;
+      return null == entityType
+          ? (null == entitySet ? null : entitySet.getType())
+          : entityType;
     }
-    
+
     @Override
     public String getEntitySetName() {
       return entitySet.getName();

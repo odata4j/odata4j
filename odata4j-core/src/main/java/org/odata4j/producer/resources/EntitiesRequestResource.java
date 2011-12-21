@@ -188,15 +188,15 @@ public class EntitiesRequestResource extends BaseResource {
       switch (bodyPart.getHttpMethod()) {
       case POST:
         response = this.createEntity(httpHeaders, uriInfo, producerResolver,
-              entitySetName, entity);
+            entitySetName, entity);
         break;
       case PUT:
         response = er.updateEntity(httpHeaders, uriInfo, producerResolver,
-              entitySetName, entityId, entity);
+            entitySetName, entityId, entity);
         break;
       case MERGE:
         response = er.mergeEntity(httpHeaders, uriInfo, producerResolver, entitySetName,
-              entityId, entity);
+            entityId, entity);
         break;
       case DELETE:
         response = er.deleteEntity(producerResolver, entitySetName, entityId);
@@ -220,7 +220,7 @@ public class EntitiesRequestResource extends BaseResource {
     return Response
         .status(Status.ACCEPTED)
         .type(ODataBatchProvider.MULTIPART_MIXED + ";boundary="
-                + batchBoundary).header(
+            + batchBoundary).header(
             ODataConstants.Headers.DATA_SERVICE_VERSION,
             ODataConstants.DATA_SERVICE_VERSION_HEADER)
         .entity(batchResponse.toString()).build();

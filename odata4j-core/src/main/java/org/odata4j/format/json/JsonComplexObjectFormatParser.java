@@ -113,17 +113,17 @@ public class JsonComplexObjectFormatParser extends JsonFormatParser implements F
 
     ensureNext(jsr);
     while (jsr.hasNext()) {
-        JsonEvent event = jsr.nextEvent();
+      JsonEvent event = jsr.nextEvent();
 
-        if (event.isStartProperty()) {
-          addProperty(props, event.asStartProperty().getName(), jsr);
-        } else if (event.isEndObject()) {
-          break;
-        } else {
-          throw new JsonParseException("unexpected parse event: " + event.toString());
-        }
+      if (event.isStartProperty()) {
+        addProperty(props, event.asStartProperty().getName(), jsr);
+      } else if (event.isEndObject()) {
+        break;
+      } else {
+        throw new JsonParseException("unexpected parse event: " + event.toString());
       }
-      return OComplexObjects.create(returnType, props);
+    }
+    return OComplexObjects.create(returnType, props);
   }
 
   protected void addProperty(List<OProperty<?>> props, String name, JsonStreamReader jsr) {

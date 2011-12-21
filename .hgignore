@@ -1,1 +1,9 @@
-odata4j-core/target
+syntax: regexp
+\.classpath$
+syntax: regexp
+\.project$
+
+syntax: glob
+target
+.settings
+

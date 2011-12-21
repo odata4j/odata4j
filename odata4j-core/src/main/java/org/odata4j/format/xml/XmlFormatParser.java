@@ -107,7 +107,7 @@ public class XmlFormatParser {
   public static final QName2 M_FC_EPMKEEPINCONTENT = new QName2(NS_METADATA, "FC_EpmKeepInContent");
 
   public static final QName2 DATASERVICES_ELEMENT = new QName2(NS_DATASERVICES, "element"); // a collection element
-  
+
   public static final QName2 XML_BASE = new QName2(NS_XML, "base");
 
   protected static boolean isStartElement(XMLEvent2 event, QName2... names) {

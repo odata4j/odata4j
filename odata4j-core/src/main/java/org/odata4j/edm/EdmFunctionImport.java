@@ -75,7 +75,7 @@ public class EdmFunctionImport extends EdmItem {
     @Override
     Builder newBuilder(EdmFunctionImport functionImport, BuilderContext context) {
       List<EdmFunctionParameter.Builder> functionParameters = new ArrayList<EdmFunctionParameter.Builder>();
-      for(EdmFunctionParameter functionParameter : functionImport.parameters)
+      for (EdmFunctionParameter functionParameter : functionImport.parameters)
         functionParameters.add(EdmFunctionParameter.newBuilder(functionParameter, context));
       return new Builder().setName(functionImport.name).setEntitySet(EdmEntitySet.newBuilder(functionImport.entitySet, context)).setReturnType(functionImport.returnType).setHttpMethod(functionImport.httpMethod)
           .addParameters(functionParameters);
@@ -83,7 +83,7 @@ public class EdmFunctionImport extends EdmItem {
 
     public EdmFunctionImport build() {
       List<EdmFunctionParameter> parameters = new ArrayList<EdmFunctionParameter>();
-      for(EdmFunctionParameter.Builder parameter : this.parameters)
+      for (EdmFunctionParameter.Builder parameter : this.parameters)
         parameters.add(parameter.build());
       EdmType returnType =
           this.returnType != null ? this.returnType

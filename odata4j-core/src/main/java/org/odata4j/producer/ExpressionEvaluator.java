@@ -66,7 +66,7 @@ public class ExpressionEvaluator {
 
     if (expression instanceof EntitySimpleProperty) {
       return resolver.resolveVariable(
-              ((EntitySimpleProperty) expression).getPropertyName());
+          ((EntitySimpleProperty) expression).getPropertyName());
     }
 
     if (expression instanceof AddExpression) {
@@ -120,12 +120,12 @@ public class ExpressionEvaluator {
     if (expression instanceof AndExpression) {
       AndExpression e = (AndExpression) expression;
       return evaluate(e.getLHS())
-              && evaluate(e.getRHS());
+          && evaluate(e.getRHS());
     }
     if (expression instanceof OrExpression) {
       OrExpression e = (OrExpression) expression;
       return evaluate(e.getLHS())
-              || evaluate(e.getRHS());
+          || evaluate(e.getRHS());
     }
     if (expression instanceof BooleanLiteral) {
       return ((BooleanLiteral) expression).getValue();
@@ -154,7 +154,7 @@ public class ExpressionEvaluator {
       String targetValue = (String) evaluate(e.getTarget());
       String searchValue = (String) evaluate(e.getValue());
       return targetValue != null && searchValue != null
-              && targetValue.contains(searchValue);
+          && targetValue.contains(searchValue);
     }
     if (expression instanceof ParenExpression) {
       @SuppressWarnings("unused")
@@ -166,7 +166,7 @@ public class ExpressionEvaluator {
     }
 
     throw new UnsupportedOperationException("unsupported expression "
-            + expression);
+        + expression);
   }
 
   private interface BinaryFunction {
@@ -341,7 +341,7 @@ public class ExpressionEvaluator {
     }
 
     throw new UnsupportedOperationException("unsupported add type "
-            + pair.lhs);
+        + pair.lhs);
   }
 
   private boolean equals(BinaryCommonExpression be) {
@@ -350,15 +350,16 @@ public class ExpressionEvaluator {
     return (pair.lhs == null ? pair.rhs == null : pair.lhs.equals(pair.rhs));
   }
 
-  @SuppressWarnings({"unchecked", "rawtypes"})
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   private int compareTo(BinaryCommonExpression be) {
     ObjectPair pair = new ObjectPair(be.getLHS(), be.getRHS());
     binaryNumericPromotion(pair);
     return ((Comparable) pair.lhs).compareTo(((Comparable) pair.rhs));
   }
-  @SuppressWarnings({"unchecked", "rawtypes"})
+
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   private static final Set<Class> SUPPORTED_CLASSES_FOR_BINARY_PROMOTION = Enumerable.create(BigDecimal.class, Double.class, Float.class, Byte.class,
-          Integer.class, Short.class, Long.class).cast(Class.class).toSet();
+      Integer.class, Short.class, Long.class).cast(Class.class).toSet();
 
   @SuppressWarnings("unchecked")
   private void binaryNumericPromotion(ObjectPair pair) {
@@ -380,7 +381,7 @@ public class ExpressionEvaluator {
       return;
     }
     if (!SUPPORTED_CLASSES_FOR_BINARY_PROMOTION.contains(lhsClass)
-            || !SUPPORTED_CLASSES_FOR_BINARY_PROMOTION.contains(rhsClass)) {
+        || !SUPPORTED_CLASSES_FOR_BINARY_PROMOTION.contains(rhsClass)) {
       return;
     }
 
@@ -391,11 +392,11 @@ public class ExpressionEvaluator {
     // converted to Edm.Decimal unless it is of type Edm.Single or
     // Edm.Double.
     if (lhsClass.equals(BigDecimal.class)
-            && Enumerable.create(Byte.class, Short.class, Integer.class,
+        && Enumerable.create(Byte.class, Short.class, Integer.class,
             Long.class).cast(Class.class).contains(rhsClass)) {
       pair.rhs = BigDecimal.valueOf(((Number) pair.rhs).longValue());
     } else if (rhsClass.equals(BigDecimal.class)
-            && Enumerable.create(Byte.class, Short.class, Integer.class,
+        && Enumerable.create(Byte.class, Short.class, Integer.class,
             Long.class).cast(Class.class).contains(lhsClass)) {
       pair.lhs = BigDecimal.valueOf(((Number) pair.lhs).longValue());
     } // * Otherwise, if either operand is Edm.Double, the other operand is
@@ -468,8 +469,8 @@ public class ExpressionEvaluator {
     }
 
     throw new UnsupportedOperationException("Unable to cast a "
-            + objClass.getSimpleName() + " to a "
-            + targetType.getSimpleName());
+        + objClass.getSimpleName() + " to a "
+        + targetType.getSimpleName());
   }
 
 }

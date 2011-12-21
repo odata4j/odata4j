@@ -16,5 +16,5 @@ public interface OFunctionParameter extends NamedValue<OObject> {
    * @return the edm-type
    */
   EdmType getType();
-  
+
 }

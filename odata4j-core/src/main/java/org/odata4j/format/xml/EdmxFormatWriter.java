@@ -96,7 +96,6 @@ public class EdmxFormatWriter extends XmlFormatWriter {
 
         for (EdmNavigationProperty np : eet.getDeclaredNavigationProperties()) {
 
-
           writer.startElement(new QName2("NavigationProperty"));
           writer.writeAttribute("Name", np.getName());
           writer.writeAttribute("Relationship", np.getRelationship().getFQNamespaceName());
@@ -172,15 +171,15 @@ public class EdmxFormatWriter extends XmlFormatWriter {
           writeDocumentation(fi, writer);
 
           for (EdmFunctionParameter param : fi.getParameters()) {
-              writer.startElement(new QName2("Parameter"));
-              writer.writeAttribute("Name", param.getName());
-              writer.writeAttribute("Type", param.getType().getFullyQualifiedTypeName());
-              if (param.getMode() != null)
-                writer.writeAttribute("Mode", param.getMode().toString());
-              writeAnnotationAttributes(param, writer);
-              writeDocumentation(param, writer);
-              writeAnnotationElements(param, writer);
-              writer.endElement("Parameter");
+            writer.startElement(new QName2("Parameter"));
+            writer.writeAttribute("Name", param.getName());
+            writer.writeAttribute("Type", param.getType().getFullyQualifiedTypeName());
+            if (param.getMode() != null)
+              writer.writeAttribute("Mode", param.getMode().toString());
+            writeAnnotationAttributes(param, writer);
+            writeDocumentation(param, writer);
+            writeAnnotationElements(param, writer);
+            writer.endElement("Parameter");
           }
           writeAnnotationElements(fi, writer);
           writer.endElement("FunctionImport");
@@ -264,8 +263,8 @@ public class EdmxFormatWriter extends XmlFormatWriter {
       for (NamespacedAnnotation<?> a : item.getAnnotations()) {
         if (a instanceof EdmAnnotationAttribute) {
           writer.writeAttribute(
-                  new QName2(a.getNamespace().getUri(), a.getName(), a.getNamespace().getPrefix()),
-                  null == a.getValue() ? "" : a.getValue().toString());
+              new QName2(a.getNamespace().getUri(), a.getName(), a.getNamespace().getPrefix()),
+              null == a.getValue() ? "" : a.getValue().toString());
         }
       }
     }

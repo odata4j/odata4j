@@ -213,7 +213,7 @@ public class InMemoryProducer implements ODataProducer {
         } else {
           List<EntitySimpleProperty> remainingPropPaths = new ArrayList<EntitySimpleProperty>();
           if (remainingPropPath != null)
-              remainingPropPaths.add(Expression.simpleProperty(remainingPropPath));
+            remainingPropPaths.add(Expression.simpleProperty(remainingPropPath));
           expandedProps.put(prop, remainingPropPaths);
         }
       }

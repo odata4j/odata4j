@@ -137,14 +137,14 @@ public class XmlPullXMLFactoryProvider2 extends XMLFactoryProvider2 {
     @Override
     public EndElement2 asEndElement() {
       if (!isEndElement())
-                return null;
+        return null;
       return new XmlPullEndElement2(new QName2(xpp.getNamespace(), xpp.getName()));
     }
 
     @Override
     public StartElement2 asStartElement() {
       if (!isStartElement())
-                return null;
+        return null;
       return new XmlPullStartElement2(xpp);
     }
 
@@ -181,7 +181,7 @@ public class XmlPullXMLFactoryProvider2 extends XMLFactoryProvider2 {
     public Attribute2 getAttributeByName(final QName2 arg0) {
       final String value = xpp.getAttributeValue(arg0.getNamespaceUri(), arg0.getLocalPart());
       if (value == null)
-                return null;
+        return null;
 
       return new Attribute2() {
         public String getValue() {

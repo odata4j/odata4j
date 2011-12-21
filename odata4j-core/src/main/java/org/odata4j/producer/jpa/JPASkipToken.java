@@ -81,8 +81,8 @@ public class JPASkipToken {
       LiteralExpression entityKeyValue = Expression.literal(entityKey.asSingleValue());
 
       BoolCommonExpression keyPredicate = Expression.gt(
-         Expression.simpleProperty(primaryKeyName),
-         entityKeyValue);
+          Expression.simpleProperty(primaryKeyName),
+          entityKeyValue);
 
       predicates.add(keyPredicate);
     } else {

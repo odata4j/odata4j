@@ -56,7 +56,7 @@ public class EdmEntitySet extends EdmItem implements Named {
   public static Builder newBuilder(EdmEntitySet entitySet, BuilderContext context) {
     return context.newBuilder(entitySet, new Builder());
   }
-  
+
   /** Mutable builder for {@link EdmEntitySet} objects. */
   public static class Builder extends EdmItem.Builder<EdmEntitySet, Builder> implements Named {
 
@@ -90,6 +90,7 @@ public class EdmEntitySet extends EdmItem implements Named {
     public String getName() {
       return name;
     }
+
     public String getEntityTypeName() {
       return entityTypeName;
     }

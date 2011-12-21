@@ -83,7 +83,7 @@ public class EdmAssociation extends EdmItem {
   }
 
   /** Mutable builder for {@link EdmAssociation} objects. */
-  public static class Builder extends EdmItem.Builder<EdmAssociation, Builder> implements Named{
+  public static class Builder extends EdmItem.Builder<EdmAssociation, Builder> implements Named {
 
     private String namespace;
     private String alias;
@@ -142,7 +142,7 @@ public class EdmAssociation extends EdmItem {
     }
 
     public String getFQAliasName() {
-   // TODO share or remove
+      // TODO share or remove
       return alias == null ? null : (alias + "." + name);
     }
 

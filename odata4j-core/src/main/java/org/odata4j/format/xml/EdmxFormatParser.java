@@ -147,19 +147,19 @@ public class EdmxFormatParser extends XmlFormatParser {
 
           List<EdmAssociationSetEnd.Builder> finalEnds = Enumerable.create(tmpEas.getEnd1(), tmpEas.getEnd2())
               .select(new Func1<EdmAssociationSetEnd.Builder, EdmAssociationSetEnd.Builder>() {
-            public EdmAssociationSetEnd.Builder apply(final EdmAssociationSetEnd.Builder input) {
+                public EdmAssociationSetEnd.Builder apply(final EdmAssociationSetEnd.Builder input) {
 
-              EdmAssociationEnd.Builder eae =
-                  ea.getEnd1().getRole().equals(input.getRoleName()) ? ea.getEnd1()
-                : ea.getEnd2().getRole().equals(input.getRoleName()) ? ea.getEnd2() : null;
+                  EdmAssociationEnd.Builder eae =
+                      ea.getEnd1().getRole().equals(input.getRoleName()) ? ea.getEnd1()
+                          : ea.getEnd2().getRole().equals(input.getRoleName()) ? ea.getEnd2() : null;
 
-              if (eae == null)
-                throw new IllegalArgumentException("Invalid role name " + input.getRoleName());
+                  if (eae == null)
+                    throw new IllegalArgumentException("Invalid role name " + input.getRoleName());
 
-              EdmEntitySet.Builder ees = Enumerable.create(edmEntityContainer.getEntitySets()).first(OPredicates.nameEquals(EdmEntitySet.Builder.class, input.getEntitySetName()));
-              return EdmAssociationSetEnd.newBuilder().setRole(eae).setEntitySet(ees);
-            }
-          }).toList();
+                  EdmEntitySet.Builder ees = Enumerable.create(edmEntityContainer.getEntitySets()).first(OPredicates.nameEquals(EdmEntitySet.Builder.class, input.getEntitySetName()));
+                  return EdmAssociationSetEnd.newBuilder().setRole(eae).setEntitySet(ees);
+                }
+              }).toList();
 
           tmpEas.setAssociation(ea).setEnds(finalEnds.get(0), finalEnds.get(1));
         }
@@ -284,8 +284,6 @@ public class EdmxFormatParser extends XmlFormatParser {
 
   }
 
-
-
   private EdmFunctionImport.Builder parseEdmFunctionImport(XMLEventReader2 reader, String schemaNamespace, StartElement2 functionImportElement) {
     String name = functionImportElement.getAttributeByName("Name").getValue();
     String entitySet = getAttributeValueIfExists(functionImportElement, "EntitySet");
@@ -295,7 +293,7 @@ public class EdmxFormatParser extends XmlFormatParser {
     // strict parsing
     boolean isCollection = null != returnType && returnType.matches("^Collection\\(.*\\)$");
     if (isCollection) {
-        returnType = returnType.substring(11, returnType.length() - 1);
+      returnType = returnType.substring(11, returnType.length() - 1);
     }
     String httpMethod = getAttributeValueIfExists(functionImportElement, new QName2(NS_METADATA, "HttpMethod"));
 
@@ -333,9 +331,9 @@ public class EdmxFormatParser extends XmlFormatParser {
       XMLEvent2 event = reader.nextEvent();
 
       if (isStartElement(event, EDM2006_END, EDM2007_END, EDM2008_END, EDM2009_END))
-                ends.add(EdmAssociationSetEnd.newBuilder()
-                    .setRoleName(event.asStartElement().getAttributeByName("Role").getValue())
-                    .setEntitySetName(event.asStartElement().getAttributeByName("EntitySet").getValue()));
+        ends.add(EdmAssociationSetEnd.newBuilder()
+            .setRoleName(event.asStartElement().getAttributeByName("Role").getValue())
+            .setEntitySetName(event.asStartElement().getAttributeByName("EntitySet").getValue()));
 
       if (isEndElement(event, associationSetElement.getName())) {
         return EdmAssociationSet.newBuilder().setName(name).setAssociationName(associationName).setEnds(ends.get(0), ends.get(1));
@@ -448,7 +446,7 @@ public class EdmxFormatParser extends XmlFormatParser {
       XMLEvent2 event = reader.nextEvent();
 
       if (isStartElement(event, EDM2006_PROPERTYREF, EDM2007_PROPERTYREF, EDM2008_PROPERTYREF, EDM2009_PROPERTYREF))
-                keys.add(event.asStartElement().getAttributeByName("Name").getValue());
+        keys.add(event.asStartElement().getAttributeByName("Name").getValue());
 
       if (isStartElement(event, EDM2006_PROPERTY, EDM2007_PROPERTY, EDM2008_PROPERTY, EDM2009_PROPERTY)) {
         edmProperties.add(parseEdmProperty(event));
@@ -466,15 +464,15 @@ public class EdmxFormatParser extends XmlFormatParser {
 
       if (isEndElement(event, entityTypeElement.getName())) {
         return EdmEntityType.newBuilder()
-                .setNamespace(schemaNamespace)
-                .setAlias(schemaAlias)
-                .setName(name)
-                .setHasStream(hasStream)
-                .addKeys(keys)
-                .addProperties(edmProperties)
-                .addNavigationProperties(edmNavigationProperties)
-                .setBaseType(baseType)
-                .setIsAbstract(null == isAbstractS ? null : "true".equals(isAbstractS));
+            .setNamespace(schemaNamespace)
+            .setAlias(schemaAlias)
+            .setName(name)
+            .setHasStream(hasStream)
+            .addKeys(keys)
+            .addProperties(edmProperties)
+            .addNavigationProperties(edmNavigationProperties)
+            .setBaseType(baseType)
+            .setIsAbstract(null == isAbstractS ? null : "true".equals(isAbstractS));
 
       }
     }

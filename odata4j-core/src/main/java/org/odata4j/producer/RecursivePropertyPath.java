@@ -1,6 +1,5 @@
 package org.odata4j.producer;
 
-
 /**
  * A recursive path has an associated depth limiter.
  *

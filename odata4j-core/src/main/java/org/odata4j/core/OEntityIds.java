@@ -1,6 +1,5 @@
 package org.odata4j.core;
 
-
 /**
  * A static factory to create immutable {@link OEntityId} instances.
  */

@@ -90,41 +90,40 @@ public class EdmSchema extends EdmItem {
     @Override
     Builder newBuilder(EdmSchema schema, BuilderContext context) {
       List<EdmEntityContainer.Builder> entityContainers = new ArrayList<EdmEntityContainer.Builder>();
-      for(EdmEntityContainer entityContainer : schema.entityContainers)
+      for (EdmEntityContainer entityContainer : schema.entityContainers)
         entityContainers.add(EdmEntityContainer.newBuilder(entityContainer, context));
 
       List<EdmComplexType.Builder> complexTypes = new ArrayList<EdmComplexType.Builder>();
-      for(EdmComplexType complexType : schema.complexTypes)
+      for (EdmComplexType complexType : schema.complexTypes)
         complexTypes.add(EdmComplexType.newBuilder(complexType, context));
 
       List<EdmEntityType.Builder> entityTypes = new ArrayList<EdmEntityType.Builder>();
-      for(EdmEntityType entityType : schema.entityTypes)
+      for (EdmEntityType entityType : schema.entityTypes)
         entityTypes.add(EdmEntityType.newBuilder(entityType, context));
 
       List<EdmAssociation.Builder> associations = new ArrayList<EdmAssociation.Builder>();
-      for(EdmAssociation association : schema.associations)
+      for (EdmAssociation association : schema.associations)
         associations.add(EdmAssociation.newBuilder(association, context));
       return new Builder().setNamespace(schema.namespace).setAlias(schema.alias).addEntityTypes(entityTypes).addComplexTypes(complexTypes).addAssociations(associations)
           .addEntityContainers(entityContainers);
 
     }
 
-
     public EdmSchema build() {
       List<EdmEntityContainer> entityContainers = new ArrayList<EdmEntityContainer>(this.entityContainers.size());
-      for(EdmEntityContainer.Builder entityContainer : this.entityContainers)
+      for (EdmEntityContainer.Builder entityContainer : this.entityContainers)
         entityContainers.add(entityContainer.build());
 
       List<EdmComplexType> complexTypes = new ArrayList<EdmComplexType>(this.complexTypes.size());
-      for(EdmComplexType.Builder complexType : this.complexTypes)
+      for (EdmComplexType.Builder complexType : this.complexTypes)
         complexTypes.add(complexType.build());
 
       List<EdmEntityType> entityTypes = new ArrayList<EdmEntityType>(this.entityTypes.size());
-      for(EdmEntityType.Builder entityType : this.entityTypes)
+      for (EdmEntityType.Builder entityType : this.entityTypes)
         entityTypes.add(entityType.build());
 
       List<EdmAssociation> associations = new ArrayList<EdmAssociation>(this.associations.size());
-      for(EdmAssociation.Builder association : this.associations)
+      for (EdmAssociation.Builder association : this.associations)
         associations.add(association.build());
 
       return new EdmSchema(namespace, alias,
@@ -165,6 +164,7 @@ public class EdmSchema extends EdmItem {
       this.entityContainers.addAll(Arrays.asList(entityContainers));
       return this;
     }
+
     public Builder addEntityContainers(List<EdmEntityContainer.Builder> entityContainers) {
       this.entityContainers.addAll(entityContainers);
       return this;

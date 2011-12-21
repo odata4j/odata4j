@@ -19,7 +19,7 @@ public interface OEntity extends OEntityId, OStructuralObject {
    * @return the entity-set
    */
   EdmEntitySet getEntitySet();
-  
+
   /**
    * Get the entity type of this instance.  This will either be the declared
    * entity type of the entity set associated with this instance *or* a sub-type

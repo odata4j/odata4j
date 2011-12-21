@@ -1,4 +1,3 @@
-
 package org.odata4j.edm;
 
 import java.util.List;

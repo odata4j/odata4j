@@ -52,7 +52,9 @@ public class ExpressionParser {
       Methods.TOLOWER, Methods.TOUPPER, Methods.TRIM, Methods.SUBSTRING, Methods.CONCAT, Methods.LENGTH,
       Methods.YEAR, Methods.MONTH, Methods.DAY, Methods.HOUR, Methods.MINUTE, Methods.SECOND, Methods.ROUND, Methods.FLOOR, Methods.CEILING).toSet();
 
-  public enum AggregateFunction { none, any, all };
+  public enum AggregateFunction {
+    none, any, all
+  };
 
   public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormat.forPattern("HH:mm:ss");
   public static boolean DUMP_EXPRESSION_INFO = false;
@@ -111,7 +113,7 @@ public class ExpressionParser {
     return Enumerable.create(expressions).select(new Func1<CommonExpression, EntitySimpleProperty>() {
       public EntitySimpleProperty apply(CommonExpression input) {
         if (input instanceof EntitySimpleProperty)
-                    return (EntitySimpleProperty) input;
+          return (EntitySimpleProperty) input;
         return null;
       }
     }).toList();
@@ -338,7 +340,7 @@ public class ExpressionParser {
                 // any(), easiest to early out here
                 List<Token> tokensIncludingParens = tokens.subList(k, ni + 1);
                 CommonExpression any = Expression.any(
-                        Expression.simpleProperty(aggregateSource));
+                    Expression.simpleProperty(aggregateSource));
 
                 ExpressionToken et = new ExpressionToken(any, tokensIncludingParens);
                 rt.subList(rt.size() - (i - k), rt.size()).clear();
@@ -393,7 +395,7 @@ public class ExpressionParser {
                   aggregateFunction,
                   Expression.simpleProperty(aggregateSource),
                   aggregateVariable,
-                  (BoolCommonExpression)expressionInsideParens);
+                  (BoolCommonExpression) expressionInsideParens);
 
               ExpressionToken et = new ExpressionToken(any, tokensIncludingParens);
               rt.subList(rt.size() - (i - k), rt.size()).clear();
@@ -531,8 +533,8 @@ public class ExpressionParser {
     }
     // decimal literal: 1234M or 1234m
     if (tokens.size() == 2 && tokens.get(0).type == TokenType.NUMBER && tokens.get(1).type == TokenType.WORD && tokens.get(1).value.equalsIgnoreCase("M")) {
-        BigDecimal decimalValue = new BigDecimal(tokens.get(0).value);
-        return Expression.decimal(decimalValue);
+      BigDecimal decimalValue = new BigDecimal(tokens.get(0).value);
+      return Expression.decimal(decimalValue);
     }
     // decimal literal: 2.0m
     if (tokens.size() == 4 && tokens.get(0).type == TokenType.NUMBER && tokens.get(1).type == TokenType.SYMBOL && tokens.get(1).value.equals(".") && tokens.get(2).type == TokenType.NUMBER && tokens.get(3).value.equalsIgnoreCase("m")) {
@@ -818,7 +820,7 @@ public class ExpressionParser {
   private static int readWord(String value, int start) {
     int rt = start;
     while (rt < value.length()
-                && (Character.isLetterOrDigit(value.charAt(rt)) || value.charAt(rt) == '/' || value.charAt(rt) == '_')) {
+        && (Character.isLetterOrDigit(value.charAt(rt)) || value.charAt(rt) == '/' || value.charAt(rt) == '_')) {
       rt++;
     }
     return rt;

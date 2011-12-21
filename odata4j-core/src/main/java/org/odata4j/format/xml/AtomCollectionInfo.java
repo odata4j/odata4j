@@ -23,7 +23,7 @@ public class AtomCollectionInfo implements EntitySetInfo {
     sb.append('[');
     sb.append(title);
     if (!title.equals(href))
-      sb.append(",href="+href);
+      sb.append(",href=" + href);
     sb.append(']');
     return sb.toString();
   }

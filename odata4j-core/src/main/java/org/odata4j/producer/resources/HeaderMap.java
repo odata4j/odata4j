@@ -4,13 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * A {@link MultivaluedMap} with String keys and values backed by a HashMap.
- * 
+ *
  * Although keys are stored case-sensitive, all (internal) comparisons are done case-insensitive.
  * I.e. {@code get("key")} and {@code get("KEY")} return the same values.
  */

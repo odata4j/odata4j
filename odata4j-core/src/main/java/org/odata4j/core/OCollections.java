@@ -44,10 +44,12 @@ public class OCollections {
 
     private final EdmType type;
     private final List<T> values;
+
     OCollectionImpl(EdmType type, List<T> values) {
       this.type = type;
       this.values = values;
     }
+
     @Override
     public EdmType getType() {
       return type;

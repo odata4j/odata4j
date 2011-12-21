@@ -55,7 +55,7 @@ public class EdmSimpleType<V> extends EdmType {
   private EdmSimpleType(String fullyQualifiedTypeName, Class<V> canonicalJavaType, Class<?>... alternateJavaTypes) {
     super(fullyQualifiedTypeName);
     this.canonicalJavaType = canonicalJavaType;
-    this.javaTypes = Enumerable.<Class<?>>create(canonicalJavaType).concat(alternateJavaTypes).toSet();
+    this.javaTypes = Enumerable.<Class<?>> create(canonicalJavaType).concat(alternateJavaTypes).toSet();
   }
 
   @Override

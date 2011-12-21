@@ -48,8 +48,8 @@ public class OProperties {
    * @return a new OData property instance
    */
   public static <T> OProperty<T> simple(String name, EdmSimpleType<T> type, Object value) {
-     OSimpleObject<T> simple = OSimpleObjects.create(type, value);
-     return new Impl<T>(name, type, simple.getValue());
+    OSimpleObject<T> simple = OSimpleObjects.create(type, value);
+    return new Impl<T>(name, type, simple.getValue());
   }
 
   /**
@@ -63,13 +63,13 @@ public class OProperties {
     return new Impl<Object>(name, type, null);
   }
 
-   /**
-   * Creates a new OData property of the given edm simple type with a null value.
-   *
-   * @param name  the property name
-   * @param fqSimpleTypeName  the property edm simple type
-   * @return a new OData property instance
-   */
+  /**
+  * Creates a new OData property of the given edm simple type with a null value.
+  *
+  * @param name  the property name
+  * @param fqSimpleTypeName  the property edm simple type
+  * @return a new OData property instance
+  */
   public static OProperty<?> null_(String name, String fqSimpleTypeName) {
     return new Impl<Object>(name, EdmType.getSimple(fqSimpleTypeName), null);
   }
@@ -86,14 +86,14 @@ public class OProperties {
     return new Impl<List<OProperty<?>>>(name, type, value);
   }
 
-   /**
-   * Creates a new collecion-valued OData property of the given edm-type.
-   *
-   * @param name  the property name
-   * @param type  the property edm-type of objects in the collection
-   * @param value  the OCollection
-   * @return a new OData property instance
-   */
+  /**
+  * Creates a new collecion-valued OData property of the given edm-type.
+  *
+  * @param name  the property name
+  * @param type  the property edm-type of objects in the collection
+  * @param value  the OCollection
+  * @return a new OData property instance
+  */
   public static OProperty<OCollection<? extends OObject>> collection(String name, EdmCollectionType type, OCollection<? extends OObject> value) {
     return new Impl<OCollection<? extends OObject>>(name, type, value);
   }
@@ -277,7 +277,6 @@ public class OProperties {
   public static OProperty<DateTime> datetimeOffset(String name, DateTime value) {
     return new Impl<DateTime>(name, EdmSimpleType.DATETIMEOFFSET, value);
   }
-
 
   /**
    * Creates a new LocalTime-valued OData property with {@link EdmSimpleType#TIME}

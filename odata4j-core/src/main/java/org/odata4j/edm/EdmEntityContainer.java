@@ -80,15 +80,15 @@ public class EdmEntityContainer extends EdmItem {
     @Override
     Builder newBuilder(EdmEntityContainer entityContainer, BuilderContext context) {
       List<EdmFunctionImport.Builder> functionImports = new ArrayList<EdmFunctionImport.Builder>();
-      for(EdmFunctionImport functionImport : entityContainer.functionImports)
+      for (EdmFunctionImport functionImport : entityContainer.functionImports)
         functionImports.add(EdmFunctionImport.newBuilder(functionImport, context));
 
       List<EdmEntitySet.Builder> entitySets = new ArrayList<EdmEntitySet.Builder>();
-      for(EdmEntitySet entitySet : entityContainer.entitySets)
+      for (EdmEntitySet entitySet : entityContainer.entitySets)
         entitySets.add(EdmEntitySet.newBuilder(entitySet, context));
 
       List<EdmAssociationSet.Builder> associationSets = new ArrayList<EdmAssociationSet.Builder>();
-      for(EdmAssociationSet associationSet : entityContainer.associationSets)
+      for (EdmAssociationSet associationSet : entityContainer.associationSets)
         associationSets.add(EdmAssociationSet.newBuilder(associationSet, context));
       return new Builder().setName(entityContainer.name).setIsDefault(entityContainer.isDefault).setLazyLoadingEnabled(entityContainer.lazyLoadingEnabled)
           .addEntitySets(entitySets).addAssociationSets(associationSets).addFunctionImports(functionImports);
@@ -96,15 +96,15 @@ public class EdmEntityContainer extends EdmItem {
 
     public EdmEntityContainer build() {
       List<EdmFunctionImport> functionImports = new ArrayList<EdmFunctionImport>();
-      for(EdmFunctionImport.Builder functionImport : this.functionImports)
+      for (EdmFunctionImport.Builder functionImport : this.functionImports)
         functionImports.add(functionImport.build());
 
       List<EdmEntitySet> entitySets = new ArrayList<EdmEntitySet>();
-      for(EdmEntitySet.Builder entitySet : this.entitySets)
+      for (EdmEntitySet.Builder entitySet : this.entitySets)
         entitySets.add(entitySet.build());
 
       List<EdmAssociationSet> associationSets = new ArrayList<EdmAssociationSet>();
-      for(EdmAssociationSet.Builder associationSet : this.associationSets)
+      for (EdmAssociationSet.Builder associationSet : this.associationSets)
         associationSets.add(associationSet.build());
 
       return new EdmEntityContainer(name, isDefault, lazyLoadingEnabled,

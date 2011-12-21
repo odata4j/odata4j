@@ -21,13 +21,13 @@ public class BatchBodyPart {
     this.uriInfo = uriInfo;
   }
 
-   public HttpHeaders getHttpHeaders() {
-     return httpHeaders;
-   }
+  public HttpHeaders getHttpHeaders() {
+    return httpHeaders;
+  }
 
-   public UriInfo getUriInfo() {
-     return uriInfo;
-   }
+  public UriInfo getUriInfo() {
+    return uriInfo;
+  }
 
   public String getEntity() {
     return this.entity;

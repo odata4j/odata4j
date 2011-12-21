@@ -133,7 +133,7 @@ public class MetadataProducer implements ODataProducer {
 
     protected final String getCustomOption(String key) {
       if (null != this.queryInfo
-              && null != this.queryInfo.customOptions) {
+          && null != this.queryInfo.customOptions) {
         return this.queryInfo.customOptions.get(key);
       }
       return null;
@@ -170,13 +170,14 @@ public class MetadataProducer implements ODataProducer {
     public void addEntity(OEntity e) {
       entities.add(e);
     }
+
     EdmEntitySet entitySet;
     QueryInfo queryInfo;
     OEntityKey entityKey;
     Locale locale = Locale.ENGLISH;
     PropertyPathHelper pathHelper;
     List<OEntity> entities = new LinkedList<OEntity>();
-    boolean flatten = false;    // flatten properties for structural types
+    boolean flatten = false; // flatten properties for structural types
 
     @Override
     public Object resolveVariable(String path) {
@@ -262,6 +263,7 @@ public class MetadataProducer implements ODataProducer {
         throw new RuntimeException("EdmProperty navigation property " + navProp + " not found or not supported");
       }
     }
+
     private Stack<EdmItem> resolverContext = new Stack<EdmItem>();
 
     private void pushResolver(EdmItem item) {
@@ -299,8 +301,8 @@ public class MetadataProducer implements ODataProducer {
     }
 
     return Responses.entities(c.entities, c.entitySet,
-            null, // inline count
-            null);      // skip token.
+        null, // inline count
+        null); // skip token.
   }
 
   protected void getSchemas(Context c) {
@@ -374,9 +376,9 @@ public class MetadataProducer implements ODataProducer {
     addAnnotationProperties(c, schema, props);
 
     return OEntities.create(c.entitySet,
-            OEntityKey.create(Edm.Schema.Namespace, schema.getNamespace()), // OEntityKey entityKey,
-            props,
-            links);
+        OEntityKey.create(Edm.Schema.Namespace, schema.getNamespace()), // OEntityKey entityKey,
+        props,
+        links);
   }
 
   protected void getEntityTypes(Context c, boolean isRoot) {
@@ -420,11 +422,11 @@ public class MetadataProducer implements ODataProducer {
       }
     } else if (st instanceof EdmEntityType && c.pathHelper.isSelected(Edm.EntityType.Key)) {
       // all root types must specify a key
-                /*
-       * Entity.Key isA EntityKey
-       * EntityKey.Keys isA Collection(PropertyRef)
-       * PropertyRef.Name isA String
-       */
+      /*
+      * Entity.Key isA EntityKey
+      * EntityKey.Keys isA Collection(PropertyRef)
+      * PropertyRef.Name isA String
+      */
       EdmComplexType propRefType = edm.findEdmComplexType(Edm.PropertyRef.fqName());
       EdmComplexType entityKeyType = edm.findEdmComplexType(Edm.EntityKey.fqName());
       Builder<OComplexObject> builder = OCollections.newBuilder(propRefType);
@@ -433,7 +435,6 @@ public class MetadataProducer implements ODataProducer {
         refProps.add(OProperties.string(Edm.PropertyRef.Name, key));
         builder.add(OComplexObjects.create(propRefType, refProps));
       }
-
 
       List<OProperty<?>> keyProps = new ArrayList<OProperty<?>>();
       EdmProperty keysProp = entityKeyType.findProperty(Edm.EntityKey.Keys);
@@ -444,7 +445,6 @@ public class MetadataProducer implements ODataProducer {
 
       props.add(OProperties.complex(Edm.EntityType.Key, entityKeyType, key.getProperties()));
     }
-
 
     // links
     List<OLink> links = new LinkedList<OLink>();
@@ -478,7 +478,7 @@ public class MetadataProducer implements ODataProducer {
         // deferred
         links.add(OLinks.relatedEntities(null, Edm.StructuralType.NavProps.SuperType, null));
       }
-    }  // else not selected
+    } // else not selected
 
     // --------------- SubTypes-------------------------------------
     if (c.pathHelper.isSelected(Edm.StructuralType.NavProps.SubTypes)) {
@@ -503,16 +503,16 @@ public class MetadataProducer implements ODataProducer {
         // deferred
         links.add(OLinks.relatedEntities(null, Edm.StructuralType.NavProps.SubTypes, null));
       }
-    }  // else not selected
+    } // else not selected
 
     addDocumenation(c, st, props);
 
     addAnnotationProperties(c, st, props);
 
     return OEntities.create(c.entitySet,
-            OEntityKey.create(Edm.StructuralType.Namespace, st.getNamespace(), Edm.StructuralType.Name, st.getName()), // OEntityKey entityKey,
-            props,
-            links);
+        OEntityKey.create(Edm.StructuralType.Namespace, st.getNamespace(), Edm.StructuralType.Name, st.getName()), // OEntityKey entityKey,
+        props,
+        links);
   }
 
   private void addProperties(EdmStructuralType queryType, EdmStructuralType st, List<OEntity> props, Context c) {
@@ -527,7 +527,7 @@ public class MetadataProducer implements ODataProducer {
 
   private void addDocumenation(Context c, EdmItem item, List<OProperty<?>> props) {
     if (null != item.getDocumentation() && (null != item.getDocumentation().getSummary()
-            || null != item.getDocumentation().getLongDescription()) && c.pathHelper.isSelected(Edm.Documentation.name())) {
+        || null != item.getDocumentation().getLongDescription()) && c.pathHelper.isSelected(Edm.Documentation.name())) {
       List<OProperty<?>> docProps = new ArrayList<OProperty<?>>();
       EdmComplexType docType = edm.findEdmComplexType(Edm.Documentation.fqName());
       if (null != item.getDocumentation().getSummary()) {
@@ -557,7 +557,7 @@ public class MetadataProducer implements ODataProducer {
           String propName = a.getNamespace().getPrefix() + "_" + a.getName();
           if (c.pathHelper.isSelected(propName)) {
             Object override = null != this.decorator ? this.decorator.getAnnotationValueOverride(item, a, c.flatten, c.locale,
-                    null == c.queryInfo ? null : c.queryInfo.customOptions) : null;
+                null == c.queryInfo ? null : c.queryInfo.customOptions) : null;
 
             if (override != MetadataProducer.REMOVE_ANNOTATION_OVERRIDE) {
               Object ov = null == override ? a.getValue() : override;
@@ -576,8 +576,6 @@ public class MetadataProducer implements ODataProducer {
       }
     }
   }
-
-
 
   private OEntity getProperty(EdmStructuralType queryType, EdmStructuralType et, EdmProperty p, Context c) {
     List<OProperty<?>> props = new ArrayList<OProperty<?>>();
@@ -630,9 +628,9 @@ public class MetadataProducer implements ODataProducer {
     }
 
     return OEntities.create(entitySet,
-            OEntityKey.create(Edm.Property.Namespace, et.getNamespace(), Edm.Property.EntityTypeName, et.getName(), Edm.Property.Name, p.getName()),
-            props,
-            Collections.<OLink>emptyList());
+        OEntityKey.create(Edm.Property.Namespace, et.getNamespace(), Edm.Property.EntityTypeName, et.getName(), Edm.Property.Name, p.getName()),
+        props,
+        Collections.<OLink> emptyList());
   }
 
   protected void getComplexTypes(Context c, boolean isRoot) {
@@ -714,10 +712,10 @@ public class MetadataProducer implements ODataProducer {
     if (entitySetName.equals(Edm.EntitySets.Schemas)) {
       findSchema(c);
     } else if (entitySetName.equals(Edm.EntitySets.EntityTypes)
-            || entitySetName.equals(Edm.EntitySets.RootEntityTypes)) {
+        || entitySetName.equals(Edm.EntitySets.RootEntityTypes)) {
       findStructuralType(c, true, entitySetName.equals(Edm.EntitySets.RootEntityTypes));
     } else if (entitySetName.equals(Edm.EntitySets.ComplexTypes)
-            || entitySetName.equals(Edm.EntitySets.RootComplexTypes)) {
+        || entitySetName.equals(Edm.EntitySets.RootComplexTypes)) {
       findStructuralType(c, false, entitySetName.equals(Edm.EntitySets.RootComplexTypes));
     } else {
       throw new NotFoundException("EntitySet " + entitySetName + " not found");

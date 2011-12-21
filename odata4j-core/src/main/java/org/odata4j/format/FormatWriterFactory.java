@@ -154,7 +154,7 @@ public class FormatWriterFactory {
 
     @Override
     public FormatWriter<ComplexObjectResponse> getComplexObjectFormatWriter() {
-        return new JsonComplexObjectFormatWriter(callback);
+      return new JsonComplexObjectFormatWriter(callback);
     }
 
     @Override

@@ -13,7 +13,9 @@ public interface OComplexObject extends OStructuralObject {
   /** Builds an {@link OComplexObject} instance. */
   public interface Builder {
     Builder add(OProperty<?> prop);
+
     EdmComplexType getType();
+
     OComplexObject build();
   }
 

@@ -103,7 +103,7 @@ public abstract class EdmStructuralType extends EdmNonSimpleType implements Name
 
     protected void fillBuilder(EdmStructuralType structuralType, BuilderContext context) {
       List<EdmProperty.Builder> properties = new ArrayList<EdmProperty.Builder>();
-      for(EdmProperty property : structuralType.declaredProperties)
+      for (EdmProperty property : structuralType.declaredProperties)
         properties.add(EdmProperty.newBuilder(property, context));
       this.namespace = structuralType.namespace;
       this.name = structuralType.name;

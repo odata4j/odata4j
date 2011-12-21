@@ -70,9 +70,9 @@ public class XmlFormatWriter {
       }
       // complex or collection
       if (value instanceof OCollection) {
-        writeCollection(writer, name, (OCollection<? extends OObject>)value);
+        writeCollection(writer, name, (OCollection<? extends OObject>) value);
       } else if (value instanceof OComplexObject) {
-        writeProperties(writer, ((OComplexObject)value).getProperties());
+        writeProperties(writer, ((OComplexObject) value).getProperties());
       } else {
         // deprecated form of a complex object.
         List<OProperty<?>> complexProperties = (List<OProperty<?>>) value;
@@ -129,7 +129,7 @@ public class XmlFormatWriter {
       } else if (type == EdmSimpleType.DATETIME) {
         if (value != null)
           sValue = InternalUtil.formatDateTime(
-                  (LocalDateTime) value);
+              (LocalDateTime) value);
       } else if (type == EdmSimpleType.BINARY) {
         byte[] bValue = (byte[]) value;
         if (value != null) {
@@ -189,35 +189,35 @@ public class XmlFormatWriter {
     }
 
     if (entityLinks != null) {
-    if (isResponse) {
+      if (isResponse) {
         // the producer has populated the link collection, we just what he gave us.
         for (OLink link : entityLinks) {
           String rel = related + link.getTitle();
           String type = (link.isCollection())
-                  ? atom_feed_content_type
-                  : atom_entry_content_type;
+              ? atom_feed_content_type
+              : atom_entry_content_type;
           String href = relid + "/" + link.getTitle();
           if (link.isInline()) {
-          writer.startElement("link");
-          writer.writeAttribute("rel", rel);
-          writer.writeAttribute("type", type);
+            writer.startElement("link");
+            writer.writeAttribute("rel", rel);
+            writer.writeAttribute("type", type);
             writer.writeAttribute("title", link.getTitle());
-          writer.writeAttribute("href", href);
-          // write the inlined entities inside the link element
+            writer.writeAttribute("href", href);
+            // write the inlined entities inside the link element
             writeLinkInline(writer, link,
-              href, baseUri, updated, isResponse);
-          writer.endElement("link");
+                href, baseUri, updated, isResponse);
+            writer.endElement("link");
           } else {
             // deferred link.
             writeElement(writer, "link", null,
-                    "rel", rel,
-                    "type", type,
-                    "title", link.getTitle(),
-                    "href", href);
+                "rel", rel,
+                "type", type,
+                "title", link.getTitle(),
+                "href", href);
+          }
         }
-      }
-    } else {
-      // for requests we include only the provided links
+      } else {
+        // for requests we include only the provided links
         // Note: It seems that OLinks for responses are only built using the
         // title and OLinks for requests have the additional info in them
         // alread.  I'm leaving that inconsistency in place for now but this
@@ -307,10 +307,10 @@ public class XmlFormatWriter {
       if (entity != null) {
         writer.startElement("entry");
         writeEntry(writer, entity,
-              entity.getProperties(), entity.getLinks(),
-              entity.getEntitySet().getName(),
-              baseUri, updated,
-              entity.getEntitySet(), isResponse);
+            entity.getProperties(), entity.getLinks(),
+            entity.getEntitySet().getName(),
+            baseUri, updated,
+            entity.getEntitySet(), isResponse);
 
         writer.endElement("entry");
       }
@@ -343,7 +343,7 @@ public class XmlFormatWriter {
       if (o instanceof OComplexObject) {
         writeProperty(writer, "element", o.getType(), o, false, false);
       } else if (o instanceof OSimpleObject) {
-        writeProperty(writer, "element", o.getType(), ((OSimpleObject)o).getValue(), false, false); // not a doc element and don't write the typename
+        writeProperty(writer, "element", o.getType(), ((OSimpleObject) o).getValue(), false, false); // not a doc element and don't write the typename
       } else {
         // TODO...
       }

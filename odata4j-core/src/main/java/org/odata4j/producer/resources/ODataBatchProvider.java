@@ -26,8 +26,10 @@ import javax.ws.rs.ext.Provider;
 @Consumes(ODataBatchProvider.MULTIPART_MIXED)
 public class ODataBatchProvider implements MessageBodyReader<List<BatchBodyPart>> {
 
-  @Context HttpHeaders httpHeaders;
-  @Context UriInfo uriInfo;
+  @Context
+  HttpHeaders httpHeaders;
+  @Context
+  UriInfo uriInfo;
 
   public enum HTTP_METHOD {
     GET,

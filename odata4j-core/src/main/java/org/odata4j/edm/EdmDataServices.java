@@ -22,7 +22,7 @@ import org.odata4j.producer.exceptions.NotFoundException;
  */
 public class EdmDataServices {
 
-  public static final EdmDataServices EMPTY = new EdmDataServices(null, ImmutableList.<EdmSchema>create(), ImmutableList.<PrefixedNamespace>create());
+  public static final EdmDataServices EMPTY = new EdmDataServices(null, ImmutableList.<EdmSchema> create(), ImmutableList.<PrefixedNamespace> create());
 
   private final ODataVersion version;
   private final ImmutableList<EdmSchema> schemas;
@@ -199,7 +199,7 @@ public class EdmDataServices {
     Builder builder = new Builder();
     BuilderContext context = new BuilderContext(builder);
     List<EdmSchema.Builder> schemas = new ArrayList<EdmSchema.Builder>();
-    for(EdmSchema schema : metadata.schemas)
+    for (EdmSchema schema : metadata.schemas)
       schemas.add(EdmSchema.newBuilder(schema, context));
     return builder.setVersion(metadata.version).addSchemas(schemas).addNamespaces(metadata.namespaces);
   }
@@ -226,7 +226,7 @@ public class EdmDataServices {
 
     public EdmDataServices build() {
       List<EdmSchema> schemas = new ArrayList<EdmSchema>(this.schemas.size());
-      for(EdmSchema.Builder schema : this.schemas)
+      for (EdmSchema.Builder schema : this.schemas)
         schemas.add(schema.build());
       return new EdmDataServices(version, ImmutableList.copyOf(schemas), ImmutableList.copyOf(namespaces));
     }
@@ -248,7 +248,7 @@ public class EdmDataServices {
     }
 
     public Builder addSchemas(EdmSchema.Builder... schemas) {
-      for(EdmSchema.Builder schema : schemas)
+      for (EdmSchema.Builder schema : schemas)
         this.schemas.add(schema);
       return this;
     }
@@ -300,7 +300,7 @@ public class EdmDataServices {
     }
 
     public EdmSchema.Builder findSchema(String namespace) {
-       // TODO share or remove
+      // TODO share or remove
       for (EdmSchema.Builder schema : this.schemas) {
         if (schema.getNamespace().equals(namespace)) {
           return schema;

@@ -31,7 +31,6 @@ import org.odata4j.internal.InternalUtil;
 import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
 import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
 
-
 /**
  * Write content to an output stream in JSON format.
  *
@@ -70,8 +69,8 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
   @Override
   public String getContentType() {
     return jsonpCallback == null
-            ? ODataConstants.APPLICATION_JAVASCRIPT_CHARSET_UTF8
-            : ODataConstants.TEXT_JAVASCRIPT_CHARSET_UTF8;
+        ? ODataConstants.APPLICATION_JAVASCRIPT_CHARSET_UTF8
+        : ODataConstants.TEXT_JAVASCRIPT_CHARSET_UTF8;
   }
 
   protected String getJsonpCallback() {
@@ -113,7 +112,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
     } else if (type.equals(EdmSimpleType.BOOLEAN)) {
       jw.writeBoolean((Boolean) pvalue);
     } else if (type.equals(EdmSimpleType.BYTE)) {
-      jw.writeString(Hex.encodeHexString(new byte[]{(Byte) pvalue}));
+      jw.writeString(Hex.encodeHexString(new byte[] { (Byte) pvalue }));
     } else if (type.equals(EdmSimpleType.DATETIME)) {
       LocalDateTime ldt = (LocalDateTime) pvalue;
       long millis = ldt.toDateTime().getMillis();
@@ -351,7 +350,6 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
       writeInlineLink(jw, link);
     }
   }
-
 
   private void writeInlineLink(JsonWriter jw, OLink link) {
     // in requests, this represents a reference to an existing entity
