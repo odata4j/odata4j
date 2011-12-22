@@ -1,15 +1,15 @@
-package org.odata4j.examples.consumer;
+package org.odata4j.examples.consumers;
 
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.examples.BaseExample;
+import org.odata4j.examples.ConsumerExample;
 import org.odata4j.examples.ODataEndpoints;
-import org.odata4j.jersey.consumer.ODataJerseyConsumer;
 
-public class TwitPicConsumerExample extends BaseExample {
+public abstract class AbstractTwitPicConsumerExample extends BaseExample  implements ConsumerExample {
 
-  public static void main(String[] args) {
-
-    ODataConsumer c = ODataJerseyConsumer.create(ODataEndpoints.TWITPIC);
+  @Override
+  public void run(String... args) {
+    ODataConsumer c = this.create(ODataEndpoints.TWITPIC);
 
     String tag = "starbucks";
     reportEntities("images tagged '" + tag + "'",
