@@ -63,25 +63,17 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
   }
 
   private final Map<String, FeedCustomizationMapping> cachedMappings = new HashMap<String, FeedCustomizationMapping>();
-  private final String serviceRootUri;
-  private final ODataClient client;
+  private final ODataJerseyClient client;
 
   private EdmDataServices cachedMetadata;
 
   private ODataJerseyConsumer(FormatType type, String serviceRootUri, ClientFactory clientFactory, OClientBehavior... behaviors) {
+    super(serviceRootUri);
+
     if (!serviceRootUri.endsWith("/"))
       serviceRootUri = serviceRootUri + "/";
 
-    this.serviceRootUri = serviceRootUri;
-    this.client = new ODataClient(type, clientFactory, behaviors);
-  }
-
-  /* (non-Javadoc)
-   * @see org.odata4j.jersey.consumer.ODataConsumer#getServiceRootUri()
-   */
-  @Override
-  public String getServiceRootUri() {
-    return serviceRootUri;
+    this.client = new ODataJerseyClient(type, clientFactory, behaviors);
   }
 
   /**
@@ -174,7 +166,7 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
    */
   @Override
   public Enumerable<EntitySetInfo> getEntitySets() {
-    ODataClientRequest request = ODataClientRequest.get(serviceRootUri);
+    ODataClientRequest request = ODataClientRequest.get(this.getServiceRootUri());
     return Enumerable.create(client.getCollections(request)).cast(EntitySetInfo.class);
   }
 
@@ -211,7 +203,7 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
   @Override
   public <T> OQueryRequest<T> getEntities(Class<T> entityType, String entitySetHref) {
     FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetHref);
-    return new ConsumerQueryEntitiesRequest<T>(client, entityType, serviceRootUri, getMetadata(), entitySetHref, mapping);
+    return new ConsumerQueryEntitiesRequest<T>(client, entityType, this.getServiceRootUri(), getMetadata(), entitySetHref, mapping);
   }
 
   /* (non-Javadoc)
@@ -262,7 +254,7 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
   public <T> OEntityGetRequest<T> getEntity(Class<T> entityType, String entitySetName, OEntityKey key) {
     FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
     return new ConsumerGetEntityRequest<T>(client,
-        entityType, serviceRootUri, getMetadata(),
+        entityType, this.getServiceRootUri(), getMetadata(),
         entitySetName, OEntityKey.create(key), mapping);
   }
 
@@ -271,7 +263,7 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
    */
   @Override
   public OQueryRequest<OEntityId> getLinks(OEntityId sourceEntity, String targetNavProp) {
-    return new ConsumerQueryLinksRequest(client, serviceRootUri, getMetadata(), sourceEntity, targetNavProp);
+    return new ConsumerQueryLinksRequest(client, this.getServiceRootUri(), getMetadata(), sourceEntity, targetNavProp);
   }
 
   /* (non-Javadoc)
@@ -279,7 +271,7 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
    */
   @Override
   public OEntityRequest<Void> createLink(OEntityId sourceEntity, String targetNavProp, OEntityId targetEntity) {
-    return new ConsumerCreateLinkRequest(client, serviceRootUri, getMetadata(), sourceEntity, targetNavProp, targetEntity);
+    return new ConsumerCreateLinkRequest(client, this.getServiceRootUri(), getMetadata(), sourceEntity, targetNavProp, targetEntity);
   }
 
   /* (non-Javadoc)
@@ -287,7 +279,7 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
    */
   @Override
   public OEntityRequest<Void> deleteLink(OEntityId sourceEntity, String targetNavProp, Object... targetKeyValues) {
-    return new ConsumerDeleteLinkRequest(client, serviceRootUri, getMetadata(), sourceEntity, targetNavProp, targetKeyValues);
+    return new ConsumerDeleteLinkRequest(client, this.getServiceRootUri(), getMetadata(), sourceEntity, targetNavProp, targetKeyValues);
   }
 
   /* (non-Javadoc)
@@ -295,7 +287,7 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
    */
   @Override
   public OEntityRequest<Void> updateLink(OEntityId sourceEntity, OEntityId newTargetEntity, String targetNavProp, Object... oldTargetKeyValues) {
-    return new ConsumerUpdateLinkRequest(client, serviceRootUri, getMetadata(), sourceEntity, newTargetEntity, targetNavProp, oldTargetKeyValues);
+    return new ConsumerUpdateLinkRequest(client, this.getServiceRootUri(), getMetadata(), sourceEntity, newTargetEntity, targetNavProp, oldTargetKeyValues);
   }
 
   /* (non-Javadoc)
@@ -304,7 +296,7 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
   @Override
   public OCreateRequest<OEntity> createEntity(String entitySetName) {
     FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
-    return new ConsumerCreateEntityRequest<OEntity>(client, serviceRootUri, getMetadata(),
+    return new ConsumerCreateEntityRequest<OEntity>(client, this.getServiceRootUri(), getMetadata(),
         entitySetName, mapping);
   }
 
@@ -313,7 +305,7 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
    */
   @Override
   public OModifyRequest<OEntity> updateEntity(OEntity entity) {
-    return new ConsumerEntityModificationRequest<OEntity>(entity, client, serviceRootUri, getMetadata(),
+    return new ConsumerEntityModificationRequest<OEntity>(entity, client, this.getServiceRootUri(), getMetadata(),
         entity.getEntitySet().getName(), entity.getEntityKey());
   }
 
@@ -338,7 +330,7 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
    */
   @Override
   public OModifyRequest<OEntity> mergeEntity(String entitySetName, OEntityKey key) {
-    return new ConsumerEntityModificationRequest<OEntity>(null, client, serviceRootUri,
+    return new ConsumerEntityModificationRequest<OEntity>(null, client, this.getServiceRootUri(),
         getMetadata(), entitySetName, key);
   }
 
@@ -363,7 +355,7 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
    */
   @Override
   public OEntityRequest<Void> deleteEntity(String entitySetName, OEntityKey key) {
-    return new ConsumerDeleteEntityRequest(client, serviceRootUri, getMetadata(), entitySetName, key);
+    return new ConsumerDeleteEntityRequest(client, this.getServiceRootUri(), getMetadata(), entitySetName, key);
   }
 
   /* (non-Javadoc)
@@ -371,7 +363,7 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
    */
   @Override
   public OFunctionRequest<OObject> callFunction(String functionName) {
-    return new ConsumerFunctionCallRequest<OObject>(client, serviceRootUri, getMetadata(), functionName);
+    return new ConsumerFunctionCallRequest<OObject>(client, this.getServiceRootUri(), getMetadata(), functionName);
   }
 
   private FeedCustomizationMapping getFeedCustomizationMapping(String entitySetName) {
@@ -411,7 +403,7 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
     }
 
     private void refreshDelegate() {
-      ODataClientRequest request = ODataClientRequest.get(serviceRootUri + "$metadata");
+      ODataClientRequest request = ODataClientRequest.get(ODataJerseyConsumer.this.getServiceRootUri() + "$metadata");
       EdmDataServices metadata = client.getMetadata(request);
       delegate = metadata == null ? EdmDataServices.EMPTY : metadata;
     }

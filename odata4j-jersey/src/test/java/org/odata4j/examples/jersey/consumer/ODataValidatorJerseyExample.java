@@ -1,13 +1,13 @@
 package org.odata4j.examples.jersey.consumer;
 
 import org.odata4j.consumer.ODataConsumer;
-import org.odata4j.examples.consumers.AbstractAppEngineConsumerExample;
+import org.odata4j.examples.consumers.AbstractODataValidatorExample;
 import org.odata4j.jersey.consumer.ODataJerseyConsumer;
 
-public class AppEngineConsumerExample extends AbstractAppEngineConsumerExample {
+public class ODataValidatorJerseyExample extends AbstractODataValidatorExample {
 
   public static void main(String... args) {
-    AppEngineConsumerExample example = new AppEngineConsumerExample();
+    ODataValidatorJerseyExample example = new ODataValidatorJerseyExample();
     example.run(args);
   }
 

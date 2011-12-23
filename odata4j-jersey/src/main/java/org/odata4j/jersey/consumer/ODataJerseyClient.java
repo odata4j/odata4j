@@ -14,6 +14,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.core4j.Enumerable;
 import org.core4j.xml.XDocument;
 import org.core4j.xml.XmlFormat;
+import org.odata4j.consumer.AbstractODataClient;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OEntities;
@@ -44,7 +45,7 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.PartialRequestBuilder;
 import com.sun.jersey.api.client.WebResource;
 
-class ODataClient {
+class ODataJerseyClient extends AbstractODataClient {
 
   private final FormatType type;
 
@@ -53,7 +54,7 @@ class ODataClient {
 
   private final Client client;
 
-  public ODataClient(FormatType type, ClientFactory clientFactory, OClientBehavior... behaviors) {
+  public ODataJerseyClient(FormatType type, ClientFactory clientFactory, OClientBehavior... behaviors) {
     this.behaviors = Enumerable.create(requiredBehaviors).concat(Enumerable.create(behaviors)).toArray(OClientBehavior.class);
     this.type = type;
     this.client = ClientUtil.newClient(clientFactory, behaviors);

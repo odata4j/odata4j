@@ -26,13 +26,13 @@ import com.sun.jersey.api.client.ClientResponse;
 
 class ConsumerCreateEntityRequest<T> extends ConsumerEntityPayloadRequestBase implements OCreateRequest<T> {
 
-  private final ODataClient client;
+  private final ODataJerseyClient client;
   private OEntity parent;
   private String navProperty;
 
   private final FeedCustomizationMapping fcMapping;
 
-  ConsumerCreateEntityRequest(ODataClient client, String serviceRootUri, EdmDataServices metadata, String entitySetName, FeedCustomizationMapping fcMapping) {
+  ConsumerCreateEntityRequest(ODataJerseyClient client, String serviceRootUri, EdmDataServices metadata, String entitySetName, FeedCustomizationMapping fcMapping) {
     super(entitySetName, serviceRootUri, metadata);
     this.client = client;
     this.fcMapping = fcMapping;

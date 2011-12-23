@@ -6,7 +6,7 @@ import org.odata4j.edm.EdmDataServices;
 
 class ConsumerDeleteEntityRequest extends ConsumerEntityRequestBase<Void> {
 
-  ConsumerDeleteEntityRequest(ODataClient client, String serviceRootUri,
+  ConsumerDeleteEntityRequest(ODataJerseyClient client, String serviceRootUri,
       EdmDataServices metadata, String entitySetName, OEntityKey key) {
     super(client, serviceRootUri, metadata, entitySetName, key);
   }

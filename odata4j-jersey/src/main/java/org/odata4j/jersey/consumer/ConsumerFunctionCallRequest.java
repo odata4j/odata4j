@@ -42,7 +42,7 @@ class ConsumerFunctionCallRequest<T extends OObject>
   private final List<OFunctionParameter> params = new LinkedList<OFunctionParameter>();
   private final EdmFunctionImport function;
 
-  ConsumerFunctionCallRequest(ODataClient client, String serviceRootUri,
+  ConsumerFunctionCallRequest(ODataJerseyClient client, String serviceRootUri,
       EdmDataServices metadata, String lastSegment) {
     super(client, serviceRootUri, metadata, lastSegment);
     // lastSegment is the function call name.
@@ -167,7 +167,7 @@ class ConsumerFunctionCallRequest<T extends OObject>
 
   private class FunctionResultsIterator extends ReadOnlyIterator<OObject> {
 
-    private ODataClient client;
+    private ODataJerseyClient client;
     private ODataClientRequest request;
     private FormatParser<? extends OObject> parser;
     private OObject current = null;
@@ -175,7 +175,7 @@ class ConsumerFunctionCallRequest<T extends OObject>
     private boolean done = false;
     private int count = 0;
 
-    public FunctionResultsIterator(ODataClient client, ODataClientRequest request) {
+    public FunctionResultsIterator(ODataJerseyClient client, ODataClientRequest request) {
       this.client = client;
       this.request = request;
     }

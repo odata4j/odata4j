@@ -5,12 +5,12 @@ import org.odata4j.examples.consumers.AbstractServiceListingConsumerExample;
 import org.odata4j.jersey.consumer.ODataJerseyConsumer;
 import org.odata4j.jersey.consumer.behaviors.OClientBehavior;
 
-public class ServiceListingConsumerExample extends AbstractServiceListingConsumerExample {
+public class ServiceListingJerseyConsumerExample extends AbstractServiceListingConsumerExample {
 
   private OClientBehavior[] behaviors = {};
 
   public static void main(String... args) {
-    TwitPicConsumerExample example = new TwitPicConsumerExample();
+    TwitPicJerseyConsumerExample example = new TwitPicJerseyConsumerExample();
     example.run(args);
   }
 

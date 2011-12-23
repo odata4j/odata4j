@@ -25,7 +25,7 @@ class ConsumerQueryEntitiesRequest<T> extends ConsumerQueryRequestBase<T> {
   private final Class<T> entityType;
   private final FeedCustomizationMapping fcMapping;
 
-  ConsumerQueryEntitiesRequest(ODataClient client, Class<T> entityType, String serviceRootUri, EdmDataServices metadata, String entitySetName, FeedCustomizationMapping fcMapping) {
+  ConsumerQueryEntitiesRequest(ODataJerseyClient client, Class<T> entityType, String serviceRootUri, EdmDataServices metadata, String entitySetName, FeedCustomizationMapping fcMapping) {
     super(client, serviceRootUri, metadata, entitySetName);
     this.entityType = entityType;
     this.fcMapping = fcMapping;
@@ -53,14 +53,14 @@ class ConsumerQueryEntitiesRequest<T> extends ConsumerQueryRequestBase<T> {
 
   private class EntryIterator extends ReadOnlyIterator<Entry> {
 
-    private ODataClient client;
+    private ODataJerseyClient client;
     private ODataClientRequest request;
     private FormatParser<Feed> parser;
     private Feed feed;
     private Iterator<Entry> feedEntries;
     private int feedEntryCount;
 
-    public EntryIterator(ODataClient client, ODataClientRequest request) {
+    public EntryIterator(ODataJerseyClient client, ODataClientRequest request) {
       this.client = client;
       this.request = request;
     }

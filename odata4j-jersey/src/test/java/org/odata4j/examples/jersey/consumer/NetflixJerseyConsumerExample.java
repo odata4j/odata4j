@@ -1,13 +1,14 @@
 package org.odata4j.examples.jersey.consumer;
 
 import org.odata4j.consumer.ODataConsumer;
-import org.odata4j.examples.consumers.AbstractODataTestServiceReadWriteExample;
+import org.odata4j.examples.consumers.AbstractNetflixConsumerExample;
 import org.odata4j.jersey.consumer.ODataJerseyConsumer;
 
-public class ODataTestServiceReadWriteExample extends AbstractODataTestServiceReadWriteExample {
+public class NetflixJerseyConsumerExample extends AbstractNetflixConsumerExample {
+
 
   public static void main(String... args) {
-    ODataTestServiceReadWriteExample example = new ODataTestServiceReadWriteExample();
+    NetflixJerseyConsumerExample example = new NetflixJerseyConsumerExample();
     example.run(args);
   }
 

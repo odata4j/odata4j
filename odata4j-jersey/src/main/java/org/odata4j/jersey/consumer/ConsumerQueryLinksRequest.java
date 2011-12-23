@@ -12,7 +12,7 @@ class ConsumerQueryLinksRequest extends ConsumerQueryRequestBase<OEntityId> {
 
   private final String targetNavProp;
 
-  ConsumerQueryLinksRequest(ODataClient client, String serviceRootUri, EdmDataServices metadata, OEntityId sourceEntity, String targetNavProp) {
+  ConsumerQueryLinksRequest(ODataJerseyClient client, String serviceRootUri, EdmDataServices metadata, OEntityId sourceEntity, String targetNavProp) {
     super(client, serviceRootUri, metadata, OEntityIds.toKeyString(sourceEntity));
     this.targetNavProp = targetNavProp;
   }

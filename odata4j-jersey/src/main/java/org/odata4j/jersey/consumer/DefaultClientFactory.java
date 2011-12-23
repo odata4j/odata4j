@@ -19,7 +19,9 @@ public class DefaultClientFactory implements ClientFactory {
    */
   @Override
   public Client createClient(ClientConfig clientConfig) {
-    return Client.create(clientConfig);
+    Client client = Client.create(clientConfig);
+        
+    return client;
   }
 
 }

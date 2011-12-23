@@ -15,7 +15,7 @@ import org.odata4j.internal.EntitySegment;
 
 abstract class ConsumerQueryRequestBase<T> implements OQueryRequest<T> {
 
-  private final ODataClient client;
+  private final ODataJerseyClient client;
   private final String serviceRootUri;
   private final EdmDataServices metadata;
 
@@ -30,14 +30,14 @@ abstract class ConsumerQueryRequestBase<T> implements OQueryRequest<T> {
   private final List<EntitySegment> segments = new ArrayList<EntitySegment>();
   private final Map<String, String> customs = new HashMap<String, String>();
 
-  ConsumerQueryRequestBase(ODataClient client, String serviceRootUri, EdmDataServices metadata, String lastSegment) {
+  ConsumerQueryRequestBase(ODataJerseyClient client, String serviceRootUri, EdmDataServices metadata, String lastSegment) {
     this.client = client;
     this.serviceRootUri = serviceRootUri;
     this.metadata = metadata;
     this.lastSegment = lastSegment;
   }
 
-  protected ODataClient getClient() {
+  protected ODataJerseyClient getClient() {
     return client;
   }
 

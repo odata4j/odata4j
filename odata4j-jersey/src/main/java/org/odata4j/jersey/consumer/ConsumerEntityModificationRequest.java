@@ -17,13 +17,13 @@ import org.odata4j.internal.EntitySegment;
 class ConsumerEntityModificationRequest<T> extends ConsumerEntityPayloadRequestBase implements OModifyRequest<T> {
 
   private final T updateRoot;
-  private final ODataClient client;
+  private final ODataJerseyClient client;
 
   private final List<EntitySegment> segments = new ArrayList<EntitySegment>();
 
   private EdmEntitySet entitySet;
 
-  ConsumerEntityModificationRequest(T updateRoot, ODataClient client, String serviceRootUri, EdmDataServices metadata, String entitySetName, OEntityKey key) {
+  ConsumerEntityModificationRequest(T updateRoot, ODataJerseyClient client, String serviceRootUri, EdmDataServices metadata, String entitySetName, OEntityKey key) {
     super(entitySetName, serviceRootUri, metadata);
     this.updateRoot = updateRoot;
     this.client = client;

@@ -4,10 +4,10 @@ import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.examples.consumers.AbstractTwitPicConsumerExample;
 import org.odata4j.jersey.consumer.ODataJerseyConsumer;
 
-public class TwitPicConsumerExample extends AbstractTwitPicConsumerExample {
+public class TwitPicJerseyConsumerExample extends AbstractTwitPicConsumerExample {
 
   public static void main(String... args) {
-    TwitPicConsumerExample example = new TwitPicConsumerExample();
+    TwitPicJerseyConsumerExample example = new TwitPicJerseyConsumerExample();
     example.run(args);
   }
 

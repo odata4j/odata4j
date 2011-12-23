@@ -9,7 +9,7 @@ class ConsumerCreateLinkRequest extends ConsumerEntityRequestBase<Void> {
   private final String targetNavProp;
   private final OEntityId targetEntity;
 
-  ConsumerCreateLinkRequest(ODataClient client, String serviceRootUri,
+  ConsumerCreateLinkRequest(ODataJerseyClient client, String serviceRootUri,
       EdmDataServices metadata, OEntityId sourceEntity, String targetNavProp, OEntityId targetEntity) {
     super(client, serviceRootUri, metadata, sourceEntity.getEntitySetName(), sourceEntity.getEntityKey());
     this.targetNavProp = targetNavProp;
