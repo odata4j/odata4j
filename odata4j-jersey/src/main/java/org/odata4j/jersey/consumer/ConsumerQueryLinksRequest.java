@@ -29,7 +29,7 @@ class ConsumerQueryLinksRequest extends ConsumerQueryRequestBase<OEntityId> {
 
   @Override
   public Enumerable<OEntityId> execute() {
-    ODataClientRequest request = buildRequest(linksPath(targetNavProp, null));
+    ODataJerseyClientRequest request = buildRequest(linksPath(targetNavProp, null));
     return Enumerable.create(getClient().getLinks(request)).select(new Func1<SingleLink, OEntityId>() {
       @Override
       public OEntityId apply(SingleLink link) {

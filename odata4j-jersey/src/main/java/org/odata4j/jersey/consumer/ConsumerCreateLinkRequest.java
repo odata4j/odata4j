@@ -21,7 +21,7 @@ class ConsumerCreateLinkRequest extends ConsumerEntityRequestBase<Void> {
     String path = Enumerable.create(getSegments()).join("/");
     path = ConsumerQueryLinksRequest.linksPath(targetNavProp, null).apply(path);
 
-    ODataClientRequest request = ODataClientRequest.post(getServiceRootUri() + path, toSingleLink(targetEntity));
+    ODataJerseyClientRequest request = ODataJerseyClientRequest.post(getServiceRootUri() + path, toSingleLink(targetEntity));
     getClient().createLink(request);
     return null;
   }

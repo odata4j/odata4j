@@ -5,8 +5,8 @@ import org.odata4j.format.FormatType;
 
 public class ODataCxfClient extends AbstractODataClient {
 
-  public ODataCxfClient(FormatType formatType) {
-    // TODO Auto-generated constructor stub
+  protected ODataCxfClient(FormatType formatType) {
+    super(formatType);
   }
 
 }

@@ -1,6 +1,6 @@
 package org.odata4j.jersey.consumer.behaviors;
 
-import org.odata4j.jersey.consumer.ODataClientRequest;
+import org.odata4j.jersey.consumer.ODataJerseyClientRequest;
 
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.filter.Filterable;
@@ -8,7 +8,7 @@ import com.sun.jersey.api.client.filter.Filterable;
 public abstract class BaseClientBehavior implements OClientBehavior {
 
   @Override
-  public ODataClientRequest transform(ODataClientRequest request) {
+  public ODataJerseyClientRequest transform(ODataJerseyClientRequest request) {
     return request;
   }
 

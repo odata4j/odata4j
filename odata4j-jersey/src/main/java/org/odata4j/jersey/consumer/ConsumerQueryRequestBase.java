@@ -53,13 +53,13 @@ abstract class ConsumerQueryRequestBase<T> implements OQueryRequest<T> {
     return metadata;
   }
 
-  protected ODataClientRequest buildRequest(Func1<String, String> pathModification) {
+  protected ODataJerseyClientRequest buildRequest(Func1<String, String> pathModification) {
     String path = Enumerable.create(segments).join("/");
     path += (path.length() == 0 ? "" : "/") + lastSegment;
     if (pathModification != null)
       path = pathModification.apply(path);
 
-    ODataClientRequest request = ODataClientRequest.get(serviceRootUri + path);
+    ODataJerseyClientRequest request = ODataJerseyClientRequest.get(serviceRootUri + path);
 
     if (top != null) {
       request = request.queryParam("$top", Integer.toString(top));

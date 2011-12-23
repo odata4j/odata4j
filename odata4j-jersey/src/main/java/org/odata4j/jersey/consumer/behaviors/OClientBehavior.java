@@ -1,6 +1,6 @@
 package org.odata4j.jersey.consumer.behaviors;
 
-import org.odata4j.jersey.consumer.ODataClientRequest;
+import org.odata4j.jersey.consumer.ODataJerseyClientRequest;
 
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.filter.Filterable;
@@ -17,7 +17,7 @@ public interface OClientBehavior {
    * @param request  the current http request
    * @return the modified http request
    */
-  ODataClientRequest transform(ODataClientRequest request);
+  ODataJerseyClientRequest transform(ODataJerseyClientRequest request);
 
   /**
    * Allows for modification of the jersey client api configuration.

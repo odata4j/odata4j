@@ -54,7 +54,7 @@ class ConsumerCreateEntityRequest<T> extends ConsumerEntityPayloadRequestBase im
       url.append(entitySetName);
     }
 
-    ODataClientRequest request = ODataClientRequest.post(url.toString(), entry);
+    ODataJerseyClientRequest request = ODataJerseyClientRequest.post(url.toString(), entry);
     ClientResponse response = client.createEntity(request);
 
     ODataVersion version = InternalUtil.getDataServiceVersion(response.getHeaders()

@@ -34,40 +34,12 @@ import org.odata4j.jersey.consumer.behaviors.OClientBehavior;
  */
 public class ODataJerseyConsumer extends AbstractODataConsumer {
 
-  private static class ParsedHref {
-    public String entitySetName;
-    public OEntityKey entityKey;
-    public String navProperty;
-
-    private ParsedHref() {}
-
-    public static ParsedHref parse(String href) {
-      // href: entityset(keyvalue[,keyvalue])/navprop[/navprop]
-      // keyvalue: <literal> for one key value -or- <name=literal> for multiple key values
-
-      int slashIndex = href.indexOf('/');
-      String head = href.substring(0, slashIndex);
-      String navProperty = href.substring(slashIndex + 1);
-
-      int pIndex = head.indexOf('(');
-      String entitySetName = head.substring(0, pIndex);
-
-      String keyString = head.substring(pIndex + 1, head.length() - 1); // keyvalue[,keyvalue]
-
-      ParsedHref rt = new ParsedHref();
-      rt.entitySetName = entitySetName;
-      rt.entityKey = OEntityKey.parse(keyString);
-      rt.navProperty = navProperty;
-      return rt;
-    }
-  }
-
   private final Map<String, FeedCustomizationMapping> cachedMappings = new HashMap<String, FeedCustomizationMapping>();
   private final ODataJerseyClient client;
 
   private EdmDataServices cachedMetadata;
 
-  private ODataJerseyConsumer(FormatType type, String serviceRootUri, ClientFactory clientFactory, OClientBehavior... behaviors) {
+  private ODataJerseyConsumer(FormatType type, String serviceRootUri, JerseyClientFactory clientFactory, OClientBehavior... behaviors) {
     super(serviceRootUri);
 
     if (!serviceRootUri.endsWith("/"))
@@ -83,13 +55,13 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
 
     private FormatType formatType;
     private String serviceRootUri;
-    private ClientFactory clientFactory;
+    private JerseyClientFactory clientFactory;
     private OClientBehavior[] clientBehaviors;
 
     private Builder(String serviceRootUri) {
       this.serviceRootUri = serviceRootUri;
       this.formatType = FormatType.ATOM;
-      this.clientFactory = DefaultClientFactory.INSTANCE;
+      this.clientFactory = DefaultJerseyClientFactory.INSTANCE;
     }
 
     /**
@@ -104,12 +76,12 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
     }
 
     /**
-     * Sets a specific {@link ClientFactory}.
+     * Sets a specific {@link JerseyClientFactory}.
      *
      * @param clientFactory  the jersey client factory
      * @return this builder
      */
-    public Builder setClientFactory(ClientFactory clientFactory) {
+    public Builder setClientFactory(JerseyClientFactory clientFactory) {
       this.clientFactory = clientFactory;
       return this;
     }
@@ -166,7 +138,7 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
    */
   @Override
   public Enumerable<EntitySetInfo> getEntitySets() {
-    ODataClientRequest request = ODataClientRequest.get(this.getServiceRootUri());
+    ODataJerseyClientRequest request = ODataJerseyClientRequest.get(this.getServiceRootUri());
     return Enumerable.create(client.getCollections(request)).cast(EntitySetInfo.class);
   }
 
@@ -181,70 +153,12 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
   }
 
   /* (non-Javadoc)
-   * @see org.odata4j.jersey.consumer.ODataConsumer#getEntities(org.odata4j.core.ORelatedEntitiesLink)
-   */
-  @Override
-  public OQueryRequest<OEntity> getEntities(ORelatedEntitiesLink link) {
-    ParsedHref parsed = ParsedHref.parse(link.getHref());
-    return getEntities(parsed.entitySetName).nav(parsed.entityKey, parsed.navProperty);
-  }
-
-  /* (non-Javadoc)
-   * @see org.odata4j.jersey.consumer.ODataConsumer#getEntities(java.lang.String)
-   */
-  @Override
-  public OQueryRequest<OEntity> getEntities(String entitySetHref) {
-    return getEntities(OEntity.class, entitySetHref);
-  }
-
-  /* (non-Javadoc)
-   * @see org.odata4j.jersey.consumer.ODataConsumer#getEntities(java.lang.Class, java.lang.String)
-   */
+    * @see org.odata4j.jersey.consumer.ODataConsumer#getEntities(java.lang.Class, java.lang.String)
+    */
   @Override
   public <T> OQueryRequest<T> getEntities(Class<T> entityType, String entitySetHref) {
     FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetHref);
     return new ConsumerQueryEntitiesRequest<T>(client, entityType, this.getServiceRootUri(), getMetadata(), entitySetHref, mapping);
-  }
-
-  /* (non-Javadoc)
-   * @see org.odata4j.jersey.consumer.ODataConsumer#getEntity(org.odata4j.core.ORelatedEntityLink)
-   */
-  @Override
-  public OEntityGetRequest<OEntity> getEntity(ORelatedEntityLink link) {
-    ParsedHref parsed = ParsedHref.parse(link.getHref());
-    return (OEntityGetRequest<OEntity>) getEntity(parsed.entitySetName, parsed.entityKey).nav(parsed.navProperty);
-  }
-
-  /* (non-Javadoc)
-   * @see org.odata4j.jersey.consumer.ODataConsumer#getEntity(java.lang.String, java.lang.Object)
-   */
-  @Override
-  public OEntityGetRequest<OEntity> getEntity(String entitySetName, Object keyValue) {
-    return getEntity(entitySetName, OEntityKey.create(keyValue));
-  }
-
-  /* (non-Javadoc)
-   * @see org.odata4j.jersey.consumer.ODataConsumer#getEntity(org.odata4j.core.OEntity)
-   */
-  @Override
-  public OEntityGetRequest<OEntity> getEntity(OEntity entity) {
-    return getEntity(entity.getEntitySet().getName(), entity.getEntityKey());
-  }
-
-  /* (non-Javadoc)
-   * @see org.odata4j.jersey.consumer.ODataConsumer#getEntity(java.lang.String, org.odata4j.core.OEntityKey)
-   */
-  @Override
-  public OEntityGetRequest<OEntity> getEntity(String entitySetName, OEntityKey key) {
-    return getEntity(OEntity.class, entitySetName, key);
-  }
-
-  /* (non-Javadoc)
-   * @see org.odata4j.jersey.consumer.ODataConsumer#getEntity(java.lang.Class, java.lang.String, java.lang.Object)
-   */
-  @Override
-  public <T> OEntityGetRequest<T> getEntity(Class<T> entityType, String entitySetName, Object keyValue) {
-    return getEntity(entityType, entitySetName, OEntityKey.create(keyValue));
   }
 
   /* (non-Javadoc)
@@ -403,7 +317,7 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
     }
 
     private void refreshDelegate() {
-      ODataClientRequest request = ODataClientRequest.get(ODataJerseyConsumer.this.getServiceRootUri() + "$metadata");
+      ODataJerseyClientRequest request = ODataJerseyClientRequest.get(ODataJerseyConsumer.this.getServiceRootUri() + "$metadata");
       EdmDataServices metadata = client.getMetadata(request);
       delegate = metadata == null ? EdmDataServices.EMPTY : metadata;
     }

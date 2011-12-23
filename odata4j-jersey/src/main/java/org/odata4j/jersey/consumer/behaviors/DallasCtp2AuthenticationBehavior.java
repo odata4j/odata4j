@@ -1,6 +1,6 @@
 package org.odata4j.jersey.consumer.behaviors;
 
-import org.odata4j.jersey.consumer.ODataClientRequest;
+import org.odata4j.jersey.consumer.ODataJerseyClientRequest;
 
 public class DallasCtp2AuthenticationBehavior extends BaseClientBehavior {
 
@@ -13,7 +13,7 @@ public class DallasCtp2AuthenticationBehavior extends BaseClientBehavior {
   }
 
   @Override
-  public ODataClientRequest transform(ODataClientRequest request) {
+  public ODataJerseyClientRequest transform(ODataJerseyClientRequest request) {
     return request.header("$uniqueUserID", uniqueUserId).header("$accountKey", accountKey).header("DataServiceVersion", "2.0").queryParam("$format", "atom10");
 
   }

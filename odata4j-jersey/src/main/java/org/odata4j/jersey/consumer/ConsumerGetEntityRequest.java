@@ -50,7 +50,7 @@ class ConsumerGetEntityRequest<T> extends ConsumerEntityRequestBase<T> implement
 
     String path = Enumerable.create(getSegments()).join("/");
 
-    ODataClientRequest request = ODataClientRequest.get(getServiceRootUri() + path);
+    ODataJerseyClientRequest request = ODataJerseyClientRequest.get(getServiceRootUri() + path);
 
     if (select != null) {
       request = request.queryParam("$select", select);

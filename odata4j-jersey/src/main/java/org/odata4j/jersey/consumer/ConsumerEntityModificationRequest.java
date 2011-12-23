@@ -62,7 +62,7 @@ class ConsumerEntityModificationRequest<T> extends ConsumerEntityPayloadRequestB
 
     String path = Enumerable.create(segments).join("/");
 
-    ODataClientRequest request = updateRoot != null ? ODataClientRequest.put(serviceRootUri + path, entry) : ODataClientRequest.merge(serviceRootUri + path, entry);
+    ODataJerseyClientRequest request = updateRoot != null ? ODataJerseyClientRequest.put(serviceRootUri + path, entry) : ODataJerseyClientRequest.merge(serviceRootUri + path, entry);
     boolean rt = client.updateEntity(request);
     return rt;
   }

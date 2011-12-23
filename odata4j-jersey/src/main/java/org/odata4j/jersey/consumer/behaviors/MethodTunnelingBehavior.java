@@ -1,7 +1,7 @@
 package org.odata4j.jersey.consumer.behaviors;
 
 import org.odata4j.core.ODataConstants;
-import org.odata4j.jersey.consumer.ODataClientRequest;
+import org.odata4j.jersey.consumer.ODataJerseyClientRequest;
 
 public class MethodTunnelingBehavior extends BaseClientBehavior {
 
@@ -12,7 +12,7 @@ public class MethodTunnelingBehavior extends BaseClientBehavior {
   }
 
   @Override
-  public ODataClientRequest transform(ODataClientRequest request) {
+  public ODataJerseyClientRequest transform(ODataJerseyClientRequest request) {
     String method = request.getMethod();
     for (String methodToTunnel : methodsToTunnel) {
       if (method.equals(methodToTunnel)) {

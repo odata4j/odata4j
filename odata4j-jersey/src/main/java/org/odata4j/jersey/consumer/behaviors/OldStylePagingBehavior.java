@@ -1,6 +1,6 @@
 package org.odata4j.jersey.consumer.behaviors;
 
-import org.odata4j.jersey.consumer.ODataClientRequest;
+import org.odata4j.jersey.consumer.ODataJerseyClientRequest;
 
 public class OldStylePagingBehavior extends BaseClientBehavior {
 
@@ -21,7 +21,7 @@ public class OldStylePagingBehavior extends BaseClientBehavior {
   }
 
   @Override
-  public ODataClientRequest transform(ODataClientRequest request) {
+  public ODataJerseyClientRequest transform(ODataJerseyClientRequest request) {
     if (request.getQueryParams().containsKey("$page"))
       return request;
     return request.queryParam("$page", Integer.toString(startPage)).queryParam("$itemsPerPage", Integer.toString(itemsPerPage));

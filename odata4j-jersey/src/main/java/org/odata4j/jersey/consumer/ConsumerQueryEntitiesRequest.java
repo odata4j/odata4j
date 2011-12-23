@@ -33,7 +33,7 @@ class ConsumerQueryEntitiesRequest<T> extends ConsumerQueryRequestBase<T> {
 
   @Override
   public Enumerable<T> execute() {
-    ODataClientRequest request = buildRequest(null);
+    ODataJerseyClientRequest request = buildRequest(null);
     Enumerable<Entry> entries = getEntries(request);
 
     return entries.select(new Func1<Entry, T>() {
@@ -43,7 +43,7 @@ class ConsumerQueryEntitiesRequest<T> extends ConsumerQueryRequestBase<T> {
     }).cast(entityType);
   }
 
-  private Enumerable<Entry> getEntries(final ODataClientRequest request) {
+  private Enumerable<Entry> getEntries(final ODataJerseyClientRequest request) {
     return Enumerable.createFromIterator(new Func<Iterator<Entry>>() {
       public Iterator<Entry> apply() {
         return new EntryIterator(getClient(), request);
@@ -54,13 +54,13 @@ class ConsumerQueryEntitiesRequest<T> extends ConsumerQueryRequestBase<T> {
   private class EntryIterator extends ReadOnlyIterator<Entry> {
 
     private ODataJerseyClient client;
-    private ODataClientRequest request;
+    private ODataJerseyClientRequest request;
     private FormatParser<Feed> parser;
     private Feed feed;
     private Iterator<Entry> feedEntries;
     private int feedEntryCount;
 
-    public EntryIterator(ODataJerseyClient client, ODataClientRequest request) {
+    public EntryIterator(ODataJerseyClient client, ODataJerseyClientRequest request) {
       this.client = client;
       this.request = request;
     }
@@ -110,7 +110,7 @@ class ConsumerQueryEntitiesRequest<T> extends ConsumerQueryRequestBase<T> {
           skiptoken = URLDecoder.decode(skiptoken, "UTF-8");
           request = request.queryParam("$skiptoken", skiptoken);
         } else if (feed.getNext().toLowerCase().startsWith("http")) {
-          request = ODataClientRequest.get(feed.getNext());
+          request = ODataJerseyClientRequest.get(feed.getNext());
         } else {
           throw new UnsupportedOperationException();
         }

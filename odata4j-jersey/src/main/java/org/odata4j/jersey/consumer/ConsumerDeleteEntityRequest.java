@@ -14,7 +14,7 @@ class ConsumerDeleteEntityRequest extends ConsumerEntityRequestBase<Void> {
   @Override
   public Void execute() {
     String path = Enumerable.create(getSegments()).join("/");
-    ODataClientRequest request = ODataClientRequest.delete(getServiceRootUri() + path);
+    ODataJerseyClientRequest request = ODataJerseyClientRequest.delete(getServiceRootUri() + path);
     getClient().deleteEntity(request);
     return null;
   }
