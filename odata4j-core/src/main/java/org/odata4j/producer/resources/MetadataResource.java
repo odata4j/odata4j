@@ -89,13 +89,13 @@ public class MetadataResource {
 
     ODataProducer producer = producerResolver.getContext(ODataProducer.class);
 
-    MetadataProducer md = producer.getMetadataProducer();
-    if (null == md) {
+    MetadataProducer metadataProducer = producer.getMetadataProducer();
+    if (null == metadataProducer) {
       return noMetadata();
     }
 
     EntitiesRequestResource r = new EntitiesRequestResource();
-    return r.getEntities(httpHeaders, uriInfo, producerResolver, entitySetName, inlineCount, top, skip, filter, orderBy, format, callback, skipToken, expand, select);
+    return r.getEntitiesImpl(httpHeaders, uriInfo, metadataProducer, entitySetName, inlineCount, top, skip, filter, orderBy, format, callback, skipToken, expand, select);
     // return Response.ok("getMetadataEntities: " + entitySetName + " optionalId: " + optionalId, "text/plain").build();
   }
 
@@ -117,13 +117,13 @@ public class MetadataResource {
 
     ODataProducer producer = producerResolver.getContext(ODataProducer.class);
 
-    MetadataProducer md = producer.getMetadataProducer();
-    if (null == md) {
+    MetadataProducer metadataProducer = producer.getMetadataProducer();
+    if (null == metadataProducer) {
       return noMetadata();
     }
 
     EntityRequestResource r = new EntityRequestResource();
-    return r.getEntity(httpHeaders, uriInfo, producerResolver, entitySetName, id, format, callback, expand, select);
+    return r.getEntityImpl(httpHeaders, uriInfo, metadataProducer, entitySetName, id, format, callback, expand, select);
     //return Response.ok("getMetadataEntity: " + entitySetName + " id: " + id, "text/plain").build();
   }
 
