@@ -7,9 +7,9 @@ import org.odata4j.jersey.consumer.behaviors.OClientBehaviors;
 /**
  * A static factory to create {@link ODataJerseyConsumer} instances preconfigured for specific services.
  */
-public class ODataConsumers {
+public class ODataJerseyConsumers {
 
-  private ODataConsumers() {}
+  private ODataJerseyConsumers() {}
 
   /**
    * Creates a new OData consumer for the Azure Table Storage service.

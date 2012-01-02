@@ -3,7 +3,7 @@ package org.odata4j.examples.consumer;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.examples.BaseExample;
 import org.odata4j.examples.ODataEndpoints;
-import org.odata4j.jersey.consumer.ODataConsumers;
+import org.odata4j.jersey.consumer.ODataJerseyConsumers;
 
 public class DallasConsumerExampleAP extends BaseExample {
 
@@ -14,7 +14,7 @@ public class DallasConsumerExampleAP extends BaseExample {
     String accountKey = dallasCreds[0];
     String uniqueUserId = dallasCreds[1];
 
-    ODataConsumer c = ODataConsumers.dallas(ODataEndpoints.DALLAS_CTP3_AP, accountKey, uniqueUserId);
+    ODataConsumer c = ODataJerseyConsumers.dallas(ODataEndpoints.DALLAS_CTP3_AP, accountKey, uniqueUserId);
 
     // all breaking news categories
     reportEntities(c, "GetBreakingNewsCategories", 1000);

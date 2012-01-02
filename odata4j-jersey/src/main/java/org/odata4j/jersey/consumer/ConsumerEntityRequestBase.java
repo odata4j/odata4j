@@ -14,13 +14,13 @@ import org.odata4j.internal.EntitySegment;
 
 abstract class ConsumerEntityRequestBase<T> implements OEntityRequest<T> {
 
-  private final ODataClient client;
+  private final ODataJerseyClient client;
 
   private final EdmDataServices metadata;
   private final String serviceRootUri;
   private final List<EntitySegment> segments = new ArrayList<EntitySegment>();
 
-  ConsumerEntityRequestBase(ODataClient client, String serviceRootUri,
+  ConsumerEntityRequestBase(ODataJerseyClient client, String serviceRootUri,
       EdmDataServices metadata, String entitySetName, OEntityKey key) {
 
     this.client = client;
@@ -30,7 +30,7 @@ abstract class ConsumerEntityRequestBase<T> implements OEntityRequest<T> {
     segments.add(new EntitySegment(entitySetName, key));
   }
 
-  protected ODataClient getClient() {
+  protected ODataJerseyClient getClient() {
     return client;
   }
 

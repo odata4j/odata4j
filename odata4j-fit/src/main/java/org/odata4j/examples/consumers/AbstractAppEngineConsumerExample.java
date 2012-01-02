@@ -1,19 +1,17 @@
-package org.odata4j.examples.consumer;
+package org.odata4j.examples.consumers;
 
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperties;
 import org.odata4j.examples.BaseExample;
+import org.odata4j.examples.ConsumerExample;
 import org.odata4j.examples.ODataEndpoints;
-import org.odata4j.jersey.consumer.ODataJerseyConsumer;
 
-public class AppEngineConsumerExample extends BaseExample {
+public abstract class AbstractAppEngineConsumerExample extends BaseExample implements ConsumerExample {
 
-  public static void main(String... args) {
-
-    ODataConsumer c = ODataJerseyConsumer.create(ODataEndpoints.ODATA4JSAMPLE_APPSPOT);
-    //ODataConsumer.create("http://localhost:8888/datastore.svc");
-
+  @Override
+  public void run(String... args) {
+    ODataConsumer c = this.create(ODataEndpoints.ODATA4JSAMPLE_APPSPOT);
     String newCategoryName = "NewCategory" + System.currentTimeMillis();
 
     report("Create a new category");

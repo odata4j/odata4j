@@ -16,7 +16,7 @@ import com.sun.jersey.core.impl.provider.header.MediaTypeProvider;
 import com.sun.jersey.core.spi.factory.AbstractRuntimeDelegate;
 import com.sun.jersey.spi.HeaderDelegateProvider;
 
-class ClientUtil {
+class JerseyClientUtil {
 
   static {
     if (PlatformUtil.runningOnAndroid())
@@ -37,7 +37,7 @@ class ClientUtil {
     }
   }
 
-  public static Client newClient(ClientFactory clientFactory, OClientBehavior[] behaviors) {
+  public static Client newClient(JerseyClientFactory clientFactory, OClientBehavior[] behaviors) {
     DefaultClientConfig cc = new DefaultClientConfig();
     cc.getSingletons().add(new StringProvider2());
     if (behaviors != null)

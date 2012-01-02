@@ -14,6 +14,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.core4j.Enumerable;
 import org.core4j.xml.XDocument;
 import org.core4j.xml.XmlFormat;
+import org.odata4j.consumer.AbstractODataClient;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OEntities;
@@ -44,26 +45,20 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.PartialRequestBuilder;
 import com.sun.jersey.api.client.WebResource;
 
-class ODataClient {
-
-  private final FormatType type;
+class ODataJerseyClient extends AbstractODataClient {
 
   private final OClientBehavior[] requiredBehaviors = new OClientBehavior[] { OClientBehaviors.methodTunneling("MERGE") }; // jersey hates MERGE, tunnel through POST
   private final OClientBehavior[] behaviors;
 
   private final Client client;
 
-  public ODataClient(FormatType type, ClientFactory clientFactory, OClientBehavior... behaviors) {
+  public ODataJerseyClient(FormatType type, JerseyClientFactory clientFactory, OClientBehavior... behaviors) {
+    super(type);
     this.behaviors = Enumerable.create(requiredBehaviors).concat(Enumerable.create(behaviors)).toArray(OClientBehavior.class);
-    this.type = type;
-    this.client = ClientUtil.newClient(clientFactory, behaviors);
+    this.client = JerseyClientUtil.newClient(clientFactory, behaviors);
   }
 
-  public FormatType getFormatType() {
-    return type;
-  }
-
-  public EdmDataServices getMetadata(ODataClientRequest request) {
+  public EdmDataServices getMetadata(ODataJerseyClientRequest request) {
     ClientResponse response = doRequest(FormatType.ATOM, request, 200, 404, 400);
     if (response.getStatus() == 404 || response.getStatus() == 400)
       return null;
@@ -71,21 +66,21 @@ class ODataClient {
     return new EdmxFormatParser().parseMetadata(reader);
   }
 
-  public Iterable<AtomCollectionInfo> getCollections(ODataClientRequest request) {
+  public Iterable<AtomCollectionInfo> getCollections(ODataJerseyClientRequest request) {
     ClientResponse response = doRequest(FormatType.ATOM, request, 200);
     XMLEventReader2 reader = doXmlRequest(response);
     return Enumerable.create(AtomServiceDocumentFormatParser.parseWorkspaces(reader))
         .selectMany(AtomWorkspaceInfo.GET_COLLECTIONS);
   }
 
-  public Iterable<SingleLink> getLinks(ODataClientRequest request) {
+  public Iterable<SingleLink> getLinks(ODataJerseyClientRequest request) {
     ClientResponse response = doRequest(FormatType.ATOM, request, 200);
     XMLEventReader2 reader = doXmlRequest(response);
     return AtomSingleLinkFormatParser.parseLinks(reader);
   }
 
-  public ClientResponse getEntity(ODataClientRequest request) {
-    ClientResponse response = doRequest(type, request, 404, 200, 204);
+  public ClientResponse getEntity(ODataJerseyClientRequest request) {
+    ClientResponse response = doRequest(this.getFormatType(), request, 404, 200, 204);
     if (response.getStatus() == 404)
       return null;
     if (response.getStatus() == 204)
@@ -94,40 +89,40 @@ class ODataClient {
     return response;
   }
 
-  public ClientResponse getEntities(ODataClientRequest request) {
-    ClientResponse response = doRequest(type, request, 200);
+  public ClientResponse getEntities(ODataJerseyClientRequest request) {
+    ClientResponse response = doRequest(this.getFormatType(), request, 200);
     return response;
   }
 
-  public ClientResponse callFunction(ODataClientRequest request) {
-    ClientResponse response = doRequest(type, request, 200, 204);
+  public ClientResponse callFunction(ODataJerseyClientRequest request) {
+    ClientResponse response = doRequest(this.getFormatType(), request, 200, 204);
     return response;
   }
 
-  public ClientResponse createEntity(ODataClientRequest request) {
-    return doRequest(type, request, 201);
+  public ClientResponse createEntity(ODataJerseyClientRequest request) {
+    return doRequest(this.getFormatType(), request, 201);
   }
 
-  public boolean updateEntity(ODataClientRequest request) {
-    doRequest(type, request, 200, 204);
+  public boolean updateEntity(ODataJerseyClientRequest request) {
+    doRequest(this.getFormatType(), request, 200, 204);
     return true;
   }
 
-  public boolean deleteEntity(ODataClientRequest request) {
-    doRequest(type, request, 200, 204, 404);
+  public boolean deleteEntity(ODataJerseyClientRequest request) {
+    doRequest(this.getFormatType(), request, 200, 204, 404);
     return true;
   }
 
-  public void deleteLink(ODataClientRequest request) {
-    doRequest(type, request, 204);
+  public void deleteLink(ODataJerseyClientRequest request) {
+    doRequest(this.getFormatType(), request, 204);
   }
 
-  public void createLink(ODataClientRequest request) {
-    doRequest(type, request, 204);
+  public void createLink(ODataJerseyClientRequest request) {
+    doRequest(this.getFormatType(), request, 204);
   }
 
-  public void updateLink(ODataClientRequest request) {
-    doRequest(type, request, 204);
+  public void updateLink(ODataJerseyClientRequest request) {
+    doRequest(this.getFormatType(), request, 204);
   }
 
   Entry createRequestEntry(EdmEntitySet entitySet, OEntityKey entityKey, List<OProperty<?>> props, List<OLink> links) {
@@ -155,14 +150,14 @@ class ODataClient {
   }
 
   @SuppressWarnings("unchecked")
-  private ClientResponse doRequest(FormatType reqType, ODataClientRequest request, Integer... expectedResponseStatus) {
+  private ClientResponse doRequest(FormatType reqType, ODataJerseyClientRequest request, Integer... expectedResponseStatus) {
 
     if (behaviors != null) {
       for (OClientBehavior behavior : behaviors)
         request = behavior.transform(request);
     }
 
-    WebResource webResource = ClientUtil.resource(client, request.getUrl(), behaviors);
+    WebResource webResource = JerseyClientUtil.resource(client, request.getUrl(), behaviors);
 
     // set query params
     for (String qpn : request.getQueryParams().keySet()) {
@@ -196,7 +191,7 @@ class ODataClient {
 
       StringWriter sw = new StringWriter();
       FormatWriter<Object> fw = (FormatWriter<Object>) (Object)
-          FormatWriterFactory.getFormatWriter(payloadClass, null, type.toString(), null);
+          FormatWriterFactory.getFormatWriter(payloadClass, null, this.getFormatType().toString(), null);
       fw.write(null, sw, request.getPayload());
 
       String entity = sw.toString();
@@ -291,7 +286,7 @@ class ODataClient {
 
   }
 
-  private void dumpHeaders(ODataClientRequest request, WebResource webResource, WebResource.Builder b) {
+  private void dumpHeaders(ODataJerseyClientRequest request, WebResource webResource, WebResource.Builder b) {
     log(request.getMethod() + " " + webResource);
     dump(getRequestHeaders(b));
   }

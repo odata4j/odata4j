@@ -26,7 +26,7 @@ class ConsumerGetEntityRequest<T> extends ConsumerEntityRequestBase<T> implement
   private String select;
   private String expand;
 
-  ConsumerGetEntityRequest(ODataClient client, Class<T> entityType, String serviceRootUri,
+  ConsumerGetEntityRequest(ODataJerseyClient client, Class<T> entityType, String serviceRootUri,
       EdmDataServices metadata, String entitySetName, OEntityKey key, FeedCustomizationMapping fcMapping) {
     super(client, serviceRootUri, metadata, entitySetName, key);
     this.entityType = entityType;
@@ -50,7 +50,7 @@ class ConsumerGetEntityRequest<T> extends ConsumerEntityRequestBase<T> implement
 
     String path = Enumerable.create(getSegments()).join("/");
 
-    ODataClientRequest request = ODataClientRequest.get(getServiceRootUri() + path);
+    ODataJerseyClientRequest request = ODataJerseyClientRequest.get(getServiceRootUri() + path);
 
     if (select != null) {
       request = request.queryParam("$select", select);

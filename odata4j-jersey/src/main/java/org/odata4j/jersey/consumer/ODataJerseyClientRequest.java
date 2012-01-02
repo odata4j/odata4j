@@ -10,7 +10,7 @@ import org.odata4j.jersey.consumer.behaviors.OClientBehavior;
 /**
  * Generic OData http request builder.  Only interesting for developers of custom {@link OClientBehavior} implementations.
  */
-public class ODataClientRequest {
+public class ODataJerseyClientRequest {
 
   private final String method;
   private final String url;
@@ -18,7 +18,7 @@ public class ODataClientRequest {
   private final Map<String, String> queryParams;
   private final Object payload;
 
-  private ODataClientRequest(String method, String url, Map<String, String> headers, Map<String, String> queryParams, Object payload) {
+  private ODataJerseyClientRequest(String method, String url, Map<String, String> headers, Map<String, String> queryParams, Object payload) {
     this.method = method;
     this.url = url;
     this.headers = headers == null ? new HashMap<String, String>() : headers;
@@ -77,8 +77,8 @@ public class ODataClientRequest {
    * @param url  the request url
    * @return a new request builder
    */
-  public static ODataClientRequest get(String url) {
-    return new ODataClientRequest("GET", url, null, null, null);
+  public static ODataJerseyClientRequest get(String url) {
+    return new ODataJerseyClientRequest("GET", url, null, null, null);
   }
 
   /**
@@ -88,8 +88,8 @@ public class ODataClientRequest {
    * @param entry  the normalized OData payload
    * @return a new request builder
    */
-  public static ODataClientRequest post(String url, Entry entry) {
-    return new ODataClientRequest("POST", url, null, null, entry);
+  public static ODataJerseyClientRequest post(String url, Entry entry) {
+    return new ODataJerseyClientRequest("POST", url, null, null, entry);
   }
 
   /**
@@ -99,8 +99,8 @@ public class ODataClientRequest {
    * @param link  the link
    * @return a new request builder
    */
-  public static ODataClientRequest post(String url, SingleLink link) {
-    return new ODataClientRequest("POST", url, null, null, link);
+  public static ODataJerseyClientRequest post(String url, SingleLink link) {
+    return new ODataJerseyClientRequest("POST", url, null, null, link);
   }
 
   /**
@@ -110,8 +110,8 @@ public class ODataClientRequest {
    * @param entry  the normalized OData payload
    * @return a new request builder
    */
-  public static ODataClientRequest put(String url, Entry entry) {
-    return new ODataClientRequest("PUT", url, null, null, entry);
+  public static ODataJerseyClientRequest put(String url, Entry entry) {
+    return new ODataJerseyClientRequest("PUT", url, null, null, entry);
   }
 
   /**
@@ -121,8 +121,8 @@ public class ODataClientRequest {
    * @param link  the link
    * @return a new request builder
    */
-  public static ODataClientRequest put(String url, SingleLink link) {
-    return new ODataClientRequest("PUT", url, null, null, link);
+  public static ODataJerseyClientRequest put(String url, SingleLink link) {
+    return new ODataJerseyClientRequest("PUT", url, null, null, link);
   }
 
   /**
@@ -132,8 +132,8 @@ public class ODataClientRequest {
    * @param entry  the normalized OData payload
    * @return a new request builder
    */
-  public static ODataClientRequest merge(String url, Entry entry) {
-    return new ODataClientRequest("MERGE", url, null, null, entry);
+  public static ODataJerseyClientRequest merge(String url, Entry entry) {
+    return new ODataJerseyClientRequest("MERGE", url, null, null, entry);
   }
 
   /**
@@ -143,8 +143,8 @@ public class ODataClientRequest {
    * @param link  the link
    * @return a new request builder
    */
-  public static ODataClientRequest merge(String url, SingleLink link) {
-    return new ODataClientRequest("MERGE", url, null, null, link);
+  public static ODataJerseyClientRequest merge(String url, SingleLink link) {
+    return new ODataJerseyClientRequest("MERGE", url, null, null, link);
   }
 
   /**
@@ -153,8 +153,8 @@ public class ODataClientRequest {
    * @param url  the request url
    * @return a new request builder
    */
-  public static ODataClientRequest delete(String url) {
-    return new ODataClientRequest("DELETE", url, null, null, null);
+  public static ODataJerseyClientRequest delete(String url) {
+    return new ODataJerseyClientRequest("DELETE", url, null, null, null);
   }
 
   /**
@@ -164,9 +164,9 @@ public class ODataClientRequest {
    * @param value  the header value
    * @return the request builder
    */
-  public ODataClientRequest header(String name, String value) {
+  public ODataJerseyClientRequest header(String name, String value) {
     headers.put(name, value);
-    return new ODataClientRequest(method, url, headers, queryParams, payload);
+    return new ODataJerseyClientRequest(method, url, headers, queryParams, payload);
   }
 
   /**
@@ -176,9 +176,9 @@ public class ODataClientRequest {
    * @param value  the query parameter value
    * @return the request builder
    */
-  public ODataClientRequest queryParam(String name, String value) {
+  public ODataJerseyClientRequest queryParam(String name, String value) {
     queryParams.put(name, value);
-    return new ODataClientRequest(method, url, headers, queryParams, payload);
+    return new ODataJerseyClientRequest(method, url, headers, queryParams, payload);
   }
 
   /**
@@ -187,8 +187,8 @@ public class ODataClientRequest {
    * @param url  the request url
    * @return the request builder
    */
-  public ODataClientRequest url(String url) {
-    return new ODataClientRequest(method, url, headers, queryParams, payload);
+  public ODataJerseyClientRequest url(String url) {
+    return new ODataJerseyClientRequest(method, url, headers, queryParams, payload);
   }
 
   /**
@@ -197,8 +197,8 @@ public class ODataClientRequest {
    * @param method  the method
    * @return the request builder
    */
-  public ODataClientRequest method(String method) {
-    return new ODataClientRequest(method, url, headers, queryParams, payload);
+  public ODataJerseyClientRequest method(String method) {
+    return new ODataJerseyClientRequest(method, url, headers, queryParams, payload);
   }
 
   /**
@@ -207,8 +207,8 @@ public class ODataClientRequest {
    * @param entry  the entry payload
    * @return the request builder
    */
-  public ODataClientRequest entryPayload(Entry entry) {
-    return new ODataClientRequest(method, url, headers, queryParams, entry);
+  public ODataJerseyClientRequest entryPayload(Entry entry) {
+    return new ODataJerseyClientRequest(method, url, headers, queryParams, entry);
   }
 
   /**
@@ -217,8 +217,8 @@ public class ODataClientRequest {
    * @param link  the link payload
    * @return the request builder
    */
-  public ODataClientRequest linkPayload(SingleLink link) {
-    return new ODataClientRequest(method, url, headers, queryParams, link);
+  public ODataJerseyClientRequest linkPayload(SingleLink link) {
+    return new ODataJerseyClientRequest(method, url, headers, queryParams, link);
   }
 
 }

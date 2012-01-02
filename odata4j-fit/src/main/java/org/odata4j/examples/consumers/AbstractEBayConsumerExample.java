@@ -1,17 +1,18 @@
-package org.odata4j.examples.consumer;
+package org.odata4j.examples.consumers;
 
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.ORelatedEntitiesLink;
 import org.odata4j.examples.BaseExample;
+import org.odata4j.examples.ConsumerExample;
 import org.odata4j.examples.ODataEndpoints;
-import org.odata4j.jersey.consumer.ODataJerseyConsumer;
 
-public class EBayConsumerExample extends BaseExample {
+public abstract class AbstractEBayConsumerExample extends BaseExample implements ConsumerExample {
 
-  public static void main(String[] args) {
+  @Override
+  public void run(String... args) {
 
-    ODataConsumer c = ODataJerseyConsumer.create(ODataEndpoints.EBAY);
+    ODataConsumer c = this.create(ODataEndpoints.EBAY);
 
     OEntity firstCategory = c.getEntities("Categories").top(1).execute().first();
     reportEntities(firstCategory.getProperty("Name").getValue().toString(),

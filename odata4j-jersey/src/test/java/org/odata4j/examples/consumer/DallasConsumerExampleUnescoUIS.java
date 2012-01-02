@@ -5,7 +5,7 @@ import org.odata4j.core.OEntity;
 import org.odata4j.core.OFuncs;
 import org.odata4j.examples.BaseExample;
 import org.odata4j.examples.ODataEndpoints;
-import org.odata4j.jersey.consumer.ODataConsumers;
+import org.odata4j.jersey.consumer.ODataJerseyConsumers;
 
 public class DallasConsumerExampleUnescoUIS extends BaseExample {
 
@@ -17,7 +17,7 @@ public class DallasConsumerExampleUnescoUIS extends BaseExample {
     String accountKey = dallasCreds[0];
     String uniqueUserId = dallasCreds[1];
 
-    ODataConsumer c = ODataConsumers.dallas(ODataEndpoints.DALLAS_CTP2_UNESCO_UIS, accountKey, uniqueUserId);
+    ODataConsumer c = ODataJerseyConsumers.dallas(ODataEndpoints.DALLAS_CTP2_UNESCO_UIS, accountKey, uniqueUserId);
 
     // Public expenditure on education as % of GDP [XGDP_FSGOV]
     for (OEntity entity : c.getEntities("UNESCO/XGDP_FSGOV").execute()

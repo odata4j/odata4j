@@ -12,7 +12,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.ODataConstants;
-import org.odata4j.jersey.consumer.ODataClientRequest;
+import org.odata4j.jersey.consumer.ODataJerseyClientRequest;
 import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
 
 public class AzureTableBehavior extends BaseClientBehavior {
@@ -26,7 +26,7 @@ public class AzureTableBehavior extends BaseClientBehavior {
   }
 
   @Override
-  public ODataClientRequest transform(ODataClientRequest request) {
+  public ODataJerseyClientRequest transform(ODataJerseyClientRequest request) {
     try {
       String utc = new DateTime(DateTimeZone.UTC).toString("EEE, dd MMM yyyy HH:mm:ss zzz");
       String date = utc.substring(0, utc.lastIndexOf(' ') + 1) + "GMT";

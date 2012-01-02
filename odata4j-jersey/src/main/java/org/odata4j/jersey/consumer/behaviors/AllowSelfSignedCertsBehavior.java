@@ -10,7 +10,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import org.odata4j.jersey.consumer.ODataClientRequest;
+import org.odata4j.jersey.consumer.ODataJerseyClientRequest;
 
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.filter.Filterable;
@@ -21,7 +21,7 @@ public enum AllowSelfSignedCertsBehavior implements OClientBehavior {
   INSTANCE;
 
   @Override
-  public ODataClientRequest transform(ODataClientRequest request) {
+  public ODataJerseyClientRequest transform(ODataJerseyClientRequest request) {
     return request;
   }
 

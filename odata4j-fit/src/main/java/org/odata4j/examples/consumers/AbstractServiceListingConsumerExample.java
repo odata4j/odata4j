@@ -1,18 +1,16 @@
-package org.odata4j.examples.consumer;
+package org.odata4j.examples.consumers;
 
 import org.core4j.Enumerable;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.EntitySetInfo;
 import org.odata4j.examples.BaseExample;
+import org.odata4j.examples.ConsumerExample;
 import org.odata4j.examples.ODataEndpoints;
-import org.odata4j.jersey.consumer.ODataJerseyConsumer;
-import org.odata4j.jersey.consumer.behaviors.OClientBehavior;
 
-public class ServiceListingConsumerExample extends BaseExample {
+public abstract class AbstractServiceListingConsumerExample extends BaseExample implements ConsumerExample {
 
-  private static OClientBehavior[] behaviors = {};
-
-  public static void main(String[] args) {
+  @Override
+  public void run(String... args) {
 
     ODataConsumer.dump.requestHeaders(true);
     //ODataConsumer.dump.responseBody(true);
@@ -66,18 +64,18 @@ public class ServiceListingConsumerExample extends BaseExample {
 
   }
 
-  private static void printOutFirstEntities(Iterable<String> services) {
+  private void printOutFirstEntities(Iterable<String> services) {
     for (String endpoint : services) {
-      ODataConsumer c = ODataJerseyConsumer.newBuilder(endpoint).setClientBehaviors(behaviors).build();
+      ODataConsumer c = this.create(endpoint);
       for (EntitySetInfo entitySet : c.getEntitySets()) {
         reportEntities(entitySet.getHref(), c.getEntities(entitySet.getHref()).top(1).execute());
       }
     }
   }
 
-  private static void printOutAllEntities(Iterable<String> services) {
+  private void printOutAllEntities(Iterable<String> services) {
     for (String endpoint : services) {
-      ODataConsumer c = ODataJerseyConsumer.newBuilder(endpoint).setClientBehaviors(behaviors).build();
+      ODataConsumer c = this.create(endpoint);
       for (EntitySetInfo entitySet : c.getEntitySets()) {
         reportEntities(entitySet.getTitle(), c.getEntities(entitySet.getHref()).execute());
       }
