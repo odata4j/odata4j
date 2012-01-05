@@ -1,58 +1,44 @@
 package org.odata4j.fit.producer;
 
+import java.io.UnsupportedEncodingException;
+
 import junit.framework.Assert;
 
-import org.core4j.Enumerable;
-import org.core4j.Func;
-import org.core4j.Funcs;
 import org.eclipse.jetty.client.ContentExchange;
 import org.eclipse.jetty.client.HttpExchange;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Test;
-import org.odata4j.fit.util.AbstractFitTest;
-import org.odata4j.producer.inmemory.InMemoryProducer;
-import org.odata4j.producer.resources.DefaultODataProducerProvider;
+import org.odata4j.fit.util.AbstractODataServerHttpClientSimpleInMemoryProducerTest;
 
-public abstract class AbstractServerSmokeTest extends AbstractFitTest {
+public abstract class AbstractServerSmokeTest extends AbstractODataServerHttpClientSimpleInMemoryProducerTest {
 
-  private static final String SVC_URL = "http://localhost:8888/SmokeTest.svc/";
   private static final String META_DATA_URL = SVC_URL + "$metadata";
-  private static final String FEED_URL = SVC_URL + "SupportedJaxRsImplementations";
-  private static final String COM_SUN_JERSEY = "com.sun.jersey";
-  private static final String ORG_APACHE_CXF = "org.apache.cxf";
+  private static final String FEED_URL = SVC_URL + ENTITY_SET_NAME;
 
   @Test
-  public void testServer() throws Exception {
-    this.requestResponse(SVC_URL);
-    this.requestResponse(META_DATA_URL);
-    this.requestResponse(FEED_URL);
+  public void testServiceUrl() throws Exception {
+    ContentExchange exchange = sendRequest(SVC_URL);
+    exchange.waitForDone();
+    verifyResponseIsReturned(exchange);
   }
 
-  @Override
-  protected void createTestScenario() {
-    InMemoryProducer producer = new InMemoryProducer("SmokeTest");
-
-    producer.register(String.class, String.class, "SupportedJaxRsImplementations", new Func<Iterable<String>>() {
-      public Iterable<String> apply() {
-        return Enumerable.create(AbstractServerSmokeTest.COM_SUN_JERSEY, AbstractServerSmokeTest.ORG_APACHE_CXF);
-      }
-    }, Funcs.identity(String.class));
-
-    DefaultODataProducerProvider.setInstance(producer);
+  @Test
+  public void testMetaDataUrl() throws Exception {
+    ContentExchange exchange = sendRequest(META_DATA_URL);
+    exchange.waitForDone();
+    verifyResponseIsReturned(exchange);
   }
 
-  private void requestResponse(String url) throws Exception {
-    ContentExchange exchange = new ContentExchange(true);
-    exchange.setURL(url);
-    this.getClient().send(exchange);
+  @Test
+  public void testFeedUrl() throws Exception {
+    ContentExchange exchange = sendRequest(FEED_URL);
+    exchange.waitForDone();
+    verifyResponseIsReturned(exchange);
+  }
 
-    Assert.assertEquals(HttpExchange.STATUS_COMPLETED, exchange.waitForDone());
+  private void verifyResponseIsReturned(ContentExchange exchange) throws InterruptedException, UnsupportedEncodingException {
+    Assert.assertEquals(HttpExchange.STATUS_COMPLETED, exchange.getStatus());
     Assert.assertEquals(HttpStatus.OK_200, exchange.getResponseStatus());
     Assert.assertTrue(exchange.getResponseContent().length() > 0);
   }
-
-  protected String getBaseUri() {
-    return AbstractServerSmokeTest.SVC_URL;
-  }
-
 }

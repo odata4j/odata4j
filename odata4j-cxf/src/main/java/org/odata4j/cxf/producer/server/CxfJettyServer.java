@@ -2,11 +2,16 @@ package org.odata4j.cxf.producer.server;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.ws.rs.core.Application;
 
 import org.apache.cxf.jaxrs.servlet.CXFNonSpringJaxrsServlet;
+import org.core4j.Enumerable;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.odata4j.producer.server.ODataServer;
@@ -19,6 +24,7 @@ public class CxfJettyServer implements ODataServer {
   private String appBaseUri;
   private Class<? extends Application> odataApp;
   private Class<? extends Application> rootApp;
+  private final List<Handler> jettyRequestHandlers = new ArrayList<Handler>();
   private Server server;
 
   public CxfJettyServer(String appBaseUri) {
@@ -40,6 +46,11 @@ public class CxfJettyServer implements ODataServer {
   @Override
   public ODataServer setRootApplication(Class<? extends Application> rootApp) {
     this.rootApp = rootApp;
+    return this;
+  }
+
+  public CxfJettyServer addJettyRequestHandler(Handler handler) {
+    jettyRequestHandlers.add(handler);
     return this;
   }
 
@@ -71,7 +82,7 @@ public class CxfJettyServer implements ODataServer {
     }
 
     server = new Server(url.getPort());
-    server.setHandler(contextHandler);
+    server.setHandler(getHandlerCollection(contextHandler));
 
     try {
       server.start();
@@ -95,5 +106,14 @@ public class CxfJettyServer implements ODataServer {
     if (path.endsWith("/"))
       return path.substring(0, path.length() - 1);
     return path;
+  }
+
+  private HandlerCollection getHandlerCollection(ServletContextHandler contextHandler) {
+    List<Handler> handlers = jettyRequestHandlers;
+    handlers.add(contextHandler);
+
+    HandlerCollection handlerCollection = new HandlerCollection();
+    handlerCollection.setHandlers(Enumerable.create(handlers).toArray(Handler.class));
+    return handlerCollection;
   }
 }

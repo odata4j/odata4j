@@ -24,8 +24,6 @@ import org.odata4j.producer.server.ODataServer;
 import com.sun.jersey.api.container.ContainerFactory;
 import com.sun.jersey.api.container.httpserver.HttpServerFactory;
 import com.sun.jersey.api.core.ApplicationAdapter;
-import com.sun.jersey.api.core.DefaultResourceConfig;
-import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.jersey.spi.container.ContainerRequestFilter;
 import com.sun.jersey.spi.container.ContainerResponseFilter;
 import com.sun.jersey.spi.container.ResourceFilterFactory;
@@ -144,12 +142,18 @@ public class JerseyServer implements ODataServer {
       throw new RuntimeException("ODataApplication not set");
 
     try {
-      // create resourceConfig for app context
-      server = HttpServerFactory.create(appBaseUri, new ApplicationAdapter(odataApp.newInstance()));
+      Map<String, Object> propertiesAndFeatures = buildPropertiesAndFeatures();
 
-      // create resourceConfig for root context (if necessary)
+      // create resource config/ application adapter for app context
+      ApplicationAdapter odataAppAdapter = new ApplicationAdapter(odataApp.newInstance());
+      odataAppAdapter.setPropertiesAndFeatures(propertiesAndFeatures);
+      server = HttpServerFactory.create(appBaseUri, odataAppAdapter);
+
+      // create resource config/ application adapter for root context (if necessary)
       if (rootApp != null) {
-        HttpHandler rootHttpHandler = ContainerFactory.createContainer(HttpHandler.class, new ApplicationAdapter(rootApp.newInstance()));
+        ApplicationAdapter rootAppAdapter = new ApplicationAdapter(rootApp.newInstance());
+        rootAppAdapter.setPropertiesAndFeatures(propertiesAndFeatures);
+        HttpHandler rootHttpHandler = ContainerFactory.createContainer(HttpHandler.class, rootAppAdapter);
         server.createContext("/", rootHttpHandler);
       }
 
@@ -173,17 +177,6 @@ public class JerseyServer implements ODataServer {
 
   protected HttpServer getHttpServer() {
     return server;
-  }
-
-  protected ResourceConfig buildResourceConfig(List<?> resourceClasses) {
-    DefaultResourceConfig resourceConfig = new DefaultResourceConfig(
-        Enumerable.create(resourceClasses)
-            .cast(Object.class)
-            .cast(Class.class)
-            .toArray(Class.class));
-
-    resourceConfig.setPropertiesAndFeatures(buildPropertiesAndFeatures());
-    return resourceConfig;
   }
 
   protected Map<String, Object> buildPropertiesAndFeatures() {

@@ -1,53 +1,44 @@
 package org.odata4j.fit.util;
 
-import org.eclipse.jetty.client.HttpClient;
 import org.junit.After;
 import org.junit.Before;
-import org.odata4j.producer.server.ODataServer;
 
+/**
+ * Base test class that:
+ * <ol><li>creates a server,</li>
+ * <li>creates a test scenario,</li>
+ * <li>starts the server,</li>
+ * <li>creates a client,</li>
+ * <li>and starts the client</li></ol>
+ */
 public abstract class AbstractFitTest {
 
-  protected abstract ODataServer createServer();
+  protected abstract void createServer() throws Exception;
+
+  protected abstract void startServer() throws Exception;
+
+  protected abstract void stopServer() throws Exception;
+
+  protected abstract void createClient() throws Exception;
+
+  protected abstract void startClient() throws Exception;
+
+  protected abstract void stopClient() throws Exception;
+
   protected abstract void createTestScenario();
 
-  private HttpClient createClient() {
-    HttpClient client = new HttpClient();
-    client.setConnectorType(HttpClient.CONNECTOR_SELECT_CHANNEL);
-    return client;
-  }
-
-  private ODataServer server;
-  private HttpClient client;
-
   @Before
-  public void setup() {
-    try {
-      this.server = this.createServer();
-      this.createTestScenario();
-      this.server.start();
-      this.client = this.createClient();
-      this.client.start();
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
+  public void setup() throws Exception {
+    createServer();
+    createTestScenario();
+    startServer();
+    createClient();
+    startClient();
   }
 
   @After
-  public void teardown() {
-    try {
-      this.client.stop();
-      this.server.stop();
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
+  public void teardown() throws Exception {
+    stopClient();
+    stopServer();
   }
-
-  public ODataServer getServer() {
-    return server;
-  }
-
-  public HttpClient getClient() {
-    return client;
-  }
-
 }
