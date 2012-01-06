@@ -38,7 +38,7 @@ public class JsonTest {
       Assert.assertEquals(0, c.getEntitySets().count());
 
       List<PojoWithAllTypes> pojos = new ArrayList<PojoWithAllTypes>();
-      producer.register(PojoWithAllTypes.class, Integer.TYPE, "Pojo", Funcs.constant((Iterable<PojoWithAllTypes>) pojos), "Int32");
+      producer.register(PojoWithAllTypes.class, "Pojo", Funcs.constant((Iterable<PojoWithAllTypes>) pojos), "Int32");
 
       pojos.add(new PojoWithAllTypes(new byte[] { 0x01, 0x02, 0x03 }, true, (byte) 0x05, new LocalDateTime(), new BigDecimal("123.456"), 123.456,
           Guid.randomGuid(), (short) 123, 1, Long.MAX_VALUE, 123.456F, "John", new LocalTime(), new DateTime()

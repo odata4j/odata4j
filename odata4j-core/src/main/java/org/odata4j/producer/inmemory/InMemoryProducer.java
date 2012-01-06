@@ -1,8 +1,10 @@
 package org.odata4j.producer.inmemory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +16,6 @@ import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityId;
 import org.odata4j.core.OEntityKey;
-import org.odata4j.core.OFuncs;
 import org.odata4j.core.OFunctionParameter;
 import org.odata4j.core.OLink;
 import org.odata4j.core.OLinks;
@@ -125,14 +126,22 @@ public class InMemoryProducer implements ODataProducer {
    *
    * <p>@see {@link #register(Class, PropertyModel, Class, String, Func, Func1)} for parameter docs.
    */
+  @Deprecated
   public <TEntity, TKey> void register(final Class<TEntity> entityClass, Class<TKey> keyClass, final String entitySetName, Func<Iterable<TEntity>> get, final String idPropertyName) {
-    register(entityClass, keyClass, entitySetName, get, new Func1<TEntity, TKey>() {
-      @SuppressWarnings("unchecked")
-      @Override
-      public TKey apply(TEntity input) {
-        return (TKey) eis.get(entitySetName).properties.getPropertyValue(input, idPropertyName);
-      }
-    });
+    register(entityClass, entitySetName, get, idPropertyName);
+  }
+
+  /**
+   * Registers a new entity based on a POJO, which support for composite keys 
+   * @param entityClass the class of the entities that are to be stored in the set
+   * @param entitySetName the alias the set will be known by; this is what is used in the ODATA URL
+   * @param get a function to iterate over the elements in the set
+   * @param keys list of keys for the entity
+   */
+  public <TEntity, TKey> void register(Class<TEntity> entityClass, String entitySetName, Func<Iterable<TEntity>> get, String... keys) {
+    PropertyModel model = new BeanBasedPropertyModel(entityClass);
+    model = new EnumsAsStringsPropertyModelDelegate(model);
+    register(entityClass, model, entitySetName, get, keys);
   }
 
   /**
@@ -144,7 +153,7 @@ public class InMemoryProducer implements ODataProducer {
     PropertyModel model = new BeanBasedPropertyModel(entityClass);
     model = new EnumsAsStringsPropertyModelDelegate(model);
     model = new EntityIdFunctionPropertyModelDelegate<TEntity, TKey>(model, ID_PROPNAME, keyClass, id);
-    register(entityClass, model, keyClass, entitySetName, get, id);
+    register(entityClass, model, entitySetName, get, ID_PROPNAME);
   }
 
   /**
@@ -152,26 +161,34 @@ public class InMemoryProducer implements ODataProducer {
    *
    * @param entityClass  the class of the entities that are to be stored in the set
    * @param propertyModel a way to get/set properties on the POJO
-   * @param keyClass  the class of the key element of the set
    * @param entitySetName  the alias the set will be known by; this is what is used in the ODATA URL
    * @param get  a function to iterate over the elements in the set
-   * @param id  a function to extract the id from any given element in the set
+   * @param keys  list of keys for the entity
    */
   public <TEntity, TKey> void register(
       Class<TEntity> entityClass,
       PropertyModel propertyModel,
-      Class<TKey> keyClass,
-      String entitySetName,
+      final String entitySetName,
       Func<Iterable<TEntity>> get,
-      Func1<TEntity, TKey> id) {
+      final String... keys) {
 
     InMemoryEntityInfo<TEntity, TKey> ei = new InMemoryEntityInfo<TEntity, TKey>();
     ei.entitySetName = entitySetName;
     ei.properties = propertyModel;
     ei.get = get;
-    ei.id = OFuncs.widen(id);
-    ei.keyClass = keyClass;
+    ei.keys = keys;
     ei.entityClass = entityClass;
+
+    ei.id = new Func1<Object, HashMap<String, Object>>() {
+      @Override
+      public HashMap<String, Object> apply(Object input) {
+        HashMap<String, Object> values = new HashMap<String, Object>();
+        for (String key : keys) {
+          values.put(key, eis.get(entitySetName).properties.getPropertyValue(input, key));
+        }
+        return values;
+      }
+    };
 
     eis.put(entitySetName, ei);
     metadata = null;
@@ -182,7 +199,11 @@ public class InMemoryProducer implements ODataProducer {
     final List<OLink> links = new ArrayList<OLink>();
     final List<OProperty<?>> properties = new ArrayList<OProperty<?>>();
 
-    Object keyValue = ei.properties.getPropertyValue(obj, ID_PROPNAME);
+    Map<String, Object> keyKVPair = new HashMap<String, Object>();
+    for (String key : ei.keys) {
+      Object keyValue = ei.properties.getPropertyValue(obj, key);
+      keyKVPair.put(key, keyValue);
+    }
 
     for (String propName : ei.properties.getPropertyNames()) {
       EdmSimpleType<?> type;
@@ -291,7 +312,7 @@ public class InMemoryProducer implements ODataProducer {
       }
     }
 
-    return OEntities.create(ees, OEntityKey.create(keyValue), properties, links);
+    return OEntities.create(ees, OEntityKey.create(keyKVPair), properties, links);
   }
 
   private static Predicate1<Object> filterToPredicate(final BoolCommonExpression filter, final PropertyModel properties) {
@@ -389,18 +410,41 @@ public class InMemoryProducer implements ODataProducer {
 
   @SuppressWarnings("unchecked")
   @Override
-  public EntityResponse getEntity(String entitySetName, OEntityKey entityKey, QueryInfo queryInfo) {
+  public EntityResponse getEntity(String entitySetName, final OEntityKey entityKey, QueryInfo queryInfo) {
     final EdmEntitySet ees = getMetadata().getEdmEntitySet(entitySetName);
     final InMemoryEntityInfo<?, ?> ei = eis.get(entitySetName);
 
-    final Object idValue = InMemoryEvaluation.cast(entityKey.asSingleValue(), ei.keyClass);
+    final String[] keyList = ei.keys;
 
     Iterable<Object> iter = (Iterable<Object>) ei.get.apply();
 
     final Object rt = Enumerable.create(iter).firstOrNull(new Predicate1<Object>() {
       public boolean apply(Object input) {
-        Object id = ei.id.apply(input);
-        return idValue.equals(id);
+        HashMap<String, Object> idObjectMap = ei.id.apply(input);
+
+        if (keyList.length == 1) {
+          Object idValue = entityKey.asSingleValue();
+          return idObjectMap.get(keyList[0]).equals(idValue);
+        } else if (keyList.length > 1) {
+          for (String key : keyList) {
+            Object curValue = null;
+            Iterator<OProperty<?>> keyProps = entityKey.asComplexProperties().iterator();
+            while (keyProps.hasNext()) {
+              OProperty<?> keyProp = keyProps.next();
+              if (keyProp.getName().equalsIgnoreCase(key)) {
+                curValue = keyProp.getValue();
+              }
+            }
+            if (curValue == null) {
+              return false;
+            } else if (!idObjectMap.get(key).equals(curValue)) {
+              return false;
+            }
+          }
+          return true;
+        } else {
+          return false;
+        }
       }
     });
     if (rt == null) throw new NotFoundException();

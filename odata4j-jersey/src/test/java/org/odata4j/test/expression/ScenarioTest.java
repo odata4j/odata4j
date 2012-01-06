@@ -33,7 +33,7 @@ public class ScenarioTest {
     Assert.assertEquals(0, c.getEntitySets().count());
 
     List<Foo> foos = new ArrayList<Foo>();
-    producer.register(Foo.class, String.class, "Foos1", Funcs.constant((Iterable<Foo>) foos), "Id");
+    producer.register(Foo.class, "Foos1", Funcs.constant((Iterable<Foo>) foos), "Id");
 
     Assert.assertEquals(1, c.getEntitySets().count());
 
@@ -43,17 +43,17 @@ public class ScenarioTest {
     foos.add(new Foo("3", 1, 1, "Gamma", true));
     Assert.assertEquals(3, c.getEntities("Foos1").execute().count());
     Assert.assertEquals(1, c.getEntities("Foos1").top(1).execute().count());
-    Assert.assertEquals("1", c.getEntities("Foos1").top(1).execute().first().getProperties().get(0).getValue());
+    Assert.assertEquals("1", c.getEntities("Foos1").top(1).execute().first().getProperty("Id").getValue());
     Assert.assertEquals(2, c.getEntities("Foos1").skip(1).execute().count());
-    Assert.assertEquals("2", c.getEntities("Foos1").skip(1).top(1).execute().first().getProperties().get(0).getValue());
+    Assert.assertEquals("2", c.getEntities("Foos1").skip(1).top(1).execute().first().getProperty("Id").getValue());
     Assert.assertEquals(0, c.getEntities("Foos1").top(0).execute().count());
-    Assert.assertEquals("3", c.getEntities("Foos1").filter("Id eq '3'").execute().first().getProperties().get(0).getValue());
-    Assert.assertEquals("3", c.getEntities("Foos1").filter("true and Id eq '3'").execute().first().getProperties().get(0).getValue());
+    Assert.assertEquals("3", c.getEntities("Foos1").filter("Id eq '3'").execute().first().getProperty("Id").getValue());
+    Assert.assertEquals("3", c.getEntities("Foos1").filter("true and Id eq '3'").execute().first().getProperty("Id").getValue());
     Assert.assertEquals(0, c.getEntities("Foos1").filter("Id ne Id").execute().count());
     Assert.assertEquals(3, c.getEntities("Foos1").filter("true or false").execute().count());
-    Assert.assertEquals("3", c.getEntities("Foos1").orderBy("Id desc").top(1).execute().first().getProperties().get(0).getValue());
+    Assert.assertEquals("3", c.getEntities("Foos1").orderBy("Id desc").top(1).execute().first().getProperty("Id").getValue());
 
-    Assert.assertEquals("3", c.getEntities("Foos1").orderBy("Id desc, Int32").top(1).execute().first().getProperties().get(0).getValue());
+    Assert.assertEquals("3", c.getEntities("Foos1").orderBy("Id desc, Int32").top(1).execute().first().getProperty("Id").getValue());
     Assert.assertEquals(1, c.getEntities("Foos1").filter("Int32 eq 2").execute().count());
     Assert.assertEquals(1, c.getEntities("Foos1").filter("Int32 gt 2").execute().count());
     Assert.assertEquals(1, c.getEntities("Foos1").filter("Int64 eq 2").execute().count());

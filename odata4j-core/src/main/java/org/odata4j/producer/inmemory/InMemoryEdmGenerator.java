@@ -36,13 +36,11 @@ public class InMemoryEdmGenerator implements EdmGenerator {
 
   private final String namespace;
   private final InMemoryTypeMapping typeMapping;
-  private final String idPropertyName;
   private final Map<String, InMemoryEntityInfo<?, ?>> eis;
 
   public InMemoryEdmGenerator(String namespace, InMemoryTypeMapping typeMapping, String idPropertyName, Map<String, InMemoryEntityInfo<?, ?>> eis) {
     this.namespace = namespace;
     this.typeMapping = typeMapping;
-    this.idPropertyName = idPropertyName;
     this.eis = eis;
   }
 
@@ -114,11 +112,11 @@ public class InMemoryEdmGenerator implements EdmGenerator {
       List<EdmProperty.Builder> properties = new ArrayList<EdmProperty.Builder>();
 
       properties.addAll(toEdmProperties(decorator, entityInfo.properties, entitySetName));
-
+      
       EdmEntityType.Builder eet = EdmEntityType.newBuilder()
           .setNamespace(namespace)
           .setName(entitySetName)
-          .addKeys(idPropertyName)
+          .addKeys(entityInfo.keys)
           .addProperties(properties);
       if (decorator != null) {
         eet.setDocumentation(decorator.getDocumentationForEntityType(namespace, entitySetName));

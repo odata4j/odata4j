@@ -54,7 +54,8 @@ public class RoundtripExample extends BaseExample {
     String endpointUri = "http://localhost:8885/RoundtripExample.svc/";
 
     InMemoryProducer producer = new InMemoryProducer("RoundtripExample");
-    producer.register(Customer.class, Integer.TYPE, "Customers", new Func<Iterable<Customer>>() {
+    
+    producer.register(Customer.class, "Customers", new Func<Iterable<Customer>>() {
       public Iterable<Customer> apply() {
         List<Customer> customers = new ArrayList<Customer>();
         customers.add(new Customer(1, "John"));

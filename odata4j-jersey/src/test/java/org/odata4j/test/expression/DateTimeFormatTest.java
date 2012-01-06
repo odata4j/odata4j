@@ -284,7 +284,8 @@ public class DateTimeFormatTest {
     final long now = 1292865839424L;
 
     InMemoryProducer producer = new InMemoryProducer("DateTimeRoundtrip");
-    producer.register(DateTimeRoundtrip.class, long.class, "DateTimeRoundtrip",
+
+    producer.register(DateTimeRoundtrip.class, "DateTimeRoundtrip",
         new Func<Iterable<DateTimeRoundtrip>>() {
           @Override
           public Iterable<DateTimeRoundtrip> apply() {

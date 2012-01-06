@@ -8,6 +8,7 @@ import junit.framework.Assert;
 import org.core4j.Funcs;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.core.OEntityKey;
 import org.odata4j.examples.producer.ProducerUtil;
 import org.odata4j.jersey.consumer.ODataJerseyConsumer;
 import org.odata4j.producer.inmemory.InMemoryProducer;
@@ -31,7 +32,7 @@ public class PojoTest {
       Assert.assertEquals(0, c.getEntitySets().count());
 
       List<Pojo1> pojo1s = new ArrayList<Pojo1>();
-      producer.register(Pojo1.class, Integer.TYPE, "Pojo1", Funcs.constant((Iterable<Pojo1>) pojo1s), "Id");
+      producer.register(Pojo1.class, "Pojo1", Funcs.constant((Iterable<Pojo1>) pojo1s), "Id");
 
       Assert.assertEquals(1, c.getEntitySets().count());
 
@@ -45,6 +46,34 @@ public class PojoTest {
 
       Assert.assertEquals(1, c.getEntities(Pojo1.class, "Pojo1").filter("Name eq 'John'").execute().first().getId());
       Assert.assertEquals("John", c.getEntities(Pojo1.class, "Pojo1").filter("Name eq 'John'").execute().first().getName());
+
+    } finally {
+      server.stop();
+    }
+
+  }
+
+  @Test
+  public void testPojoWithCompositeKey() {
+
+    String uri = "http://localhost:18889/";
+
+    InMemoryProducer producer = new InMemoryProducer("PojoTest");
+    DefaultODataProducerProvider.setInstance(producer);
+
+    ODataServer server = ProducerUtil.startODataServer(uri);
+
+    try {
+      ODataConsumer c = ODataJerseyConsumer.create(uri);
+      Assert.assertEquals(0, c.getEntitySets().count());
+
+      List<Pojo1> pojo1s = new ArrayList<Pojo1>();
+      producer.register(Pojo1.class, "Pojo1", Funcs.constant((Iterable<Pojo1>) pojo1s), "Id", "Name");
+
+      pojo1s.add(new Pojo1(1, "John"));
+
+      Assert.assertEquals(1, c.getEntity("Pojo1", OEntityKey.create("Id", 1, "Name", "John")).execute().getProperty("Id").getValue());
+      Assert.assertEquals("John", c.getEntity("Pojo1", OEntityKey.create("Id", 1, "Name", "John")).execute().getProperty("Name").getValue());
 
     } finally {
       server.stop();
