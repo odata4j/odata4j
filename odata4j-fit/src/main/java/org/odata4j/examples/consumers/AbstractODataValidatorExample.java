@@ -1,4 +1,4 @@
-package org.odata4j.examples.consumer;
+package org.odata4j.examples.consumers;
 
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.Guid;
@@ -6,17 +6,18 @@ import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.ORelatedEntitiesLink;
 import org.odata4j.examples.BaseExample;
+import org.odata4j.examples.ConsumerExample;
 import org.odata4j.examples.ODataEndpoints;
 import org.odata4j.internal.InternalUtil;
-import org.odata4j.jersey.consumer.ODataJerseyConsumer;
 
-public class ODataValidatorExample extends BaseExample {
+public abstract class AbstractODataValidatorExample extends BaseExample implements ConsumerExample {
 
-  public static void main(String[] args) {
+  @Override
+  public void run(String... args) {
 
     String uri = ODataEndpoints.NORTHWIND;
 
-    ODataConsumer c = ODataJerseyConsumer.create("http://services.odata.org/validation/odatavalidator/");
+    ODataConsumer c = this.create("http://services.odata.org/validation/odatavalidator/");
 
     Guid validationJobId = Guid.fromString("f4aa9495-ef40-469e-818c-29c4ec5fb2ed");
     if (true) {

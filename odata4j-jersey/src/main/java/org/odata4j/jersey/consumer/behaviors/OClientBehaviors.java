@@ -1,6 +1,6 @@
 package org.odata4j.jersey.consumer.behaviors;
 
-import org.odata4j.jersey.consumer.ODataClientRequest;
+import org.odata4j.jersey.consumer.ODataJerseyClientRequest;
 
 /**
  * A static factory to create built-in {@link OClientBehavior} instances.
@@ -59,7 +59,7 @@ public class OClientBehaviors {
   public static OClientBehavior rateLimit(final long millis) {
     return new BaseClientBehavior() {
       @Override
-      public ODataClientRequest transform(ODataClientRequest request) {
+      public ODataJerseyClientRequest transform(ODataJerseyClientRequest request) {
         try {
           Thread.sleep(millis);
         } catch (InterruptedException e) {

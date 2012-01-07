@@ -6,7 +6,7 @@ import com.sun.jersey.api.client.config.ClientConfig;
 /**
  * Client-side extension mechanism - provides a Jersey {@link Client} implementation given a configuration.
  */
-public interface ClientFactory {
+public interface JerseyClientFactory {
 
   /**
    * Creates a new Jersey client.

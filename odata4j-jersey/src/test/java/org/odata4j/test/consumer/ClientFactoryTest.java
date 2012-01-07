@@ -4,7 +4,7 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
-import org.odata4j.jersey.consumer.ClientFactory;
+import org.odata4j.jersey.consumer.JerseyClientFactory;
 import org.odata4j.jersey.consumer.ODataJerseyConsumer;
 
 import com.sun.jersey.api.client.Client;
@@ -27,7 +27,7 @@ public class ClientFactoryTest {
   }
 }
 
-class ClientFactoryStub implements ClientFactory {
+class ClientFactoryStub implements JerseyClientFactory {
   boolean isCalled = false;
 
   @Override

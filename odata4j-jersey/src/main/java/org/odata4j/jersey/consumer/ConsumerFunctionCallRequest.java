@@ -42,7 +42,7 @@ class ConsumerFunctionCallRequest<T extends OObject>
   private final List<OFunctionParameter> params = new LinkedList<OFunctionParameter>();
   private final EdmFunctionImport function;
 
-  ConsumerFunctionCallRequest(ODataClient client, String serviceRootUri,
+  ConsumerFunctionCallRequest(ODataJerseyClient client, String serviceRootUri,
       EdmDataServices metadata, String lastSegment) {
     super(client, serviceRootUri, metadata, lastSegment);
     // lastSegment is the function call name.
@@ -56,7 +56,7 @@ class ConsumerFunctionCallRequest<T extends OObject>
     for (OFunctionParameter p : params) {
       custom(p.getName(), toUriString(p));
     }
-    final ODataClientRequest request = buildRequest(null);
+    final ODataJerseyClientRequest request = buildRequest(null);
     Enumerable<OObject> results = Enumerable.createFromIterator(
         new Func<Iterator<OObject>>() {
           @Override
@@ -167,15 +167,15 @@ class ConsumerFunctionCallRequest<T extends OObject>
 
   private class FunctionResultsIterator extends ReadOnlyIterator<OObject> {
 
-    private ODataClient client;
-    private ODataClientRequest request;
+    private ODataJerseyClient client;
+    private ODataJerseyClientRequest request;
     private FormatParser<? extends OObject> parser;
     private OObject current = null;
     private Iterator<OObject> iter = null;
     private boolean done = false;
     private int count = 0;
 
-    public FunctionResultsIterator(ODataClient client, ODataClientRequest request) {
+    public FunctionResultsIterator(ODataJerseyClient client, ODataJerseyClientRequest request) {
       this.client = client;
       this.request = request;
     }

@@ -3,7 +3,7 @@ package org.odata4j.examples.consumer;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 import org.odata4j.examples.BaseExample;
-import org.odata4j.jersey.consumer.ODataConsumers;
+import org.odata4j.jersey.consumer.ODataJerseyConsumers;
 
 public class DataMarketConsumerExample extends BaseExample {
 
@@ -14,7 +14,7 @@ public class DataMarketConsumerExample extends BaseExample {
 
     String url = "https://api.datamarket.azure.com/Data.ashx/UnitedNations/MDG/";
 
-    ODataConsumer c = ODataConsumers.dataMarket(url, accountKey);
+    ODataConsumer c = ODataJerseyConsumers.dataMarket(url, accountKey);
 
     OEntity firstDataSeries = c.getEntities("DataSeries").top(1).execute().first();
     String filter = String.format("DataSeriesId eq '%s'", firstDataSeries.getProperty("Id").getValue());

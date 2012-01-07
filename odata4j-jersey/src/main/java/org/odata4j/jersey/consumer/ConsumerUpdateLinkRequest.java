@@ -10,7 +10,7 @@ class ConsumerUpdateLinkRequest extends ConsumerEntityRequestBase<Void> {
   private final Object[] oldTargetKeyValues;
   private final OEntityId newTargetEntity;
 
-  ConsumerUpdateLinkRequest(ODataClient client, String serviceRootUri,
+  ConsumerUpdateLinkRequest(ODataJerseyClient client, String serviceRootUri,
       EdmDataServices metadata, OEntityId sourceEntity, OEntityId newTargetEntity, String targetNavProp, Object... oldTargetKeyValues) {
     super(client, serviceRootUri, metadata, sourceEntity.getEntitySetName(), sourceEntity.getEntityKey());
     this.targetNavProp = targetNavProp;
@@ -23,7 +23,7 @@ class ConsumerUpdateLinkRequest extends ConsumerEntityRequestBase<Void> {
     String path = Enumerable.create(getSegments()).join("/");
     path = ConsumerQueryLinksRequest.linksPath(targetNavProp, oldTargetKeyValues).apply(path);
 
-    ODataClientRequest request = ODataClientRequest.put(getServiceRootUri() + path, toSingleLink(newTargetEntity));
+    ODataJerseyClientRequest request = ODataJerseyClientRequest.put(getServiceRootUri() + path, toSingleLink(newTargetEntity));
     getClient().updateLink(request);
     return null;
   }

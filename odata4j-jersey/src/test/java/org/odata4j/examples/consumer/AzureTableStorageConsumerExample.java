@@ -5,7 +5,7 @@ import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OProperties;
 import org.odata4j.examples.BaseExample;
-import org.odata4j.jersey.consumer.ODataConsumers;
+import org.odata4j.jersey.consumer.ODataJerseyConsumers;
 
 public class AzureTableStorageConsumerExample extends BaseExample {
 
@@ -15,7 +15,7 @@ public class AzureTableStorageConsumerExample extends BaseExample {
     String account = azureCreds[0];
     String key = azureCreds[1];
 
-    ODataConsumer c = ODataConsumers.azureTables(account, key);
+    ODataConsumer c = ODataJerseyConsumers.azureTables(account, key);
 
     report("Create a new temp table to use for the test");
     String tableName = "TempTable" + System.currentTimeMillis();
