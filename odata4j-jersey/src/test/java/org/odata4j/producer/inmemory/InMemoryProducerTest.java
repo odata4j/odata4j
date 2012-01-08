@@ -9,12 +9,14 @@ import org.core4j.Func;
 import org.core4j.Funcs;
 import org.junit.Test;
 import org.odata4j.core.OAtomStreamEntity;
+import org.odata4j.core.OEntityKey;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.InlineCount;
 import org.odata4j.producer.QueryInfo;
 
 public class InMemoryProducerTest {
+  private final QueryInfo NULL_QUERY = new QueryInfo(InlineCount.ALLPAGES, null, null, null, null, null, null, null, null);
 
   @Test
   public void inlineCountWithOneShotIterable() {
@@ -33,8 +35,7 @@ public class InMemoryProducerTest {
     Assert.assertEquals(3, response.getEntities().size());
     Assert.assertNull(response.getInlineCount());
 
-    QueryInfo queryInfo = new QueryInfo(InlineCount.ALLPAGES, null, null, null, null, null, null, null, null);
-    response = producer.getEntities("TestData", queryInfo);
+    response = producer.getEntities("TestData", NULL_QUERY);
     Assert.assertEquals(3, response.getEntities().size());
     Assert.assertEquals(Integer.valueOf(3), response.getInlineCount());
   }
@@ -62,6 +63,25 @@ public class InMemoryProducerTest {
     final EdmEntitySet ss = p.getMetadata().findEdmEntitySet("ss");
     Assert.assertNotNull(ss);
     Assert.assertFalse(ss.getType().getHasStream());
+  }
+
+
+  @Test
+  public void testSetNameAndType() {
+    final SimpleEntity e1 = new SimpleEntity();
+    final InMemoryProducer p = new InMemoryProducer("AAA");
+    p.register(SimpleEntity.class, "setName", "typeName", new Func<Iterable<SimpleEntity>>() {
+      @Override
+      public Iterable<SimpleEntity> apply() {
+        return Enumerable.create(e1, new SimpleEntity());
+      }
+    }, "Id");
+
+    Assert.assertEquals(2, p.getEntities("setName", NULL_QUERY).getEntities().size());
+    Assert.assertNotNull(p.getEntity("setName", OEntityKey.create(e1.getId()), NULL_QUERY).getEntity());
+
+    Assert.assertNotNull(p.getMetadata().findEdmEntitySet("setName"));
+    Assert.assertNotNull(p.getMetadata().findEdmEntityType("AAA.typeName"));
   }
 
   static class SimpleEntity {

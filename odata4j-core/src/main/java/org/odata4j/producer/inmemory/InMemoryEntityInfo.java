@@ -8,6 +8,7 @@ import org.core4j.Func1;
 public class InMemoryEntityInfo<TEntity, TKey> {
 
   String entitySetName;
+  String entityTypeName;
   String[] keys;
   Class<TEntity> entityClass;
   Func<Iterable<TEntity>> get;

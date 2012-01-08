@@ -130,16 +130,27 @@ public class InMemoryProducer implements ODataProducer {
    * @param get  a function to iterate over the elements in the set
    * @param keys  one or more keys for the entity
    */
-  public <TEntity, TKey> void register(Class<TEntity> entityClass, String entitySetName, Func<Iterable<TEntity>> get, String... keys) {
+  public <TEntity> void register(Class<TEntity> entityClass, String entitySetName, Func<Iterable<TEntity>> get, String... keys) {
+    register(entityClass, entitySetName, entitySetName, get, keys);
+  }
+
+  /**
+   * Registers a new entity based on a POJO, with support for composite keys.
+   * 
+   * @param entityClass  the class of the entities that are to be stored in the set
+   * @param entitySetName  the alias the set will be known by; this is what is used in the OData url
+   * @param entityTypeName  type name of the entity
+   * @param get  a function to iterate over the elements in the set
+   * @param keys  one or more keys for the entity
+   */
+  public <TEntity> void register(Class<TEntity> entityClass, String entitySetName, String entityTypeName, Func<Iterable<TEntity>> get, String... keys) {
     PropertyModel model = new BeanBasedPropertyModel(entityClass);
     model = new EnumsAsStringsPropertyModelDelegate(model);
-    register(entityClass, model, entitySetName, get, keys);
+    register(entityClass, model, entitySetName, entityTypeName, get, keys);
   }
 
   /**
    * Registers a new entity set based on a POJO type using the default property model.
-   *
-   * <p>@see {@link #register(Class, PropertyModel, Class, String, Func, Func1)} for parameter docs.
    */
   public <TEntity, TKey> void register(Class<TEntity> entityClass, Class<TKey> keyClass, String entitySetName, Func<Iterable<TEntity>> get, Func1<TEntity, TKey> id) {
     PropertyModel model = new BeanBasedPropertyModel(entityClass);
@@ -160,12 +171,23 @@ public class InMemoryProducer implements ODataProducer {
   public <TEntity, TKey> void register(
       Class<TEntity> entityClass,
       PropertyModel propertyModel,
-      final String entitySetName,
+      String entitySetName,
       Func<Iterable<TEntity>> get,
+      String... keys) {
+    register(entityClass, propertyModel, entitySetName, entitySetName, get, keys);
+  }
+
+  public <TEntity, TKey> void register(
+      final Class<TEntity> entityClass,
+      final PropertyModel propertyModel,
+      final String entitySetName,
+      final String entityTypeName,
+      final Func<Iterable<TEntity>> get,
       final String... keys) {
 
     InMemoryEntityInfo<TEntity, TKey> ei = new InMemoryEntityInfo<TEntity, TKey>();
     ei.entitySetName = entitySetName;
+    ei.entityTypeName = entityTypeName;
     ei.properties = propertyModel;
     ei.get = get;
     ei.keys = keys;
