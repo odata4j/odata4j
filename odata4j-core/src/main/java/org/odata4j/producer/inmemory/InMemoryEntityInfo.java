@@ -13,5 +13,5 @@ public class InMemoryEntityInfo<TEntity, TKey> {
   Func<Iterable<TEntity>> get;
   Func1<Object, HashMap<String, Object>> id;
   PropertyModel properties;
-
+  boolean hasStream;
 }

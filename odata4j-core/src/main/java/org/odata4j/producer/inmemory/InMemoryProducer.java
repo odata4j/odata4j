@@ -11,6 +11,7 @@ import org.core4j.Enumerable;
 import org.core4j.Func;
 import org.core4j.Func1;
 import org.core4j.Predicate1;
+import org.odata4j.core.OAtomStreamEntity;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityId;
@@ -168,6 +169,7 @@ public class InMemoryProducer implements ODataProducer {
     ei.get = get;
     ei.keys = keys;
     ei.entityClass = entityClass;
+    ei.hasStream = OAtomStreamEntity.class.isAssignableFrom(entityClass);
 
     ei.id = new Func1<Object, HashMap<String, Object>>() {
       @Override

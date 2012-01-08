@@ -112,11 +112,12 @@ public class InMemoryEdmGenerator implements EdmGenerator {
       List<EdmProperty.Builder> properties = new ArrayList<EdmProperty.Builder>();
 
       properties.addAll(toEdmProperties(decorator, entityInfo.properties, entitySetName));
-      
+
       EdmEntityType.Builder eet = EdmEntityType.newBuilder()
           .setNamespace(namespace)
           .setName(entitySetName)
           .addKeys(entityInfo.keys)
+          .setHasStream(entityInfo.hasStream)
           .addProperties(properties);
       if (decorator != null) {
         eet.setDocumentation(decorator.getDocumentationForEntityType(namespace, entitySetName));
