@@ -8,6 +8,7 @@ import javax.ws.rs.core.MediaType;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
+import org.odata4j.core.OAtomEntity;
 import org.odata4j.core.OCollection;
 import org.odata4j.core.OComplexObject;
 import org.odata4j.core.OEntity;
@@ -163,6 +164,33 @@ public class XmlFormatWriter {
 
   }
 
+  private OAtomEntity getAtomInfo(OEntity oe, final String updated) {
+    if (oe instanceof OAtomEntity) {
+      return (OAtomEntity) oe;
+    }
+    return new OAtomEntity() {
+      @Override
+      public String getAtomEntityTitle() {
+        return null;
+      }
+
+      @Override
+      public String getAtomEntitySummary() {
+        return null;
+      }
+
+      @Override
+      public String getAtomEntityAuthor() {
+        return null;
+      }
+
+      @Override
+      public String getAtomEntityUpdated() {
+        return updated;
+      }
+    };
+  }
+
   protected String writeEntry(XMLWriter2 writer, OEntity oe,
       List<OProperty<?>> entityProperties, List<OLink> entityLinks,
       String entitySetName, String baseUri, String updated,
@@ -176,11 +204,17 @@ public class XmlFormatWriter {
       writeElement(writer, "id", absid);
     }
 
-    writeElement(writer, "title", null, "type", "text");
+    final OAtomEntity oae = getAtomInfo(oe, updated);
+
+    writeElement(writer, "title", oae.getAtomEntityTitle(), "type", "text");
+    String summary = oae.getAtomEntitySummary();
+    if (summary != null) {
+      writeElement(writer, "summary", summary, "type", "text");
+    }
     writeElement(writer, "updated", updated);
 
     writer.startElement("author");
-    writeElement(writer, "name", null);
+    writeElement(writer, "name", oae.getAtomEntityAuthor());
     writer.endElement("author");
 
     if (isResponse) {

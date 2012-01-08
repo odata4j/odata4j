@@ -11,6 +11,7 @@ import org.core4j.Enumerable;
 import org.core4j.Func;
 import org.core4j.Func1;
 import org.core4j.Predicate1;
+import org.odata4j.core.OAtomEntity;
 import org.odata4j.core.OAtomStreamEntity;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
@@ -304,7 +305,11 @@ public class InMemoryProducer implements ODataProducer {
       }
     }
 
-    return OEntities.create(ees, OEntityKey.create(keyKVPair), properties, links);
+    if (obj instanceof OAtomEntity) {
+      return OEntities.create(ees, OEntityKey.create(keyKVPair), properties, links, (OAtomEntity) obj);
+    } else {
+      return OEntities.create(ees, OEntityKey.create(keyKVPair), properties, links);
+    }
   }
 
   private static Predicate1<Object> filterToPredicate(final BoolCommonExpression filter, final PropertyModel properties) {
