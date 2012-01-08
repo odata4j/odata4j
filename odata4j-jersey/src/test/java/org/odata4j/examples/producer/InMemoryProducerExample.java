@@ -49,7 +49,7 @@ public class InMemoryProducerExample {
     final InMemoryProducer producer = new InMemoryProducer("InMemoryProducerExample", 100, new MyEdmDecorator(), null);
 
     // expose this jvm's thread information (Thread instances) as an entity-set called "Threads"
-    producer.register(Thread.class,"Threads",new Func<Iterable<Thread>>() {
+    producer.register(Thread.class, "Threads", new Func<Iterable<Thread>>() {
       public Iterable<Thread> apply() {
         ThreadGroup tg = Thread.currentThread().getThreadGroup();
         while (tg.getParent() != null)
@@ -58,8 +58,8 @@ public class InMemoryProducerExample {
         int count = tg.enumerate(threads, true);
         return Enumerable.create(threads).take(count);
       }
-    },"Id");
-    
+    }, "Id");
+
     // expose current system properties (Map.Entry instances) as an entity-set called "SystemProperties"
     producer.register(Entry.class, "SystemProperties", new Func<Iterable<Entry>>() {
       public Iterable<Entry> apply() {

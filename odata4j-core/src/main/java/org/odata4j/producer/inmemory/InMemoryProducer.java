@@ -1,7 +1,6 @@
 package org.odata4j.producer.inmemory;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -122,21 +121,12 @@ public class InMemoryProducer implements ODataProducer {
   }
 
   /**
-   * Registers a new entity set based on a POJO type using the default property model and a given ID property.
+   * Registers a new entity based on a POJO, with support for composite keys.
    *
-   * <p>@see {@link #register(Class, PropertyModel, Class, String, Func, Func1)} for parameter docs.
-   */
-  @Deprecated
-  public <TEntity, TKey> void register(final Class<TEntity> entityClass, Class<TKey> keyClass, final String entitySetName, Func<Iterable<TEntity>> get, final String idPropertyName) {
-    register(entityClass, entitySetName, get, idPropertyName);
-  }
-
-  /**
-   * Registers a new entity based on a POJO, which support for composite keys 
-   * @param entityClass the class of the entities that are to be stored in the set
-   * @param entitySetName the alias the set will be known by; this is what is used in the ODATA URL
-   * @param get a function to iterate over the elements in the set
-   * @param keys list of keys for the entity
+   * @param entityClass  the class of the entities that are to be stored in the set
+   * @param entitySetName  the alias the set will be known by; this is what is used in the OData url
+   * @param get  a function to iterate over the elements in the set
+   * @param keys  one or more keys for the entity
    */
   public <TEntity, TKey> void register(Class<TEntity> entityClass, String entitySetName, Func<Iterable<TEntity>> get, String... keys) {
     PropertyModel model = new BeanBasedPropertyModel(entityClass);
@@ -163,7 +153,7 @@ public class InMemoryProducer implements ODataProducer {
    * @param propertyModel a way to get/set properties on the POJO
    * @param entitySetName  the alias the set will be known by; this is what is used in the ODATA URL
    * @param get  a function to iterate over the elements in the set
-   * @param keys  list of keys for the entity
+   * @param keys  one or more keys for the entity
    */
   public <TEntity, TKey> void register(
       Class<TEntity> entityClass,
