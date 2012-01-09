@@ -3,7 +3,7 @@ package org.odata4j.test.producer;
 import junit.framework.Assert;
 
 import org.odata4j.fit.producer.AbstractServerFilteringTest;
-import org.odata4j.jersey.server.JerseyServer;
+import org.odata4j.jersey.producer.server.JerseyServer;
 import org.odata4j.producer.resources.DefaultODataApplication;
 import org.odata4j.producer.resources.RootApplication;
 

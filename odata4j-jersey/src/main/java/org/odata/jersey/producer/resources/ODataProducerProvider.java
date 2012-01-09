@@ -1,4 +1,4 @@
-package org.odata.jersey.resources;
+package org.odata.jersey.producer.resources;
 
 import java.util.Properties;
 
