@@ -13,7 +13,7 @@ public class LinksProducer extends InMemoryProducer {
   public LinksProducer() {
     super("LinksProducer");
 
-    this.register(A.class, String.class, "As", new Func<Iterable<A>>() {
+    this.register(A.class, "As", new Func<Iterable<A>>() {
 
       @Override
       public Iterable<A> apply() {
@@ -22,7 +22,7 @@ public class LinksProducer extends InMemoryProducer {
 
     }, "Name");
 
-    this.register(B.class, String.class, "Bs", new Func<Iterable<B>>() {
+    this.register(B.class, "Bs", new Func<Iterable<B>>() {
 
       @Override
       public Iterable<B> apply() {
@@ -31,7 +31,7 @@ public class LinksProducer extends InMemoryProducer {
 
     }, "Name");
 
-    this.register(C.class, String.class, "Cs", new Func<Iterable<C>>() {
+    this.register(C.class, "Cs", new Func<Iterable<C>>() {
 
       @Override
       public Iterable<C> apply() {

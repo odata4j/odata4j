@@ -5,6 +5,7 @@ import org.junit.runners.Suite;
 import org.odata4j.format.xml.EdmxFormatParserTest;
 import org.odata4j.format.xml.EdmxFormatWriterTest;
 import org.odata4j.format.xml.MultipleWorkspacesTest;
+import org.odata4j.producer.inmemory.InMemoryEvaluationTest;
 import org.odata4j.producer.inmemory.InMemoryProducerTest;
 import org.odata4j.producer.jpa.airline.test.CreateWithLinkTest;
 import org.odata4j.producer.jpa.airline.test.EdmDateTimeTemporalTest;
@@ -92,7 +93,8 @@ import org.odata4j.test.producer.resources.HeaderMapTest;
     InMemoryProducerTest.class,
     ConsumerLinksTest.class,
     ConsumerExpandTest.class,
-    HeaderMapTest.class
+    HeaderMapTest.class,
+    InMemoryEvaluationTest.class
 })
 public class OData4jTestSuite {
 

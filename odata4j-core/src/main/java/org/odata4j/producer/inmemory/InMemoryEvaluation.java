@@ -14,13 +14,16 @@ import org.odata4j.expression.BoolParenExpression;
 import org.odata4j.expression.BooleanLiteral;
 import org.odata4j.expression.CastExpression;
 import org.odata4j.expression.CommonExpression;
+import org.odata4j.expression.ConcatMethodCallExpression;
 import org.odata4j.expression.DivExpression;
 import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.EqExpression;
 import org.odata4j.expression.Expression;
 import org.odata4j.expression.GeExpression;
 import org.odata4j.expression.GtExpression;
+import org.odata4j.expression.IndexOfMethodCallExpression;
 import org.odata4j.expression.LeExpression;
+import org.odata4j.expression.LengthMethodCallExpression;
 import org.odata4j.expression.LiteralExpression;
 import org.odata4j.expression.LtExpression;
 import org.odata4j.expression.ModExpression;
@@ -29,8 +32,13 @@ import org.odata4j.expression.NeExpression;
 import org.odata4j.expression.NotExpression;
 import org.odata4j.expression.OrExpression;
 import org.odata4j.expression.ParenExpression;
+import org.odata4j.expression.ReplaceMethodCallExpression;
 import org.odata4j.expression.SubExpression;
+import org.odata4j.expression.SubstringMethodCallExpression;
 import org.odata4j.expression.SubstringOfMethodCallExpression;
+import org.odata4j.expression.ToLowerMethodCallExpression;
+import org.odata4j.expression.ToUpperMethodCallExpression;
+import org.odata4j.expression.TrimMethodCallExpression;
 import org.odata4j.internal.TypeConverter;
 
 public class InMemoryEvaluation {
@@ -39,13 +47,13 @@ public class InMemoryEvaluation {
     if (expression instanceof LiteralExpression)
       return Expression.literalValue((LiteralExpression) expression);
 
-    if (expression instanceof BoolCommonExpression)
-      return evaluate((BoolCommonExpression) expression, target,
-          properties);
-
     if (expression instanceof EntitySimpleProperty)
       return properties.getPropertyValue(target,
           ((EntitySimpleProperty) expression).getPropertyName());
+
+    if (expression instanceof BoolCommonExpression)
+      return evaluate((BoolCommonExpression) expression, target,
+          properties);
 
     if (expression instanceof AddExpression)
       return binaryFunction((BinaryCommonExpression) expression, target,
@@ -84,7 +92,78 @@ public class InMemoryEvaluation {
       return TypeConverter.convert(evaluate(castExpression.getExpression(), target, properties), javaType);
     }
 
+    if (expression instanceof ToLowerMethodCallExpression) {
+      ToLowerMethodCallExpression e = (ToLowerMethodCallExpression) expression;
+      String value = evaluateToString(e.getTarget(), target, properties);
+      return value == null ? null : value.toLowerCase();
+    }
+
+    if (expression instanceof ToUpperMethodCallExpression) {
+      ToUpperMethodCallExpression e = (ToUpperMethodCallExpression) expression;
+      String value = evaluateToString(e.getTarget(), target, properties);
+      return value == null ? null : value.toUpperCase();
+    }
+
+    if (expression instanceof SubstringMethodCallExpression) {
+      SubstringMethodCallExpression e = (SubstringMethodCallExpression) expression;
+      String value = evaluateToString(e.getTarget(), target, properties);
+      if (value == null || e.getStart() == null)
+        return value;
+
+      int start = (Integer) evaluate(e.getStart(), target, properties);
+
+      if (e.getLength() == null) {
+        return value.substring(start);
+      }
+
+      int length = (Integer) evaluate(e.getLength(), target, properties);
+      return length == 0 ? "" : value.substring(start, start + length);
+    }
+
+    if (expression instanceof IndexOfMethodCallExpression) {
+      IndexOfMethodCallExpression e = (IndexOfMethodCallExpression) expression;
+      String text = evaluateToString(e.getTarget(), target, properties);
+      String search = evaluateToString(e.getValue(), target, properties);
+      return text.indexOf(search);
+    }
+
+    if (expression instanceof ReplaceMethodCallExpression) {
+      ReplaceMethodCallExpression e = (ReplaceMethodCallExpression) expression;
+      String text = evaluateToString(e.getTarget(), target, properties);
+      String find = evaluateToString(e.getFind(), target, properties);
+      String replace = evaluateToString(e.getReplace(), target, properties);
+      return text.replace(find, replace);
+    }
+
+    if (expression instanceof ConcatMethodCallExpression) {
+      ConcatMethodCallExpression e = (ConcatMethodCallExpression) expression;
+      String left = evaluateToString(e.getLHS(), target, properties);
+      String right = evaluateToString(e.getRHS(), target, properties);
+      return left + right;
+    }
+
+    if (expression instanceof TrimMethodCallExpression) {
+      TrimMethodCallExpression e = (TrimMethodCallExpression) expression;
+      String left = evaluateToString(e.getTarget(), target, properties);
+      return left == null ? null : left.trim();
+    }
+
+    if (expression instanceof LengthMethodCallExpression) {
+      LengthMethodCallExpression e = (LengthMethodCallExpression) expression;
+      String left = evaluateToString(e.getTarget(), target, properties);
+      return left == null ? 0 : left.length();
+    }
+
     throw new UnsupportedOperationException("unsupported expression " + expression);
+  }
+
+  private static String evaluateToString(CommonExpression expression, Object target, PropertyModel properties) {
+    Object value = evaluate(expression, target, properties);
+    if (value == null)
+      return null;
+    if (value instanceof String)
+      return ((String) value);
+    return String.valueOf(value);
   }
 
   public static boolean evaluate(BoolCommonExpression expression, Object target, PropertyModel properties) {
@@ -144,6 +223,12 @@ public class InMemoryEvaluation {
       BoolParenExpression e = (BoolParenExpression) expression;
       return evaluate((BoolCommonExpression) e.getExpression(), target,
           properties);
+    }
+
+    //Let's try to evaluate generic expressions in hope it evaluates to bool
+    Object o = evaluate((CommonExpression) expression, target, properties);
+    if (o instanceof Boolean) {
+      return (Boolean) o;
     }
 
     throw new UnsupportedOperationException("unsupported expression "

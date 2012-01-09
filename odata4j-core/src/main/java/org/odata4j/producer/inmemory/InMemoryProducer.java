@@ -1,7 +1,6 @@
 package org.odata4j.producer.inmemory;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -12,6 +11,8 @@ import org.core4j.Enumerable;
 import org.core4j.Func;
 import org.core4j.Func1;
 import org.core4j.Predicate1;
+import org.odata4j.core.OAtomEntity;
+import org.odata4j.core.OAtomStreamEntity;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityId;
@@ -122,32 +123,34 @@ public class InMemoryProducer implements ODataProducer {
   }
 
   /**
-   * Registers a new entity set based on a POJO type using the default property model and a given ID property.
+   * Registers a new entity based on a POJO, with support for composite keys.
    *
-   * <p>@see {@link #register(Class, PropertyModel, Class, String, Func, Func1)} for parameter docs.
+   * @param entityClass  the class of the entities that are to be stored in the set
+   * @param entitySetName  the alias the set will be known by; this is what is used in the OData url
+   * @param get  a function to iterate over the elements in the set
+   * @param keys  one or more keys for the entity
    */
-  @Deprecated
-  public <TEntity, TKey> void register(final Class<TEntity> entityClass, Class<TKey> keyClass, final String entitySetName, Func<Iterable<TEntity>> get, final String idPropertyName) {
-    register(entityClass, entitySetName, get, idPropertyName);
+  public <TEntity> void register(Class<TEntity> entityClass, String entitySetName, Func<Iterable<TEntity>> get, String... keys) {
+    register(entityClass, entitySetName, entitySetName, get, keys);
   }
 
   /**
-   * Registers a new entity based on a POJO, which support for composite keys 
-   * @param entityClass the class of the entities that are to be stored in the set
-   * @param entitySetName the alias the set will be known by; this is what is used in the ODATA URL
-   * @param get a function to iterate over the elements in the set
-   * @param keys list of keys for the entity
+   * Registers a new entity based on a POJO, with support for composite keys.
+   * 
+   * @param entityClass  the class of the entities that are to be stored in the set
+   * @param entitySetName  the alias the set will be known by; this is what is used in the OData url
+   * @param entityTypeName  type name of the entity
+   * @param get  a function to iterate over the elements in the set
+   * @param keys  one or more keys for the entity
    */
-  public <TEntity, TKey> void register(Class<TEntity> entityClass, String entitySetName, Func<Iterable<TEntity>> get, String... keys) {
+  public <TEntity> void register(Class<TEntity> entityClass, String entitySetName, String entityTypeName, Func<Iterable<TEntity>> get, String... keys) {
     PropertyModel model = new BeanBasedPropertyModel(entityClass);
     model = new EnumsAsStringsPropertyModelDelegate(model);
-    register(entityClass, model, entitySetName, get, keys);
+    register(entityClass, model, entitySetName, entityTypeName, get, keys);
   }
 
   /**
    * Registers a new entity set based on a POJO type using the default property model.
-   *
-   * <p>@see {@link #register(Class, PropertyModel, Class, String, Func, Func1)} for parameter docs.
    */
   public <TEntity, TKey> void register(Class<TEntity> entityClass, Class<TKey> keyClass, String entitySetName, Func<Iterable<TEntity>> get, Func1<TEntity, TKey> id) {
     PropertyModel model = new BeanBasedPropertyModel(entityClass);
@@ -163,21 +166,33 @@ public class InMemoryProducer implements ODataProducer {
    * @param propertyModel a way to get/set properties on the POJO
    * @param entitySetName  the alias the set will be known by; this is what is used in the ODATA URL
    * @param get  a function to iterate over the elements in the set
-   * @param keys  list of keys for the entity
+   * @param keys  one or more keys for the entity
    */
   public <TEntity, TKey> void register(
       Class<TEntity> entityClass,
       PropertyModel propertyModel,
-      final String entitySetName,
+      String entitySetName,
       Func<Iterable<TEntity>> get,
+      String... keys) {
+    register(entityClass, propertyModel, entitySetName, entitySetName, get, keys);
+  }
+
+  public <TEntity, TKey> void register(
+      final Class<TEntity> entityClass,
+      final PropertyModel propertyModel,
+      final String entitySetName,
+      final String entityTypeName,
+      final Func<Iterable<TEntity>> get,
       final String... keys) {
 
     InMemoryEntityInfo<TEntity, TKey> ei = new InMemoryEntityInfo<TEntity, TKey>();
     ei.entitySetName = entitySetName;
+    ei.entityTypeName = entityTypeName;
     ei.properties = propertyModel;
     ei.get = get;
     ei.keys = keys;
     ei.entityClass = entityClass;
+    ei.hasStream = OAtomStreamEntity.class.isAssignableFrom(entityClass);
 
     ei.id = new Func1<Object, HashMap<String, Object>>() {
       @Override
@@ -312,7 +327,11 @@ public class InMemoryProducer implements ODataProducer {
       }
     }
 
-    return OEntities.create(ees, OEntityKey.create(keyKVPair), properties, links);
+    if (obj instanceof OAtomEntity) {
+      return OEntities.create(ees, OEntityKey.create(keyKVPair), properties, links, (OAtomEntity) obj);
+    } else {
+      return OEntities.create(ees, OEntityKey.create(keyKVPair), properties, links);
+    }
   }
 
   private static Predicate1<Object> filterToPredicate(final BoolCommonExpression filter, final PropertyModel properties) {

@@ -1,29 +1,14 @@
 package org.odata4j.format.xml;
 
-import java.io.Writer;
-
 import org.odata4j.core.NamespacedAnnotation;
 import org.odata4j.core.PrefixedNamespace;
-import org.odata4j.edm.EdmAnnotationAttribute;
-import org.odata4j.edm.EdmAnnotationElement;
-import org.odata4j.edm.EdmAssociation;
-import org.odata4j.edm.EdmAssociationSet;
-import org.odata4j.edm.EdmComplexType;
-import org.odata4j.edm.EdmDataServices;
-import org.odata4j.edm.EdmDocumentation;
-import org.odata4j.edm.EdmEntityContainer;
-import org.odata4j.edm.EdmEntitySet;
-import org.odata4j.edm.EdmEntityType;
-import org.odata4j.edm.EdmFunctionImport;
-import org.odata4j.edm.EdmFunctionParameter;
-import org.odata4j.edm.EdmItem;
-import org.odata4j.edm.EdmNavigationProperty;
-import org.odata4j.edm.EdmProperty;
+import org.odata4j.edm.*;
 import org.odata4j.edm.EdmProperty.CollectionKind;
-import org.odata4j.edm.EdmSchema;
 import org.odata4j.stax2.QName2;
 import org.odata4j.stax2.XMLFactoryProvider2;
 import org.odata4j.stax2.XMLWriter2;
+
+import java.io.Writer;
 
 public class EdmxFormatWriter extends XmlFormatWriter {
 
@@ -72,6 +57,10 @@ public class EdmxFormatWriter extends XmlFormatWriter {
         writer.writeAttribute("Name", eet.getName());
         if (null != eet.getIsAbstract()) {
           writer.writeAttribute("Abstract", eet.getIsAbstract().toString());
+        }
+
+        if (Boolean.TRUE.equals(eet.getHasStream())) {
+          writer.writeAttribute(new QName2(m, "HasStream", "m"), "true");
         }
 
         // keys only on base types

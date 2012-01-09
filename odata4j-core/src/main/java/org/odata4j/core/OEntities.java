@@ -32,7 +32,21 @@ public class OEntities {
    * Creates a new entity.
    *
    * @param entitySet  the entity-set
-   * @param entityType the entity type
+   * @param entityKey  the entity-key
+   * @param properties  the entity properties, if any
+   * @param links  the entity links, if any
+   * @param atomEntity atom serialization info
+   * @return the new entity
+   */
+  public static OEntity create(EdmEntitySet entitySet, OEntityKey entityKey, List<OProperty<?>> properties, List<OLink> links, OAtomEntity atomEntity) {
+    return new OAtomEntityImpl(entitySet, entityKey, true, properties, links, atomEntity);
+  }
+
+  /**
+   * Creates a new entity.
+   *
+   * @param entitySet  the entity-set
+   * @param entityType  the entity type
    * @param entityKey  the entity-key
    * @param properties  the entity properties, if any
    * @param links  the entity links, if any
@@ -59,6 +73,7 @@ public class OEntities {
    * Creates a new entity with additional Atom information.
    *
    * @param entitySet  the entity-set
+   * @param entityType  the entity type
    * @param entityKey  the entity-key
    * @param properties  the entity properties, if any
    * @param links  the entity links, if any
@@ -83,6 +98,35 @@ public class OEntities {
    */
   public static OEntity createRequest(EdmEntitySet entitySet, List<OProperty<?>> properties, List<OLink> links, String title, String categoryTerm) {
     return new OEntityAtomImpl(entitySet, null, null, false, properties, links, title, categoryTerm);
+  }
+
+  private static class OAtomEntityImpl extends OEntityImpl implements OAtomEntity {
+    private final OAtomEntity atomEntity;
+
+    private OAtomEntityImpl(EdmEntitySet entitySet, OEntityKey entityKey, boolean entityKeyRequired, List<OProperty<?>> properties, List<OLink> links, OAtomEntity atomEntity) {
+      super(entitySet, entityKey, entityKeyRequired, properties, links);
+      this.atomEntity = atomEntity;
+    }
+
+    @Override
+    public String getAtomEntityTitle() {
+      return atomEntity.getAtomEntityTitle();
+    }
+
+    @Override
+    public String getAtomEntitySummary() {
+      return atomEntity.getAtomEntitySummary();
+    }
+
+    @Override
+    public String getAtomEntityAuthor() {
+      return atomEntity.getAtomEntityAuthor();
+    }
+
+    @Override
+    public String getAtomEntityUpdated() {
+      return atomEntity.getAtomEntityUpdated();
+    }
   }
 
   private static class OEntityAtomImpl extends OEntityImpl implements AtomInfo {

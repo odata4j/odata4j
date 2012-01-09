@@ -36,8 +36,8 @@ public class MetadataResource {
 
     // a request for media type atomsvc+xml means give me the service document of the metadata producer
     if ("atomsvc".equals(format) || isAtomSvcRequest(httpHeaders)) {
-      MetadataProducer md = producer.getMetadataProducer();
-      if (null == md) {
+      MetadataProducer metadataProducer = producer.getMetadataProducer();
+      if (metadataProducer == null) {
         return noMetadata();
       }
       ServiceDocumentResource r = new ServiceDocumentResource();
@@ -45,7 +45,7 @@ public class MetadataResource {
     } else {
       StringWriter w = new StringWriter();
       ODataProducer source = "metamodel".equals(format) ? producer.getMetadataProducer() : producer;
-      if (null == source) {
+      if (source == null) {
         return noMetadata();
       }
       EdmDataServices s = source.getMetadata();
@@ -90,13 +90,12 @@ public class MetadataResource {
     ODataProducer producer = producerResolver.getContext(ODataProducer.class);
 
     MetadataProducer metadataProducer = producer.getMetadataProducer();
-    if (null == metadataProducer) {
+    if (metadataProducer == null) {
       return noMetadata();
     }
 
     EntitiesRequestResource r = new EntitiesRequestResource();
     return r.getEntitiesImpl(httpHeaders, uriInfo, metadataProducer, entitySetName, inlineCount, top, skip, filter, orderBy, format, callback, skipToken, expand, select);
-    // return Response.ok("getMetadataEntities: " + entitySetName + " optionalId: " + optionalId, "text/plain").build();
   }
 
   @GET
@@ -118,13 +117,12 @@ public class MetadataResource {
     ODataProducer producer = producerResolver.getContext(ODataProducer.class);
 
     MetadataProducer metadataProducer = producer.getMetadataProducer();
-    if (null == metadataProducer) {
+    if (metadataProducer == null) {
       return noMetadata();
     }
 
     EntityRequestResource r = new EntityRequestResource();
     return r.getEntityImpl(httpHeaders, uriInfo, metadataProducer, entitySetName, id, format, callback, expand, select);
-    //return Response.ok("getMetadataEntity: " + entitySetName + " id: " + id, "text/plain").build();
   }
 
   public static final int HTTP_NOT_IMPLEMENTED = 501;

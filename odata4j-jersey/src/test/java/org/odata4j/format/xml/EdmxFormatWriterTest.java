@@ -128,7 +128,7 @@ public class EdmxFormatWriterTest implements EdmDecorator {
     honolulu.setName("Honolulu International Airport");
     airports.add(honolulu);
 
-    p.register(Airport.class, String.class, "Airports", new Func<Iterable<Airport>>() {
+    p.register(Airport.class, "Airports", new Func<Iterable<Airport>>() {
 
       @Override
       public Iterable<Airport> apply() {

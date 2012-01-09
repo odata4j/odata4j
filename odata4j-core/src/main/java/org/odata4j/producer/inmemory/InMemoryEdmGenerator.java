@@ -112,11 +112,12 @@ public class InMemoryEdmGenerator implements EdmGenerator {
       List<EdmProperty.Builder> properties = new ArrayList<EdmProperty.Builder>();
 
       properties.addAll(toEdmProperties(decorator, entityInfo.properties, entitySetName));
-      
+
       EdmEntityType.Builder eet = EdmEntityType.newBuilder()
           .setNamespace(namespace)
-          .setName(entitySetName)
+          .setName(entityInfo.entityTypeName)
           .addKeys(entityInfo.keys)
+          .setHasStream(entityInfo.hasStream)
           .addProperties(properties);
       if (decorator != null) {
         eet.setDocumentation(decorator.getDocumentationForEntityType(namespace, entitySetName));
@@ -142,11 +143,11 @@ public class InMemoryEdmGenerator implements EdmGenerator {
 
       generateToOneNavProperties(associations, associationSets,
           entityTypesByName, entitySetByName, entityNameByClass,
-          entitySetName, ei);
+          ei.entityTypeName, ei);
 
       generateToManyNavProperties(associations, associationSets,
           entityTypesByName, entitySetByName, entityNameByClass,
-          entitySetName, ei, clazz1);
+          ei.entityTypeName, ei, clazz1);
     }
   }
 
@@ -155,12 +156,13 @@ public class InMemoryEdmGenerator implements EdmGenerator {
       List<EdmAssociationSet.Builder> associationSets,
       Map<String, EdmEntityType.Builder> entityTypesByName,
       Map<String, EdmEntitySet.Builder> entitySetByName,
-      Map<Class<?>, String> entityNameByClass, String entitySetName,
+      Map<Class<?>, String> entityNameByClass, 
+      String entityTypeName,
       InMemoryEntityInfo<?, ?> ei) {
 
     for (String assocProp : ei.properties.getPropertyNames()) {
 
-      EdmEntityType.Builder eet1 = entityTypesByName.get(entitySetName);
+      EdmEntityType.Builder eet1 = entityTypesByName.get(entityTypeName);
       Class<?> clazz2 = ei.properties.getPropertyType(assocProp);
       String eetName2 = entityNameByClass.get(clazz2);
 
@@ -203,12 +205,14 @@ public class InMemoryEdmGenerator implements EdmGenerator {
       List<EdmAssociationSet.Builder> associationSets,
       Map<String, EdmEntityType.Builder> entityTypesByName,
       Map<String, EdmEntitySet.Builder> entitySetByName,
-      Map<Class<?>, String> entityNameByClass, String entitySetName,
-      InMemoryEntityInfo<?, ?> ei, Class<?> clazz1) {
+      Map<Class<?>, String> entityNameByClass,
+      String entityTypeName,
+      InMemoryEntityInfo<?, ?> ei,
+      Class<?> clazz1) {
 
     for (String assocProp : ei.properties.getCollectionNames()) {
 
-      final EdmEntityType.Builder eet1 = entityTypesByName.get(entitySetName);
+      final EdmEntityType.Builder eet1 = entityTypesByName.get(entityTypeName);
 
       Class<?> clazz2 = ei.properties.getCollectionElementType(assocProp);
       String eetName2 = entityNameByClass.get(clazz2);
