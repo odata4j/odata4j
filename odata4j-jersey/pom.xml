@@ -13,6 +13,29 @@
     <relativePath>..</relativePath>
   </parent>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <configuration>
+          <additionalConfig>
+            <file>
+              <name>.settings/org.eclipse.jdt.core.prefs</name>
+              <content>
+                  <!-- because of reference to com.sun.net.httpserver -->
+                  <![CDATA[
+                  org.eclipse.jdt.core.compiler.problem.forbiddenReference=ignore
+                  ]]>
+              </content>
+              </file>
+          </additionalConfig>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+
   <dependencies>
     <dependency>
       <groupId>org.odata4j</groupId>
