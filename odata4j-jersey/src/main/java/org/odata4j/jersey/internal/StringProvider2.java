@@ -1,4 +1,4 @@
-package org.odata.jersey.internal;
+package org.odata4j.jersey.internal;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
