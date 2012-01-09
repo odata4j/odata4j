@@ -5,9 +5,9 @@ import java.util.Set;
 
 import javax.ws.rs.ext.RuntimeDelegate;
 
-import org.odata.jersey.internal.StringProvider2;
 import org.odata4j.internal.PlatformUtil;
 import org.odata4j.jersey.consumer.behaviors.OClientBehavior;
+import org.odata4j.jersey.internal.StringProvider2;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
