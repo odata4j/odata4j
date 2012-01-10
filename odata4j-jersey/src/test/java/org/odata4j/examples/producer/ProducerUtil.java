@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import org.odata4j.jersey.server.JerseyServer;
+import org.odata4j.jersey.producer.server.JerseyServer;
 import org.odata4j.producer.resources.DefaultODataApplication;
 import org.odata4j.producer.resources.RootApplication;
 import org.odata4j.producer.server.ODataServer;

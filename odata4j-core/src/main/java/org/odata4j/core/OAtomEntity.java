@@ -2,10 +2,10 @@ package org.odata4j.core;
 
 /**
  * Interface providing information for ATOM serialization.
- * 
+ *
  * <p>Enables feed customization of ATOM entries for certain properties instead of using &lt;m:Properties&gt;
  */
-public interface OAtomEntity {
+public interface OAtomEntity extends OExtension<OEntity> {
 
   String getAtomEntityTitle();
 
@@ -14,5 +14,5 @@ public interface OAtomEntity {
   String getAtomEntityAuthor();
 
   String getAtomEntityUpdated();
-  
+
 }

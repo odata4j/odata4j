@@ -1,4 +1,4 @@
-package org.odata4j.jersey.server;
+package org.odata4j.jersey.producer.server;
 
 import static com.sun.jersey.api.core.ResourceConfig.FEATURE_TRACE;
 import static com.sun.jersey.api.core.ResourceConfig.PROPERTY_CONTAINER_REQUEST_FILTERS;

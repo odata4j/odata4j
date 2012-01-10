@@ -9,6 +9,7 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.odata4j.core.OAtomEntity;
+import org.odata4j.core.OAtomStreamEntity;
 import org.odata4j.core.OCollection;
 import org.odata4j.core.OComplexObject;
 import org.odata4j.core.OEntity;
@@ -165,8 +166,10 @@ public class XmlFormatWriter {
   }
 
   private OAtomEntity getAtomInfo(OEntity oe, final String updated) {
-    if (oe instanceof OAtomEntity) {
-      return (OAtomEntity) oe;
+    if (oe != null) {
+      OAtomEntity atomEntity = oe.findExtension(OAtomEntity.class);
+      if (atomEntity != null)
+        return atomEntity;
     }
     return new OAtomEntity() {
       @Override
@@ -193,7 +196,7 @@ public class XmlFormatWriter {
 
   protected String writeEntry(XMLWriter2 writer, OEntity oe,
       List<OProperty<?>> entityProperties, List<OLink> entityLinks,
-      String entitySetName, String baseUri, String updated,
+      String baseUri, String updated,
       EdmEntitySet ees, boolean isResponse) {
 
     String relid = null;
@@ -218,8 +221,7 @@ public class XmlFormatWriter {
     writer.endElement("author");
 
     if (isResponse) {
-      writeElement(writer, "link", null, "rel", "edit", "title",
-          entitySetName, "href", relid);
+      writeElement(writer, "link", null, "rel", "edit", "title", ees.getType().getName(), "href", relid);
     }
 
     if (entityLinks != null) {
@@ -281,15 +283,30 @@ public class XmlFormatWriter {
         "term", null == oe ? ees.getType().getFullyQualifiedTypeName() : oe.getEntityType().getFullyQualifiedTypeName(),
         "scheme", scheme);
 
-    writer.startElement("content");
-    writer.writeAttribute("type", MediaType.APPLICATION_XML);
+    boolean hasStream = false;
+    if (oe != null) {
+      OAtomStreamEntity stream = oe.findExtension(OAtomStreamEntity.class);
+      if (stream != null) {
+        hasStream = true;
+        writer.startElement("content");
+        writer.writeAttribute("type", stream.getAtomEntityType());
+        writer.writeAttribute("src", baseUri + stream.getAtomEntitySource());
+        writer.endElement("content");
+      }
+    }
+
+    if (!hasStream) {
+      writer.startElement("content");
+      writer.writeAttribute("type", MediaType.APPLICATION_XML);
+    }
 
     writer.startElement(new QName2(m, "properties", "m"));
-
     writeProperties(writer, entityProperties);
-
     writer.endElement("properties");
-    writer.endElement("content");
+
+    if (!hasStream) {
+      writer.endElement("content");
+    }
     return absid;
 
   }
@@ -328,7 +345,6 @@ public class XmlFormatWriter {
           writer.startElement("entry");
           writeEntry(writer, entity,
               entity.getProperties(), entity.getLinks(),
-              entity.getEntitySet().getName(),
               baseUri, updated,
               entity.getEntitySet(), isResponse);
 
@@ -342,7 +358,6 @@ public class XmlFormatWriter {
         writer.startElement("entry");
         writeEntry(writer, entity,
             entity.getProperties(), entity.getLinks(),
-            entity.getEntitySet().getName(),
             baseUri, updated,
             entity.getEntitySet(), isResponse);
 
