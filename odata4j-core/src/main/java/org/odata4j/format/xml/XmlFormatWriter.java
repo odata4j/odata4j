@@ -193,7 +193,7 @@ public class XmlFormatWriter {
 
   protected String writeEntry(XMLWriter2 writer, OEntity oe,
       List<OProperty<?>> entityProperties, List<OLink> entityLinks,
-      String entitySetName, String baseUri, String updated,
+      String baseUri, String updated,
       EdmEntitySet ees, boolean isResponse) {
 
     String relid = null;
@@ -218,8 +218,7 @@ public class XmlFormatWriter {
     writer.endElement("author");
 
     if (isResponse) {
-      writeElement(writer, "link", null, "rel", "edit", "title",
-          entitySetName, "href", relid);
+      writeElement(writer, "link", null, "rel", "edit", "title", ees.getType().getName(), "href", relid);
     }
 
     if (entityLinks != null) {
@@ -328,7 +327,6 @@ public class XmlFormatWriter {
           writer.startElement("entry");
           writeEntry(writer, entity,
               entity.getProperties(), entity.getLinks(),
-              entity.getEntitySet().getName(),
               baseUri, updated,
               entity.getEntitySet(), isResponse);
 
@@ -342,7 +340,6 @@ public class XmlFormatWriter {
         writer.startElement("entry");
         writeEntry(writer, entity,
             entity.getProperties(), entity.getLinks(),
-            entity.getEntitySet().getName(),
             baseUri, updated,
             entity.getEntitySet(), isResponse);
 
