@@ -2,6 +2,7 @@ package org.odata4j.producer.inmemory;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.odata4j.expression.BoolMethodExpression;
 import org.odata4j.expression.CommonExpression;
 import org.odata4j.expression.EqExpression;
 import org.odata4j.expression.Expression;
@@ -86,6 +87,54 @@ public class InMemoryEvaluationTest {
 
     Object evaluate = InMemoryEvaluation.evaluate(ex, this, new BeanBasedPropertyModel(getClass()));
     Assert.assertEquals(evaluate, "C");
+  }
+
+  @Test
+  public void testStartsWithExpression() {
+    BoolMethodExpression ex = Expression.startsWith(Expression.string("ABCDE"), Expression.string("ABC"));
+
+    boolean evaluate = InMemoryEvaluation.evaluate(ex, this, new BeanBasedPropertyModel(getClass()));
+    Assert.assertTrue(evaluate);
+  }
+
+  @Test
+  public void testStartsWithExpressionNegative() {
+    BoolMethodExpression ex = Expression.startsWith(Expression.string("ABCDE"), Expression.string("BC"));
+
+    boolean evaluate = InMemoryEvaluation.evaluate(ex, this, new BeanBasedPropertyModel(getClass()));
+    Assert.assertFalse(evaluate);
+  }
+
+  @Test
+  public void testEndsWithExpression() {
+    BoolMethodExpression ex = Expression.endsWith(Expression.string("ABCDE"), Expression.string("CDE"));
+
+    boolean evaluate = InMemoryEvaluation.evaluate(ex, this, new BeanBasedPropertyModel(getClass()));
+    Assert.assertTrue(evaluate);
+  }
+
+  @Test
+  public void testEndsWithExpressionNegative() {
+    BoolMethodExpression ex = Expression.endsWith(Expression.string("ABCDE"), Expression.string("CD"));
+
+    boolean evaluate = InMemoryEvaluation.evaluate(ex, this, new BeanBasedPropertyModel(getClass()));
+    Assert.assertFalse(evaluate);
+  }
+
+  @Test
+  public void testSubstringOfExpression() {
+    BoolMethodExpression ex = Expression.substringOf(Expression.string("BCD"), Expression.string("ABCDE"));
+
+    boolean evaluate = InMemoryEvaluation.evaluate(ex, this, new BeanBasedPropertyModel(getClass()));
+    Assert.assertTrue(evaluate);
+  }
+
+  @Test
+  public void testSubstringOfExpressionNegative() {
+    BoolMethodExpression ex = Expression.substringOf(Expression.string("BCE"), Expression.string("ABCDE"));
+
+    boolean evaluate = InMemoryEvaluation.evaluate(ex, this, new BeanBasedPropertyModel(getClass()));
+    Assert.assertFalse(evaluate);
   }
 
 }
