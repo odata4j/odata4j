@@ -1,8 +1,8 @@
 package org.odata4j.jersey.consumer;
 
 import org.odata4j.consumer.ODataConsumer;
-import org.odata4j.jersey.consumer.behaviors.OClientBehavior;
-import org.odata4j.jersey.consumer.behaviors.OClientBehaviors;
+import org.odata4j.consumer.behaviors.OClientBehavior;
+import org.odata4j.consumer.behaviors.OClientBehaviors;
 
 /**
  * A static factory to create {@link ODataJerseyConsumer} instances preconfigured for specific services.

@@ -1,10 +1,9 @@
-package org.odata4j.examples.consumer;
+package org.odata4j.examples.jersey.consumer;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.Date;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
@@ -13,35 +12,52 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 
 import org.core4j.Func1;
+import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.ODataConstants;
-import org.odata4j.core.OProperties;
+import org.odata4j.examples.consumers.AbstractRequestEntryModificationExample;
 import org.odata4j.jersey.consumer.ODataJerseyConsumer;
-import org.odata4j.jersey.consumer.behaviors.BaseClientBehavior;
+import org.odata4j.jersey.consumer.behaviors.JerseyClientBehavior;
 
 import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.filter.Filterable;
 import com.sun.jersey.core.util.ReaderWriter;
 
-public class RequestEntryModificationExample {
+public class RequestEntryModificationJerseyExample extends AbstractRequestEntryModificationExample {
 
   public static void main(String... args) {
-    ODataConsumer.dump.all(true);
+    RequestEntryModificationJerseyExample example = new RequestEntryModificationJerseyExample();
+    example.run(args);
+  }
 
-    // create a consumer with additional behavior
-    String serviceUri = "http://services.odata.org/Northwind/Northwind.svc";
+  @Override
+  public ODataConsumer create(String endpointUri) {
     final ModifiableAtomEntryMessageBodyWriter writer = new ModifiableAtomEntryMessageBodyWriter();
-    ODataConsumer consumer = ODataJerseyConsumer.newBuilder(serviceUri).setClientBehaviors(new BaseClientBehavior() {
+    ODataConsumer consumer = ODataJerseyConsumer.newBuilder(endpointUri).setClientBehaviors(new JerseyClientBehavior() {
       @Override
       public void modify(ClientConfig cc) {
         cc.getSingletons().add(writer);
       }
+
+      @Override
+      public ODataClientRequest transform(ODataClientRequest request) {
+        return request;
+      }
+
+      @Override
+      public void modifyClientFilters(Filterable client) {
+        // nop
+      }
+
+      @Override
+      public void modifyWebResourceFilters(Filterable webResource) {
+        // nop
+      }
     }).build();
 
-    // set category for subsequent entry creation requests
     writer.setEntryXmlModification(insertCategory("NorthwindModel.Categories"));
-    consumer.createEntity("Categories")
-        .properties(OProperties.string("CategoryName", "Category " + new Date()))
-        .execute();
+
+    return consumer;
   }
 
   private static Func1<String, String> insertCategory(final String term) {

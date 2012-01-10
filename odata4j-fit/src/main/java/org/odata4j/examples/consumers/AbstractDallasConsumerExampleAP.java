@@ -1,20 +1,20 @@
-package org.odata4j.examples.consumer;
+package org.odata4j.examples.consumers;
 
 import org.odata4j.consumer.ODataConsumer;
-import org.odata4j.examples.BaseExample;
+import org.odata4j.examples.BaseCredentialsExample;
+import org.odata4j.examples.ConsumerExample;
 import org.odata4j.examples.ODataEndpoints;
-import org.odata4j.jersey.consumer.ODataJerseyConsumers;
 
-public class DallasConsumerExampleAP extends BaseExample {
+public abstract class AbstractDallasConsumerExampleAP extends BaseCredentialsExample implements ConsumerExample {
 
-  @SuppressWarnings("unused")
-  public static void main(String... args) {
+  @Override
+  public void run(String... args) {
 
     String[] dallasCreds = args.length > 0 ? args : System.getenv("DALLAS").split(":");
-    String accountKey = dallasCreds[0];
-    String uniqueUserId = dallasCreds[1];
+    this.setLoginPassword(dallasCreds[0]);
+    this.setLoginName(dallasCreds[1]);    
 
-    ODataConsumer c = ODataJerseyConsumers.dallas(ODataEndpoints.DALLAS_CTP3_AP, accountKey, uniqueUserId);
+    ODataConsumer c = this.create(ODataEndpoints.DALLAS_CTP3_AP);
 
     // all breaking news categories
     reportEntities(c, "GetBreakingNewsCategories", 1000);

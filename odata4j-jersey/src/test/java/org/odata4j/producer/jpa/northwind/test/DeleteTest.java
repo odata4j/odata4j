@@ -5,10 +5,10 @@ import junit.framework.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.consumer.behaviors.OClientBehaviors;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OPredicates;
 import org.odata4j.jersey.consumer.ODataJerseyConsumer;
-import org.odata4j.jersey.consumer.behaviors.OClientBehaviors;
 
 public class DeleteTest extends JPAProducerTestBase {
 

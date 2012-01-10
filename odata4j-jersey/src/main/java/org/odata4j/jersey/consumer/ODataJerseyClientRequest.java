@@ -1,82 +1,27 @@
 package org.odata4j.jersey.consumer;
 
-import java.util.HashMap;
 import java.util.Map;
 
+import org.odata4j.consumer.ODataClientRequest;
+import org.odata4j.consumer.behaviors.OClientBehavior;
 import org.odata4j.format.Entry;
 import org.odata4j.format.SingleLink;
-import org.odata4j.jersey.consumer.behaviors.OClientBehavior;
 
 /**
  * Generic OData http request builder.  Only interesting for developers of custom {@link OClientBehavior} implementations.
  */
-public class ODataJerseyClientRequest {
-
-  private final String method;
-  private final String url;
-  private final Map<String, String> headers;
-  private final Map<String, String> queryParams;
-  private final Object payload;
+public class ODataJerseyClientRequest extends ODataClientRequest {
 
   private ODataJerseyClientRequest(String method, String url, Map<String, String> headers, Map<String, String> queryParams, Object payload) {
-    this.method = method;
-    this.url = url;
-    this.headers = headers == null ? new HashMap<String, String>() : headers;
-    this.queryParams = queryParams == null ? new HashMap<String, String>() : queryParams;
-    this.payload = payload;
+    super(method, url, headers, queryParams, payload);
   }
 
   /**
-   * Gets the request http method.
-   * 
-   * @return the http method
-   */
-  public String getMethod() {
-    return method;
-  }
-
-  /**
-   * Gets the request url.
-   * 
-   * @return the url
-   */
-  public String getUrl() {
-    return url;
-  }
-
-  /**
-   * Gets the request http headers.
-   * 
-   * @return the headers
-   */
-  public Map<String, String> getHeaders() {
-    return headers;
-  }
-
-  /**
-   * Gets the request query parameters.
-   * 
-   * @return the query parameters
-   */
-  public Map<String, String> getQueryParams() {
-    return queryParams;
-  }
-
-  /**
-   * Gets the normalized OData payload.
-   * 
-   * @return the normalized OData payload
-   */
-  public Object getPayload() {
-    return payload;
-  }
-
-  /**
-   * Creates a new GET request.
-   * 
-   * @param url  the request url
-   * @return a new request builder
-   */
+  * Creates a new GET request.
+  * 
+  * @param url  the request url
+  * @return a new request builder
+  */
   public static ODataJerseyClientRequest get(String url) {
     return new ODataJerseyClientRequest("GET", url, null, null, null);
   }
@@ -165,8 +110,8 @@ public class ODataJerseyClientRequest {
    * @return the request builder
    */
   public ODataJerseyClientRequest header(String name, String value) {
-    headers.put(name, value);
-    return new ODataJerseyClientRequest(method, url, headers, queryParams, payload);
+    this.getHeaders().put(name, value);
+    return new ODataJerseyClientRequest(this.getMethod(), this.getUrl(), this.getHeaders(), this.getQueryParams(), this.getPayload());
   }
 
   /**
@@ -177,8 +122,8 @@ public class ODataJerseyClientRequest {
    * @return the request builder
    */
   public ODataJerseyClientRequest queryParam(String name, String value) {
-    queryParams.put(name, value);
-    return new ODataJerseyClientRequest(method, url, headers, queryParams, payload);
+    this.getQueryParams().put(name, value);
+    return new ODataJerseyClientRequest(this.getMethod(), this.getUrl(), this.getHeaders(), this.getQueryParams(), this.getPayload());
   }
 
   /**
@@ -188,7 +133,7 @@ public class ODataJerseyClientRequest {
    * @return the request builder
    */
   public ODataJerseyClientRequest url(String url) {
-    return new ODataJerseyClientRequest(method, url, headers, queryParams, payload);
+    return new ODataJerseyClientRequest(this.getMethod(), url, this.getHeaders(), this.getQueryParams(), this.getPayload());
   }
 
   /**
@@ -198,7 +143,7 @@ public class ODataJerseyClientRequest {
    * @return the request builder
    */
   public ODataJerseyClientRequest method(String method) {
-    return new ODataJerseyClientRequest(method, url, headers, queryParams, payload);
+    return new ODataJerseyClientRequest(method, this.getUrl(), this.getHeaders(), this.getQueryParams(), this.getPayload());
   }
 
   /**
@@ -208,7 +153,7 @@ public class ODataJerseyClientRequest {
    * @return the request builder
    */
   public ODataJerseyClientRequest entryPayload(Entry entry) {
-    return new ODataJerseyClientRequest(method, url, headers, queryParams, entry);
+    return new ODataJerseyClientRequest(this.getMethod(), this.getUrl(), this.getHeaders(), this.getQueryParams(), entry);
   }
 
   /**
@@ -218,7 +163,7 @@ public class ODataJerseyClientRequest {
    * @return the request builder
    */
   public ODataJerseyClientRequest linkPayload(SingleLink link) {
-    return new ODataJerseyClientRequest(method, url, headers, queryParams, link);
+    return new ODataJerseyClientRequest(this.getMethod(), this.getUrl(), this.getHeaders(), this.getQueryParams(), link);
   }
 
 }

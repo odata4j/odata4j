@@ -1,4 +1,4 @@
-package org.odata4j.jersey.consumer.behaviors;
+package org.odata4j.consumer.behaviors;
 
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
@@ -10,12 +10,12 @@ import javax.ws.rs.core.MediaType;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.ODataConstants;
-import org.odata4j.jersey.consumer.ODataJerseyClientRequest;
 import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
 
-public class AzureTableBehavior extends BaseClientBehavior {
+public class AzureTableBehavior implements OClientBehavior {
 
   private final String account;
   private final String key;
@@ -26,7 +26,7 @@ public class AzureTableBehavior extends BaseClientBehavior {
   }
 
   @Override
-  public ODataJerseyClientRequest transform(ODataJerseyClientRequest request) {
+  public ODataClientRequest transform(ODataClientRequest request) {
     try {
       String utc = new DateTime(DateTimeZone.UTC).toString("EEE, dd MMM yyyy HH:mm:ss zzz");
       String date = utc.substring(0, utc.lastIndexOf(' ') + 1) + "GMT";

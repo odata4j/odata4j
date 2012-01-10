@@ -15,7 +15,10 @@ import org.core4j.Enumerable;
 import org.core4j.xml.XDocument;
 import org.core4j.xml.XmlFormat;
 import org.odata4j.consumer.AbstractODataClient;
+import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.consumer.behaviors.OClientBehavior;
+import org.odata4j.consumer.behaviors.OClientBehaviors;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
@@ -36,8 +39,6 @@ import org.odata4j.format.xml.AtomWorkspaceInfo;
 import org.odata4j.format.xml.EdmxFormatParser;
 import org.odata4j.internal.BOMWorkaroundReader;
 import org.odata4j.internal.InternalUtil;
-import org.odata4j.jersey.consumer.behaviors.OClientBehavior;
-import org.odata4j.jersey.consumer.behaviors.OClientBehaviors;
 import org.odata4j.stax2.XMLEventReader2;
 
 import com.sun.jersey.api.client.Client;
@@ -58,7 +59,7 @@ class ODataJerseyClient extends AbstractODataClient {
     this.client = JerseyClientUtil.newClient(clientFactory, behaviors);
   }
 
-  public EdmDataServices getMetadata(ODataJerseyClientRequest request) {
+  public EdmDataServices getMetadata(ODataClientRequest request) {
     ClientResponse response = doRequest(FormatType.ATOM, request, 200, 404, 400);
     if (response.getStatus() == 404 || response.getStatus() == 400)
       return null;
@@ -66,20 +67,20 @@ class ODataJerseyClient extends AbstractODataClient {
     return new EdmxFormatParser().parseMetadata(reader);
   }
 
-  public Iterable<AtomCollectionInfo> getCollections(ODataJerseyClientRequest request) {
+  public Iterable<AtomCollectionInfo> getCollections(ODataClientRequest request) {
     ClientResponse response = doRequest(FormatType.ATOM, request, 200);
     XMLEventReader2 reader = doXmlRequest(response);
     return Enumerable.create(AtomServiceDocumentFormatParser.parseWorkspaces(reader))
         .selectMany(AtomWorkspaceInfo.GET_COLLECTIONS);
   }
 
-  public Iterable<SingleLink> getLinks(ODataJerseyClientRequest request) {
+  public Iterable<SingleLink> getLinks(ODataClientRequest request) {
     ClientResponse response = doRequest(FormatType.ATOM, request, 200);
     XMLEventReader2 reader = doXmlRequest(response);
     return AtomSingleLinkFormatParser.parseLinks(reader);
   }
 
-  public ClientResponse getEntity(ODataJerseyClientRequest request) {
+  public ClientResponse getEntity(ODataClientRequest request) {
     ClientResponse response = doRequest(this.getFormatType(), request, 404, 200, 204);
     if (response.getStatus() == 404)
       return null;
@@ -89,39 +90,39 @@ class ODataJerseyClient extends AbstractODataClient {
     return response;
   }
 
-  public ClientResponse getEntities(ODataJerseyClientRequest request) {
+  public ClientResponse getEntities(ODataClientRequest request) {
     ClientResponse response = doRequest(this.getFormatType(), request, 200);
     return response;
   }
 
-  public ClientResponse callFunction(ODataJerseyClientRequest request) {
+  public ClientResponse callFunction(ODataClientRequest request) {
     ClientResponse response = doRequest(this.getFormatType(), request, 200, 204);
     return response;
   }
 
-  public ClientResponse createEntity(ODataJerseyClientRequest request) {
+  public ClientResponse createEntity(ODataClientRequest request) {
     return doRequest(this.getFormatType(), request, 201);
   }
 
-  public boolean updateEntity(ODataJerseyClientRequest request) {
+  public boolean updateEntity(ODataClientRequest request) {
     doRequest(this.getFormatType(), request, 200, 204);
     return true;
   }
 
-  public boolean deleteEntity(ODataJerseyClientRequest request) {
+  public boolean deleteEntity(ODataClientRequest request) {
     doRequest(this.getFormatType(), request, 200, 204, 404);
     return true;
   }
 
-  public void deleteLink(ODataJerseyClientRequest request) {
+  public void deleteLink(ODataClientRequest request) {
     doRequest(this.getFormatType(), request, 204);
   }
 
-  public void createLink(ODataJerseyClientRequest request) {
+  public void createLink(ODataClientRequest request) {
     doRequest(this.getFormatType(), request, 204);
   }
 
-  public void updateLink(ODataJerseyClientRequest request) {
+  public void updateLink(ODataClientRequest request) {
     doRequest(this.getFormatType(), request, 204);
   }
 
@@ -150,7 +151,7 @@ class ODataJerseyClient extends AbstractODataClient {
   }
 
   @SuppressWarnings("unchecked")
-  private ClientResponse doRequest(FormatType reqType, ODataJerseyClientRequest request, Integer... expectedResponseStatus) {
+  private ClientResponse doRequest(FormatType reqType, ODataClientRequest request, Integer... expectedResponseStatus) {
 
     if (behaviors != null) {
       for (OClientBehavior behavior : behaviors)
@@ -286,7 +287,7 @@ class ODataJerseyClient extends AbstractODataClient {
 
   }
 
-  private void dumpHeaders(ODataJerseyClientRequest request, WebResource webResource, WebResource.Builder b) {
+  private void dumpHeaders(ODataClientRequest request, WebResource webResource, WebResource.Builder b) {
     log(request.getMethod() + " " + webResource);
     dump(getRequestHeaders(b));
   }

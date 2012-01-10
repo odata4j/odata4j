@@ -1,6 +1,6 @@
-package org.odata4j.jersey.consumer.behaviors;
+package org.odata4j.consumer.behaviors;
 
-import org.odata4j.jersey.consumer.ODataJerseyClientRequest;
+import org.odata4j.consumer.ODataClientRequest;
 
 /**
  * A static factory to create built-in {@link OClientBehavior} instances.
@@ -18,15 +18,6 @@ public class OClientBehaviors {
    */
   public static OClientBehavior basicAuth(String user, String password) {
     return new BasicAuthenticationBehavior(user, password);
-  }
-
-  /**
-   * Creates a behavior that allows for https services with self-signed certificates.
-   *
-   * @return a behavior that allows for https services with self-signed certificates
-   */
-  public static OClientBehavior allowSelfSignedCerts() {
-    return AllowSelfSignedCertsBehavior.INSTANCE;
   }
 
   /**
@@ -57,9 +48,9 @@ public class OClientBehaviors {
    * @return a behavior that sleeps a specified amount of time before each client request
    */
   public static OClientBehavior rateLimit(final long millis) {
-    return new BaseClientBehavior() {
+    return new OClientBehavior() {
       @Override
-      public ODataJerseyClientRequest transform(ODataJerseyClientRequest request) {
+      public ODataClientRequest transform(ODataClientRequest request) {
         try {
           Thread.sleep(millis);
         } catch (InterruptedException e) {

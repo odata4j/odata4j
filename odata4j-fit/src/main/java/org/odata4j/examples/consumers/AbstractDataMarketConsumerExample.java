@@ -1,20 +1,21 @@
-package org.odata4j.examples.consumer;
+package org.odata4j.examples.consumers;
 
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
-import org.odata4j.examples.BaseExample;
-import org.odata4j.jersey.consumer.ODataJerseyConsumers;
+import org.odata4j.examples.BaseCredentialsExample;
+import org.odata4j.examples.ConsumerExample;
 
-public class DataMarketConsumerExample extends BaseExample {
+public abstract class AbstractDataMarketConsumerExample extends BaseCredentialsExample implements ConsumerExample {
 
-  public static void main(String[] args) {
+  @Override
+  public void run(String... args) {
 
     String[] datamarketCreds = args.length > 0 ? args : System.getenv("DATAMARKET").split(":");
-    String accountKey = datamarketCreds[0];
-
+    this.setLoginPassword(datamarketCreds[0]);
+    
     String url = "https://api.datamarket.azure.com/Data.ashx/UnitedNations/MDG/";
 
-    ODataConsumer c = ODataJerseyConsumers.dataMarket(url, accountKey);
+    ODataConsumer c = this.create(url);
 
     OEntity firstDataSeries = c.getEntities("DataSeries").top(1).execute().first();
     String filter = String.format("DataSeriesId eq '%s'", firstDataSeries.getProperty("Id").getValue());

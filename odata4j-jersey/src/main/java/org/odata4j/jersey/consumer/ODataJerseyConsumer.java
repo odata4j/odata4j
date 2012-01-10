@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.core4j.Enumerable;
 import org.odata4j.consumer.AbstractODataConsumer;
+import org.odata4j.consumer.behaviors.OClientBehavior;
 import org.odata4j.core.EntitySetInfo;
 import org.odata4j.core.OCreateRequest;
 import org.odata4j.core.OEntity;
@@ -16,8 +17,6 @@ import org.odata4j.core.OFunctionRequest;
 import org.odata4j.core.OModifyRequest;
 import org.odata4j.core.OObject;
 import org.odata4j.core.OQueryRequest;
-import org.odata4j.core.ORelatedEntitiesLink;
-import org.odata4j.core.ORelatedEntityLink;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmEntityType;
@@ -25,7 +24,6 @@ import org.odata4j.edm.EdmProperty;
 import org.odata4j.format.FormatType;
 import org.odata4j.internal.EdmDataServicesDecorator;
 import org.odata4j.internal.FeedCustomizationMapping;
-import org.odata4j.jersey.consumer.behaviors.OClientBehavior;
 
 /**
  * <code>ODataConsumer</code> is the client-side interface to an OData service.

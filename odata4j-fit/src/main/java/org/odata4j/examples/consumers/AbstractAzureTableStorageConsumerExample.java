@@ -1,21 +1,24 @@
-package org.odata4j.examples.consumer;
+package org.odata4j.examples.consumers;
 
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OProperties;
-import org.odata4j.examples.BaseExample;
-import org.odata4j.jersey.consumer.ODataJerseyConsumers;
+import org.odata4j.examples.BaseCredentialsExample;
+import org.odata4j.examples.ConsumerExample;
 
-public class AzureTableStorageConsumerExample extends BaseExample {
+public abstract class AbstractAzureTableStorageConsumerExample  extends BaseCredentialsExample implements ConsumerExample {
 
-  public static void main(String... args) {
+  @Override
+  public void run(String... args) {
 
     String[] azureCreds = args.length > 0 ? args : System.getenv("AZURESTORAGE").split(":");
-    String account = azureCreds[0];
-    String key = azureCreds[1];
-
-    ODataConsumer c = ODataJerseyConsumers.azureTables(account, key);
+    this.setLoginName(azureCreds[0]);
+    this.setLoginPassword(azureCreds[1]);
+  
+    String url = "http://" + this.getLoginName() + ".table.core.windows.net/";
+    
+    ODataConsumer c = this.create(url);
 
     report("Create a new temp table to use for the test");
     String tableName = "TempTable" + System.currentTimeMillis();
@@ -52,5 +55,4 @@ public class AzureTableStorageConsumerExample extends BaseExample {
     report("Delete the temp table");
     c.deleteEntity("Tables", tableName).execute();
   }
-
 }

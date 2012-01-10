@@ -5,8 +5,9 @@ import java.util.Set;
 
 import javax.ws.rs.ext.RuntimeDelegate;
 
+import org.odata4j.consumer.behaviors.OClientBehavior;
 import org.odata4j.internal.PlatformUtil;
-import org.odata4j.jersey.consumer.behaviors.OClientBehavior;
+import org.odata4j.jersey.consumer.behaviors.JerseyClientBehavior;
 import org.odata4j.jersey.internal.StringProvider2;
 
 import com.sun.jersey.api.client.Client;
@@ -40,21 +41,38 @@ class JerseyClientUtil {
   public static Client newClient(JerseyClientFactory clientFactory, OClientBehavior[] behaviors) {
     DefaultClientConfig cc = new DefaultClientConfig();
     cc.getSingletons().add(new StringProvider2());
-    if (behaviors != null)
+    if (behaviors != null) {
       for (OClientBehavior behavior : behaviors)
-        behavior.modify(cc);
+      {
+        if (behavior instanceof JerseyClientBehavior) {
+          ((JerseyClientBehavior) behavior).modify(cc);
+        }
+      }
+    }
     Client client = clientFactory.createClient(cc);
     if (behaviors != null)
+    {
       for (OClientBehavior behavior : behaviors)
-        behavior.modifyClientFilters(client);
+      {
+        if (behavior instanceof JerseyClientBehavior) {
+          ((JerseyClientBehavior) behavior).modifyClientFilters(client);
+        }
+      }
+    }
     return client;
   }
 
   public static WebResource resource(Client client, String url, OClientBehavior[] behaviors) {
     WebResource resource = client.resource(url);
     if (behaviors != null)
+    {
       for (OClientBehavior behavior : behaviors)
-        behavior.modifyWebResourceFilters(resource);
+      {
+        if (behavior instanceof JerseyClientBehavior) {
+          ((JerseyClientBehavior) behavior).modifyWebResourceFilters(resource);
+        }
+      }
+    }
     return resource;
   }
 

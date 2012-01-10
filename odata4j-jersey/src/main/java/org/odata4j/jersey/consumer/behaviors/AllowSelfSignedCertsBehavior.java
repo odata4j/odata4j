@@ -10,18 +10,19 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import org.odata4j.jersey.consumer.ODataJerseyClientRequest;
+import org.odata4j.consumer.ODataClientRequest;
+import org.odata4j.consumer.behaviors.OClientBehavior;
 
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.filter.Filterable;
 import com.sun.jersey.client.urlconnection.HTTPSProperties;
 
-public enum AllowSelfSignedCertsBehavior implements OClientBehavior {
+public enum AllowSelfSignedCertsBehavior implements JerseyClientBehavior {
 
   INSTANCE;
 
   @Override
-  public ODataJerseyClientRequest transform(ODataJerseyClientRequest request) {
+  public ODataClientRequest transform(ODataClientRequest request) {
     return request;
   }
 
@@ -64,4 +65,15 @@ public enum AllowSelfSignedCertsBehavior implements OClientBehavior {
   @Override
   public void modifyWebResourceFilters(Filterable webResource) {}
 
+  /**
+   * Creates a behavior that allows for https services with self-signed certificates.
+   *
+   * @return a behavior that allows for https services with self-signed certificates
+   */
+  public static OClientBehavior allowSelfSignedCerts() {
+    return AllowSelfSignedCertsBehavior.INSTANCE;
+  }
+
+
+  
 }

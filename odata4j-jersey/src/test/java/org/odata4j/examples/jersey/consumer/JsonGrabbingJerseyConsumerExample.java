@@ -1,34 +1,41 @@
-package org.odata4j.examples.consumer;
+package org.odata4j.examples.jersey.consumer;
 
 import java.io.ByteArrayInputStream;
 
+import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.examples.consumers.AbstractJsonGrabbingConsumerExample;
 import org.odata4j.format.FormatType;
 import org.odata4j.jersey.consumer.ODataJerseyConsumer;
-import org.odata4j.jersey.consumer.behaviors.BaseClientBehavior;
+import org.odata4j.jersey.consumer.behaviors.JerseyClientBehavior;
 
 import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientRequest;
 import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.filter.ClientFilter;
 import com.sun.jersey.api.client.filter.Filterable;
 
-public class JsonGrabbingConsumerExample {
+public class JsonGrabbingJerseyConsumerExample extends AbstractJsonGrabbingConsumerExample {
 
-  public static void main(String[] args) {
+  public static void main(String... args) {
+    TwitPicJerseyConsumerExample example = new TwitPicJerseyConsumerExample();
+    example.run(args);
+  }
+
+  @Override
+  public ODataConsumer create(String endpointUri) {
     ResponseGrabbingClientBehavior responseGrabbingBehavior = new ResponseGrabbingClientBehavior();
 
-    String serviceUri = "http://services.odata.org/Northwind/Northwind.svc";
-    ODataConsumer c = ODataJerseyConsumer.newBuilder(serviceUri)
+    ODataConsumer c = ODataJerseyConsumer.newBuilder(endpointUri)
         .setFormatType(FormatType.JSON)
         .setClientBehaviors(responseGrabbingBehavior)
         .build();
 
-    c.getEntity("Customers", "VICTE").execute();
-    System.out.println(responseGrabbingBehavior.lastResponse);
+    return c;
   }
 
-  private static class ResponseGrabbingClientBehavior extends BaseClientBehavior {
+  private static class ResponseGrabbingClientBehavior implements JerseyClientBehavior {
 
     public String lastResponse;
 
@@ -44,6 +51,21 @@ public class JsonGrabbingConsumerExample {
           return response;
         }
       });
+    }
+
+    @Override
+    public ODataClientRequest transform(ODataClientRequest request) {
+      return request;
+    }
+
+    @Override
+    public void modify(ClientConfig clientConfig) {
+      // nop
+    }
+
+    @Override
+    public void modifyWebResourceFilters(Filterable webResource) {
+      // nop
     }
 
   }
