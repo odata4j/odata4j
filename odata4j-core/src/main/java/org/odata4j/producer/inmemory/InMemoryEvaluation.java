@@ -10,12 +10,14 @@ import org.odata4j.expression.AddExpression;
 import org.odata4j.expression.AndExpression;
 import org.odata4j.expression.BinaryCommonExpression;
 import org.odata4j.expression.BoolCommonExpression;
+import org.odata4j.expression.BoolMethodExpression;
 import org.odata4j.expression.BoolParenExpression;
 import org.odata4j.expression.BooleanLiteral;
 import org.odata4j.expression.CastExpression;
 import org.odata4j.expression.CommonExpression;
 import org.odata4j.expression.ConcatMethodCallExpression;
 import org.odata4j.expression.DivExpression;
+import org.odata4j.expression.EndsWithMethodCallExpression;
 import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.EqExpression;
 import org.odata4j.expression.Expression;
@@ -33,6 +35,7 @@ import org.odata4j.expression.NotExpression;
 import org.odata4j.expression.OrExpression;
 import org.odata4j.expression.ParenExpression;
 import org.odata4j.expression.ReplaceMethodCallExpression;
+import org.odata4j.expression.StartsWithMethodCallExpression;
 import org.odata4j.expression.SubExpression;
 import org.odata4j.expression.SubstringMethodCallExpression;
 import org.odata4j.expression.SubstringOfMethodCallExpression;
@@ -206,14 +209,8 @@ public class InMemoryEvaluation {
           properties);
       return !rt;
     }
-    if (expression instanceof SubstringOfMethodCallExpression) {
-      SubstringOfMethodCallExpression e = (SubstringOfMethodCallExpression) expression;
-      String targetValue = (String) evaluate(e.getTarget(), target,
-          properties);
-      String searchValue = (String) evaluate(e.getValue(), target,
-          properties);
-      return targetValue != null && searchValue != null
-          && targetValue.contains(searchValue);
+    if (expression instanceof BoolMethodExpression) {
+      return evaluate((BoolMethodExpression) expression, target, properties);
     }
     if (expression instanceof ParenExpression) {
       @SuppressWarnings("unused")
@@ -229,6 +226,27 @@ public class InMemoryEvaluation {
     Object o = evaluate((CommonExpression) expression, target, properties);
     if (o instanceof Boolean) {
       return (Boolean) o;
+    }
+
+    throw new UnsupportedOperationException("unsupported expression "
+        + expression);
+  }
+
+  private static boolean evaluate(BoolMethodExpression expression, Object target, PropertyModel properties) {
+    String targetValue = (String) evaluate(expression.getTarget(), target, properties);
+    String searchValue = (String) evaluate(expression.getValue(), target, properties);
+
+    if (targetValue == null || searchValue == null) {
+      return false;
+    }
+    if (expression instanceof SubstringOfMethodCallExpression) {
+      return targetValue.contains(searchValue);
+    }
+    if (expression instanceof StartsWithMethodCallExpression) {
+      return targetValue.startsWith(searchValue);
+    }
+    if (expression instanceof EndsWithMethodCallExpression) {
+      return targetValue.endsWith(searchValue);
     }
 
     throw new UnsupportedOperationException("unsupported expression "
