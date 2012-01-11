@@ -1,6 +1,5 @@
 package org.odata4j.fit.util;
 
-
 import org.core4j.Enumerable;
 import org.core4j.Func;
 import org.core4j.Funcs;
@@ -16,7 +15,7 @@ import org.odata4j.producer.resources.DefaultODataProducerProvider;
 public abstract class AbstractODataServerHttpClientSimpleInMemoryProducerTest extends AbstractODataServerHttpClientTest {
 
   protected static final String ENTITY_SET_NAME = "Alphabet";
-  protected static final String[] ENTITIES = {"A", "B", "C"};
+  protected static final String[] ENTITIES = { "A", "B", "C" };
 
   @Override
   protected void createTestScenario() {

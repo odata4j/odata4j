@@ -1,21 +1,18 @@
-package org.odata4j.jersey.format.xml;
+package org.odata4j.jersey.producer.custom;
 
 import javax.ws.rs.core.MediaType;
 
-import org.odata4j.edm.EdmDecorator;
-import org.odata4j.format.xml.AbstractEdmxFormatWriterTest;
+import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.format.FormatType;
+import org.odata4j.jersey.consumer.ODataJerseyConsumer;
 import org.odata4j.jersey.examples.producer.JerseyProducerUtil;
+import org.odata4j.producer.custom.AbstractCustomTest;
 import org.odata4j.producer.server.ODataServer;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 
-/**
- * a simple test for writing annotations and documentation in the edmx.
- *
- * This test also demonstrates the use of {@link EdmDecorator}.
- */
-public class EdmxFormatWriterTest extends AbstractEdmxFormatWriterTest {
+public class CustomTest extends AbstractCustomTest {
 
   @Override
   public void hostODataServer(String baseUri) {
@@ -25,6 +22,11 @@ public class EdmxFormatWriterTest extends AbstractEdmxFormatWriterTest {
   @Override
   public ODataServer startODataServer(String baseUri) {
     return JerseyProducerUtil.startODataServer(baseUri);
+  }
+
+  @Override
+  public ODataConsumer create(String endpointUri, FormatType formatType) {
+    return ODataJerseyConsumer.newBuilder(endpointUri).setFormatType(formatType).build();
   }
 
   @Override
@@ -38,7 +40,7 @@ public class EdmxFormatWriterTest extends AbstractEdmxFormatWriterTest {
 
   @Override
   public void accept(String uri, MediaType mediaType) {
-    throw new RuntimeException("not implemented");
+    WebResource webResource = new Client().resource(uri);
+    webResource.accept(mediaType);
   }
-
 }

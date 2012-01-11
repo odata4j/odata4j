@@ -25,7 +25,7 @@ public class JerseyServerFilteringTest extends AbstractServerFilteringTest {
   @Override
   protected void createServer() {
     server = new JerseyServer(SVC_URL, DefaultODataApplication.class, RootApplication.class)
-               .addJerseyRequestFilter(RequestFilterStub.class);
+        .addJerseyRequestFilter(RequestFilterStub.class);
   }
 
   @Override

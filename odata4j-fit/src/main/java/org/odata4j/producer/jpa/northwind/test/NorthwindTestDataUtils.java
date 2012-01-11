@@ -82,6 +82,7 @@ public class NorthwindTestDataUtils {
       }
     }
   }
+
   public static void writeStringToFile(String fileName, String contents) {
     Writer out = null;
     try {
@@ -138,6 +139,5 @@ public class NorthwindTestDataUtils {
 
     return strBuilder.toString();
   }
-
 
 }

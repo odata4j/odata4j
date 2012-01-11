@@ -3,9 +3,9 @@ package org.odata4j.jersey.consumer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.odata4j.consumer.AbstractConsumerEntityPayloadRequest;
 import org.core4j.Enumerable;
 import org.core4j.Predicate1;
+import org.odata4j.consumer.AbstractConsumerEntityPayloadRequest;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OModifyRequest;

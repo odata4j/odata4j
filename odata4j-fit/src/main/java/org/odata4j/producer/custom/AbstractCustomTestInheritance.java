@@ -2,9 +2,6 @@ package org.odata4j.producer.custom;
 
 import static org.junit.Assert.assertTrue;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
@@ -13,20 +10,9 @@ import org.odata4j.core.ORelatedEntitiesLinkInline;
 import org.odata4j.core.ORelatedEntityLink;
 import org.odata4j.format.FormatType;
 
-public class CustomTestInheritance extends CustomTestBase {
+public abstract class AbstractCustomTestInheritance extends AbstractCustomTestBase {
 
-  public CustomTestInheritance() {}
-
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-    setUpClass(50);
-  }
-
-  @Before
-  public void setUp() {}
-
-  @After
-  public void tearDown() {}
+  public AbstractCustomTestInheritance() {}
 
   @Test
   public void testGetEntityPolymorphic() {

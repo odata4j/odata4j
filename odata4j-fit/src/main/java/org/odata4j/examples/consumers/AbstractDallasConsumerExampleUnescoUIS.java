@@ -15,9 +15,9 @@ public abstract class AbstractDallasConsumerExampleUnescoUIS extends AbstractCre
 
     String[] dallasCreds = args.length > 0 ? args : System.getenv("DALLAS").split(":");
     this.setLoginPassword(dallasCreds[0]);
-    this.setLoginName(dallasCreds[1]);    
+    this.setLoginName(dallasCreds[1]);
 
-    ODataConsumer c = this.create(ODataEndpoints.DALLAS_CTP2_UNESCO_UIS);
+    ODataConsumer c = this.create(ODataEndpoints.DALLAS_CTP2_UNESCO_UIS, null);
 
     // Public expenditure on education as % of GDP [XGDP_FSGOV]
     for (OEntity entity : c.getEntities("UNESCO/XGDP_FSGOV").execute()
@@ -41,4 +41,3 @@ public abstract class AbstractDallasConsumerExampleUnescoUIS extends AbstractCre
   }
 
 }
-

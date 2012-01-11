@@ -5,21 +5,19 @@ import javax.persistence.Persistence;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.junit.Assert;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperties;
-import org.odata4j.jersey.consumer.ODataJerseyConsumer;
-import org.odata4j.jersey.examples.producer.JerseyProducerUtil;
 import org.odata4j.producer.jpa.JPAProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.test.JPAProvider;
 
-public class CreateWithLinkTest extends AirlineJPAProducerTestBase {
+public abstract class AbstractCreateWithLinkTest extends AbstractAirlineJPAProducerTestBase {
 
-  @BeforeClass
-  public static void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     String persistenceUnitName = "AirlineService" + JPAProvider.JPA_PROVIDER.caption;
     String namespace = "Airline";
 
@@ -28,7 +26,7 @@ public class CreateWithLinkTest extends AirlineJPAProducerTestBase {
     JPAProducer producer = new JPAProducer(emf, namespace, 20);
 
     DefaultODataProducerProvider.setInstance(producer);
-    server = JerseyProducerUtil.startODataServer(endpointUri);
+    server = this.startODataServer(endpointUri);
   }
 
   @Test
@@ -36,7 +34,7 @@ public class CreateWithLinkTest extends AirlineJPAProducerTestBase {
    * Linking to entities with string key
    */
   public void linkToStringId() {
-    ODataConsumer consumer = ODataJerseyConsumer.create(endpointUri);
+    ODataConsumer consumer = this.create(endpointUri, null);
 
     OEntity muc = consumer.getEntities("Airport")
         .filter("code eq 'MUC'")
@@ -106,7 +104,7 @@ public class CreateWithLinkTest extends AirlineJPAProducerTestBase {
    * Linking to entities with long key
    */
   public void linkToLongId() {
-    ODataConsumer consumer = ODataJerseyConsumer.create(endpointUri);
+    ODataConsumer consumer = this.create(endpointUri, null);
 
     OEntity flightSchedule = consumer.getEntities("FlightSchedule")
         .filter("flightNo eq 'LH410'")
@@ -129,7 +127,7 @@ public class CreateWithLinkTest extends AirlineJPAProducerTestBase {
    * Linking to entities with long key (use only the entity-key)
    */
   public void linkToLongIdUsingKey() {
-    ODataConsumer consumer = ODataJerseyConsumer.create(endpointUri);
+    ODataConsumer consumer = this.create(endpointUri, null);
 
     OEntity flightSchedule = consumer.getEntities("FlightSchedule")
         .filter("flightNo eq 'LH410'")

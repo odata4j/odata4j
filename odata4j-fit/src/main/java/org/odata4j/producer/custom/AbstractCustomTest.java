@@ -5,9 +5,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OCollection;
@@ -29,20 +26,9 @@ import org.odata4j.edm.EdmStructuralType;
 import org.odata4j.edm.EdmType;
 import org.odata4j.format.FormatType;
 
-public class CustomTest extends CustomTestBase {
+public abstract class AbstractCustomTest extends AbstractCustomTestBase {
 
-  public CustomTest() {}
-
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-    setUpClass(50);
-  }
-
-  @Before
-  public void setUp() {}
-
-  @After
-  public void tearDown() {}
+  public AbstractCustomTest() {}
 
   @Test
   public void testPropertiesJSON() {

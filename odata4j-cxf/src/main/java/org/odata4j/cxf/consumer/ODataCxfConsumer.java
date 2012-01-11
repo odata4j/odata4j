@@ -65,7 +65,6 @@ public class ODataCxfConsumer extends AbstractODataConsumer {
     this.odataClient = new ODataCxfClient(formatType);
   }
 
-
   @Override
   public Enumerable<EntitySetInfo> getEntitySets() {
     return null;

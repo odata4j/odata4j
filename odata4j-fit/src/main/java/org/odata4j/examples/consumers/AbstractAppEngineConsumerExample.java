@@ -12,7 +12,7 @@ public abstract class AbstractAppEngineConsumerExample extends AbstractExample i
 
   @Override
   public void run(String[] args) {
-    ODataConsumer c = this.create(ODataEndpoints.ODATA4JSAMPLE_APPSPOT);
+    ODataConsumer c = this.create(ODataEndpoints.ODATA4JSAMPLE_APPSPOT, null);
     String newCategoryName = "NewCategory" + System.currentTimeMillis();
 
     report("Create a new category");

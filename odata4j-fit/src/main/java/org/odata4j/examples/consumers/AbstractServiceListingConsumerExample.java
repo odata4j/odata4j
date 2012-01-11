@@ -67,7 +67,7 @@ public abstract class AbstractServiceListingConsumerExample extends AbstractExam
 
   private void printOutFirstEntities(Iterable<String> services) {
     for (String endpoint : services) {
-      ODataConsumer c = this.create(endpoint);
+      ODataConsumer c = this.create(endpoint, null);
       for (EntitySetInfo entitySet : c.getEntitySets()) {
         reportEntities(entitySet.getHref(), c.getEntities(entitySet.getHref()).top(1).execute());
       }
@@ -76,7 +76,7 @@ public abstract class AbstractServiceListingConsumerExample extends AbstractExam
 
   private void printOutAllEntities(Iterable<String> services) {
     for (String endpoint : services) {
-      ODataConsumer c = this.create(endpoint);
+      ODataConsumer c = this.create(endpoint, null);
       for (EntitySetInfo entitySet : c.getEntitySets()) {
         reportEntities(entitySet.getTitle(), c.getEntities(entitySet.getHref()).execute());
       }

@@ -68,7 +68,6 @@ public class InMemoryProducerTest {
     Assert.assertFalse(ss.getType().getHasStream());
   }
 
-
   @Test
   public void testSetNameAndType() {
     final SimpleEntity e1 = new SimpleEntity();
@@ -120,7 +119,6 @@ public class InMemoryProducerTest {
     EntitiesResponse data = producer.getEntities("TestData", qi);
     Assert.assertEquals(data.getEntities().size(), 2);
   }
-
 
   private static class SimpleEntity {
     public String getId() {

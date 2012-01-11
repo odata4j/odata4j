@@ -26,7 +26,7 @@ public abstract class AbstractCodePlexConsumerExample extends AbstractCredential
 
     for (String collection : Enumerable.create("TFS03", "TFS05", "TFS09")) {
       //      ODataConsumer c = ODataJerseyConsumer.newBuilder("https://codeplexodata.cloudapp.net/" + collection).setClientBehaviors(OClientBehaviors.basicAuth(codeplexUser, codeplexPassword)).build();
-      ODataConsumer c = this.create("https://codeplexodata.cloudapp.net/" + collection);
+      ODataConsumer c = this.create("https://codeplexodata.cloudapp.net/" + collection, null);
 
       for (OEntity p : c.getEntities("Projects").execute()) {
         reportEntity("project:", p);

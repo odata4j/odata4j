@@ -74,6 +74,4 @@ public enum AllowSelfSignedCertsBehavior implements JerseyClientBehavior {
     return AllowSelfSignedCertsBehavior.INSTANCE;
   }
 
-
-  
 }

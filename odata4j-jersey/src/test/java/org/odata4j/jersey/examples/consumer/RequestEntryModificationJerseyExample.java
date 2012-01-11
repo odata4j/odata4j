@@ -16,6 +16,7 @@ import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.examples.consumers.AbstractRequestEntryModificationExample;
+import org.odata4j.format.FormatType;
 import org.odata4j.jersey.consumer.ODataJerseyConsumer;
 import org.odata4j.jersey.consumer.behaviors.JerseyClientBehavior;
 
@@ -31,7 +32,7 @@ public class RequestEntryModificationJerseyExample extends AbstractRequestEntryM
   }
 
   @Override
-  public ODataConsumer create(String endpointUri) {
+  public ODataConsumer create(String endpointUri, FormatType formatType) {
     final ModifiableAtomEntryMessageBodyWriter writer = new ModifiableAtomEntryMessageBodyWriter();
     ODataConsumer consumer = ODataJerseyConsumer.newBuilder(endpointUri).setClientBehaviors(new JerseyClientBehavior() {
       @Override

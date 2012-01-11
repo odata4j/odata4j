@@ -22,7 +22,7 @@ public class InMemoryEvaluationTest {
     CommonExpression ex = Expression.length(Expression.string("aaa"));
 
     Object evaluate = InMemoryEvaluation.evaluate(ex, this, new BeanBasedPropertyModel(getClass()));
-    Assert.assertEquals(evaluate, (Integer)3);
+    Assert.assertEquals(evaluate, (Integer) 3);
   }
 
   @Test

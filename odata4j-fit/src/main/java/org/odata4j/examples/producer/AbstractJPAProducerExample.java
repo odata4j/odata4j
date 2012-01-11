@@ -3,8 +3,8 @@ package org.odata4j.examples.producer;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-import org.odata4j.examples.RunSupport;
 import org.odata4j.examples.ProducerSupport;
+import org.odata4j.examples.RunSupport;
 import org.odata4j.producer.jpa.JPAProducer;
 import org.odata4j.producer.jpa.northwind.test.NorthwindTestDataUtils;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;

@@ -14,7 +14,7 @@ public abstract class AbstractODataTestServiceReadWriteExample extends AbstractE
 
   @Override
   public void run(String[] args) {
-    ODataConsumer c = this.create(ODataEndpoints.ODATA_TEST_SERVICE_READWRITE2);
+    ODataConsumer c = this.create(ODataEndpoints.ODATA_TEST_SERVICE_READWRITE2, null);
 
     //ODataConsumer.dump.all(true);
 

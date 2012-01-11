@@ -12,7 +12,7 @@ public abstract class AbstractAgilitrainConsumerExample extends AbstractExample 
 
   @Override
   public void run(String[] args) {
-    ODataConsumer c = this.create(ODataEndpoints.AGILITRAIN);
+    ODataConsumer c = this.create(ODataEndpoints.AGILITRAIN, null);
 
     OEntity event = c.getEntity("Events", 225).execute();
     ORelatedEntityLink link = event.getLink("Workshop", ORelatedEntityLink.class);

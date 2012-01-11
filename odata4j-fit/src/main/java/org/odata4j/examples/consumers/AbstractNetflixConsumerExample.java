@@ -15,7 +15,7 @@ public abstract class AbstractNetflixConsumerExample extends AbstractExample imp
   @Override
   public void run(String[] args) {
 
-    ODataConsumer c = this.create(ODataEndpoints.NETFLIX);
+    ODataConsumer c = this.create(ODataEndpoints.NETFLIX, null);
 
     // locate the netflix id for Morgan Spurlock
     int morganSpurlockId = c.getEntities("People").filter("substringof('Spurlock',Name)").execute().first().getProperty("Id", Integer.class).getValue();

@@ -13,10 +13,10 @@ public abstract class AbstractDataMarketConsumerExample extends AbstractCredenti
 
     String[] datamarketCreds = args.length > 0 ? args : System.getenv("DATAMARKET").split(":");
     this.setLoginPassword(datamarketCreds[0]);
-    
+
     String url = "https://api.datamarket.azure.com/Data.ashx/UnitedNations/MDG/";
 
-    ODataConsumer c = this.create(url);
+    ODataConsumer c = this.create(url, null);
 
     OEntity firstDataSeries = c.getEntities("DataSeries").top(1).execute().first();
     String filter = String.format("DataSeriesId eq '%s'", firstDataSeries.getProperty("Id").getValue());

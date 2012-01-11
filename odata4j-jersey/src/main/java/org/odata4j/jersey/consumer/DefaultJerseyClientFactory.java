@@ -20,7 +20,7 @@ public class DefaultJerseyClientFactory implements JerseyClientFactory {
   @Override
   public Client createClient(ClientConfig clientConfig) {
     Client client = Client.create(clientConfig);
-        
+
     return client;
   }
 

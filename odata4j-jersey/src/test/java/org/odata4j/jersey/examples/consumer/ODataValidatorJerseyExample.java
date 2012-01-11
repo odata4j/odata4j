@@ -2,6 +2,7 @@ package org.odata4j.jersey.examples.consumer;
 
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.examples.consumers.AbstractODataValidatorExample;
+import org.odata4j.format.FormatType;
 import org.odata4j.jersey.consumer.ODataJerseyConsumer;
 
 public class ODataValidatorJerseyExample extends AbstractODataValidatorExample {
@@ -12,7 +13,7 @@ public class ODataValidatorJerseyExample extends AbstractODataValidatorExample {
   }
 
   @Override
-  public ODataConsumer create(String endpointUri) {
+  public ODataConsumer create(String endpointUri, FormatType formatType) {
     return ODataJerseyConsumer.create(endpointUri);
   }
 

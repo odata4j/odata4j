@@ -13,7 +13,7 @@ public abstract class AbstractEBayConsumerExample extends AbstractExample implem
   @Override
   public void run(String[] args) {
 
-    ODataConsumer c = this.create(ODataEndpoints.EBAY);
+    ODataConsumer c = this.create(ODataEndpoints.EBAY, null);
 
     OEntity firstCategory = c.getEntities("Categories").top(1).execute().first();
     reportEntities(firstCategory.getProperty("Name").getValue().toString(),

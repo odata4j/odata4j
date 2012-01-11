@@ -16,8 +16,8 @@ public abstract class AbstractRequestEntryModificationExample extends AbstractEx
 
     // create a consumer with additional behavior
     String serviceUri = "http://services.odata.org/Northwind/Northwind.svc";
-    ODataConsumer consumer = this.create(serviceUri);
-    
+    ODataConsumer consumer = this.create(serviceUri, null);
+
     consumer.createEntity("Categories")
         .properties(OProperties.string("CategoryName", "Category " + new Date()))
         .execute();

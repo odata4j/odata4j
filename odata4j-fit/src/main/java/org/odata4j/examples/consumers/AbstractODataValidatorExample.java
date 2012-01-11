@@ -18,7 +18,7 @@ public abstract class AbstractODataValidatorExample extends AbstractExample impl
 
     String uri = ODataEndpoints.NORTHWIND;
 
-    ODataConsumer c = this.create("http://services.odata.org/validation/odatavalidator/");
+    ODataConsumer c = this.create("http://services.odata.org/validation/odatavalidator/", null);
 
     Guid validationJobId = Guid.fromString("f4aa9495-ef40-469e-818c-29c4ec5fb2ed");
     if (true) {

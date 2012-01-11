@@ -1,4 +1,4 @@
-package org.odata4j.test.consumer;
+package org.odata4j.jersey.test.consumer;
 
 import junit.framework.Assert;
 

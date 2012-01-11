@@ -1,72 +1,48 @@
 package org.odata4j.producer.jpa.airline.test;
 
-import java.sql.Time;
 import java.text.DateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 
 import javax.persistence.Persistence;
-import javax.persistence.metamodel.SingularAttribute;
 
 import org.core4j.Enumerable;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.junit.Assert;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperties;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmSimpleType;
-import org.odata4j.jersey.consumer.ODataJerseyConsumer;
-import org.odata4j.jersey.examples.producer.JerseyProducerUtil;
-import org.odata4j.producer.jpa.JPAEdmGenerator;
 import org.odata4j.producer.jpa.JPAProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.test.JPAProvider;
 
-/**
- * Unfortunately not all OData consumer support the Edm.Time type yet(?).
- * Using a customized JPAEdmGenerator as shown in this test case allows
- * using a Edm.DateTime instead of Edm.Time for types annotated with
- * TemporalType.TIME (Date, Calendar) or java.sql.Time.
- */
-public class EdmDateTimeTemporalTest extends AirlineJPAProducerTestBase {
+public abstract class AbstractEdmTimeTemporalTest extends AbstractAirlineJPAProducerTestBase {
 
-  @BeforeClass
-  public static void setUp() throws Exception {
+  @Before
+  public void setUpClass() throws Exception {
     String persistenceUnitName = "AirlineService" + JPAProvider.JPA_PROVIDER.caption;
     String namespace = "Airline";
 
     emf = Persistence.createEntityManagerFactory(persistenceUnitName);
 
-    JPAProducer producer = new JPAProducer(emf, new JPAEdmGenerator(emf, namespace) {
-      protected EdmSimpleType<?> toEdmType(SingularAttribute<?, ?> sa) {
-        Class<?> javaType = sa.getType().getJavaType();
-        if (javaType.equals(Date.class)
-            || javaType.equals(Calendar.class)
-            || javaType.equals(Time.class)) {
-          return EdmSimpleType.DATETIME;
-        } else {
-          return super.toEdmType(sa);
-        }
-      }
-    }.generateEdm(null).build(), 20);
+    JPAProducer producer = new JPAProducer(emf, namespace, 20);
 
     DefaultODataProducerProvider.setInstance(producer);
-    server = JerseyProducerUtil.startODataServer(endpointUri);
+    server = this.startODataServer(endpointUri);
   }
 
   @Test
   public void testMetadata() {
-    ODataConsumer consumer = ODataJerseyConsumer.create(endpointUri);
+    ODataConsumer consumer = this.create(endpointUri, null);
 
     EdmDataServices metadata = consumer.getMetadata();
 
-    Assert.assertEquals(EdmSimpleType.DATETIME, metadata.findEdmEntitySet("FlightSchedule").getType().findProperty("departureTime").getType());
-    Assert.assertEquals(EdmSimpleType.DATETIME, metadata.findEdmEntitySet("FlightSchedule").getType().findProperty("arrivalTime").getType());
+    Assert.assertEquals(EdmSimpleType.TIME, metadata.findEdmEntitySet("FlightSchedule").getType().findProperty("departureTime").getType());
+    Assert.assertEquals(EdmSimpleType.TIME, metadata.findEdmEntitySet("FlightSchedule").getType().findProperty("arrivalTime").getType());
   }
 
   @Test
@@ -74,7 +50,7 @@ public class EdmDateTimeTemporalTest extends AirlineJPAProducerTestBase {
    *handling of Date fields with different @Temporal
    */
   public void createWithDifferentTemporal() throws Exception {
-    ODataConsumer consumer = ODataJerseyConsumer.create(endpointUri);
+    ODataConsumer consumer = this.create(endpointUri, null);
 
     OEntity flightSchedule = consumer.createEntity("FlightSchedule")
         .properties(OProperties.string("flightNo", "LH460"))
@@ -85,24 +61,24 @@ public class EdmDateTimeTemporalTest extends AirlineJPAProducerTestBase {
         .execute();
 
     Long id = (Long) flightSchedule.getProperty("flightScheduleID").getValue();
-    Assert.assertEquals(new LocalDateTime(1970, 1, 1, 9, 30, 0), flightSchedule.getProperty("departureTime").getValue());
-    Assert.assertEquals(new LocalDateTime(1970, 1, 1, 14, 10, 0), flightSchedule.getProperty("arrivalTime").getValue());
+    Assert.assertEquals(new LocalTime(9, 30, 0), flightSchedule.getProperty("departureTime").getValue());
+    Assert.assertEquals(new LocalTime(14, 10, 0), flightSchedule.getProperty("arrivalTime").getValue());
     Assert.assertEquals(new LocalDateTime(2011, 03, 28, 9, 30), flightSchedule.getProperty("firstDeparture").getValue());
     Assert.assertEquals(new LocalDateTime(2011, 07, 05, 0, 0), flightSchedule.getProperty("lastDeparture").getValue());
 
     flightSchedule = consumer.getEntity("FlightSchedule", id).execute();
-    Assert.assertEquals(new LocalDateTime(1970, 1, 1, 9, 30, 0), flightSchedule.getProperty("departureTime").getValue());
-    Assert.assertEquals(new LocalDateTime(1970, 1, 1, 14, 10, 0), flightSchedule.getProperty("arrivalTime").getValue());
+    Assert.assertEquals(new LocalTime(9, 30, 0), flightSchedule.getProperty("departureTime").getValue());
+    Assert.assertEquals(new LocalTime(14, 10, 0), flightSchedule.getProperty("arrivalTime").getValue());
     Assert.assertEquals(new LocalDateTime(2011, 03, 28, 9, 30), flightSchedule.getProperty("firstDeparture").getValue());
     Assert.assertEquals(new LocalDateTime(2011, 07, 05, 0, 0), flightSchedule.getProperty("lastDeparture").getValue());
   }
 
   @Test
   public void filterTime() {
-    ODataConsumer consumer = ODataJerseyConsumer.create(endpointUri);
+    ODataConsumer consumer = this.create(endpointUri, null);
 
     Enumerable<OEntity> schedules = consumer.getEntities("FlightSchedule")
-        .filter("departureTime ge datetime'1970-01-01T11:00:00' and departureTime lt datetime'1970-01-01T12:00:00'")
+        .filter("departureTime ge time'PT11H' and departureTime lt time'PT12H'")
         .execute();
 
     Assert.assertEquals(1, schedules.count());

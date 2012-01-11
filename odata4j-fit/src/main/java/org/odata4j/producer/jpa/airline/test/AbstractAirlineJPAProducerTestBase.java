@@ -18,10 +18,11 @@ import org.core4j.ThrowingFunc1;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
-import org.odata4j.producer.jpa.northwind.test.NorthwindTestDataUtils;
+import org.odata4j.examples.ConsumerSupport;
+import org.odata4j.examples.ProducerSupport;
 import org.odata4j.producer.server.ODataServer;
 
-public abstract class AirlineJPAProducerTestBase {
+public abstract class AbstractAirlineJPAProducerTestBase implements ProducerSupport, ConsumerSupport {
   protected static final String endpointUri =
       "http://localhost:8810/airline/Airline.svc/";
 
@@ -33,7 +34,7 @@ public abstract class AirlineJPAProducerTestBase {
       Class.forName("org.hsqldb.jdbcDriver");
     } catch (Exception ex) {
       System.out.println("ERROR: failed to load HSQLDB JDBC driver.");
-      Logger.getLogger(AirlineJPAProducerTestBase.class.getName()).log(
+      Logger.getLogger(AbstractAirlineJPAProducerTestBase.class.getName()).log(
           Level.SEVERE,
           null,
           ex);
@@ -51,7 +52,7 @@ public abstract class AirlineJPAProducerTestBase {
       function.apply(conn);
 
     } catch (Exception ex) {
-      Logger.getLogger(AirlineJPAProducerTestBase.class.getName()).log(
+      Logger.getLogger(AbstractAirlineJPAProducerTestBase.class.getName()).log(
           Level.SEVERE,
           null,
           ex);
@@ -61,7 +62,7 @@ public abstract class AirlineJPAProducerTestBase {
         try {
           conn.close();
         } catch (SQLException ex) {
-          Logger.getLogger(AirlineJPAProducerTestBase.class.getName()).log(
+          Logger.getLogger(AbstractAirlineJPAProducerTestBase.class.getName()).log(
               Level.SEVERE,
               null,
               ex);
@@ -84,7 +85,7 @@ public abstract class AirlineJPAProducerTestBase {
 
         BufferedReader br = null;
         try {
-          InputStream xml = NorthwindTestDataUtils.class
+          InputStream xml = AbstractAirlineJPAProducerTestBase.class
               .getResourceAsStream("/META-INF/airline_insert.sql");
 
           br = new BufferedReader(new InputStreamReader(xml, "UTF-8"));
@@ -125,10 +126,7 @@ public abstract class AirlineJPAProducerTestBase {
         return null;
       }
     });
-  }
 
-  @AfterClass
-  public static void tearDownClass() throws Exception {
     if (server != null) {
       server.stop();
     }
@@ -136,5 +134,7 @@ public abstract class AirlineJPAProducerTestBase {
     if (emf != null) {
       emf.close();
     }
+
   }
+
 }

@@ -3,6 +3,7 @@ package org.odata4j.examples.cxf.consumer;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.cxf.consumer.ODataCxfConsumer;
 import org.odata4j.examples.consumers.AbstractEBayConsumerExample;
+import org.odata4j.format.FormatType;
 
 public class EBayCxfConsumerExample extends AbstractEBayConsumerExample {
 
@@ -12,7 +13,7 @@ public class EBayCxfConsumerExample extends AbstractEBayConsumerExample {
   }
 
   @Override
-  public ODataConsumer create(String endpointUri) {
+  public ODataConsumer create(String endpointUri, FormatType formatType) {
     return ODataCxfConsumer.create(endpointUri);
   }
 }
