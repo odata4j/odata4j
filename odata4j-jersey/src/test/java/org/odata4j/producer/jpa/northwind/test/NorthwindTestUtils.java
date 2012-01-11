@@ -58,64 +58,7 @@ public class NorthwindTestUtils {
     String northwindSvc = "http://services.odata.org/Northwind/Northwind.svc";
     String contents = client.resource(northwindSvc + path).accept(accept).get(String.class);
     String filePath = "src/test/resources" + RESOURCES_ROOT + format + "/" + fileName + "." + format;
-    writeStringToFile(filePath, contents);
-  }
-
-  public static void writeStringToFile(String fileName, String contents) {
-    Writer out = null;
-    try {
-      out = new OutputStreamWriter(new FileOutputStream(fileName), "utf-8");
-      out.write(contents);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    } finally {
-      if (out != null) {
-        try {
-          out.close();
-        } catch (IOException e) {}
-      }
-    }
-
-  }
-
-  public static String readFileToString(String fileName) {
-    return readFileToString(fileName, Charset.defaultCharset().name());
-  }
-
-  public static String readFileToString(String fileName, String charsetName) {
-    StringBuilder strBuilder = new StringBuilder();
-    try {
-      InputStream buf = NorthwindTestDataUtil.class.getResourceAsStream(
-          fileName);
-
-      BufferedReader in = new BufferedReader(
-          new InputStreamReader(buf, charsetName));
-
-      String str;
-
-      try {
-        while ((str = in.readLine()) != null) {
-          strBuilder.append(str);
-        }
-        in.close();
-
-      } catch (IOException ex) {
-        Logger.getLogger(
-            QueryOptionTest.class.getName()).log(
-            Level.SEVERE,
-            null,
-            ex);
-      }
-
-    } catch (Exception ex) {
-      Logger.getLogger(
-          QueryOptionTest.class.getName()).log(
-          Level.SEVERE,
-          null,
-          ex);
-    }
-
-    return strBuilder.toString();
+    NorthwindTestDataUtils.writeStringToFile(filePath, contents);
   }
 
   public static void testJSONResult(String endpointUri, String uri, String inp) {
@@ -149,7 +92,7 @@ public class NorthwindTestUtils {
         "http://localhost:8810/northwind",
         "http://services.odata.org/northwind");
 
-    String expect = NorthwindTestUtils.readFileToString(
+    String expect = NorthwindTestDataUtils.readFileToString(
         RESOURCES_ROOT +
             RESOURCES_TYPE +
             "/" + inp + "."
@@ -189,7 +132,7 @@ public class NorthwindTestUtils {
     result = result.replace("OrderDetails", "Order_Details");
 
     String expect =
-        NorthwindTestUtils.readFileToString(
+        NorthwindTestDataUtils.readFileToString(
             RESOURCES_ROOT
                 + RESOURCES_TYPE
                 + "/" + inp + "."

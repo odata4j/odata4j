@@ -8,12 +8,12 @@ import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.examples.AbstractExample;
 import org.odata4j.examples.ConsumerSupport;
 import org.odata4j.examples.RunSupport;
-import org.odata4j.examples.ServerSupport;
+import org.odata4j.examples.ProducerSupport;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.producer.server.ODataServer;
 
-public abstract class AbstractRoundtripExample extends AbstractExample implements ConsumerSupport, ServerSupport, RunSupport{
+public abstract class AbstractRoundtripExample extends AbstractExample implements ConsumerSupport, ProducerSupport, RunSupport{
 
   public class Customer {
 

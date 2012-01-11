@@ -1,13 +1,14 @@
-package org.odata4j.examples.jersey.consumer;
+package org.odata4j.jersey.examples.consumer;
 
 import org.odata4j.consumer.ODataConsumer;
-import org.odata4j.examples.consumers.AbstractEBayConsumerExample;
+import org.odata4j.examples.consumers.AbstractNetflixConsumerExample;
 import org.odata4j.jersey.consumer.ODataJerseyConsumer;
 
-public class EBayJerseyConsumerExample extends AbstractEBayConsumerExample {
+public class NetflixJerseyConsumerExample extends AbstractNetflixConsumerExample {
+
 
   public static void main(String[] args) {
-    EBayJerseyConsumerExample example = new EBayJerseyConsumerExample();
+    NetflixJerseyConsumerExample example = new NetflixJerseyConsumerExample();
     example.run(args);
   }
 
@@ -15,4 +16,5 @@ public class EBayJerseyConsumerExample extends AbstractEBayConsumerExample {
   public ODataConsumer create(String endpointUri) {
     return ODataJerseyConsumer.create(endpointUri);
   }
+
 }

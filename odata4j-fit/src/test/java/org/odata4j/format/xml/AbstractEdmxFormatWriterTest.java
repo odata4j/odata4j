@@ -32,12 +32,12 @@ import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmItem;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmStructuralType;
-import org.odata4j.examples.jersey.producer.JerseyProducerUtil;
+import org.odata4j.examples.ProducerSupport;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.producer.PropertyPath;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.jpa.airline.Airport;
-import org.odata4j.producer.jpa.northwind.test.NorthwindTestUtils;
+import org.odata4j.producer.jpa.northwind.test.NorthwindTestDataUtils;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.producer.server.ODataServer;
 import org.xml.sax.SAXException;
@@ -50,9 +50,9 @@ import com.sun.jersey.api.client.WebResource;
  *
  * This test also demonstrates the use of {@link EdmDecorator}.
  */
-public class EdmxFormatWriterTest implements EdmDecorator {
+public abstract class AbstractEdmxFormatWriterTest implements EdmDecorator, ProducerSupport {
 
-  public EdmxFormatWriterTest() {}
+  public AbstractEdmxFormatWriterTest() {}
 
   @BeforeClass
   public static void setUpClass() throws Exception {}
@@ -88,7 +88,7 @@ public class EdmxFormatWriterTest implements EdmDecorator {
 
     //System.out.println(metadata);
 
-    String expected = NorthwindTestUtils.readFileToString("/META-INF/uri-conventions/xml/DocAnnotTest.xml");
+    String expected = NorthwindTestDataUtils.readFileToString("/META-INF/uri-conventions/xml/DocAnnotTest.xml");
 
     XMLUnit.setIgnoreWhitespace(true);
     Diff myDiff = new Diff(expected, metadata);
@@ -139,7 +139,7 @@ public class EdmxFormatWriterTest implements EdmDecorator {
 
     // register the producer as the static instance, then launch the http server
     DefaultODataProducerProvider.setInstance(p);
-    server = JerseyProducerUtil.startODataServer(endpointUri);
+    server = this.startODataServer(endpointUri);
     return p.getMetadata();
   }
 

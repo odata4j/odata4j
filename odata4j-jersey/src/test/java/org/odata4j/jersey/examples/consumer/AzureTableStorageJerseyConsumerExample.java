@@ -1,4 +1,4 @@
-package org.odata4j.examples.jersey.consumer;
+package org.odata4j.jersey.examples.consumer;
 
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.consumer.behaviors.OClientBehaviors;

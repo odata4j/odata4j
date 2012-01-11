@@ -1,4 +1,4 @@
-package org.odata4j.examples.jersey.producer;
+package org.odata4j.jersey.examples.producer;
 
 import java.io.IOException;
 import java.util.Set;

@@ -18,7 +18,7 @@ import org.core4j.ThrowingFunc1;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
-import org.odata4j.producer.jpa.northwind.test.NorthwindTestDataUtil;
+import org.odata4j.producer.jpa.northwind.test.NorthwindTestDataUtils;
 import org.odata4j.producer.server.ODataServer;
 
 public abstract class AirlineJPAProducerTestBase {
@@ -84,7 +84,7 @@ public abstract class AirlineJPAProducerTestBase {
 
         BufferedReader br = null;
         try {
-          InputStream xml = NorthwindTestDataUtil.class
+          InputStream xml = NorthwindTestDataUtils.class
               .getResourceAsStream("/META-INF/airline_insert.sql");
 
           br = new BufferedReader(new InputStreamReader(xml, "UTF-8"));

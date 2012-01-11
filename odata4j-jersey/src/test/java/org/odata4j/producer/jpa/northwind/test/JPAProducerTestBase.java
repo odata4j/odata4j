@@ -5,7 +5,7 @@ import javax.persistence.Persistence;
 
 import org.core4j.Func1;
 import org.junit.AfterClass;
-import org.odata4j.examples.jersey.producer.JerseyProducerUtil;
+import org.odata4j.jersey.examples.producer.JerseyProducerUtil;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.jpa.JPAProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
@@ -36,7 +36,7 @@ public abstract class JPAProducerTestBase {
     // using 20 as maxResult in almost any case but not
     // for every
 
-    NorthwindTestDataUtil.fillDatabase(emf);
+    NorthwindTestDataUtils.fillDatabase(emf);
 
     if (producerModification != null)
       producer = producerModification.apply(producer);

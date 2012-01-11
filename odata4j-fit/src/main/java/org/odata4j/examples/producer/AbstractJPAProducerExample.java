@@ -4,13 +4,13 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import org.odata4j.examples.RunSupport;
-import org.odata4j.examples.ServerSupport;
+import org.odata4j.examples.ProducerSupport;
 import org.odata4j.producer.jpa.JPAProducer;
-import org.odata4j.producer.jpa.northwind.test.NorthwindTestDataUtil;
+import org.odata4j.producer.jpa.northwind.test.NorthwindTestDataUtils;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.test.JPAProvider;
 
-public abstract class AbstractJPAProducerExample implements ServerSupport, RunSupport {
+public abstract class AbstractJPAProducerExample implements ProducerSupport, RunSupport {
 
   public void run(String[] args) {
 
@@ -25,7 +25,7 @@ public abstract class AbstractJPAProducerExample implements ServerSupport, RunSu
     EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceUnitName);
 
     JPAProducer producer = new JPAProducer(emf, namespace, 50);
-    NorthwindTestDataUtil.fillDatabase(emf);
+    NorthwindTestDataUtils.fillDatabase(emf);
 
     // register the producer as the static instance, then launch the http server
     DefaultODataProducerProvider.setInstance(producer);

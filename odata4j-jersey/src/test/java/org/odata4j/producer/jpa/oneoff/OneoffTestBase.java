@@ -7,7 +7,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import org.junit.AfterClass;
-import org.odata4j.examples.jersey.producer.JerseyProducerUtil;
+import org.odata4j.jersey.examples.producer.JerseyProducerUtil;
 import org.odata4j.producer.jpa.JPAProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.producer.server.ODataServer;

@@ -1,13 +1,13 @@
-package org.odata4j.examples.jersey.consumer;
+package org.odata4j.jersey.examples.consumer;
 
 import org.odata4j.consumer.ODataConsumer;
-import org.odata4j.examples.consumers.AbstractAppEngineConsumerExample;
+import org.odata4j.examples.consumers.AbstractAgilitrainConsumerExample;
 import org.odata4j.jersey.consumer.ODataJerseyConsumer;
 
-public class AppEngineJerseyConsumerExample extends AbstractAppEngineConsumerExample {
+public class AgilitrainJerseyConsumerExample extends AbstractAgilitrainConsumerExample {
 
   public static void main(String[] args) {
-    AppEngineJerseyConsumerExample example = new AppEngineJerseyConsumerExample();
+    AgilitrainJerseyConsumerExample example = new AgilitrainJerseyConsumerExample();
     example.run(args);
   }
 

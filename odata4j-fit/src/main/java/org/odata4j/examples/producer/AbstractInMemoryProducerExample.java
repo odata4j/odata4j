@@ -34,12 +34,12 @@ import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.edm.EdmStructuralType;
 import org.odata4j.examples.RunSupport;
-import org.odata4j.examples.ServerSupport;
+import org.odata4j.examples.ProducerSupport;
 import org.odata4j.producer.PropertyPath;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 
-public abstract class AbstractInMemoryProducerExample implements ServerSupport, RunSupport {
+public abstract class AbstractInMemoryProducerExample implements ProducerSupport, RunSupport {
 
   @SuppressWarnings({ "unchecked", "rawtypes" })
   public void run(String [] args) {

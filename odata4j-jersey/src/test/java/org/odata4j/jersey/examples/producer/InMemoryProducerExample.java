@@ -1,12 +1,12 @@
-package org.odata4j.examples.jersey.producer;
+package org.odata4j.jersey.examples.producer;
 
-import org.odata4j.examples.producer.AbstractJPAProducerExample;
+import org.odata4j.examples.producer.AbstractInMemoryProducerExample;
 import org.odata4j.producer.server.ODataServer;
 
-public class JPAProducerExample extends AbstractJPAProducerExample {
+public class InMemoryProducerExample extends AbstractInMemoryProducerExample {
 
   public static void main(String[] args) {
-    JPAProducerExample example = new JPAProducerExample();
+    InMemoryProducerExample example = new InMemoryProducerExample();
     example.run(args);
   }
 

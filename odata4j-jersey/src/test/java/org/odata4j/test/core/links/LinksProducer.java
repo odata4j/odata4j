@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.core4j.Func;
-import org.odata4j.examples.jersey.producer.JerseyProducerUtil;
+import org.odata4j.jersey.examples.producer.JerseyProducerUtil;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 

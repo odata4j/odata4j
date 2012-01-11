@@ -1,15 +1,15 @@
-package org.odata4j.examples.jersey.consumer;
+package org.odata4j.jersey.examples.consumer;
 
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.consumer.behaviors.OClientBehavior;
 import org.odata4j.consumer.behaviors.OClientBehaviors;
-import org.odata4j.examples.consumers.AbstractDallasConsumerExampleUnescoUIS;
+import org.odata4j.examples.consumers.AbstractDataMarketConsumerExample;
 import org.odata4j.jersey.consumer.ODataJerseyConsumer;
 
-public class DallasJerseyConsumerExampleUnescoUIS extends AbstractDallasConsumerExampleUnescoUIS{
+public class DataMarketJerseyConsumerExample extends AbstractDataMarketConsumerExample{
 
   public static void main(String[] args) {
-    DallasJerseyConsumerExampleUnescoUIS example = new DallasJerseyConsumerExampleUnescoUIS();
+    DataMarketJerseyConsumerExample example = new DataMarketJerseyConsumerExample();
     example.run(args);
   }
   

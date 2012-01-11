@@ -38,7 +38,7 @@ import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.examples.RunSupport;
-import org.odata4j.examples.ServerSupport;
+import org.odata4j.examples.ProducerSupport;
 import org.odata4j.producer.BaseResponse;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityIdResponse;
@@ -49,13 +49,13 @@ import org.odata4j.producer.Responses;
 import org.odata4j.producer.edm.MetadataProducer;
 import org.odata4j.producer.exceptions.NotImplementedException;
 import org.odata4j.producer.jpa.northwind.Customers;
-import org.odata4j.producer.jpa.northwind.test.NorthwindTestDataUtil;
+import org.odata4j.producer.jpa.northwind.test.NorthwindTestDataUtils;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 
 /**
  * This example shows how to expose xml data as an atom feed.
  */
-public abstract class AbstractXmlDataProducerExample implements ServerSupport, RunSupport  {
+public abstract class AbstractXmlDataProducerExample implements ProducerSupport, RunSupport  {
 
   public static final String endpointUri = "http://localhost:8010/XmlDataProducerExample.svc";
 
@@ -83,7 +83,7 @@ public abstract class AbstractXmlDataProducerExample implements ServerSupport, R
     // create an fill temporary database
     emf = Persistence.createEntityManagerFactory(persistenceUnitName);
     emf.createEntityManager().close();
-    NorthwindTestDataUtil.fillDatabase(emf);
+    NorthwindTestDataUtils.fillDatabase(emf);
 
     // select the customers
     EntityManager em = emf.createEntityManager();

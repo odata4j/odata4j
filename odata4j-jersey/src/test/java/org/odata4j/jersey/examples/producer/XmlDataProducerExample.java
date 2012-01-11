@@ -1,4 +1,4 @@
-package org.odata4j.examples.jersey.producer;
+package org.odata4j.jersey.examples.producer;
 
 import org.odata4j.examples.producer.AbstractXmlDataProducerExample;
 import org.odata4j.producer.server.ODataServer;
