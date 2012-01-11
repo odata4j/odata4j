@@ -8,7 +8,7 @@ import org.odata4j.jersey.consumer.ODataJerseyConsumer;
 
 public class DallasJerseyConsumerExampleAP extends AbstractDallasConsumerExampleAP{
 
-  public static void main(String... args) {
+  public static void main(String[] args) {
     DallasJerseyConsumerExampleAP example = new DallasJerseyConsumerExampleAP();
     example.run(args);
   }

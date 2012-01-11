@@ -3,6 +3,7 @@ package org.odata4j.jersey.consumer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.odata4j.consumer.AbstractConsumerEntityPayloadRequest;
 import org.core4j.Enumerable;
 import org.core4j.Predicate1;
 import org.odata4j.core.OEntity;
@@ -14,7 +15,7 @@ import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.format.Entry;
 import org.odata4j.internal.EntitySegment;
 
-class ConsumerEntityModificationRequest<T> extends ConsumerEntityPayloadRequestBase implements OModifyRequest<T> {
+class ConsumerEntityModificationRequest<T> extends AbstractConsumerEntityPayloadRequest implements OModifyRequest<T> {
 
   private final T updateRoot;
   private final ODataJerseyClient client;

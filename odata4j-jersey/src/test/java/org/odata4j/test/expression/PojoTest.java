@@ -9,7 +9,7 @@ import org.core4j.Funcs;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntityKey;
-import org.odata4j.examples.producer.ProducerUtil;
+import org.odata4j.examples.jersey.producer.JerseyProducerUtil;
 import org.odata4j.jersey.consumer.ODataJerseyConsumer;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
@@ -25,7 +25,7 @@ public class PojoTest {
     InMemoryProducer producer = new InMemoryProducer("PojoTest");
     DefaultODataProducerProvider.setInstance(producer);
 
-    ODataServer server = ProducerUtil.startODataServer(uri);
+    ODataServer server = JerseyProducerUtil.startODataServer(uri);
 
     try {
       ODataConsumer c = ODataJerseyConsumer.create(uri);
@@ -61,7 +61,7 @@ public class PojoTest {
     InMemoryProducer producer = new InMemoryProducer("PojoTest");
     DefaultODataProducerProvider.setInstance(producer);
 
-    ODataServer server = ProducerUtil.startODataServer(uri);
+    ODataServer server = JerseyProducerUtil.startODataServer(uri);
 
     try {
       ODataConsumer c = ODataJerseyConsumer.create(uri);

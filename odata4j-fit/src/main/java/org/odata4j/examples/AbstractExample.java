@@ -18,7 +18,7 @@ import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmSimpleType;
 
-public class BaseExample {
+public abstract class AbstractExample {
 
   protected static void report(String msg) {
     System.out.println(msg);

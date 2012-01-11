@@ -4,13 +4,14 @@ import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OProperties;
-import org.odata4j.examples.BaseCredentialsExample;
-import org.odata4j.examples.ConsumerExample;
+import org.odata4j.examples.AbstractCredentialsExample;
+import org.odata4j.examples.ConsumerSupport;
+import org.odata4j.examples.RunSupport;
 
-public abstract class AbstractAzureTableStorageConsumerExample  extends BaseCredentialsExample implements ConsumerExample {
+public abstract class AbstractAzureTableStorageConsumerExample  extends AbstractCredentialsExample implements ConsumerSupport, RunSupport {
 
   @Override
-  public void run(String... args) {
+  public void run(String[] args) {
 
     String[] azureCreds = args.length > 0 ? args : System.getenv("AZURESTORAGE").split(":");
     this.setLoginName(azureCreds[0]);

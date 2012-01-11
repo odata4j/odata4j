@@ -16,17 +16,17 @@ import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperties;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmSimpleType;
-import org.odata4j.examples.producer.ProducerUtil;
+import org.odata4j.examples.jersey.producer.JerseyProducerUtil;
 import org.odata4j.jersey.consumer.ODataJerseyConsumer;
 import org.odata4j.producer.jpa.JPAProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
-import org.odata4j.test.OData4jTestSuite;
+import org.odata4j.test.JPAProvider;
 
 public class EdmTimeTemporalTest extends AirlineJPAProducerTestBase {
 
   @BeforeClass
   public static void setUpClass() throws Exception {
-    String persistenceUnitName = "AirlineService" + OData4jTestSuite.JPA_PROVIDER.caption;
+    String persistenceUnitName = "AirlineService" + JPAProvider.JPA_PROVIDER.caption;
     String namespace = "Airline";
 
     emf = Persistence.createEntityManagerFactory(persistenceUnitName);
@@ -34,7 +34,7 @@ public class EdmTimeTemporalTest extends AirlineJPAProducerTestBase {
     JPAProducer producer = new JPAProducer(emf, namespace, 20);
 
     DefaultODataProducerProvider.setInstance(producer);
-    server = ProducerUtil.startODataServer(endpointUri);
+    server = JerseyProducerUtil.startODataServer(endpointUri);
   }
 
   @Test

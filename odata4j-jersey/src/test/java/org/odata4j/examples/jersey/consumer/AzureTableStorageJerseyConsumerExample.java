@@ -7,7 +7,7 @@ import org.odata4j.jersey.consumer.ODataJerseyConsumer;
 
 public class AzureTableStorageJerseyConsumerExample extends AbstractAzureTableStorageConsumerExample {
 
-  public static void main(String... args) {
+  public static void main(String[] args) {
     AzureTableStorageJerseyConsumerExample example = new AzureTableStorageJerseyConsumerExample();
     example.run(args);
   }

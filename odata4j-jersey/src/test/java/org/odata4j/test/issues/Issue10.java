@@ -7,7 +7,7 @@ import org.core4j.Func;
 import org.core4j.Funcs;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
-import org.odata4j.examples.producer.ProducerUtil;
+import org.odata4j.examples.jersey.producer.JerseyProducerUtil;
 import org.odata4j.jersey.consumer.ODataJerseyConsumer;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.QueryInfo;
@@ -36,7 +36,7 @@ public class Issue10 {
     }, Funcs.identity(String.class));
 
     DefaultODataProducerProvider.setInstance(producer);
-    ODataServer server = ProducerUtil.startODataServer(endpointUri);
+    ODataServer server = JerseyProducerUtil.startODataServer(endpointUri);
 
     ODataConsumer c = ODataJerseyConsumer.create(endpointUri);
 

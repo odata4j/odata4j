@@ -16,7 +16,7 @@ import org.joda.time.chrono.ISOChronology;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
-import org.odata4j.examples.producer.ProducerUtil;
+import org.odata4j.examples.jersey.producer.JerseyProducerUtil;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.jersey.consumer.ODataJerseyConsumer;
 import org.odata4j.producer.inmemory.InMemoryProducer;
@@ -293,7 +293,7 @@ public class DateTimeFormatTest {
           }
         }, "Key");
     DefaultODataProducerProvider.setInstance(producer);
-    ODataServer server = ProducerUtil.startODataServer(endpointUri);
+    ODataServer server = JerseyProducerUtil.startODataServer(endpointUri);
     ODataConsumer c = ODataJerseyConsumer.create(endpointUri);
     List<OEntity> oentities = c.getEntities("DateTimeRoundtrip").execute().toList();
 

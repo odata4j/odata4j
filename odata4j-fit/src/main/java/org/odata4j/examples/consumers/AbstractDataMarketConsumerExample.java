@@ -2,13 +2,14 @@ package org.odata4j.examples.consumers;
 
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
-import org.odata4j.examples.BaseCredentialsExample;
-import org.odata4j.examples.ConsumerExample;
+import org.odata4j.examples.AbstractCredentialsExample;
+import org.odata4j.examples.ConsumerSupport;
+import org.odata4j.examples.RunSupport;
 
-public abstract class AbstractDataMarketConsumerExample extends BaseCredentialsExample implements ConsumerExample {
+public abstract class AbstractDataMarketConsumerExample extends AbstractCredentialsExample implements ConsumerSupport, RunSupport {
 
   @Override
-  public void run(String... args) {
+  public void run(String[] args) {
 
     String[] datamarketCreds = args.length > 0 ? args : System.getenv("DATAMARKET").split(":");
     this.setLoginPassword(datamarketCreds[0]);

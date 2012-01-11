@@ -61,68 +61,6 @@ public class NorthwindTestUtils {
     writeStringToFile(filePath, contents);
   }
 
-  public static void fillDatabase(EntityManagerFactory emf) {
-    try {
-      Class.forName("org.hsqldb.jdbcDriver");
-    } catch (Exception ex) {
-      System.out.println("ERROR: failed to load HSQLDB JDBC driver.");
-      Logger.getLogger(NorthwindTestUtils.class.getName()).log(
-          Level.SEVERE,
-          null,
-          ex);
-
-      return;
-    }
-
-    Connection conn = null;
-    String line = "";
-    try {
-      conn = DriverManager.getConnection(
-          "jdbc:hsqldb:mem:northwind",
-          "sa",
-          "");
-
-      Statement statement = conn.createStatement();
-
-      InputStream xml = NorthwindTestUtils.class.getResourceAsStream(
-          "/META-INF/northwind_insert.sql");
-
-      BufferedReader br = new BufferedReader(
-          new InputStreamReader(xml, "UTF-8"));
-
-      while ((line = br.readLine()) != null) {
-        line = line.replace("`", "");
-        line = line.replace(");", ")");
-        line = line.replace("'0x", "'");
-
-        if (line.length() > 5) {
-          statement.executeUpdate(line);
-        }
-      }
-
-      br.close();
-      statement.close();
-
-    } catch (Exception ex) {
-      Logger.getLogger(NorthwindTestUtils.class.getName()).log(
-          Level.SEVERE,
-          null,
-          ex);
-
-    } finally {
-      if (conn != null) {
-        try {
-          conn.close();
-        } catch (SQLException ex) {
-          Logger.getLogger(NorthwindTestUtils.class.getName()).log(
-              Level.SEVERE,
-              null,
-              ex);
-        }
-      }
-    }
-  }
-
   public static void writeStringToFile(String fileName, String contents) {
     Writer out = null;
     try {
@@ -147,7 +85,7 @@ public class NorthwindTestUtils {
   public static String readFileToString(String fileName, String charsetName) {
     StringBuilder strBuilder = new StringBuilder();
     try {
-      InputStream buf = NorthwindTestUtils.class.getResourceAsStream(
+      InputStream buf = NorthwindTestDataUtil.class.getResourceAsStream(
           fileName);
 
       BufferedReader in = new BufferedReader(

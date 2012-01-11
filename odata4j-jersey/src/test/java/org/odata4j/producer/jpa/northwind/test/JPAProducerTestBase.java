@@ -5,12 +5,12 @@ import javax.persistence.Persistence;
 
 import org.core4j.Func1;
 import org.junit.AfterClass;
-import org.odata4j.examples.producer.ProducerUtil;
+import org.odata4j.examples.jersey.producer.JerseyProducerUtil;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.jpa.JPAProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.producer.server.ODataServer;
-import org.odata4j.test.OData4jTestSuite;
+import org.odata4j.test.JPAProvider;
 
 public abstract class JPAProducerTestBase {
   protected static final String endpointUri =
@@ -24,7 +24,7 @@ public abstract class JPAProducerTestBase {
   }
 
   public static void setUpClass(int maxResults, Func1<ODataProducer, ODataProducer> producerModification) throws Exception {
-    String persistenceUnitName = "NorthwindService" + OData4jTestSuite.JPA_PROVIDER.caption;
+    String persistenceUnitName = "NorthwindService" + JPAProvider.JPA_PROVIDER.caption;
     String namespace = "Northwind";
 
     emf = Persistence.createEntityManagerFactory(persistenceUnitName);
@@ -36,13 +36,13 @@ public abstract class JPAProducerTestBase {
     // using 20 as maxResult in almost any case but not
     // for every
 
-    NorthwindTestUtils.fillDatabase(emf);
+    NorthwindTestDataUtil.fillDatabase(emf);
 
     if (producerModification != null)
       producer = producerModification.apply(producer);
 
     DefaultODataProducerProvider.setInstance(producer);
-    server = ProducerUtil.startODataServer(endpointUri);
+    server = JerseyProducerUtil.startODataServer(endpointUri);
   }
 
   @AfterClass

@@ -25,7 +25,7 @@ import com.sun.jersey.core.util.ReaderWriter;
 
 public class RequestEntryModificationJerseyExample extends AbstractRequestEntryModificationExample {
 
-  public static void main(String... args) {
+  public static void main(String[] args) {
     RequestEntryModificationJerseyExample example = new RequestEntryModificationJerseyExample();
     example.run(args);
   }

@@ -32,7 +32,7 @@ import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmItem;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmStructuralType;
-import org.odata4j.examples.producer.ProducerUtil;
+import org.odata4j.examples.jersey.producer.JerseyProducerUtil;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.producer.PropertyPath;
 import org.odata4j.producer.inmemory.InMemoryProducer;
@@ -139,7 +139,7 @@ public class EdmxFormatWriterTest implements EdmDecorator {
 
     // register the producer as the static instance, then launch the http server
     DefaultODataProducerProvider.setInstance(p);
-    server = ProducerUtil.startODataServer(endpointUri);
+    server = JerseyProducerUtil.startODataServer(endpointUri);
     return p.getMetadata();
   }
 

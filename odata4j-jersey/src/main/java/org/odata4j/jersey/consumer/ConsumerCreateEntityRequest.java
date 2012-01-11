@@ -2,6 +2,7 @@ package org.odata4j.jersey.consumer;
 
 import java.util.Arrays;
 
+import org.odata4j.consumer.AbstractConsumerEntityPayloadRequest;
 import org.odata4j.core.OCreateRequest;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.ODataVersion;
@@ -24,7 +25,7 @@ import org.odata4j.internal.InternalUtil;
 
 import com.sun.jersey.api.client.ClientResponse;
 
-class ConsumerCreateEntityRequest<T> extends ConsumerEntityPayloadRequestBase implements OCreateRequest<T> {
+class ConsumerCreateEntityRequest<T> extends AbstractConsumerEntityPayloadRequest implements OCreateRequest<T> {
 
   private final ODataJerseyClient client;
   private OEntity parent;

@@ -7,7 +7,7 @@ import org.odata4j.jersey.consumer.ODataJerseyConsumer;
 public class NetflixJerseyConsumerExample extends AbstractNetflixConsumerExample {
 
 
-  public static void main(String... args) {
+  public static void main(String[] args) {
     NetflixJerseyConsumerExample example = new NetflixJerseyConsumerExample();
     example.run(args);
   }

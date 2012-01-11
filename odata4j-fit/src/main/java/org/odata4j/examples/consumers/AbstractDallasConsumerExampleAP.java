@@ -1,18 +1,19 @@
 package org.odata4j.examples.consumers;
 
 import org.odata4j.consumer.ODataConsumer;
-import org.odata4j.examples.BaseCredentialsExample;
-import org.odata4j.examples.ConsumerExample;
+import org.odata4j.examples.AbstractCredentialsExample;
+import org.odata4j.examples.ConsumerSupport;
 import org.odata4j.examples.ODataEndpoints;
+import org.odata4j.examples.RunSupport;
 
-public abstract class AbstractDallasConsumerExampleAP extends BaseCredentialsExample implements ConsumerExample {
+public abstract class AbstractDallasConsumerExampleAP extends AbstractCredentialsExample implements ConsumerSupport, RunSupport {
 
   @Override
-  public void run(String... args) {
+  public void run(String[] args) {
 
     String[] dallasCreds = args.length > 0 ? args : System.getenv("DALLAS").split(":");
     this.setLoginPassword(dallasCreds[0]);
-    this.setLoginName(dallasCreds[1]);    
+    this.setLoginName(dallasCreds[1]);
 
     ODataConsumer c = this.create(ODataEndpoints.DALLAS_CTP3_AP);
 
@@ -22,9 +23,9 @@ public abstract class AbstractDallasConsumerExampleAP extends BaseCredentialsExa
     // stories by category: top 5 tech stories
     int topTechCategoryId = 31992;
     String mediaOptionNoPictures = "0";
-    String mediaOptionPictures = "1";
+    //    String mediaOptionPictures = "1";
     String contentOptionLinksOnly = "0";
-    String contentOptionFullStoryContent = "2";
+    //    String contentOptionFullStoryContent = "2";
     reportEntities("Tech", c.getEntities("GetBreakingNewsContentByCategory")
         .custom("CategoryId", "" + topTechCategoryId)
         .custom("MediaOption", mediaOptionNoPictures)

@@ -5,7 +5,7 @@ import javax.ws.rs.core.MediaType;
 import org.core4j.Func1;
 import org.junit.AfterClass;
 import org.odata4j.consumer.ODataConsumer;
-import org.odata4j.examples.producer.ProducerUtil;
+import org.odata4j.examples.jersey.producer.JerseyProducerUtil;
 import org.odata4j.format.FormatType;
 import org.odata4j.jersey.consumer.ODataJerseyConsumer;
 import org.odata4j.producer.ODataProducer;
@@ -37,7 +37,7 @@ public class CustomTestBase {
     }
 
     DefaultODataProducerProvider.setInstance(p);
-    server = ProducerUtil.startODataServer(endpointUri);
+    server = JerseyProducerUtil.startODataServer(endpointUri);
   }
 
   protected ODataConsumer createConsumer(FormatType format) {

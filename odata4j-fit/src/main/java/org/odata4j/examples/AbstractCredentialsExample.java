@@ -1,6 +1,6 @@
 package org.odata4j.examples;
 
-public class BaseCredentialsExample extends BaseExample {
+public abstract class AbstractCredentialsExample extends AbstractExample {
 
   private String loginName;
   private String loginPassword;

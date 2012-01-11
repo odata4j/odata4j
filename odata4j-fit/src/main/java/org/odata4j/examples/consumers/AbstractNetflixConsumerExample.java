@@ -5,14 +5,15 @@ import java.util.List;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperty;
-import org.odata4j.examples.BaseExample;
-import org.odata4j.examples.ConsumerExample;
+import org.odata4j.examples.AbstractExample;
+import org.odata4j.examples.ConsumerSupport;
 import org.odata4j.examples.ODataEndpoints;
+import org.odata4j.examples.RunSupport;
 
-public abstract class AbstractNetflixConsumerExample extends BaseExample implements ConsumerExample {
+public abstract class AbstractNetflixConsumerExample extends AbstractExample implements ConsumerSupport, RunSupport {
 
   @Override
-  public void run(String... args) {
+  public void run(String[] args) {
 
     ODataConsumer c = this.create(ODataEndpoints.NETFLIX);
 

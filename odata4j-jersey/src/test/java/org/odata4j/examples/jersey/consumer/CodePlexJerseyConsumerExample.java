@@ -7,7 +7,7 @@ import org.odata4j.jersey.consumer.ODataJerseyConsumer;
 
 public class CodePlexJerseyConsumerExample extends AbstractCodePlexConsumerExample {
 
-  public static void main(String... args) {
+  public static void main(String[] args) {
     CodePlexJerseyConsumerExample example = new CodePlexJerseyConsumerExample();
     example.run(args);
   }

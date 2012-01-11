@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.core4j.Func;
-import org.odata4j.examples.producer.ProducerUtil;
+import org.odata4j.examples.jersey.producer.JerseyProducerUtil;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 
@@ -49,7 +49,7 @@ public class LinksProducer extends InMemoryProducer {
 
     // register the producer as the static instance, then launch the http server
     DefaultODataProducerProvider.setInstance(producer);
-    ProducerUtil.hostODataServer(endpointUri);
+    JerseyProducerUtil.hostODataServer(endpointUri);
   }
 
   private static final List<C> cs = new ArrayList<C>(2);

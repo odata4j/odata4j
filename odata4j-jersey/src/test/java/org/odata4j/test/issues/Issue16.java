@@ -8,7 +8,7 @@ import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.edm.EdmEntitySet;
-import org.odata4j.examples.producer.ProducerUtil;
+import org.odata4j.examples.jersey.producer.JerseyProducerUtil;
 import org.odata4j.jersey.consumer.ODataJerseyConsumer;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.QueryInfo;
@@ -35,7 +35,7 @@ public class Issue16 {
     };
 
     DefaultODataProducerProvider.setInstance(producer);
-    ODataServer server = ProducerUtil.startODataServer(endpointUri);
+    ODataServer server = JerseyProducerUtil.startODataServer(endpointUri);
     ODataConsumer c = ODataJerseyConsumer.create(endpointUri);
     c.getEntities("Message").nav(124L, "messageLog()").execute().count();
     Assert.assertNotNull(actualNavProp[0]);

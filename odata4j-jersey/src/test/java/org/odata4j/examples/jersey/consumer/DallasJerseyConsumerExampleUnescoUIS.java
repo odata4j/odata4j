@@ -8,7 +8,7 @@ import org.odata4j.jersey.consumer.ODataJerseyConsumer;
 
 public class DallasJerseyConsumerExampleUnescoUIS extends AbstractDallasConsumerExampleUnescoUIS{
 
-  public static void main(String... args) {
+  public static void main(String[] args) {
     DallasJerseyConsumerExampleUnescoUIS example = new DallasJerseyConsumerExampleUnescoUIS();
     example.run(args);
   }

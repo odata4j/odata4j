@@ -18,7 +18,7 @@ import com.sun.jersey.api.client.filter.Filterable;
 
 public class JsonGrabbingJerseyConsumerExample extends AbstractJsonGrabbingConsumerExample {
 
-  public static void main(String... args) {
+  public static void main(String[] args) {
     TwitPicJerseyConsumerExample example = new TwitPicJerseyConsumerExample();
     example.run(args);
   }

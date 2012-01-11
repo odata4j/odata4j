@@ -6,7 +6,7 @@ import org.odata4j.jersey.consumer.ODataJerseyConsumer;
 
 public class ODataValidatorJerseyExample extends AbstractODataValidatorExample {
 
-  public static void main(String... args) {
+  public static void main(String[] args) {
     ODataValidatorJerseyExample example = new ODataValidatorJerseyExample();
     example.run(args);
   }

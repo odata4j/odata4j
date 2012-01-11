@@ -8,7 +8,7 @@ import junit.framework.Assert;
 import org.core4j.Funcs;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
-import org.odata4j.examples.producer.ProducerUtil;
+import org.odata4j.examples.jersey.producer.JerseyProducerUtil;
 import org.odata4j.expression.ExpressionParser;
 import org.odata4j.jersey.consumer.ODataJerseyConsumer;
 import org.odata4j.producer.inmemory.InMemoryProducer;
@@ -27,7 +27,7 @@ public class ScenarioTest {
     InMemoryProducer producer = new InMemoryProducer("ScenarioTest");
     DefaultODataProducerProvider.setInstance(producer);
 
-    ODataServer server = ProducerUtil.startODataServer(uri);
+    ODataServer server = JerseyProducerUtil.startODataServer(uri);
 
     ODataConsumer c = ODataJerseyConsumer.create(uri);
     Assert.assertEquals(0, c.getEntitySets().count());

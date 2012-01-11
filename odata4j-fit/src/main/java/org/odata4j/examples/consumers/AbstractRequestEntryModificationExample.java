@@ -4,13 +4,14 @@ import java.util.Date;
 
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OProperties;
-import org.odata4j.examples.BaseExample;
-import org.odata4j.examples.ConsumerExample;
+import org.odata4j.examples.AbstractExample;
+import org.odata4j.examples.ConsumerSupport;
+import org.odata4j.examples.RunSupport;
 
-public abstract class AbstractRequestEntryModificationExample extends BaseExample implements ConsumerExample {
+public abstract class AbstractRequestEntryModificationExample extends AbstractExample implements ConsumerSupport, RunSupport {
 
   @Override
-  public void run(String... args) {
+  public void run(String[] args) {
     ODataConsumer.dump.all(true);
 
     // create a consumer with additional behavior

@@ -13,7 +13,7 @@ import org.joda.time.LocalTime;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.Guid;
-import org.odata4j.examples.producer.ProducerUtil;
+import org.odata4j.examples.jersey.producer.JerseyProducerUtil;
 import org.odata4j.jersey.consumer.ODataJerseyConsumer;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
@@ -31,7 +31,7 @@ public class JsonTest {
     InMemoryProducer producer = new InMemoryProducer("JsonTest");
     DefaultODataProducerProvider.setInstance(producer);
 
-    ODataServer server = ProducerUtil.startODataServer(uri);
+    ODataServer server = JerseyProducerUtil.startODataServer(uri);
 
     try {
       ODataConsumer c = ODataJerseyConsumer.create(uri);

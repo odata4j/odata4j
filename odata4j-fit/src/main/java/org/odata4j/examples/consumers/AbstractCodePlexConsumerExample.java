@@ -4,17 +4,18 @@ import org.core4j.Enumerable;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.ORelatedEntitiesLink;
-import org.odata4j.examples.BaseCredentialsExample;
-import org.odata4j.examples.ConsumerExample;
+import org.odata4j.examples.AbstractCredentialsExample;
+import org.odata4j.examples.ConsumerSupport;
+import org.odata4j.examples.RunSupport;
 
-public abstract class AbstractCodePlexConsumerExample extends BaseCredentialsExample implements ConsumerExample{
+public abstract class AbstractCodePlexConsumerExample extends AbstractCredentialsExample implements ConsumerSupport, RunSupport {
 
   // for more info: https://codeplexodata.cloudapp.net/
 
   private static final int MAX_LISTING = 5;
 
   @Override
-  public void run(String... args) {
+  public void run(String[] args) {
 
     ODataConsumer.dump.requestHeaders(true);
 
@@ -24,7 +25,7 @@ public abstract class AbstractCodePlexConsumerExample extends BaseCredentialsExa
     this.setLoginPassword(codeplexCreds[1]);
 
     for (String collection : Enumerable.create("TFS03", "TFS05", "TFS09")) {
-//      ODataConsumer c = ODataJerseyConsumer.newBuilder("https://codeplexodata.cloudapp.net/" + collection).setClientBehaviors(OClientBehaviors.basicAuth(codeplexUser, codeplexPassword)).build();
+      //      ODataConsumer c = ODataJerseyConsumer.newBuilder("https://codeplexodata.cloudapp.net/" + collection).setClientBehaviors(OClientBehaviors.basicAuth(codeplexUser, codeplexPassword)).build();
       ODataConsumer c = this.create("https://codeplexodata.cloudapp.net/" + collection);
 
       for (OEntity p : c.getEntities("Projects").execute()) {

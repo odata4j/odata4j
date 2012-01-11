@@ -8,7 +8,7 @@ import org.odata4j.jersey.consumer.ODataJerseyConsumer;
 
 public class DataMarketJerseyConsumerExample extends AbstractDataMarketConsumerExample{
 
-  public static void main(String... args) {
+  public static void main(String[] args) {
     DataMarketJerseyConsumerExample example = new DataMarketJerseyConsumerExample();
     example.run(args);
   }

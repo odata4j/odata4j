@@ -12,7 +12,7 @@ import org.odata4j.core.ORelatedEntitiesLink;
 import org.odata4j.core.ORelatedEntitiesLinkInline;
 import org.odata4j.core.ORelatedEntityLink;
 import org.odata4j.core.ORelatedEntityLinkInline;
-import org.odata4j.examples.producer.ProducerUtil;
+import org.odata4j.examples.jersey.producer.JerseyProducerUtil;
 import org.odata4j.format.FormatType;
 import org.odata4j.jersey.consumer.ODataJerseyConsumer;
 import org.odata4j.producer.jpa.northwind.Orders;
@@ -44,7 +44,7 @@ public class LinksTestBase extends JPAProducerTestBase {
       LinksProducer producer = new LinksProducer();
 
       DefaultODataProducerProvider.setInstance(producer);
-      server = ProducerUtil.startODataServer(endpointUri);
+      server = JerseyProducerUtil.startODataServer(endpointUri);
     }
   }
 

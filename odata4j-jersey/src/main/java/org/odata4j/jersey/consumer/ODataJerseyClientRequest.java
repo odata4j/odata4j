@@ -162,7 +162,7 @@ public class ODataJerseyClientRequest extends ODataClientRequest {
    * @param link  the link payload
    * @return the request builder
    */
-  public ODataJerseyClientRequest linkPayload(SingleLink link) {
+  public ODataClientRequest linkPayload(SingleLink link) {
     return new ODataJerseyClientRequest(this.getMethod(), this.getUrl(), this.getHeaders(), this.getQueryParams(), link);
   }
 

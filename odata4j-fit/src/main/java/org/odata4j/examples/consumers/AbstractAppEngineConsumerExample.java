@@ -3,14 +3,15 @@ package org.odata4j.examples.consumers;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperties;
-import org.odata4j.examples.BaseExample;
-import org.odata4j.examples.ConsumerExample;
+import org.odata4j.examples.AbstractExample;
+import org.odata4j.examples.ConsumerSupport;
 import org.odata4j.examples.ODataEndpoints;
+import org.odata4j.examples.RunSupport;
 
-public abstract class AbstractAppEngineConsumerExample extends BaseExample implements ConsumerExample {
+public abstract class AbstractAppEngineConsumerExample extends AbstractExample implements ConsumerSupport, RunSupport {
 
   @Override
-  public void run(String... args) {
+  public void run(String[] args) {
     ODataConsumer c = this.create(ODataEndpoints.ODATA4JSAMPLE_APPSPOT);
     String newCategoryName = "NewCategory" + System.currentTimeMillis();
 
