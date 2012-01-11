@@ -33,6 +33,7 @@ import org.odata4j.edm.EdmItem;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmStructuralType;
 import org.odata4j.examples.ProducerSupport;
+import org.odata4j.examples.WebResourceSupport;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.producer.PropertyPath;
 import org.odata4j.producer.inmemory.InMemoryProducer;
@@ -42,15 +43,12 @@ import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.producer.server.ODataServer;
 import org.xml.sax.SAXException;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
-
 /**
  * a simple test for writing annotations and documentation in the edmx.
  *
  * This test also demonstrates the use of {@link EdmDecorator}.
  */
-public abstract class AbstractEdmxFormatWriterTest implements EdmDecorator, ProducerSupport {
+public abstract class AbstractEdmxFormatWriterTest implements EdmDecorator, ProducerSupport, WebResourceSupport {
 
   public AbstractEdmxFormatWriterTest() {}
 
@@ -81,10 +79,7 @@ public abstract class AbstractEdmxFormatWriterTest implements EdmDecorator, Prod
   public void testExtensions() throws InterruptedException, SAXException, IOException {
     // test to see that documentation and annotations get written correctly
 
-    WebResource webResource = new Client().resource(endpointUri + "$metadata");
-
-    String metadata = webResource.get(
-        String.class);
+    String metadata = this.getWebResource(endpointUri + "$metadata", String.class);
 
     //System.out.println(metadata);
 

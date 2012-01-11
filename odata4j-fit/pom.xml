@@ -40,7 +40,6 @@
       <groupId>xmlunit</groupId>
       <artifactId>xmlunit</artifactId>
       <version>1.3</version>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 
