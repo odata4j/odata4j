@@ -15,7 +15,7 @@ public class DallasJerseyConsumerExampleAP extends AbstractDallasConsumerExample
   }
 
   @Override
-  public ODataConsumer create(String endpointUri, FormatType formatType) {
+  public ODataConsumer create(String endpointUri, FormatType formatType, String methodToTunnel) {
     OClientBehavior basicAuth = OClientBehaviors.basicAuth("accountKey", this.getLoginPassword());
     return ODataJerseyConsumer.newBuilder(endpointUri).setClientBehaviors(basicAuth).build();
   }

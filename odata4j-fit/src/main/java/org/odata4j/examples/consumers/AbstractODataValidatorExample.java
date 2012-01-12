@@ -6,9 +6,9 @@ import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.ORelatedEntitiesLink;
 import org.odata4j.examples.AbstractExample;
-import org.odata4j.examples.ConsumerSupport;
 import org.odata4j.examples.ODataEndpoints;
-import org.odata4j.examples.RunSupport;
+import org.odata4j.fit.support.ConsumerSupport;
+import org.odata4j.fit.support.RunSupport;
 import org.odata4j.internal.InternalUtil;
 
 public abstract class AbstractODataValidatorExample extends AbstractExample implements ConsumerSupport, RunSupport {
@@ -18,7 +18,7 @@ public abstract class AbstractODataValidatorExample extends AbstractExample impl
 
     String uri = ODataEndpoints.NORTHWIND;
 
-    ODataConsumer c = this.create("http://services.odata.org/validation/odatavalidator/", null);
+    ODataConsumer c = this.create("http://services.odata.org/validation/odatavalidator/", null, null);
 
     Guid validationJobId = Guid.fromString("f4aa9495-ef40-469e-818c-29c4ec5fb2ed");
     if (true) {

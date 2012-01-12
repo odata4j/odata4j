@@ -14,7 +14,7 @@ public class CodePlexJerseyConsumerExample extends AbstractCodePlexConsumerExamp
   }
 
   @Override
-  public ODataConsumer create(String endpointUri, FormatType formatType) {
+  public ODataConsumer create(String endpointUri, FormatType formatType, String methodToTunnel) {
     return ODataJerseyConsumer.newBuilder(endpointUri).setClientBehaviors(OClientBehaviors.basicAuth(this.getLoginName(), this.getLoginPassword())).build();
   }
 

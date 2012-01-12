@@ -24,7 +24,7 @@ public class RoundtripExample extends AbstractRoundtripExample {
   }
 
   @Override
-  public ODataConsumer create(String endpointUri, FormatType formatType) {
+  public ODataConsumer create(String endpointUri, FormatType formatType, String methodToTunnel) {
     return ODataJerseyConsumer.create(endpointUri);
   }
 }

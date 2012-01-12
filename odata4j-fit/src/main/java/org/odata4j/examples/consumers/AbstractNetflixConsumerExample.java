@@ -6,16 +6,16 @@ import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperty;
 import org.odata4j.examples.AbstractExample;
-import org.odata4j.examples.ConsumerSupport;
 import org.odata4j.examples.ODataEndpoints;
-import org.odata4j.examples.RunSupport;
+import org.odata4j.fit.support.ConsumerSupport;
+import org.odata4j.fit.support.RunSupport;
 
 public abstract class AbstractNetflixConsumerExample extends AbstractExample implements ConsumerSupport, RunSupport {
 
   @Override
   public void run(String[] args) {
 
-    ODataConsumer c = this.create(ODataEndpoints.NETFLIX, null);
+    ODataConsumer c = this.create(ODataEndpoints.NETFLIX, null, null);
 
     // locate the netflix id for Morgan Spurlock
     int morganSpurlockId = c.getEntities("People").filter("substringof('Spurlock',Name)").execute().first().getProperty("Id", Integer.class).getValue();

@@ -6,9 +6,9 @@ import org.core4j.Func1;
 import org.junit.After;
 import org.junit.Before;
 import org.odata4j.consumer.ODataConsumer;
-import org.odata4j.examples.ConsumerSupport;
-import org.odata4j.examples.ProducerSupport;
-import org.odata4j.examples.WebResourceSupport;
+import org.odata4j.fit.support.ConsumerSupport;
+import org.odata4j.fit.support.ProducerSupport;
+import org.odata4j.fit.support.WebResourceSupport;
 import org.odata4j.format.FormatType;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
@@ -41,7 +41,7 @@ public abstract class AbstractCustomTestBase implements ProducerSupport, Consume
   }
 
   protected ODataConsumer createConsumer(FormatType format) {
-    return this.create(endpointUri, format);
+    return this.create(endpointUri, format, null);
   }
 
   public void dumpResourceJSON(String path) {

@@ -37,8 +37,8 @@ import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmSimpleType;
-import org.odata4j.examples.ProducerSupport;
-import org.odata4j.examples.RunSupport;
+import org.odata4j.fit.support.ProducerSupport;
+import org.odata4j.fit.support.RunSupport;
 import org.odata4j.producer.BaseResponse;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityIdResponse;
@@ -49,7 +49,7 @@ import org.odata4j.producer.Responses;
 import org.odata4j.producer.edm.MetadataProducer;
 import org.odata4j.producer.exceptions.NotImplementedException;
 import org.odata4j.producer.jpa.northwind.Customers;
-import org.odata4j.producer.jpa.northwind.test.NorthwindTestDataUtils;
+import org.odata4j.producer.jpa.northwind.test.AbstractNorthwindTestUtils;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 
 /**
@@ -83,7 +83,7 @@ public abstract class AbstractXmlDataProducerExample implements ProducerSupport,
     // create an fill temporary database
     emf = Persistence.createEntityManagerFactory(persistenceUnitName);
     emf.createEntityManager().close();
-    NorthwindTestDataUtils.fillDatabase(emf);
+    AbstractNorthwindTestUtils.fillDatabase(emf);
 
     // select the customers
     EntityManager em = emf.createEntityManager();

@@ -9,10 +9,6 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntityType;
@@ -22,18 +18,6 @@ import org.odata4j.stax2.XMLEventReader2;
 public class EdmxFormatParserTest {
 
   public EdmxFormatParserTest() {}
-
-  @BeforeClass
-  public static void setUpClass() throws Exception {}
-
-  @AfterClass
-  public static void tearDownClass() throws Exception {}
-
-  @Before
-  public void setUp() {}
-
-  @After
-  public void tearDown() {}
 
   // a "unit" edmx
   private String edmxFile = "/META-INF/edmx.xml";

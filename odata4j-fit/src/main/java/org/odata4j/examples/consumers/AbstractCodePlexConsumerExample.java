@@ -5,8 +5,8 @@ import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.ORelatedEntitiesLink;
 import org.odata4j.examples.AbstractCredentialsExample;
-import org.odata4j.examples.ConsumerSupport;
-import org.odata4j.examples.RunSupport;
+import org.odata4j.fit.support.ConsumerSupport;
+import org.odata4j.fit.support.RunSupport;
 
 public abstract class AbstractCodePlexConsumerExample extends AbstractCredentialsExample implements ConsumerSupport, RunSupport {
 
@@ -26,7 +26,7 @@ public abstract class AbstractCodePlexConsumerExample extends AbstractCredential
 
     for (String collection : Enumerable.create("TFS03", "TFS05", "TFS09")) {
       //      ODataConsumer c = ODataJerseyConsumer.newBuilder("https://codeplexodata.cloudapp.net/" + collection).setClientBehaviors(OClientBehaviors.basicAuth(codeplexUser, codeplexPassword)).build();
-      ODataConsumer c = this.create("https://codeplexodata.cloudapp.net/" + collection, null);
+      ODataConsumer c = this.create("https://codeplexodata.cloudapp.net/" + collection, null, null);
 
       for (OEntity p : c.getEntities("Projects").execute()) {
         reportEntity("project:", p);

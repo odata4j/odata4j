@@ -16,10 +16,9 @@ import javax.persistence.EntityManagerFactory;
 
 import org.core4j.ThrowingFunc1;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.odata4j.examples.ConsumerSupport;
-import org.odata4j.examples.ProducerSupport;
+import org.odata4j.fit.support.ConsumerSupport;
+import org.odata4j.fit.support.ProducerSupport;
 import org.odata4j.producer.server.ODataServer;
 
 public abstract class AbstractAirlineJPAProducerTestBase implements ProducerSupport, ConsumerSupport {

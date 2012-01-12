@@ -32,7 +32,7 @@ public class RequestEntryModificationJerseyExample extends AbstractRequestEntryM
   }
 
   @Override
-  public ODataConsumer create(String endpointUri, FormatType formatType) {
+  public ODataConsumer create(String endpointUri, FormatType formatType, String methodToTunnel) {
     final ModifiableAtomEntryMessageBodyWriter writer = new ModifiableAtomEntryMessageBodyWriter();
     ODataConsumer consumer = ODataJerseyConsumer.newBuilder(endpointUri).setClientBehaviors(new JerseyClientBehavior() {
       @Override

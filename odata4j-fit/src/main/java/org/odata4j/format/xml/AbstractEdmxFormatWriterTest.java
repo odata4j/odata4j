@@ -32,13 +32,13 @@ import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmItem;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmStructuralType;
-import org.odata4j.examples.ProducerSupport;
-import org.odata4j.examples.WebResourceSupport;
+import org.odata4j.fit.support.ProducerSupport;
+import org.odata4j.fit.support.WebResourceSupport;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.producer.PropertyPath;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.jpa.airline.Airport;
-import org.odata4j.producer.jpa.northwind.test.NorthwindTestDataUtils;
+import org.odata4j.producer.jpa.northwind.test.AbstractNorthwindTestUtils;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.producer.server.ODataServer;
 import org.xml.sax.SAXException;
@@ -51,12 +51,6 @@ import org.xml.sax.SAXException;
 public abstract class AbstractEdmxFormatWriterTest implements EdmDecorator, ProducerSupport, WebResourceSupport {
 
   public AbstractEdmxFormatWriterTest() {}
-
-  @BeforeClass
-  public static void setUpClass() throws Exception {}
-
-  @AfterClass
-  public static void tearDownClass() throws Exception {}
 
   private ODataServer server = null;
   @SuppressWarnings("unused")
@@ -83,7 +77,7 @@ public abstract class AbstractEdmxFormatWriterTest implements EdmDecorator, Prod
 
     //System.out.println(metadata);
 
-    String expected = NorthwindTestDataUtils.readFileToString("/META-INF/uri-conventions/xml/DocAnnotTest.xml");
+    String expected = AbstractNorthwindTestUtils.readFileToString("/META-INF/uri-conventions/xml/DocAnnotTest.xml");
 
     XMLUnit.setIgnoreWhitespace(true);
     Diff myDiff = new Diff(expected, metadata);

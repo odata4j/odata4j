@@ -20,7 +20,7 @@ public class CreateWithLinkTest extends AbstractCreateWithLinkTest {
   }
 
   @Override
-  public ODataConsumer create(String endpointUri, FormatType formatType) {
+  public ODataConsumer create(String endpointUri, FormatType formatType, String methodToTunnel) {
     return ODataJerseyConsumer.newBuilder(endpointUri).build();
   }
 

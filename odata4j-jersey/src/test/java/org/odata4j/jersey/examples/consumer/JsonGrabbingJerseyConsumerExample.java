@@ -24,7 +24,7 @@ public class JsonGrabbingJerseyConsumerExample extends AbstractJsonGrabbingConsu
   }
 
   @Override
-  public ODataConsumer create(String endpointUri, FormatType formatType) {
+  public ODataConsumer create(String endpointUri, FormatType formatType, String methodToTunnel) {
     ResponseGrabbingClientBehavior responseGrabbingBehavior = new ResponseGrabbingClientBehavior();
 
     ODataConsumer c = ODataJerseyConsumer.newBuilder(endpointUri)

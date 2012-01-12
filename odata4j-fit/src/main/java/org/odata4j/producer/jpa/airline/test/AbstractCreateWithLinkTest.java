@@ -34,7 +34,7 @@ public abstract class AbstractCreateWithLinkTest extends AbstractAirlineJPAProdu
    * Linking to entities with string key
    */
   public void linkToStringId() {
-    ODataConsumer consumer = this.create(endpointUri, null);
+    ODataConsumer consumer = this.create(endpointUri, null, null);
 
     OEntity muc = consumer.getEntities("Airport")
         .filter("code eq 'MUC'")
@@ -104,7 +104,7 @@ public abstract class AbstractCreateWithLinkTest extends AbstractAirlineJPAProdu
    * Linking to entities with long key
    */
   public void linkToLongId() {
-    ODataConsumer consumer = this.create(endpointUri, null);
+    ODataConsumer consumer = this.create(endpointUri, null, null);
 
     OEntity flightSchedule = consumer.getEntities("FlightSchedule")
         .filter("flightNo eq 'LH410'")
@@ -127,7 +127,7 @@ public abstract class AbstractCreateWithLinkTest extends AbstractAirlineJPAProdu
    * Linking to entities with long key (use only the entity-key)
    */
   public void linkToLongIdUsingKey() {
-    ODataConsumer consumer = this.create(endpointUri, null);
+    ODataConsumer consumer = this.create(endpointUri, null, null);
 
     OEntity flightSchedule = consumer.getEntities("FlightSchedule")
         .filter("flightNo eq 'LH410'")

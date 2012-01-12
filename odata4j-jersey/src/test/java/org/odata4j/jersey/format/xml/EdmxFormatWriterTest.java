@@ -28,17 +28,19 @@ public class EdmxFormatWriterTest extends AbstractEdmxFormatWriterTest {
   }
 
   @Override
-  public <T> String getWebResource(String uri, Class<T> c) {
+  public String getWebResource(String uri, Class<String> c) {
     WebResource webResource = new Client().resource(uri);
-
-    String data = webResource.get(
-        String.class);
-    return data;
+    return webResource.get(String.class);
   }
 
   @Override
   public void accept(String uri, MediaType mediaType) {
     throw new RuntimeException("not implemented");
+  }
+
+  @Override
+  public String getWebResource(String uri, String accept, Class<String> c) {
+    throw new RuntimeException("NotImplemented");
   }
 
 }

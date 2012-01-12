@@ -37,7 +37,7 @@ public abstract class AbstractEdmTimeTemporalTest extends AbstractAirlineJPAProd
 
   @Test
   public void testMetadata() {
-    ODataConsumer consumer = this.create(endpointUri, null);
+    ODataConsumer consumer = this.create(endpointUri, null, null);
 
     EdmDataServices metadata = consumer.getMetadata();
 
@@ -50,7 +50,7 @@ public abstract class AbstractEdmTimeTemporalTest extends AbstractAirlineJPAProd
    *handling of Date fields with different @Temporal
    */
   public void createWithDifferentTemporal() throws Exception {
-    ODataConsumer consumer = this.create(endpointUri, null);
+    ODataConsumer consumer = this.create(endpointUri, null, null);
 
     OEntity flightSchedule = consumer.createEntity("FlightSchedule")
         .properties(OProperties.string("flightNo", "LH460"))
@@ -75,7 +75,7 @@ public abstract class AbstractEdmTimeTemporalTest extends AbstractAirlineJPAProd
 
   @Test
   public void filterTime() {
-    ODataConsumer consumer = this.create(endpointUri, null);
+    ODataConsumer consumer = this.create(endpointUri, null, null);
 
     Enumerable<OEntity> schedules = consumer.getEntities("FlightSchedule")
         .filter("departureTime ge time'PT11H' and departureTime lt time'PT12H'")

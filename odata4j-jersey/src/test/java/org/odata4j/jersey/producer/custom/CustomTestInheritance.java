@@ -25,12 +25,12 @@ public class CustomTestInheritance extends AbstractCustomTestBase {
   }
 
   @Override
-  public ODataConsumer create(String endpointUri, FormatType formatType) {
+  public ODataConsumer create(String endpointUri, FormatType formatType, String methodToTunnel) {
     return ODataJerseyConsumer.newBuilder(endpointUri).setFormatType(formatType).build();
   }
 
   @Override
-  public <T> String getWebResource(String uri, Class<T> c) {
+  public String getWebResource(String uri, Class<String> c) {
     WebResource webResource = new Client().resource(uri);
 
     String data = webResource.get(
@@ -43,4 +43,10 @@ public class CustomTestInheritance extends AbstractCustomTestBase {
     WebResource webResource = new Client().resource(uri);
     webResource.accept(mediaType);
   }
+
+  @Override
+  public String getWebResource(String uri, String accept, Class<String> c) {
+    throw new RuntimeException("NotImplemented");
+  }
+
 }

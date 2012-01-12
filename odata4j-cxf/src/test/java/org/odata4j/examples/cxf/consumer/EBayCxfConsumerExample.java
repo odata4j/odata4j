@@ -13,7 +13,7 @@ public class EBayCxfConsumerExample extends AbstractEBayConsumerExample {
   }
 
   @Override
-  public ODataConsumer create(String endpointUri, FormatType formatType) {
+  public ODataConsumer create(String endpointUri, FormatType formatType, String methodToTunnel) {
     return ODataCxfConsumer.create(endpointUri);
   }
 }

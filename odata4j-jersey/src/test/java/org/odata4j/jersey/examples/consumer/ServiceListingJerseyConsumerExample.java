@@ -16,7 +16,7 @@ public class ServiceListingJerseyConsumerExample extends AbstractServiceListingC
   }
 
   @Override
-  public ODataConsumer create(String endpointUri, FormatType formatType) {
+  public ODataConsumer create(String endpointUri, FormatType formatType, String methodToTunnel) {
     return ODataJerseyConsumer.newBuilder(endpointUri).setClientBehaviors(behaviors).build();
   }
 }

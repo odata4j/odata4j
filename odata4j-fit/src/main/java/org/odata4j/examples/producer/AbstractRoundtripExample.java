@@ -6,9 +6,9 @@ import java.util.List;
 import org.core4j.Func;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.examples.AbstractExample;
-import org.odata4j.examples.ConsumerSupport;
-import org.odata4j.examples.ProducerSupport;
-import org.odata4j.examples.RunSupport;
+import org.odata4j.fit.support.ConsumerSupport;
+import org.odata4j.fit.support.ProducerSupport;
+import org.odata4j.fit.support.RunSupport;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.producer.server.ODataServer;
@@ -71,7 +71,7 @@ public abstract class AbstractRoundtripExample extends AbstractExample implement
     try {
       // create the client
       ODataConsumer.dump.responseHeaders(true);
-      ODataConsumer consumer = this.create(endpointUri, null);
+      ODataConsumer consumer = this.create(endpointUri, null, null);
 
       reportEntities("Customers", consumer.getEntities("Customers").execute());
 

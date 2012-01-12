@@ -5,8 +5,8 @@ import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OProperties;
 import org.odata4j.examples.AbstractCredentialsExample;
-import org.odata4j.examples.ConsumerSupport;
-import org.odata4j.examples.RunSupport;
+import org.odata4j.fit.support.ConsumerSupport;
+import org.odata4j.fit.support.RunSupport;
 
 public abstract class AbstractAzureTableStorageConsumerExample extends AbstractCredentialsExample implements ConsumerSupport, RunSupport {
 
@@ -19,7 +19,7 @@ public abstract class AbstractAzureTableStorageConsumerExample extends AbstractC
 
     String url = "http://" + this.getLoginName() + ".table.core.windows.net/";
 
-    ODataConsumer c = this.create(url, null);
+    ODataConsumer c = this.create(url, null, null);
 
     report("Create a new temp table to use for the test");
     String tableName = "TempTable" + System.currentTimeMillis();
