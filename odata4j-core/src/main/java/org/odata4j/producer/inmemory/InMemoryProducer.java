@@ -56,7 +56,7 @@ public class InMemoryProducer implements ODataProducer {
 
   private final String namespace;
   private final int maxResults;
-  private final Map<String, InMemoryEntityInfo<?, ?>> eis = new HashMap<String, InMemoryEntityInfo<?, ?>>();
+  private final Map<String, InMemoryEntityInfo<?>> eis = new HashMap<String, InMemoryEntityInfo<?>>();
   private EdmDataServices metadata;
   private final EdmDecorator decorator;
   private final MetadataProducer metadataProducer;
@@ -107,7 +107,7 @@ public class InMemoryProducer implements ODataProducer {
     return metadata;
   }
 
-  protected InMemoryEdmGenerator newEdmGenerator(String namespace, InMemoryTypeMapping typeMapping, String idPropName, Map<String, InMemoryEntityInfo<?, ?>> eis) {
+  protected InMemoryEdmGenerator newEdmGenerator(String namespace, InMemoryTypeMapping typeMapping, String idPropName, Map<String, InMemoryEntityInfo<?>> eis) {
     return new InMemoryEdmGenerator(namespace, typeMapping, ID_PROPNAME, eis);
   }
 
@@ -135,7 +135,7 @@ public class InMemoryProducer implements ODataProducer {
 
   /**
    * Registers a new entity based on a POJO, with support for composite keys.
-   * 
+   *
    * @param entityClass  the class of the entities that are to be stored in the set
    * @param entitySetName  the alias the set will be known by; this is what is used in the OData url
    * @param entityTypeName  type name of the entity
@@ -176,7 +176,7 @@ public class InMemoryProducer implements ODataProducer {
     register(entityClass, propertyModel, entitySetName, entitySetName, get, keys);
   }
 
-  public <TEntity, TKey> void register(
+  public <TEntity> void register(
       final Class<TEntity> entityClass,
       final PropertyModel propertyModel,
       final String entitySetName,
@@ -184,7 +184,7 @@ public class InMemoryProducer implements ODataProducer {
       final Func<Iterable<TEntity>> get,
       final String... keys) {
 
-    InMemoryEntityInfo<TEntity, TKey> ei = new InMemoryEntityInfo<TEntity, TKey>();
+    InMemoryEntityInfo<TEntity> ei = new InMemoryEntityInfo<TEntity>();
     ei.entitySetName = entitySetName;
     ei.entityTypeName = entityTypeName;
     ei.properties = propertyModel;
@@ -209,7 +209,7 @@ public class InMemoryProducer implements ODataProducer {
   }
 
   protected OEntity toOEntity(EdmEntitySet ees, Object obj, List<EntitySimpleProperty> expand) {
-    InMemoryEntityInfo<?, ?> ei = eis.get(ees.getName());
+    InMemoryEntityInfo<?> ei = eis.get(ees.getName());
     final List<OLink> links = new ArrayList<OLink>();
     final List<OProperty<?>> properties = new ArrayList<OProperty<?>>();
 
@@ -268,9 +268,9 @@ public class InMemoryProducer implements ODataProducer {
 
             for (final Object entity : values) {
               if (relEntitySet == null) {
-                InMemoryEntityInfo<?, ?> oei = Enumerable.create(eis.values()).firstOrNull(new Predicate1<InMemoryEntityInfo<?, ?>>() {
+                InMemoryEntityInfo<?> oei = Enumerable.create(eis.values()).firstOrNull(new Predicate1<InMemoryEntityInfo<?>>() {
                   @Override
-                  public boolean apply(InMemoryEntityInfo<?, ?> input) {
+                  public boolean apply(InMemoryEntityInfo<?> input) {
                     return entity.getClass().equals(input.entityClass);
                   }
                 });
@@ -287,9 +287,9 @@ public class InMemoryProducer implements ODataProducer {
           OEntity relatedEntity = null;
 
           if (entity != null) {
-            InMemoryEntityInfo<?, ?> oei = Enumerable.create(eis.values()).firstOrNull(new Predicate1<InMemoryEntityInfo<?, ?>>() {
+            InMemoryEntityInfo<?> oei = Enumerable.create(eis.values()).firstOrNull(new Predicate1<InMemoryEntityInfo<?>>() {
               @Override
-              public boolean apply(InMemoryEntityInfo<?, ?> input) {
+              public boolean apply(InMemoryEntityInfo<?> input) {
                 return entity.getClass().equals(input.entityClass);
               }
             });
@@ -340,7 +340,7 @@ public class InMemoryProducer implements ODataProducer {
   @Override
   public EntitiesResponse getEntities(String entitySetName, final QueryInfo queryInfo) {
     final EdmEntitySet ees = getMetadata().getEdmEntitySet(entitySetName);
-    final InMemoryEntityInfo<?, ?> ei = eis.get(entitySetName);
+    final InMemoryEntityInfo<?> ei = eis.get(entitySetName);
 
     Enumerable<Object> objects = Enumerable.create(ei.get.apply()).cast(Object.class);
 
@@ -426,7 +426,7 @@ public class InMemoryProducer implements ODataProducer {
   @Override
   public EntityResponse getEntity(String entitySetName, final OEntityKey entityKey, QueryInfo queryInfo) {
     final EdmEntitySet ees = getMetadata().getEdmEntitySet(entitySetName);
-    final InMemoryEntityInfo<?, ?> ei = eis.get(entitySetName);
+    final InMemoryEntityInfo<?> ei = eis.get(entitySetName);
 
     final String[] keyList = ei.keys;
 

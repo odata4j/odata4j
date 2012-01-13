@@ -36,9 +36,9 @@ public class InMemoryEdmGenerator implements EdmGenerator {
 
   private final String namespace;
   private final InMemoryTypeMapping typeMapping;
-  private final Map<String, InMemoryEntityInfo<?, ?>> eis;
+  private final Map<String, InMemoryEntityInfo<?>> eis;
 
-  public InMemoryEdmGenerator(String namespace, InMemoryTypeMapping typeMapping, String idPropertyName, Map<String, InMemoryEntityInfo<?, ?>> eis) {
+  public InMemoryEdmGenerator(String namespace, InMemoryTypeMapping typeMapping, String idPropertyName, Map<String, InMemoryEntityInfo<?>> eis) {
     this.namespace = namespace;
     this.typeMapping = typeMapping;
     this.eis = eis;
@@ -78,7 +78,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
 
     Map<Class<?>, String> entityNameByClass = new HashMap<Class<?>, String>();
 
-    for (Entry<String, InMemoryEntityInfo<?, ?>> e : eis.entrySet())
+    for (Entry<String, InMemoryEntityInfo<?>> e : eis.entrySet())
       entityNameByClass.put(e.getValue().entityClass, e.getKey());
 
     createNavigationProperties(associations, associationSets,
@@ -107,7 +107,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
       List<EdmEntityType.Builder> entityTypes) {
 
     for (String entitySetName : eis.keySet()) {
-      InMemoryEntityInfo<?, ?> entityInfo = eis.get(entitySetName);
+      InMemoryEntityInfo<?> entityInfo = eis.get(entitySetName);
 
       List<EdmProperty.Builder> properties = new ArrayList<EdmProperty.Builder>();
 
@@ -138,7 +138,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
       Map<Class<?>, String> entityNameByClass) {
 
     for (String entitySetName : eis.keySet()) {
-      InMemoryEntityInfo<?, ?> ei = eis.get(entitySetName);
+      InMemoryEntityInfo<?> ei = eis.get(entitySetName);
       Class<?> clazz1 = ei.entityClass;
 
       generateToOneNavProperties(associations, associationSets,
@@ -156,9 +156,9 @@ public class InMemoryEdmGenerator implements EdmGenerator {
       List<EdmAssociationSet.Builder> associationSets,
       Map<String, EdmEntityType.Builder> entityTypesByName,
       Map<String, EdmEntitySet.Builder> entitySetByName,
-      Map<Class<?>, String> entityNameByClass, 
+      Map<Class<?>, String> entityNameByClass,
       String entityTypeName,
-      InMemoryEntityInfo<?, ?> ei) {
+      InMemoryEntityInfo<?> ei) {
 
     for (String assocProp : ei.properties.getPropertyNames()) {
 
@@ -207,7 +207,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
       Map<String, EdmEntitySet.Builder> entitySetByName,
       Map<Class<?>, String> entityNameByClass,
       String entityTypeName,
-      InMemoryEntityInfo<?, ?> ei,
+      InMemoryEntityInfo<?> ei,
       Class<?> clazz1) {
 
     for (String assocProp : ei.properties.getCollectionNames()) {
@@ -237,7 +237,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
           EdmMultiplicity m2 = EdmMultiplicity.MANY;
 
           //find ei info of class2
-          InMemoryEntityInfo<?, ?> class2eiInfo = eis.get(eetName2);
+          InMemoryEntityInfo<?> class2eiInfo = eis.get(eetName2);
           for (String tmp : class2eiInfo.properties.getCollectionNames()) {
             //class2 has a ref to class1
             //Class<?> tmpc = class2eiInfo.properties.getCollectionElementType(tmp);

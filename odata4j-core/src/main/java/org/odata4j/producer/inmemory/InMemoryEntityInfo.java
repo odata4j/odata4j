@@ -5,7 +5,7 @@ import java.util.HashMap;
 import org.core4j.Func;
 import org.core4j.Func1;
 
-public class InMemoryEntityInfo<TEntity, TKey> {
+public class InMemoryEntityInfo<TEntity> {
 
   String entitySetName;
   String entityTypeName;
