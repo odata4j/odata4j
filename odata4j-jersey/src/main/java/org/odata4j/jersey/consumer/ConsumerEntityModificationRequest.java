@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.core4j.Enumerable;
 import org.core4j.Predicate1;
+import org.odata4j.consumer.AbstractConsumerEntityPayloadRequest;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OModifyRequest;
@@ -14,16 +15,16 @@ import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.format.Entry;
 import org.odata4j.internal.EntitySegment;
 
-class ConsumerEntityModificationRequest<T> extends ConsumerEntityPayloadRequestBase implements OModifyRequest<T> {
+class ConsumerEntityModificationRequest<T> extends AbstractConsumerEntityPayloadRequest implements OModifyRequest<T> {
 
   private final T updateRoot;
-  private final ODataClient client;
+  private final ODataJerseyClient client;
 
   private final List<EntitySegment> segments = new ArrayList<EntitySegment>();
 
   private EdmEntitySet entitySet;
 
-  ConsumerEntityModificationRequest(T updateRoot, ODataClient client, String serviceRootUri, EdmDataServices metadata, String entitySetName, OEntityKey key) {
+  ConsumerEntityModificationRequest(T updateRoot, ODataJerseyClient client, String serviceRootUri, EdmDataServices metadata, String entitySetName, OEntityKey key) {
     super(entitySetName, serviceRootUri, metadata);
     this.updateRoot = updateRoot;
     this.client = client;
@@ -62,7 +63,7 @@ class ConsumerEntityModificationRequest<T> extends ConsumerEntityPayloadRequestB
 
     String path = Enumerable.create(segments).join("/");
 
-    ODataClientRequest request = updateRoot != null ? ODataClientRequest.put(serviceRootUri + path, entry) : ODataClientRequest.merge(serviceRootUri + path, entry);
+    ODataJerseyClientRequest request = updateRoot != null ? ODataJerseyClientRequest.put(serviceRootUri + path, entry) : ODataJerseyClientRequest.merge(serviceRootUri + path, entry);
     boolean rt = client.updateEntity(request);
     return rt;
   }

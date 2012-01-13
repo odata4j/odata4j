@@ -12,7 +12,7 @@ class ConsumerQueryLinksRequest extends ConsumerQueryRequestBase<OEntityId> {
 
   private final String targetNavProp;
 
-  ConsumerQueryLinksRequest(ODataClient client, String serviceRootUri, EdmDataServices metadata, OEntityId sourceEntity, String targetNavProp) {
+  ConsumerQueryLinksRequest(ODataJerseyClient client, String serviceRootUri, EdmDataServices metadata, OEntityId sourceEntity, String targetNavProp) {
     super(client, serviceRootUri, metadata, OEntityIds.toKeyString(sourceEntity));
     this.targetNavProp = targetNavProp;
   }
@@ -29,7 +29,7 @@ class ConsumerQueryLinksRequest extends ConsumerQueryRequestBase<OEntityId> {
 
   @Override
   public Enumerable<OEntityId> execute() {
-    ODataClientRequest request = buildRequest(linksPath(targetNavProp, null));
+    ODataJerseyClientRequest request = buildRequest(linksPath(targetNavProp, null));
     return Enumerable.create(getClient().getLinks(request)).select(new Func1<SingleLink, OEntityId>() {
       @Override
       public OEntityId apply(SingleLink link) {

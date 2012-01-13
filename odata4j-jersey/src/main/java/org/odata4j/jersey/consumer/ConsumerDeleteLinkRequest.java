@@ -9,7 +9,7 @@ class ConsumerDeleteLinkRequest extends ConsumerEntityRequestBase<Void> {
   private final String targetNavProp;
   private final Object[] targetKeyValues;
 
-  ConsumerDeleteLinkRequest(ODataClient client, String serviceRootUri,
+  ConsumerDeleteLinkRequest(ODataJerseyClient client, String serviceRootUri,
       EdmDataServices metadata, OEntityId sourceEntity, String targetNavProp, Object... targetKeyValues) {
     super(client, serviceRootUri, metadata, sourceEntity.getEntitySetName(), sourceEntity.getEntityKey());
     this.targetNavProp = targetNavProp;
@@ -20,7 +20,7 @@ class ConsumerDeleteLinkRequest extends ConsumerEntityRequestBase<Void> {
   public Void execute() {
     String path = Enumerable.create(getSegments()).join("/");
     path = ConsumerQueryLinksRequest.linksPath(targetNavProp, targetKeyValues).apply(path);
-    ODataClientRequest request = ODataClientRequest.delete(getServiceRootUri() + path);
+    ODataJerseyClientRequest request = ODataJerseyClientRequest.delete(getServiceRootUri() + path);
     getClient().deleteLink(request);
     return null;
   }
