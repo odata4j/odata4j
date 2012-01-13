@@ -27,6 +27,7 @@ public abstract class AbstractCreateWithLinkTest extends AbstractAirlineJPAProdu
 
     DefaultODataProducerProvider.setInstance(producer);
     server = this.startODataServer(endpointUri);
+    this.fillDatabase();
   }
 
   @Test

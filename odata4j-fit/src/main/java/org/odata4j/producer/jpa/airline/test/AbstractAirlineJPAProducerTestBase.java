@@ -70,7 +70,7 @@ public abstract class AbstractAirlineJPAProducerTestBase implements ProducerSupp
     }
   }
 
-  @Before
+//  @Before
   public void fillDatabase() throws SQLException,
       UnsupportedEncodingException, IOException {
 

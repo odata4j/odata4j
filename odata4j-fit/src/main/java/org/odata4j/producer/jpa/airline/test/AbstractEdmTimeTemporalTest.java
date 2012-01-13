@@ -32,7 +32,10 @@ public abstract class AbstractEdmTimeTemporalTest extends AbstractAirlineJPAProd
     JPAProducer producer = new JPAProducer(emf, namespace, 20);
 
     DefaultODataProducerProvider.setInstance(producer);
+
     server = this.startODataServer(endpointUri);
+    this.fillDatabase();
+    
   }
 
   @Test
