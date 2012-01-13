@@ -112,15 +112,15 @@ public class EntityRequestResource extends BaseResource {
     ODataProducer producer = producerResolver.getContext(ODataProducer.class);
     return getEntityImpl(httpHeaders, uriInfo, producer, entitySetName, id, format, callback, expand, select);
   }
-  
-   protected Response getEntityImpl(HttpHeaders httpHeaders, UriInfo uriInfo, ODataProducer producer,
+
+  protected Response getEntityImpl(HttpHeaders httpHeaders, UriInfo uriInfo, ODataProducer producer,
       String entitySetName,
       String id,
       String format,
       String callback,
       String expand,
       String select) {
-     
+
     QueryInfo query = new QueryInfo(
         null, null, null, null, null, null,
         OptionsQueryParser.parseCustomOptions(uriInfo),

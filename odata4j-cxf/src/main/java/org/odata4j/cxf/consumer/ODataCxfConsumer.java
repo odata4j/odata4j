@@ -2,7 +2,6 @@ package org.odata4j.cxf.consumer;
 
 import org.core4j.Enumerable;
 import org.odata4j.consumer.AbstractODataConsumer;
-import org.odata4j.consumer.ODataClient;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.EntitySetInfo;
 import org.odata4j.core.OCreateRequest;
@@ -58,11 +57,9 @@ public class ODataCxfConsumer extends AbstractODataConsumer {
     }
   }
 
-  private ODataClient odataClient;
-
   public ODataCxfConsumer(FormatType formatType, String serviceRootUri) {
     super(serviceRootUri);
-    this.odataClient = new ODataCxfClient(formatType);
+    new ODataCxfClient(formatType);
   }
 
   @Override

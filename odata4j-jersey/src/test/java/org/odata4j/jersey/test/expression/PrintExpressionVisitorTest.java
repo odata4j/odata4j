@@ -1,6 +1,5 @@
 package org.odata4j.jersey.test.expression;
 
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,8 +53,8 @@ public class PrintExpressionVisitorTest {
     t(Expression.guid(Guid.fromString("12345678-aaaa-bbbb-ccccddddffff")), "guid(12345678-aaaa-bbbb-ccccddddffff)");
     t(Expression.guid(Guid.fromString("bf4eeb4d-2ded-4aa6-a167-0571e1057e3b")), "guid(bf4eeb4d-2ded-4aa6-a167-0571e1057e3b)");
 
-    t(Expression.binary(new byte[]{(byte) 0xff}), "binary(ff)");
-    t(Expression.binary(new byte[]{(byte) 0x00, (byte) 0xaa, (byte) 0xff}), "binary(00aaff)");
+    t(Expression.binary(new byte[] { (byte) 0xff }), "binary(ff)");
+    t(Expression.binary(new byte[] { (byte) 0x00, (byte) 0xaa, (byte) 0xff }), "binary(00aaff)");
 
     t(Expression.simpleProperty("LastName"), "simpleProperty(LastName)");
 

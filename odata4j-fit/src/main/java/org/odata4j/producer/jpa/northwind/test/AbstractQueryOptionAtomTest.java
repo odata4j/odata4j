@@ -1,6 +1,5 @@
 package org.odata4j.producer.jpa.northwind.test;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 

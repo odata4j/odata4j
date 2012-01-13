@@ -55,7 +55,7 @@ public abstract class AbstractEdmDateTimeTemporalTest extends AbstractAirlineJPA
 
     DefaultODataProducerProvider.setInstance(producer);
     server = this.startODataServer(endpointUri);
-    
+
     this.fillDatabase();
   }
 

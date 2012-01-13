@@ -112,9 +112,9 @@ public class EntitiesRequestResource extends BaseResource {
     ODataProducer producer = producerResolver.getContext(ODataProducer.class);
 
     return getEntitiesImpl(httpHeaders, uriInfo, producer, entitySetName, inlineCount, top, skip,
-            filter, orderBy, format, callback, skipToken, expand, select);
+        filter, orderBy, format, callback, skipToken, expand, select);
   }
-  
+
   protected Response getEntitiesImpl(
       HttpHeaders httpHeaders,
       UriInfo uriInfo,
@@ -130,7 +130,7 @@ public class EntitiesRequestResource extends BaseResource {
       String skipToken,
       String expand,
       String select) throws Exception {
-    
+
     // the OData URI scheme makes it impossible to have unique @Paths that refer
     // to functions and entity sets
     if (producer.getMetadata().findEdmFunctionImport(entitySetName) != null) {

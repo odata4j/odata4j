@@ -13,10 +13,9 @@ import org.odata4j.producer.jpa.oneoff.AbstractOneoffTestBase;
 
 public abstract class AbstractOneoff07GuidPrimaryKey extends AbstractOneoffTestBase implements ConsumerSupport {
 
-
   @Test
   public void guidPrimaryKey() {
-    ODataConsumer c = this.create(endpointUri,null,null);
+    ODataConsumer c = this.create(endpointUri, null, null);
     Assert.assertEquals(0, c.getEntities("CommunicationCellCarrier").execute().count());
     String id = UUID.randomUUID().toString();
     c.createEntity("CommunicationCellCarrier")

@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
@@ -35,7 +34,6 @@ public abstract class AbstractJPASkipTokenTest extends AbstractJPAProducerTest i
     product = consumer.getEntity("Products", OEntityKey.create("ProductID", new Integer(1))).execute();
     order = consumer.getEntity("Orders", OEntityKey.create("OrderID", new Integer(10248))).execute();
   }
-
 
   private void test(String orderBy, String skipTokenExpected, String expectFilter, OEntity lastEntity, String key) {
     List<OrderByExpression> orderByList = ExpressionParser.parseOrderBy(orderBy);

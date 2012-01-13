@@ -10,7 +10,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.odata4j.fit.support.ProducerSupport;
 import org.odata4j.producer.jpa.JPAProducer;
-import org.odata4j.producer.jpa.oneoff06.AbstractOneoff06JsonCreate;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.producer.server.ODataServer;
 import org.odata4j.test.JPAProvider;
@@ -38,7 +37,6 @@ public abstract class AbstractOneoffTestBase implements ProducerSupport {
     setUp(this.getClass(), 20);
   }
 
-  
   private void setUp(Class<?> testClass, int maxResults) throws Exception {
 
     String name = testClass.getSimpleName().split("_")[0];

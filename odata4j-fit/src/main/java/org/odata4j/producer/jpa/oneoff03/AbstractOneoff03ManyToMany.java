@@ -5,7 +5,6 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.core4j.Enumerable;
-import org.junit.Before;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
@@ -14,12 +13,12 @@ import org.odata4j.core.ORelatedEntitiesLink;
 import org.odata4j.fit.support.ConsumerSupport;
 import org.odata4j.producer.jpa.oneoff.AbstractOneoffTestBase;
 
-public abstract class AbstractOneoff03ManyToMany extends AbstractOneoffTestBase  implements ConsumerSupport  {
+public abstract class AbstractOneoff03ManyToMany extends AbstractOneoffTestBase implements ConsumerSupport {
 
   @Test
   public void createManyToMany() {
     final long now = System.currentTimeMillis();
-    ODataConsumer consumer = this.create(endpointUri,null,null);
+    ODataConsumer consumer = this.create(endpointUri, null, null);
 
     OEntity course1 = consumer
         .createEntity("Course")
@@ -53,7 +52,7 @@ public abstract class AbstractOneoff03ManyToMany extends AbstractOneoffTestBase 
   @Test
   public void mergeManyToMany() {
     final long now = System.currentTimeMillis();
-    ODataConsumer consumer = this.create(endpointUri,null,null);
+    ODataConsumer consumer = this.create(endpointUri, null, null);
 
     OEntity course1 = consumer
         .createEntity("Course")
@@ -88,7 +87,7 @@ public abstract class AbstractOneoff03ManyToMany extends AbstractOneoffTestBase 
   @Test
   public void deleteManyToMany() {
     final long now = System.currentTimeMillis();
-    ODataConsumer consumer = this.create(endpointUri,null,null);
+    ODataConsumer consumer = this.create(endpointUri, null, null);
 
     OEntity course1 = consumer
         .createEntity("Course")

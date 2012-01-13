@@ -1,6 +1,5 @@
 package org.odata4j.producer.jpa.northwind.test;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -10,7 +9,6 @@ public abstract class AbstractQueryOptionAtomTest50 extends AbstractJPAProducerT
   public void setUp() throws Exception {
     super.setUp(50);
   }
-
 
   @Test
   // http://services.odata.org/northwind/Northwind.svc/ is using maxResult > 20 here?

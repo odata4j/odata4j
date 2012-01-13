@@ -35,7 +35,7 @@ public abstract class AbstractEdmTimeTemporalTest extends AbstractAirlineJPAProd
 
     server = this.startODataServer(endpointUri);
     this.fillDatabase();
-    
+
   }
 
   @Test
