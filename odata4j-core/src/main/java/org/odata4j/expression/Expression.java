@@ -1057,6 +1057,7 @@ public class Expression {
       getTarget().visit(visitor);
       visitor.betweenDescend();
       getValue().visit(visitor);
+      visitor.afterDescend();
     }
   }
 

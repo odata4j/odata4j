@@ -40,6 +40,7 @@ import org.odata4j.test.expression.DateTimeFormatTest;
 import org.odata4j.test.expression.ExpressionTest;
 import org.odata4j.test.expression.JsonTest;
 import org.odata4j.test.expression.PojoTest;
+import org.odata4j.test.expression.PrintExpressionVisitorTest;
 import org.odata4j.test.expression.ScenarioTest;
 import org.odata4j.test.expression.TypeConverterTest;
 import org.odata4j.test.issues.Issue10;
@@ -94,7 +95,8 @@ import org.odata4j.test.producer.resources.HeaderMapTest;
     ConsumerLinksTest.class,
     ConsumerExpandTest.class,
     HeaderMapTest.class,
-    InMemoryEvaluationTest.class
+    InMemoryEvaluationTest.class,
+    PrintExpressionVisitorTest.class
 })
 public class OData4jTestSuite {
 
