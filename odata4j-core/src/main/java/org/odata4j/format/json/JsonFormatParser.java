@@ -101,10 +101,10 @@ public class JsonFormatParser {
   protected void resolveEntityType(JsonEntry entry) {
     // does the metadata refine the type of entity to expect?
     if (null != entry.jemd && entry.jemd.type != null && !entry.getEntitySet().getType().getFullyQualifiedTypeName().equals(entry.jemd.type)) {
-      // yes it does.  
+      // yes it does.
 
       entry.setEntityType((EdmEntityType) this.metadata.findEdmEntityType(entry.jemd.type));
-      if (null == entry.getEntityType()) {
+      if (entry.getEntityType() == null) {
         throw new IllegalArgumentException("failed resolving type: " + entry.jemd.type);
       }
     } else {
@@ -218,7 +218,7 @@ public class JsonFormatParser {
       if (ep == null) {
         // a navigation property with muliplicty 1 and a null associated element looks
         // like a scalar property here with a null value
-        if (null == event.asEndProperty().getValue()) {
+        if (event.asEndProperty().getValue() == null) {
           EdmNavigationProperty navProp = entry.getEntityType().findNavigationProperty(name);
           if (null != navProp) {
             // aha
@@ -389,7 +389,7 @@ public class JsonFormatParser {
         rt.entity = toOEntity(ees, refentry.getEntityType(), refentry.getEntityKey(), refentry.properties, refentry.links);
       } else {
         EdmProperty eprop = entry.getEntityType().findProperty(name);
-        if (null == eprop) {
+        if (eprop == null) {
           throw new RuntimeException("can't find property: " + name + " on type: " + entry.getEntityType().getName());
         } else {
           // why the lookup?  well, duing metadata parsing, currently, EdmProperties with type=EdmComplexType are created

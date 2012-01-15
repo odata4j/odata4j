@@ -37,7 +37,7 @@ public class JsonCollectionFormatParser extends JsonFormatParser implements Form
 
   public JsonCollectionFormatParser(Settings s) {
     super(s);
-    returnType = (EdmCollectionType) (null == s ? null : s.parseType);
+    returnType = (EdmCollectionType) (s == null ? null : s.parseType);
   }
 
   public JsonCollectionFormatParser(EdmCollectionType collectionType, EdmDataServices md) {

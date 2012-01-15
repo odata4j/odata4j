@@ -294,7 +294,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
 
       } else {
         OEntity re = ((ORelatedEntityLinkInline) link).getRelatedEntity();
-        if (null == re) {
+        if (re == null) {
           jw.writeNull();
         } else {
           writeOEntity(uriInfo, jw, re, re.getEntitySet(), true);
@@ -340,7 +340,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
       } else {
         // single entity
         OEntity relEntity = ((ORelatedEntityLinkInline) link).getRelatedEntity();
-        if (null == relEntity) {
+        if (relEntity == null) {
           jw.writeNull();
         } else {
           writeOEntity(uriInfo, jw, relEntity, relEntity.getEntitySet(), false);

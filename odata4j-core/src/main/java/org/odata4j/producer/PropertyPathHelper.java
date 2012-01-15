@@ -141,7 +141,7 @@ public class PropertyPathHelper {
    */
   protected boolean isSelectionLimited() {
     // selection is only limited if the $select explicitly says so.
-    if (null == this.selectPaths) {
+    if (selectPaths == null) {
       return false;
     }
     // a match starts with navPath and has a single additional component.
@@ -165,7 +165,7 @@ public class PropertyPathHelper {
 
   protected boolean isSelectionLimitedRecursive() {
     // selection is only limited if the selectR explicitly says so.
-    if (null == this.selectRPaths) {
+    if (selectRPaths == null) {
       return false;
     }
     // empty current nav paths:  see design notes.  These are a problem.
@@ -232,7 +232,7 @@ public class PropertyPathHelper {
   /** determines if the given navigation property is expanded on the current navigation path */
   protected boolean isExpandedExplicit(String navPropName) {
     // expand paths don't have wildcarding...hmmh...why not?
-    if (null == this.expandPaths) {
+    if (expandPaths == null) {
       return false;
     }
     PropertyPath checkPath = currentNavPath.addComponent(navPropName);
@@ -245,7 +245,7 @@ public class PropertyPathHelper {
   }
 
   protected boolean isExpandedRecursive(String navPropName) {
-    if (null == this.expandRPaths) {
+    if (expandRPaths == null) {
       return false;
     }
     // recursive expansion doesn't care about the current navigation path.

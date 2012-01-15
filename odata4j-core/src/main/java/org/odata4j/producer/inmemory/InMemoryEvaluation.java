@@ -89,7 +89,7 @@ public class InMemoryEvaluation {
     if (expression instanceof CastExpression) {
       CastExpression castExpression = (CastExpression) expression;
       EdmSimpleType<?> t = EdmType.getSimple(castExpression.getType());
-      if (null == t)
+      if (t == null)
         throw new UnsupportedOperationException("Only simple types supported");
       Class<?> javaType = t.getJavaTypes().iterator().next();
       return TypeConverter.convert(evaluate(castExpression.getExpression(), target, properties), javaType);

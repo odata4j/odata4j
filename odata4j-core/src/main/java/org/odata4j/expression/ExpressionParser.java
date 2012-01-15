@@ -322,17 +322,17 @@ public class ExpressionParser {
               // or, for any, i + 1 can be CLOSEPAREN
               int ni = i + 1;
               Token ntoken = ni < tokens.size() ? tokens.get(ni) : null;
-              if (null == ntoken ||
+              if (ntoken == null ||
                   (aggregateFunction == AggregateFunction.all && ntoken.type != TokenType.WORD) ||
                   (aggregateFunction == AggregateFunction.any && ntoken.type != TokenType.WORD && ntoken.type != TokenType.CLOSEPAREN)) {
-                throw new RuntimeException("unexpected token: " + (null == ntoken ? "eof" : ntoken.toString()));
+                throw new RuntimeException("unexpected token: " + (ntoken == null ? "eof" : ntoken.toString()));
               }
               if (ntoken.type == TokenType.WORD) {
                 aggregateVariable = ntoken.value;
                 ni += 1;
                 ntoken = ni < tokens.size() ? tokens.get(ni) : null;
-                if (null == ntoken || ntoken.type != TokenType.SYMBOL || !ntoken.value.equals(":")) {
-                  throw new RuntimeException("expected ':', found: " + (null == ntoken ? "eof" : ntoken.toString()));
+                if (ntoken == null || ntoken.type != TokenType.SYMBOL || !ntoken.value.equals(":")) {
+                  throw new RuntimeException("expected ':', found: " + (ntoken == null ? "eof" : ntoken.toString()));
                 }
                 // now we can parse the predicate, starting after the ':'
                 afterParenIdx = ni + 1;

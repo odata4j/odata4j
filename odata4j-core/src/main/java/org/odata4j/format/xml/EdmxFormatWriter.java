@@ -268,7 +268,7 @@ public class EdmxFormatWriter extends XmlFormatWriter {
         if (a instanceof EdmAnnotationAttribute) {
           writer.writeAttribute(
               new QName2(a.getNamespace().getUri(), a.getName(), a.getNamespace().getPrefix()),
-              null == a.getValue() ? "" : a.getValue().toString());
+              a.getValue() == null ? "" : a.getValue().toString());
         }
       }
     }

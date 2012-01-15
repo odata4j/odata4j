@@ -206,10 +206,10 @@ public class EdmDataServices {
 
   public EdmType resolveType(String fqTypeName) {
     EdmType t = EdmType.getSimple(fqTypeName);
-    if (null == t) {
+    if (t == null) {
       // not simple, try complex
       t = this.findEdmComplexType(fqTypeName);
-      if (null == t) {
+      if (t == null) {
         // try entity type
         t = this.findEdmEntityType(fqTypeName);
       }
@@ -322,7 +322,7 @@ public class EdmDataServices {
         builder = EdmSimpleType.newBuilder(type);
       } else {
         builder = findEdmEntityType(fqTypeName);
-        if (null == builder) {
+        if (builder == null) {
           builder = findEdmComplexType(fqTypeName);
         }
       }

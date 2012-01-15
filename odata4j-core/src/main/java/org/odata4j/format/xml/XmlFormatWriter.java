@@ -286,7 +286,7 @@ public class XmlFormatWriter {
 
     writeElement(writer, "category", null,
         // oe is null for creates
-        "term", null == oe ? ees.getType().getFullyQualifiedTypeName() : oe.getEntityType().getFullyQualifiedTypeName(),
+        "term", oe == null ? ees.getType().getFullyQualifiedTypeName() : oe.getEntityType().getFullyQualifiedTypeName(),
         "scheme", scheme);
 
     boolean hasStream = false;

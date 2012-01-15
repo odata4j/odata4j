@@ -77,7 +77,7 @@ public class NorthwindProducerWithFunctions extends ODataProducerDelegate {
   private BaseResponse testFunction2(EdmFunctionImport function, java.util.Map<String, OFunctionParameter> params, QueryInfo queryInfo) {
 
     OFunctionParameter fp = params.get("NResults");
-    if (null == fp) {
+    if (fp == null) {
       throw new RuntimeException("missing parameter NResults");
     }
 

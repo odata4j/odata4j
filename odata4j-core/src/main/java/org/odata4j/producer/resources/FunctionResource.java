@@ -115,7 +115,7 @@ public class FunctionResource extends BaseResource {
     Map<String, OFunctionParameter> m = new HashMap<String, OFunctionParameter>();
     for (EdmFunctionParameter p : function.getParameters()) {
       String val = opts.get(p.getName());
-      m.put(p.getName(), null == val ? null : OFunctionParameters.parse(p.getName(), p.getType(), val));
+      m.put(p.getName(), val == null ? null : OFunctionParameters.parse(p.getName(), p.getType(), val));
     }
     return m;
   }

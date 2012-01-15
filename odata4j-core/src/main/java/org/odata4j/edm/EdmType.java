@@ -103,7 +103,7 @@ public abstract class EdmType extends EdmItem {
     public abstract EdmType build();
 
     protected final EdmType _build() {
-      if (null == builtType) {
+      if (builtType == null) {
         builtType = buildImpl();
       }
       return builtType;
@@ -137,7 +137,7 @@ public abstract class EdmType extends EdmItem {
     @Override
     protected EdmType buildImpl() {
       Builder<?, ?> b = dataServices.resolveType(fqTypeName);
-      if (null == b) {
+      if (b == null) {
         throw new RuntimeException("Edm-type not found: " + fqTypeName);
       }
       return b.build();

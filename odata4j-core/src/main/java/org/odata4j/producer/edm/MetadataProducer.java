@@ -142,7 +142,7 @@ public class MetadataProducer implements ODataProducer {
 
     protected final boolean getCustomBoolean(String key, boolean fallback) {
       String s = getCustomOption(key);
-      return null == s ? fallback : Boolean.parseBoolean(s);
+      return s == null ? fallback : Boolean.parseBoolean(s);
     }
 
     protected final void setLocale() {
@@ -193,16 +193,16 @@ public class MetadataProducer implements ODataProducer {
         }
       }
 
-      throw new NotImplementedException("unhandled EdmItem type in resolveVariable: " + (null == i ? "null" : i.getClass().getName()));
+      throw new NotImplementedException("unhandled EdmItem type in resolveVariable: " + (i == null ? "null" : i.getClass().getName()));
     }
 
     private Object resolveStructuralTypeVariable(EdmStructuralType et, PropertyPath path) {
       if (path.getNComponents() == 1) {
         String name = path.getLastComponent();
         if (Edm.EntityType.Abstract.equals(name)) {
-          return null == et.getIsAbstract() ? false : et.getIsAbstract();
+          return et.getIsAbstract() == null ? false : et.getIsAbstract();
         } else if (Edm.EntityType.BaseType.equals(name)) {
-          return null == et.getBaseType() ? null : et.getBaseType().getFullyQualifiedTypeName();
+          return et.getBaseType() == null ? null : et.getBaseType().getFullyQualifiedTypeName();
         } else if (Edm.EntityType.Name.equals(name)) {
           return et.getName();
         } else if (Edm.EntityType.Namespace.equals(name)) {
@@ -245,9 +245,9 @@ public class MetadataProducer implements ODataProducer {
         } else if (Edm.Property.Type.equals(name)) {
           return prop.getType().getFullyQualifiedTypeName();
         } else if (Edm.Property.Precision.equals(name)) {
-          return null == prop.getPrecision() ? null : prop.getPrecision().toString();
+          return prop.getPrecision() == null ? null : prop.getPrecision().toString();
         } else if (Edm.Property.Scale.equals(name)) {
-          return null == prop.getScale() ? null : prop.getScale().toString();
+          return prop.getScale() == null ? null : prop.getScale().toString();
         } else if (null != decorator) {
           try {
             return decorator.resolvePropertyProperty(prop, path);
@@ -558,10 +558,10 @@ public class MetadataProducer implements ODataProducer {
           String propName = a.getNamespace().getPrefix() + "_" + a.getName();
           if (c.pathHelper.isSelected(propName)) {
             Object override = null != this.decorator ? this.decorator.getAnnotationValueOverride(item, a, c.flatten, c.locale,
-                null == c.queryInfo ? null : c.queryInfo.customOptions) : null;
+                c.queryInfo == null ? null : c.queryInfo.customOptions) : null;
 
             if (override != MetadataProducer.REMOVE_ANNOTATION_OVERRIDE) {
-              Object ov = null == override ? a.getValue() : override;
+              Object ov = override == null ? a.getValue() : override;
               if (a instanceof EdmAnnotationAttribute) {
                 props.add(OProperties.string(propName, ov.toString()));
               } else if (ov instanceof OComplexObject) {
@@ -791,7 +791,7 @@ public class MetadataProducer implements ODataProducer {
   public CountResponse getNavPropertyCount(String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
-  
+
   @Override
   public void close() {
     throw new UnsupportedOperationException("Not supported yet.");

@@ -100,7 +100,7 @@ public class ExpressionEvaluator {
     if (expression instanceof CastExpression) {
       CastExpression castExpression = (CastExpression) expression;
       EdmSimpleType<?> t = EdmType.getSimple(castExpression.getType());
-      if (null == t) {
+      if (t == null) {
         throw new UnsupportedOperationException("Only simple types supported");
       }
       Class<?> javaType = t.getJavaTypes().iterator().next();

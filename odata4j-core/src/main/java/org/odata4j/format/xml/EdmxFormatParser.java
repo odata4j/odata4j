@@ -201,7 +201,7 @@ public class EdmxFormatParser extends XmlFormatParser {
         String baseTypeName = entry.getValue().getFQBaseTypeName();
         if (null != baseTypeName) {
           EdmEntityType.Builder baseType = allEetsByFQName.get(baseTypeName);
-          if (null == baseType) {
+          if (baseType == null) {
             throw new IllegalArgumentException("Invalid baseType: " + baseTypeName);
           }
           entry.getValue().setBaseType(baseType);
@@ -472,7 +472,7 @@ public class EdmxFormatParser extends XmlFormatParser {
             .addProperties(edmProperties)
             .addNavigationProperties(edmNavigationProperties)
             .setBaseType(baseType)
-            .setIsAbstract(null == isAbstractS ? null : "true".equals(isAbstractS));
+            .setIsAbstract(isAbstractS == null ? null : "true".equals(isAbstractS));
 
       }
     }

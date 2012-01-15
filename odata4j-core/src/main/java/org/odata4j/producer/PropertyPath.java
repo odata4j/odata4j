@@ -25,7 +25,7 @@ public class PropertyPath {
   }
 
   public boolean isEmpty() {
-    return null == pathComponents;
+    return pathComponents == null;
   }
 
   // components numbered from 0

@@ -193,7 +193,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
         if (typeAttribute != null) {
           type = typeAttribute.getValue();
           et = metadata.resolveType(type);
-          if (null == et) {
+          if (et == null) {
             // property arrived with an unknown type
             throw new RuntimeException("unknown property type: " + type);
           }
@@ -412,7 +412,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
     if (null != dsae.categoryTerm) {
       // The type of an entity set is polymorphic...
       entityType = (EdmEntityType) metadata.findEdmEntityType(dsae.categoryTerm);
-      if (null == entityType) {
+      if (entityType == null) {
         throw new RuntimeException("Unable to resolve entity type " + dsae.categoryTerm);
       }
     }
@@ -424,7 +424,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
             : OEntityKey.infer(entitySet, props))
         : null;
 
-    if (null == key) {
+    if (key == null) {
       key = entityKey;
     }
 

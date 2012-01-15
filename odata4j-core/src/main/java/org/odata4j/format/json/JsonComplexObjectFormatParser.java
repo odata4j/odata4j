@@ -24,7 +24,7 @@ public class JsonComplexObjectFormatParser extends JsonFormatParser implements F
 
   public JsonComplexObjectFormatParser(Settings s) {
     super(s);
-    returnType = (EdmComplexType) (null == s ? null : s.parseType);
+    returnType = (EdmComplexType) (s == null ? null : s.parseType);
   }
 
   public JsonComplexObjectFormatParser(EdmComplexType type) {

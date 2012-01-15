@@ -81,12 +81,12 @@ public class JsonFeedFormatParser extends JsonFormatParser implements FormatPars
 
     @Override
     public String getUri() {
-      return null == jemd ? null : jemd.uri;
+      return jemd == null ? null : jemd.uri;
     }
 
     @Override
     public String getETag() {
-      return null == jemd ? null : jemd.etag;
+      return jemd == null ? null : jemd.etag;
     }
 
     @Override
@@ -111,7 +111,7 @@ public class JsonFeedFormatParser extends JsonFormatParser implements FormatPars
   public JsonFeed parse(Reader reader) {
     JsonStreamReader jsr = JsonStreamReaderFactory.createJsonStreamReader(reader);
     try {
-      // { 
+      // {
       ensureStartObject(jsr.nextEvent());
 
       // "d" :

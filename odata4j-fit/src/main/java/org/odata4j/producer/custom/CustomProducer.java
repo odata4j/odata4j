@@ -103,7 +103,7 @@ public class CustomProducer implements ODataProducer {
   }
 
   private boolean isExpanded(String navprop, QueryInfo q) {
-    if (null == q || null == q.expand) {
+    if (q == null || q.expand == null) {
       return false;
     }
     PropertyPathHelper h = new PropertyPathHelper(q.select, q.expand);
