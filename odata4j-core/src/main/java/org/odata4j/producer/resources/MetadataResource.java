@@ -20,9 +20,12 @@ import org.odata4j.format.FormatType;
 import org.odata4j.format.xml.EdmxFormatWriter;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.edm.MetadataProducer;
+import org.odata4j.producer.exceptions.NotImplementedException;
 
 @Path("{first: \\$}metadata")
 public class MetadataResource {
+
+  private static final MediaType APPLICATION_ATOMSVC_XML_MEDIATYPE = MediaType.valueOf(ODataConstants.APPLICATION_ATOMSVC_XML);
 
   @GET
   @Produces({ ODataConstants.APPLICATION_XML_CHARSET_UTF8, ODataConstants.APPLICATION_ATOMSVC_XML_CHARSET_UTF8 })
@@ -38,7 +41,7 @@ public class MetadataResource {
     if ("atomsvc".equals(format) || isAtomSvcRequest(httpHeaders)) {
       MetadataProducer metadataProducer = producer.getMetadataProducer();
       if (metadataProducer == null) {
-        return noMetadata();
+        throw newMetadataNotImplementedException();
       }
       ServiceDocumentResource r = new ServiceDocumentResource();
       return r.getServiceDocument(httpHeaders, uriInfo, producerResolver, FormatType.ATOM.name(), null);
@@ -46,23 +49,19 @@ public class MetadataResource {
       StringWriter w = new StringWriter();
       ODataProducer source = "metamodel".equals(format) ? producer.getMetadataProducer() : producer;
       if (source == null) {
-        return noMetadata();
+        throw newMetadataNotImplementedException();
       }
       EdmDataServices s = source.getMetadata();
       EdmxFormatWriter.write(s, w);
 
       return Response.ok(w.toString(), ODataConstants.APPLICATION_XML_CHARSET_UTF8)
-          .header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
+          .header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER)
+          .build();
     }
   }
 
   private boolean isAtomSvcRequest(HttpHeaders h) {
-    for (MediaType mt : h.getAcceptableMediaTypes()) {
-      if (mt.equals(ODataConstants.APPLICATION_ATOMSVC_XML_TYPE)) {
-        return true;
-      }
-    }
-    return false;
+    return h.getAcceptableMediaTypes().contains(APPLICATION_ATOMSVC_XML_MEDIATYPE);
   }
 
   @GET
@@ -74,8 +73,8 @@ public class MetadataResource {
       @Context HttpHeaders httpHeaders,
       @Context UriInfo uriInfo,
       @Context ContextResolver<ODataProducer> producerResolver,
-      final @PathParam("entitySetName") String entitySetName,
-      final @PathParam("optionalId") String optionalId,
+      @PathParam("entitySetName") String entitySetName,
+      @PathParam("optionalId") String optionalId,
       @QueryParam("$inlinecount") String inlineCount,
       @QueryParam("$top") String top,
       @QueryParam("$skip") String skip,
@@ -91,7 +90,7 @@ public class MetadataResource {
 
     MetadataProducer metadataProducer = producer.getMetadataProducer();
     if (metadataProducer == null) {
-      return noMetadata();
+      throw newMetadataNotImplementedException();
     }
 
     EntitiesRequestResource r = new EntitiesRequestResource();
@@ -107,8 +106,8 @@ public class MetadataResource {
       @Context HttpHeaders httpHeaders,
       @Context UriInfo uriInfo,
       @Context ContextResolver<ODataProducer> producerResolver,
-      final @PathParam("entitySetName") String entitySetName,
-      final @PathParam("id") String id,
+      @PathParam("entitySetName") String entitySetName,
+      @PathParam("id") String id,
       @QueryParam("$format") String format,
       @QueryParam("$callback") String callback,
       @QueryParam("$expand") String expand,
@@ -118,21 +117,15 @@ public class MetadataResource {
 
     MetadataProducer metadataProducer = producer.getMetadataProducer();
     if (metadataProducer == null) {
-      return noMetadata();
+      throw newMetadataNotImplementedException();
     }
 
     EntityRequestResource r = new EntityRequestResource();
     return r.getEntityImpl(httpHeaders, uriInfo, metadataProducer, entitySetName, id, format, callback, expand, select);
   }
 
-  public static final int HTTP_NOT_IMPLEMENTED = 501;
-
-  private Response error(int status, String msg) {
-    return Response.status(status).entity(msg).type("text/plain").build();
-  }
-
-  private Response noMetadata() {
-    return error(HTTP_NOT_IMPLEMENTED, "Queryable metadata not implemented by this producer");
+  private static NotImplementedException newMetadataNotImplementedException() {
+    return new NotImplementedException("Queryable metadata not implemented by this producer");
   }
 
 }
