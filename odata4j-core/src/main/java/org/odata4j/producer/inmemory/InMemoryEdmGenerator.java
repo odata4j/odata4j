@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -111,7 +112,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
 
       List<EdmProperty.Builder> properties = new ArrayList<EdmProperty.Builder>();
 
-      properties.addAll(toEdmProperties(decorator, entityInfo.properties, entitySetName));
+      properties.addAll(toEdmProperties(decorator, entityInfo.properties, entityInfo.keys, entitySetName));
 
       EdmEntityType.Builder eet = EdmEntityType.newBuilder()
           .setNamespace(namespace)
@@ -281,8 +282,14 @@ public class InMemoryEdmGenerator implements EdmGenerator {
     }
   }
 
-  private Collection<EdmProperty.Builder> toEdmProperties(EdmDecorator decorator, PropertyModel model, String structuralTypename) {
+  private Collection<EdmProperty.Builder> toEdmProperties(
+      EdmDecorator decorator,
+      PropertyModel model,
+      String[] keys,
+      String structuralTypename) {
+
     List<EdmProperty.Builder> rt = new ArrayList<EdmProperty.Builder>();
+    Set<String> keySet = Enumerable.create(keys).toSet();
 
     for (String propName : model.getPropertyNames()) {
       Class<?> propType = model.getPropertyType(propName);
@@ -290,7 +297,10 @@ public class InMemoryEdmGenerator implements EdmGenerator {
       if (type == null)
         continue;
 
-      EdmProperty.Builder ep = EdmProperty.newBuilder(propName).setType(type).setNullable(true);
+      EdmProperty.Builder ep = EdmProperty
+              .newBuilder(propName)
+              .setType(type)
+              .setNullable(!keySet.contains(propName));
       if (decorator != null) {
         ep.setDocumentation(decorator.getDocumentationForProperty(namespace, structuralTypename, propName));
         ep.setAnnotations(decorator.getAnnotationsForProperty(namespace, structuralTypename, propName));

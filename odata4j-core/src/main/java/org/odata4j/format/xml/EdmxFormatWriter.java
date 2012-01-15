@@ -61,7 +61,7 @@ public class EdmxFormatWriter extends XmlFormatWriter {
         writeAnnotationAttributes(ect, writer);
         writeDocumentation(ect, writer);
 
-        write(ect.getProperties(), writer);
+        writeProperties(ect.getProperties(), writer);
         writeAnnotationElements(ect, writer);
         writer.endElement("ComplexType");
       }
@@ -96,7 +96,7 @@ public class EdmxFormatWriter extends XmlFormatWriter {
           writeDocumentation(eet, writer);
         }
 
-        write(eet.getDeclaredProperties(), writer);
+        writeProperties(eet.getDeclaredProperties(), writer);
 
         for (EdmNavigationProperty np : eet.getDeclaredNavigationProperties()) {
 
@@ -234,7 +234,7 @@ public class EdmxFormatWriter extends XmlFormatWriter {
     }
   }
 
-  private static void write(Iterable<EdmProperty> properties, XMLWriter2 writer) {
+  private static void writeProperties(Iterable<EdmProperty> properties, XMLWriter2 writer) {
     for (EdmProperty prop : properties) {
       writer.startElement(new QName2("Property"));
 

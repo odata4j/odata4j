@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.odata4j.core.OAtomStreamEntity;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.edm.EdmProperty;
 import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.Expression;
 import org.odata4j.producer.CountResponse;
@@ -186,6 +187,27 @@ public class InMemoryProducerTest {
     InMemoryProducer p = new InMemoryProducer("testMetadataContainerName", "Foo", 20, null, null);
     String name = p.getMetadata().getSchemas().iterator().next().getEntityContainers().iterator().next().getName();
     Assert.assertEquals("Foo", name);
+  }
+
+  @Test
+  public void testKeysAreNotNull() {
+    InMemoryProducer p = new InMemoryProducer("testKeysAreNotNull");
+    p.register(SimpleEntity.class, "QQ", new Func<Iterable<SimpleEntity>>() {
+      @Override
+      public Iterable<SimpleEntity> apply() {
+        return Enumerable.create(new SimpleEntity());
+      }
+    }, "Id", "String");
+
+    Enumerable<EdmProperty> properties = p.getMetadata().getEdmEntitySet("QQ").getType().getProperties();
+    boolean found = false;
+    for (EdmProperty property : properties) {
+      if (property.getName().equals("Id") || property.getName().equals("String")) {
+        Assert.assertFalse(property.isNullable());
+        found = true;
+      }
+    }
+    Assert.assertTrue("There should be keys", found);
   }
 
   private static class SimpleEntity {
