@@ -32,14 +32,14 @@ public class InMemoryEdmGenerator implements EdmGenerator {
 
   private final Logger log = Logger.getLogger(getClass().getName());
 
-  private static final String CONTAINER_NAME = "Container";
-
   private final String namespace;
+  private final String containerName;
   private final InMemoryTypeMapping typeMapping;
   private final Map<String, InMemoryEntityInfo<?>> eis;
 
-  public InMemoryEdmGenerator(String namespace, InMemoryTypeMapping typeMapping, String idPropertyName, Map<String, InMemoryEntityInfo<?>> eis) {
+  public InMemoryEdmGenerator(String namespace, String containerName, InMemoryTypeMapping typeMapping, String idPropertyName, Map<String, InMemoryEntityInfo<?>> eis) {
     this.namespace = namespace;
+    this.containerName = containerName;
     this.typeMapping = typeMapping;
     this.eis = eis;
   }
@@ -84,7 +84,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
     createNavigationProperties(associations, associationSets,
         entityTypesByName, entitySetByName, entityNameByClass);
 
-    EdmEntityContainer.Builder container = EdmEntityContainer.newBuilder().setName(CONTAINER_NAME).setIsDefault(true)
+    EdmEntityContainer.Builder container = EdmEntityContainer.newBuilder().setName(containerName).setIsDefault(true)
         .addEntitySets(entitySets).addAssociationSets(associationSets);
 
     containers.add(container);

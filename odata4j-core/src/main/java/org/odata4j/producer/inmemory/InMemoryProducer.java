@@ -56,6 +56,7 @@ public class InMemoryProducer implements ODataProducer {
   private static final String ID_PROPNAME = "EntityId";
 
   private final String namespace;
+  private final String containerName;
   private final int maxResults;
   private final Map<String, InMemoryEntityInfo<?>> eis = new HashMap<String, InMemoryEntityInfo<?>>();
   private EdmDataServices metadata;
@@ -81,19 +82,21 @@ public class InMemoryProducer implements ODataProducer {
    * @param maxResults  the maximum number of entities to return in a single call
    */
   public InMemoryProducer(String namespace, int maxResults) {
-    this(namespace, maxResults, null, null);
+    this(namespace, null, maxResults, null, null);
   }
 
   /**
    * Creates a new instance of an in-memory POJO producer.
    *
    * @param namespace  the namespace of the schema registrations
+   * @param containerName  the container name for generated metadata
    * @param maxResults  the maximum number of entities to return in a single call
    * @param decorator  a decorator to use for edm customizations
    * @param typeMapping  optional mapping between java types and edm types, null for default
    */
-  public InMemoryProducer(String namespace, int maxResults, EdmDecorator decorator, InMemoryTypeMapping typeMapping) {
+  public InMemoryProducer(String namespace, String containerName, int maxResults, EdmDecorator decorator, InMemoryTypeMapping typeMapping) {
     this.namespace = namespace;
+    this.containerName = containerName != null && !containerName.isEmpty() ? containerName : "Container";
     this.maxResults = maxResults;
     this.decorator = decorator;
     this.metadataProducer = new MetadataProducer(this, decorator);
@@ -109,7 +112,7 @@ public class InMemoryProducer implements ODataProducer {
   }
 
   protected InMemoryEdmGenerator newEdmGenerator(String namespace, InMemoryTypeMapping typeMapping, String idPropName, Map<String, InMemoryEntityInfo<?>> eis) {
-    return new InMemoryEdmGenerator(namespace, typeMapping, ID_PROPNAME, eis);
+    return new InMemoryEdmGenerator(namespace, containerName, typeMapping, ID_PROPNAME, eis);
   }
 
   @Override

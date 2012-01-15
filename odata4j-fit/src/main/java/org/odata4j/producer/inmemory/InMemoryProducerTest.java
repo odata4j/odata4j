@@ -181,6 +181,13 @@ public class InMemoryProducerTest {
     Assert.assertEquals(2L, response.getCount());
   }
 
+  @Test
+  public void testMetadataContainerName() {
+    InMemoryProducer p = new InMemoryProducer("testMetadataContainerName", "Foo", 20, null, null);
+    String name = p.getMetadata().getSchemas().iterator().next().getEntityContainers().iterator().next().getName();
+    Assert.assertEquals("Foo", name);
+  }
+
   private static class SimpleEntity {
     private final int integer;
 

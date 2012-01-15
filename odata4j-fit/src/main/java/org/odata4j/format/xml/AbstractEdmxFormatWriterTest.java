@@ -100,7 +100,7 @@ public abstract class AbstractEdmxFormatWriterTest implements EdmDecorator, Prod
 
   private EdmDataServices buildModel() {
 
-    InMemoryProducer p = new InMemoryProducer("flights", 50, this, null);
+    InMemoryProducer p = new InMemoryProducer("flights", null, 50, this, null);
 
     final List<Airport> airports = new ArrayList<Airport>();
     Airport denver = new Airport();
