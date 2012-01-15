@@ -31,7 +31,7 @@ public class EdmComplexType extends EdmStructuralType {
     return new Builder();
   }
 
-  public static Builder newBuilder(EdmComplexType complexType, BuilderContext context) {
+  static Builder newBuilder(EdmComplexType complexType, BuilderContext context) {
     return context.newBuilder(complexType, new Builder());
   }
 

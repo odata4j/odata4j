@@ -35,7 +35,7 @@ public class EdmAssociationSetEnd extends EdmItem {
     return new Builder();
   }
 
-  public static Builder newBuilder(EdmAssociationSetEnd associationSetEnd, BuilderContext context) {
+  static Builder newBuilder(EdmAssociationSetEnd associationSetEnd, BuilderContext context) {
     return context.newBuilder(associationSetEnd, new Builder());
   }
 
@@ -48,7 +48,7 @@ public class EdmAssociationSetEnd extends EdmItem {
     private String entitySetName;
 
     @Override
-    public Builder newBuilder(EdmAssociationSetEnd associationSetEnd, BuilderContext context) {
+    Builder newBuilder(EdmAssociationSetEnd associationSetEnd, BuilderContext context) {
       this.role = EdmAssociationEnd.newBuilder(associationSetEnd.role, context);
       this.entitySet = EdmEntitySet.newBuilder(associationSetEnd.entitySet, context);
       return this;

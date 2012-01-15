@@ -73,7 +73,7 @@ public class EdmSchema extends EdmItem {
     return new Builder();
   }
 
-  public static Builder newBuilder(EdmSchema schema, BuilderContext context) {
+  static Builder newBuilder(EdmSchema schema, BuilderContext context) {
     return context.newBuilder(schema, new Builder());
   }
 
@@ -104,7 +104,13 @@ public class EdmSchema extends EdmItem {
       List<EdmAssociation.Builder> associations = new ArrayList<EdmAssociation.Builder>();
       for (EdmAssociation association : schema.associations)
         associations.add(EdmAssociation.newBuilder(association, context));
-      return new Builder().setNamespace(schema.namespace).setAlias(schema.alias).addEntityTypes(entityTypes).addComplexTypes(complexTypes).addAssociations(associations)
+
+      return new Builder()
+          .setNamespace(schema.namespace)
+          .setAlias(schema.alias)
+          .addEntityTypes(entityTypes)
+          .addComplexTypes(complexTypes)
+          .addAssociations(associations)
           .addEntityContainers(entityContainers);
 
     }

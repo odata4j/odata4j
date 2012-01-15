@@ -143,7 +143,7 @@ public class EdmProperty extends EdmPropertyBase {
     return new Builder(name);
   }
 
-  public static Builder newBuilder(EdmProperty property, BuilderContext context) {
+  static Builder newBuilder(EdmProperty property, BuilderContext context) {
     return context.newBuilder(property, new Builder(property.getName()));
   }
 

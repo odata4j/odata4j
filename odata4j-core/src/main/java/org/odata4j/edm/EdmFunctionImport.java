@@ -56,7 +56,7 @@ public class EdmFunctionImport extends EdmItem {
     return new Builder();
   }
 
-  public static Builder newBuilder(EdmFunctionImport functionImport, BuilderContext context) {
+  static Builder newBuilder(EdmFunctionImport functionImport, BuilderContext context) {
     return context.newBuilder(functionImport, new Builder());
   }
 

@@ -57,7 +57,7 @@ public class EdmNavigationProperty extends EdmPropertyBase {
     return new Builder(name);
   }
 
-  public static Builder newBuilder(EdmNavigationProperty navigationProperty, BuilderContext context) {
+  static Builder newBuilder(EdmNavigationProperty navigationProperty, BuilderContext context) {
     return context.newBuilder(navigationProperty, new Builder(navigationProperty.getName()));
   }
 

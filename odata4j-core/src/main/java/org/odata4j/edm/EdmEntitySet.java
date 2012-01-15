@@ -53,7 +53,7 @@ public class EdmEntitySet extends EdmItem implements Named {
     return new Builder();
   }
 
-  public static Builder newBuilder(EdmEntitySet entitySet, BuilderContext context) {
+  static Builder newBuilder(EdmEntitySet entitySet, BuilderContext context) {
     return context.newBuilder(entitySet, new Builder());
   }
 

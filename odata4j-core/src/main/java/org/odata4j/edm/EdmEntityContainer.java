@@ -63,7 +63,7 @@ public class EdmEntityContainer extends EdmItem {
     return new Builder();
   }
 
-  public static Builder newBuilder(EdmEntityContainer entityContainer, BuilderContext context) {
+  static Builder newBuilder(EdmEntityContainer entityContainer, BuilderContext context) {
     return context.newBuilder(entityContainer, new Builder());
   }
 

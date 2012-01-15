@@ -47,7 +47,7 @@ public class EdmAssociationSet extends EdmItem {
     return new Builder();
   }
 
-  public static Builder newBuilder(EdmAssociationSet associationSet, BuilderContext context) {
+  static Builder newBuilder(EdmAssociationSet associationSet, BuilderContext context) {
     return context.newBuilder(associationSet, new Builder());
   }
 

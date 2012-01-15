@@ -49,7 +49,7 @@ public class EdmAssociationEnd extends EdmItem {
     return new Builder();
   }
 
-  public static Builder newBuilder(EdmAssociationEnd associationEnd, BuilderContext context) {
+  static Builder newBuilder(EdmAssociationEnd associationEnd, BuilderContext context) {
     return context.newBuilder(associationEnd, new Builder());
   }
 
