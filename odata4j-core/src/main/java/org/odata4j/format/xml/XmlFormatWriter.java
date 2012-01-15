@@ -6,6 +6,7 @@ import java.util.List;
 import javax.ws.rs.core.MediaType;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.odata4j.core.OAtomEntity;
@@ -165,7 +166,7 @@ public class XmlFormatWriter {
 
   }
 
-  private OAtomEntity getAtomInfo(OEntity oe, final String updated) {
+  private OAtomEntity getAtomInfo(OEntity oe) {
     if (oe != null) {
       OAtomEntity atomEntity = oe.findExtension(OAtomEntity.class);
       if (atomEntity != null)
@@ -188,8 +189,8 @@ public class XmlFormatWriter {
       }
 
       @Override
-      public String getAtomEntityUpdated() {
-        return updated;
+      public LocalDateTime getAtomEntityUpdated() {
+        return null;
       }
     };
   }
@@ -207,12 +208,17 @@ public class XmlFormatWriter {
       writeElement(writer, "id", absid);
     }
 
-    final OAtomEntity oae = getAtomInfo(oe, updated);
+    OAtomEntity oae = getAtomInfo(oe);
 
     writeElement(writer, "title", oae.getAtomEntityTitle(), "type", "text");
     String summary = oae.getAtomEntitySummary();
     if (summary != null) {
       writeElement(writer, "summary", summary, "type", "text");
+    }
+
+    LocalDateTime updatedTime = oae.getAtomEntityUpdated();
+    if (updatedTime != null) {
+      updated = InternalUtil.toString(updatedTime.toDateTime(DateTimeZone.UTC));
     }
     writeElement(writer, "updated", updated);
 
