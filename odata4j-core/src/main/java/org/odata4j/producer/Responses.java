@@ -59,6 +59,15 @@ public class Responses {
     };
   }
 
+  public static CountResponse count(final long count) {
+    return new CountResponse() {
+      @Override
+      public long getCount() {
+        return count;
+      }          
+    };
+  }
+  
   /**
    * Creates a new <code>EntityResponse</code> instance.
    *

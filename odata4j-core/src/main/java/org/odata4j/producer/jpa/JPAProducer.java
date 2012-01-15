@@ -60,6 +60,7 @@ import org.odata4j.expression.OrderByExpression;
 import org.odata4j.expression.OrderByExpression.Direction;
 import org.odata4j.internal.TypeConverter;
 import org.odata4j.producer.BaseResponse;
+import org.odata4j.producer.CountResponse;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityIdResponse;
 import org.odata4j.producer.EntityResponse;
@@ -142,6 +143,16 @@ public class JPAProducer implements ODataProducer {
   }
 
   @Override
+  public CountResponse getEntitiesCount(String entitySetName, QueryInfo queryInfo) {
+    return common(entitySetName, null, queryInfo,
+        new Func1<Context, CountResponse>() {
+          public CountResponse apply(Context input) {
+            return getEntitiesCount(input);
+          }
+        });
+  }
+
+  @Override
   public BaseResponse getNavProperty(
       final String entitySetName,
       final OEntityKey entityKey,
@@ -159,6 +170,24 @@ public class JPAProducer implements ODataProducer {
         });
   }
 
+  @Override
+  public CountResponse getNavPropertyCount(
+      final String entitySetName,
+      final OEntityKey entityKey,
+      final String navProp,
+      final QueryInfo queryInfo) {
+      
+    return common(
+        entitySetName,
+        entityKey,
+        queryInfo,
+        new Func1<Context, CountResponse>() {
+          public CountResponse apply(Context input) {
+            return getNavPropertyCount(input, navProp);
+          }
+        });
+  }
+  
   private static class Context {
     EntityManager em;
     EdmEntitySet ees;
@@ -205,7 +234,12 @@ public class JPAProducer implements ODataProducer {
         response.skipToken);
   }
 
-  private BaseResponse getNavProperty(final Context context, String navProp) {
+  private CountResponse getEntitiesCount(Context context) {
+    CountResponse response = getEntitiesCountResponse(context, null);
+    return response;
+  }
+
+  private BaseResponse getNavProperty(Context context, String navProp) {
 
     DynamicEntitiesResponse response = getEntitiesResponse(context, navProp);
     if (response.responseType.equals(PropertyResponse.class))
@@ -220,6 +254,10 @@ public class JPAProducer implements ODataProducer {
           response.skipToken);
 
     throw new UnsupportedOperationException("Unknown responseType: " + response.responseType.getName());
+  }
+
+  private CountResponse getNavPropertyCount(Context context, String navProp) {
+    return getEntitiesCountResponse(context, navProp);
   }
 
   private <T> T common(
@@ -548,7 +586,7 @@ public class JPAProducer implements ODataProducer {
   private DynamicEntitiesResponse getEntitiesResponse(final Context context, String navProp) {
 
     // generate jpql
-    String jpql = generateJPQL(context, navProp);
+    String jpql = generateJPQL(context, navProp, false);
 
     // jpql -> jpa query
     Query tq = context.em.createQuery(jpql);
@@ -627,7 +665,41 @@ public class JPAProducer implements ODataProducer {
     return DynamicEntitiesResponse.entities(entities, inlineCount, skipToken);
   }
 
-  private String generateJPQL(Context context, String navProp) {
+  private CountResponse getEntitiesCountResponse(Context context, String navProp) {
+
+    // inlineCount is not applicable to $count queries
+    if (context != null && context.query != null && context.query.inlineCount == InlineCount.ALLPAGES) {
+      throw new UnsupportedOperationException("$inlinecount cannot be applied to the resource segment '$count'");
+    }
+    
+    // sktiptoken is not applicable to $count queries
+    if (context != null && context.query != null && context.query.skipToken != null) {
+      throw new UnsupportedOperationException("Skip tokens can only be provided for requests that return collections of entities.");
+    }
+
+    // generate jpql
+    String jpql = generateJPQL(context, navProp, true);
+
+    // jpql -> jpa query
+    Query tq = context.em.createQuery(jpql);
+
+    // execute jpa query
+    Long count = (Long) tq.getSingleResult();
+    
+    // apply $skip.
+    // example: http://odata.netflix.com/Catalog/Titles/$count?$skip=100
+    if (context.query != null && context.query.skip != null)
+      count = Math.max(0, count - context.query.skip);
+              
+    // apply $top.
+    // example:  http://odata.netflix.com/Catalog/Titles/$count?$top=10
+    if (context.query != null && context.query.top != null)
+      count = Math.min(count, context.query.top);
+
+    return Responses.count(count);
+  }
+
+  private String generateJPQL(Context context, String navProp, boolean isCount) {
     String alias = "t0";
     String from = context.jpaEntityType.getName() + " " + alias;
     String where = null;
@@ -697,7 +769,9 @@ public class JPAProducer implements ODataProducer {
       }
     }
 
-    String jpql = String.format("SELECT %s FROM %s", alias, from);
+    String select = isCount ? "COUNT(" + alias + ")" : alias;
+
+    String jpql = String.format("SELECT %s FROM %s", select, from);
 
     JPQLGenerator jpqlGen = new JPQLGenerator(context.keyAttributeName, alias);
 
@@ -715,7 +789,7 @@ public class JPAProducer implements ODataProducer {
     if (where != null)
       jpql = String.format("%s WHERE %s", jpql, where);
 
-    if (context.query != null && context.query.orderBy != null && !context.query.orderBy.isEmpty()) {
+    if (!isCount && context.query != null && context.query.orderBy != null && !context.query.orderBy.isEmpty()) {
       List<String> orderBys = new ArrayList<String>();
       for (OrderByExpression orderBy : context.query.orderBy) {
         String field = jpqlGen.toJpql(orderBy.getExpression());

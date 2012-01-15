@@ -95,7 +95,7 @@ public class MetadataResource {
     }
 
     EntitiesRequestResource r = new EntitiesRequestResource();
-    return r.getEntitiesImpl(httpHeaders, uriInfo, metadataProducer, entitySetName, inlineCount, top, skip, filter, orderBy, format, callback, skipToken, expand, select);
+    return r.getEntitiesImpl(httpHeaders, uriInfo, metadataProducer, entitySetName, false, inlineCount, top, skip, filter, orderBy, format, callback, skipToken, expand, select);
   }
 
   @GET

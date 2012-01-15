@@ -40,6 +40,7 @@ import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.fit.support.ProducerSupport;
 import org.odata4j.fit.support.RunSupport;
 import org.odata4j.producer.BaseResponse;
+import org.odata4j.producer.CountResponse;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityIdResponse;
 import org.odata4j.producer.EntityResponse;
@@ -217,7 +218,17 @@ public abstract class AbstractXmlDataProducerExample implements ProducerSupport,
     }
 
     @Override
+    public CountResponse getEntitiesCount(String entitySetName, QueryInfo queryInfo) {
+      throw new NotImplementedException();
+    }
+
+    @Override
     public EntitiesResponse getNavProperty(String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
+      throw new NotImplementedException();
+    }
+
+    @Override
+    public CountResponse getNavPropertyCount(String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
       throw new NotImplementedException();
     }
 

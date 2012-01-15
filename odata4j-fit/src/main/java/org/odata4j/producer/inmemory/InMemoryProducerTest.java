@@ -12,6 +12,9 @@ import org.junit.Test;
 import org.odata4j.core.OAtomStreamEntity;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.expression.BoolCommonExpression;
+import org.odata4j.expression.Expression;
+import org.odata4j.producer.CountResponse;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.InlineCount;
 import org.odata4j.producer.QueryInfo;
@@ -23,7 +26,7 @@ public class InMemoryProducerTest {
 
   @Test
   public void inlineCountWithOneShotIterable() {
-    InMemoryProducer producer = new InMemoryProducer("InMemoryProducerTest");
+    InMemoryProducer producer = new InMemoryProducer("inlineCountWithOneShotIterable");
     final List<String> testData = Enumerable.create("one", "two", "three").toList();
     Func<Iterable<String>> getTestData = new Func<Iterable<String>>() {
       @Override
@@ -45,7 +48,7 @@ public class InMemoryProducerTest {
 
   @Test
   public void testStreamEntity() {
-    final InMemoryProducer p = new InMemoryProducer("AAA");
+    final InMemoryProducer p = new InMemoryProducer("testStreamEntity");
     p.register(StreamEntity.class, "setName", new Func<Iterable<StreamEntity>>() {
       @Override
       public Iterable<StreamEntity> apply() {
@@ -71,7 +74,8 @@ public class InMemoryProducerTest {
   @Test
   public void testSetNameAndType() {
     final SimpleEntity e1 = new SimpleEntity();
-    final InMemoryProducer p = new InMemoryProducer("AAA");
+    String namespace = "testSetNameAndType";
+    InMemoryProducer p = new InMemoryProducer(namespace);
     p.register(SimpleEntity.class, "setName", "typeName", new Func<Iterable<SimpleEntity>>() {
       @Override
       public Iterable<SimpleEntity> apply() {
@@ -83,7 +87,7 @@ public class InMemoryProducerTest {
     Assert.assertNotNull(p.getEntity("setName", OEntityKey.create(e1.getId()), NULL_QUERY).getEntity());
 
     Assert.assertNotNull(p.getMetadata().findEdmEntitySet("setName"));
-    Assert.assertNotNull(p.getMetadata().findEdmEntityType("AAA.typeName"));
+    Assert.assertNotNull(p.getMetadata().findEdmEntityType(namespace + ".typeName"));
   }
 
   @Test
@@ -98,7 +102,7 @@ public class InMemoryProducerTest {
       }
     }
 
-    InMemoryProducer producer = new InMemoryProducer("aaa");
+    InMemoryProducer producer = new InMemoryProducer("complexQuery");
     final List<Entry> testData = Enumerable.create(new Entry(), new Entry()).toList();
     Func<Iterable<Entry>> getTestData = new Func<Iterable<Entry>>() {
       @Override
@@ -120,7 +124,74 @@ public class InMemoryProducerTest {
     Assert.assertEquals(data.getEntities().size(), 2);
   }
 
+  @Test
+  public void testSimpleCount() {
+    InMemoryProducer p = new InMemoryProducer("testSimpleCount");
+    p.register(SimpleEntity.class, "setName", "typeName", new Func<Iterable<SimpleEntity>>() {
+      @Override
+      public Iterable<SimpleEntity> apply() {
+        return Enumerable.create(new SimpleEntity(), new SimpleEntity());
+      }
+    }, "Id");
+
+    CountResponse response = p.getEntitiesCount("setName", null);
+    Assert.assertEquals(2L, response.getCount());
+  }
+
+  @Test
+  public void testFilteredCount() {
+    InMemoryProducer p = new InMemoryProducer("testFilteredCount");
+    p.register(SimpleEntity.class, "setName", "typeName", new Func<Iterable<SimpleEntity>>() {
+      @Override
+      public Iterable<SimpleEntity> apply() {
+        return Enumerable.create(new SimpleEntity(1), new SimpleEntity(2));
+      }
+    }, "Id");
+
+    BoolCommonExpression filter = Expression.gt(Expression.simpleProperty("Integer"), Expression.integral(1));
+    CountResponse response = p.getEntitiesCount("setName", new QueryInfo(InlineCount.NONE, null, null, filter, null, null, null, null, null));
+    Assert.assertEquals(1L, response.getCount());
+  }
+
+  @Test
+  public void testTopCount() {
+    InMemoryProducer p = new InMemoryProducer("testTopCount");
+    p.register(SimpleEntity.class, "setName", "typeName", new Func<Iterable<SimpleEntity>>() {
+      @Override
+      public Iterable<SimpleEntity> apply() {
+        return Enumerable.create(new SimpleEntity(1), new SimpleEntity(2), new SimpleEntity(3), new SimpleEntity(4), new SimpleEntity(5));
+      }
+    }, "Id");
+
+    CountResponse response = p.getEntitiesCount("setName", new QueryInfo(InlineCount.NONE, 3, null, null, null, null, null, null, null));
+    Assert.assertEquals(3L, response.getCount());
+  }
+
+  @Test
+  public void testSkipCount() {
+    InMemoryProducer p = new InMemoryProducer("testSkipCount");
+    p.register(SimpleEntity.class, "setName", "typeName", new Func<Iterable<SimpleEntity>>() {
+      @Override
+      public Iterable<SimpleEntity> apply() {
+        return Enumerable.create(new SimpleEntity(1), new SimpleEntity(2), new SimpleEntity(3), new SimpleEntity(4), new SimpleEntity(5));
+      }
+    }, "Id");
+
+    CountResponse response = p.getEntitiesCount("setName", new QueryInfo(InlineCount.NONE, null, 3, null, null, null, null, null, null));
+    Assert.assertEquals(2L, response.getCount());
+  }
+
   private static class SimpleEntity {
+    private final int integer;
+
+    public SimpleEntity() {
+      this(0);
+    }
+
+    public SimpleEntity(int integer) {
+      this.integer = integer;
+    }
+
     public String getId() {
       return String.valueOf(System.identityHashCode(this));
     }
@@ -131,6 +202,10 @@ public class InMemoryProducerTest {
 
     public boolean getBool() {
       return false;
+    }
+
+    public int getInteger() {
+      return integer;
     }
   }
 

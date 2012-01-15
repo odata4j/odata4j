@@ -45,6 +45,15 @@ public interface ODataProducer {
   EntitiesResponse getEntities(String entitySetName, QueryInfo queryInfo);
 
   /**
+   * Gets the count of all the entities for a given set matching the query information.
+   *
+   * @param entitySetName  the entity-set name for entities whose count is returned
+   * @param queryInfo  the additional constraints to apply to the entities
+   * @return count of the entities
+   */
+  CountResponse getEntitiesCount(String entitySetName, QueryInfo queryInfo);
+  
+  /**
    * Obtains a single entity based on its type and key. Also honors $select and $expand in queryInfo
    * @param entitySetName the entity-set name for entities to return
    * @param entityKey the unique entity-key of the entity to start with
@@ -64,6 +73,18 @@ public interface ODataProducer {
    * @return the resulting entity, entities, or property value
    */
   BaseResponse getNavProperty(String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo);
+
+  /**
+   * Given a specific entity, follow one of its navigation properties, applying constraints as appropriate.
+   * Return the count of the resulting entities.
+   *
+   * @param entitySetName  the entity-set of the entity to start with
+   * @param entityKey  the unique entity-key of the entity to start with
+   * @param navProp  the navigation property to follow
+   * @param queryInfo  additional constraints to apply to the result
+   * @return the count of the resulting entities
+   */
+  CountResponse getNavPropertyCount(String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo);
 
   /**
    * Releases any resources managed by this producer.

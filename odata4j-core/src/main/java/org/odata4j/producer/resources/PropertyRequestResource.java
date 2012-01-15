@@ -29,11 +29,13 @@ import org.odata4j.format.FormatWriter;
 import org.odata4j.format.FormatWriterFactory;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.producer.BaseResponse;
+import org.odata4j.producer.CountResponse;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.PropertyResponse;
 import org.odata4j.producer.QueryInfo;
+import org.odata4j.producer.exceptions.NotFoundException;
 import org.odata4j.producer.exceptions.NotImplementedException;
 
 public class PropertyRequestResource extends BaseResource {
@@ -45,8 +47,8 @@ public class PropertyRequestResource extends BaseResource {
   public Response updateEntity(
       @Context ContextResolver<ODataProducer> producerResolver,
       @PathParam("entitySetName") String entitySetName,
-      final @PathParam("id") String id,
-      final @PathParam("navProp") String navProp) {
+      @PathParam("id") String id,
+      @PathParam("navProp") String navProp) {
 
     log.info("NavProp: updateEntity Not supported yet.");
     throw new NotImplementedException("NavProp: updateEntity not supported yet.");
@@ -57,9 +59,9 @@ public class PropertyRequestResource extends BaseResource {
       @Context HttpHeaders httpHeaders,
       @Context UriInfo uriInfo,
       @Context ContextResolver<ODataProducer> producerResolver,
-      final @PathParam("entitySetName") String entitySetName,
-      final @PathParam("id") String id,
-      final @PathParam("navProp") String navProp,
+      @PathParam("entitySetName") String entitySetName,
+      @PathParam("id") String id,
+      @PathParam("navProp") String navProp,
       String payload) throws Exception {
 
     String method = httpHeaders.getRequestHeaders().getFirst(ODataConstants.Headers.X_HTTP_METHOD);
@@ -80,7 +82,7 @@ public class PropertyRequestResource extends BaseResource {
       EntityResponse response = producer.createEntity(entitySetName, OEntityKey.parse(id), navProp, entity);
 
       if (response == null) {
-        return Response.status(Status.NOT_FOUND).build();
+        throw new NotFoundException();
       }
 
       // get the FormatWriter for the accepted media types requested by client
@@ -99,8 +101,8 @@ public class PropertyRequestResource extends BaseResource {
           .ok(responseEntity, fw.getContentType())
           .status(Status.CREATED)
           .location(URI.create(entryId))
-          .header(ODataConstants.Headers.DATA_SERVICE_VERSION,
-              ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
+          .header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER)
+          .build();
     }
 
     throw new NotImplementedException("Not supported yet.");
@@ -109,9 +111,9 @@ public class PropertyRequestResource extends BaseResource {
   @DELETE
   public Response deleteEntity(
       @Context ContextResolver<ODataProducer> producerResolver,
-      final @PathParam("entitySetName") String entitySetName,
-      final @PathParam("id") String id,
-      final @PathParam("navProp") String navProp) {
+      @PathParam("entitySetName") String entitySetName,
+      @PathParam("id") String id,
+      @PathParam("navProp") String navProp) {
     throw new NotImplementedException("Not supported yet.");
   }
 
@@ -124,19 +126,20 @@ public class PropertyRequestResource extends BaseResource {
       @Context HttpHeaders httpHeaders,
       @Context UriInfo uriInfo,
       @Context ContextResolver<ODataProducer> producerResolver,
-      final @PathParam("entitySetName") String entitySetName,
-      final @PathParam("id") String id,
-      final @PathParam("navProp") String navProp,
-      final @QueryParam("$inlinecount") String inlineCount,
-      final @QueryParam("$top") String top,
-      final @QueryParam("$skip") String skip,
-      final @QueryParam("$filter") String filter,
-      final @QueryParam("$orderby") String orderBy,
-      final @QueryParam("$format") String format,
-      final @QueryParam("$callback") String callback,
-      final @QueryParam("$skiptoken") String skipToken,
-      final @QueryParam("$expand") String expand,
-      final @QueryParam("$select") String select) throws Exception {
+      @PathParam("entitySetName") String entitySetName,
+      @PathParam("id") String id,
+      @PathParam("navProp") String navProp,
+      @QueryParam("$inlinecount") String inlineCount,
+      @QueryParam("$top") String top,
+      @QueryParam("$skip") String skip,
+      @QueryParam("$filter") String filter,
+      @QueryParam("$orderby") String orderBy,
+      @QueryParam("$format") String format,
+      @QueryParam("$callback") String callback,
+      @QueryParam("$skiptoken") String skipToken,
+      @QueryParam("$expand") String expand,
+      @QueryParam("$select") String select) throws Exception {
+
     QueryInfo query = new QueryInfo(
         OptionsQueryParser.parseInlineCount(inlineCount),
         OptionsQueryParser.parseTop(top),
@@ -150,66 +153,88 @@ public class PropertyRequestResource extends BaseResource {
 
     ODataProducer producer = producerResolver.getContext(ODataProducer.class);
 
-    final BaseResponse response = producer.getNavProperty(
-        entitySetName,
-        OEntityKey.parse(id),
-        navProp,
-        query);
+    if (navProp.endsWith("/$count")
+        || navProp.endsWith("/$count/")
+        || navProp.contains("/$count?")
+        || navProp.contains("/$count/?")) {
 
-    if (response == null) {
-      return Response.status(Status.NOT_FOUND).build();
-    }
+      navProp = navProp.replace("/$count", "");
 
-    ODataVersion version = ODataConstants.DATA_SERVICE_VERSION;
+      CountResponse response = producer.getNavPropertyCount(
+          entitySetName,
+          OEntityKey.parse(id),
+          navProp,
+          query);
 
-    StringWriter sw = new StringWriter();
-    FormatWriter<?> fwBase;
-    if (response instanceof PropertyResponse) {
-      FormatWriter<PropertyResponse> fw =
-          FormatWriterFactory.getFormatWriter(
-              PropertyResponse.class,
-              httpHeaders.getAcceptableMediaTypes(),
-              format,
-              callback);
+      if (response == null) {
+        throw new NotFoundException();
+      }
 
-      fw.write(uriInfo, sw, (PropertyResponse) response);
-      fwBase = fw;
-    } else if (response instanceof EntityResponse) {
-      FormatWriter<EntityResponse> fw =
-          FormatWriterFactory.getFormatWriter(
-              EntityResponse.class,
-              httpHeaders.getAcceptableMediaTypes(),
-              format,
-              callback);
-
-      fw.write(uriInfo, sw, (EntityResponse) response);
-      fwBase = fw;
-    } else if (response instanceof EntitiesResponse) {
-      FormatWriter<EntitiesResponse> fw =
-          FormatWriterFactory.getFormatWriter(
-              EntitiesResponse.class,
-              httpHeaders.getAcceptableMediaTypes(),
-              format,
-              callback);
-
-      fw.write(uriInfo, sw, (EntitiesResponse) response);
-      fwBase = fw;
+      String entity = Long.toString(response.getCount());
 
       // TODO remove this hack, check whether we are Version 2.0 compatible anyway
-      // the JsonWriter writes feed currently always as Version 2.0
-      version = MediaType.valueOf(fw.getContentType()).isCompatible(MediaType.APPLICATION_JSON_TYPE)
-          ? ODataVersion.V2 : ODataVersion.V2;
+      ODataVersion version = ODataVersion.V2;
 
+      return Response
+          .ok(entity, ODataConstants.TEXT_PLAIN_CHARSET_UTF8)
+          .header(ODataConstants.Headers.DATA_SERVICE_VERSION, version.asString)
+          .build();
     } else {
-      throw new NotImplementedException("Unknown BaseResponse type: " + response.getClass().getName());
+      BaseResponse response = producer.getNavProperty(
+          entitySetName,
+          OEntityKey.parse(id),
+          navProp,
+          query);
+
+      if (response == null) {
+        throw new NotFoundException();
+      }
+
+      ODataVersion version = ODataConstants.DATA_SERVICE_VERSION;
+
+      StringWriter sw = new StringWriter();
+      FormatWriter<?> fwBase;
+      if (response instanceof PropertyResponse) {
+        FormatWriter<PropertyResponse> fw =
+            FormatWriterFactory.getFormatWriter(
+                PropertyResponse.class,
+                httpHeaders.getAcceptableMediaTypes(),
+                format,
+                callback);
+        fw.write(uriInfo, sw, (PropertyResponse) response);
+        fwBase = fw;
+      } else if (response instanceof EntityResponse) {
+        FormatWriter<EntityResponse> fw =
+            FormatWriterFactory.getFormatWriter(
+                EntityResponse.class,
+                httpHeaders.getAcceptableMediaTypes(),
+                format,
+                callback);
+        fw.write(uriInfo, sw, (EntityResponse) response);
+        fwBase = fw;
+      } else if (response instanceof EntitiesResponse) {
+        FormatWriter<EntitiesResponse> fw =
+            FormatWriterFactory.getFormatWriter(
+                EntitiesResponse.class,
+                httpHeaders.getAcceptableMediaTypes(),
+                format,
+                callback);
+        fw.write(uriInfo, sw, (EntitiesResponse) response);
+        fwBase = fw;
+
+        // TODO remove this hack, check whether we are Version 2.0 compatible anyway
+        // the JsonWriter writes feed currently always as Version 2.0
+        version = MediaType.valueOf(fw.getContentType()).isCompatible(MediaType.APPLICATION_JSON_TYPE)
+            ? ODataVersion.V2 : ODataVersion.V2;
+      } else {
+        throw new NotImplementedException("Unknown BaseResponse type: " + response.getClass().getName());
+      }
+
+      String entity = sw.toString();
+      return Response
+          .ok(entity, fwBase.getContentType())
+          .header(ODataConstants.Headers.DATA_SERVICE_VERSION, version.asString)
+          .build();
     }
-
-    String entity = sw.toString();
-    return Response.ok(
-        entity,
-        fwBase.getContentType()).header(
-        ODataConstants.Headers.DATA_SERVICE_VERSION,
-        version.asString).build();
   }
-
 }

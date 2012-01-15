@@ -8,4 +8,6 @@ public interface NorthwindTestUtils {
 
   void writeStringToFile(String fileName, String contents);
 
+  String getCount(String endpointUri, String uri);
+
 }

@@ -29,6 +29,7 @@ import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.edm.EdmProperty.CollectionKind;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.producer.BaseResponse;
+import org.odata4j.producer.CountResponse;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityIdResponse;
 import org.odata4j.producer.EntityResponse;
@@ -38,6 +39,7 @@ import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.Responses;
 import org.odata4j.producer.edm.MetadataProducer;
 import org.odata4j.producer.exceptions.NotFoundException;
+import org.odata4j.producer.exceptions.NotImplementedException;
 
 /**
  * A custom producer for various test scenarios that aren't possible with
@@ -77,6 +79,11 @@ public class CustomProducer implements ODataProducer {
     }
   }
 
+  @Override
+  public CountResponse getEntitiesCount(String entitySetName, QueryInfo queryInfo) {
+    throw new NotImplementedException();
+  }
+
   private int nDirs = 5;
   private Map<String, OEntity> dirs = new HashMap<String, OEntity>();
 
@@ -88,6 +95,11 @@ public class CustomProducer implements ODataProducer {
     }
     l.addAll(dirs.values());
     return l;
+  }
+
+  @Override
+  public CountResponse getNavPropertyCount(String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
+    throw new NotImplementedException();
   }
 
   private boolean isExpanded(String navprop, QueryInfo q) {

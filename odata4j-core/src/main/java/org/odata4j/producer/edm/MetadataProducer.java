@@ -42,6 +42,7 @@ import org.odata4j.edm.EdmStructuralType;
 import org.odata4j.edm.EdmType;
 import org.odata4j.format.xml.EdmxFormatWriter;
 import org.odata4j.producer.BaseResponse;
+import org.odata4j.producer.CountResponse;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityIdResponse;
 import org.odata4j.producer.EntityResponse;
@@ -781,6 +782,16 @@ public class MetadataProducer implements ODataProducer {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
+  @Override
+  public CountResponse getEntitiesCount(String entitySetName, QueryInfo queryInfo) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public CountResponse getNavPropertyCount(String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+  
   @Override
   public void close() {
     throw new UnsupportedOperationException("Not supported yet.");

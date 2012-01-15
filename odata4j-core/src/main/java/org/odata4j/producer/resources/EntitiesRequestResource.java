@@ -28,6 +28,7 @@ import org.odata4j.core.OEntity;
 import org.odata4j.format.FormatWriter;
 import org.odata4j.format.FormatWriterFactory;
 import org.odata4j.internal.InternalUtil;
+import org.odata4j.producer.CountResponse;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.ODataProducer;
@@ -44,14 +45,14 @@ public class EntitiesRequestResource extends BaseResource {
       @Context HttpHeaders httpHeaders,
       @Context UriInfo uriInfo,
       @Context ContextResolver<ODataProducer> producerResolver,
-      final @PathParam("entitySetName") String entitySetName,
+      @PathParam("entitySetName") String entitySetName,
       String payload) throws Exception {
 
     // visual studio will send a soap mex request
     if (entitySetName.equals("mex") && httpHeaders.getMediaType() != null && httpHeaders.getMediaType().toString().startsWith("application/soap+xml"))
       return Response.status(405).build();
 
-    log.info(String.format("createEntity(%s)", entitySetName));
+    log("createEntity", "entitySetName", entitySetName);
 
     ODataProducer producer = producerResolver.getContext(ODataProducer.class);
 
@@ -75,7 +76,6 @@ public class EntitiesRequestResource extends BaseResource {
         .location(URI.create(entryId))
         .header(ODataConstants.Headers.DATA_SERVICE_VERSION,
             ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
-
   }
 
   @GET
@@ -98,21 +98,64 @@ public class EntitiesRequestResource extends BaseResource {
       @QueryParam("$expand") String expand,
       @QueryParam("$select") String select) throws Exception {
 
-    log.info(String.format(
-        "getEntities(%s,%s,%s,%s,%s,%s,%s,%s)",
-        entitySetName,
-        inlineCount,
-        top,
-        skip,
-        filter,
-        orderBy,
-        skipToken,
-        expand));
+    log("getEntities",
+        "entitySetName", entitySetName,
+        "inlineCount", inlineCount,
+        "top", top,
+        "skip", skip,
+        "filter", filter,
+        "orderBy", orderBy,
+        "format", format,
+        "callback", callback,
+        "skipToken", skipToken,
+        "expand", expand,
+        "select", select);
 
     ODataProducer producer = producerResolver.getContext(ODataProducer.class);
 
-    return getEntitiesImpl(httpHeaders, uriInfo, producer, entitySetName, inlineCount, top, skip,
-        filter, orderBy, format, callback, skipToken, expand, select);
+    return getEntitiesImpl(httpHeaders, uriInfo, producer, entitySetName, false, inlineCount, top, skip,
+            filter, orderBy, format, callback, skipToken, expand, select);
+  }
+
+  @GET
+  @Path("{count: [$]count}")
+  @Produces({ ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8,
+      ODataConstants.TEXT_JAVASCRIPT_CHARSET_UTF8,
+      ODataConstants.APPLICATION_JAVASCRIPT_CHARSET_UTF8 })
+  public Response getEntitiesCount(
+      @Context HttpHeaders httpHeaders,
+      @Context UriInfo uriInfo,
+      @Context ContextResolver<ODataProducer> producerResolver,
+      @PathParam("entitySetName") String entitySetName,
+      @PathParam("count") String count,
+      @QueryParam("$inlinecount") String inlineCount,
+      @QueryParam("$top") String top,
+      @QueryParam("$skip") String skip,
+      @QueryParam("$filter") String filter,
+      @QueryParam("$orderby") String orderBy,
+      @QueryParam("$format") String format,
+      @QueryParam("$callback") String callback,
+      @QueryParam("$skiptoken") String skipToken,
+      @QueryParam("$expand") String expand,
+      @QueryParam("$select") String select) throws Exception {
+
+    log("getEntitiesCount",
+        "entitySetName", entitySetName,
+        "inlineCount", inlineCount,
+        "top", top,
+        "skip", skip,
+        "filter", filter,
+        "orderBy", orderBy,
+        "format", format,
+        "callback", callback,
+        "skipToken", skipToken,
+        "expand", expand,
+        "select", select);
+
+    ODataProducer producer = producerResolver.getContext(ODataProducer.class);
+
+    return getEntitiesImpl(httpHeaders, uriInfo, producer, entitySetName, true, inlineCount, top, skip,
+           filter, orderBy, format, callback, skipToken, expand, select);
   }
 
   protected Response getEntitiesImpl(
@@ -120,6 +163,7 @@ public class EntitiesRequestResource extends BaseResource {
       UriInfo uriInfo,
       ODataProducer producer,
       String entitySetName,
+      boolean isCount,
       String inlineCount,
       String top,
       String skip,
@@ -148,28 +192,44 @@ public class EntitiesRequestResource extends BaseResource {
         OptionsQueryParser.parseExpand(expand),
         OptionsQueryParser.parseSelect(select));
 
-    EntitiesResponse response = producer.getEntities(entitySetName, query);
+    Response response = null;
+    if (isCount) {
+      CountResponse countResponse = producer.getEntitiesCount(entitySetName, query);
 
-    StringWriter sw = new StringWriter();
-    FormatWriter<EntitiesResponse> fw =
-        FormatWriterFactory.getFormatWriter(
-            EntitiesResponse.class,
-            httpHeaders.getAcceptableMediaTypes(),
-            format,
-            callback);
+      String entity = Long.toString(countResponse.getCount());
 
-    fw.write(uriInfo, sw, response);
-    String entity = sw.toString();
+      // TODO remove this hack, check whether we are Version 2.0 compatible anyway
+      ODataVersion version = ODataVersion.V2;
 
-    // TODO remove this hack, check whether we are Version 2.0 compatible anyway
-    ODataVersion version = MediaType.valueOf(fw.getContentType()).isCompatible(MediaType.APPLICATION_JSON_TYPE)
-        ? ODataVersion.V2 : ODataVersion.V2;
+      response = Response
+          .ok(entity, ODataConstants.TEXT_PLAIN_CHARSET_UTF8)
+          .header(ODataConstants.Headers.DATA_SERVICE_VERSION, version.asString)
+          .build();
+    }
+    else {
+        EntitiesResponse entitiesResponse = producer.getEntities(entitySetName, query);
 
-    return Response
-        .ok(entity, fw.getContentType())
-        .header(ODataConstants.Headers.DATA_SERVICE_VERSION,
-            version.asString).build();
+        StringWriter sw = new StringWriter();
+        FormatWriter<EntitiesResponse> fw =
+            FormatWriterFactory.getFormatWriter(
+                EntitiesResponse.class,
+                httpHeaders.getAcceptableMediaTypes(),
+                format,
+                callback);
 
+        fw.write(uriInfo, sw, entitiesResponse);
+        String entity = sw.toString();
+
+        // TODO remove this hack, check whether we are Version 2.0 compatible anyway
+        ODataVersion version = MediaType.valueOf(fw.getContentType()).isCompatible(MediaType.APPLICATION_JSON_TYPE)
+            ? ODataVersion.V2 : ODataVersion.V2;
+
+        response = Response
+            .ok(entity, fw.getContentType())
+            .header(ODataConstants.Headers.DATA_SERVICE_VERSION, version.asString)
+            .build();
+    }
+    return response;
   }
 
   @POST
@@ -179,9 +239,9 @@ public class EntitiesRequestResource extends BaseResource {
       @Context ContextResolver<ODataProducer> producerResolver,
       @Context HttpHeaders headers,
       @Context Request request,
-      final List<BatchBodyPart> bodyParts) throws Exception {
+      List<BatchBodyPart> bodyParts) throws Exception {
 
-    log.info(String.format("processBatch(%s)", ""));
+    log("processBatch", "bodyParts.size", bodyParts.size());
 
     EntityRequestResource er = new EntityRequestResource();
 
@@ -245,4 +305,17 @@ public class EntitiesRequestResource extends BaseResource {
             ODataConstants.DATA_SERVICE_VERSION_HEADER)
         .entity(batchResponse.toString()).build();
   }
+
+  private static void log(String operation, Object... namedArgs) {
+    StringBuilder sb = new StringBuilder(operation).append('(');
+    if (namedArgs != null && namedArgs.length > 0) {
+      for (int i = 0; i < namedArgs.length; i += 2) {
+        if (i > 0)
+          sb.append(',');
+        sb.append(namedArgs[i]).append('=').append(namedArgs[i + 1]);
+      }
+    }
+    log.info(sb.append(')').toString());
+  }
+
 }

@@ -35,6 +35,7 @@ import org.odata4j.expression.Expression;
 import org.odata4j.expression.OrderByExpression;
 import org.odata4j.expression.OrderByExpression.Direction;
 import org.odata4j.producer.BaseResponse;
+import org.odata4j.producer.CountResponse;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityIdResponse;
 import org.odata4j.producer.EntityResponse;
@@ -409,6 +410,54 @@ public class InMemoryProducer implements ODataProducer {
 
   }
 
+  @Override
+  public CountResponse getEntitiesCount(String entitySetName, final QueryInfo queryInfo) {
+    final EdmEntitySet ees = getMetadata().getEdmEntitySet(entitySetName);
+    final InMemoryEntityInfo<?> ei = eis.get(entitySetName);
+
+    Enumerable<Object> objects = Enumerable.create(ei.get.apply()).cast(Object.class);
+
+    // apply filter
+    if (queryInfo != null && queryInfo.filter != null) {
+      objects = objects.where(filterToPredicate(queryInfo.filter, ei.properties));
+    }
+
+    // inlineCount is not applicable to $count queries
+    if (queryInfo != null && queryInfo.inlineCount == InlineCount.ALLPAGES) {
+      throw new UnsupportedOperationException("$inlinecount cannot be applied to the resource segment '$count'");
+    }
+
+    // ignore ordering for count
+
+    // work with oentities.
+    Enumerable<OEntity> entities = objects.select(new Func1<Object, OEntity>() {
+      public OEntity apply(Object input) {
+        return toOEntity(ees, input, queryInfo != null ? queryInfo.expand : null);
+      }
+    });
+
+    // skipToken is not applicable to $count queries
+    if (queryInfo != null && queryInfo.skipToken != null) {
+      throw new UnsupportedOperationException("Skip tokens can only be provided for requests that return collections of entities.");
+    }
+
+    // skip records by $skip amount
+    // http://services.odata.org/Northwind/Northwind.svc/Customers/$count/?$skip=5
+    if (queryInfo != null && queryInfo.skip != null) {
+      entities = entities.skip(queryInfo.skip);
+    }
+
+    // apply $top.  maxResults is not applicable to $count but $top is.
+    // http://services.odata.org/Northwind/Northwind.svc/Customers/$count/?$top=55
+    int limit = Integer.MAX_VALUE;
+    if (queryInfo != null && queryInfo.top != null && queryInfo.top < limit) {
+      limit = queryInfo.top;
+    }
+    entities = entities.take(limit);
+
+    return Responses.count(entities.count());
+  }
+
   private Enumerable<Object> orderBy(Enumerable<Object> iter, List<OrderByExpression> orderBys, final PropertyModel properties) {
     for (final OrderByExpression orderBy : Enumerable.create(orderBys).reverse())
       iter = iter.orderBy(new Comparator<Object>() {
@@ -495,6 +544,11 @@ public class InMemoryProducer implements ODataProducer {
 
   @Override
   public BaseResponse getNavProperty(String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public CountResponse getNavPropertyCount(String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
     throw new NotImplementedException();
   }
 

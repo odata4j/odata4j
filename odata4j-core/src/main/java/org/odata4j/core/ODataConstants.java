@@ -9,6 +9,9 @@ public class ODataConstants {
 
   private ODataConstants() {}
 
+  public static final String TEXT_PLAIN = "text/plain";
+  public static final String TEXT_PLAIN_CHARSET_UTF8 = TEXT_PLAIN + ";charset=utf-8";
+  
   public static final String APPLICATION_ATOM_XML = "application/atom+xml";
   public static final String APPLICATION_ATOM_XML_CHARSET_UTF8 = APPLICATION_ATOM_XML + ";charset=utf-8";
 
