@@ -17,8 +17,21 @@ import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmSimpleType;
+import org.odata4j.fit.support.CxfRuntimeSupport;
+import org.odata4j.fit.support.JerseyRuntimeSupport;
+import org.odata4j.fit.support.RuntimeSupport;
 
+@SuppressWarnings("unused")
 public abstract class AbstractExample {
+
+  protected RuntimeSupport runtime;
+  {
+    if (true) { // condition ?
+      this.runtime = new JerseyRuntimeSupport();
+    } else {
+      this.runtime = new CxfRuntimeSupport();
+    }
+  }
 
   protected static void report(String msg) {
     System.out.println(msg);

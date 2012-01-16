@@ -5,14 +5,16 @@ import org.odata4j.core.OEntity;
 import org.odata4j.core.ORelatedEntityLink;
 import org.odata4j.examples.AbstractExample;
 import org.odata4j.examples.ODataEndpoints;
-import org.odata4j.fit.support.ConsumerSupport;
-import org.odata4j.fit.support.RunSupport;
 
-public abstract class AbstractAgilitrainConsumerExample extends AbstractExample implements ConsumerSupport, RunSupport {
+public class AgilitrainConsumerExample extends AbstractExample {
 
-  @Override
-  public void run(String[] args) {
-    ODataConsumer c = this.create(ODataEndpoints.AGILITRAIN, null, null);
+  public static void main(String[] args) {
+    AgilitrainConsumerExample example = new AgilitrainConsumerExample();
+    example.run(args);
+  }
+
+  private void run(String[] args) {
+    ODataConsumer c = this.runtime.create(ODataEndpoints.AGILITRAIN);
 
     OEntity event = c.getEntity("Events", 225).execute();
     ORelatedEntityLink link = event.getLink("Workshop", ORelatedEntityLink.class);

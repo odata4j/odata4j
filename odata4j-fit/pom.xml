@@ -20,6 +20,16 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.odata4j</groupId>
+      <artifactId>odata4j-jersey</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.odata4j</groupId>
+      <artifactId>odata4j-cxf</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>${junit.version}</version>
@@ -29,12 +39,6 @@
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-client</artifactId>
       <version>7.4.5.v20110725</version>
-    </dependency>
-   <dependency> <!-- required to have a jax-rs default implementation -->
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-client</artifactId>
-      <version>${jersey.version}</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>xmlunit</groupId>

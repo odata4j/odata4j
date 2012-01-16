@@ -110,11 +110,13 @@ public abstract class AbstractResourcePathTest extends AbstractJPAProducerTest {
     String result = getUtils().getCount(endpointUri, uri);
     Assert.assertEquals("10", result);
 
-    uri = "Categories(1)/Products/$count?$top=100&$filter=ProductID gt 0";;
+    uri = "Categories(1)/Products/$count?$top=100&$filter=ProductID gt 0";
+    ;
     result = getUtils().getCount(endpointUri, uri);
     Assert.assertEquals("12", result);
 
-    uri = "Categories(1)/Products/$count?$top=0&$filter=ProductID gt 0";;
+    uri = "Categories(1)/Products/$count?$top=0&$filter=ProductID gt 0";
+    ;
     result = getUtils().getCount(endpointUri, uri);
     Assert.assertEquals("0", result);
   }
@@ -125,11 +127,13 @@ public abstract class AbstractResourcePathTest extends AbstractJPAProducerTest {
     String result = getUtils().getCount(endpointUri, uri);
     Assert.assertEquals("2", result);
 
-    uri = "Categories(1)/Products/$count?$skip=100&$filter=ProductID gt 0";;
+    uri = "Categories(1)/Products/$count?$skip=100&$filter=ProductID gt 0";
+    ;
     result = getUtils().getCount(endpointUri, uri);
     Assert.assertEquals("0", result);
 
-    uri = "Categories(1)/Products/$count?$skip=0&$filter=ProductID gt 0";;
+    uri = "Categories(1)/Products/$count?$skip=0&$filter=ProductID gt 0";
+    ;
     result = getUtils().getCount(endpointUri, uri);
     Assert.assertEquals("12", result);
   }

@@ -6,14 +6,11 @@ import java.util.List;
 import org.core4j.Func;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.examples.AbstractExample;
-import org.odata4j.fit.support.ConsumerSupport;
-import org.odata4j.fit.support.ProducerSupport;
-import org.odata4j.fit.support.RunSupport;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.producer.server.ODataServer;
 
-public abstract class AbstractRoundtripExample extends AbstractExample implements ConsumerSupport, ProducerSupport, RunSupport {
+public class RoundtripExample extends AbstractExample {
 
   public class Customer {
 
@@ -50,7 +47,12 @@ public abstract class AbstractRoundtripExample extends AbstractExample implement
 
   }
 
-  public void run(String[] args) {
+  public static void main(String[] args) {
+    RoundtripExample example = new RoundtripExample();
+    example.run(args);
+  }
+
+  private void run(String[] args) {
 
     // create/start the server
     String endpointUri = "http://localhost:8885/RoundtripExample.svc/";
@@ -66,12 +68,12 @@ public abstract class AbstractRoundtripExample extends AbstractExample implement
     }, "Id");
 
     DefaultODataProducerProvider.setInstance(producer);
-    ODataServer server = this.startODataServer(endpointUri);
+    ODataServer server = this.runtime.startODataServer(endpointUri);
 
     try {
       // create the client
       ODataConsumer.dump.responseHeaders(true);
-      ODataConsumer consumer = this.create(endpointUri, null, null);
+      ODataConsumer consumer = this.runtime.create(endpointUri);
 
       reportEntities("Customers", consumer.getEntities("Customers").execute());
 

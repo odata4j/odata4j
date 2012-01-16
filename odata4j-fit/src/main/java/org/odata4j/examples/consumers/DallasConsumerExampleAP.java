@@ -3,19 +3,21 @@ package org.odata4j.examples.consumers;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.examples.AbstractCredentialsExample;
 import org.odata4j.examples.ODataEndpoints;
-import org.odata4j.fit.support.ConsumerSupport;
-import org.odata4j.fit.support.RunSupport;
 
-public abstract class AbstractDallasConsumerExampleAP extends AbstractCredentialsExample implements ConsumerSupport, RunSupport {
+public class DallasConsumerExampleAP extends AbstractCredentialsExample {
 
-  @Override
-  public void run(String[] args) {
+  public static void main(String[] args) {
+    DallasConsumerExampleAP example = new DallasConsumerExampleAP();
+    example.run(args);
+  }
+
+  private void run(String[] args) {
 
     String[] dallasCreds = args.length > 0 ? args : System.getenv("DALLAS").split(":");
     this.setLoginPassword(dallasCreds[0]);
     this.setLoginName(dallasCreds[1]);
 
-    ODataConsumer c = this.create(ODataEndpoints.DALLAS_CTP3_AP, null, null);
+    ODataConsumer c = this.runtime.create(ODataEndpoints.DALLAS_CTP3_AP);
 
     // all breaking news categories
     reportEntities(c, "GetBreakingNewsCategories", 1000);

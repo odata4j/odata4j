@@ -7,14 +7,16 @@ import org.odata4j.core.OFuncs;
 import org.odata4j.core.OProperties;
 import org.odata4j.examples.AbstractExample;
 import org.odata4j.examples.ODataEndpoints;
-import org.odata4j.fit.support.ConsumerSupport;
-import org.odata4j.fit.support.RunSupport;
 
-public abstract class AbstractODataTestServiceReadWriteExample extends AbstractExample implements ConsumerSupport, RunSupport {
+public class ODataTestServiceReadWriteExample extends AbstractExample {
 
-  @Override
-  public void run(String[] args) {
-    ODataConsumer c = this.create(ODataEndpoints.ODATA_TEST_SERVICE_READWRITE2, null, null);
+  public static void main(String[] args) {
+    ODataTestServiceReadWriteExample example = new ODataTestServiceReadWriteExample();
+    example.run(args);
+  }
+
+  private void run(String[] args) {
+    ODataConsumer c = this.runtime.create(ODataEndpoints.ODATA_TEST_SERVICE_READWRITE2);
 
     //ODataConsumer.dump.all(true);
 

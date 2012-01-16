@@ -37,8 +37,7 @@ import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmSimpleType;
-import org.odata4j.fit.support.ProducerSupport;
-import org.odata4j.fit.support.RunSupport;
+import org.odata4j.examples.AbstractExample;
 import org.odata4j.producer.BaseResponse;
 import org.odata4j.producer.CountResponse;
 import org.odata4j.producer.EntitiesResponse;
@@ -56,17 +55,22 @@ import org.odata4j.producer.resources.DefaultODataProducerProvider;
 /**
  * This example shows how to expose xml data as an atom feed.
  */
-public abstract class AbstractXmlDataProducerExample implements ProducerSupport, RunSupport {
+public class XmlDataProducerExample extends AbstractExample {
 
   public static final String endpointUri = "http://localhost:8010/XmlDataProducerExample.svc";
 
-  public void run(String[] args) {
+  public static void main(String[] args) {
+    XmlDataProducerExample example = new XmlDataProducerExample();
+    example.run(args);
+  }
+
+  private void run(String[] args) {
 
     System.out.println("Please direct your browerser to " + endpointUri + "Customers");
 
     // register the producer as the static instance, then launch the http server
     DefaultODataProducerProvider.setInstance(new XmlDataProducer());
-    this.hostODataServer(endpointUri);
+    this.runtime.hostODataServer(endpointUri);
 
     // generateXmlTestData();
   }

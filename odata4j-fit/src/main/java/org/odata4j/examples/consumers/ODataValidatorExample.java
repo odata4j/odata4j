@@ -7,18 +7,20 @@ import org.odata4j.core.OProperties;
 import org.odata4j.core.ORelatedEntitiesLink;
 import org.odata4j.examples.AbstractExample;
 import org.odata4j.examples.ODataEndpoints;
-import org.odata4j.fit.support.ConsumerSupport;
-import org.odata4j.fit.support.RunSupport;
 import org.odata4j.internal.InternalUtil;
 
-public abstract class AbstractODataValidatorExample extends AbstractExample implements ConsumerSupport, RunSupport {
+public class ODataValidatorExample extends AbstractExample {
 
-  @Override
-  public void run(String[] args) {
+  public static void main(String[] args) {
+    ODataValidatorExample example = new ODataValidatorExample();
+    example.run(args);
+  }
+
+  private void run(String[] args) {
 
     String uri = ODataEndpoints.NORTHWIND;
 
-    ODataConsumer c = this.create("http://services.odata.org/validation/odatavalidator/", null, null);
+    ODataConsumer c = this.runtime.create("http://services.odata.org/validation/odatavalidator/");
 
     Guid validationJobId = Guid.fromString("f4aa9495-ef40-469e-818c-29c4ec5fb2ed");
     if (true) {

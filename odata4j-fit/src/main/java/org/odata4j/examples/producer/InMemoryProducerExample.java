@@ -33,16 +33,20 @@ import org.odata4j.edm.EdmItem;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.edm.EdmStructuralType;
-import org.odata4j.fit.support.ProducerSupport;
-import org.odata4j.fit.support.RunSupport;
+import org.odata4j.examples.AbstractExample;
 import org.odata4j.producer.PropertyPath;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 
-public abstract class AbstractInMemoryProducerExample implements ProducerSupport, RunSupport {
+public class InMemoryProducerExample extends AbstractExample {
+
+  public static void main(String[] args) {
+    InMemoryProducerExample example = new InMemoryProducerExample();
+    example.run(args);
+  }
 
   @SuppressWarnings({ "unchecked", "rawtypes" })
-  public void run(String[] args) {
+  private void run(String[] args) {
 
     String endpointUri = "http://localhost:8887/InMemoryProducerExample.svc/";
 
@@ -99,7 +103,7 @@ public abstract class AbstractInMemoryProducerExample implements ProducerSupport
 
     // register the producer as the static instance, then launch the http server
     DefaultODataProducerProvider.setInstance(producer);
-    this.hostODataServer(endpointUri);
+    this.runtime.hostODataServer(endpointUri);
   }
 
   private static Iterable<EtfInfo> getETFs() throws Exception {

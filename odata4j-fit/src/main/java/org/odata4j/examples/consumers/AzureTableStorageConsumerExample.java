@@ -5,13 +5,15 @@ import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OProperties;
 import org.odata4j.examples.AbstractCredentialsExample;
-import org.odata4j.fit.support.ConsumerSupport;
-import org.odata4j.fit.support.RunSupport;
 
-public abstract class AbstractAzureTableStorageConsumerExample extends AbstractCredentialsExample implements ConsumerSupport, RunSupport {
+public class AzureTableStorageConsumerExample extends AbstractCredentialsExample {
 
-  @Override
-  public void run(String[] args) {
+  public static void main(String[] args) {
+    AzureTableStorageConsumerExample example = new AzureTableStorageConsumerExample();
+    example.run(args);
+  }
+
+  private void run(String[] args) {
 
     String[] azureCreds = args.length > 0 ? args : System.getenv("AZURESTORAGE").split(":");
     this.setLoginName(azureCreds[0]);
@@ -19,7 +21,7 @@ public abstract class AbstractAzureTableStorageConsumerExample extends AbstractC
 
     String url = "http://" + this.getLoginName() + ".table.core.windows.net/";
 
-    ODataConsumer c = this.create(url, null, null);
+    ODataConsumer c = this.runtime.create(url);
 
     report("Create a new temp table to use for the test");
     String tableName = "TempTable" + System.currentTimeMillis();

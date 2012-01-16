@@ -5,19 +5,21 @@ import org.odata4j.core.OEntity;
 import org.odata4j.core.OFuncs;
 import org.odata4j.examples.AbstractCredentialsExample;
 import org.odata4j.examples.ODataEndpoints;
-import org.odata4j.fit.support.ConsumerSupport;
-import org.odata4j.fit.support.RunSupport;
 
-public abstract class AbstractDallasConsumerExampleUnescoUIS extends AbstractCredentialsExample implements ConsumerSupport, RunSupport {
+public class DallasConsumerExampleUnescoUIS extends AbstractCredentialsExample {
 
-  @Override
-  public void run(String[] args) {
+  public static void main(String[] args) {
+    DallasConsumerExampleUnescoUIS example = new DallasConsumerExampleUnescoUIS();
+    example.run(args);
+  }
+
+  private void run(String[] args) {
 
     String[] dallasCreds = args.length > 0 ? args : System.getenv("DALLAS").split(":");
     this.setLoginPassword(dallasCreds[0]);
     this.setLoginName(dallasCreds[1]);
 
-    ODataConsumer c = this.create(ODataEndpoints.DALLAS_CTP2_UNESCO_UIS, null, null);
+    ODataConsumer c = this.runtime.create(ODataEndpoints.DALLAS_CTP2_UNESCO_UIS);
 
     // Public expenditure on education as % of GDP [XGDP_FSGOV]
     for (OEntity entity : c.getEntities("UNESCO/XGDP_FSGOV").execute()

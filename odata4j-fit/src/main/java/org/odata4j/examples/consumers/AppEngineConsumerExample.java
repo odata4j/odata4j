@@ -5,14 +5,16 @@ import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperties;
 import org.odata4j.examples.AbstractExample;
 import org.odata4j.examples.ODataEndpoints;
-import org.odata4j.fit.support.ConsumerSupport;
-import org.odata4j.fit.support.RunSupport;
 
-public abstract class AbstractAppEngineConsumerExample extends AbstractExample implements ConsumerSupport, RunSupport {
+public class AppEngineConsumerExample extends AbstractExample {
 
-  @Override
-  public void run(String[] args) {
-    ODataConsumer c = this.create(ODataEndpoints.ODATA4JSAMPLE_APPSPOT, null, null);
+  public static void main(String[] args) {
+    AppEngineConsumerExample example = new AppEngineConsumerExample();
+    example.run(args);
+  }
+
+  private void run(String[] args) {
+    ODataConsumer c = this.runtime.create(ODataEndpoints.ODATA4JSAMPLE_APPSPOT);
     String newCategoryName = "NewCategory" + System.currentTimeMillis();
 
     report("Create a new category");

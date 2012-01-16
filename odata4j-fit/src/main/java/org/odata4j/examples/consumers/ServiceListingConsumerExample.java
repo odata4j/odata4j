@@ -5,13 +5,15 @@ import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.EntitySetInfo;
 import org.odata4j.examples.AbstractExample;
 import org.odata4j.examples.ODataEndpoints;
-import org.odata4j.fit.support.ConsumerSupport;
-import org.odata4j.fit.support.RunSupport;
 
-public abstract class AbstractServiceListingConsumerExample extends AbstractExample implements ConsumerSupport, RunSupport {
+public class ServiceListingConsumerExample extends AbstractExample {
 
-  @Override
-  public void run(String[] args) {
+  public static void main(String[] args) {
+    ServiceListingConsumerExample example = new ServiceListingConsumerExample();
+    example.run(args);
+  }
+
+  private void run(String[] args) {
 
     ODataConsumer.dump.requestHeaders(true);
     //ODataConsumer.dump.responseBody(true);
@@ -67,7 +69,7 @@ public abstract class AbstractServiceListingConsumerExample extends AbstractExam
 
   private void printOutFirstEntities(Iterable<String> services) {
     for (String endpoint : services) {
-      ODataConsumer c = this.create(endpoint, null, null);
+      ODataConsumer c = this.runtime.create(endpoint);
       for (EntitySetInfo entitySet : c.getEntitySets()) {
         reportEntities(entitySet.getHref(), c.getEntities(entitySet.getHref()).top(1).execute());
       }
@@ -76,7 +78,7 @@ public abstract class AbstractServiceListingConsumerExample extends AbstractExam
 
   private void printOutAllEntities(Iterable<String> services) {
     for (String endpoint : services) {
-      ODataConsumer c = this.create(endpoint, null, null);
+      ODataConsumer c = this.runtime.create(endpoint);
       for (EntitySetInfo entitySet : c.getEntitySets()) {
         reportEntities(entitySet.getTitle(), c.getEntities(entitySet.getHref()).execute());
       }
