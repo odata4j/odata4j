@@ -24,11 +24,11 @@
       <artifactId>odata4j-jersey</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.odata4j</groupId>
-      <artifactId>odata4j-cxf</artifactId>
-      <version>${project.version}</version>
-    </dependency>
+<!--     <dependency> -->
+<!--       <groupId>org.odata4j</groupId> -->
+<!--       <artifactId>odata4j-cxf</artifactId> -->
+<!--       <version>${project.version}</version> -->
+<!--     </dependency> -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

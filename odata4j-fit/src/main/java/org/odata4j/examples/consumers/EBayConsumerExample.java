@@ -15,7 +15,7 @@ public class EBayConsumerExample extends AbstractExample {
 
   private void run(String[] args) {
 
-    ODataConsumer c = this.runtime.create(ODataEndpoints.EBAY);
+    ODataConsumer c = this.rtFacde.create(ODataEndpoints.EBAY, null, null);
 
     OEntity firstCategory = c.getEntities("Categories").top(1).execute().first();
     reportEntities(firstCategory.getProperty("Name").getValue().toString(),

@@ -49,7 +49,7 @@ import org.odata4j.producer.Responses;
 import org.odata4j.producer.edm.MetadataProducer;
 import org.odata4j.producer.exceptions.NotImplementedException;
 import org.odata4j.producer.jpa.northwind.Customers;
-import org.odata4j.producer.jpa.northwind.test.AbstractNorthwindTestUtils;
+import org.odata4j.producer.jpa.northwind.test.NorthwindTestUtils;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 
 /**
@@ -70,7 +70,7 @@ public class XmlDataProducerExample extends AbstractExample {
 
     // register the producer as the static instance, then launch the http server
     DefaultODataProducerProvider.setInstance(new XmlDataProducer());
-    this.runtime.hostODataServer(endpointUri);
+    this.rtFacde.hostODataServer(endpointUri);
 
     // generateXmlTestData();
   }
@@ -88,7 +88,7 @@ public class XmlDataProducerExample extends AbstractExample {
     // create an fill temporary database
     emf = Persistence.createEntityManagerFactory(persistenceUnitName);
     emf.createEntityManager().close();
-    AbstractNorthwindTestUtils.fillDatabase(emf);
+    NorthwindTestUtils.fillDatabase(emf);
 
     // select the customers
     EntityManager em = emf.createEntityManager();

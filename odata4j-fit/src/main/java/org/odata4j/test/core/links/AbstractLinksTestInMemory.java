@@ -3,7 +3,7 @@ package org.odata4j.test.core.links;
 import org.junit.Test;
 import org.odata4j.format.FormatType;
 
-public abstract class AbstractLinksTestInMemory extends AbstractLinksTest {
+public abstract class AbstractLinksTestInMemory extends LinksTest {
 
   @Test
   public void testReadDeferredAtom() {

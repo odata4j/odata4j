@@ -17,7 +17,7 @@ public class DallasConsumerExampleAP extends AbstractCredentialsExample {
     this.setLoginPassword(dallasCreds[0]);
     this.setLoginName(dallasCreds[1]);
 
-    ODataConsumer c = this.runtime.create(ODataEndpoints.DALLAS_CTP3_AP);
+    ODataConsumer c = this.rtFacde.create(ODataEndpoints.DALLAS_CTP3_AP, null, null);
 
     // all breaking news categories
     reportEntities(c, "GetBreakingNewsCategories", 1000);

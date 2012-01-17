@@ -103,7 +103,7 @@ public class InMemoryProducerExample extends AbstractExample {
 
     // register the producer as the static instance, then launch the http server
     DefaultODataProducerProvider.setInstance(producer);
-    this.runtime.hostODataServer(endpointUri);
+    this.rtFacde.hostODataServer(endpointUri);
   }
 
   private static Iterable<EtfInfo> getETFs() throws Exception {

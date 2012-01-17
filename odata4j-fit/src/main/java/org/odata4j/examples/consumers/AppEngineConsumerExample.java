@@ -14,7 +14,7 @@ public class AppEngineConsumerExample extends AbstractExample {
   }
 
   private void run(String[] args) {
-    ODataConsumer c = this.runtime.create(ODataEndpoints.ODATA4JSAMPLE_APPSPOT);
+    ODataConsumer c = this.rtFacde.create(ODataEndpoints.ODATA4JSAMPLE_APPSPOT, null, null);
     String newCategoryName = "NewCategory" + System.currentTimeMillis();
 
     report("Create a new category");

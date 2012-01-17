@@ -17,7 +17,7 @@ public class NetflixConsumerExample extends AbstractExample {
 
   private void run(String[] args) {
 
-    ODataConsumer c = this.runtime.create(ODataEndpoints.NETFLIX);
+    ODataConsumer c = this.rtFacde.create(ODataEndpoints.NETFLIX, null, null);
 
     // locate the netflix id for Morgan Spurlock
     int morganSpurlockId = c.getEntities("People").filter("substringof('Spurlock',Name)").execute().first().getProperty("Id", Integer.class).getValue();

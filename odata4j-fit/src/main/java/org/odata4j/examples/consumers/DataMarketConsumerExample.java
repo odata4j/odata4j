@@ -18,7 +18,7 @@ public class DataMarketConsumerExample extends AbstractCredentialsExample {
 
     String url = "https://api.datamarket.azure.com/Data.ashx/UnitedNations/MDG/";
 
-    ODataConsumer c = this.runtime.create(url);
+    ODataConsumer c = this.rtFacde.create(url, null, null);
 
     OEntity firstDataSeries = c.getEntities("DataSeries").top(1).execute().first();
     String filter = String.format("DataSeriesId eq '%s'", firstDataSeries.getProperty("Id").getValue());

@@ -68,12 +68,12 @@ public class RoundtripExample extends AbstractExample {
     }, "Id");
 
     DefaultODataProducerProvider.setInstance(producer);
-    ODataServer server = this.runtime.startODataServer(endpointUri);
+    ODataServer server = this.rtFacde.startODataServer(endpointUri);
 
     try {
       // create the client
       ODataConsumer.dump.responseHeaders(true);
-      ODataConsumer consumer = this.runtime.create(endpointUri);
+      ODataConsumer consumer = this.rtFacde.create(endpointUri, null, null);
 
       reportEntities("Customers", consumer.getEntities("Customers").execute());
 

@@ -14,7 +14,7 @@ public class AgilitrainConsumerExample extends AbstractExample {
   }
 
   private void run(String[] args) {
-    ODataConsumer c = this.runtime.create(ODataEndpoints.AGILITRAIN);
+    ODataConsumer c = this.rtFacde.create(ODataEndpoints.AGILITRAIN, null, null);
 
     OEntity event = c.getEntity("Events", 225).execute();
     ORelatedEntityLink link = event.getLink("Workshop", ORelatedEntityLink.class);

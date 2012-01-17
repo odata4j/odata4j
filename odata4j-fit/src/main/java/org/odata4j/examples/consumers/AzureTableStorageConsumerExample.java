@@ -21,7 +21,7 @@ public class AzureTableStorageConsumerExample extends AbstractCredentialsExample
 
     String url = "http://" + this.getLoginName() + ".table.core.windows.net/";
 
-    ODataConsumer c = this.runtime.create(url);
+    ODataConsumer c = this.rtFacde.create(url, null, null);
 
     report("Create a new temp table to use for the test");
     String tableName = "TempTable" + System.currentTimeMillis();

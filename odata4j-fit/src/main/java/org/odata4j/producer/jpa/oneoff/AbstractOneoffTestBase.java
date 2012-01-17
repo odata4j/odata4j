@@ -8,13 +8,13 @@ import javax.persistence.Persistence;
 
 import org.junit.After;
 import org.junit.Before;
-import org.odata4j.fit.support.ProducerSupport;
 import org.odata4j.producer.jpa.JPAProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.producer.server.ODataServer;
+import org.odata4j.test.AbstractRuntimeTest;
 import org.odata4j.test.JPAProvider;
 
-public abstract class AbstractOneoffTestBase implements ProducerSupport {
+public class AbstractOneoffTestBase extends AbstractRuntimeTest {
 
   protected static String endpointUri;
 
@@ -75,7 +75,7 @@ public abstract class AbstractOneoffTestBase implements ProducerSupport {
         maxResults);
 
     DefaultODataProducerProvider.setInstance(producer);
-    server = this.startODataServer(endpointUri);
+    server = this.rtFacade.startODataServer(endpointUri);
   }
 
 }

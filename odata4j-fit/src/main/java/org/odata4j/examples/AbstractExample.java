@@ -17,19 +17,19 @@ import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmSimpleType;
-import org.odata4j.fit.support.CxfRuntimeSupport;
-import org.odata4j.fit.support.JerseyRuntimeSupport;
-import org.odata4j.fit.support.RuntimeSupport;
+import org.odata4j.fit.support.CxfRuntimeFacade;
+import org.odata4j.fit.support.JerseyRuntimeFacade;
+import org.odata4j.fit.support.RuntimeFacade;
 
 @SuppressWarnings("unused")
 public abstract class AbstractExample {
 
-  protected RuntimeSupport runtime;
+  protected RuntimeFacade rtFacde;
   {
     if (true) { // condition ?
-      this.runtime = new JerseyRuntimeSupport();
+      this.rtFacde = new JerseyRuntimeFacade();
     } else {
-      this.runtime = new CxfRuntimeSupport();
+      this.rtFacde = new CxfRuntimeFacade();
     }
   }
 

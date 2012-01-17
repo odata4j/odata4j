@@ -18,7 +18,7 @@ public class RequestEntryModificationExample extends AbstractExample {
 
     // create a consumer with additional behavior
     String serviceUri = "http://services.odata.org/Northwind/Northwind.svc";
-    ODataConsumer consumer = this.runtime.create(serviceUri);
+    ODataConsumer consumer = this.rtFacde.create(serviceUri, null, null);
 
     consumer.createEntity("Categories")
         .properties(OProperties.string("CategoryName", "Category " + new Date()))

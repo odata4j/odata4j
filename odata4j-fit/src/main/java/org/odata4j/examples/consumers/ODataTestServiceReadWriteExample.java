@@ -16,7 +16,7 @@ public class ODataTestServiceReadWriteExample extends AbstractExample {
   }
 
   private void run(String[] args) {
-    ODataConsumer c = this.runtime.create(ODataEndpoints.ODATA_TEST_SERVICE_READWRITE2);
+    ODataConsumer c = this.rtFacde.create(ODataEndpoints.ODATA_TEST_SERVICE_READWRITE2, null, null);
 
     //ODataConsumer.dump.all(true);
 

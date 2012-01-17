@@ -69,7 +69,7 @@ public class ServiceListingConsumerExample extends AbstractExample {
 
   private void printOutFirstEntities(Iterable<String> services) {
     for (String endpoint : services) {
-      ODataConsumer c = this.runtime.create(endpoint);
+      ODataConsumer c = this.rtFacde.create(endpoint, null, null);
       for (EntitySetInfo entitySet : c.getEntitySets()) {
         reportEntities(entitySet.getHref(), c.getEntities(entitySet.getHref()).top(1).execute());
       }
@@ -78,7 +78,7 @@ public class ServiceListingConsumerExample extends AbstractExample {
 
   private void printOutAllEntities(Iterable<String> services) {
     for (String endpoint : services) {
-      ODataConsumer c = this.runtime.create(endpoint);
+      ODataConsumer c = this.rtFacde.create(endpoint, null, null);
       for (EntitySetInfo entitySet : c.getEntitySets()) {
         reportEntities(entitySet.getTitle(), c.getEntities(entitySet.getHref()).execute());
       }
