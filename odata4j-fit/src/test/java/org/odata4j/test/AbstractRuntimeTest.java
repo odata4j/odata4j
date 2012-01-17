@@ -1,8 +1,5 @@
 package org.odata4j.test;
 
-import org.odata4j.fit.support.CxfRuntimeFacade;
-import org.odata4j.fit.support.JerseyRuntimeFacade;
-import org.odata4j.fit.support.RuntimeFacade;
 
 public abstract class AbstractRuntimeTest {
 

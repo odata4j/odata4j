@@ -1,4 +1,4 @@
-package org.odata4j.fit.support;
+package org.odata4j.test;
 
 import org.odata4j.producer.server.ODataServer;
 

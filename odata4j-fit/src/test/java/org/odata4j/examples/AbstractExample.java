@@ -17,9 +17,9 @@ import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmSimpleType;
-import org.odata4j.fit.support.CxfRuntimeFacade;
-import org.odata4j.fit.support.JerseyRuntimeFacade;
-import org.odata4j.fit.support.RuntimeFacade;
+import org.odata4j.test.CxfRuntimeFacade;
+import org.odata4j.test.JerseyRuntimeFacade;
+import org.odata4j.test.RuntimeFacade;
 
 @SuppressWarnings("unused")
 public abstract class AbstractExample {
