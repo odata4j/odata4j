@@ -176,7 +176,7 @@ public class JPAProducer implements ODataProducer {
       final OEntityKey entityKey,
       final String navProp,
       final QueryInfo queryInfo) {
-      
+
     return common(
         entitySetName,
         entityKey,
@@ -187,7 +187,7 @@ public class JPAProducer implements ODataProducer {
           }
         });
   }
-  
+
   private static class Context {
     EntityManager em;
     EdmEntitySet ees;
@@ -671,7 +671,7 @@ public class JPAProducer implements ODataProducer {
     if (context != null && context.query != null && context.query.inlineCount == InlineCount.ALLPAGES) {
       throw new UnsupportedOperationException("$inlinecount cannot be applied to the resource segment '$count'");
     }
-    
+
     // sktiptoken is not applicable to $count queries
     if (context != null && context.query != null && context.query.skipToken != null) {
       throw new UnsupportedOperationException("Skip tokens can only be provided for requests that return collections of entities.");
@@ -685,12 +685,12 @@ public class JPAProducer implements ODataProducer {
 
     // execute jpa query
     Long count = (Long) tq.getSingleResult();
-    
+
     // apply $skip.
     // example: http://odata.netflix.com/Catalog/Titles/$count?$skip=100
     if (context.query != null && context.query.skip != null)
       count = Math.max(0, count - context.query.skip);
-              
+
     // apply $top.
     // example:  http://odata.netflix.com/Catalog/Titles/$count?$top=10
     if (context.query != null && context.query.top != null)

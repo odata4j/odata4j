@@ -52,7 +52,7 @@ public interface ODataProducer {
    * @return count of the entities
    */
   CountResponse getEntitiesCount(String entitySetName, QueryInfo queryInfo);
-  
+
   /**
    * Obtains a single entity based on its type and key. Also honors $select and $expand in queryInfo
    * @param entitySetName the entity-set name for entities to return

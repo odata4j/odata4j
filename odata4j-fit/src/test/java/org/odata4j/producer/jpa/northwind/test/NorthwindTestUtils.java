@@ -36,10 +36,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 import org.xml.sax.InputSource;
 
-public class NorthwindTestUtils  {
+public class NorthwindTestUtils {
 
   private RuntimeFacade rtFacade;
-  
+
   public NorthwindTestUtils(RuntimeFacade rtFacade) {
     this.rtFacade = rtFacade;
   }

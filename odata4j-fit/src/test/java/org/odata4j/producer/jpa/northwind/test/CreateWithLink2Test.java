@@ -13,7 +13,7 @@ public class CreateWithLink2Test extends JPAProducerTest {
 
   public CreateWithLink2Test(RuntimeFacadeType type) {
     super(type);
-   }
+  }
 
   protected static final String endpointUri = "http://localhost:8810/northwind/Northwind.svc/";
 

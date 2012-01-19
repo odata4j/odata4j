@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.RuntimeDelegate;
 
 import org.apache.cxf.jaxrs.client.WebClient;

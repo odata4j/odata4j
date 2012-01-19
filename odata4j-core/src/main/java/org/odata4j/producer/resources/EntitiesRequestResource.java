@@ -114,7 +114,7 @@ public class EntitiesRequestResource extends BaseResource {
     ODataProducer producer = producerResolver.getContext(ODataProducer.class);
 
     return getEntitiesImpl(httpHeaders, uriInfo, producer, entitySetName, false, inlineCount, top, skip,
-            filter, orderBy, format, callback, skipToken, expand, select);
+        filter, orderBy, format, callback, skipToken, expand, select);
   }
 
   @GET
@@ -155,7 +155,7 @@ public class EntitiesRequestResource extends BaseResource {
     ODataProducer producer = producerResolver.getContext(ODataProducer.class);
 
     return getEntitiesImpl(httpHeaders, uriInfo, producer, entitySetName, true, inlineCount, top, skip,
-           filter, orderBy, format, callback, skipToken, expand, select);
+        filter, orderBy, format, callback, skipToken, expand, select);
   }
 
   protected Response getEntitiesImpl(
@@ -207,27 +207,27 @@ public class EntitiesRequestResource extends BaseResource {
           .build();
     }
     else {
-        EntitiesResponse entitiesResponse = producer.getEntities(entitySetName, query);
+      EntitiesResponse entitiesResponse = producer.getEntities(entitySetName, query);
 
-        StringWriter sw = new StringWriter();
-        FormatWriter<EntitiesResponse> fw =
-            FormatWriterFactory.getFormatWriter(
-                EntitiesResponse.class,
-                httpHeaders.getAcceptableMediaTypes(),
-                format,
-                callback);
+      StringWriter sw = new StringWriter();
+      FormatWriter<EntitiesResponse> fw =
+          FormatWriterFactory.getFormatWriter(
+              EntitiesResponse.class,
+              httpHeaders.getAcceptableMediaTypes(),
+              format,
+              callback);
 
-        fw.write(uriInfo, sw, entitiesResponse);
-        String entity = sw.toString();
+      fw.write(uriInfo, sw, entitiesResponse);
+      String entity = sw.toString();
 
-        // TODO remove this hack, check whether we are Version 2.0 compatible anyway
-        ODataVersion version = MediaType.valueOf(fw.getContentType()).isCompatible(MediaType.APPLICATION_JSON_TYPE)
-            ? ODataVersion.V2 : ODataVersion.V2;
+      // TODO remove this hack, check whether we are Version 2.0 compatible anyway
+      ODataVersion version = MediaType.valueOf(fw.getContentType()).isCompatible(MediaType.APPLICATION_JSON_TYPE)
+          ? ODataVersion.V2 : ODataVersion.V2;
 
-        response = Response
-            .ok(entity, fw.getContentType())
-            .header(ODataConstants.Headers.DATA_SERVICE_VERSION, version.asString)
-            .build();
+      response = Response
+          .ok(entity, fw.getContentType())
+          .header(ODataConstants.Headers.DATA_SERVICE_VERSION, version.asString)
+          .build();
     }
     return response;
   }

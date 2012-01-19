@@ -27,7 +27,7 @@ public class JPAProducerTest extends AbstractRuntimeTest {
   protected EntityManagerFactory emf;
   protected ODataServer server;
 
-  protected NorthwindTestUtils utils; 
+  protected NorthwindTestUtils utils;
 
   public void setUp(int maxResults) {
     setUp(maxResults, null);

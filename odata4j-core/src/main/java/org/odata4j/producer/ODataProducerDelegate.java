@@ -28,12 +28,12 @@ public abstract class ODataProducerDelegate implements Delegate<ODataProducer>, 
   public EntitiesResponse getEntities(String entitySetName, QueryInfo queryInfo) {
     return getDelegate().getEntities(entitySetName, queryInfo);
   }
-  
+
   @Override
   public CountResponse getEntitiesCount(String entitySetName, QueryInfo queryInfo) {
     return getDelegate().getEntitiesCount(entitySetName, queryInfo);
   }
-  
+
   @Override
   public EntityResponse getEntity(String entitySetName, OEntityKey entityKey, QueryInfo queryInfo) {
     return getDelegate().getEntity(entitySetName, entityKey, queryInfo);

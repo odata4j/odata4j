@@ -28,7 +28,7 @@ public class CxfServerFilteringTest extends AbstractServerFilteringTest {
   @Override
   protected void createServer() {
     server = new CxfJettyServer(SVC_URL, DefaultODataApplication.class, RootApplication.class)
-               .addJettyRequestHandler(new RequestFilterStub());
+        .addJettyRequestHandler(new RequestFilterStub());
   }
 
   @Override
@@ -36,4 +36,3 @@ public class CxfServerFilteringTest extends AbstractServerFilteringTest {
     Assert.assertTrue("Request filter has not been called", RequestFilterStub.isCalled);
   }
 }
-

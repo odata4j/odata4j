@@ -18,7 +18,7 @@ public class CreateWithLinkTest extends AirlineJPAProducerTestBase {
 
   public CreateWithLinkTest(RuntimeFacadeType type) {
     super(type);
-   }
+  }
 
   @Before
   public void setUp() {

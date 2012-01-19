@@ -298,9 +298,9 @@ public class InMemoryEdmGenerator implements EdmGenerator {
         continue;
 
       EdmProperty.Builder ep = EdmProperty
-              .newBuilder(propName)
-              .setType(type)
-              .setNullable(!keySet.contains(propName));
+          .newBuilder(propName)
+          .setType(type)
+          .setNullable(!keySet.contains(propName));
       if (decorator != null) {
         ep.setDocumentation(decorator.getDocumentationForProperty(namespace, structuralTypename, propName));
         ep.setAnnotations(decorator.getAnnotationsForProperty(namespace, structuralTypename, propName));

@@ -64,10 +64,10 @@ public class Responses {
       @Override
       public long getCount() {
         return count;
-      }          
+      }
     };
   }
-  
+
   /**
    * Creates a new <code>EntityResponse</code> instance.
    *
