@@ -7,6 +7,10 @@ import org.junit.Test;
 
 public class QueryOptionTest extends JPAProducerTest {
 
+  public QueryOptionTest(RuntimeFacadeType type) {
+    super(type);
+  }
+
   @Before
   public void setUp() {
     super.setUp(20);

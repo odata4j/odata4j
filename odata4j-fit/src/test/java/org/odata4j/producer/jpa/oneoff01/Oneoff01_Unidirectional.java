@@ -12,6 +12,10 @@ import org.odata4j.producer.jpa.oneoff.AbstractOneoffTestBase;
 
 public class Oneoff01_Unidirectional extends AbstractOneoffTestBase {
 
+  public Oneoff01_Unidirectional(RuntimeFacadeType type) {
+    super(type);
+  }
+
   @Test
   public void createOnetoManyUniDirectional() {
     final long now = System.currentTimeMillis();

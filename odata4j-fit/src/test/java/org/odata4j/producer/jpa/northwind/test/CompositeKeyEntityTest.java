@@ -8,8 +8,13 @@ import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OProperties;
+import org.odata4j.test.AbstractRuntimeTest.RuntimeFacadeType;
 
 public class CompositeKeyEntityTest extends JPAProducerTest {
+
+  public CompositeKeyEntityTest(RuntimeFacadeType type) {
+    super(type);
+  }
 
   protected static final String endpointUri = "http://localhost:8810/northwind/Northwind.svc/";
 

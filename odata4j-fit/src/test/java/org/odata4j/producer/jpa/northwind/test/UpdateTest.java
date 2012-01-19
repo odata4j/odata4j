@@ -10,6 +10,10 @@ import org.odata4j.core.OProperties;
 
 public class UpdateTest extends JPAProducerTest {
 
+  public UpdateTest(RuntimeFacadeType type) {
+    super(type);
+  }
+
   @Before
   public void setUpClass() throws Exception {
     super.setUp(20);

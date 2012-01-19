@@ -12,7 +12,9 @@ import org.odata4j.format.FormatType;
 
 public class CustomTestInheritance extends CustomTestBase {
 
-  public CustomTestInheritance() {}
+  public CustomTestInheritance(RuntimeFacadeType type) {
+    super(type);
+  }
 
   @Test
   public void testGetEntityPolymorphic() {

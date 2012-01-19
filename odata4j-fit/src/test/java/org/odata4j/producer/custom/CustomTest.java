@@ -28,7 +28,9 @@ import org.odata4j.format.FormatType;
 
 public class CustomTest extends CustomTestBase {
 
-  public CustomTest() {}
+  public CustomTest(RuntimeFacadeType type) {
+    super(type);
+  }
 
   @Test
   public void testPropertiesJSON() {

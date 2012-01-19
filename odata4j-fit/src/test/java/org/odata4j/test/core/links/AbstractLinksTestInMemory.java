@@ -5,6 +5,10 @@ import org.odata4j.format.FormatType;
 
 public abstract class AbstractLinksTestInMemory extends LinksTest {
 
+  public AbstractLinksTestInMemory(RuntimeFacadeType type) {
+    super(type);
+  }
+
   @Test
   public void testReadDeferredAtom() {
     testReadDeferred(FormatType.ATOM);

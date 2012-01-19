@@ -19,6 +19,10 @@ import org.odata4j.producer.jpa.northwind.test.InterceptLinkModificationCalls.Li
 
 public class LinksTest extends JPAProducerTest {
 
+  public LinksTest(RuntimeFacadeType type) {
+    super(type);
+  }
+
   @Before
   public void setUpClass() throws Exception {
     super.setUp(20, new Func1<ODataProducer, ODataProducer>() {

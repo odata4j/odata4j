@@ -20,10 +20,12 @@ import org.odata4j.producer.jpa.JPQLGenerator;
  */
 public class JPASkipTokenTest extends JPAProducerTest {
 
+  public JPASkipTokenTest(RuntimeFacadeType type) {
+    super(type);
+  }
+
   private static OEntity product;
   private static OEntity order;
-
-  public JPASkipTokenTest() {}
 
   @Before
   public void setUp() {

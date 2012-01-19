@@ -16,6 +16,10 @@ import org.odata4j.test.AbstractRuntimeTest;
 
 public class ScenarioTest extends AbstractRuntimeTest {
 
+  public ScenarioTest(RuntimeFacadeType type) {
+    super(type);
+  }
+
   @Test
   public void testScenario() {
 

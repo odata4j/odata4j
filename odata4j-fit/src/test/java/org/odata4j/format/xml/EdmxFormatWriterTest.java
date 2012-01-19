@@ -47,7 +47,9 @@ import org.xml.sax.SAXException;
  */
 public class EdmxFormatWriterTest extends AbstractRuntimeTest implements EdmDecorator {
 
-  public EdmxFormatWriterTest() {}
+  public EdmxFormatWriterTest(RuntimeFacadeType type) {
+    super(type);
+  }
 
   private ODataServer server = null;
   @SuppressWarnings("unused")

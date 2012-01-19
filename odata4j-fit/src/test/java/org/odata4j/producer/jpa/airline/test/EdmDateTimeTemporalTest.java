@@ -33,6 +33,10 @@ import org.odata4j.test.JPAProvider;
  */
 public class EdmDateTimeTemporalTest extends AirlineJPAProducerTestBase {
 
+  public EdmDateTimeTemporalTest(RuntimeFacadeType type) {
+    super(type);
+  }
+
   @Before
   public void setUp() {
     String persistenceUnitName = "AirlineService" + JPAProvider.JPA_PROVIDER.caption;

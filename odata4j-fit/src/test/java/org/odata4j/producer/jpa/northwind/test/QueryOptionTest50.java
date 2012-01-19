@@ -5,6 +5,10 @@ import org.junit.Test;
 
 public class QueryOptionTest50 extends JPAProducerTest {
 
+  public QueryOptionTest50(RuntimeFacadeType type) {
+    super(type);
+  }
+
   @Before
   public void setUpClass() throws Exception {
     super.setUp(50);

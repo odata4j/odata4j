@@ -12,6 +12,10 @@ import org.odata4j.core.ORelatedEntityLinkInline;
 
 public class ConsumerExpandTest extends JPAProducerTest {
 
+  public ConsumerExpandTest(RuntimeFacadeType type) {
+    super(type);
+  }
+
   @Before
   public void setUp() {
     super.setUp(20);

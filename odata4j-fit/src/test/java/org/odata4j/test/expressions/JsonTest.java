@@ -20,6 +20,10 @@ import org.odata4j.test.AbstractRuntimeTest;
 
 public class JsonTest extends AbstractRuntimeTest {
 
+  public JsonTest(RuntimeFacadeType type) {
+    super(type);
+  }
+
   @Test
   public void testJson() {
 

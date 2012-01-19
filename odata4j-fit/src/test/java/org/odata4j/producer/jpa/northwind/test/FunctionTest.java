@@ -24,6 +24,10 @@ import org.odata4j.producer.jpa.JPAProducer;
  */
 public class FunctionTest extends JPAProducerTest {
 
+  public FunctionTest(RuntimeFacadeType type) {
+    super(type);
+  }
+
   @Before
   public void setUpClass() throws Exception {
     super.setUp(20, new Func1<ODataProducer, ODataProducer>() {

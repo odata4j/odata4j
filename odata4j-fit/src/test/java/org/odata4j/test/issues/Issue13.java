@@ -17,6 +17,10 @@ import org.odata4j.test.AbstractRuntimeTest;
 
 public class Issue13 extends AbstractRuntimeTest {
 
+  public Issue13(RuntimeFacadeType type) {
+    super(type);
+  }
+
   @Test
   public void issue13() {
 

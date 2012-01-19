@@ -14,6 +14,10 @@ import org.odata4j.producer.jpa.oneoff.AbstractOneoffTestBase;
 
 public class Oneoff02_ManyToManyWithoutMappedName extends AbstractOneoffTestBase {
 
+  public Oneoff02_ManyToManyWithoutMappedName(RuntimeFacadeType type) {
+    super(type);
+  }
+
   @Test
   public void createManyToMany() {
     final long now = System.currentTimeMillis();

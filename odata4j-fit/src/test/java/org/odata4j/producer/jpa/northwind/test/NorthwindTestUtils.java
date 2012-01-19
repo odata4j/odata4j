@@ -28,7 +28,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.junit.Assert;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.internal.InternalUtil;
-import org.odata4j.test.AbstractRuntimeTest;
+import org.odata4j.test.RuntimeFacade;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -36,7 +36,13 @@ import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 import org.xml.sax.InputSource;
 
-public class NorthwindTestUtils extends AbstractRuntimeTest {
+public class NorthwindTestUtils  {
+
+  private RuntimeFacade rtFacade;
+  
+  public NorthwindTestUtils(RuntimeFacade rtFacade) {
+    this.rtFacade = rtFacade;
+  }
 
   public static final String RESOURCES_ROOT = "/META-INF/uri-conventions/";
 

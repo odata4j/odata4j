@@ -5,6 +5,7 @@ import javax.ws.rs.core.MediaType;
 import org.core4j.Func1;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.format.FormatType;
 import org.odata4j.producer.ODataProducer;
@@ -15,7 +16,13 @@ import org.odata4j.test.AbstractRuntimeTest;
 /**
  *
  */
+@Ignore
 public class CustomTestBase extends AbstractRuntimeTest {
+
+  public CustomTestBase(RuntimeFacadeType type) {
+    super(type);
+  }
+
   protected static final String endpointUri = "http://localhost:8810/CustomTest.svc/";
   protected static ODataServer server;
   protected static CustomProducer producer;

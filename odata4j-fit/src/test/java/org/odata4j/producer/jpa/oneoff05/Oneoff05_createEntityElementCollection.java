@@ -8,6 +8,10 @@ import org.odata4j.producer.jpa.oneoff.AbstractOneoffTestBase;
 
 public class Oneoff05_createEntityElementCollection extends AbstractOneoffTestBase {
 
+  public Oneoff05_createEntityElementCollection(RuntimeFacadeType type) {
+    super(type);
+  }
+
   @Ignore
   @Test
   public void createEntityElementCollection() {

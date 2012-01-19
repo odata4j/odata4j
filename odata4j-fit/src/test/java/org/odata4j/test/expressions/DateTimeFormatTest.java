@@ -24,6 +24,10 @@ import org.odata4j.test.AbstractRuntimeTest;
 
 public class DateTimeFormatTest extends AbstractRuntimeTest {
 
+  public DateTimeFormatTest(RuntimeFacadeType type) {
+    super(type);
+  }
+
   @Test
   public void testyyyyMMddHHmm() {
     DateTime dt = InternalUtil.parseDateTime("2010-12-20T17:34");

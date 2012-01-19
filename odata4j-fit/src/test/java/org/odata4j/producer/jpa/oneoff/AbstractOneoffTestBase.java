@@ -8,13 +8,19 @@ import javax.persistence.Persistence;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.odata4j.producer.jpa.JPAProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.producer.server.ODataServer;
 import org.odata4j.test.AbstractRuntimeTest;
 import org.odata4j.test.JPAProvider;
 
+@Ignore
 public class AbstractOneoffTestBase extends AbstractRuntimeTest {
+
+  public AbstractOneoffTestBase(RuntimeFacadeType type) {
+    super(type);
+  }
 
   protected static String endpointUri;
 

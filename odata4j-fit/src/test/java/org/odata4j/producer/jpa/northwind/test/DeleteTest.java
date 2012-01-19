@@ -10,6 +10,10 @@ import org.odata4j.core.OPredicates;
 
 public class DeleteTest extends JPAProducerTest {
 
+  public DeleteTest(RuntimeFacadeType type) {
+    super(type);
+  }
+
   @Before
   public void setUpClass() throws Exception {
     super.setUp(20);

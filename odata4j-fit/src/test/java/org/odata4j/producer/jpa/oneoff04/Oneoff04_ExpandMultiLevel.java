@@ -11,6 +11,10 @@ import org.odata4j.producer.jpa.oneoff.AbstractOneoffTestBase;
 
 public class Oneoff04_ExpandMultiLevel extends AbstractOneoffTestBase {
 
+  public Oneoff04_ExpandMultiLevel(RuntimeFacadeType type) {
+    super(type);
+  }
+
   @Ignore
   @Test
   public void expandMultiLevel() {

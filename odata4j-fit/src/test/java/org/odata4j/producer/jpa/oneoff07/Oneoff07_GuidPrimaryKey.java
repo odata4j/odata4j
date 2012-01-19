@@ -12,6 +12,10 @@ import org.odata4j.producer.jpa.oneoff.AbstractOneoffTestBase;
 
 public class Oneoff07_GuidPrimaryKey extends AbstractOneoffTestBase {
 
+  public Oneoff07_GuidPrimaryKey(RuntimeFacadeType type) {
+    super(type);
+  }
+
   @Test
   public void guidPrimaryKey() {
     ODataConsumer c = this.rtFacade.create(endpointUri, null, null);

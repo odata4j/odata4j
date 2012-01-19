@@ -5,6 +5,7 @@ import javax.persistence.EntityManager;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OLink;
@@ -20,7 +21,12 @@ import org.odata4j.producer.resources.DefaultODataProducerProvider;
 /**
  * Tests for new OLink semantics.
  */
+@Ignore
 public class LinksTest extends JPAProducerTest {
+
+  public LinksTest(RuntimeFacadeType type) {
+    super(type);
+  }
 
   protected static boolean useJpaProducer = false;
 

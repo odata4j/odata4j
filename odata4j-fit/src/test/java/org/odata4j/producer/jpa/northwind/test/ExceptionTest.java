@@ -12,6 +12,10 @@ import org.odata4j.core.OEntity;
 
 public class ExceptionTest extends JPAProducerTest {
 
+  public ExceptionTest(RuntimeFacadeType type) {
+    super(type);
+  }
+
   @Rule
   public ExpectedException thrown = ExpectedException.none();
 

@@ -21,6 +21,10 @@ import org.odata4j.test.AbstractRuntimeTest;
 // precision information when stored to database
 public class Issue15 extends AbstractRuntimeTest {
 
+  public Issue15(RuntimeFacadeType type) {
+    super(type);
+  }
+
   @Test
   public void issue15() {
 

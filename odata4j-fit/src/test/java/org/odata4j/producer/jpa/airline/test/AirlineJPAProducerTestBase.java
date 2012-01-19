@@ -14,10 +14,17 @@ import javax.persistence.EntityManagerFactory;
 
 import org.core4j.ThrowingFunc1;
 import org.junit.After;
+import org.junit.Ignore;
 import org.odata4j.producer.server.ODataServer;
 import org.odata4j.test.AbstractRuntimeTest;
 
+@Ignore
 public class AirlineJPAProducerTestBase extends AbstractRuntimeTest {
+
+  public AirlineJPAProducerTestBase(RuntimeFacadeType type) {
+    super(type);
+  }
+
   protected static final String endpointUri =
       "http://localhost:8810/airline/Airline.svc/";
 

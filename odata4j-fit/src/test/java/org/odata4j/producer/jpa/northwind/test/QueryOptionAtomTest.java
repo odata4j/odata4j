@@ -5,6 +5,10 @@ import org.junit.Test;
 
 public class QueryOptionAtomTest extends JPAProducerTest {
 
+  public QueryOptionAtomTest(RuntimeFacadeType type) {
+    super(type);
+  }
+
   @Before
   public void setUp() {
     super.setUp(20);

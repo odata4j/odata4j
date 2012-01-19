@@ -12,6 +12,10 @@ import org.odata4j.format.FormatType;
 
 public class CreateTest extends JPAProducerTest {
 
+  public CreateTest(RuntimeFacadeType type) {
+    super(type);
+  }
+
   @Before
   public void setUpClass() throws Exception {
     super.setUp(20);

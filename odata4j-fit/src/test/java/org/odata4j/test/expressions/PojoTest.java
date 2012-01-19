@@ -16,6 +16,10 @@ import org.odata4j.test.AbstractRuntimeTest;
 
 public class PojoTest extends AbstractRuntimeTest {
 
+  public PojoTest(RuntimeFacadeType type) {
+    super(type);
+  }
+
   @Test
   public void testPojo() {
 

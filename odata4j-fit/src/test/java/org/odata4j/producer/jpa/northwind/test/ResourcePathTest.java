@@ -7,6 +7,10 @@ import org.junit.Test;
 
 public class ResourcePathTest extends JPAProducerTest {
 
+  public ResourcePathTest(RuntimeFacadeType type) {
+    super(type);
+  }
+
   @Before
   public void setUpClass() throws Exception {
     super.setUp(50);

@@ -16,6 +16,10 @@ import org.odata4j.test.JPAProvider;
 
 public class CreateWithLinkTest extends AirlineJPAProducerTestBase {
 
+  public CreateWithLinkTest(RuntimeFacadeType type) {
+    super(type);
+   }
+
   @Before
   public void setUp() {
     String persistenceUnitName = "AirlineService" + JPAProvider.JPA_PROVIDER.caption;

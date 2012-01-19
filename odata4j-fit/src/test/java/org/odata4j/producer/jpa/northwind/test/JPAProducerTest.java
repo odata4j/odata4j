@@ -5,20 +5,29 @@ import javax.persistence.Persistence;
 
 import org.core4j.Func1;
 import org.junit.After;
+import org.junit.Ignore;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.jpa.JPAProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.producer.server.ODataServer;
+import org.odata4j.test.AbstractRuntimeTest;
 import org.odata4j.test.JPAProvider;
 
-public class JPAProducerTest extends NorthwindTestUtils {
+@Ignore
+public class JPAProducerTest extends AbstractRuntimeTest {
+
+  public JPAProducerTest(RuntimeFacadeType type) {
+    super(type);
+    this.utils = new NorthwindTestUtils(this.rtFacade);
+  }
+
   protected static final String endpointUri =
       "http://localhost:8810/northwind/Northwind.svc/";
 
   protected EntityManagerFactory emf;
   protected ODataServer server;
 
-  protected NorthwindTestUtils utils = new NorthwindTestUtils();
+  protected NorthwindTestUtils utils; 
 
   public void setUp(int maxResults) {
     setUp(maxResults, null);

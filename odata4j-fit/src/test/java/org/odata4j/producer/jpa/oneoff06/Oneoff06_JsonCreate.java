@@ -12,6 +12,10 @@ import com.sun.jersey.api.client.ClientResponse;
 
 public class Oneoff06_JsonCreate extends AbstractOneoffTestBase {
 
+  public Oneoff06_JsonCreate(RuntimeFacadeType type) {
+    super(type);
+  }
+
   /*
    * TODO currently not decoupled from Jersey -> introduce response facade in dependency of CXF options
    */

@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.ext.RuntimeDelegate;
 
+import org.junit.Assert;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.consumer.behaviors.MethodTunnelingBehavior;
 import org.odata4j.format.FormatType;
@@ -21,6 +23,13 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.container.filter.LoggingFilter;
 
 public class JerseyRuntimeFacade implements RuntimeFacade {
+
+  static {
+    // ensure that the correct JAX-RS implementation is loaded
+    RuntimeDelegate runtimeDelegate = new com.sun.jersey.server.impl.provider.RuntimeDelegateImpl();
+    RuntimeDelegate.setInstance(runtimeDelegate);
+    Assert.assertEquals(runtimeDelegate, RuntimeDelegate.getInstance());
+  }
 
   @Override
   public void hostODataServer(String baseUri) {

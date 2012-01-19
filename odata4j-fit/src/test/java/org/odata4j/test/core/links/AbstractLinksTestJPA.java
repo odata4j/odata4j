@@ -5,6 +5,10 @@ import org.odata4j.format.FormatType;
 
 public abstract class AbstractLinksTestJPA extends LinksTest {
 
+  public AbstractLinksTestJPA(RuntimeFacadeType type) {
+    super(type);
+  }
+
   static {
     useJpaProducer = true;
   }

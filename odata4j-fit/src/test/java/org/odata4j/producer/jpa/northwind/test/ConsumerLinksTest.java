@@ -14,6 +14,10 @@ import org.odata4j.core.OLink;
 
 public class ConsumerLinksTest extends JPAProducerTest {
 
+  public ConsumerLinksTest(RuntimeFacadeType type) {
+    super(type);
+  }
+
   @Before
   public void setUpClass() throws Exception {
     super.setUp(20);
