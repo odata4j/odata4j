@@ -15,7 +15,7 @@ public abstract class AbstractRuntimeTest {
 
   private final Logger log = Logger.getLogger(this.getClass().getName());
 
-  protected Logger getLog() {
+  protected Logger getLogger() {
     return this.log;
   }
 
@@ -34,13 +34,15 @@ public abstract class AbstractRuntimeTest {
     default:
       throw new RuntimeException("JAX-RS runtime type not supported: " + type);
     }
-    this.getLog().info("Activated Runtime Facade: " + type);
+    this.getLogger().info("******************************************************************");
+    this.getLogger().info("Activated Runtime Facade: " + type);
+    this.getLogger().info("******************************************************************");
   }
 
   @Parameterized.Parameters
   public static List<Object[]> data() {
     // TODO enable CXF as soon as implementation is completed and all test cases are green
-    Object[][] a = new Object[][] { { RuntimeFacadeType.JERSEY } /*, { RuntimeFacadeType.CXF } */};
+    Object[][] a = new Object[][] { { RuntimeFacadeType.JERSEY } /*, { RuntimeFacadeType.CXF } */ };
     return Arrays.asList(a);
   }
 

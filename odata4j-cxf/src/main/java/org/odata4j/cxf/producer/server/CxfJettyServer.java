@@ -85,6 +85,7 @@ public class CxfJettyServer implements ODataServer {
     server.setHandler(getHandlerCollection(contextHandler));
 
     try {
+      
       server.start();
       return this;
     } catch (Exception e) {

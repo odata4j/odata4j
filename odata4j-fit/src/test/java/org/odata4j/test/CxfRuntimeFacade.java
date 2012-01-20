@@ -19,6 +19,8 @@ import org.odata4j.producer.server.ODataServer;
 
 public class CxfRuntimeFacade implements RuntimeFacade {
 
+  private static final long REQUEST_TIMEOUT = 10 * 60 * 1000; // 10 minutes for debugging
+
   static {
     // ensure that the correct JAX-RS implementation is loaded
     RuntimeDelegate runtimeDelegate = new org.apache.cxf.jaxrs.impl.RuntimeDelegateImpl();
@@ -49,16 +51,10 @@ public class CxfRuntimeFacade implements RuntimeFacade {
   }
 
   @Override
-  public String getWebResource(String uri) {
-    WebClient client = WebClient.create(uri);
-    String resource = client.get(String.class);
-    return resource;
-  }
-
-  @Override
   public String acceptAndReturn(String uri, MediaType mediaType) {
     uri = uri.replace(" ", "%20");
-    WebClient client = WebClient.create(uri);
+    WebClient client = creatWebClient(uri);
+
     String resource = client.accept(mediaType).get(String.class);
     return resource;
   }
@@ -66,7 +62,8 @@ public class CxfRuntimeFacade implements RuntimeFacade {
   @Override
   public String getWebResource(String uri, String accept) {
     uri = uri.replace(" ", "%20");
-    WebClient client = WebClient.create(uri);
+    WebClient client = creatWebClient(uri);
+
     String resource = client.accept(accept).get(String.class);
     return resource;
   }
@@ -74,7 +71,22 @@ public class CxfRuntimeFacade implements RuntimeFacade {
   @Override
   public void accept(String uri, MediaType mediaType) {
     uri = uri.replace(" ", "%20");
-    WebClient client = WebClient.create(uri);
+    WebClient client = creatWebClient(uri);
     client.accept(mediaType);
+  }
+  
+  @Override
+  public String getWebResource(String uri) {
+    WebClient client = this.creatWebClient(uri);
+    
+    String resource = client.get(String.class);
+    return resource;
+  }
+
+  private WebClient creatWebClient(String uri) {
+    WebClient client = WebClient.create(uri);
+    // request timeout for debugging
+    WebClient.getConfig(client).getHttpConduit().getClient().setReceiveTimeout(CxfRuntimeFacade.REQUEST_TIMEOUT);
+    return client;
   }
 }
