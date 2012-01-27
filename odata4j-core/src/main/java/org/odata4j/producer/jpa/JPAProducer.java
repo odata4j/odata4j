@@ -2,9 +2,7 @@ package org.odata4j.producer.jpa;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -13,14 +11,11 @@ import java.util.Map;
 import javax.persistence.CascadeType;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.EntityTransaction;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.Query;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Attribute.PersistentAttributeType;
 import javax.persistence.metamodel.CollectionAttribute;
@@ -32,7 +27,6 @@ import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.core4j.Enumerable;
-import org.core4j.Func1;
 import org.core4j.Predicate1;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
@@ -53,27 +47,20 @@ import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.edm.EdmMultiplicity;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
-import org.odata4j.edm.EdmPropertyBase;
 import org.odata4j.edm.EdmSimpleType;
-import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.Expression;
-import org.odata4j.expression.OrderByExpression;
-import org.odata4j.expression.OrderByExpression.Direction;
 import org.odata4j.internal.TypeConverter;
 import org.odata4j.producer.BaseResponse;
 import org.odata4j.producer.CountResponse;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityIdResponse;
 import org.odata4j.producer.EntityResponse;
-import org.odata4j.producer.InlineCount;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.Responses;
 import org.odata4j.producer.edm.MetadataProducer;
-import org.odata4j.producer.exceptions.NotFoundException;
 import org.odata4j.producer.exceptions.NotImplementedException;
-import org.odata4j.producer.jpa.JPAProducer.Context.EntityAccessor;
 
 public class JPAProducer implements ODataProducer {
 
@@ -88,18 +75,6 @@ public class JPAProducer implements ODataProducer {
     GetLinks,
     GetCount
   };
-
-  public interface Command {
-    public boolean execute(Context context);
-  }
-
-  public interface Filter extends Command {
-    public boolean postProcess(Context context, Exception exception);
-  }
-
-  public interface JPAProducerBehavior {
-    public List<Command> modify(CommandType type, List<Command> commands);
-  }
 
   private final EntityManagerFactory emf;
   private final EdmDataServices metadata;
@@ -199,15 +174,15 @@ public class JPAProducer implements ODataProducer {
     // get the entity we want the new entity add to (parent entity)
     commands.add(new GetEntityCommand());
     // convert the given new OEntity to a new JPAEntity
-    commands.add(new OEntityToJPAEntityCommand(Context.EntityAccessor.OTHER, true));
+    commands.add(new OEntityToJPAEntityCommand(JPAContext.EntityAccessor.OTHER, true));
     // add the new JPAEntity to the parent entity
     commands.add(new CreateAndLinkCommand());
     // commit the transaction
     commands.add(new CommitTransactionCommand());
     // convert the new JPAEntity back to an OEntity
-    commands.add(new JPAEntityToOEntityCommand(Context.EntityAccessor.OTHER));
+    commands.add(new JPAEntityToOEntityCommand(JPAContext.EntityAccessor.OTHER));
     // set this new OEntity as Response entity
-    commands.add(new SetOEntityResponseCommand(Context.EntityAccessor.OTHER));
+    commands.add(new SetOEntityResponseCommand(JPAContext.EntityAccessor.OTHER));
     createAndLinkCommand = createChain(CommandType.CreateAndLink, commands);
 
     /* get entity processors */
@@ -311,7 +286,7 @@ public class JPAProducer implements ODataProducer {
   @Override
   public EntitiesResponse getEntities(String entitySetName,
       QueryInfo queryInfo) {
-    Context context = new Context(metadata, entitySetName, queryInfo);
+    JPAContext context = new JPAContext(metadata, entitySetName, queryInfo);
     getEntitiesCommand.execute(context);
     return (EntitiesResponse) context.getResponse();
   }
@@ -319,7 +294,7 @@ public class JPAProducer implements ODataProducer {
   @Override
   public EntityResponse getEntity(String entitySetName, OEntityKey entityKey,
       QueryInfo queryInfo) {
-    Context context = new Context(metadata, entitySetName, entityKey, null,
+    JPAContext context = new JPAContext(metadata, entitySetName, entityKey, null,
         queryInfo);
     getEntityCommand.execute(context);
     return (EntityResponse) context.getResponse();
@@ -328,7 +303,7 @@ public class JPAProducer implements ODataProducer {
   @Override
   public BaseResponse getNavProperty(String entitySetName,
       OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
-    Context context = new Context(metadata, entitySetName, entityKey,
+    JPAContext context = new JPAContext(metadata, entitySetName, entityKey,
         navProp, queryInfo);
     getEntitiesCommand.execute(context);
     return context.getResponse();
@@ -339,7 +314,7 @@ public class JPAProducer implements ODataProducer {
 
   @Override
   public EntityResponse createEntity(String entitySetName, OEntity entity) {
-    Context context = new Context(metadata, entitySetName, null, entity);
+    JPAContext context = new JPAContext(metadata, entitySetName, null, entity);
     try {
       createEntityCommand.execute(context);
     } catch (Exception e) {
@@ -352,7 +327,7 @@ public class JPAProducer implements ODataProducer {
   @Override
   public EntityResponse createEntity(String entitySetName,
       OEntityKey entityKey, String navProp, OEntity entity) {
-    Context context = new Context(metadata, entitySetName, entityKey,
+    JPAContext context = new JPAContext(metadata, entitySetName, entityKey,
         navProp, entity);
     createAndLinkCommand.execute(context);
     return (EntityResponse) context.getResponse();
@@ -360,20 +335,20 @@ public class JPAProducer implements ODataProducer {
 
   @Override
   public void deleteEntity(String entitySetName, OEntityKey entityKey) {
-    Context context = new Context(metadata, entitySetName, entityKey, null);
+    JPAContext context = new JPAContext(metadata, entitySetName, entityKey, null);
     deleteEntityCommand.execute(context);
   }
 
   @Override
   public void mergeEntity(String entitySetName, OEntity entity) {
-    Context context = new Context(metadata, entitySetName,
+    JPAContext context = new JPAContext(metadata, entitySetName,
         entity.getEntityKey(), entity);
     mergeEntityCommand.execute(context);
   }
 
   @Override
   public void updateEntity(String entitySetName, OEntity entity) {
-    Context context = new Context(metadata, entitySetName,
+    JPAContext context = new JPAContext(metadata, entitySetName,
         entity.getEntityKey(), entity);
     updateEntityCommand.execute(context);
   }
@@ -381,7 +356,7 @@ public class JPAProducer implements ODataProducer {
   @Override
   public EntityIdResponse getLinks(OEntityId sourceEntity,
       String targetNavProp) {
-    Context context = new Context(metadata,
+    JPAContext context = new JPAContext(metadata,
         sourceEntity.getEntitySetName(),
         sourceEntity.getEntityKey(), targetNavProp, (QueryInfo) null);
     getLinksCommand.execute(context);
@@ -433,7 +408,7 @@ public class JPAProducer implements ODataProducer {
   @Override
   public CountResponse getEntitiesCount(String entitySetName,
       QueryInfo queryInfo) {
-    Context context = new Context(metadata, entitySetName, queryInfo);
+    JPAContext context = new JPAContext(metadata, entitySetName, queryInfo);
     getCountCommand.execute(context);
     return (CountResponse) context.getResponse();
   }
@@ -441,1010 +416,10 @@ public class JPAProducer implements ODataProducer {
   @Override
   public CountResponse getNavPropertyCount(String entitySetName,
       OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
-    Context context = new Context(metadata, entitySetName, entityKey,
+    JPAContext context = new JPAContext(metadata, entitySetName, entityKey,
         navProp, queryInfo);
     getCountCommand.execute(context);
     return (CountResponse) context.getResponse();
-  }
-
-  public static class Context {
-
-    private EdmDataServices metadata;
-    private EntityManager em;
-    private EntityTransaction tx;
-
-    private ContextEntity entity;
-    private ContextEntity otherEntity;
-
-    private String navProperty;
-
-    private QueryInfo queryInfo;
-
-    private String jpqlQuery;
-    private EdmPropertyBase edmPropertyBase;
-
-    private BaseResponse response;
-    
-    // update, merge, delete
-    protected Context(EdmDataServices metadata, String entitySetName,
-        OEntityKey oEntityKey, OEntity oEntity) {
-      this.metadata = metadata;
-      this.entity = new ContextEntity(entitySetName, oEntityKey, oEntity);
-    }
-
-    // create
-    public Context(EdmDataServices metadata, String entitySetName,
-        OEntityKey oEntityKey, String navProperty, OEntity oEntity) {
-      this.metadata = metadata;
-      this.entity = new ContextEntity(entitySetName, oEntityKey, null);
-      this.navProperty = navProperty;
-      this.otherEntity = new ContextEntity(oEntity.getEntitySetName(), oEntity.getEntityKey(), oEntity);
-    }
-
-    // query
-    public Context(EdmDataServices metadata, String entitySetName,
-        QueryInfo queryInfo) {
-      this.metadata = metadata;
-      this.entity = new ContextEntity(entitySetName, null, null);
-      this.queryInfo = queryInfo;
-    }
-
-    // get entity / with nav property (count?)
-    public Context(EdmDataServices metadata, String entitySetName,
-        OEntityKey oEntityKey, String navProperty, QueryInfo queryInfo) {
-      this.metadata = metadata;
-      this.entity = new ContextEntity(entitySetName, oEntityKey, null);
-      this.navProperty = navProperty;
-      this.queryInfo = queryInfo;
-    }
-
-    public EdmDataServices getMetadata() {
-      return metadata;
-    }
-
-    public EntityManager getEntityManager() {
-      return em;
-    }
-
-    public void setEntityManager(EntityManager em) {
-      this.em = em;
-    }
-
-    public EntityTransaction getEntityTransaction() {
-      return tx;
-    }
-
-    public void setEntityTransaction(EntityTransaction tx) {
-      this.tx = tx;
-    }
-    
-    public ContextEntity getEntity() {
-      return entity;
-    }
-
-    public ContextEntity getOtherEntity() {
-      return otherEntity;
-    }
-    
-    public String getNavProperty() {
-      return navProperty;
-    }
-
-    public QueryInfo getQueryInfo() {
-      return queryInfo;
-    }
-
-    public String getJPQLQuery() {
-      return jpqlQuery;
-    }
-
-    public void setJPQLQuery(String jpqlQuery) {
-      this.jpqlQuery = jpqlQuery;
-    }
-
-    public EdmPropertyBase getEdmPropertyBase() {
-      return edmPropertyBase;
-    }
-
-    public void setEdmPropertyBase(EdmPropertyBase edmPropertyBase) {
-      this.edmPropertyBase = edmPropertyBase;
-    }
-    
-    public BaseResponse getResponse() {
-      return response;
-    }
-
-    public void setResponse(BaseResponse response) {
-      this.response = response;
-    }
-
-    public class ContextEntity {
-      private String entitySetName;
-      private OEntityKey oEntityKey;
-      private OEntity oEntity;
-
-      private EdmEntitySet ees;
-      private EntityType<?> jpaEntityType;
-      private String keyAttributeName;
-      private Object jpaEntity;
-
-      public ContextEntity(String entitySetName, OEntityKey oEntityKey,
-          OEntity oEntity) {
-        this.entitySetName = entitySetName;
-        this.oEntityKey = oEntityKey;
-        this.oEntity = oEntity;
-      }
-
-      public String getEntitySetName() {
-        return entitySetName;
-      }
-
-      public void setEntitySetName(String entitySetName) {
-        this.entitySetName = entitySetName;
-        this.jpaEntityType = null;
-        this.ees = null;
-        this.keyAttributeName = null;
-        this.oEntityKey = null;
-      }
-
-      public void setOEntityKey(OEntityKey oEntityKey) {
-        this.oEntityKey = oEntityKey;
-      }
-
-      public EntityType<?> getJPAEntityType() {
-        if (jpaEntityType == null) {
-
-          jpaEntityType = JPAProducer.getJPAEntityType(em,
-              getEdmEntitySet()
-                  .getType().getName());
-        }
-        return jpaEntityType;
-      }
-
-      public EdmEntitySet getEdmEntitySet() {
-        if (ees == null) {
-          ees = getMetadata().getEdmEntitySet(getEntitySetName());
-        }
-        return ees;
-      }
-
-      public String getKeyAttributeName() {
-        if (keyAttributeName == null) {
-          keyAttributeName = JPAEdmGenerator
-            .getIdAttribute(getJPAEntityType()).getName();
-        }
-        return keyAttributeName;
-      }
-
-      public Object getTypeSafeEntityKey() {
-        return typeSafeEntityKey(
-              getEntityManager(),
-              getJPAEntityType(),
-              oEntityKey);
-      }
-
-      public Object getJpaEntity() {
-        return jpaEntity;
-      }
-
-      public void setJpaEntity(Object jpaEntity) {
-        this.jpaEntity = jpaEntity;
-      }
-
-      public OEntity getOEntity() {
-        return oEntity;
-      }
-
-      public void setOEntity(OEntity oEntity) {
-        this.oEntity = oEntity;
-        setEntitySetName(oEntity.getEntitySetName());
-        this.oEntityKey = oEntity != null ? oEntity.getEntityKey() : null;
-      }
-    }
-
-    public static abstract class EntityAccessor {
-      public abstract ContextEntity getEntity(Context context);
-
-      public abstract void setJPAEntity(Context context, Object jpaEntity);
-
-      public static final EntityAccessor ENTITY = new EntityAccessor() {
-
-        @Override
-        public ContextEntity getEntity(Context context) {
-          return context.getEntity();
-        }
-
-        @Override
-        public void setJPAEntity(Context context, Object jpaEntity) {
-          context.getEntity().setJpaEntity(jpaEntity);
-        }
-      };
-
-      public static final EntityAccessor OTHER = new EntityAccessor() {
-
-        @Override
-        public ContextEntity getEntity(Context context) {
-          return context.getOtherEntity();
-        }
-
-        @Override
-        public void setJPAEntity(Context context, Object jpaEntity) {
-          context.getOtherEntity().setJpaEntity(jpaEntity);
-        }
-      };
-    }
-  }
-
-  class Chain implements Command {
-
-    List<Command> commands;
-
-    Chain(List<Command> commands) {
-      this.commands = Collections.unmodifiableList(commands);
-    }
-
-    /**
-     * copied from http://commons.apache.org/chain. 
-     */
-    @Override
-    public boolean execute(Context context) {
-      boolean saveResult = false;
-      RuntimeException saveException = null;
-      int i = 0;
-      int n = commands.size();
-      for (i = 0; i < n; i++) {
-        try {
-          saveResult = commands.get(i).execute(context);
-          if (saveResult) {
-            break;
-          }
-        } catch (RuntimeException e) {
-          saveException = e;
-          break;
-        }
-      }
-
-      // Call postprocess methods on Filters in reverse order
-      if (i >= n) { // Fell off the end of the chain
-        i--;
-      }
-      boolean handled = false;
-      boolean result = false;
-      for (int j = i; j >= 0; j--) {
-        if (commands.get(j) instanceof Filter) {
-          try {
-            result =
-                            ((Filter) commands.get(j)).postProcess(context,
-                                                               saveException);
-            if (result) {
-              handled = true;
-            }
-          } catch (Exception e) {
-            // Silently ignore
-          }
-        }
-      }
-
-      // Return the exception or result state from the last execute()
-      if ((saveException != null) && !handled) {
-        throw saveException;
-      } else {
-        return saveResult;
-      }
-    }
-  }
-
-  public class CreateAndLinkCommand implements Command {
-
-    @Override
-    public boolean execute(Context context) {
-      // get the navigation property
-      EdmNavigationProperty edmNavProperty = context.getEntity()
-          .getEdmEntitySet().getType()
-          .findNavigationProperty(context.getNavProperty());
-
-      // check whether the navProperty is valid
-      if (edmNavProperty == null
-          || edmNavProperty.getToRole().getMultiplicity() != EdmMultiplicity.MANY) {
-        throw new IllegalArgumentException(
-            "unknown navigation property "
-                + context.getNavProperty()
-                + " or navigation property toRole Multiplicity is not '*'");
-      }
-
-      EntityType<?> newJpaEntityType = context.getOtherEntity()
-          .getJPAEntityType();
-      Object newJpaEntity = context.getOtherEntity().getJpaEntity();
-
-      // get the collection attribute and add the new entity to the parent
-      // entity
-      final String navProperty = context.getNavProperty();
-      @SuppressWarnings("unchecked")
-      PluralAttribute<?, ?, ?> attr = Enumerable.create(
-          context.getEntity().getJPAEntityType()
-              .getPluralAttributes())
-          .firstOrNull(new Predicate1() {
-            public boolean apply(Object input) {
-              PluralAttribute<?, ?, ?> pa = (PluralAttribute<?, ?, ?>) input;
-              return pa.getName().equals(navProperty);
-            }
-          });
-      JPAMember member = JPAMember.create(attr, context.getEntity()
-          .getJpaEntity());
-      Collection<Object> collection = member.get();
-      collection.add(newJpaEntity);
-
-      // TODO handle ManyToMany relationships
-      // set the backreference in bidirectional relationships
-      OneToMany oneToMany = member.getAnnotation(OneToMany.class);
-      if (oneToMany != null
-          && oneToMany.mappedBy() != null
-          && !oneToMany.mappedBy().isEmpty()) {
-        JPAMember.create(
-            newJpaEntityType.getAttribute(oneToMany.mappedBy()),
-            newJpaEntity)
-            .set(context.getEntity().getJpaEntity());
-      }
-
-      // check whether the EntityManager will persist the
-      // new entity or should we do it
-      if (oneToMany != null
-          && oneToMany.cascade() != null) {
-        List<CascadeType> cascadeTypes = Arrays.asList(oneToMany
-            .cascade());
-        if (!cascadeTypes.contains(CascadeType.ALL)
-            && !cascadeTypes.contains(CascadeType.PERSIST)) {
-          context.getEntityManager().persist(newJpaEntity);
-        }
-      }
-
-      return false;
-    }
-  }
-
-  public class DeleteEntityCommand implements Command {
-
-    @Override
-    public boolean execute(Context context) {
-      context.getEntityManager().remove(context.getEntity().getJpaEntity());
-
-      return false;
-    }
-  }
-
-  public class EntityManagerCommand implements Filter {
-
-    private final EntityManagerFactory emf;
-
-    public EntityManagerCommand(EntityManagerFactory emf) {
-      this.emf = emf;
-    }
-
-    @Override
-    public boolean execute(Context context) {
-      EntityManager em = this.emf.createEntityManager();
-      context.setEntityManager(em);
-
-      return false;
-    }
-
-    @Override
-    public boolean postProcess(Context context, Exception exception) {
-      context.getEntityManager().close();
-      context.setEntityManager(null);
-
-      return false;
-    }
-  }
-
-  public class ExecuteCountQueryCommand implements Command {
-
-    @Override
-    public boolean execute(Context context) {
-      // get the jpql
-      String jpql = context.getJPQLQuery();
-
-      // jpql -> jpa query
-      Query tq = context.getEntityManager().createQuery(jpql);
-
-      // execute jpa query
-      Long count = (Long) tq.getSingleResult();
-
-      QueryInfo query = context.getQueryInfo();
-      // apply $skip.
-      // example: http://odata.netflix.com/Catalog/Titles/$count?$skip=100
-      if (query != null && query.skip != null)
-        count = Math.max(0, count - query.skip);
-
-      // apply $top.
-      // example: http://odata.netflix.com/Catalog/Titles/$count?$top=10
-      if (query != null && query.top != null)
-        count = Math.min(count, query.top);
-
-      context.setResponse(Responses.count(count));
-
-      return false;
-    }
-  }
-
-  public class ExecuteJPQLQueryCommand implements Command {
-
-    private int maxResults;
-
-    public ExecuteJPQLQueryCommand(int maxResults) {
-      this.maxResults = maxResults;
-    }
-
-    @Override
-    public boolean execute(Context context) {
-      context.setResponse(getEntitiesResponse(context));
-
-      return false;
-    }
-
-    private BaseResponse getEntitiesResponse(final Context context) {
-
-      // get the jpql
-      String jpql = context.getJPQLQuery();
-
-      // jpql -> jpa query
-      Query tq = context.getEntityManager().createQuery(jpql);
-
-      Integer inlineCount = context.getQueryInfo() != null
-          && context.getQueryInfo().inlineCount == InlineCount.ALLPAGES
-          ? tq.getResultList().size()
-          : null;
-
-      int queryMaxResults = maxResults;
-      if (context.getQueryInfo() != null
-          && context.getQueryInfo().top != null) {
-
-        // top=0: don't even hit jpa, return a response with zero
-        // entities
-        if (context.getQueryInfo().top.equals(0)) {
-          // returning null from this function would cause the
-          // FormatWriters to throw
-          // a null reference exception as the entities collection is
-          // expected to be empty and
-          // not null. This prevents us from being able to
-          // successfully
-          // respond to $top=0 contexts.
-          List<OEntity> emptyList = Collections.emptyList();
-          return Responses.entities(
-              emptyList,
-              context.getEntity().getEdmEntitySet(),
-              inlineCount,
-              null);
-        }
-
-        if (context.getQueryInfo().top < maxResults)
-          queryMaxResults = context.getQueryInfo().top;
-      }
-
-      // jpa query for one more than specified to determine whether or not
-      // to
-      // return a skip token
-      tq = tq.setMaxResults(queryMaxResults + 1);
-
-      if (context.getQueryInfo() != null
-          && context.getQueryInfo().skip != null)
-        tq = tq.setFirstResult(context.getQueryInfo().skip);
-
-      // execute jpa query
-      @SuppressWarnings("unchecked")
-      List<Object> results = tq.getResultList();
-
-      // property response
-      if (context.getEdmPropertyBase() instanceof EdmProperty) {
-        EdmProperty propInfo = (EdmProperty) context
-            .getEdmPropertyBase();
-
-        if (results.size() != 1)
-          throw new RuntimeException(
-              "Expected one and only one result for property, found "
-                  + results.size());
-
-        Object value = results.get(0);
-        OProperty<?> op = OProperties.simple(
-            ((EdmProperty) propInfo).getName(),
-            (EdmSimpleType<?>) ((EdmProperty) propInfo).getType(),
-            value);
-        return Responses.property(op);
-      }
-
-      // entities response
-      List<OEntity> entities = Enumerable.create(results)
-          .take(queryMaxResults)
-          .select(new Func1<Object, OEntity>() {
-            public OEntity apply(final Object jpaEntity) {
-              return makeEntity(context, jpaEntity);
-            }
-          }).toList();
-
-      // compute skip token if necessary
-      String skipToken = null;
-      boolean hasMoreResults = context.getQueryInfo() != null
-          && context.getQueryInfo().top != null
-          ? context.getQueryInfo().top > maxResults
-              && results.size() > queryMaxResults
-          : results.size() > queryMaxResults;
-
-      if (hasMoreResults)
-        skipToken = JPASkipToken.create(context.getQueryInfo() == null
-            ? null
-            : context.getQueryInfo().orderBy,
-            Enumerable.create(entities)
-                .last());
-
-      if (context.getEdmPropertyBase() instanceof EdmNavigationProperty) {
-        EdmNavigationProperty edmNavProp = (EdmNavigationProperty) context
-            .getEdmPropertyBase();
-        if (edmNavProp.getToRole().getMultiplicity() == EdmMultiplicity.ONE
-            || edmNavProp.getToRole().getMultiplicity() == EdmMultiplicity.ZERO_TO_ONE) {
-          if (entities.size() != 1)
-            throw new RuntimeException(
-                "Expected only one entity, found "
-                    + entities.size());
-          return Responses.entity(entities.get(0));
-        }
-      }
-
-      return Responses.entities(entities, context.getEntity()
-          .getEdmEntitySet(),
-          inlineCount, skipToken);
-    }
-
-    private OEntity makeEntity(Context context, Object jpaEntity) {
-
-      return jpaEntityToOEntity(
-          context.getMetadata(),
-          context.getEntity().getEdmEntitySet(),
-          context.getEntity().getJPAEntityType(),
-          jpaEntity,
-          context.getQueryInfo() == null ? null : context
-              .getQueryInfo().expand,
-          context.getQueryInfo() == null ? null : context
-              .getQueryInfo().select);
-    }
-  }
-
-  public class GenerateJPQLCommand implements Command {
-
-    private boolean isCount;
-
-    public GenerateJPQLCommand() {
-      this(false);
-    }
-
-    public GenerateJPQLCommand(boolean isCount) {
-      this.isCount = isCount;
-    }
-
-    @Override
-    public boolean execute(Context context) {
-      context.setJPQLQuery(generateJPQL(context));
-
-      return false;
-    }
-
-    private String generateJPQL(Context context) {
-      String alias = "t0";
-      String from = context.getEntity().getJPAEntityType().getName()
-          + " " + alias;
-      String where = null;
-
-      if (context.getNavProperty() != null) {
-        where = whereKeyEquals(context.getEntity().getJPAEntityType(),
-            context.getEntity().getKeyAttributeName(),
-            context.getEntity().getTypeSafeEntityKey(), alias);
-
-        String prop = null;
-        int propCount = 0;
-
-        for (String pn : context.getNavProperty().split("/")) {
-          String[] propSplit = pn.split("\\(");
-          prop = propSplit[0];
-          propCount++;
-
-          if (context.getEdmPropertyBase() instanceof EdmProperty) {
-            throw new UnsupportedOperationException(
-                String.format(
-                    "The request URI is not valid. Since the segment '%s' "
-                        + "refers to a collection, this must be the last segment "
-                        + "in the request URI. All intermediate segments must refer "
-                        + "to a single resource.",
-                    alias));
-          }
-
-          context.setEdmPropertyBase(context.getMetadata()
-              .findEdmProperty(prop));
-
-          if (context.getEdmPropertyBase() instanceof EdmNavigationProperty) {
-            EdmNavigationProperty propInfo = (EdmNavigationProperty) context
-                .getEdmPropertyBase();
-
-            context.getEntity().setEntitySetName(
-                propInfo.getToRole().getType().getName());
-
-            prop = alias + "." + prop;
-            alias = "t" + Integer.toString(propCount);
-            from = String
-                .format("%s JOIN %s %s", from, prop, alias);
-
-            if (propSplit.length > 1) {
-              OEntityKey entityKey = OEntityKey.parse("("
-                  + propSplit[1]);
-              context.getEntity().setOEntityKey(entityKey);
-
-              where = whereKeyEquals(context.getEntity()
-                  .getJPAEntityType(),
-                  context.getEntity().getKeyAttributeName(),
-                  context.getEntity().getTypeSafeEntityKey(),
-                  alias);
-            }
-          } else if (context.getEdmPropertyBase() instanceof EdmProperty) {
-            EdmProperty propInfo = (EdmProperty) context
-                .getEdmPropertyBase();
-
-            alias = alias + "." + propInfo.getName();
-            // TODO?
-          }
-
-          if (context.getEdmPropertyBase() == null) {
-            throw new EntityNotFoundException(
-                String.format(
-                    "Resource not found for the segment '%s'.",
-                    pn));
-          }
-        }
-      }
-
-      String select = isCount ? "COUNT(" + alias + ")" : alias;
-
-      String jpql = String.format("SELECT %s FROM %s", select, from);
-
-      JPQLGenerator jpqlGen = new JPQLGenerator(context.getEntity()
-          .getKeyAttributeName(), alias);
-
-      if (context.getQueryInfo() != null
-          && context.getQueryInfo().filter != null) {
-        String filterPredicate = jpqlGen
-            .toJpql(context.getQueryInfo().filter);
-        where = addWhereExpression(where, filterPredicate, "AND");
-      }
-
-      if (context.getQueryInfo() != null
-          && context.getQueryInfo().skipToken != null) {
-        BoolCommonExpression skipTokenPredicateExpr = JPASkipToken
-            .parse(jpqlGen.getPrimaryKeyName(),
-                context.getQueryInfo().orderBy,
-                context.getQueryInfo().skipToken);
-        String skipTokenPredicate = jpqlGen
-            .toJpql(skipTokenPredicateExpr);
-        where = addWhereExpression(where, skipTokenPredicate, "AND");
-      }
-
-      if (where != null)
-        jpql = String.format("%s WHERE %s", jpql, where);
-
-      if (!isCount && context.getQueryInfo() != null
-          && context.getQueryInfo().orderBy != null
-          && !context.getQueryInfo().orderBy.isEmpty()) {
-        List<String> orderBys = new ArrayList<String>();
-        for (OrderByExpression orderBy : context.getQueryInfo().orderBy) {
-          String field = jpqlGen.toJpql(orderBy.getExpression());
-          orderBys.add(field
-              + (orderBy.getDirection() == Direction.ASCENDING
-                  ? ""
-                  : " DESC"));
-        }
-        jpql = jpql + " ORDER BY "
-            + Enumerable.create(orderBys).join(",");
-      }
-
-      return jpql;
-    }
-
-    private String addWhereExpression(String expression,
-        String nextExpression, String condition) {
-
-      return expression == null
-          ? nextExpression
-          : String.format(
-              "%s %s %s",
-              expression,
-              condition,
-              nextExpression);
-    }
-
-    private String whereKeyEquals(EntityType<?> jpsEntityType,
-        String keyAttributeName, Object typeSafeEntityKey, String alias) {
-      SingularAttribute<?, ?> idAtt = jpsEntityType
-          .getSingularAttribute(keyAttributeName);
-      if (idAtt.getPersistentAttributeType() == PersistentAttributeType.EMBEDDED) {
-        List<String> predicates = new ArrayList<String>();
-        EmbeddableType<?> et = (EmbeddableType<?>) idAtt.getType();
-        for (Attribute<?, ?> subAtt : et.getAttributes()) {
-          Object subAttValue = JPAMember
-              .create(subAtt, typeSafeEntityKey).get();
-          String jpqlLiteral = JPQLGenerator
-              .toJpqlLiteral(subAttValue);
-          String predicate = String.format(
-              "(%s.%s.%s = %s)",
-              alias,
-              keyAttributeName,
-              subAtt.getName(),
-              jpqlLiteral);
-          predicates.add(predicate);
-        }
-
-        return "(" + Enumerable.create(predicates).join(" AND ") + ")";
-      }
-
-      String jpqlLiteral = JPQLGenerator.toJpqlLiteral(typeSafeEntityKey);
-      return String.format(
-          "(%s.%s = %s)",
-          alias,
-          keyAttributeName,
-          jpqlLiteral);
-    }
-  }
-
-  public class GetEntityCommand implements Command {
-
-    private EntityAccessor accessor;
-
-    public GetEntityCommand() {
-      this(Context.EntityAccessor.ENTITY);
-    }
-
-    public GetEntityCommand(EntityAccessor accessor) {
-      this.accessor = accessor;
-    }
-
-    @Override
-    public boolean execute(Context context) {
-
-      EntityType<?> jpaEntityType = accessor.getEntity(context)
-          .getJPAEntityType();
-      Object typeSafeEntityKey = accessor.getEntity(context)
-          .getTypeSafeEntityKey();
-      Object jpaEntity = context.getEntityManager().find(
-          jpaEntityType.getJavaType(), typeSafeEntityKey);
-
-      if (jpaEntity == null) {
-        throw new NotFoundException(jpaEntityType
-            .getJavaType()
-            + " not found with key "
-            + typeSafeEntityKey);
-      }
-
-      accessor.getEntity(context).setJpaEntity(jpaEntity);
-
-      return false;
-    }
-  }
-
-  public class JPAEntityToOEntityCommand implements Command {
-
-    private Context.EntityAccessor accessor;
-
-    public JPAEntityToOEntityCommand() {
-      this(Context.EntityAccessor.ENTITY);
-    }
-
-    public JPAEntityToOEntityCommand(Context.EntityAccessor accessor) {
-      this.accessor = accessor;
-    }
-
-    @Override
-    public boolean execute(Context context) {
-
-      OEntity oentity = jpaEntityToOEntity(
-          context.getMetadata(),
-          accessor.getEntity(context).getEdmEntitySet(),
-          accessor.getEntity(context).getJPAEntityType(),
-          accessor.getEntity(context).getJpaEntity(),
-          context.getQueryInfo() == null
-              ? null
-              : context.getQueryInfo().expand,
-          context.getQueryInfo() == null
-              ? null
-              : context.getQueryInfo().select);
-
-      accessor.getEntity(context).setOEntity(oentity);
-
-      return false;
-    }
-  }
-
-  public class MergeEntityCommand implements Command {
-
-    @Override
-    public boolean execute(Context context) {
-      EntityManager em = context.getEntityManager();
-      EntityType<?> jpaEntityType = context.getEntity()
-          .getJPAEntityType();
-      Object jpaEntity = context.getEntity().getJpaEntity();
-      OEntity entity = context.getEntity().getOEntity();
-
-      applyOProperties(em, jpaEntityType,
-          entity.getProperties(),
-          jpaEntity);
-      applyOLinks(em, jpaEntityType, entity.getLinks(),
-          jpaEntity);
-
-      return false;
-    }
-  }
-
-  public class OEntityToJPAEntityCommand implements Command {
-
-    private boolean withLinks;
-    private Context.EntityAccessor accessor;
-
-    public OEntityToJPAEntityCommand(boolean withLinks) {
-      this(Context.EntityAccessor.ENTITY, withLinks);
-    }
-
-    public OEntityToJPAEntityCommand(Context.EntityAccessor accessor,
-        boolean withLinks) {
-      this.accessor = accessor;
-      this.withLinks = withLinks;
-    }
-
-    @Override
-    public boolean execute(Context context) {
-
-      Object jpaEntity = createNewJPAEntity(
-          context.getEntityManager(),
-            accessor.getEntity(context).getJPAEntityType(),
-            accessor.getEntity(context).getOEntity(),
-            withLinks);
-      accessor.getEntity(context).setJpaEntity(jpaEntity);
-
-      return false;
-    }
-  }
-
-  public class PersistJPAEntityCommand implements Command {
-
-    @Override
-    public boolean execute(Context context) {
-      context.getEntityManager().persist(
-          context.getEntity().getJpaEntity());
-
-      return false;
-    }
-  }
-
-  public class ReReadJPAEntityCommand implements Command {
-
-    @Override
-    public boolean execute(Context context) {
-
-      // reread the entity in case we had links. This should insure
-      // we get the implicitly set foreign keys. E.g in the Northwind model
-      // creating a new Product with a link to the Category should return
-      // the CategoryID.
-      EntityManager em = context.getEntityManager();
-      if (context.getEntity().getOEntity().getLinks() != null
-                && !context.getEntity().getOEntity().getLinks().isEmpty()) {
-
-        EntityTransaction tx = em.getTransaction();
-        tx.begin();
-        try {
-          context.getEntityManager().refresh(
-                    context.getEntity().getJpaEntity());
-          tx.commit();
-        } finally {
-          if (tx.isActive()) {
-            tx.rollback();
-          }
-        }
-      }
-
-      return false;
-    }
-  }
-
-  public class SetOEntityResponseCommand implements Command {
-
-    private Context.EntityAccessor accessor;
-
-    public SetOEntityResponseCommand() {
-      this(Context.EntityAccessor.ENTITY);
-    }
-
-    public SetOEntityResponseCommand(Context.EntityAccessor accessor) {
-      this.accessor = accessor;
-    }
-
-    @Override
-    public boolean execute(Context context) {
-
-      OEntity oentity = accessor.getEntity(context).getOEntity();
-      context.setResponse(Responses.entity(oentity));
-
-      return false;
-    }
-  }
-
-  public class BeginTransactionCommand implements Filter {
-
-    @Override
-    public boolean execute(Context context) {
-      EntityManager em = context.getEntityManager();
-      EntityTransaction tx = em.getTransaction();
-      tx.begin();
-      context.setEntityTransaction(tx);
-
-      return false;
-    }
-
-    public boolean postProcess(Context context, Exception ex) {
-      EntityTransaction tx = context.getEntityTransaction();
-      if (tx != null) {
-        if (tx.isActive()) {
-          tx.rollback();
-        } else {
-          context.setEntityTransaction(null);
-        }
-      }
-      return false;
-    }
-  }
-
-  public class CommitTransactionCommand implements Command {
-
-    @Override
-    public boolean execute(Context context) {
-      EntityManager em = context.getEntityManager();
-      EntityTransaction tx = em.getTransaction();
-      tx.commit();
-      context.setEntityTransaction(null);
-
-      return false;
-    }
-  }
-
-  public class UpdateEntityCommand implements Command {
-
-    @Override
-    public boolean execute(Context context) {
-      EntityManager em = context.getEntityManager();
-      EntityType<?> jpaEntityType = context.getEntity()
-          .getJPAEntityType();
-      Object jpaEntity = context.getEntity().getJpaEntity();
-      OEntity entity = context.getEntity().getOEntity();
-
-      em.merge(jpaEntity);
-      applyOLinks(em, jpaEntityType, entity.getLinks(),
-          jpaEntity);
-
-      return false;
-    }
-  }
-
-  public class ValidateCountRequestProcessor implements Command {
-
-    @Override
-    public boolean execute(Context context) {
-      // inlineCount is not applicable to $count queries
-      QueryInfo query = context.getQueryInfo();
-      if (query != null && query.inlineCount == InlineCount.ALLPAGES) {
-        throw new UnsupportedOperationException(
-            "$inlinecount cannot be applied to the resource segment '$count'");
-      }
-
-      // sktiptoken is not applicable to $count queries
-      if (query != null && query.skipToken != null) {
-        throw new UnsupportedOperationException(
-            "Skip tokens can only be provided for contexts that return collections of entities.");
-      }
-
-      return false;
-    }
   }
 
   /**** utility functions ***/
