@@ -28,6 +28,9 @@ public class ReReadJPAEntityCommand implements Command {
         }
       }
     }
+    
+    context.setResult(JPAResults
+        .entity(context.getEntity().getJpaEntity()));
 
     return false;
   }

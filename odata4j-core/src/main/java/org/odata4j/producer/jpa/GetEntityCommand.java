@@ -36,6 +36,9 @@ public class GetEntityCommand implements Command {
     }
 
     accessor.getEntity(context).setJpaEntity(jpaEntity);
+    
+    context.setResult(JPAResults.entity(accessor
+        .getEntity(context).getJpaEntity()));
 
     return false;
   }

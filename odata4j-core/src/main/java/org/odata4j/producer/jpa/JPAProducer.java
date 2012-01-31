@@ -138,11 +138,8 @@ public class JPAProducer implements ODataProducer {
     commands.add(new GenerateJPQLCommand());
     // execute the JPQL query
     commands.add(new ExecuteJPQLQueryCommand(maxResults));
-    // TODO ExecuteJPQLQueryProcessor should only execute the query
-    // and set the result in the context
-    // add a processor which converts the query result into a BaseResponse
-    // and sets this into the response of the context. This allows for
-    // inspecting and modifying the found enities.
+    // convert the query result to response 
+    commands.add(new SetResponseCommand());
     getEntitiesCommand = createChain(CommandType.GetEntities, commands);
 
     /* initialize the create processors */
@@ -159,10 +156,8 @@ public class JPAProducer implements ODataProducer {
     commands.add(new CommitTransactionCommand());
     // reread the JPAEntity if necessary
     commands.add(new ReReadJPAEntityCommand());
-    // convert the JPAEntity back to an OEntity
-    commands.add(new JPAEntityToOEntityCommand());
-    // set this OEntity as Response entity
-    commands.add(new SetOEntityResponseCommand());
+    // convert the JPAEntity to OEntity and set the response
+    commands.add(new SetResponseCommand());
     createEntityCommand = createChain(CommandType.CreateEntity, commands);
 
     /* create and link processors */
@@ -179,10 +174,8 @@ public class JPAProducer implements ODataProducer {
     commands.add(new CreateAndLinkCommand());
     // commit the transaction
     commands.add(new CommitTransactionCommand());
-    // convert the new JPAEntity back to an OEntity
-    commands.add(new JPAEntityToOEntityCommand(JPAContext.EntityAccessor.OTHER));
-    // set this new OEntity as Response entity
-    commands.add(new SetOEntityResponseCommand(JPAContext.EntityAccessor.OTHER));
+    // convert the JPAEntity to OEntity and set the response
+    commands.add(new SetResponseCommand(JPAContext.EntityAccessor.OTHER));
     createAndLinkCommand = createChain(CommandType.CreateAndLink, commands);
 
     /* get entity processors */
@@ -191,10 +184,8 @@ public class JPAProducer implements ODataProducer {
     commands.add(new EntityManagerCommand(emf));
     // get the requested JPAEntity
     commands.add(new GetEntityCommand());
-    // convert the JPAEntity to an OEntity
-    commands.add(new JPAEntityToOEntityCommand());
-    // set this OEntity as Response entity
-    commands.add(new SetOEntityResponseCommand());
+    // convert the JPAEntity to OEntity and set the response
+    commands.add(new SetResponseCommand());
     getEntityCommand = createChain(CommandType.GetEntity, commands);
 
     /* delete entity processors */
@@ -250,6 +241,8 @@ public class JPAProducer implements ODataProducer {
     commands.add(new GenerateJPQLCommand());
     // execute the JPQL query
     commands.add(new ExecuteJPQLQueryCommand(maxResults));
+    // convert the result to a response and set it
+    commands.add(new SetResponseCommand());
     getLinksCommand = createChain(CommandType.GetLinks, commands);
 
     /* get entities count processors */
@@ -262,6 +255,8 @@ public class JPAProducer implements ODataProducer {
     commands.add(new GenerateJPQLCommand(true));
     // execute the JPQL query
     commands.add(new ExecuteCountQueryCommand());
+    // set the count into the response
+    commands.add(new SetResponseCommand());
     getCountCommand = createChain(CommandType.GetCount, commands);
   }
 

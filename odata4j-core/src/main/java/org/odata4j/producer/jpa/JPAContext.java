@@ -28,6 +28,8 @@ public class JPAContext implements Context {
   private String jpqlQuery;
   private EdmPropertyBase edmPropertyBase;
 
+  private JPAResult result;
+  
   private BaseResponse response;
   
   // update, merge, delete
@@ -115,6 +117,14 @@ public class JPAContext implements Context {
     this.edmPropertyBase = edmPropertyBase;
   }
   
+  public JPAResult getResult() {
+    return result;
+  }
+
+  public void setResult(JPAResult result) {
+    this.result = result;
+  }
+
   public BaseResponse getResponse() {
     return response;
   }

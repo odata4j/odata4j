@@ -5,18 +5,11 @@ import java.util.List;
 
 import javax.persistence.Query;
 
-import org.core4j.Enumerable;
-import org.core4j.Func1;
-import org.odata4j.core.OEntity;
-import org.odata4j.core.OProperties;
-import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmMultiplicity;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSimpleType;
-import org.odata4j.producer.BaseResponse;
 import org.odata4j.producer.InlineCount;
-import org.odata4j.producer.Responses;
 
 public class ExecuteJPQLQueryCommand implements Command {
 
@@ -28,12 +21,12 @@ public class ExecuteJPQLQueryCommand implements Command {
 
   @Override
   public boolean execute(JPAContext context) {
-    context.setResponse(getEntitiesResponse(context));
+    context.setResult(getEntitiesResponse(context));
 
     return false;
   }
 
-  private BaseResponse getEntitiesResponse(final JPAContext context) {
+  private JPAResult getEntitiesResponse(final JPAContext context) {
 
     // get the jpql
     String jpql = context.getJPQLQuery();
@@ -60,12 +53,8 @@ public class ExecuteJPQLQueryCommand implements Command {
         // not null. This prevents us from being able to
         // successfully
         // respond to $top=0 contexts.
-        List<OEntity> emptyList = Collections.emptyList();
-        return Responses.entities(
-            emptyList,
-            context.getEntity().getEdmEntitySet(),
-            inlineCount,
-            null);
+        List<Object> emptyList = Collections.emptyList();
+        return JPAResults.entities(emptyList, inlineCount, false);
       }
 
       if (context.getQueryInfo().top < maxResults)
@@ -96,65 +85,34 @@ public class ExecuteJPQLQueryCommand implements Command {
                 + results.size());
 
       Object value = results.get(0);
-      OProperty<?> op = OProperties.simple(
-          ((EdmProperty) propInfo).getName(),
-          (EdmSimpleType<?>) ((EdmProperty) propInfo).getType(),
-          value);
-      return Responses.property(op);
+      return JPAResults.property(((EdmProperty) propInfo).getName(),
+          (EdmSimpleType<?>) ((EdmProperty) propInfo).getType(), value);
     }
 
-    // entities response
-    List<OEntity> entities = Enumerable.create(results)
-        .take(queryMaxResults)
-        .select(new Func1<Object, OEntity>() {
-          public OEntity apply(final Object jpaEntity) {
-            return makeEntity(context, jpaEntity);
-          }
-        }).toList();
-
     // compute skip token if necessary
-    String skipToken = null;
     boolean hasMoreResults = context.getQueryInfo() != null
         && context.getQueryInfo().top != null
         ? context.getQueryInfo().top > maxResults
             && results.size() > queryMaxResults
         : results.size() > queryMaxResults;
-
-    if (hasMoreResults)
-      skipToken = JPASkipToken.create(context.getQueryInfo() == null
-          ? null
-          : context.getQueryInfo().orderBy,
-          Enumerable.create(entities)
-              .last());
-
+    
     if (context.getEdmPropertyBase() instanceof EdmNavigationProperty) {
       EdmNavigationProperty edmNavProp = (EdmNavigationProperty) context
           .getEdmPropertyBase();
       if (edmNavProp.getToRole().getMultiplicity() == EdmMultiplicity.ONE
           || edmNavProp.getToRole().getMultiplicity() == EdmMultiplicity.ZERO_TO_ONE) {
-        if (entities.size() != 1)
+        if (results.size() != 1)
           throw new RuntimeException(
               "Expected only one entity, found "
-                  + entities.size());
-        return Responses.entity(entities.get(0));
+                  + results.size());
+        
+        return JPAResults.entity(results.get(0));
       }
     }
 
-    return Responses.entities(entities, context.getEntity()
-        .getEdmEntitySet(),
-        inlineCount, skipToken);
+    return JPAResults.entities(results
+        .subList(0, Math.min(queryMaxResults, results.size())), 
+        inlineCount, hasMoreResults);
   }
 
-  private OEntity makeEntity(JPAContext context, Object jpaEntity) {
-
-    return JPAProducer.jpaEntityToOEntity(
-        context.getMetadata(),
-        context.getEntity().getEdmEntitySet(),
-        context.getEntity().getJPAEntityType(),
-        jpaEntity,
-        context.getQueryInfo() == null ? null : context
-            .getQueryInfo().expand,
-        context.getQueryInfo() == null ? null : context
-            .getQueryInfo().select);
-  }
 }

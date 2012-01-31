@@ -77,6 +77,9 @@ public class CreateAndLinkCommand implements Command {
         context.getEntityManager().persist(newJpaEntity);
       }
     }
+    
+    context.setResult(JPAResults
+        .entity(context.getOtherEntity().getJpaEntity()));
 
     return false;
   }

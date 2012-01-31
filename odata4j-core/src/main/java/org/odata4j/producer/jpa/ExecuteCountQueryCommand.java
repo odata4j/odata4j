@@ -3,7 +3,6 @@ package org.odata4j.producer.jpa;
 import javax.persistence.Query;
 
 import org.odata4j.producer.QueryInfo;
-import org.odata4j.producer.Responses;
 
 public class ExecuteCountQueryCommand implements Command {
 
@@ -29,7 +28,7 @@ public class ExecuteCountQueryCommand implements Command {
     if (query != null && query.top != null)
       count = Math.min(count, query.top);
 
-    context.setResponse(Responses.count(count));
+    context.setResult(JPAResults.count(count));
 
     return false;
   }
