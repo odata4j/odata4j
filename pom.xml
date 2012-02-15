@@ -73,6 +73,11 @@
       <name>Stephan Klevenz</name>
       <email>stephan.klevenz@sap.com</email>
     </developer>
+    <developer>
+      <id>rolf.aden</id>
+      <name>Rolf Aden</name>
+      <email>Mail.Rolf.Aden@googlemail.com</email>
+    </developer>
   </developers>
 
   <properties>

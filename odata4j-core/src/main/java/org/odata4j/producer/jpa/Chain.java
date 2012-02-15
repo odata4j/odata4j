@@ -3,11 +3,11 @@ package org.odata4j.producer.jpa;
 import java.util.Collections;
 import java.util.List;
 
-class Chain implements Command {
+public class Chain implements Command {
 
   List<Command> commands;
 
-  Chain(List<Command> commands) {
+  public Chain(List<Command> commands) {
     this.commands = Collections.unmodifiableList(commands);
   }
 
