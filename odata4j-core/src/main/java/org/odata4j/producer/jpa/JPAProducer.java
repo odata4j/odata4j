@@ -299,12 +299,7 @@ public class JPAProducer implements ODataProducer {
   @Override
   public EntityResponse createEntity(String entitySetName, OEntity entity) {
     JPAContext context = new JPAContext(metadata, entitySetName, null, entity);
-    try {
-      createEntityCommand.execute(context);
-    } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+    createEntityCommand.execute(context);
     return (EntityResponse) context.getResponse();
   }
 
