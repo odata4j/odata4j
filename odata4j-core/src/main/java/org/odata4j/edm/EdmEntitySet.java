@@ -63,6 +63,7 @@ public class EdmEntitySet extends EdmItem implements Named {
     protected String name;
     protected String entityTypeName;
     protected EdmEntityType.Builder entityType;
+    private EdmEntitySet builtEntitySet;
 
     @Override
     Builder newBuilder(EdmEntitySet entitySet, BuilderContext context) {
@@ -83,7 +84,10 @@ public class EdmEntitySet extends EdmItem implements Named {
     }
 
     public EdmEntitySet build() {
-      return new EdmEntitySet(name, entityType == null ? null : entityType.builtFunc(), getDocumentation(), ImmutableList.copyOf(getAnnotations()));
+      if (builtEntitySet == null) {
+        builtEntitySet = new EdmEntitySet(name, entityType == null ? null : entityType.builtFunc(), getDocumentation(), ImmutableList.copyOf(getAnnotations()));
+      }
+      return builtEntitySet;
     }
 
     @Override

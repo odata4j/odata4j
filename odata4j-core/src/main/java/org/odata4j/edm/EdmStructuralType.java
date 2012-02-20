@@ -1,6 +1,7 @@
 package org.odata4j.edm;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.core4j.Enumerable;
@@ -128,6 +129,10 @@ public abstract class EdmStructuralType extends EdmNonSimpleType implements Name
     public TBuilder addProperties(List<EdmProperty.Builder> properties) {
       this.properties.addAll(properties);
       return (TBuilder) this;
+    }
+
+    public TBuilder addProperties(EdmProperty.Builder... properties) {
+      return addProperties(Arrays.asList(properties));
     }
 
     @SuppressWarnings("unchecked")

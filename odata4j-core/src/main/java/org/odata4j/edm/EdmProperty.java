@@ -169,6 +169,8 @@ public class EdmProperty extends EdmPropertyBase {
     private String fcEpmContentKind;
     private String fcEpmKeepInContent;
 
+    private EdmProperty builtProperty;
+
     private Builder(String name) {
       super(name);
     }
@@ -203,11 +205,14 @@ public class EdmProperty extends EdmPropertyBase {
     }
 
     public EdmProperty build() {
-      EdmType type = this.type != null ? this.type : typeBuilder.build();
-      return new EdmProperty(getDocumentation(), ImmutableList.copyOf(getAnnotations()),
-          getName(), declaringType, type, nullable, maxLength, unicode, fixedLength, storeGeneratedPattern,
-          fcTargetPath, fcContentKind, fcKeepInContent, fcEpmContentKind, fcEpmKeepInContent, collectionKind,
-          defaultValue, precision, scale);
+      if (builtProperty == null) {
+        EdmType type = this.type != null ? this.type : typeBuilder.build();
+        builtProperty = new EdmProperty(getDocumentation(), ImmutableList.copyOf(getAnnotations()),
+            getName(), declaringType, type, nullable, maxLength, unicode, fixedLength, storeGeneratedPattern,
+            fcTargetPath, fcContentKind, fcKeepInContent, fcEpmContentKind, fcEpmKeepInContent, collectionKind,
+            defaultValue, precision, scale);
+      }
+      return builtProperty;
     }
 
     public Builder setType(EdmType type) {
