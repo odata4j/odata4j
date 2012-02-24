@@ -1,7 +1,6 @@
 package org.odata4j.producer.jpa.northwind.test;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class QueryOptionTest50 extends JPAProducerTest {
@@ -14,8 +13,7 @@ public class QueryOptionTest50 extends JPAProducerTest {
   public void setUpClass() throws Exception {
     super.setUp(50);
   }
-  
-  @Ignore /* TODO remove annotation! */
+
   @Test
   public void systemQueryOptionFilterNotEqualTest() {
     String inp = "SystemQueryOptionFilterNotEqualTest";

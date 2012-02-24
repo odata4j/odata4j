@@ -2,16 +2,17 @@ package org.odata4j.examples.producer;
 
 import java.io.IOException;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.core4j.Enumerable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sun.net.httpserver.Filter;
 import com.sun.net.httpserver.HttpExchange;
 
 public class WhitelistFilter extends Filter {
 
-  private static final Logger log = Logger.getLogger(WhitelistFilter.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(WhitelistFilter.class);
 
   private final Set<String> whitelist;
 
@@ -31,10 +32,10 @@ public class WhitelistFilter extends Filter {
     String path = exchange.getRequestURI().getPath();
 
     if (whitelist.contains(ipaddr)) {
-      log.info("allow " + ipaddr + " for" + path);
+      WhitelistFilter.LOGGER.info("allow " + ipaddr + " for" + path);
       chain.doFilter(exchange);
     } else {
-      log.info("DENY " + ipaddr + " for " + path);
+      WhitelistFilter.LOGGER.info("DENY " + ipaddr + " for " + path);
       exchange.close();
     }
 

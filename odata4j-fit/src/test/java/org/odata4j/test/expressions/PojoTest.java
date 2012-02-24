@@ -23,7 +23,7 @@ public class PojoTest extends AbstractRuntimeTest {
   @Test
   public void testPojo() {
 
-    String uri = "http://localhost:18889/";
+    String uri = "http://localhost:18889/TestService.svc/";
 
     InMemoryProducer producer = new InMemoryProducer("PojoTest");
     DefaultODataProducerProvider.setInstance(producer);
@@ -59,7 +59,7 @@ public class PojoTest extends AbstractRuntimeTest {
   @Test
   public void testPojoWithCompositeKey() {
 
-    String uri = "http://localhost:18889/";
+    String uri = "http://localhost:18889/TestService.svc/";
 
     InMemoryProducer producer = new InMemoryProducer("PojoTest");
     DefaultODataProducerProvider.setInstance(producer);

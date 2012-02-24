@@ -7,7 +7,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -18,8 +20,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.core.MediaType;
@@ -29,6 +29,8 @@ import org.junit.Assert;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.test.RuntimeFacade;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -37,6 +39,8 @@ import org.w3c.dom.Text;
 import org.xml.sax.InputSource;
 
 public class NorthwindTestUtils {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(NorthwindTestUtils.class);
 
   private RuntimeFacade rtFacade;
 
@@ -67,54 +71,62 @@ public class NorthwindTestUtils {
    * @see org.odata4j.producer.jpa.northwind.test.NorthwindTestUtils#testJSONResult(java.lang.String, java.lang.String, java.lang.String)
    */
   public void testJSONResult(String endpointUri, String uri, String inp) {
-    System.out.println("Test: " + inp);
+    try {
+      System.out.println("Test: " + inp);
 
-    String RESOURCES_TYPE = "json";
+      String RESOURCES_TYPE = "json";
 
-    uri = uri.replace(" ", "%20");
-    String result = this.rtFacade.getWebResource(endpointUri + uri, "application/json");
+      uri = uri.replace(" ", "%20");
+      String result = this.rtFacade.getWebResource(endpointUri + uri, "application/json");
 
-    // different naming
-    result = result.replace(
-        "NorthwindModel.Categories",
-        "NorthwindModel.Category");
-    result = result.replace(
-        "NorthwindModel.Products",
-        "NorthwindModel.Product");
-    result = result.replace(
-        "NorthwindModel.Suppliers",
-        "NorthwindModel.Supplier");
-    result = result.replace(
-        "NorthwindModel.Customers",
-        "NorthwindModel.Customer");
-    result = result.replace(
-        "NorthwindModel.Order_Details",
-        "NorthwindModel.Order_Detail");
-    result = result.replace(
-        "http://localhost:8810/northwind",
-        "http://services.odata.org/northwind");
+      result = URLDecoder.decode(result, "UTF-8");
 
-    String expect = NorthwindTestUtils.readFileToString(
-        RESOURCES_ROOT +
-            RESOURCES_TYPE +
-            "/" + inp + "."
-            + RESOURCES_TYPE,
-        "ISO-8859-15");
+      // different naming
+      result = result.replace(
+          "NorthwindModel.Categories",
+          "NorthwindModel.Category");
+      result = result.replace(
+          "NorthwindModel.Products",
+          "NorthwindModel.Product");
+      result = result.replace(
+          "NorthwindModel.Suppliers",
+          "NorthwindModel.Supplier");
+      result = result.replace(
+          "NorthwindModel.Customers",
+          "NorthwindModel.Customer");
+      result = result.replace(
+          "NorthwindModel.Order_Details",
+          "NorthwindModel.Order_Detail");
+      result = result.replace(
+          "http://localhost:8810/northwind",
+          "http://services.odata.org/northwind");
 
-    expect = expect.replace(
-        "http://services.odata.org/Northwind",
-        "http://services.odata.org/northwind");
+      String expect = NorthwindTestUtils.readFileToString(
+          RESOURCES_ROOT +
+              RESOURCES_TYPE +
+              "/" + inp + "."
+              + RESOURCES_TYPE,
+          "ISO-8859-15");
 
-    expect = normalizeFormat(expect);
-    result = normalizeFormat(result);
+      expect = URLDecoder.decode(expect, "UTF-8");
 
-    String[] resultParts = result.split(",");
-    Arrays.sort(resultParts);
+      expect = expect.replace(
+          "http://services.odata.org/Northwind",
+          "http://services.odata.org/northwind");
 
-    String[] expectParts = expect.split(",");
-    Arrays.sort(expectParts);
+      expect = normalizeFormat(expect);
+      result = normalizeFormat(result);
 
-    Assert.assertArrayEquals(expectParts, resultParts);
+      String[] resultParts = result.split(",");
+      Arrays.sort(resultParts);
+
+      String[] expectParts = expect.split(",");
+      Arrays.sort(expectParts);
+
+      Assert.assertArrayEquals(expectParts, resultParts);
+    } catch (UnsupportedEncodingException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   /* (non-Javadoc)
@@ -509,12 +521,7 @@ public class NorthwindTestUtils {
     try {
       Class.forName("org.hsqldb.jdbcDriver");
     } catch (Exception ex) {
-      System.out.println("ERROR: failed to load HSQLDB JDBC driver.");
-      Logger.getLogger(NorthwindTestUtils.class.getName()).log(
-          Level.SEVERE,
-          null,
-          ex);
-
+      NorthwindTestUtils.LOGGER.error("ERROR: failed to load HSQLDB JDBC driver.", ex);
       return;
     }
 
@@ -548,20 +555,13 @@ public class NorthwindTestUtils {
       statement.close();
 
     } catch (Exception ex) {
-      Logger.getLogger(NorthwindTestUtils.class.getName()).log(
-          Level.SEVERE,
-          null,
-          ex);
-
+      NorthwindTestUtils.LOGGER.error(ex.getMessage(), ex);
     } finally {
       if (conn != null) {
         try {
           conn.close();
         } catch (SQLException ex) {
-          Logger.getLogger(NorthwindTestUtils.class.getName()).log(
-              Level.SEVERE,
-              null,
-              ex);
+          NorthwindTestUtils.LOGGER.error(ex.getMessage(), ex);
         }
       }
     }
@@ -609,19 +609,11 @@ public class NorthwindTestUtils {
         in.close();
 
       } catch (IOException ex) {
-        Logger.getLogger(
-            NorthwindTestUtils.class.getName()).log(
-            Level.SEVERE,
-            null,
-            ex);
+        NorthwindTestUtils.LOGGER.error(ex.getMessage(), ex);
       }
 
     } catch (Exception ex) {
-      Logger.getLogger(
-          NorthwindTestUtils.class.getName()).log(
-          Level.SEVERE,
-          null,
-          ex);
+      NorthwindTestUtils.LOGGER.error(ex.getMessage(), ex);
     }
 
     return strBuilder.toString();

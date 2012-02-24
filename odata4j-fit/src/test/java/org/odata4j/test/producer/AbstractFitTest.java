@@ -2,6 +2,7 @@ package org.odata4j.test.producer;
 
 import org.junit.After;
 import org.junit.Before;
+import org.odata4j.test.AbstractTest;
 
 /**
  * Base test class that:
@@ -11,7 +12,7 @@ import org.junit.Before;
  * <li>creates a client,</li>
  * <li>and starts the client</li></ol>
  */
-public abstract class AbstractFitTest {
+public abstract class AbstractFitTest extends AbstractTest {
 
   protected abstract void createServer() throws Exception;
 

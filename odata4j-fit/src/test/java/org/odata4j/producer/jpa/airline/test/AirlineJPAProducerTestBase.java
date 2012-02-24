@@ -7,8 +7,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.persistence.EntityManagerFactory;
 
@@ -35,12 +33,7 @@ public class AirlineJPAProducerTestBase extends AbstractRuntimeTest {
     try {
       Class.forName("org.hsqldb.jdbcDriver");
     } catch (Exception ex) {
-      System.out.println("ERROR: failed to load HSQLDB JDBC driver.");
-      Logger.getLogger(AirlineJPAProducerTestBase.class.getName()).log(
-          Level.SEVERE,
-          null,
-          ex);
-
+      this.logger.error("ERROR: failed to load HSQLDB JDBC driver.", ex);
       return;
     }
 
@@ -54,20 +47,13 @@ public class AirlineJPAProducerTestBase extends AbstractRuntimeTest {
       function.apply(conn);
 
     } catch (Exception ex) {
-      Logger.getLogger(AirlineJPAProducerTestBase.class.getName()).log(
-          Level.SEVERE,
-          null,
-          ex);
-
+      this.logger.error(ex.getMessage(), ex);
     } finally {
       if (conn != null) {
         try {
           conn.close();
         } catch (SQLException ex) {
-          Logger.getLogger(AirlineJPAProducerTestBase.class.getName()).log(
-              Level.SEVERE,
-              null,
-              ex);
+          this.logger.error(ex.getMessage(), ex);
         }
       }
     }

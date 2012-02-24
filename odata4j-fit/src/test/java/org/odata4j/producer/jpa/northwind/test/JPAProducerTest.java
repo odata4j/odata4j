@@ -21,8 +21,7 @@ public class JPAProducerTest extends AbstractRuntimeTest {
     this.utils = new NorthwindTestUtils(this.rtFacade);
   }
 
-  protected static final String endpointUri =
-      "http://localhost:8810/northwind/Northwind.svc/";
+  protected static final String endpointUri = "http://localhost:8810/northwind/Northwind.svc/";
 
   protected EntityManagerFactory emf;
   protected ODataServer server;
@@ -57,14 +56,18 @@ public class JPAProducerTest extends AbstractRuntimeTest {
 
   @After
   public void tearDown() throws Exception {
-    if (server != null) {
-      server.stop();
-      server = null;
-    }
+    try {
 
-    if (emf != null) {
-      emf.close();
-      emf = null;
+    } finally {
+      if (server != null) {
+        server.stop();
+        server = null;
+      }
+
+      if (emf != null) {
+        emf.close();
+        emf = null;
+      }
     }
   }
 

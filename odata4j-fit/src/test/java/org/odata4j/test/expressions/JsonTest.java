@@ -27,7 +27,7 @@ public class JsonTest extends AbstractRuntimeTest {
   @Test
   public void testJson() {
 
-    String uri = "http://localhost:18890/";
+    String uri = "http://localhost:18890/TestService.svc/";
 
     InMemoryProducer producer = new InMemoryProducer("JsonTest");
     DefaultODataProducerProvider.setInstance(producer);
