@@ -1,6 +1,7 @@
 package org.odata4j.jersey.consumer;
 
 import org.core4j.Enumerable;
+import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.edm.EdmDataServices;
 
@@ -14,7 +15,7 @@ class ConsumerDeleteEntityRequest extends ConsumerEntityRequestBase<Void> {
   @Override
   public Void execute() {
     String path = Enumerable.create(getSegments()).join("/");
-    ODataJerseyClientRequest request = ODataJerseyClientRequest.delete(getServiceRootUri() + path);
+    ODataClientRequest request = ODataClientRequest.delete(getServiceRootUri() + path);
     getClient().deleteEntity(request);
     return null;
   }

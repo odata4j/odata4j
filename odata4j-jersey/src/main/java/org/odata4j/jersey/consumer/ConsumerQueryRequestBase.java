@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.core4j.Enumerable;
 import org.core4j.Func1;
+import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OQueryRequest;
 import org.odata4j.edm.EdmDataServices;
@@ -53,13 +54,13 @@ public abstract class ConsumerQueryRequestBase<T> implements OQueryRequest<T> {
     return metadata;
   }
 
-  protected ODataJerseyClientRequest buildRequest(Func1<String, String> pathModification) {
+  protected ODataClientRequest buildRequest(Func1<String, String> pathModification) {
     String path = Enumerable.create(segments).join("/");
     path += (path.length() == 0 ? "" : "/") + lastSegment;
     if (pathModification != null)
       path = pathModification.apply(path);
 
-    ODataJerseyClientRequest request = ODataJerseyClientRequest.get(serviceRootUri + path);
+    ODataClientRequest request = ODataClientRequest.get(serviceRootUri + path);
 
     if (top != null) {
       request = request.queryParam("$top", Integer.toString(top));

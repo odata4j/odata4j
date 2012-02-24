@@ -6,6 +6,7 @@ import java.util.List;
 import org.core4j.Enumerable;
 import org.core4j.Predicate1;
 import org.odata4j.consumer.AbstractConsumerEntityPayloadRequest;
+import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OModifyRequest;
@@ -63,7 +64,7 @@ class ConsumerEntityModificationRequest<T> extends AbstractConsumerEntityPayload
 
     String path = Enumerable.create(segments).join("/");
 
-    ODataJerseyClientRequest request = updateRoot != null ? ODataJerseyClientRequest.put(serviceRootUri + path, entry) : ODataJerseyClientRequest.merge(serviceRootUri + path, entry);
+    ODataClientRequest request = updateRoot != null ? ODataClientRequest.put(serviceRootUri + path, entry) : ODataClientRequest.merge(serviceRootUri + path, entry);
     boolean rt = client.updateEntity(request);
     return rt;
   }

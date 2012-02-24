@@ -14,13 +14,13 @@ public class ReReadJPAEntityCommand implements Command {
     // the CategoryID.
     EntityManager em = context.getEntityManager();
     if (context.getEntity().getOEntity().getLinks() != null
-              && !context.getEntity().getOEntity().getLinks().isEmpty()) {
+        && !context.getEntity().getOEntity().getLinks().isEmpty()) {
 
       EntityTransaction tx = em.getTransaction();
       tx.begin();
       try {
         context.getEntityManager().refresh(
-                  context.getEntity().getJpaEntity());
+            context.getEntity().getJpaEntity());
         tx.commit();
       } finally {
         if (tx.isActive()) {
@@ -28,7 +28,7 @@ public class ReReadJPAEntityCommand implements Command {
         }
       }
     }
-    
+
     context.setResult(JPAResults
         .entity(context.getEntity().getJpaEntity()));
 

@@ -20,6 +20,23 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <executions>
 
+          <!-- cxf bundle: everything with cxf -->
+          <execution>
+            <id>cxfbundle</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <appendAssemblyId>false</appendAssemblyId>
+              <skipAssembly>false</skipAssembly>
+              <finalName>${odata4j.cxfbundle}</finalName>
+              <descriptors>
+                <descriptor>src/main/assembly/cxfbundle.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </execution>
+
           <!-- core: odata4j-core only -->
           <execution>
             <id>core</id>
@@ -118,6 +135,11 @@
                   <type>jar</type>
                   <classifier>bundle</classifier>
                 </artifact>
+                <artifact>
+                  <file>${project.build.directory}/${odata4j.cxfbundle}.jar</file>
+                  <type>jar</type>
+                  <classifier>cxfbundle</classifier>
+                </artifact>
               </artifacts>
             </configuration>
           </execution>
@@ -137,11 +159,11 @@
       <groupId>org.odata4j</groupId>
       <version>${project.version}</version>
     </dependency>
-<!--     <dependency> -->
-<!--       <artifactId>odata4j-cxf</artifactId> -->
-<!--       <groupId>org.odata4j</groupId> -->
-<!--       <version>${project.version}</version> -->
-<!--     </dependency> -->
+    <dependency>
+      <artifactId>odata4j-cxf</artifactId>
+      <groupId>org.odata4j</groupId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
 </project>

@@ -27,7 +27,8 @@ import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
 
-@Path("{entitySetName}{id: (\\(.+?\\))}")
+// orig @Path("{entitySetName}{id: (\\(.+?\\))}")
+@Path("{entitySetName}{id: \\(.+?\\)}")
 public class EntityRequestResource extends BaseResource {
 
   private static final Logger log = Logger.getLogger(EntityRequestResource.class.getName());

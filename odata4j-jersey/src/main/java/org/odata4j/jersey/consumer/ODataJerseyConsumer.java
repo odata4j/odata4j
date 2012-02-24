@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.core4j.Enumerable;
 import org.odata4j.consumer.AbstractODataConsumer;
+import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.consumer.behaviors.OClientBehavior;
 import org.odata4j.core.EntitySetInfo;
 import org.odata4j.core.OCreateRequest;
@@ -136,7 +137,7 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
    */
   @Override
   public Enumerable<EntitySetInfo> getEntitySets() {
-    ODataJerseyClientRequest request = ODataJerseyClientRequest.get(this.getServiceRootUri());
+    ODataClientRequest request = ODataClientRequest.get(this.getServiceRootUri());
     return Enumerable.create(client.getCollections(request)).cast(EntitySetInfo.class);
   }
 
@@ -315,7 +316,7 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
     }
 
     private void refreshDelegate() {
-      ODataJerseyClientRequest request = ODataJerseyClientRequest.get(ODataJerseyConsumer.this.getServiceRootUri() + "$metadata");
+      ODataClientRequest request = ODataClientRequest.get(ODataJerseyConsumer.this.getServiceRootUri() + "$metadata");
       EdmDataServices metadata = client.getMetadata(request);
       delegate = metadata == null ? EdmDataServices.EMPTY : metadata;
     }

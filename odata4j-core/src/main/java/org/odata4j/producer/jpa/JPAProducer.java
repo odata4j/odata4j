@@ -613,7 +613,7 @@ public class JPAProducer implements ODataProducer {
         Object relJpaEntity = createNewJPAEntity(em, relJpaEntityType,
             ((ORelatedEntityLinkInline) link).getRelatedEntity(),
             true);
-        
+
         if (!cascade) {
           em.persist(relJpaEntity);
         }

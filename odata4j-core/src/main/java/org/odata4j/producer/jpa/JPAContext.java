@@ -29,9 +29,9 @@ public class JPAContext implements Context {
   private EdmPropertyBase edmPropertyBase;
 
   private JPAResult result;
-  
+
   private BaseResponse response;
-  
+
   // update, merge, delete
   protected JPAContext(EdmDataServices metadata, String entitySetName,
       OEntityKey oEntityKey, OEntity oEntity) {
@@ -84,7 +84,7 @@ public class JPAContext implements Context {
   public void setEntityTransaction(EntityTransaction tx) {
     this.tx = tx;
   }
-  
+
   public ContextEntity getEntity() {
     return entity;
   }
@@ -92,7 +92,7 @@ public class JPAContext implements Context {
   public ContextEntity getOtherEntity() {
     return otherEntity;
   }
-  
+
   public String getNavProperty() {
     return navProperty;
   }
@@ -116,7 +116,7 @@ public class JPAContext implements Context {
   public void setEdmPropertyBase(EdmPropertyBase edmPropertyBase) {
     this.edmPropertyBase = edmPropertyBase;
   }
-  
+
   public JPAResult getResult() {
     return result;
   }
@@ -186,16 +186,16 @@ public class JPAContext implements Context {
     public String getKeyAttributeName() {
       if (keyAttributeName == null) {
         keyAttributeName = JPAEdmGenerator
-          .getIdAttribute(getJPAEntityType()).getName();
+            .getIdAttribute(getJPAEntityType()).getName();
       }
       return keyAttributeName;
     }
 
     public Object getTypeSafeEntityKey() {
       return JPAProducer.typeSafeEntityKey(
-            getEntityManager(),
-            getJPAEntityType(),
-            oEntityKey);
+          getEntityManager(),
+          getJPAEntityType(),
+          oEntityKey);
     }
 
     public Object getJpaEntity() {

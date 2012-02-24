@@ -44,7 +44,7 @@ public class JPAResults {
     };
   }
 
-  public static EntitiesResult entities(final List<Object> entities, 
+  public static EntitiesResult entities(final List<Object> entities,
       final Integer inlineCount, final boolean createSkipToken) {
     return new EntitiesResult() {
       @Override

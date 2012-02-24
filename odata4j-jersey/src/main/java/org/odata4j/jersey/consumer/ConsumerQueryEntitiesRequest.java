@@ -7,6 +7,7 @@ import org.core4j.Enumerable;
 import org.core4j.Func;
 import org.core4j.Func1;
 import org.core4j.ReadOnlyIterator;
+import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.ODataVersion;
 import org.odata4j.edm.EdmDataServices;
@@ -33,7 +34,7 @@ class ConsumerQueryEntitiesRequest<T> extends ConsumerQueryRequestBase<T> {
 
   @Override
   public Enumerable<T> execute() {
-    ODataJerseyClientRequest request = buildRequest(null);
+    ODataClientRequest request = buildRequest(null);
     Enumerable<Entry> entries = getEntries(request);
 
     return entries.select(new Func1<Entry, T>() {
@@ -43,7 +44,7 @@ class ConsumerQueryEntitiesRequest<T> extends ConsumerQueryRequestBase<T> {
     }).cast(entityType);
   }
 
-  private Enumerable<Entry> getEntries(final ODataJerseyClientRequest request) {
+  private Enumerable<Entry> getEntries(final ODataClientRequest request) {
     return Enumerable.createFromIterator(new Func<Iterator<Entry>>() {
       public Iterator<Entry> apply() {
         return new EntryIterator(getClient(), request);
@@ -54,13 +55,13 @@ class ConsumerQueryEntitiesRequest<T> extends ConsumerQueryRequestBase<T> {
   private class EntryIterator extends ReadOnlyIterator<Entry> {
 
     private ODataJerseyClient client;
-    private ODataJerseyClientRequest request;
+    private ODataClientRequest request;
     private FormatParser<Feed> parser;
     private Feed feed;
     private Iterator<Entry> feedEntries;
     private int feedEntryCount;
 
-    public EntryIterator(ODataJerseyClient client, ODataJerseyClientRequest request) {
+    public EntryIterator(ODataJerseyClient client, ODataClientRequest request) {
       this.client = client;
       this.request = request;
     }
@@ -110,7 +111,7 @@ class ConsumerQueryEntitiesRequest<T> extends ConsumerQueryRequestBase<T> {
           skiptoken = URLDecoder.decode(skiptoken, "UTF-8");
           request = request.queryParam("$skiptoken", skiptoken);
         } else if (feed.getNext().toLowerCase().startsWith("http")) {
-          request = ODataJerseyClientRequest.get(feed.getNext());
+          request = ODataClientRequest.get(feed.getNext());
         } else {
           throw new UnsupportedOperationException();
         }

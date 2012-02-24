@@ -5,10 +5,10 @@ import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.Attribute.PersistentAttributeType;
 import javax.persistence.metamodel.EmbeddableType;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.SingularAttribute;
-import javax.persistence.metamodel.Attribute.PersistentAttributeType;
 
 import org.core4j.Enumerable;
 import org.odata4j.core.OEntityKey;

@@ -3,6 +3,7 @@ package org.odata4j.jersey.consumer;
 import java.util.Arrays;
 
 import org.odata4j.consumer.AbstractConsumerEntityPayloadRequest;
+import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.core.OCreateRequest;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.ODataVersion;
@@ -55,7 +56,7 @@ class ConsumerCreateEntityRequest<T> extends AbstractConsumerEntityPayloadReques
       url.append(entitySetName);
     }
 
-    ODataJerseyClientRequest request = ODataJerseyClientRequest.post(url.toString(), entry);
+    ODataClientRequest request = ODataClientRequest.post(url.toString(), entry);
     ClientResponse response = client.createEntity(request);
 
     ODataVersion version = InternalUtil.getDataServiceVersion(response.getHeaders()

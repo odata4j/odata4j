@@ -87,11 +87,13 @@
     <odata4j.sign.artifacts.phase>verify</odata4j.sign.artifacts.phase>
     <odata4j.clientbundle>${project.name}-clientbundle-${project.version}</odata4j.clientbundle>
     <odata4j.nojpabundle>${project.name}-nojpabundle-${project.version}</odata4j.nojpabundle>
+    <odata4j.cxfbundle>${project.name}-cxfbundle-${project.version}</odata4j.cxfbundle>
     <odata4j.bundle>${project.name}-bundle-${project.version}</odata4j.bundle>
 
     <junit.version>4.8.2</junit.version>
     <jersey.version>1.1.5</jersey.version>
-    <cxf.version>2.5.0</cxf.version>
+    <cxf.version>2.5.2</cxf.version>
+    <httpclient.version>4.1.2</httpclient.version>
     <jetty.version>7.5.3.v20111011</jetty.version>
 
   </properties>
@@ -229,38 +231,6 @@
         </executions>
       </plugin>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-            <configuration>
-              <nodeprecated>true</nodeprecated>
-              <skip>${odata4j.skip.javadoc}</skip>
-              <bottom><![CDATA[<i><a href="http://odata4j.org">http://odata4j.org</a></i>]]></bottom>
-              <links>
-                <link>http://jersey.java.net/nonav/apidocs/1.1.5/jersey</link>
-                <link>http://joda-time.sourceforge.net/api-release</link>
-                <link>http://download.oracle.com/javase/6/docs/api</link>
-                <link>http://download.oracle.com/javaee/6/api</link>
-                <link>http://core4j.googlecode.com/hg/core4j/doc/apidocs</link>
-                <link>http://www.xmlpull.org/v1/doc/api</link>
-                <link>http://cxf.apache.org/javadoc/latest-2.5.x/</link>
-              </links>
-              <archive>
-                <manifestEntries>
-                  <Built-By>${built.by}</Built-By>
-                </manifestEntries>
-              </archive>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
     </plugins>
   </build>
 
@@ -279,6 +249,37 @@
                 <goals>
                   <goal>sign</goal>
                 </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+                <configuration>
+                  <nodeprecated>true</nodeprecated>
+                  <skip>${odata4j.skip.javadoc}</skip>
+                  <bottom><![CDATA[<i><a href="http://odata4j.org">http://odata4j.org</a></i>]]></bottom>
+                  <links>
+                    <link>http://jersey.java.net/nonav/apidocs/1.1.5/jersey</link>
+                    <link>http://joda-time.sourceforge.net/api-release</link>
+                    <link>http://download.oracle.com/javase/6/docs/api</link>
+                    <link>http://download.oracle.com/javaee/6/api</link>
+                    <link>http://core4j.googlecode.com/hg/core4j/doc/apidocs</link>
+                    <link>http://www.xmlpull.org/v1/doc/api</link>
+                    <link>http://cxf.apache.org/javadoc/latest-2.5.x/</link>
+                  </links>
+                  <archive>
+                    <manifestEntries>
+                      <Built-By>${built.by}</Built-By>
+                    </manifestEntries>
+                  </archive>
+                </configuration>
               </execution>
             </executions>
           </plugin>

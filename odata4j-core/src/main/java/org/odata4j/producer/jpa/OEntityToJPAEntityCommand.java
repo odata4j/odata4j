@@ -20,9 +20,9 @@ public class OEntityToJPAEntityCommand implements Command {
 
     Object jpaEntity = JPAProducer.createNewJPAEntity(
         context.getEntityManager(),
-          accessor.getEntity(context).getJPAEntityType(),
-          accessor.getEntity(context).getOEntity(),
-          withLinks);
+        accessor.getEntity(context).getJPAEntityType(),
+        accessor.getEntity(context).getOEntity(),
+        withLinks);
     accessor.getEntity(context).setJpaEntity(jpaEntity);
 
     return false;

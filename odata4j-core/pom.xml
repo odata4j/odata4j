@@ -25,8 +25,8 @@
           <instructions>
             <Import-Package>
               !com.sun.net.httpserver.*,
-              com.sun.jersey.*;version="0.0.0",
-              javax.ws.rs.*;version="0.0.0",
+<!--               com.sun.jersey.*;version="0.0.0", -->
+<!--               javax.ws.rs.*;version="0.0.0", -->
               *
             </Import-Package>
             <Export-Package>

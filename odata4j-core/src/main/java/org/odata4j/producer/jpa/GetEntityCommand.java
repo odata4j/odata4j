@@ -5,7 +5,6 @@ import javax.persistence.metamodel.EntityType;
 import org.odata4j.producer.exceptions.NotFoundException;
 import org.odata4j.producer.jpa.JPAContext.EntityAccessor;
 
-
 public class GetEntityCommand implements Command {
 
   private EntityAccessor accessor;
@@ -36,7 +35,7 @@ public class GetEntityCommand implements Command {
     }
 
     accessor.getEntity(context).setJpaEntity(jpaEntity);
-    
+
     context.setResult(JPAResults.entity(accessor
         .getEntity(context).getJpaEntity()));
 

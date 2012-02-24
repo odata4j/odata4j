@@ -50,7 +50,7 @@ public class SetResponseCommand implements Command {
 
     if (context.getResult() instanceof EntityResult) {
       EntityResult result = (EntityResult) context.getResult();
-      
+
       OEntity oentity = makeEntity(context, result.getEntity());
       context.setResponse(Responses.entity(oentity));
 
@@ -63,17 +63,17 @@ public class SetResponseCommand implements Command {
               return makeEntity(context, jpaEntity);
             }
           }).toList();
-      
+
       //  TODO create the skip token based on the jpaEntity and
       //  move this back to ExecuteJPQLQueryCommand
-      String skipToken = null;    
+      String skipToken = null;
       if (result.createSkipToken()) {
         skipToken = JPASkipToken.create(context.getQueryInfo() == null
-          ? null
-          : context.getQueryInfo().orderBy,
-          Enumerable.create(entities).last());
+            ? null
+            : context.getQueryInfo().orderBy,
+            Enumerable.create(entities).last());
       }
-      
+
       context.setResponse(Responses.entities(entities, context.getEntity()
           .getEdmEntitySet(), result.getInlineCount(), skipToken));
 
@@ -85,7 +85,7 @@ public class SetResponseCommand implements Command {
       context.setResponse(Responses.property(op));
 
     } else if (context.getResult() instanceof CountResult) {
-      
+
       CountResult result = (CountResult) context.getResult();
       context.setResponse(Responses.count(result.getCount()));
 

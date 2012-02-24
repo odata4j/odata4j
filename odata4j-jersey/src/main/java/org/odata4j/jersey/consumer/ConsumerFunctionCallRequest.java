@@ -11,6 +11,7 @@ import org.core4j.Enumerable;
 import org.core4j.Func;
 import org.core4j.ReadOnlyIterator;
 import org.joda.time.LocalDateTime;
+import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.core.Guid;
 import org.odata4j.core.OCollection;
 import org.odata4j.core.ODataConstants;
@@ -56,7 +57,7 @@ class ConsumerFunctionCallRequest<T extends OObject>
     for (OFunctionParameter p : params) {
       custom(p.getName(), toUriString(p));
     }
-    final ODataJerseyClientRequest request = buildRequest(null);
+    final ODataClientRequest request = buildRequest(null);
     Enumerable<OObject> results = Enumerable.createFromIterator(
         new Func<Iterator<OObject>>() {
           @Override
@@ -168,14 +169,14 @@ class ConsumerFunctionCallRequest<T extends OObject>
   private class FunctionResultsIterator extends ReadOnlyIterator<OObject> {
 
     private ODataJerseyClient client;
-    private ODataJerseyClientRequest request;
+    private ODataClientRequest request;
     private FormatParser<? extends OObject> parser;
     private OObject current = null;
     private Iterator<OObject> iter = null;
     private boolean done = false;
     private int count = 0;
 
-    public FunctionResultsIterator(ODataJerseyClient client, ODataJerseyClientRequest request) {
+    public FunctionResultsIterator(ODataJerseyClient client, ODataClientRequest request) {
       this.client = client;
       this.request = request;
     }

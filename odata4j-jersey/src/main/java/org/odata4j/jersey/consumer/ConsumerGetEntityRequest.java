@@ -1,6 +1,7 @@
 package org.odata4j.jersey.consumer;
 
 import org.core4j.Enumerable;
+import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OEntityGetRequest;
 import org.odata4j.core.OEntityKey;
@@ -50,7 +51,7 @@ class ConsumerGetEntityRequest<T> extends ConsumerEntityRequestBase<T> implement
 
     String path = Enumerable.create(getSegments()).join("/");
 
-    ODataJerseyClientRequest request = ODataJerseyClientRequest.get(getServiceRootUri() + path);
+    ODataClientRequest request = ODataClientRequest.get(getServiceRootUri() + path);
 
     if (select != null) {
       request = request.queryParam("$select", select);

@@ -39,7 +39,7 @@ public class CreateAndLinkCommand implements Command {
     // get the collection attribute and add the new entity to the parent
     // entity
     final String navProperty = context.getNavProperty();
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     PluralAttribute<?, ?, ?> attr = Enumerable.create(
         context.getEntity().getJPAEntityType()
             .getPluralAttributes())
@@ -77,7 +77,7 @@ public class CreateAndLinkCommand implements Command {
         context.getEntityManager().persist(newJpaEntity);
       }
     }
-    
+
     context.setResult(JPAResults
         .entity(context.getOtherEntity().getJpaEntity()));
 

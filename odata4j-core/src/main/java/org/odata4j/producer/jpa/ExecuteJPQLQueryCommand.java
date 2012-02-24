@@ -95,7 +95,7 @@ public class ExecuteJPQLQueryCommand implements Command {
         ? context.getQueryInfo().top > maxResults
             && results.size() > queryMaxResults
         : results.size() > queryMaxResults;
-    
+
     if (context.getEdmPropertyBase() instanceof EdmNavigationProperty) {
       EdmNavigationProperty edmNavProp = (EdmNavigationProperty) context
           .getEdmPropertyBase();
@@ -105,13 +105,13 @@ public class ExecuteJPQLQueryCommand implements Command {
           throw new RuntimeException(
               "Expected only one entity, found "
                   + results.size());
-        
+
         return JPAResults.entity(results.get(0));
       }
     }
 
     return JPAResults.entities(results
-        .subList(0, Math.min(queryMaxResults, results.size())), 
+        .subList(0, Math.min(queryMaxResults, results.size())),
         inlineCount, hasMoreResults);
   }
 

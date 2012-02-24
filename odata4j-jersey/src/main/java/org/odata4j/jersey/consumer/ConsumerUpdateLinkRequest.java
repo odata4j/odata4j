@@ -1,6 +1,7 @@
 package org.odata4j.jersey.consumer;
 
 import org.core4j.Enumerable;
+import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.core.OEntityId;
 import org.odata4j.edm.EdmDataServices;
 
@@ -23,7 +24,7 @@ class ConsumerUpdateLinkRequest extends ConsumerEntityRequestBase<Void> {
     String path = Enumerable.create(getSegments()).join("/");
     path = ConsumerQueryLinksRequest.linksPath(targetNavProp, oldTargetKeyValues).apply(path);
 
-    ODataJerseyClientRequest request = ODataJerseyClientRequest.put(getServiceRootUri() + path, toSingleLink(newTargetEntity));
+    ODataClientRequest request = ODataClientRequest.put(getServiceRootUri() + path, toSingleLink(newTargetEntity));
     getClient().updateLink(request);
     return null;
   }

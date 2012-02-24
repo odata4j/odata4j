@@ -158,6 +158,18 @@ public class ODataClientRequest {
   }
 
   /**
+   * Sets a request query parameter.
+   * 
+   * @param name  the query parameter name
+   * @param value  the query parameter value
+   * @return the request builder
+   */
+  public ODataClientRequest queryParam(String name, String value) {
+    this.getQueryParams().put(name, value);
+    return new ODataClientRequest(this.getMethod(), this.getUrl(), this.getHeaders(), this.getQueryParams(), this.getPayload());
+  }
+
+  /**
    * Sets an http request header.
    * 
    * @param name  the header name
@@ -170,28 +182,6 @@ public class ODataClientRequest {
   }
 
   /**
-   * Sets a request query parameter.
-   * 
-   * @param name  the query parameter name
-   * @param value  the query parameter value
-   * @return the request builder
-   */
-  public ODataClientRequest queryParam(String name, String value) {
-    queryParams.put(name, value);
-    return new ODataClientRequest(method, url, headers, queryParams, payload);
-  }
-
-  /**
-   * Sets the request url.
-   * 
-   * @param url  the request url
-   * @return the request builder
-   */
-  public ODataClientRequest url(String url) {
-    return new ODataClientRequest(method, url, headers, queryParams, payload);
-  }
-
-  /**
    * Sets the http request method.
    * 
    * @param method  the method
@@ -200,25 +190,4 @@ public class ODataClientRequest {
   public ODataClientRequest method(String method) {
     return new ODataClientRequest(method, url, headers, queryParams, payload);
   }
-
-  /**
-   * Sets the normalized OData payload.
-   * 
-   * @param entry  the entry payload
-   * @return the request builder
-   */
-  public ODataClientRequest entryPayload(Entry entry) {
-    return new ODataClientRequest(method, url, headers, queryParams, entry);
-  }
-
-  /**
-   * Sets the normalized OData payload.
-   * 
-   * @param link  the link payload
-   * @return the request builder
-   */
-  public ODataClientRequest linkPayload(SingleLink link) {
-    return new ODataClientRequest(method, url, headers, queryParams, link);
-  }
-
 }

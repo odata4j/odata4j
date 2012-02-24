@@ -42,8 +42,8 @@ public class Chain implements Command {
       if (commands.get(j) instanceof Filter) {
         try {
           result =
-                          ((Filter) commands.get(j)).postProcess(context,
-                                                             saveException);
+              ((Filter) commands.get(j)).postProcess(context,
+                  saveException);
           if (result) {
             handled = true;
           }

@@ -34,7 +34,7 @@ import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
 
-@Path("{entitySetName}{optionalParens: ((\\(\\))?)}")
+@Path("{entitySetName}")
 public class EntitiesRequestResource extends BaseResource {
 
   private static final Logger log = Logger.getLogger(EntitiesRequestResource.class.getName());
@@ -99,6 +99,46 @@ public class EntitiesRequestResource extends BaseResource {
       @QueryParam("$select") String select) throws Exception {
 
     log("getEntities",
+        "entitySetName", entitySetName,
+        "inlineCount", inlineCount,
+        "top", top,
+        "skip", skip,
+        "filter", filter,
+        "orderBy", orderBy,
+        "format", format,
+        "callback", callback,
+        "skipToken", skipToken,
+        "expand", expand,
+        "select", select);
+
+    ODataProducer producer = producerResolver.getContext(ODataProducer.class);
+
+    return getEntitiesImpl(httpHeaders, uriInfo, producer, entitySetName, false, inlineCount, top, skip,
+        filter, orderBy, format, callback, skipToken, expand, select);
+  }
+
+  @GET
+  @Path("{entitySetName}()")
+  @Produces({ ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8,
+      ODataConstants.TEXT_JAVASCRIPT_CHARSET_UTF8,
+      ODataConstants.APPLICATION_JAVASCRIPT_CHARSET_UTF8 })
+  public Response getEntitiesParenthesis(
+      @Context HttpHeaders httpHeaders,
+      @Context UriInfo uriInfo,
+      @Context ContextResolver<ODataProducer> producerResolver,
+      @PathParam("entitySetName") String entitySetName,
+      @QueryParam("$inlinecount") String inlineCount,
+      @QueryParam("$top") String top,
+      @QueryParam("$skip") String skip,
+      @QueryParam("$filter") String filter,
+      @QueryParam("$orderby") String orderBy,
+      @QueryParam("$format") String format,
+      @QueryParam("$callback") String callback,
+      @QueryParam("$skiptoken") String skipToken,
+      @QueryParam("$expand") String expand,
+      @QueryParam("$select") String select) throws Exception {
+
+    log("getEntitiesParenthesis",
         "entitySetName", entitySetName,
         "inlineCount", inlineCount,
         "top", top,
