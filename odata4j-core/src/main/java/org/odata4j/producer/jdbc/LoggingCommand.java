@@ -2,12 +2,12 @@ package org.odata4j.producer.jdbc;
 
 import java.util.logging.Logger;
 
-import org.odata4j.producer.jdbc.command.Command;
-import org.odata4j.producer.jdbc.command.CommandResult;
-import org.odata4j.producer.jdbc.commandproducer.CloseCommandContext;
-import org.odata4j.producer.jdbc.commandproducer.GetEntitiesCommandContext;
-import org.odata4j.producer.jdbc.commandproducer.GetMetadataCommandContext;
-import org.odata4j.producer.jdbc.commandproducer.ProducerCommandContext;
+import org.odata4j.command.Command;
+import org.odata4j.command.CommandResult;
+import org.odata4j.producer.command.CloseCommandContext;
+import org.odata4j.producer.command.GetEntitiesCommandContext;
+import org.odata4j.producer.command.GetMetadataCommandContext;
+import org.odata4j.producer.command.ProducerCommandContext;
 
 public class LoggingCommand implements Command<ProducerCommandContext<?>> {
   private static final Logger log = Logger.getLogger(LoggingCommand.class.getName());

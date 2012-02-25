@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.odata4j.producer.jdbc.commandproducer.ProducerCommandContext;
+import org.odata4j.producer.command.ProducerCommandContext;
 
 public class JdbcProducerBackendInvocationHandler implements InvocationHandler {
 

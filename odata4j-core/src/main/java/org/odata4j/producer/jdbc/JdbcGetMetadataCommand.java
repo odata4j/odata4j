@@ -1,9 +1,8 @@
 package org.odata4j.producer.jdbc;
 
-
-import org.odata4j.producer.jdbc.command.Command;
-import org.odata4j.producer.jdbc.command.CommandResult;
-import org.odata4j.producer.jdbc.commandproducer.GetMetadataCommandContext;
+import org.odata4j.command.Command;
+import org.odata4j.command.CommandResult;
+import org.odata4j.producer.command.GetMetadataCommandContext;
 
 public class JdbcGetMetadataCommand implements Command<GetMetadataCommandContext> {
 
@@ -14,7 +13,7 @@ public class JdbcGetMetadataCommand implements Command<GetMetadataCommandContext
     // 1. get jdbc model
     JdbcModel model = jdbcContext.getJdbc().execute(new CreateJdbcModel());
 
-	// 2. apply model cleanup
+    // 2. apply model cleanup
     new LimitJdbcModelToDefaultSchema().apply(model);
 
     // 3. project jdbc model into edm metadata

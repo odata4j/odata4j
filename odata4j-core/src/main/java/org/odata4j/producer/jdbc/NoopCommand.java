@@ -1,8 +1,8 @@
 package org.odata4j.producer.jdbc;
 
-import org.odata4j.producer.jdbc.command.Command;
-import org.odata4j.producer.jdbc.command.CommandContext;
-import org.odata4j.producer.jdbc.command.CommandResult;
+import org.odata4j.command.Command;
+import org.odata4j.command.CommandContext;
+import org.odata4j.command.CommandResult;
 
 public class NoopCommand implements Command<CommandContext> {
 

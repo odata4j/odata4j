@@ -3,11 +3,11 @@ package org.odata4j.producer.jdbc;
 import java.util.Map;
 
 import org.odata4j.edm.EdmDataServices;
+import org.odata4j.edm.EdmDataServicesProvider;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.producer.jdbc.JdbcModel.JdbcColumn;
 import org.odata4j.producer.jdbc.JdbcModel.JdbcTable;
-import org.odata4j.producer.jdbc.command.EdmDataServicesProvider;
 
 public class JdbcMetadataMapping implements EdmDataServicesProvider {
 

@@ -1,7 +1,7 @@
 package org.odata4j.producer.jdbc;
 
-import org.odata4j.producer.jdbc.command.CommandExecution;
-import org.odata4j.producer.jdbc.commandproducer.CommandProducer;
+import org.odata4j.command.CommandExecution;
+import org.odata4j.producer.command.CommandProducer;
 
 public class JdbcProducer extends CommandProducer {
 

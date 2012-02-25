@@ -8,6 +8,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.core4j.ThrowingFunc1;
+import org.odata4j.command.Command;
+import org.odata4j.command.CommandResult;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
@@ -18,14 +20,11 @@ import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.Responses;
+import org.odata4j.producer.command.GetEntitiesCommandContext;
 import org.odata4j.producer.jdbc.JdbcModel.JdbcColumn;
 import org.odata4j.producer.jdbc.JdbcModel.JdbcTable;
-import org.odata4j.producer.jdbc.command.Command;
-import org.odata4j.producer.jdbc.command.CommandResult;
-import org.odata4j.producer.jdbc.commandproducer.GetEntitiesCommandContext;
 
 public class JdbcGetEntitiesCommand implements Command<GetEntitiesCommandContext> {
-
 
   private static OEntity toOEntity(JdbcMetadataMapping mapping, EdmEntitySet entitySet, JdbcTable table, ResultSet results) throws SQLException {
     List<OProperty<?>> properties = new ArrayList<OProperty<?>>();
