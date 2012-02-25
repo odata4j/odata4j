@@ -35,7 +35,7 @@ public abstract class ODataProducerDelegate implements Delegate<ODataProducer>, 
   }
 
   @Override
-  public EntityResponse getEntity(String entitySetName, OEntityKey entityKey, QueryInfo queryInfo) {
+  public EntityResponse getEntity(String entitySetName, OEntityKey entityKey, EntityQueryInfo queryInfo) {
     return getDelegate().getEntity(entitySetName, entityKey, queryInfo);
   }
 

@@ -45,6 +45,7 @@ import org.odata4j.producer.BaseResponse;
 import org.odata4j.producer.CountResponse;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityIdResponse;
+import org.odata4j.producer.EntityQueryInfo;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.ExpressionEvaluator;
 import org.odata4j.producer.ExpressionEvaluator.VariableResolver;
@@ -707,7 +708,7 @@ public class MetadataProducer implements ODataProducer {
   }
 
   @Override
-  public EntityResponse getEntity(String entitySetName, OEntityKey entityKey, QueryInfo queryInfo) {
+  public EntityResponse getEntity(String entitySetName, OEntityKey entityKey, EntityQueryInfo queryInfo) {
     Context c = new Context(entitySetName, queryInfo, entityKey);
 
     if (entitySetName.equals(Edm.EntitySets.Schemas)) {

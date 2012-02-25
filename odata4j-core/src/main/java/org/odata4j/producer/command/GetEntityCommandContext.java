@@ -1,8 +1,8 @@
 package org.odata4j.producer.command;
 
 import org.odata4j.core.OEntityKey;
+import org.odata4j.producer.EntityQueryInfo;
 import org.odata4j.producer.EntityResponse;
-import org.odata4j.producer.QueryInfo;
 
 public interface GetEntityCommandContext extends ProducerCommandContext<EntityResponse> {
 
@@ -10,6 +10,6 @@ public interface GetEntityCommandContext extends ProducerCommandContext<EntityRe
 
   OEntityKey getEntityKey();
 
-  QueryInfo getQueryInfo();
+  EntityQueryInfo getQueryInfo();
 
 }

@@ -17,6 +17,7 @@ import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.Expression;
 import org.odata4j.producer.CountResponse;
 import org.odata4j.producer.EntitiesResponse;
+import org.odata4j.producer.EntityQueryInfo;
 import org.odata4j.producer.InlineCount;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.resources.OptionsQueryParser;
@@ -24,6 +25,7 @@ import org.odata4j.producer.resources.OptionsQueryParser;
 @SuppressWarnings("unused")
 public class InMemoryProducerTest {
   private final QueryInfo NULL_QUERY = new QueryInfo(InlineCount.ALLPAGES, null, null, null, null, null, null, null, null);
+  private final EntityQueryInfo NULL_ENTITY_QUERY = new EntityQueryInfo(null, null, null, null);
 
   @Test
   public void inlineCountWithOneShotIterable() {
@@ -85,7 +87,7 @@ public class InMemoryProducerTest {
     }, "Id");
 
     Assert.assertEquals(2, p.getEntities("setName", NULL_QUERY).getEntities().size());
-    Assert.assertNotNull(p.getEntity("setName", OEntityKey.create(e1.getId()), NULL_QUERY).getEntity());
+    Assert.assertNotNull(p.getEntity("setName", OEntityKey.create(e1.getId()), NULL_ENTITY_QUERY).getEntity());
 
     Assert.assertNotNull(p.getMetadata().findEdmEntitySet("setName"));
     Assert.assertNotNull(p.getMetadata().findEdmEntityType(namespace + ".typeName"));

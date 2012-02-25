@@ -8,8 +8,8 @@ import org.core4j.Funcs;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntityKey;
+import org.odata4j.producer.EntityQueryInfo;
 import org.odata4j.producer.EntityResponse;
-import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.producer.server.ODataServer;
@@ -29,7 +29,7 @@ public class Issue13 extends AbstractRuntimeTest {
     final OEntityKey[] lastEntityKey = new OEntityKey[1];
     InMemoryProducer producer = new InMemoryProducer("Issue13") {
       @Override
-      public EntityResponse getEntity(String entitySetName, OEntityKey entityKey, QueryInfo queryInfo) {
+      public EntityResponse getEntity(String entitySetName, OEntityKey entityKey, EntityQueryInfo queryInfo) {
         lastEntityKey[0] = entityKey;
         return super.getEntity(entitySetName, entityKey, queryInfo);
       }

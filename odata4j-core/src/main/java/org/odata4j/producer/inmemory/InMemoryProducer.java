@@ -36,12 +36,13 @@ import org.odata4j.expression.OrderByExpression;
 import org.odata4j.expression.OrderByExpression.Direction;
 import org.odata4j.producer.BaseResponse;
 import org.odata4j.producer.CountResponse;
+import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityIdResponse;
+import org.odata4j.producer.EntityQueryInfo;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.InlineCount;
 import org.odata4j.producer.ODataProducer;
-import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.Responses;
 import org.odata4j.producer.edm.MetadataProducer;
 import org.odata4j.producer.exceptions.NotFoundException;
@@ -476,7 +477,7 @@ public class InMemoryProducer implements ODataProducer {
 
   @SuppressWarnings("unchecked")
   @Override
-  public EntityResponse getEntity(String entitySetName, final OEntityKey entityKey, QueryInfo queryInfo) {
+  public EntityResponse getEntity(String entitySetName, final OEntityKey entityKey, EntityQueryInfo queryInfo) {
     final EdmEntitySet ees = getMetadata().getEdmEntitySet(entitySetName);
     final InMemoryEntityInfo<?> ei = eis.get(entitySetName);
 

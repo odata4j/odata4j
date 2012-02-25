@@ -32,6 +32,7 @@ import org.odata4j.producer.BaseResponse;
 import org.odata4j.producer.CountResponse;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityIdResponse;
+import org.odata4j.producer.EntityQueryInfo;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.PropertyPathHelper;
@@ -247,7 +248,7 @@ public class CustomProducer implements ODataProducer {
   }
 
   @Override
-  public EntityResponse getEntity(String entitySetName, OEntityKey entityKey, QueryInfo queryInfo) {
+  public EntityResponse getEntity(String entitySetName, OEntityKey entityKey, EntityQueryInfo queryInfo) {
     if (entitySetName.equals("Type1s")) {
       return Responses.entity(getType1(Integer.parseInt((String) entityKey.asSingleValue())));
     }

@@ -13,11 +13,12 @@ import org.odata4j.edm.EdmDataServicesProvider;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.producer.BaseResponse;
 import org.odata4j.producer.CountResponse;
+import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityIdResponse;
+import org.odata4j.producer.EntityQueryInfo;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.ODataProducer;
-import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.edm.MetadataProducer;
 
 public class CommandProducer implements ODataProducer {
@@ -67,7 +68,7 @@ public class CommandProducer implements ODataProducer {
   }
 
   @Override
-  public EntityResponse getEntity(String entitySetName, OEntityKey entityKey, QueryInfo queryInfo) {
+  public EntityResponse getEntity(String entitySetName, OEntityKey entityKey, EntityQueryInfo queryInfo) {
     return executeCommand(GetEntityCommandContext.class, EntityResponse.class, backend.newGetEntityCommandContext(entitySetName, entityKey, queryInfo));
   }
 

@@ -13,6 +13,7 @@ import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OFunctionParameter;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.producer.QueryInfo;
+import org.odata4j.producer.EntityQueryInfo;
 import org.odata4j.producer.command.CallFunctionCommandContext;
 import org.odata4j.producer.command.CloseCommandContext;
 import org.odata4j.producer.command.CommandProducerBackend;
@@ -118,7 +119,7 @@ public abstract class JdbcProducerBackend implements CommandProducerBackend {
   }
 
   @Override
-  public GetEntityCommandContext newGetEntityCommandContext(String entitySetName, OEntityKey entityKey, QueryInfo queryInfo) {
+  public GetEntityCommandContext newGetEntityCommandContext(String entitySetName, OEntityKey entityKey, EntityQueryInfo queryInfo) {
     throw new UnsupportedOperationException();
   }
 

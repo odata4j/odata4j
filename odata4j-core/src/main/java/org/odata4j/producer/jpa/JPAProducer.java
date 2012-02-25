@@ -44,6 +44,7 @@ import org.odata4j.producer.BaseResponse;
 import org.odata4j.producer.CountResponse;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityIdResponse;
+import org.odata4j.producer.EntityQueryInfo;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
@@ -127,7 +128,7 @@ public class JPAProducer implements ODataProducer {
     commands.add(new GenerateJPQLCommand());
     // execute the JPQL query
     commands.add(new ExecuteJPQLQueryCommand(maxResults));
-    // convert the query result to response 
+    // convert the query result to response
     commands.add(new SetResponseCommand());
     getEntitiesCommand = createChain(CommandType.GetEntities, commands);
 
@@ -277,7 +278,7 @@ public class JPAProducer implements ODataProducer {
 
   @Override
   public EntityResponse getEntity(String entitySetName, OEntityKey entityKey,
-      QueryInfo queryInfo) {
+      EntityQueryInfo queryInfo) {
     JPAContext context = new JPAContext(metadata, entitySetName, entityKey, null,
         queryInfo);
     getEntityCommand.execute(context);

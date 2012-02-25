@@ -54,13 +54,14 @@ public interface ODataProducer {
   CountResponse getEntitiesCount(String entitySetName, QueryInfo queryInfo);
 
   /**
-   * Obtains a single entity based on its type and key. Also honors $select and $expand in queryInfo
-   * @param entitySetName the entity-set name for entities to return
-   * @param entityKey the unique entity-key of the entity to start with
-   * @param queryInfo the additional constraints to apply to the entities
+   * Obtains a single entity based on its type and key.
+   *
+   * @param entitySetName  the entity-set name for entities to return
+   * @param entityKey  the unique entity-key of the entity to start with
+   * @param queryInfo  the additional constraints applicable to single-entity queries
    * @return the resulting entity
    */
-  EntityResponse getEntity(String entitySetName, OEntityKey entityKey, QueryInfo queryInfo);
+  EntityResponse getEntity(String entitySetName, OEntityKey entityKey, EntityQueryInfo queryInfo);
 
   /**
    * Given a specific entity, follow one of its navigation properties, applying constraints as appropriate.

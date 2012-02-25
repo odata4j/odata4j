@@ -11,6 +11,7 @@ import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OFunctionParameter;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.producer.QueryInfo;
+import org.odata4j.producer.EntityQueryInfo;
 
 public interface CommandProducerBackend {
 
@@ -26,7 +27,7 @@ public interface CommandProducerBackend {
 
   GetEntitiesCountCommandContext newGetEntitiesCountCommandContext(String entitySetName, QueryInfo queryInfo);
 
-  GetEntityCommandContext newGetEntityCommandContext(String entitySetName, OEntityKey entityKey, QueryInfo queryInfo);
+  GetEntityCommandContext newGetEntityCommandContext(String entitySetName, OEntityKey entityKey, EntityQueryInfo queryInfo);
 
   GetNavPropertyCommandContext newGetNavPropertyCommandContext(String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo);
 

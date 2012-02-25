@@ -23,9 +23,9 @@ import org.odata4j.core.OEntityIds;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.format.FormatWriter;
 import org.odata4j.format.FormatWriterFactory;
+import org.odata4j.producer.EntityQueryInfo;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.ODataProducer;
-import org.odata4j.producer.QueryInfo;
 
 // orig @Path("{entitySetName}{id: (\\(.+?\\))}")
 @Path("{entitySetName}{id: \\(.+?\\)}")
@@ -122,8 +122,8 @@ public class EntityRequestResource extends BaseResource {
       String expand,
       String select) {
 
-    QueryInfo query = new QueryInfo(
-        null, null, null, null, null, null,
+    EntityQueryInfo query = new EntityQueryInfo(
+        null,
         OptionsQueryParser.parseCustomOptions(uriInfo),
         OptionsQueryParser.parseExpand(expand),
         OptionsQueryParser.parseSelect(select));
