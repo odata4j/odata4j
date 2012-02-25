@@ -36,6 +36,9 @@ public interface OFunctionRequest<T> extends OQueryRequest<T> {
   /** Adds a byte parameter. */
   OFunctionRequest<T> pByte(String name, byte value);
 
+  /** Adds a sbyte parameter. */
+  OFunctionRequest<T> pSByte(String name, byte value);
+
   /** Adds a datetime parameter. */
   OFunctionRequest<T> pDateTime(String name, Calendar value);
 

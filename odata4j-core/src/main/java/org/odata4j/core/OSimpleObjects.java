@@ -46,6 +46,9 @@ public class OSimpleObjects {
     } else if (type == EdmSimpleType.BYTE) {
       Byte bValue = (Byte) value;
       return (OSimpleObject<T>) Impl.create(EdmSimpleType.BYTE, bValue);
+    } else if (type == EdmSimpleType.SBYTE) {
+      Byte bValue = (Byte) value;
+      return (OSimpleObject<T>) Impl.create(EdmSimpleType.SBYTE, bValue);
     } else if (type == EdmSimpleType.DECIMAL) {
       BigDecimal dValue = (BigDecimal) value;
       return (OSimpleObject<T>) Impl.create(EdmSimpleType.DECIMAL, dValue);
@@ -87,6 +90,9 @@ public class OSimpleObjects {
     } else if (EdmSimpleType.BYTE.equals(type)) {
       Byte bValue = value == null ? null : Byte.parseByte(value);
       return (OSimpleObject<V>) Impl.create(EdmSimpleType.BYTE, bValue);
+    } else if (EdmSimpleType.SBYTE.equals(type)) {
+      Byte bValue = value == null ? null : Byte.parseByte(value);
+      return (OSimpleObject<V>) Impl.create(EdmSimpleType.SBYTE, bValue);
     } else if (EdmSimpleType.INT16.equals(type)) {
       Short sValue = value == null ? null : Short.parseShort(value);
       return (OSimpleObject<V>) Impl.create(EdmSimpleType.INT16, sValue);

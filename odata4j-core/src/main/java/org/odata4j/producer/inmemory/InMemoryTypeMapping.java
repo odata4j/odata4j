@@ -21,7 +21,8 @@ public class InMemoryTypeMapping {
     SUPPORTED_TYPES.put(byte[].class, EdmSimpleType.BINARY);
     SUPPORTED_TYPES.put(Boolean.class, EdmSimpleType.BOOLEAN);
     SUPPORTED_TYPES.put(Boolean.TYPE, EdmSimpleType.BOOLEAN);
-    SUPPORTED_TYPES.put(byte.class, EdmSimpleType.BYTE);
+    SUPPORTED_TYPES.put(Byte.class, EdmSimpleType.SBYTE);
+    SUPPORTED_TYPES.put(Byte.TYPE, EdmSimpleType.SBYTE);
     SUPPORTED_TYPES.put(LocalDateTime.class, EdmSimpleType.DATETIME);
     SUPPORTED_TYPES.put(BigDecimal.class, EdmSimpleType.DECIMAL);
     SUPPORTED_TYPES.put(Double.class, EdmSimpleType.DOUBLE);

@@ -123,6 +123,11 @@ public class FilterExpressionVisitor implements ExpressionVisitor {
   }
 
   @Override
+  public void visit(SByteLiteral expr) {
+    push(Hex.encodeHexString(new byte[] { expr.getValue() }));
+  }
+
+  @Override
   public void visit(AddExpression expr) {
     throw new UnsupportedOperationException();
   }

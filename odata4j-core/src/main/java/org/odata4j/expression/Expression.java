@@ -76,6 +76,10 @@ public class Expression {
     return new ByteLiteralImpl(value);
   }
 
+  public static SByteLiteral sbyte_(byte value) {
+    return new SByteLiteralImpl(value);
+  }
+
   public static SingleLiteral single(float value) {
     return new SingleLiteralImpl(value);
   }
@@ -311,7 +315,8 @@ public class Expression {
       return time((LocalTime) prop.getValue());
     if (edmType.equals(EdmSimpleType.BYTE))
       return byte_((Byte) prop.getValue());
-
+    if (edmType.equals(EdmSimpleType.SBYTE))
+      return sbyte_((Byte) prop.getValue());
     throw new UnsupportedOperationException("Cannot infer literal expression type for edm type: " + edmType);
   }
 
@@ -320,6 +325,8 @@ public class Expression {
       return ((BinaryLiteral) expression).getValue();
     if (expression instanceof ByteLiteral)
       return ((ByteLiteral) expression).getValue();
+    if (expression instanceof SByteLiteral)
+      return ((SByteLiteral) expression).getValue();
     if (expression instanceof BooleanLiteral)
       return ((BooleanLiteral) expression).getValue();
     if (expression instanceof DateTimeLiteral)
@@ -451,6 +458,25 @@ public class Expression {
 
     public ByteLiteralImpl(byte value) {
       super(ByteLiteral.class);
+      this.value = value;
+    }
+
+    @Override
+    public byte getValue() {
+      return value;
+    }
+
+    @Override
+    void visitThis(ExpressionVisitor visitor) {
+      visitor.visit(this);
+    }
+  }
+
+  private static class SByteLiteralImpl extends ExpressionImpl implements SByteLiteral {
+    private final byte value;
+
+    public SByteLiteralImpl(byte value) {
+      super(SByteLiteral.class);
       this.value = value;
     }
 

@@ -55,10 +55,13 @@ public class OFunctionParameters {
       // parser gave us an Integer
       v = Short.valueOf(((Number) val).shortValue());
     } else if (type.equals(EdmSimpleType.SINGLE) && (!(val instanceof Float))) {
-      // parser gave us an Double
+      // parser gave us a Single
       v = new Float(((Number) val).floatValue());
     } else if (type.equals(EdmSimpleType.BYTE) && (!(val instanceof Byte))) {
-      // parser gave us an Double
+      // parser gave us a Byte
+      v = Byte.valueOf(((Number) val).byteValue());
+    } else if (type.equals(EdmSimpleType.SBYTE) && (!(val instanceof Byte))) {
+      // parser gave us a SByte
       v = Byte.valueOf(((Number) val).byteValue());
     }
     return v;

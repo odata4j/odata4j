@@ -31,6 +31,14 @@ public class JsonTypeConverter {
         throw new IllegalArgumentException(dex);
       }
       return OProperties.byte_(name, bValue);
+    } else if (EdmSimpleType.SBYTE.equals(type)) {
+      Byte bValue;
+      try {
+        bValue = value == null ? null : Hex.decodeHex(value.toCharArray())[0];
+      } catch (DecoderException dex) {
+        throw new IllegalArgumentException(dex);
+      }
+      return OProperties.sbyte_(name, bValue);
     } else if (EdmSimpleType.INT16.equals(type)) {
       Short sValue = value == null ? null : Short.parseShort(value);
       return OProperties.int16(name, sValue);

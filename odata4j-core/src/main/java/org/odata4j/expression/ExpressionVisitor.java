@@ -48,6 +48,8 @@ public interface ExpressionVisitor {
 
   void visit(ByteLiteral expr);
 
+  void visit(SByteLiteral expr);
+
   void visit(IndexOfMethodCallExpression expr);
 
   void visit(SingleLiteral expr);

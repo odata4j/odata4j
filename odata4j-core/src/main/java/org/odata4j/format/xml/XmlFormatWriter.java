@@ -113,6 +113,11 @@ public class XmlFormatWriter {
           sValue = Hex.encodeHexString(
               new byte[] { (Byte) value });
         }
+      } else if (type == EdmSimpleType.SBYTE) {
+        if (value != null) {
+          sValue = Hex.encodeHexString(
+              new byte[] { (Byte) value });
+        }
       } else if (type == EdmSimpleType.DECIMAL) {
         if (value != null) {
           sValue = value.toString();

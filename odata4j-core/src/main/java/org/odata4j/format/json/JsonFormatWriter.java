@@ -113,6 +113,8 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
       jw.writeBoolean((Boolean) pvalue);
     } else if (type.equals(EdmSimpleType.BYTE)) {
       jw.writeString(Hex.encodeHexString(new byte[] { (Byte) pvalue }));
+    } else if (type.equals(EdmSimpleType.SBYTE)) {
+      jw.writeString(Hex.encodeHexString(new byte[] { (Byte) pvalue }));
     } else if (type.equals(EdmSimpleType.DATETIME)) {
       LocalDateTime ldt = (LocalDateTime) pvalue;
       long millis = ldt.toDateTime().getMillis();

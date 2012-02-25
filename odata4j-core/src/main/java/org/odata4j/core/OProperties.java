@@ -377,6 +377,17 @@ public class OProperties {
     return new Impl<Byte>(name, EdmSimpleType.BYTE, value);
   }
 
+  /**
+   * Creates a new byte-valued OData property with {@link EdmSimpleType#SBYTE}
+   *
+   * @param name  the property name
+   * @param value  the property value
+   * @return a new OData property instance
+   */
+  public static OProperty<Byte> sbyte_(String name, byte value) {
+    return new Impl<Byte>(name, EdmSimpleType.SBYTE, value);
+  }
+
   private static class Impl<T> implements OProperty<T> {
 
     private final String name;

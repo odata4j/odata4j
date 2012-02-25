@@ -112,6 +112,7 @@ public class NorthwindProducerWithFunctions extends ODataProducerDelegate {
     List<EdmFunctionParameter.Builder> params = new ArrayList<EdmFunctionParameter.Builder>(15);
     params.add(EdmFunctionParameter.newBuilder().input("PBoolean", EdmSimpleType.BOOLEAN));
     params.add(EdmFunctionParameter.newBuilder().input("PByte", EdmSimpleType.BYTE));
+    params.add(EdmFunctionParameter.newBuilder().input("PSByte", EdmSimpleType.SBYTE));
     params.add(EdmFunctionParameter.newBuilder().input("PDateTime", EdmSimpleType.DATETIME));
     params.add(EdmFunctionParameter.newBuilder().input("PDateTimeOffset", EdmSimpleType.DATETIMEOFFSET));
     params.add(EdmFunctionParameter.newBuilder().input("PDecimal", EdmSimpleType.DECIMAL));

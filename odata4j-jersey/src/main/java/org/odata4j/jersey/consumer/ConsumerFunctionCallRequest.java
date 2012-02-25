@@ -97,6 +97,11 @@ class ConsumerFunctionCallRequest<T extends OObject>
   }
 
   @Override
+  public OFunctionRequest<T> pSByte(String name, byte value) {
+    return parameter(name, OSimpleObjects.create(EdmSimpleType.SBYTE, value));
+  }
+
+  @Override
   public OFunctionRequest<T> pDateTime(String name, Calendar value) {
     return parameter(name, OSimpleObjects.create(EdmSimpleType.DATETIME, value));
   }
