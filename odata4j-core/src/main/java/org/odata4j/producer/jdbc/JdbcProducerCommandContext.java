@@ -6,4 +6,6 @@ public interface JdbcProducerCommandContext {
 
   JdbcProducerBackend getBackend();
 
+  <T> T get(Class<T> instanceType);
+
 }

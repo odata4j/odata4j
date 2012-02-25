@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.core4j.Func1;
+import org.odata4j.core.ImmutableMap;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntityContainer;
 import org.odata4j.edm.EdmEntitySet;
@@ -22,9 +23,48 @@ import org.odata4j.producer.jdbc.JdbcModel.JdbcTable;
 
 public class JdbcModelToMetadata implements Func1<JdbcModel, JdbcMetadataMapping> {
 
+  private static final Map<Integer, EdmType> SIMPLE_TYPE_MAPPING = ImmutableMap.<Integer, EdmType>of(
+      Types.INTEGER, EdmSimpleType.INT32,
+      Types.VARCHAR, EdmSimpleType.STRING,
+      Types.BOOLEAN, EdmSimpleType.BOOLEAN);
+
+  public String getModelNamespace() {
+    return "JdbcModel";
+  }
+
+  public String getContainerNamespace(String entityContainerName) {
+    return "JdbcEntities." + entityContainerName;
+  }
+
+  public String getEntityContainerName(String schemaName) {
+    return rename(schemaName);
+  }
+
+  public String getEntityTypeName(String tableName) {
+    return rename(tableName);
+  }
+
+  public String getEntitySetName(String tableName) {
+    return rename(tableName);
+  }
+
+  public String getPropertyName(String columnName) {
+    return rename(columnName);
+  }
+
+  public String rename(String dbName) {
+    return dbName;
+  }
+
+  public EdmType getEdmType(int jdbcType, String columnTypeName, Integer columnSize) {
+    if (!SIMPLE_TYPE_MAPPING.containsKey(jdbcType))
+      throw new UnsupportedOperationException("TODO implement edmtype conversion for jdbc type: " + jdbcType);
+    return SIMPLE_TYPE_MAPPING.get(jdbcType);
+  }
+
   @Override
   public JdbcMetadataMapping apply(JdbcModel jdbcModel) {
-    String modelNamespace = "JdbcModel";
+    String modelNamespace = getModelNamespace();
 
     List<EdmEntityType.Builder> entityTypes = new ArrayList<EdmEntityType.Builder>();
     List<EdmEntityContainer.Builder> entityContainers = new ArrayList<EdmEntityContainer.Builder>();
@@ -40,32 +80,38 @@ public class JdbcModelToMetadata implements Func1<JdbcModel, JdbcMetadataMapping
           continue;
         }
 
+        String entityTypeName = getEntityTypeName(jdbcTable.tableName);
         EdmEntityType.Builder entityType = EdmEntityType.newBuilder()
-            .setName(jdbcTable.tableName)
+            .setName(entityTypeName)
             .setNamespace(modelNamespace);
         entityTypes.add(entityType);
 
         for (JdbcPrimaryKey primaryKey : jdbcTable.primaryKeys) {
-          entityType.addKeys(primaryKey.columnName);
+          String propertyName = getPropertyName(primaryKey.columnName);
+          entityType.addKeys(propertyName);
         }
 
-        for (JdbcColumn jdbcColumns : jdbcTable.columns) {
-          EdmProperty.Builder property = EdmProperty.newBuilder(jdbcColumns.columnName)
-              .setType(getEdmType(jdbcColumns.columnType))
-              .setNullable(jdbcColumns.isNullable);
+        for (JdbcColumn jdbcColumn : jdbcTable.columns) {
+          String propertyName = getPropertyName(jdbcColumn.columnName);
+          EdmType propertyType = getEdmType(jdbcColumn.columnType, jdbcColumn.columnTypeName, jdbcColumn.columnSize);
+          EdmProperty.Builder property = EdmProperty.newBuilder(propertyName)
+              .setType(propertyType)
+              .setNullable(jdbcColumn.isNullable);
           entityType.addProperties(property);
-          propertyMapping.put(property, jdbcColumns);
+          propertyMapping.put(property, jdbcColumn);
         }
 
+        String entitySetName = getEntitySetName(jdbcTable.tableName);
         EdmEntitySet.Builder entitySet = EdmEntitySet.newBuilder()
-            .setName(jdbcTable.tableName)
+            .setName(entitySetName)
             .setEntityType(entityType);
         entitySets.add(entitySet);
         entitySetMapping.put(entitySet, jdbcTable);
       }
 
+      String entityContainerName = getEntityContainerName(jdbcSchema.schemaName);
       EdmEntityContainer.Builder entityContainer = EdmEntityContainer.newBuilder()
-          .setName(jdbcSchema.schemaName)
+          .setName(entityContainerName)
           .setIsDefault(jdbcSchema.isDefault)
           .addEntitySets(entitySets);
       entityContainers.add(entityContainer);
@@ -77,8 +123,9 @@ public class JdbcModelToMetadata implements Func1<JdbcModel, JdbcMetadataMapping
         .addEntityTypes(entityTypes);
     edmSchemas.add(modelSchema);
     for (EdmEntityContainer.Builder entityContainer : entityContainers) {
+      String containerSchemaNamespace = getContainerNamespace(entityContainer.getName());
       EdmSchema.Builder containerSchema = EdmSchema.newBuilder()
-          .setNamespace("JdbcEntities." + entityContainer.getName())
+          .setNamespace(containerSchemaNamespace)
           .addEntityContainers(entityContainer);
       edmSchemas.add(containerSchema);
     }
@@ -95,16 +142,6 @@ public class JdbcModelToMetadata implements Func1<JdbcModel, JdbcMetadataMapping
       finalPropertyMapping.put(entry.getKey().build(), entry.getValue());
     }
     return new JdbcMetadataMapping(metadata, jdbcModel, finalEntitySetMapping, finalPropertyMapping);
-  }
-  
-  private static EdmType getEdmType(int jdbcType) {
-    Map<Integer, EdmType> map = new HashMap<Integer, EdmType>();
-    map.put(Types.INTEGER, EdmSimpleType.INT32);
-    map.put(Types.VARCHAR, EdmSimpleType.STRING);
-    map.put(Types.BOOLEAN, EdmSimpleType.BOOLEAN);
-    if (!map.containsKey(jdbcType))
-      throw new UnsupportedOperationException("TODO implement edmtype conversion for jdbc type: " + jdbcType);
-    return map.get(jdbcType);
   }
 
 }

@@ -12,13 +12,22 @@ public class ChainCommand<TContext extends CommandContext> implements Command<TC
 
     @SuppressWarnings("unchecked")
     public Builder<TContext> add(Command<?> command) {
-      commands.add((Command<TContext>) command);
+      if (command != null)
+        commands.add((Command<TContext>) command);
+      return this;
+    }
+
+    public Builder<TContext> addAll(Iterable<Command<?>> commands) {
+      if (commands != null)
+        for (Command<?> command : commands)
+          add(command);
       return this;
     }
 
     public ChainCommand<TContext> build() {
       return new ChainCommand<TContext>(commands);
     }
+
   }
 
   public static <TContext extends CommandContext> Builder<TContext> newBuilder() {

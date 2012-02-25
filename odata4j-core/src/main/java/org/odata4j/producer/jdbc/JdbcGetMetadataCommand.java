@@ -10,17 +10,29 @@ public class JdbcGetMetadataCommand implements Command<GetMetadataCommandContext
   public CommandResult execute(GetMetadataCommandContext context) throws Exception {
     JdbcProducerCommandContext jdbcContext = (JdbcProducerCommandContext) context;
 
-    // 1. get jdbc model
-    JdbcModel model = jdbcContext.getJdbc().execute(new CreateJdbcModel());
+    // 1. create jdbc model
+    JdbcModel model = createModel(jdbcContext);
 
     // 2. apply model cleanup
-    new LimitJdbcModelToDefaultSchema().apply(model);
+    cleanupModel(model);
 
     // 3. project jdbc model into edm metadata
-    JdbcMetadataMapping mapping = new JdbcModelToMetadata().apply(model);
+    JdbcMetadataMapping mapping = modelToMapping(jdbcContext, model);
 
     context.setResult(mapping);
     return CommandResult.CONTINUE;
+  }
+
+  public JdbcModel createModel(JdbcProducerCommandContext jdbcContext) {
+    return jdbcContext.getJdbc().execute(new CreateJdbcModel());
+  }
+
+  public void cleanupModel(JdbcModel model) {
+    new LimitJdbcModelToDefaultSchema().apply(model);
+  }
+
+  public JdbcMetadataMapping modelToMapping(JdbcProducerCommandContext jdbcContext, JdbcModel model) {
+    return jdbcContext.get(JdbcModelToMetadata.class).apply(model);
   }
 
 }

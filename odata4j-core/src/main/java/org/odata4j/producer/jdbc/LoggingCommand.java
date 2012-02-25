@@ -6,6 +6,7 @@ import org.odata4j.command.Command;
 import org.odata4j.command.CommandResult;
 import org.odata4j.producer.command.CloseCommandContext;
 import org.odata4j.producer.command.GetEntitiesCommandContext;
+import org.odata4j.producer.command.GetEntityCommandContext;
 import org.odata4j.producer.command.GetMetadataCommandContext;
 import org.odata4j.producer.command.ProducerCommandContext;
 
@@ -20,8 +21,16 @@ public class LoggingCommand implements Command<ProducerCommandContext<?>> {
       log("getMetadata");
     else if (context instanceof GetEntitiesCommandContext) {
       GetEntitiesCommandContext c = (GetEntitiesCommandContext) context;
-      log("getEntities", "entitySetName", c.getEntitySetName(), "queryInfo", c.getQueryInfo());
-    } else
+      log("getEntities",
+          "entitySetName", c.getEntitySetName(),
+          "queryInfo", c.getQueryInfo());
+    } else if (context instanceof GetEntityCommandContext) {
+      GetEntityCommandContext c = (GetEntityCommandContext) context;
+      log("getEntity",
+          "entitySetName", c.getEntitySetName(),
+          "entityKey", c.getEntityKey(),
+          "queryInfo", c.getQueryInfo());
+    }else
       throw new UnsupportedOperationException("TODO implement logging for : " + context);
     return CommandResult.CONTINUE;
   }

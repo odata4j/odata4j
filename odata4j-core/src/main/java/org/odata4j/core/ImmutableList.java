@@ -121,54 +121,58 @@ public class ImmutableList<T> implements List<T>, RandomAccess {
     return values.subList(fromIndex, toIndex);
   }
 
+  private static UnsupportedOperationException newModificationUnsupported() {
+    return new UnsupportedOperationException(ImmutableList.class.getSimpleName() + " cannot be modified");
+  }
+
   @Override
   public void clear() {
-    throw new UnsupportedOperationException();
+    throw newModificationUnsupported();
   }
 
   @Override
   public T set(int paramInt, T paramE) {
-    throw new UnsupportedOperationException();
+    throw newModificationUnsupported();
   }
 
   @Override
   public void add(int paramInt, T paramE) {
-    throw new UnsupportedOperationException();
+    throw newModificationUnsupported();
   }
 
   @Override
   public T remove(int paramInt) {
-    throw new UnsupportedOperationException();
+    throw newModificationUnsupported();
   }
 
   @Override
   public boolean add(T paramE) {
-    throw new UnsupportedOperationException();
+    throw newModificationUnsupported();
   }
 
   @Override
   public boolean remove(Object paramObject) {
-    throw new UnsupportedOperationException();
+    throw newModificationUnsupported();
   }
 
   @Override
   public boolean addAll(Collection<? extends T> paramCollection) {
-    throw new UnsupportedOperationException();
+    throw newModificationUnsupported();
   }
 
   @Override
   public boolean addAll(int paramInt, Collection<? extends T> paramCollection) {
-    throw new UnsupportedOperationException();
+    throw newModificationUnsupported();
   }
 
   @Override
   public boolean removeAll(Collection<?> paramCollection) {
-    throw new UnsupportedOperationException();
+    throw newModificationUnsupported();
   }
 
   @Override
   public boolean retainAll(Collection<?> paramCollection) {
-    throw new UnsupportedOperationException();
+    throw newModificationUnsupported();
   }
 
 }

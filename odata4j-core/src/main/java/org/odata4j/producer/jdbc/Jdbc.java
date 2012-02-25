@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import org.core4j.ThrowingFunc1;
+import org.odata4j.core.Throwables;
 
 public class Jdbc {
 
@@ -24,20 +25,20 @@ public class Jdbc {
     try {
       Class.forName(driverClassname);
     } catch (ClassNotFoundException e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
     Connection conn = null;
     try {
       conn = DriverManager.getConnection(url, user, password);
       return execute.apply(conn);
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     } finally {
       if (conn != null) {
         try {
           conn.close();
         } catch (SQLException e) {
-          throw new RuntimeException(e);
+          throw Throwables.propagate(e);
         }
       }
     }
