@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.ws.rs.core.MultivaluedMap;
 
@@ -14,7 +13,6 @@ import javax.ws.rs.core.MultivaluedMap;
  * Although keys are stored case-sensitive, all (internal) comparisons are done case-insensitive.
  * I.e. {@code get("key")} and {@code get("KEY")} return the same values.
  */
-@SuppressWarnings("unused")
 public class HeaderMap extends HashMap<String, List<String>> implements MultivaluedMap<String, String> {
 
   private static final long serialVersionUID = 1L;
@@ -68,7 +66,7 @@ public class HeaderMap extends HashMap<String, List<String>> implements Multival
 
   @Override
   public void putAll(Map<? extends String, ? extends List<String>> map) {
-    for (Entry<? extends String, ? extends List<String>> e : map.entrySet())
+    for (Map.Entry<? extends String, ? extends List<String>> e : map.entrySet())
       this.put(e.getKey(), e.getValue());
   }
 
