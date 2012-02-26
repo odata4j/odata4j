@@ -60,9 +60,16 @@ public class JdbcTest {
     HSQL_DB.execute(new ThrowingFunc1<Connection, Void>(){
       @Override
       public Void apply(Connection conn) throws Exception {
-        conn.createStatement().execute("CREATE TABLE CUSTOMER(CUSTOMER_ID INTEGER NOT NULL, CUSTOMER_NAME VARCHAR(25) NOT NULL, PRIMARY KEY (CUSTOMER_ID))");
+        conn.createStatement().execute("CREATE TABLE CUSTOMER (CUSTOMER_ID INTEGER NOT NULL, CUSTOMER_NAME VARCHAR(25) NOT NULL, PRIMARY KEY (CUSTOMER_ID))");
         conn.createStatement().execute("INSERT INTO CUSTOMER (CUSTOMER_ID, CUSTOMER_NAME) VALUES (1, 'Customer One')");
         conn.createStatement().execute("INSERT INTO CUSTOMER (CUSTOMER_ID, CUSTOMER_NAME) VALUES (2, 'Customer Two')");
+
+        conn.createStatement().execute("CREATE TABLE PRODUCT (PRODUCT_ID INTEGER NOT NULL, PRODUCT_NAME VARCHAR(25) NOT NULL, PRIMARY KEY (PRODUCT_ID))");
+        conn.createStatement().execute("INSERT INTO PRODUCT (PRODUCT_ID, PRODUCT_NAME) VALUES (1, 'Product One')");
+
+        conn.createStatement().execute("CREATE TABLE CUSTOMER_PRODUCT (CUSTOMER_ID INTEGER NOT NULL, PRODUCT_ID INTEGER NOT NULL, PRIMARY KEY (CUSTOMER_ID, PRODUCT_ID))");
+        conn.createStatement().execute("INSERT INTO CUSTOMER_PRODUCT (CUSTOMER_ID, PRODUCT_ID) VALUES (1, 1)");
+        conn.createStatement().execute("INSERT INTO CUSTOMER_PRODUCT (CUSTOMER_ID, PRODUCT_ID) VALUES (2, 1)");
         return null;
       }});
   }

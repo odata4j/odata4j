@@ -7,10 +7,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
+import org.core4j.Enumerable;
+import org.core4j.Func1;
 import org.core4j.ThrowingFunc1;
 import org.odata4j.command.Command;
 import org.odata4j.command.CommandResult;
+import org.odata4j.core.NamedValue;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
@@ -45,14 +49,26 @@ public class JdbcGetEntityCommand implements Command<GetEntityCommandContext> {
 
   private static BoolCommonExpression prependPrimaryKeyFilter(JdbcMetadataMapping mapping, EdmEntityType entityType,
       OEntityKey entityKey, BoolCommonExpression filter) {
-    BoolCommonExpression keyFilter = null;
+    List<BoolCommonExpression> filters = new ArrayList<BoolCommonExpression>();
     if (entityType.getKeys().size() == 1) {
       String key = entityType.getKeys().iterator().next();
-      keyFilter = Expression.eq(Expression.simpleProperty(key), Expression.literal(entityKey.asSingleValue()));
+      filters.add(Expression.eq(Expression.simpleProperty(key), Expression.literal(entityKey.asSingleValue())));
     } else {
-      throw new UnsupportedOperationException("TODO Implement complex keys");
+      Map<String, NamedValue<?>> complexKey = Enumerable.create(entityKey.asComplexValue()).toMap(new Func1<NamedValue<?>, String>(){
+        @Override
+        public String apply(NamedValue<?> nv) {
+          return nv.getName();
+        }});
+      for (String key : entityType.getKeys()) {
+        filters.add(Expression.eq(Expression.simpleProperty(key), Expression.literal(complexKey.get(key).getValue())));
+      }
     }
-    return filter == null ? keyFilter : Expression.and(keyFilter, filter);
+    if (filter != null)
+      filters.add(filter);
+    BoolCommonExpression newFilter = null;
+    for (BoolCommonExpression f : filters)
+      newFilter = newFilter == null ? f : Expression.and(f, newFilter);
+    return newFilter;
   }
 
   @Override

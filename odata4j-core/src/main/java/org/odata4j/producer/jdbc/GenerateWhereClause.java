@@ -50,6 +50,7 @@ import org.odata4j.expression.NotExpression;
 import org.odata4j.expression.NullLiteral;
 import org.odata4j.expression.OrExpression;
 import org.odata4j.expression.OrderByExpression;
+import org.odata4j.expression.OrderByExpression.Direction;
 import org.odata4j.expression.ParenExpression;
 import org.odata4j.expression.ReplaceMethodCallExpression;
 import org.odata4j.expression.RoundMethodCallExpression;
@@ -66,7 +67,6 @@ import org.odata4j.expression.ToLowerMethodCallExpression;
 import org.odata4j.expression.ToUpperMethodCallExpression;
 import org.odata4j.expression.TrimMethodCallExpression;
 import org.odata4j.expression.YearMethodCallExpression;
-import org.odata4j.expression.OrderByExpression.Direction;
 import org.odata4j.producer.jdbc.JdbcModel.JdbcColumn;
 import org.odata4j.producer.jdbc.SqlStatement.SqlParameter;
 
@@ -187,12 +187,12 @@ public class GenerateWhereClause implements ExpressionVisitor {
 
   @Override
   public void visit(GeExpression expr) {
-    throw new UnsupportedOperationException();
+    nextBetween.push(" >= ");
   }
 
   @Override
   public void visit(GtExpression expr) {
-    throw new UnsupportedOperationException();
+    nextBetween.push(" > ");
   }
 
   @Override
@@ -248,7 +248,7 @@ public class GenerateWhereClause implements ExpressionVisitor {
 
   @Override
   public void visit(LeExpression expr) {
-    throw new UnsupportedOperationException();
+    nextBetween.push(" <= ");
   }
 
   @Override
@@ -258,7 +258,7 @@ public class GenerateWhereClause implements ExpressionVisitor {
 
   @Override
   public void visit(LtExpression expr) {
-    throw new UnsupportedOperationException();
+    nextBetween.push(" < ");
   }
 
   @Override
@@ -273,7 +273,7 @@ public class GenerateWhereClause implements ExpressionVisitor {
 
   @Override
   public void visit(NeExpression expr) {
-    throw new UnsupportedOperationException();
+    nextBetween.push(" <> ");
   }
 
   @Override
@@ -318,7 +318,8 @@ public class GenerateWhereClause implements ExpressionVisitor {
 
   @Override
   public void visit(StringLiteral expr) {
-    throw new UnsupportedOperationException();
+    sb.append("?");
+    params.add(new SqlParameter(expr.getValue(), Types.VARCHAR));
   }
 
   @Override
