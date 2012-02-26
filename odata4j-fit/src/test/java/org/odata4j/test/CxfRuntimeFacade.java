@@ -17,6 +17,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.junit.Assert;
 import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.core.Throwables;
 import org.odata4j.cxf.consumer.ODataCxfConsumer;
 import org.odata4j.cxf.consumer.ODataCxfConsumer.Builder;
 import org.odata4j.cxf.producer.server.CxfJettyServer;
@@ -44,7 +45,7 @@ public class CxfRuntimeFacade implements RuntimeFacade {
       new BufferedReader(new InputStreamReader(System.in)).readLine();
       server.stop();
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 
@@ -99,11 +100,11 @@ public class CxfRuntimeFacade implements RuntimeFacade {
           // support proxy settings
           String hostName = System.getProperties().getProperty("http.proxyHost");
           String hostPort = System.getProperties().getProperty("http.proxyPort");
-          
+
           HttpHost proxy = new HttpHost(hostName, Integer.parseInt(hostPort));
           httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
         }
-      
+
       // Prepare a request object
       HttpGet httpget = new HttpGet(uri);
       if (accept != null) {
@@ -126,7 +127,7 @@ public class CxfRuntimeFacade implements RuntimeFacade {
       }
       return resource;
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 }

@@ -14,6 +14,7 @@ import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.odata4j.core.Guid;
+import org.odata4j.core.Throwables;
 import org.odata4j.expression.OrderByExpression.Direction;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.repack.org.apache.commons.codec.DecoderException;
@@ -481,7 +482,7 @@ public class ExpressionParser {
           byte[] bValue = Hex.decodeHex(value.toCharArray());
           return Expression.binary(bValue);
         } catch (DecoderException e) {
-          throw new RuntimeException(e);
+          throw Throwables.propagate(e);
         }
       }
     }

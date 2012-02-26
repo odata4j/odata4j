@@ -19,6 +19,7 @@ import javax.ws.rs.core.Application;
 
 import org.core4j.CoreUtils;
 import org.core4j.Enumerable;
+import org.odata4j.core.Throwables;
 import org.odata4j.producer.server.ODataServer;
 
 import com.sun.jersey.api.container.ContainerFactory;
@@ -117,7 +118,7 @@ public class JerseyServer implements ODataServer {
   /**
    * stop synchronously, handy for unit test scenarios.
    * @param delaySeconds
-   * @return 
+   * @return
    */
   public JerseyServer stop(int delaySeconds) {
     server.stop(delaySeconds);
@@ -167,11 +168,11 @@ public class JerseyServer implements ODataServer {
       LOG.info(String.format("Jersey app started with WADL available at %sapplication.wadl\n", appBaseUri));
       return this;
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     } catch (InstantiationException e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     } catch (IllegalAccessException e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 

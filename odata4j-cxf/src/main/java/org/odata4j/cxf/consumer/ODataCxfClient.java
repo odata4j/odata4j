@@ -36,6 +36,7 @@ import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OLink;
 import org.odata4j.core.OProperty;
+import org.odata4j.core.Throwables;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.format.Entry;
@@ -60,12 +61,12 @@ public class ODataCxfClient extends AbstractODataClient {
   public ODataCxfClient(FormatType formatType) {
     super(formatType);
     this.httpClient = new DefaultHttpClient();
-    
+
     if (System.getProperties().containsKey("http.proxyHost") && System.getProperties().containsKey("http.proxyPort")) {
       // support proxy settings
       String hostName = System.getProperties().getProperty("http.proxyHost");
       String hostPort = System.getProperties().getProperty("http.proxyPort");
-      
+
       HttpHost proxy = new HttpHost(hostName, Integer.parseInt(hostPort));
       this.httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
     }
@@ -87,7 +88,7 @@ public class ODataCxfClient extends AbstractODataClient {
   //    DefaultHttpClient client = new DefaultHttpClient();
   //    ClientConnectionManager mgr = client.getConnectionManager();
   //    HttpParams params = client.getParams();
-  //    client = new DefaultHttpClient(new ThreadSafeClientConnManager(params, 
+  //    client = new DefaultHttpClient(new ThreadSafeClientConnManager(params,
   //
   //            mgr.getSchemeRegistry()), params);
   //    return client;
@@ -191,7 +192,7 @@ public class ODataCxfClient extends AbstractODataClient {
       InputStream textEntity = response.getEntity().getContent();
       return new BOMWorkaroundReader(new InputStreamReader(textEntity, "UTF-8"));
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 
@@ -277,7 +278,7 @@ public class ODataCxfClient extends AbstractODataClient {
 
       return httpResponse;
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 
@@ -312,7 +313,7 @@ public class ODataCxfClient extends AbstractODataClient {
       InputStream textEntity = response.getEntity().getContent();
       return InternalUtil.newXMLEventReader(new BOMWorkaroundReader(new InputStreamReader(textEntity, "UTF-8")));
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 

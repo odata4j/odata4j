@@ -7,6 +7,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.core4j.ReadOnlyIterator;
+import org.odata4j.core.Throwables;
 import org.odata4j.internal.PlatformUtil;
 import org.odata4j.stax2.Attribute2;
 import org.odata4j.stax2.EndElement2;
@@ -91,7 +92,7 @@ public class DomXMLFactoryProvider2 extends XMLFactoryProvider2 {
         Document document = builder.parse(new InputSource(reader));
         return new DomXMLEventReader2(document);
       } catch (Exception e) {
-        throw new RuntimeException(e);
+        throw Throwables.propagate(e);
       }
 
     }

@@ -13,6 +13,7 @@ import org.joda.time.DateTimeZone;
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.ODataConstants;
+import org.odata4j.core.Throwables;
 import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
 
 public class AzureTableBehavior implements OClientBehavior {
@@ -84,11 +85,11 @@ public class AzureTableBehavior implements OClientBehavior {
 
       return request;
     } catch (NoSuchAlgorithmException e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     } catch (InvalidKeyException e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     } catch (UnsupportedEncodingException e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 

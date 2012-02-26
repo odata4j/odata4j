@@ -14,6 +14,7 @@ import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
+import org.odata4j.core.Throwables;
 import org.odata4j.stax2.Attribute2;
 import org.odata4j.stax2.EndElement2;
 import org.odata4j.stax2.QName2;
@@ -68,7 +69,7 @@ public class StaxXMLFactoryProvider2 extends XMLFactoryProvider2 {
         XMLEventReader real = factory.createXMLEventReader(reader);
         return new StaxXMLEventReader2(real);
       } catch (XMLStreamException e) {
-        throw new RuntimeException(e);
+        throw Throwables.propagate(e);
       }
     }
 
@@ -86,7 +87,7 @@ public class StaxXMLFactoryProvider2 extends XMLFactoryProvider2 {
       try {
         return real.getElementText();
       } catch (XMLStreamException e) {
-        throw new RuntimeException(e);
+        throw Throwables.propagate(e);
       }
     }
 
@@ -100,7 +101,7 @@ public class StaxXMLFactoryProvider2 extends XMLFactoryProvider2 {
       try {
         return new StaxXMLEvent2(real.nextEvent());
       } catch (XMLStreamException e) {
-        throw new RuntimeException(e);
+        throw Throwables.propagate(e);
       }
     }
 
@@ -126,7 +127,7 @@ public class StaxXMLFactoryProvider2 extends XMLFactoryProvider2 {
         XMLEventWriter real = factory.createXMLEventWriter(writer);
         return new StaxXMLEventWriter2(real);
       } catch (XMLStreamException e) {
-        throw new RuntimeException(e);
+        throw Throwables.propagate(e);
       }
 
     }
@@ -146,7 +147,7 @@ public class StaxXMLFactoryProvider2 extends XMLFactoryProvider2 {
       try {
         real.add(realXMLEvent);
       } catch (XMLStreamException e) {
-        throw new RuntimeException(e);
+        throw Throwables.propagate(e);
       }
     }
 

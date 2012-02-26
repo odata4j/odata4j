@@ -14,6 +14,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.core4j.Enumerable;
+import org.odata4j.core.Throwables;
 
 /**
  * An abstract representation of the "bean" nature of a class.
@@ -123,7 +124,7 @@ public class BeanModel {
     try {
       return method.invoke(target);
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 
@@ -142,7 +143,7 @@ public class BeanModel {
     try {
       method.invoke(target, propertyValue);
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 
@@ -166,7 +167,7 @@ public class BeanModel {
             ? Enumerable.create((Object[]) obj)
             : (Iterable<?>) obj;
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 
@@ -200,7 +201,7 @@ public class BeanModel {
 
       method.invoke(target, value);
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
 
   }

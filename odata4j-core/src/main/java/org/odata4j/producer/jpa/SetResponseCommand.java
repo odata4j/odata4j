@@ -23,6 +23,7 @@ import org.odata4j.core.OLink;
 import org.odata4j.core.OLinks;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
+import org.odata4j.core.Throwables;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmMultiplicity;
@@ -115,38 +116,38 @@ public class SetResponseCommand implements Command {
         Object jpaEntity,
         List<EntitySimpleProperty> expand,
         List<EntitySimpleProperty> select) {
-  
+
     List<OProperty<?>> properties = new ArrayList<OProperty<?>>();
     List<OLink> links = new ArrayList<OLink>();
-  
+
     try {
       SingularAttribute<?, ?> idAtt = JPAEdmGenerator.getIdAttribute(entityType);
       boolean hasEmbeddedCompositeKey =
             idAtt.getPersistentAttributeType() == PersistentAttributeType.EMBEDDED;
-  
+
       // get properties
       for (EdmProperty ep : ees.getType().getProperties()) {
-  
+
         if (!JPAProducer.isSelected(ep.getName(), select)) {
           continue;
         }
-  
+
         // we have a embedded composite key and we want a property from
         // that key
         if (hasEmbeddedCompositeKey && ees.getType().getKeys().contains(ep.getName())) {
           Object value = SetResponseCommand.getIdValue(jpaEntity, idAtt, ep.getName());
-  
+
           properties.add(OProperties.simple(
                 ep.getName(),
                 (EdmSimpleType<?>) ep.getType(),
                 value));
-  
+
         } else {
           // get the simple attribute
           Attribute<?, ?> att = entityType.getAttribute(ep.getName());
           JPAMember member = JPAMember.create(att, jpaEntity);
           Object value = member.get();
-  
+
           if (ep.getType().isSimple()) {
             properties.add(OProperties.simple(
                   ep.getName(),
@@ -157,12 +158,12 @@ public class SetResponseCommand implements Command {
           }
         }
       }
-  
+
       // get the collections if necessary
       if (expand != null && !expand.isEmpty()) {
-  
+
         HashMap<String, List<EntitySimpleProperty>> expandedProps = new HashMap<String, List<EntitySimpleProperty>>();
-  
+
         //process all the expanded properties and add them to map
         for (final EntitySimpleProperty propPath : expand) {
           // split the property path into the first and remaining
@@ -183,23 +184,23 @@ public class SetResponseCommand implements Command {
             expandedProps.put(prop, remainingPropPaths);
           }
         }
-  
+
         for (final String prop : expandedProps.keySet()) {
           List<EntitySimpleProperty> remainingPropPath = expandedProps.get(prop);
-  
+
           Attribute<?, ?> att = entityType.getAttribute(prop);
           if (att.getPersistentAttributeType() == PersistentAttributeType.ONE_TO_MANY
                 || att.getPersistentAttributeType() == PersistentAttributeType.MANY_TO_MANY) {
-  
+
             Collection<?> value = JPAMember.create(att, jpaEntity).get();
-  
+
             List<OEntity> relatedEntities = new ArrayList<OEntity>();
             for (Object relatedEntity : value) {
               EntityType<?> elementEntityType = (EntityType<?>) ((PluralAttribute<?, ?, ?>) att)
                     .getElementType();
               EdmEntitySet elementEntitySet = metadata
                     .getEdmEntitySet(JPAEdmGenerator.getEntitySetName(elementEntityType));
-  
+
               relatedEntities.add(jpaEntityToOEntity(
                   metadata,
                     elementEntitySet,
@@ -208,32 +209,32 @@ public class SetResponseCommand implements Command {
                     remainingPropPath,
                     null));
             }
-  
+
             links.add(OLinks.relatedEntitiesInline(
                   null,
                   prop,
                   null,
                   relatedEntities));
-  
+
           } else if (att.getPersistentAttributeType() == PersistentAttributeType.ONE_TO_ONE
                 || att.getPersistentAttributeType() == PersistentAttributeType.MANY_TO_ONE) {
             EntityType<?> relatedEntityType =
                   (EntityType<?>) ((SingularAttribute<?, ?>) att)
                       .getType();
-  
+
             EdmEntitySet relatedEntitySet =
                   metadata.getEdmEntitySet(JPAEdmGenerator
                       .getEntitySetName(relatedEntityType));
-  
+
             Object relatedEntity = JPAMember.create(att, jpaEntity).get();
-  
+
             if (relatedEntity == null) {
               links.add(OLinks.relatedEntityInline(
                     null,
                     prop,
                     null,
                     null));
-  
+
             } else {
               links.add(OLinks.relatedEntityInline(
                     null,
@@ -247,12 +248,12 @@ public class SetResponseCommand implements Command {
                         remainingPropPath,
                         null)));
             }
-  
+
           }
-  
+
         }
       }
-  
+
       // for every navigation propety that we didn' expand we must place an deferred
       // OLink if the nav prop is selected
       for (final EdmNavigationProperty ep : ees.getType().getNavigationProperties()) {
@@ -263,7 +264,7 @@ public class SetResponseCommand implements Command {
               return t.getTitle().equals(ep.getName());
             }
           });
-  
+
           if (!expanded) {
             // defer
             if (ep.getToRole().getMultiplicity() == EdmMultiplicity.MANY) {
@@ -274,11 +275,11 @@ public class SetResponseCommand implements Command {
           }
         }
       }
-  
+
       return OEntities.create(ees, SetResponseCommand.toOEntityKey(jpaEntity, idAtt), properties, links);
-  
+
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 
@@ -289,16 +290,16 @@ public class SetResponseCommand implements Command {
     try {
       // get the composite id
       Object keyValue = JPAMember.create(idAtt, jpaEntity).get();
-  
+
       if (propName == null)
           return keyValue;
-  
+
       // get the property from the key
       ManagedType<?> keyType = (ManagedType<?>) idAtt.getType();
       Attribute<?, ?> att = keyType.getAttribute(propName);
       return JPAMember.create(att, keyValue).get();
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 
@@ -310,7 +311,7 @@ public class SetResponseCommand implements Command {
       return OEntityKey.create(id);
     }
     ManagedType<?> keyType = (ManagedType<?>) idAtt.getType();
-  
+
     Map<String, Object> nameValues = new HashMap<String, Object>();
     for (Attribute<?, ?> att : keyType.getAttributes())
       nameValues.put(att.getName(), SetResponseCommand.getIdValue(jpaEntity, idAtt, att.getName()));

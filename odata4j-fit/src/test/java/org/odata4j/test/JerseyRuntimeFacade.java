@@ -10,6 +10,7 @@ import javax.ws.rs.ext.RuntimeDelegate;
 import org.junit.Assert;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.consumer.behaviors.MethodTunnelingBehavior;
+import org.odata4j.core.Throwables;
 import org.odata4j.format.FormatType;
 import org.odata4j.jersey.consumer.ODataJerseyConsumer;
 import org.odata4j.jersey.consumer.ODataJerseyConsumer.Builder;
@@ -39,7 +40,7 @@ public class JerseyRuntimeFacade implements RuntimeFacade {
       new BufferedReader(new InputStreamReader(System.in)).readLine();
       server.stop();
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 

@@ -6,6 +6,7 @@ import java.util.Set;
 import javax.ws.rs.ext.RuntimeDelegate;
 
 import org.odata4j.consumer.behaviors.OClientBehavior;
+import org.odata4j.core.Throwables;
 import org.odata4j.internal.PlatformUtil;
 import org.odata4j.jersey.consumer.behaviors.JerseyClientBehavior;
 import org.odata4j.jersey.internal.StringProvider2;
@@ -34,7 +35,7 @@ class JerseyClientUtil {
       hps.clear();
       hps.add(new MediaTypeProvider());
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 

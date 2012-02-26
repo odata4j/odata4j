@@ -29,6 +29,7 @@ import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OFunctionParameter;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
+import org.odata4j.core.Throwables;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntityContainer;
 import org.odata4j.edm.EdmEntitySet;
@@ -210,7 +211,7 @@ public class XmlDataProducerExample extends AbstractExample {
 
         return Responses.entities(entities, ees, null, null);
       } catch (XMLStreamException ex) {
-        throw new RuntimeException(ex);
+        throw Throwables.propagate(ex);
       } finally {
         try {
           if (reader != null) reader.close();

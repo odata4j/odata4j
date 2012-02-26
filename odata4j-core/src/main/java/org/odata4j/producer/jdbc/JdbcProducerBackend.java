@@ -12,6 +12,7 @@ import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityId;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OFunctionParameter;
+import org.odata4j.core.Throwables;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.producer.EntityQueryInfo;
 import org.odata4j.producer.QueryInfo;
@@ -55,7 +56,7 @@ public abstract class JdbcProducerBackend implements CommandProducerBackend {
       getCommand(GetMetadataCommandContext.class).execute(context);
       return (JdbcMetadataMapping) context.getResult();
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 

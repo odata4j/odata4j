@@ -26,6 +26,7 @@ import javax.ws.rs.core.MediaType;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.junit.Assert;
+import org.odata4j.core.Throwables;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.test.RuntimeFacade;
@@ -125,7 +126,7 @@ public class NorthwindTestUtils {
 
       Assert.assertArrayEquals(expectParts, resultParts);
     } catch (UnsupportedEncodingException e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 
@@ -576,7 +577,7 @@ public class NorthwindTestUtils {
       out = new OutputStreamWriter(new FileOutputStream(fileName), "utf-8");
       out.write(contents);
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     } finally {
       if (out != null) {
         try {

@@ -7,6 +7,7 @@ import org.junit.Rule;
 import org.junit.rules.MethodRule;
 import org.junit.rules.TestWatchman;
 import org.junit.runners.model.FrameworkMethod;
+import org.odata4j.core.Throwables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +27,7 @@ public abstract class AbstractTest {
       // configure JUL
       java.util.logging.LogManager.getLogManager().readConfiguration(AbstractTest.class.getResourceAsStream("/logging.properties"));
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 

@@ -16,6 +16,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.StringUtil;
 import org.junit.Assert;
+import org.odata4j.core.Throwables;
 import org.odata4j.producer.server.ODataServer;
 
 public class CxfTestServer implements ODataServer {
@@ -62,7 +63,7 @@ public class CxfTestServer implements ODataServer {
       return this;
 
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 
@@ -80,7 +81,7 @@ public class CxfTestServer implements ODataServer {
       this.server.stop();
       return this;
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 

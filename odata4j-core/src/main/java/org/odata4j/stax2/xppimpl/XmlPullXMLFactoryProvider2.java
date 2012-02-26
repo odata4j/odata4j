@@ -3,6 +3,7 @@ package org.odata4j.stax2.xppimpl;
 import java.io.Reader;
 import java.io.Writer;
 
+import org.odata4j.core.Throwables;
 import org.odata4j.stax2.Attribute2;
 import org.odata4j.stax2.EndElement2;
 import org.odata4j.stax2.QName2;
@@ -85,7 +86,7 @@ public class XmlPullXMLFactoryProvider2 extends XMLFactoryProvider2 {
 
         return new XmlPullXMLEventReader2(xpp);
       } catch (XmlPullParserException e) {
-        throw new RuntimeException(e);
+        throw Throwables.propagate(e);
       }
 
     }
@@ -105,7 +106,7 @@ public class XmlPullXMLFactoryProvider2 extends XMLFactoryProvider2 {
       try {
         return xpp.nextText();
       } catch (Exception e) {
-        throw new RuntimeException(e);
+        throw Throwables.propagate(e);
       }
     }
 
@@ -115,7 +116,7 @@ public class XmlPullXMLFactoryProvider2 extends XMLFactoryProvider2 {
         int eventType = xpp.next();
         return eventType != XmlPullParser.END_DOCUMENT;
       } catch (Exception e) {
-        throw new RuntimeException(e);
+        throw Throwables.propagate(e);
       }
 
     }
@@ -153,7 +154,7 @@ public class XmlPullXMLFactoryProvider2 extends XMLFactoryProvider2 {
       try {
         return xpp.getEventType() == XmlPullParser.END_TAG;
       } catch (XmlPullParserException e) {
-        throw new RuntimeException(e);
+        throw Throwables.propagate(e);
       }
     }
 
@@ -162,7 +163,7 @@ public class XmlPullXMLFactoryProvider2 extends XMLFactoryProvider2 {
       try {
         return xpp.getEventType() == XmlPullParser.START_TAG;
       } catch (XmlPullParserException e) {
-        throw new RuntimeException(e);
+        throw Throwables.propagate(e);
       }
     }
 

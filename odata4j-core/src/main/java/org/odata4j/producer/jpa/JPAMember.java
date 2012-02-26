@@ -13,6 +13,7 @@ import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.SingularAttribute;
 
 import org.core4j.CoreUtils;
+import org.odata4j.core.Throwables;
 
 public abstract class JPAMember {
 
@@ -126,7 +127,7 @@ public abstract class JPAMember {
       try {
         return (T) field.get(target);
       } catch (Exception e) {
-        throw new RuntimeException(e);
+        throw Throwables.propagate(e);
       }
     }
 
@@ -135,7 +136,7 @@ public abstract class JPAMember {
       try {
         field.set(target, value);
       } catch (Exception e) {
-        throw new RuntimeException(e);
+        throw Throwables.propagate(e);
       }
     }
 
@@ -185,7 +186,7 @@ public abstract class JPAMember {
       try {
         return (T) getter.invoke(target);
       } catch (Exception e) {
-        throw new RuntimeException(e);
+        throw Throwables.propagate(e);
       }
     }
 
@@ -196,7 +197,7 @@ public abstract class JPAMember {
       try {
         setter.invoke(target, value);
       } catch (Exception e) {
-        throw new RuntimeException(e);
+        throw Throwables.propagate(e);
       }
     }
 

@@ -13,6 +13,7 @@ import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OLinks;
 import org.odata4j.core.OProperty;
+import org.odata4j.core.Throwables;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmMultiplicity;
@@ -68,7 +69,7 @@ class CxfConsumerCreateEntityRequest<T> extends AbstractConsumerEntityPayloadReq
 
       return (T) entry.getEntity();
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     } finally {
       client.shuttdown();
     }

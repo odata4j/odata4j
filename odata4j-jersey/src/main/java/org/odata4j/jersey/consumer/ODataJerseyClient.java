@@ -25,6 +25,7 @@ import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OLink;
 import org.odata4j.core.OProperty;
+import org.odata4j.core.Throwables;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.format.Entry;
@@ -233,7 +234,7 @@ class ODataJerseyClient extends AbstractODataClient {
     try {
       return new BOMWorkaroundReader(new InputStreamReader(textEntity, "UTF-8"));
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 
@@ -249,7 +250,7 @@ class ODataJerseyClient extends AbstractODataClient {
     try {
       return InternalUtil.newXMLEventReader(new BOMWorkaroundReader(new InputStreamReader(textEntity, "UTF-8")));
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 

@@ -35,6 +35,7 @@ import org.odata4j.core.OProperty;
 import org.odata4j.core.ORelatedEntitiesLinkInline;
 import org.odata4j.core.ORelatedEntityLink;
 import org.odata4j.core.ORelatedEntityLinkInline;
+import org.odata4j.core.Throwables;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmDecorator;
 import org.odata4j.edm.EdmFunctionImport;
@@ -470,7 +471,7 @@ public class JPAProducer implements ODataProducer {
       ctor.setAccessible(true);
       return (T) ctor.newInstance();
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 

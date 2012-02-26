@@ -12,6 +12,7 @@ import javax.net.ssl.X509TrustManager;
 
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.consumer.behaviors.OClientBehavior;
+import org.odata4j.core.Throwables;
 
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.filter.Filterable;
@@ -55,7 +56,7 @@ public enum AllowSelfSignedCertsBehavior implements JerseyClientBehavior {
       HTTPSProperties props = new HTTPSProperties(hv, context);
       clientConfig.getProperties().put(HTTPSProperties.PROPERTY_HTTPS_PROPERTIES, props);
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 

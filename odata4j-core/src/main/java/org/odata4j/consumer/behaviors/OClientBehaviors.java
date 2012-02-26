@@ -1,6 +1,7 @@
 package org.odata4j.consumer.behaviors;
 
 import org.odata4j.consumer.ODataClientRequest;
+import org.odata4j.core.Throwables;
 
 /**
  * A static factory to create built-in {@link OClientBehavior} instances.
@@ -54,7 +55,7 @@ public class OClientBehaviors {
         try {
           Thread.sleep(millis);
         } catch (InterruptedException e) {
-          throw new RuntimeException(e);
+          throw Throwables.propagate(e);
         }
         return request;
       }

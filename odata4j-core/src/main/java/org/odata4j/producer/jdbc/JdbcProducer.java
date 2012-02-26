@@ -8,6 +8,7 @@ import java.util.Map;
 import org.odata4j.command.Command;
 import org.odata4j.command.CommandContext;
 import org.odata4j.command.CommandExecution;
+import org.odata4j.core.Throwables;
 import org.odata4j.producer.command.CommandProducer;
 import org.odata4j.producer.command.ProducerCommandContext;
 
@@ -18,7 +19,7 @@ public class JdbcProducer extends CommandProducer {
     private final Map<Class<?>, Object> instances = new HashMap<Class<?>, Object>();
     private final Map<Class<?>, List<Command<?>>> preCommands = new HashMap<Class<?>, List<Command<?>>>();
     private final Map<Class<?>, List<Command<?>>> postCommands = new HashMap<Class<?>, List<Command<?>>>();
- 
+
     private Jdbc jdbc;
 
     public Builder jdbc(Jdbc jdbc) {
@@ -76,7 +77,7 @@ public class JdbcProducer extends CommandProducer {
             try {
               rt = instanceType.newInstance();
             } catch (Exception e) {
-              throw new RuntimeException(e);
+              throw Throwables.propagate(e);
             }
           }
           return (T) rt;

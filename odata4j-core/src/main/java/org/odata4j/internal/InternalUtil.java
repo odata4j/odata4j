@@ -28,6 +28,7 @@ import org.odata4j.core.OLink;
 import org.odata4j.core.OProperty;
 import org.odata4j.core.ORelatedEntitiesLinkInline;
 import org.odata4j.core.ORelatedEntityLink;
+import org.odata4j.core.Throwables;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.producer.inmemory.BeanModel;
 import org.odata4j.stax2.XMLEventReader2;
@@ -207,7 +208,7 @@ public class InternalUtil {
 
       return rt;
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
 
   }
@@ -269,7 +270,7 @@ public class InternalUtil {
     try {
       Thread.sleep(millis);
     } catch (InterruptedException e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 

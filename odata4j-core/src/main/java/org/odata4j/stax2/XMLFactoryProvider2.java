@@ -1,5 +1,6 @@
 package org.odata4j.stax2;
 
+import org.odata4j.core.Throwables;
 import org.odata4j.internal.PlatformUtil;
 
 public abstract class XMLFactoryProvider2 {
@@ -11,7 +12,7 @@ public abstract class XMLFactoryProvider2 {
       String clazz = PlatformUtil.runningOnAndroid() ? "org.odata4j.stax2.xppimpl.XmlPullXMLFactoryProvider2" : "org.odata4j.stax2.staximpl.StaxXMLFactoryProvider2";
       STAX = (XMLFactoryProvider2) Class.forName(clazz).newInstance();
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 

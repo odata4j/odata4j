@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Stack;
 
+import org.odata4j.core.Throwables;
 import org.odata4j.stax2.QName2;
 import org.odata4j.stax2.XMLWriter2;
 
@@ -26,7 +27,7 @@ public class ManualXMLWriter2 implements XMLWriter2 {
     try {
       writer.flush();
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 
@@ -130,7 +131,7 @@ public class ManualXMLWriter2 implements XMLWriter2 {
     try {
       writer.write(value);
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 

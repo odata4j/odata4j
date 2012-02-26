@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 
+import org.odata4j.core.Throwables;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.ODataProducerFactory;
 
@@ -111,7 +112,7 @@ public class DefaultODataProducerProvider implements ContextResolver<ODataProduc
       ODataProducerFactory factory = (ODataProducerFactory) obj;
       return factory.create(props);
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 

@@ -14,6 +14,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.odata4j.core.Throwables;
 import org.odata4j.producer.server.ODataServer;
 
 /**
@@ -63,7 +64,7 @@ public class CxfJettyServer implements ODataServer {
     try {
       url = new URL(appBaseUri);
     } catch (MalformedURLException e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
 
     CXFNonSpringJaxrsServlet odataServlet = new CXFNonSpringJaxrsServlet();
@@ -89,7 +90,7 @@ public class CxfJettyServer implements ODataServer {
       server.start();
       return this;
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 
@@ -99,7 +100,7 @@ public class CxfJettyServer implements ODataServer {
       server.stop();
       return this;
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 

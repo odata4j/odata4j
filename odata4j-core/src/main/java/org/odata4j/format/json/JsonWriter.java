@@ -3,6 +3,8 @@ package org.odata4j.format.json;
 import java.io.IOException;
 import java.io.Writer;
 
+import org.odata4j.core.Throwables;
+
 public class JsonWriter {
 
   private final Writer writer;
@@ -15,7 +17,7 @@ public class JsonWriter {
     try {
       writer.write(encode(functionName) + "(");
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 
@@ -23,7 +25,7 @@ public class JsonWriter {
     try {
       writer.write(");");
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 
@@ -31,7 +33,7 @@ public class JsonWriter {
     try {
       writer.write("{\n");
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 
@@ -39,7 +41,7 @@ public class JsonWriter {
     try {
       writer.write("\n}");
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 
@@ -47,7 +49,7 @@ public class JsonWriter {
     try {
       writer.write("\"" + encode(name) + "\" : ");
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 
@@ -55,7 +57,7 @@ public class JsonWriter {
     try {
       writer.write("[\n");
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 
@@ -63,7 +65,7 @@ public class JsonWriter {
     try {
       writer.write("\n]");
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 
@@ -71,7 +73,7 @@ public class JsonWriter {
     try {
       writer.write(", ");
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 
@@ -79,7 +81,7 @@ public class JsonWriter {
     try {
       writer.write("\"" + encode(value) + "\"");
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 
@@ -87,7 +89,7 @@ public class JsonWriter {
     try {
       writer.write("null");
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 
@@ -95,7 +97,7 @@ public class JsonWriter {
     try {
       writer.write(Integer.toString(value));
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 
@@ -108,7 +110,7 @@ public class JsonWriter {
         fvalue = fvalue.substring(0, fvalue.length() - 1);
       writer.write(fvalue);
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 
@@ -116,7 +118,7 @@ public class JsonWriter {
     try {
       writer.write(value ? "true" : "false");
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 
@@ -124,7 +126,7 @@ public class JsonWriter {
     try {
       writer.write(value);
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw Throwables.propagate(e);
     }
   }
 

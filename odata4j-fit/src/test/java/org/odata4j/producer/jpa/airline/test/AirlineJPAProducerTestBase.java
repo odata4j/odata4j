@@ -13,6 +13,7 @@ import javax.persistence.EntityManagerFactory;
 import org.core4j.ThrowingFunc1;
 import org.junit.After;
 import org.junit.Ignore;
+import org.odata4j.core.Throwables;
 import org.odata4j.producer.server.ODataServer;
 import org.odata4j.test.AbstractRuntimeTest;
 
@@ -83,7 +84,7 @@ public class AirlineJPAProducerTestBase extends AbstractRuntimeTest {
             }
           }
         } catch (Exception e) {
-          throw new RuntimeException(e);
+          throw Throwables.propagate(e);
         } finally {
           try {
             statement.close();
