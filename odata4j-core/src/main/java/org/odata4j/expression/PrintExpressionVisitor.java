@@ -8,6 +8,12 @@ public class PrintExpressionVisitor implements ExpressionVisitor {
 
   private final StringBuilder sb = new StringBuilder();
 
+  public static String asString(CommonExpression expr) {
+    PrintExpressionVisitor v = new PrintExpressionVisitor();
+    expr.visit(v);
+    return v.toString();
+  }
+
   @Override
   public String toString() {
     return sb.toString();

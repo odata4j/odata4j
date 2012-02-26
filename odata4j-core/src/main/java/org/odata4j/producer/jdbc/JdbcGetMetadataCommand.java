@@ -10,8 +10,8 @@ public class JdbcGetMetadataCommand implements Command<GetMetadataCommandContext
   public CommandResult execute(GetMetadataCommandContext context) throws Exception {
     JdbcProducerCommandContext jdbcContext = (JdbcProducerCommandContext) context;
 
-    // 1. create jdbc model
-    JdbcModel model = createModel(jdbcContext);
+    // 1. generate jdbc model
+    JdbcModel model = generateModel(jdbcContext);
 
     // 2. apply model cleanup
     cleanupModel(model);
@@ -23,8 +23,8 @@ public class JdbcGetMetadataCommand implements Command<GetMetadataCommandContext
     return CommandResult.CONTINUE;
   }
 
-  public JdbcModel createModel(JdbcProducerCommandContext jdbcContext) {
-    return jdbcContext.getJdbc().execute(new CreateJdbcModel());
+  public JdbcModel generateModel(JdbcProducerCommandContext jdbcContext) {
+    return jdbcContext.getJdbc().execute(new GenerateJdbcModel());
   }
 
   public void cleanupModel(JdbcModel model) {

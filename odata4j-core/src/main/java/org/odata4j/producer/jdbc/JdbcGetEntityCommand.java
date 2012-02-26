@@ -18,13 +18,15 @@ import org.odata4j.core.OLink;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.edm.EdmEntityType;
 import org.odata4j.edm.EdmProperty;
+import org.odata4j.expression.BoolCommonExpression;
+import org.odata4j.expression.Expression;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.Responses;
 import org.odata4j.producer.command.GetEntityCommandContext;
 import org.odata4j.producer.exceptions.NotFoundException;
 import org.odata4j.producer.jdbc.JdbcModel.JdbcColumn;
-import org.odata4j.producer.jdbc.JdbcModel.JdbcTable;
 
 public class JdbcGetEntityCommand implements Command<GetEntityCommandContext> {
 
@@ -41,6 +43,18 @@ public class JdbcGetEntityCommand implements Command<GetEntityCommandContext> {
     return OEntities.create(entitySet, entityKey, properties, Collections.<OLink>emptyList());
   }
 
+  private static BoolCommonExpression prependPrimaryKeyFilter(JdbcMetadataMapping mapping, EdmEntityType entityType,
+      OEntityKey entityKey, BoolCommonExpression filter) {
+    BoolCommonExpression keyFilter = null;
+    if (entityType.getKeys().size() == 1) {
+      String key = entityType.getKeys().iterator().next();
+      keyFilter = Expression.eq(Expression.simpleProperty(key), Expression.literal(entityKey.asSingleValue()));
+    } else {
+      throw new UnsupportedOperationException("TODO Implement complex keys");
+    }
+    return filter == null ? keyFilter : Expression.and(keyFilter, filter);
+  }
+
   @Override
   public CommandResult execute(final GetEntityCommandContext context) throws Exception {
     JdbcProducerCommandContext jdbcContext = (JdbcProducerCommandContext) context;
@@ -49,15 +63,17 @@ public class JdbcGetEntityCommand implements Command<GetEntityCommandContext> {
 
     final JdbcMetadataMapping mapping = jdbcContext.getBackend().getMetadataMapping();
     final EdmEntitySet entitySet = mapping.getMetadata().findEdmEntitySet(entitySetName);
-    final JdbcTable table = mapping.getMappedTable(entitySet);
-    String keyName = entitySet.getType().getKeys().iterator().next();
-    final JdbcColumn pkColumn = mapping.getMappedColumn(entitySet.getType().findProperty(keyName));
+    if (entitySet == null)
+      throw new NotFoundException();
+
+    GenerateSqlQuery queryGen = jdbcContext.get(GenerateSqlQuery.class);
+    BoolCommonExpression filter = context.getQueryInfo() == null ? null : context.getQueryInfo().filter;
+    filter = prependPrimaryKeyFilter(mapping, entitySet.getType(), context.getEntityKey(), filter);
+    final SqlStatement sqlStatement = queryGen.generate(mapping, entitySet, filter);
     OEntity entity = jdbcContext.getJdbc().execute(new ThrowingFunc1<Connection, OEntity>() {
       @Override
       public OEntity apply(Connection conn) throws Exception {
-        String sql = "SELECT * FROM " + table.tableName + " WHERE " + pkColumn.columnName + " = ?";
-        PreparedStatement stmt = conn.prepareStatement(sql);
-        stmt.setObject(1, context.getEntityKey().asSingleValue());
+        PreparedStatement stmt = sqlStatement.asPreparedStatement(conn);
         ResultSet results = stmt.executeQuery();
         if (results.next()) {
           return toOEntity(mapping, entitySet, results);

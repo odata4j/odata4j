@@ -10,7 +10,7 @@ import org.odata4j.producer.jdbc.JdbcModel.JdbcPrimaryKey;
 import org.odata4j.producer.jdbc.JdbcModel.JdbcSchema;
 import org.odata4j.producer.jdbc.JdbcModel.JdbcTable;
 
-public class CreateJdbcModel implements ThrowingFunc1<Connection, JdbcModel> {
+public class GenerateJdbcModel implements ThrowingFunc1<Connection, JdbcModel> {
 
   @Override
   public JdbcModel apply(Connection conn) throws Exception {

@@ -22,4 +22,26 @@ public class EntityQueryInfo extends QueryInfo {
     super(null, null, null, filter, null, null, customOptions, expand, select);
   }
 
+  public static EntityQueryInfo.Builder newBuilder() {
+    return new EntityQueryInfo.Builder();
+  }
+
+  public static class Builder extends QueryInfo.Builder {
+
+    private BoolCommonExpression filter;
+
+    private Map<String, String> customOptions;
+    private List<EntitySimpleProperty> expand;
+    private List<EntitySimpleProperty> select;
+
+    public Builder setFilter(BoolCommonExpression filter) {
+      this.filter = filter;
+      return this;
+    }
+
+    public EntityQueryInfo build() {
+      return new EntityQueryInfo(filter, customOptions, expand, select);
+    }
+  }
+
 }

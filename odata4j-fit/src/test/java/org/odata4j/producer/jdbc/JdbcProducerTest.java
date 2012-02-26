@@ -55,6 +55,9 @@ public class JdbcProducerTest {
 
     Asserts.assertThrows(NotFoundException.class, getEntity(producer, CUSTOMER, OEntityKey.create(-1), null));
 
+    BoolCommonExpression filter = Expression.boolean_(false);
+    Asserts.assertThrows(NotFoundException.class, getEntity(producer, CUSTOMER, OEntityKey.create(1), EntityQueryInfo.newBuilder().setFilter(filter).build()));
+
     // getEntities
     EntitiesResponse entitiesResponse = producer.getEntities(CUSTOMER, null);
     Assert.assertNotNull(entitiesResponse);
@@ -63,7 +66,14 @@ public class JdbcProducerTest {
 
     Asserts.assertThrows(NotFoundException.class, getEntities(producer, "badEntitySet", null));
 
-    BoolCommonExpression filter = Expression.eq(Expression.simpleProperty(CUSTOMER_ID), Expression.literal(1));
+    filter = Expression.eq(Expression.simpleProperty(CUSTOMER_ID), Expression.literal(1));
+    entitiesResponse = producer.getEntities(CUSTOMER, QueryInfo.newBuilder().setFilter(filter).build());
+    Assert.assertNotNull(entitiesResponse);
+    Assert.assertEquals(CUSTOMER, entitiesResponse.getEntitySet().getName());
+    Assert.assertEquals(1, entitiesResponse.getEntities().size());
+    Assert.assertEquals("Customer One", entitiesResponse.getEntities().get(0).getProperty(CUSTOMER_NAME).getValue());
+
+    filter = Expression.eq(Expression.literal(1), Expression.simpleProperty(CUSTOMER_ID));
     entitiesResponse = producer.getEntities(CUSTOMER, QueryInfo.newBuilder().setFilter(filter).build());
     Assert.assertNotNull(entitiesResponse);
     Assert.assertEquals(CUSTOMER, entitiesResponse.getEntitySet().getName());

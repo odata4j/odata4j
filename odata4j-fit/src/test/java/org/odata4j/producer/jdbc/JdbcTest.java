@@ -31,7 +31,7 @@ public class JdbcTest {
       @Override
       public Void apply(Connection conn) throws Exception {
 
-        JdbcModel model = new CreateJdbcModel().apply(conn);
+        JdbcModel model = new GenerateJdbcModel().apply(conn);
         new HsqlAddSystemTables().apply(model);
         dump(model);
         EdmDataServices edm = new JdbcModelToMetadata().apply(model).getMetadata();
