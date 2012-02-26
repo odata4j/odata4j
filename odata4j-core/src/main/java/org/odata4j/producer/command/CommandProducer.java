@@ -8,17 +8,18 @@ import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityId;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OFunctionParameter;
+import org.odata4j.core.Throwables;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmDataServicesProvider;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.producer.BaseResponse;
 import org.odata4j.producer.CountResponse;
-import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityIdResponse;
 import org.odata4j.producer.EntityQueryInfo;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.ODataProducer;
+import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.edm.MetadataProducer;
 
 public class CommandProducer implements ODataProducer {
@@ -39,7 +40,7 @@ public class CommandProducer implements ODataProducer {
       if (result != null)
         return result;
     } catch (Exception e) {
-      throw new RuntimeException("Backend CommandExecution did not handle: " + e.getMessage(), e);
+      throw Throwables.propagate(e);
     }
     if (resultType.equals(Void.class)) {
       return null;  // ok for Void

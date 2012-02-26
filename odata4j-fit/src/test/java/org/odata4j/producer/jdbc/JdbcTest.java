@@ -62,6 +62,7 @@ public class JdbcTest {
       public Void apply(Connection conn) throws Exception {
         conn.createStatement().execute("CREATE TABLE CUSTOMER(CUSTOMER_ID INTEGER NOT NULL, CUSTOMER_NAME VARCHAR(25) NOT NULL, PRIMARY KEY (CUSTOMER_ID))");
         conn.createStatement().execute("INSERT INTO CUSTOMER (CUSTOMER_ID, CUSTOMER_NAME) VALUES (1, 'Customer One')");
+        conn.createStatement().execute("INSERT INTO CUSTOMER (CUSTOMER_ID, CUSTOMER_NAME) VALUES (2, 'Customer Two')");
         return null;
       }});
   }

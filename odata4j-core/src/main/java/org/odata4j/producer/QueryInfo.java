@@ -98,4 +98,44 @@ public class QueryInfo {
     this.select = select == null ? Collections.<EntitySimpleProperty>emptyList() : Collections.unmodifiableList(select);
   }
 
+  public static Builder newBuilder() {
+    return new Builder();
+  }
+
+  public static class Builder {
+    private InlineCount inlineCount;
+    private Integer top;
+    private Integer skip;
+    private BoolCommonExpression filter;
+    private List<OrderByExpression> orderBy;
+    private String skipToken;
+    private Map<String, String> customOptions;
+    private List<EntitySimpleProperty> expand;
+    private List<EntitySimpleProperty> select;
+
+    public Builder setInlineCount(InlineCount inlineCount) {
+      this.inlineCount = inlineCount;
+      return this;
+    }
+
+    public Builder setTop(Integer top) {
+      this.top = top;
+      return this;
+    }
+
+    public Builder setSkip(Integer skip) {
+      this.skip = skip;
+      return this;
+    }
+
+    public Builder setFilter(BoolCommonExpression filter) {
+      this.filter = filter;
+      return this;
+    }
+
+    public QueryInfo build() {
+      return new QueryInfo(inlineCount, top, skip, filter, orderBy, skipToken, customOptions, expand, select);
+    }
+  }
+
 }

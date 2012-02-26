@@ -22,12 +22,13 @@ import org.odata4j.edm.EdmProperty;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.Responses;
 import org.odata4j.producer.command.GetEntityCommandContext;
+import org.odata4j.producer.exceptions.NotFoundException;
 import org.odata4j.producer.jdbc.JdbcModel.JdbcColumn;
 import org.odata4j.producer.jdbc.JdbcModel.JdbcTable;
 
 public class JdbcGetEntityCommand implements Command<GetEntityCommandContext> {
 
-  public static OEntity toOEntity(JdbcMetadataMapping mapping, EdmEntitySet entitySet, JdbcTable table, ResultSet results) throws SQLException {
+  public static OEntity toOEntity(JdbcMetadataMapping mapping, EdmEntitySet entitySet, ResultSet results) throws SQLException {
     List<OProperty<?>> properties = new ArrayList<OProperty<?>>();
     for (EdmProperty edmProperty : entitySet.getType().getProperties()) {
       JdbcColumn column = mapping.getMappedColumn(edmProperty);
@@ -59,10 +60,13 @@ public class JdbcGetEntityCommand implements Command<GetEntityCommandContext> {
         stmt.setObject(1, context.getEntityKey().asSingleValue());
         ResultSet results = stmt.executeQuery();
         if (results.next()) {
-          return toOEntity(mapping, entitySet, table, results);
+          return toOEntity(mapping, entitySet, results);
         }
         return null;
       }});
+
+    if (entity == null)
+      throw new NotFoundException();
 
     EntityResponse response = Responses.entity(entity);
     context.setResult(response);

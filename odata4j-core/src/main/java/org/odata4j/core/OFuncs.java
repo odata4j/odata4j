@@ -1,5 +1,6 @@
 package org.odata4j.core;
 
+import org.core4j.Func;
 import org.core4j.Func1;
 import org.odata4j.edm.EdmType;
 
@@ -75,6 +76,14 @@ public class OFuncs {
         return input.getTitle();
       }
     };
+  }
+
+  public static Runnable asRunnable(final Func<?> func) {
+    return new Runnable() {
+      @Override
+      public void run() {
+        func.apply();
+      }};
   }
 
 }
