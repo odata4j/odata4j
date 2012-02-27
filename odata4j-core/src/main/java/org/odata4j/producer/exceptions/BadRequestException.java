@@ -11,7 +11,7 @@ public class BadRequestException extends ODataException {
   }
 
   public BadRequestException(String message) {
-    super(Response.status(400).entity(message).build());
+    super(Response.status(400).entity(message).build(), message);
   }
 
 }

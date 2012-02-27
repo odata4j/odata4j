@@ -99,6 +99,14 @@ public abstract class JdbcProducerBackend implements CommandProducerBackend {
       chain.addAll(getPreCommands(GetEntityCommandContext.class));
       chain.add(new JdbcGetEntityCommand());
       chain.addAll(getPostCommands(GetEntityCommandContext.class));
+    } else if (CreateEntityCommandContext.class.isAssignableFrom(contextType)) {
+      chain.addAll(getPreCommands(CreateEntityCommandContext.class));
+      chain.add(new JdbcCreateEntityCommand());
+      chain.addAll(getPostCommands(CreateEntityCommandContext.class));
+    } else if (DeleteEntityCommandContext.class.isAssignableFrom(contextType)) {
+      chain.addAll(getPreCommands(DeleteEntityCommandContext.class));
+      chain.add(new JdbcDeleteEntityCommand());
+      chain.addAll(getPostCommands(DeleteEntityCommandContext.class));
     } else {
       throw new UnsupportedOperationException("TODO implement: " + contextType.getSimpleName());
     }
@@ -161,7 +169,9 @@ public abstract class JdbcProducerBackend implements CommandProducerBackend {
 
   @Override
   public CreateEntityCommandContext newCreateEntityCommandContext(String entitySetName, OEntity entity) {
-    throw new UnsupportedOperationException();
+    return newContext(CreateEntityCommandContext.class,
+        "entitySetName", entitySetName,
+        "entity",  entity);
   }
 
   @Override
@@ -171,7 +181,9 @@ public abstract class JdbcProducerBackend implements CommandProducerBackend {
 
   @Override
   public DeleteEntityCommandContext newDeleteEntityCommandContext(String entitySetName, OEntityKey entityKey) {
-    throw new UnsupportedOperationException();
+    return newContext(DeleteEntityCommandContext.class,
+        "entitySetName", entitySetName,
+        "entityKey",  entityKey);
   }
 
   @Override

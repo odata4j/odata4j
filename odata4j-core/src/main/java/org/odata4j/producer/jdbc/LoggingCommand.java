@@ -12,6 +12,8 @@ import org.odata4j.expression.CommonExpression;
 import org.odata4j.expression.PrintExpressionVisitor;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.command.CloseCommandContext;
+import org.odata4j.producer.command.CreateEntityCommandContext;
+import org.odata4j.producer.command.DeleteEntityCommandContext;
 import org.odata4j.producer.command.GetEntitiesCommandContext;
 import org.odata4j.producer.command.GetEntityCommandContext;
 import org.odata4j.producer.command.GetMetadataCommandContext;
@@ -22,11 +24,11 @@ public class LoggingCommand implements Command<ProducerCommandContext<?>> {
 
   @Override
   public CommandResult execute(ProducerCommandContext<?> context) throws Exception {
-    if (context instanceof CloseCommandContext)
+    if (context instanceof CloseCommandContext) {
       log("close");
-    else if (context instanceof GetMetadataCommandContext)
+    } else if (context instanceof GetMetadataCommandContext) {
       log("getMetadata");
-    else if (context instanceof GetEntitiesCommandContext) {
+    } else if (context instanceof GetEntitiesCommandContext) {
       GetEntitiesCommandContext c = (GetEntitiesCommandContext) context;
       log("getEntities",
           "entitySetName", c.getEntitySetName(),
@@ -37,8 +39,19 @@ public class LoggingCommand implements Command<ProducerCommandContext<?>> {
           "entitySetName", c.getEntitySetName(),
           "entityKey", c.getEntityKey(),
           "queryInfo", c.getQueryInfo());
-    }else
+    } else if (context instanceof CreateEntityCommandContext) {
+      CreateEntityCommandContext c = (CreateEntityCommandContext) context;
+      log("createEntity",
+          "entitySetName", c.getEntitySetName(),
+          "entity", c.getEntity());
+    } else if (context instanceof DeleteEntityCommandContext) {
+      DeleteEntityCommandContext c = (DeleteEntityCommandContext) context;
+      log("deleteEntity",
+          "entitySetName", c.getEntitySetName(),
+          "entityKey", c.getEntityKey());
+    } else {
       throw new UnsupportedOperationException("TODO implement logging for : " + context);
+    }
     return CommandResult.CONTINUE;
   }
 

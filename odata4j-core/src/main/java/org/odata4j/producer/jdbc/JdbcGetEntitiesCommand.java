@@ -17,7 +17,7 @@ import org.odata4j.producer.Responses;
 import org.odata4j.producer.command.GetEntitiesCommandContext;
 import org.odata4j.producer.exceptions.NotFoundException;
 
-public class JdbcGetEntitiesCommand implements Command<GetEntitiesCommandContext> {
+public class JdbcGetEntitiesCommand extends JdbcBaseCommand implements Command<GetEntitiesCommandContext> {
 
   @Override
   public CommandResult execute(GetEntitiesCommandContext context) throws Exception {
@@ -41,7 +41,7 @@ public class JdbcGetEntitiesCommand implements Command<GetEntitiesCommandContext
         PreparedStatement stmt = sqlStatement.asPreparedStatement(conn);
         ResultSet results = stmt.executeQuery();
         while (results.next()) {
-          OEntity entity = JdbcGetEntityCommand.toOEntity(mapping, entitySet, results);
+          OEntity entity = toOEntity(mapping, entitySet, results);
           entities.add(entity);
         }
         return null;

@@ -143,7 +143,7 @@ public class OEntities {
       this.entityType = entityType;
       this.entityKey = entityKey;
       this.properties = Collections.unmodifiableList(properties);
-      this.links = Collections.unmodifiableList(links);
+      this.links = links == null ? Collections.<OLink>emptyList() : Collections.unmodifiableList(links);
       this.extensions = Arrays.asList(extensions);
     }
 

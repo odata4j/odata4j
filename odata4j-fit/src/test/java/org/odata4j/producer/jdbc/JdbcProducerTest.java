@@ -1,11 +1,19 @@
 package org.odata4j.producer.jdbc;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import junit.framework.Assert;
 
 import org.core4j.Func;
 import org.junit.Test;
+import org.odata4j.core.OEntities;
+import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
+import org.odata4j.core.OProperties;
+import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmDataServices;
+import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.Expression;
 import org.odata4j.producer.EntitiesResponse;
@@ -56,9 +64,13 @@ public class JdbcProducerTest {
         .register(JdbcModelToMetadata.class, modelToMetadata)
         .build();
 
+    // getMetadata
     EdmDataServices metadata = producer.getMetadata();
     Assert.assertNotNull(metadata);
     JdbcTest.dump(metadata);
+    EdmEntitySet customerEntitySet = metadata.findEdmEntitySet(CUSTOMER);
+    Assert.assertNotNull(customerEntitySet);
+    Assert.assertEquals(CUSTOMER, customerEntitySet.getName());
 
     // getEntity - simple key
     EntityResponse entityResponse = producer.getEntity(CUSTOMER, OEntityKey.create(1), null);
@@ -154,8 +166,31 @@ public class JdbcProducerTest {
     Assert.assertEquals(CUSTOMER, entitiesResponse.getEntitySet().getName());
     Assert.assertEquals(2, entitiesResponse.getEntities().size());
 
+    // createEntity - id = 3
+    entityResponse = producer.createEntity(CUSTOMER, newCustomer(customerEntitySet, 3, "Customer Three"));
+    Assert.assertNotNull(entityResponse);
+    Assert.assertNotNull(entityResponse.getEntity());
+    entitiesResponse = producer.getEntities(CUSTOMER, null);
+    Assert.assertNotNull(entitiesResponse);
+    Assert.assertEquals(CUSTOMER, entitiesResponse.getEntitySet().getName());
+    Assert.assertEquals(3, entitiesResponse.getEntities().size());
+
+    // deleteEntity - id = 3
+    producer.deleteEntity(CUSTOMER, OEntityKey.create(3));
+    entitiesResponse = producer.getEntities(CUSTOMER, null);
+    Assert.assertNotNull(entitiesResponse);
+    Assert.assertEquals(CUSTOMER, entitiesResponse.getEntitySet().getName());
+    Assert.assertEquals(2, entitiesResponse.getEntities().size());
+
     // close
     producer.close();
+  }
+
+  private static OEntity newCustomer(EdmEntitySet entitySet, int id, String name) {
+    List<OProperty<?>> properties = new ArrayList<OProperty<?>>();
+    properties.add(OProperties.int32(CUSTOMER_ID, id));
+    properties.add(OProperties.string(CUSTOMER_NAME, name));
+    return OEntities.createRequest(entitySet, properties, null);
   }
 
   private static Func<EntitiesResponse> getEntities(final ODataProducer producer, final String entitySet, final QueryInfo queryInfo) {

@@ -8,6 +8,8 @@ public class ODataException extends WebApplicationException {
 
   private static final long serialVersionUID = 1L;
 
+  private String message;
+
   public ODataException() {
     super();
   }
@@ -18,6 +20,11 @@ public class ODataException extends WebApplicationException {
 
   public ODataException(Response response) {
     super(response);
+  }
+
+  public ODataException(Response response, String message) {
+    super(response);
+    this.message = message;
   }
 
   public ODataException(Status status) {
@@ -38,6 +45,14 @@ public class ODataException extends WebApplicationException {
 
   public ODataException(Throwable cause) {
     super(cause);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder(getClass().getName());
+    if (message != null)
+      sb.append(": " + message);
+    return sb.toString();
   }
 
 }
