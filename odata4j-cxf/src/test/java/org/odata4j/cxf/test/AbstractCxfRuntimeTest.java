@@ -31,8 +31,6 @@ public abstract class AbstractCxfRuntimeTest extends AbstractTest {
     this.server = new CxfTestServer(this.baseUri);
     this.consumer = ODataCxfConsumer.create(this.baseUri.toString());
 
-    //    this.server.setODataApplication(TestApplication.class);
-
     this.logger.info("******************************************************************");
     this.logger.info("Activated Server Type = CXF");
     this.logger.info("******************************************************************");
@@ -46,9 +44,11 @@ public abstract class AbstractCxfRuntimeTest extends AbstractTest {
   @After
   public void teardown() {
     try {
-
     } finally {
-      this.server.stop();
+      // ensure server release resources in any case of error condition
+      if (server != null) {
+        this.server.stop();
+      }
     }
   }
 }
