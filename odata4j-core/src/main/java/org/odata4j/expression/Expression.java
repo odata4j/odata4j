@@ -8,6 +8,7 @@ import org.joda.time.LocalTime;
 import org.odata4j.core.Guid;
 import org.odata4j.core.OSimpleObject;
 import org.odata4j.core.OSimpleObjects;
+import org.odata4j.core.UnsignedByte;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.expression.ExpressionParser.AggregateFunction;
 import org.odata4j.expression.OrderByExpression.Direction;
@@ -72,7 +73,7 @@ public class Expression {
     return new BinaryLiteralImpl(value);
   }
 
-  public static ByteLiteral byte_(byte value) {
+  public static ByteLiteral byte_(UnsignedByte value) {
     return new ByteLiteralImpl(value);
   }
 
@@ -314,7 +315,7 @@ public class Expression {
     if (edmType.equals(EdmSimpleType.TIME))
       return time((LocalTime) prop.getValue());
     if (edmType.equals(EdmSimpleType.BYTE))
-      return byte_((Byte) prop.getValue());
+      return byte_((UnsignedByte) prop.getValue());
     if (edmType.equals(EdmSimpleType.SBYTE))
       return sbyte_((Byte) prop.getValue());
     throw new UnsupportedOperationException("Cannot infer literal expression type for edm type: " + edmType);
@@ -454,15 +455,15 @@ public class Expression {
   }
 
   private static class ByteLiteralImpl extends ExpressionImpl implements ByteLiteral {
-    private final byte value;
+    private final UnsignedByte value;
 
-    public ByteLiteralImpl(byte value) {
+    public ByteLiteralImpl(UnsignedByte value) {
       super(ByteLiteral.class);
       this.value = value;
     }
 
     @Override
-    public byte getValue() {
+    public UnsignedByte getValue() {
       return value;
     }
 

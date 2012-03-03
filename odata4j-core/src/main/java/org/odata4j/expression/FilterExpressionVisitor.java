@@ -87,7 +87,7 @@ public class FilterExpressionVisitor implements ExpressionVisitor {
 
   @Override
   public void visit(ByteLiteral expr) {
-    push(Hex.encodeHexString(new byte[] { expr.getValue() }));
+    push(Integer.toString(expr.getValue().intValue()));
   }
 
   // non-literals, not supported at the moment
@@ -124,7 +124,7 @@ public class FilterExpressionVisitor implements ExpressionVisitor {
 
   @Override
   public void visit(SByteLiteral expr) {
-    push(Hex.encodeHexString(new byte[] { expr.getValue() }));
+    push(Byte.toString(expr.getValue()));
   }
 
   @Override

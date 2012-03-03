@@ -26,7 +26,6 @@ import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.edm.EdmType;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
-import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
 import org.odata4j.stax2.QName2;
 import org.odata4j.stax2.XMLWriter2;
 
@@ -110,13 +109,11 @@ public class XmlFormatWriter {
         }
       } else if (type == EdmSimpleType.BYTE) {
         if (value != null) {
-          sValue = Hex.encodeHexString(
-              new byte[] { (Byte) value });
+          sValue = value.toString();
         }
       } else if (type == EdmSimpleType.SBYTE) {
         if (value != null) {
-          sValue = Hex.encodeHexString(
-              new byte[] { (Byte) value });
+          sValue = value.toString();
         }
       } else if (type == EdmSimpleType.DECIMAL) {
         if (value != null) {

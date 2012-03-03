@@ -13,6 +13,7 @@ import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.Guid;
 import org.odata4j.core.OComplexObject;
 import org.odata4j.core.OObject;
+import org.odata4j.core.UnsignedByte;
 import org.odata4j.edm.EdmComplexType;
 import org.odata4j.format.FormatType;
 import org.odata4j.producer.ODataProducer;
@@ -52,7 +53,8 @@ public class FunctionTest extends JPAProducerTest {
     // this is also testing that the server can handle all parameter types (simple types for now)
     Enumerable<OObject> e = c.callFunction("TestFunction1")
         .pBoolean("PBoolean", false)
-        .pByte("PByte", (byte) 33)
+        .pByte("PByte", UnsignedByte.valueOf(255))
+        .pSByte("PSByte", (byte) -5)
         .pDateTime("PDateTime", new Date())
         .pDecimal("PDecimal", new BigDecimal("12345.6789"))
         .pDouble("PDouble", (double) 33.33)

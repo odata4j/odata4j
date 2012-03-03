@@ -367,14 +367,14 @@ public class OProperties {
   }
 
   /**
-   * Creates a new byte-valued OData property with {@link EdmSimpleType#BYTE}
+   * Creates a new unsigned-byte-valued OData property with {@link EdmSimpleType#BYTE}
    *
    * @param name  the property name
    * @param value  the property value
    * @return a new OData property instance
    */
-  public static OProperty<Byte> byte_(String name, byte value) {
-    return new Impl<Byte>(name, EdmSimpleType.BYTE, value);
+  public static OProperty<UnsignedByte> byte_(String name, UnsignedByte value) {
+    return new Impl<UnsignedByte>(name, EdmSimpleType.BYTE, value);
   }
 
   /**

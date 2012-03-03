@@ -44,7 +44,7 @@ public class OSimpleObjects {
       Long iValue = (Long) value;
       return (OSimpleObject<T>) Impl.create(EdmSimpleType.INT64, iValue);
     } else if (type == EdmSimpleType.BYTE) {
-      Byte bValue = (Byte) value;
+      UnsignedByte bValue = (UnsignedByte) value;
       return (OSimpleObject<T>) Impl.create(EdmSimpleType.BYTE, bValue);
     } else if (type == EdmSimpleType.SBYTE) {
       Byte bValue = (Byte) value;
@@ -88,7 +88,7 @@ public class OSimpleObjects {
       Boolean bValue = value == null ? null : Boolean.parseBoolean(value);
       return (OSimpleObject<V>) Impl.create(EdmSimpleType.BOOLEAN, bValue);
     } else if (EdmSimpleType.BYTE.equals(type)) {
-      Byte bValue = value == null ? null : Byte.parseByte(value);
+      UnsignedByte bValue = value == null ? null : UnsignedByte.parseUnsignedByte(value);
       return (OSimpleObject<V>) Impl.create(EdmSimpleType.BYTE, bValue);
     } else if (EdmSimpleType.SBYTE.equals(type)) {
       Byte bValue = value == null ? null : Byte.parseByte(value);

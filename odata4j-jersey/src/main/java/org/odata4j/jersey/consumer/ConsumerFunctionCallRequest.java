@@ -22,6 +22,7 @@ import org.odata4j.core.OFunctionRequest;
 import org.odata4j.core.OObject;
 import org.odata4j.core.OSimpleObject;
 import org.odata4j.core.OSimpleObjects;
+import org.odata4j.core.UnsignedByte;
 import org.odata4j.edm.EdmCollectionType;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmFunctionImport;
@@ -92,7 +93,7 @@ class ConsumerFunctionCallRequest<T extends OObject>
   }
 
   @Override
-  public OFunctionRequest<T> pByte(String name, byte value) {
+  public OFunctionRequest<T> pByte(String name, UnsignedByte value) {
     return parameter(name, OSimpleObjects.create(EdmSimpleType.BYTE, value));
   }
 

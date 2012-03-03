@@ -11,6 +11,7 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.odata4j.core.Guid;
+import org.odata4j.core.UnsignedByte;
 
 /**
  * Primitive types in the EDM type system.
@@ -25,7 +26,7 @@ public class EdmSimpleType<V> extends EdmType {
   // http://msdn.microsoft.com/en-us/library/bb399213.aspx
   public static final EdmSimpleType<byte[]> BINARY = newSimple("Edm.Binary", byte[].class, Byte[].class);
   public static final EdmSimpleType<Boolean> BOOLEAN = newSimple("Edm.Boolean", Boolean.class, boolean.class);
-  public static final EdmSimpleType<Byte> BYTE = newSimple("Edm.Byte", Byte.class, byte.class);
+  public static final EdmSimpleType<UnsignedByte> BYTE = newSimple("Edm.Byte", UnsignedByte.class);
   public static final EdmSimpleType<Byte> SBYTE = newSimple("Edm.SByte", Byte.class, byte.class);
   public static final EdmSimpleType<LocalDateTime> DATETIME = newSimple("Edm.DateTime", LocalDateTime.class);
   public static final EdmSimpleType<DateTime> DATETIMEOFFSET = newSimple("Edm.DateTimeOffset", DateTime.class);

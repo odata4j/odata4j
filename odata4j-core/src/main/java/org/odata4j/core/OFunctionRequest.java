@@ -34,7 +34,7 @@ public interface OFunctionRequest<T> extends OQueryRequest<T> {
   OFunctionRequest<T> pBoolean(String name, boolean value);
 
   /** Adds a byte parameter. */
-  OFunctionRequest<T> pByte(String name, byte value);
+  OFunctionRequest<T> pByte(String name, UnsignedByte value);
 
   /** Adds a sbyte parameter. */
   OFunctionRequest<T> pSByte(String name, byte value);

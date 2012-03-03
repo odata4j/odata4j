@@ -9,6 +9,7 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.odata4j.core.Guid;
+import org.odata4j.core.UnsignedByte;
 import org.odata4j.edm.EdmSimpleType;
 
 public class InMemoryTypeMapping {
@@ -21,6 +22,7 @@ public class InMemoryTypeMapping {
     SUPPORTED_TYPES.put(byte[].class, EdmSimpleType.BINARY);
     SUPPORTED_TYPES.put(Boolean.class, EdmSimpleType.BOOLEAN);
     SUPPORTED_TYPES.put(Boolean.TYPE, EdmSimpleType.BOOLEAN);
+    SUPPORTED_TYPES.put(UnsignedByte.class, EdmSimpleType.BYTE);
     SUPPORTED_TYPES.put(Byte.class, EdmSimpleType.SBYTE);
     SUPPORTED_TYPES.put(Byte.TYPE, EdmSimpleType.SBYTE);
     SUPPORTED_TYPES.put(LocalDateTime.class, EdmSimpleType.DATETIME);

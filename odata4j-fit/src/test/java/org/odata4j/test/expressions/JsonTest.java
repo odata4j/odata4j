@@ -13,6 +13,7 @@ import org.joda.time.LocalTime;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.Guid;
+import org.odata4j.core.UnsignedByte;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.producer.server.ODataServer;
@@ -41,7 +42,7 @@ public class JsonTest extends AbstractRuntimeTest {
       List<PojoWithAllTypes> pojos = new ArrayList<PojoWithAllTypes>();
       producer.register(PojoWithAllTypes.class, "Pojo", Funcs.constant((Iterable<PojoWithAllTypes>) pojos), "Int32");
 
-      pojos.add(new PojoWithAllTypes(new byte[] { 0x01, 0x02, 0x03 }, true, (byte) 0x05, new LocalDateTime(), new BigDecimal("123.456"), 123.456,
+      pojos.add(new PojoWithAllTypes(new byte[] { 0x01, 0x02, 0x03 }, true, UnsignedByte.valueOf(0xFF), (byte) -0x05, new LocalDateTime(), new BigDecimal("123.456"), 123.456,
           Guid.randomGuid(), (short) 123, 1, Long.MAX_VALUE, 123.456F, "John", new LocalTime(), new DateTime()
           ));
 

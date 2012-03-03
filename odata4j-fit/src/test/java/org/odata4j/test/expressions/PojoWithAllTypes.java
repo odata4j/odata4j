@@ -6,12 +6,14 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.odata4j.core.Guid;
+import org.odata4j.core.UnsignedByte;
 
-public class PojoWithAllTypes { // except sbyte
+public class PojoWithAllTypes {
 
   private final byte[] binary;
   private final boolean boolean_;
-  private final byte byte_;
+  private final UnsignedByte byte_;
+  private final byte sbyte;
   private final LocalDateTime dateTime;
   private final BigDecimal decimal;
   private final double double_;
@@ -24,13 +26,12 @@ public class PojoWithAllTypes { // except sbyte
   private final LocalTime time;
   private final DateTime dateTimeOffset;
 
-  public PojoWithAllTypes(byte[] binary, boolean boolean_, byte byte_, LocalDateTime dateTime, BigDecimal decimal,
-      double double_, Guid guid, short int16, int int32, long int64, float single, String string, LocalTime time, DateTime dateTimeOffset
-
-  ) {
+  public PojoWithAllTypes(byte[] binary, boolean boolean_, UnsignedByte byte_, byte sbyte, LocalDateTime dateTime, BigDecimal decimal,
+      double double_, Guid guid, short int16, int int32, long int64, float single, String string, LocalTime time, DateTime dateTimeOffset) {
     this.binary = binary;
     this.boolean_ = boolean_;
     this.byte_ = byte_;
+    this.sbyte = sbyte;
     this.dateTime = dateTime;
     this.decimal = decimal;
     this.double_ = double_;
@@ -42,7 +43,6 @@ public class PojoWithAllTypes { // except sbyte
     this.time = time;
     this.string = string;
     this.dateTimeOffset = dateTimeOffset;
-
   }
 
   public byte[] getBinary() {
@@ -53,8 +53,12 @@ public class PojoWithAllTypes { // except sbyte
     return boolean_;
   }
 
-  public byte getByte() {
+  public UnsignedByte getByte() {
     return byte_;
+  }
+
+  public byte getSByte() {
+    return sbyte;
   }
 
   public LocalDateTime getDateTime() {

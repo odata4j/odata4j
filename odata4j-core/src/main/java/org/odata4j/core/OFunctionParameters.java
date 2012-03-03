@@ -57,9 +57,9 @@ public class OFunctionParameters {
     } else if (type.equals(EdmSimpleType.SINGLE) && (!(val instanceof Float))) {
       // parser gave us a Single
       v = new Float(((Number) val).floatValue());
-    } else if (type.equals(EdmSimpleType.BYTE) && (!(val instanceof Byte))) {
-      // parser gave us a Byte
-      v = Byte.valueOf(((Number) val).byteValue());
+    } else if (type.equals(EdmSimpleType.BYTE) && (!(val instanceof UnsignedByte))) {
+      // parser gave us an Edm.Byte
+      v = UnsignedByte.valueOf(((Number) val).intValue());
     } else if (type.equals(EdmSimpleType.SBYTE) && (!(val instanceof Byte))) {
       // parser gave us a SByte
       v = Byte.valueOf(((Number) val).byteValue());

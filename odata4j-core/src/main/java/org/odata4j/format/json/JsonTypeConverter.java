@@ -7,11 +7,10 @@ import org.joda.time.LocalTime;
 import org.odata4j.core.Guid;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
+import org.odata4j.core.UnsignedByte;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.internal.InternalUtil;
-import org.odata4j.repack.org.apache.commons.codec.DecoderException;
 import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
-import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
 
 public class JsonTypeConverter {
 
@@ -24,20 +23,10 @@ public class JsonTypeConverter {
       Boolean bValue = value == null ? null : Boolean.parseBoolean(value);
       return OProperties.boolean_(name, bValue);
     } else if (EdmSimpleType.BYTE.equals(type)) {
-      Byte bValue;
-      try {
-        bValue = value == null ? null : Hex.decodeHex(value.toCharArray())[0];
-      } catch (DecoderException dex) {
-        throw new IllegalArgumentException(dex);
-      }
+      UnsignedByte bValue = value == null ? null : UnsignedByte.parseUnsignedByte(value);
       return OProperties.byte_(name, bValue);
     } else if (EdmSimpleType.SBYTE.equals(type)) {
-      Byte bValue;
-      try {
-        bValue = value == null ? null : Hex.decodeHex(value.toCharArray())[0];
-      } catch (DecoderException dex) {
-        throw new IllegalArgumentException(dex);
-      }
+      Byte bValue = value == null ? null : Byte.parseByte(value);
       return OProperties.sbyte_(name, bValue);
     } else if (EdmSimpleType.INT16.equals(type)) {
       Short sValue = value == null ? null : Short.parseShort(value);

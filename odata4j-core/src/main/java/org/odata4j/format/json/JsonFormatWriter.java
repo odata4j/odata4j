@@ -21,6 +21,7 @@ import org.odata4j.core.OProperty;
 import org.odata4j.core.ORelatedEntitiesLinkInline;
 import org.odata4j.core.ORelatedEntityLinkInline;
 import org.odata4j.core.OSimpleObject;
+import org.odata4j.core.UnsignedByte;
 import org.odata4j.edm.EdmCollectionType;
 import org.odata4j.edm.EdmComplexType;
 import org.odata4j.edm.EdmEntitySet;
@@ -29,7 +30,6 @@ import org.odata4j.edm.EdmType;
 import org.odata4j.format.FormatWriter;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
-import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
 
 /**
  * Write content to an output stream in JSON format.
@@ -112,9 +112,9 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
     } else if (type.equals(EdmSimpleType.BOOLEAN)) {
       jw.writeBoolean((Boolean) pvalue);
     } else if (type.equals(EdmSimpleType.BYTE)) {
-      jw.writeString(Hex.encodeHexString(new byte[] { (Byte) pvalue }));
+      jw.writeNumber(((UnsignedByte) pvalue).intValue());
     } else if (type.equals(EdmSimpleType.SBYTE)) {
-      jw.writeString(Hex.encodeHexString(new byte[] { (Byte) pvalue }));
+      jw.writeNumber((Byte) pvalue);
     } else if (type.equals(EdmSimpleType.DATETIME)) {
       LocalDateTime ldt = (LocalDateTime) pvalue;
       long millis = ldt.toDateTime().getMillis();
