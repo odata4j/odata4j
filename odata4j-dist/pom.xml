@@ -45,6 +45,7 @@
               <goal>single</goal>
             </goals>
             <configuration>
+              <finalName>${odata4j.bundle}</finalName>
               <appendAssemblyId>false</appendAssemblyId>
               <skipAssembly>false</skipAssembly>
               <descriptors>

@@ -6,4 +6,4 @@ syntax: regexp
 syntax: glob
 target
 .settings
-
+.DS_Store

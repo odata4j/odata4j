@@ -85,10 +85,10 @@
     <built.by>${project.name}</built.by>
     <odata4j.skip.javadoc>false</odata4j.skip.javadoc>
     <odata4j.sign.artifacts.phase>verify</odata4j.sign.artifacts.phase>
-    <odata4j.clientbundle>${project.name}-clientbundle-${project.version}</odata4j.clientbundle>
-    <odata4j.nojpabundle>${project.name}-nojpabundle-${project.version}</odata4j.nojpabundle>
-    <odata4j.cxfbundle>${project.name}-cxfbundle-${project.version}</odata4j.cxfbundle>
-    <odata4j.bundle>${project.name}-bundle-${project.version}</odata4j.bundle>
+    <odata4j.clientbundle>odata4j-${project.version}-clientbundle</odata4j.clientbundle>
+    <odata4j.nojpabundle>odata4j-${project.version}-nojpabundle</odata4j.nojpabundle>
+    <odata4j.cxfbundle>odata4j-${project.version}-cxfbundle</odata4j.cxfbundle>
+    <odata4j.bundle>odata4j-${project.version}-bundle</odata4j.bundle>
 
     <junit.version>4.8.2</junit.version>
     <jersey.version>1.1.5</jersey.version>
