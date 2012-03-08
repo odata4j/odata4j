@@ -129,6 +129,11 @@ public class EdmEntityContainer extends EdmItem {
       return this;
     }
 
+    public Builder addEntitySets(EdmEntitySet.Builder... entitySets) {
+      this.entitySets.addAll(Arrays.asList(entitySets));
+      return this;
+    }
+
     public Builder addEntitySets(List<EdmEntitySet.Builder> entitySets) {
       this.entitySets.addAll(entitySets);
       return this;

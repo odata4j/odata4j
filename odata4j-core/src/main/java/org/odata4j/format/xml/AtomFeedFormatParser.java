@@ -52,7 +52,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
     this.fcMapping = fcMapping;
   }
 
-  static class AtomFeed implements Feed {
+  public static class AtomFeed implements Feed {
     public String next;
     public Iterable<Entry> entries;
 
@@ -342,7 +342,6 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
       } else if (isStartElement(event, ATOM_CATEGORY)) {
         categoryTerm = getAttributeValueIfExists(event.asStartElement(), "term");
         categoryScheme = getAttributeValueIfExists(event.asStartElement(), "scheme");
-
       } else if (isStartElement(event, ATOM_LINK)) {
         AtomLink link = parseAtomLink(reader, event.asStartElement());
         atomLinks.add(link);
@@ -350,18 +349,13 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
         rt = parseDSAtomEntry(etag, reader, event);
       } else if (isStartElement(event, ATOM_CONTENT)) {
         contentType = getAttributeValueIfExists(event.asStartElement(), "type");
-
-        if (contentType.equals(MediaType.APPLICATION_XML)) {
-
+        if (MediaType.APPLICATION_XML.equals(contentType)) {
           StartElement2 contentElement = event.asStartElement();
           StartElement2 valueElement = null;
           while (reader.hasNext()) {
-
             XMLEvent2 event2 = reader.nextEvent();
-
             if (valueElement == null && event2.isStartElement()) {
               valueElement = event2.asStartElement();
-
               if (isStartElement(event2, M_PROPERTIES)) {
                 rt = parseDSAtomEntry(etag, reader, event2);
               } else {
@@ -369,25 +363,18 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
                 bae.content = innerText(reader, event2.asStartElement());
                 rt = bae;
               }
-
             }
             if (event2.isEndElement() && event2.asEndElement().getName().equals(contentElement.getName())) {
-
               break;
             }
-
           }
-
         } else {
           BasicAtomEntry bae = new BasicAtomEntry();
           bae.content = innerText(reader, event.asStartElement());
           rt = bae;
         }
-
       }
-
     }
-
     throw new RuntimeException();
   }
 

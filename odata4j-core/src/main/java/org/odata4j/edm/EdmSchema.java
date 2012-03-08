@@ -156,6 +156,11 @@ public class EdmSchema extends EdmItem {
       return this;
     }
 
+    public Builder addEntityTypes(EdmEntityType.Builder... entityTypes) {
+      this.entityTypes.addAll(Arrays.asList(entityTypes));
+      return this;
+    }
+
     public Builder addComplexTypes(List<EdmComplexType.Builder> complexTypes) {
       this.complexTypes.addAll(complexTypes);
       return this;
