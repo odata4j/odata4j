@@ -11,7 +11,7 @@
         <include>org.odata4j:odata4j-core</include>
         <include>org.odata4j:odata4j-jersey</include>
         <include>org.odata4j:odata4j-cxf</include>
-        <include>org.odata4j:core4j</include>
+        <include>org.core4j:core4j</include>
         <include>*:joda-time:*</include>
         <include>*:jersey-core:*</include>
         <include>*:jersey-client:*</include>
