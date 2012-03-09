@@ -257,6 +257,7 @@
                   <goal>aggregate-jar</goal>
                 </goals>
                 <configuration>
+                  <finalName>odata4j-${project.version}</finalName>
                   <nodeprecated>true</nodeprecated>
                   <bottom><![CDATA[<i><a href="http://odata4j.org">http://odata4j.org</a></i>]]></bottom>
                   <links>
