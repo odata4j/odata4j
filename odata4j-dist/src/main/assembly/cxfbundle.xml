@@ -1,4 +1,6 @@
-<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<assembly
+  xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
   <id>cxfbundle</id>  <!-- also becomes the classifier -->
   <formats>
@@ -12,10 +14,10 @@
         <include>org.odata4j:odata4j-cxf</include>
         <include>org.core4j:core4j</include>
         <include>*:cxf-bundle-jaxrs:*</include>
-        <include>*:jetty-servlet:*</include>
-        <include>*:jetty-client:*</include>
-        <include>*:slf4j-api:*</include>
-        <include>*:slf4j-log4j12:*</include>
+        <!-- provided by RT <include>*:jetty-servlet:*</include> -->
+        <!-- provided by RT <include>*:jetty-client:*</include> -->
+        <!-- provided by RT <include>*:slf4j-api:*</include> -->
+        <!-- provided by RT <include>*:slf4j-log4j12:*</include> -->
         <include>*:httpclient:*</include>
         <include>*:httpcore:*</include>
         <include>*:httpmime:*</include>

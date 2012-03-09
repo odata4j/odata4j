@@ -13,6 +13,14 @@
     <relativePath>..</relativePath>
   </parent>
 
+  <properties>
+    <odata4j.clientbundle>odata4j-${project.version}-clientbundle</odata4j.clientbundle>
+    <odata4j.nojpabundle>odata4j-${project.version}-nojpabundle</odata4j.nojpabundle>
+    <odata4j.cxfbundle>odata4j-${project.version}-cxfbundle</odata4j.cxfbundle>
+    <odata4j.bundle>odata4j-${project.version}-bundle</odata4j.bundle>
+    <odata4j.core>odata4j-${project.version}-core</odata4j.core>
+  </properties>
+
   <build>
     <plugins>
       <plugin>
@@ -45,7 +53,7 @@
               <goal>single</goal>
             </goals>
             <configuration>
-              <finalName>${odata4j.bundle}</finalName>
+              <finalName>${odata4j.core}</finalName>
               <appendAssemblyId>false</appendAssemblyId>
               <skipAssembly>false</skipAssembly>
               <descriptors>
