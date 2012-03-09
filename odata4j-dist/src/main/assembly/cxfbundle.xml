@@ -10,7 +10,7 @@
       <includes>
         <include>org.odata4j:odata4j-core</include>
         <include>org.odata4j:odata4j-cxf</include>
-        <include>org.odata4j:core4j</include>
+        <include>org.core4j:core4j</include>
         <include>*:cxf-bundle-jaxrs:*</include>
         <include>*:jetty-servlet:*</include>
         <include>*:jetty-client:*</include>
