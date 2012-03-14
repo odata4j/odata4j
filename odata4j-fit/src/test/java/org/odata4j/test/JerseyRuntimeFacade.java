@@ -50,6 +50,15 @@ public class JerseyRuntimeFacade implements RuntimeFacade {
   }
 
   @Override
+  public ODataServer createODataServer(String baseUri) {
+
+    return new JerseyServer(baseUri, DefaultODataApplication.class, RootApplication.class)
+        .addJerseyRequestFilter(LoggingFilter.class) // log all requests
+    //      .addHttpServerFilter(new WhitelistFilter("127.0.0.1","0:0:0:0:0:0:0:1%0")) // only allow local requests
+    ;
+  }
+
+  @Override
   public ODataConsumer create(String endpointUri, FormatType format, String methodToTunnel) {
     Builder builder = ODataJerseyConsumer.newBuilder(endpointUri);
 
@@ -62,14 +71,6 @@ public class JerseyRuntimeFacade implements RuntimeFacade {
     }
 
     return builder.build();
-  }
-
-  private ODataServer createODataServer(String baseUri) {
-
-    return new JerseyServer(baseUri, DefaultODataApplication.class, RootApplication.class)
-        .addJerseyRequestFilter(LoggingFilter.class) // log all requests
-    //      .addHttpServerFilter(new WhitelistFilter("127.0.0.1","0:0:0:0:0:0:0:1%0")) // only allow local requests
-    ;
   }
 
   @Override

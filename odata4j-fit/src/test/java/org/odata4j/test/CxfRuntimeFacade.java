@@ -51,7 +51,12 @@ public class CxfRuntimeFacade implements RuntimeFacade {
 
   @Override
   public ODataServer startODataServer(String baseUri) {
-    return new CxfJettyServer(baseUri, DefaultODataApplication.class, RootApplication.class).start();
+    return this.createODataServer(baseUri).start();
+  }
+
+  @Override
+  public ODataServer createODataServer(String baseUri) {
+    return new CxfJettyServer(baseUri, DefaultODataApplication.class, RootApplication.class);
   }
 
   @Override

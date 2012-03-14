@@ -1,4 +1,4 @@
-package org.odata4j.test.producer;
+package org.odata4j.test.server;
 
 import org.core4j.Enumerable;
 import org.core4j.Func;
@@ -7,15 +7,16 @@ import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 
 /**
- * Base test class that uses an ODataServer as server, a Jetty HttpClient as client and a simple
- * InMemoryProducer as test scenario.
- * <p>Method {@code createServer} needs to be implemented to create a concrete ODataServer
- * implementation.</p>
+ * Base test class that uses a simple InMemoryProducer as test scenario.
  */
-public abstract class AbstractODataServerHttpClientSimpleInMemoryProducerTest extends AbstractODataServerHttpClientTest {
+public abstract class AbstractSimpleInMemoryProducerTest extends AbstractHttpClientTest {
 
   protected static final String ENTITY_SET_NAME = "Alphabet";
   protected static final String[] ENTITIES = { "A", "B", "C" };
+
+  public AbstractSimpleInMemoryProducerTest(RuntimeFacadeType type) {
+    super(type);
+  }
 
   @Override
   protected void createTestScenario() {

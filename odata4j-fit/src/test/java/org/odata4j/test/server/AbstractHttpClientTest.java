@@ -1,4 +1,4 @@
-package org.odata4j.test.producer;
+package org.odata4j.test.server;
 
 import java.io.IOException;
 
@@ -6,22 +6,20 @@ import org.eclipse.jetty.client.ContentExchange;
 import org.eclipse.jetty.client.HttpClient;
 
 /**
- * Base test class that uses an ODataServer as server and a Jetty HttpClient as client.
- * <p>Method {@code createServer} needs to be implemented to create a concrete ODataServer
- * implementation.</p>
+ * Base test class that uses a Jetty HttpClient as client.
  */
-public abstract class AbstractODataServerHttpClientTest extends AbstractODataServerTest {
+public abstract class AbstractHttpClientTest extends AbstractServerTest {
 
   protected HttpClient client;
 
-  @Override
-  protected void createClient() throws Exception {
-    client = new HttpClient();
-    client.setConnectorType(HttpClient.CONNECTOR_SELECT_CHANNEL);
+  public AbstractHttpClientTest(RuntimeFacadeType type) {
+    super(type);
   }
 
   @Override
   protected void startClient() throws Exception {
+    client = new HttpClient();
+    client.setConnectorType(HttpClient.CONNECTOR_SELECT_CHANNEL);
     client.start();
   }
 

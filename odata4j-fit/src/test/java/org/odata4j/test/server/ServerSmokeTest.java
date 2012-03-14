@@ -1,4 +1,4 @@
-package org.odata4j.test.producer;
+package org.odata4j.test.server;
 
 import java.io.UnsupportedEncodingException;
 
@@ -9,10 +9,14 @@ import org.eclipse.jetty.client.HttpExchange;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Test;
 
-public abstract class AbstractServerSmokeTest extends AbstractODataServerHttpClientSimpleInMemoryProducerTest {
+public class ServerSmokeTest extends AbstractSimpleInMemoryProducerTest {
 
   private static final String META_DATA_URL = SVC_URL + "$metadata";
   private static final String FEED_URL = SVC_URL + ENTITY_SET_NAME;
+
+  public ServerSmokeTest(RuntimeFacadeType type) {
+    super(type);
+  }
 
   @Test
   public void testServiceUrl() throws Exception {
