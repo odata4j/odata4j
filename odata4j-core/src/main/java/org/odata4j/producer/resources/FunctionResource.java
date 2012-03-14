@@ -17,10 +17,7 @@ import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.edm.EdmFunctionParameter;
 import org.odata4j.format.FormatWriter;
 import org.odata4j.format.FormatWriterFactory;
-import org.odata4j.producer.BaseResponse;
-import org.odata4j.producer.CollectionResponse;
-import org.odata4j.producer.ComplexObjectResponse;
-import org.odata4j.producer.ODataProducer;
+import org.odata4j.producer.*;
 import org.odata4j.producer.exceptions.NotImplementedException;
 
 /**
@@ -92,6 +89,16 @@ public class FunctionResource extends BaseResource {
               callback);
 
       fw.write(uriInfo, sw, (CollectionResponse<?>) response);
+      fwBase = fw;
+    } else if (response instanceof PropertyResponse) {
+      FormatWriter<PropertyResponse> fw =
+          FormatWriterFactory.getFormatWriter(
+              PropertyResponse.class,
+              httpHeaders.getAcceptableMediaTypes(),
+              format,
+              callback);
+
+      fw.write(uriInfo, sw, (PropertyResponse) response);
       fwBase = fw;
     } else {
       // TODO add in other response types.
