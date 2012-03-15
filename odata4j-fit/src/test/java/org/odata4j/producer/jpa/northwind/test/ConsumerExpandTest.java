@@ -23,7 +23,7 @@ public class ConsumerExpandTest extends JPAProducerTest {
 
   @Test
   public void testConsumerExpandAndFilter() {
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
 
     // Northwind.svc/Order_Details?$expand=Order&$select=Order&$filter=Order/CustomerID%20eq%20'VINET'
     List<OEntity> orderDetails = consumer.getEntities("Order_Details")

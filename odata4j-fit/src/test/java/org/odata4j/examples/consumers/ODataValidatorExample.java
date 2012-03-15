@@ -20,7 +20,7 @@ public class ODataValidatorExample extends AbstractExample {
 
     String uri = ODataEndpoints.NORTHWIND;
 
-    ODataConsumer c = this.rtFacde.create("http://services.odata.org/validation/odatavalidator/", null, null);
+    ODataConsumer c = this.rtFacde.createODataConsumer("http://services.odata.org/validation/odatavalidator/", null, null);
 
     Guid validationJobId = Guid.fromString("f4aa9495-ef40-469e-818c-29c4ec5fb2ed");
     if (true) {

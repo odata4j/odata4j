@@ -39,7 +39,7 @@ public class Issue16 extends AbstractRuntimeTest {
 
     DefaultODataProducerProvider.setInstance(producer);
     ODataServer server = this.rtFacade.startODataServer(endpointUri);
-    ODataConsumer c = this.rtFacade.create(endpointUri, null, null);
+    ODataConsumer c = this.rtFacade.createODataConsumer(endpointUri, null, null);
     c.getEntities("Message").nav(124L, "messageLog()").execute().count();
     Assert.assertNotNull(actualNavProp[0]);
     Assert.assertEquals("messageLog", actualNavProp[0]);

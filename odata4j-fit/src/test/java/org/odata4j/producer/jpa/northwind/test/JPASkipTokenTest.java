@@ -30,7 +30,7 @@ public class JPASkipTokenTest extends JPAProducerTest {
   @Before
   public void setUp() {
     super.setUp(3);
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
     product = consumer.getEntity("Products", OEntityKey.create("ProductID", new Integer(1))).execute();
     order = consumer.getEntity("Orders", OEntityKey.create("OrderID", new Integer(10248))).execute();
   }

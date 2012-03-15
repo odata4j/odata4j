@@ -13,7 +13,7 @@ public class JsonGrabbingConsumerExample extends AbstractExample {
   private void run(String[] args) {
 
     String serviceUri = "http://services.odata.org/Northwind/Northwind.svc";
-    ODataConsumer c = this.rtFacde.create(serviceUri, null, null);
+    ODataConsumer c = this.rtFacde.createODataConsumer(serviceUri, null, null);
 
     c.getEntity("Customers", "VICTE").execute();
   }

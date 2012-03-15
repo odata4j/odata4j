@@ -19,7 +19,7 @@ public class Oneoff04_ExpandMultiLevel extends AbstractOneoffTestBase {
   @Test
   public void expandMultiLevel() {
     final long now = System.currentTimeMillis();
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
 
     OEntity course1 = consumer
         .createEntity("Course")

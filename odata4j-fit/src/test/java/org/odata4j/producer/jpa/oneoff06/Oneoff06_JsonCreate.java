@@ -24,7 +24,7 @@ public class Oneoff06_JsonCreate extends AbstractOneoffTestBase {
   @Test
   @Ignore
   public void createCountry() {
-    ODataConsumer c = this.rtFacade.create(endpointUri, null, null);
+    ODataConsumer c = this.rtFacade.createODataConsumer(endpointUri, null, null);
     Assert.assertEquals(0, c.getEntities("Country").execute().count());
 
     this.requestPost();

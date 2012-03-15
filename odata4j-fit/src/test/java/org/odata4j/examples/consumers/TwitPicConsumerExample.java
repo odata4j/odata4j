@@ -12,7 +12,7 @@ public class TwitPicConsumerExample extends AbstractExample {
   }
 
   private void run(String[] args) {
-    ODataConsumer c = this.rtFacde.create(ODataEndpoints.TWITPIC, null, null);
+    ODataConsumer c = this.rtFacde.createODataConsumer(ODataEndpoints.TWITPIC, null, null);
 
     String tag = "starbucks";
     reportEntities("images tagged '" + tag + "'",

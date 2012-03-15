@@ -1,4 +1,4 @@
-package org.odata4j.test.server;
+package org.odata4j.test.integration;
 
 import org.junit.After;
 import org.junit.Before;
@@ -6,26 +6,29 @@ import org.odata4j.producer.server.ODataServer;
 import org.odata4j.test.AbstractRuntimeTest;
 
 /**
- * Base test class that:
+ * Base integration test class that:
  * <ol><li>starts an ODataServer,</li>
- * <li>starts a client,</li>
- * <li>and creates a test scenario</li></ol>
+ * <li>registers an ODataProducer,</li>
+ * <li>and starts a client</li></ol>
  */
-public abstract class AbstractServerTest extends AbstractRuntimeTest {
+public abstract class AbstractIntegrationTest extends AbstractRuntimeTest {
 
-  protected static final String SVC_URL = "http://localhost:8888/test.svc/";
+  protected static final String BASE_URI = "http://localhost:8888/test.svc/";
 
+  /**
+   * The ODataServer instance.
+   */
   protected ODataServer server;
 
-  public AbstractServerTest(RuntimeFacadeType type) {
+  public AbstractIntegrationTest(RuntimeFacadeType type) {
     super(type);
   }
 
   @Before
   public void setup() throws Exception {
     startODataServer();
+    registerODataProducer();
     startClient();
-    createTestScenario();
   }
 
   @After
@@ -35,12 +38,12 @@ public abstract class AbstractServerTest extends AbstractRuntimeTest {
   }
 
   protected void startODataServer() throws Exception {
-    server = rtFacade.startODataServer(SVC_URL);
+    server = rtFacade.startODataServer(BASE_URI);
   }
 
-  protected abstract void startClient() throws Exception;
+  protected abstract void registerODataProducer() throws Exception;
 
-  protected abstract void createTestScenario();
+  protected abstract void startClient() throws Exception;
 
   protected abstract void stopClient() throws Exception;
 

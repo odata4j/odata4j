@@ -73,7 +73,7 @@ public class RoundtripExample extends AbstractExample {
     try {
       // create the client
       ODataConsumer.dump.responseHeaders(true);
-      ODataConsumer consumer = this.rtFacde.create(endpointUri, null, null);
+      ODataConsumer consumer = this.rtFacde.createODataConsumer(endpointUri, null, null);
 
       reportEntities("Customers", consumer.getEntities("Customers").execute());
 

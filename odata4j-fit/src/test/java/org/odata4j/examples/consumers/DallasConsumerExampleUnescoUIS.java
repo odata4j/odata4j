@@ -19,7 +19,7 @@ public class DallasConsumerExampleUnescoUIS extends AbstractCredentialsExample {
     this.setLoginPassword(dallasCreds[0]);
     this.setLoginName(dallasCreds[1]);
 
-    ODataConsumer c = this.rtFacde.create(ODataEndpoints.DALLAS_CTP2_UNESCO_UIS, null, null);
+    ODataConsumer c = this.rtFacde.createODataConsumer(ODataEndpoints.DALLAS_CTP2_UNESCO_UIS, null, null);
 
     // Public expenditure on education as % of GDP [XGDP_FSGOV]
     for (OEntity entity : c.getEntities("UNESCO/XGDP_FSGOV").execute()

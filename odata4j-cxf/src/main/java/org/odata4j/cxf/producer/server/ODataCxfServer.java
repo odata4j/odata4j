@@ -20,7 +20,7 @@ import org.odata4j.producer.server.ODataServer;
 /**
  * OData server using the CXF JAX-RS implementation and Jetty as HTTP server.
  */
-public class CxfJettyServer implements ODataServer {
+public class ODataCxfServer implements ODataServer {
 
   private String appBaseUri;
   private Class<? extends Application> odataApp;
@@ -28,11 +28,11 @@ public class CxfJettyServer implements ODataServer {
   private final List<Handler> jettyRequestHandlers = new ArrayList<Handler>();
   private Server server;
 
-  public CxfJettyServer(String appBaseUri) {
+  public ODataCxfServer(String appBaseUri) {
     this.appBaseUri = appBaseUri;
   }
 
-  public CxfJettyServer(String appBaseUri, Class<? extends Application> odataApp, Class<? extends Application> rootApp) {
+  public ODataCxfServer(String appBaseUri, Class<? extends Application> odataApp, Class<? extends Application> rootApp) {
     this.appBaseUri = appBaseUri;
     this.odataApp = odataApp;
     this.rootApp = rootApp;
@@ -50,7 +50,7 @@ public class CxfJettyServer implements ODataServer {
     return this;
   }
 
-  public CxfJettyServer addJettyRequestHandler(Handler handler) {
+  public ODataCxfServer addJettyRequestHandler(Handler handler) {
     jettyRequestHandlers.add(handler);
     return this;
   }

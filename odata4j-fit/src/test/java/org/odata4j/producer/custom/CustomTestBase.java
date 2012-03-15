@@ -46,7 +46,7 @@ public class CustomTestBase extends AbstractRuntimeTest {
   }
 
   protected ODataConsumer createConsumer(FormatType format) {
-    return this.rtFacade.create(endpointUri, format, null);
+    return this.rtFacade.createODataConsumer(endpointUri, format, null);
   }
 
   public void dumpResourceJSON(String path) {

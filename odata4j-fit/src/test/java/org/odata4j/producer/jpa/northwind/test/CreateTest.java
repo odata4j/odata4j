@@ -23,61 +23,61 @@ public class CreateTest extends JPAProducerTest {
 
   @Test
   public void tunneledInsertEntityToExistingEntityRelationAtom() {
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, null, "PUT");
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, "PUT");
     insertEntityToExistingEntityRelationAndTest(consumer);
   }
 
   @Test
   public void tunneledInsertEntityToExistingEntityRelationJson() {
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, FormatType.JSON, "PUT");
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, FormatType.JSON, "PUT");
     insertEntityToExistingEntityRelationAndTest(consumer);
   }
 
   @Test
   public void insertEntityToExistingEntityRelationAtom() {
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
     insertEntityToExistingEntityRelationAndTest(consumer);
   }
 
   @Test
   public void insertEntityToExistingEntityRelationJson() {
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, FormatType.JSON, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, FormatType.JSON, null);
     insertEntityToExistingEntityRelationAndTest(consumer);
   }
 
   @Test
   public void tunneledInsertEntityUsingLinksAtom() {
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, null, "PUT");
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, "PUT");
     insertEntityUsingLinksAndTest(consumer);
   }
 
   @Test
   public void tunneledInsertEntityUsingLinksJson() {
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, FormatType.JSON, "PUT");
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, FormatType.JSON, "PUT");
     insertEntityUsingLinksAndTest(consumer);
   }
 
   @Test
   public void insertEntityUsingLinksAtom() {
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
     insertEntityUsingLinksAndTest(consumer);
   }
 
   @Test
   public void insertEntityUsingLinksJson() {
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, FormatType.JSON, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, FormatType.JSON, null);
     insertEntityUsingLinksAndTest(consumer);
   }
 
   @Test
   public void insertEntityWithInlinedEntitiesAtom() {
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
     insertEntityWithInlinedEntities(consumer);
   }
 
   @Test
   public void insertEntityWithInlinedEntitiesJson() {
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, FormatType.JSON, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, FormatType.JSON, null);
     insertEntityWithInlinedEntities(consumer);
   }
 
@@ -126,25 +126,25 @@ public class CreateTest extends JPAProducerTest {
 
   @Test
   public void insertEntityWithInlinedEntityAtom() {
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
     insertEntityWithInlinedEntity(consumer);
   }
 
   @Test
   public void insertEntityWithInlinedEntityJson() {
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, FormatType.JSON, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, FormatType.JSON, null);
     insertEntityWithInlinedEntity(consumer);
   }
 
   @Test
   public void expandEntitiesWithNullReferenceAtom() {
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
     expandEntitiesWithNullReference(consumer);
   }
 
   @Test
   public void expandEntitiesWithNullReferenceJson() {
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, FormatType.JSON, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, FormatType.JSON, null);
     expandEntitiesWithNullReference(consumer);
   }
 

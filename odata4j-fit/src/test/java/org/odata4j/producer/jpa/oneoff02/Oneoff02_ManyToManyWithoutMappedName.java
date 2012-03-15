@@ -21,7 +21,7 @@ public class Oneoff02_ManyToManyWithoutMappedName extends AbstractOneoffTestBase
   @Test
   public void createManyToMany() {
     final long now = System.currentTimeMillis();
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
 
     OEntity course1 = consumer
         .createEntity("Course")
@@ -55,7 +55,7 @@ public class Oneoff02_ManyToManyWithoutMappedName extends AbstractOneoffTestBase
   @Test
   public void mergeManyToMany() {
     final long now = System.currentTimeMillis();
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
 
     OEntity course1 = consumer
         .createEntity("Course")
@@ -90,7 +90,7 @@ public class Oneoff02_ManyToManyWithoutMappedName extends AbstractOneoffTestBase
   @Test
   public void deleteManyToMany() {
     final long now = System.currentTimeMillis();
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
 
     OEntity course1 = consumer
         .createEntity("Course")

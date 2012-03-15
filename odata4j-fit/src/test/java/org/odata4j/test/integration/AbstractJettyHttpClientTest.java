@@ -1,18 +1,19 @@
-package org.odata4j.test.server;
-
-import java.io.IOException;
+package org.odata4j.test.integration;
 
 import org.eclipse.jetty.client.ContentExchange;
 import org.eclipse.jetty.client.HttpClient;
 
 /**
- * Base test class that uses a Jetty HttpClient as client.
+ * Base integration test class that uses a Jetty HTTP client.
  */
-public abstract class AbstractHttpClientTest extends AbstractServerTest {
+public abstract class AbstractJettyHttpClientTest extends AbstractIntegrationTest {
 
+  /**
+   * The HttpClient instance.
+   */
   protected HttpClient client;
 
-  public AbstractHttpClientTest(RuntimeFacadeType type) {
+  public AbstractJettyHttpClientTest(RuntimeFacadeType type) {
     super(type);
   }
 
@@ -28,7 +29,10 @@ public abstract class AbstractHttpClientTest extends AbstractServerTest {
     client.stop();
   }
 
-  protected ContentExchange sendRequest(String url) throws IOException {
+  /**
+   * Helper method to send an HTTP request.
+   */
+  protected ContentExchange sendRequest(String url) throws Exception {
     ContentExchange exchange = new ContentExchange(true);
     exchange.setURL(url);
     client.send(exchange);

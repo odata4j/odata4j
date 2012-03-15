@@ -53,6 +53,9 @@ import org.odata4j.internal.BOMWorkaroundReader;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.stax2.XMLEventReader2;
 
+/**
+ * OData client based on Apache's HTTP client implementation.
+ */
 public class ODataCxfClient extends AbstractODataClient {
 
   private HttpClient httpClient;

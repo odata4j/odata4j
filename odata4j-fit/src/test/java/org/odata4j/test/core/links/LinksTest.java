@@ -101,7 +101,7 @@ public class LinksTest extends JPAProducerTest {
   public static int numberOfRelatedEntities = 2;
 
   protected void testReadDeferred(FormatType formatType) {
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, formatType, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, formatType, null);
 
     ODataConsumer.dump.all(true);
     OEntity a0 = consumer.getEntity(entitySetName, deferredId).execute();
@@ -123,7 +123,7 @@ public class LinksTest extends JPAProducerTest {
   }
 
   protected void testReadEmpty(FormatType formatType) {
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, formatType, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, formatType, null);
 
     ODataConsumer.dump.all(true);
     OEntity a0 = consumer.getEntity(entitySetName, emptyId).expand(toOneNavPropName + "," + toManyNavPropName).execute();
@@ -144,7 +144,7 @@ public class LinksTest extends JPAProducerTest {
   }
 
   protected void testReadPopulated(FormatType formatType) {
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, formatType, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, formatType, null);
 
     ODataConsumer.dump.all(true);
     OEntity a0 = consumer.getEntity(entitySetName, populatedId).expand(toOneNavPropName + "," + toManyNavPropName).execute();

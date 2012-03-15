@@ -25,7 +25,7 @@ public class ConsumerLinksTest extends JPAProducerTest {
 
   @Test
   public void linksReturnedToClient() {
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
 
     OEntity order = consumer.getEntity("Orders", 10248).execute();
     Assert.assertEquals(3, order.getLinks().size());

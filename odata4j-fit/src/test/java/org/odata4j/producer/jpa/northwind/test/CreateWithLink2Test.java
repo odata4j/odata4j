@@ -25,7 +25,7 @@ public class CreateWithLink2Test extends JPAProducerTest {
   @Test
   public void passEntityRefFromFilter() {
     final long now = System.currentTimeMillis();
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
 
     OEntity customer = consumer
         .createEntity("Customers")

@@ -20,7 +20,7 @@ import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.Throwables;
 import org.odata4j.cxf.consumer.ODataCxfConsumer;
 import org.odata4j.cxf.consumer.ODataCxfConsumer.Builder;
-import org.odata4j.cxf.producer.server.CxfJettyServer;
+import org.odata4j.cxf.producer.server.ODataCxfServer;
 import org.odata4j.format.FormatType;
 import org.odata4j.producer.resources.DefaultODataApplication;
 import org.odata4j.producer.resources.RootApplication;
@@ -56,11 +56,11 @@ public class CxfRuntimeFacade implements RuntimeFacade {
 
   @Override
   public ODataServer createODataServer(String baseUri) {
-    return new CxfJettyServer(baseUri, DefaultODataApplication.class, RootApplication.class);
+    return new ODataCxfServer(baseUri, DefaultODataApplication.class, RootApplication.class);
   }
 
   @Override
-  public ODataConsumer create(String endpointUri, FormatType format, String methodToTunnel) {
+  public ODataConsumer createODataConsumer(String endpointUri, FormatType format, String methodToTunnel) {
     Builder builder = ODataCxfConsumer.newBuilder(endpointUri);
 
     if (format != null) {

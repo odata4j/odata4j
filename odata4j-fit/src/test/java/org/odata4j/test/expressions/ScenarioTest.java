@@ -32,7 +32,7 @@ public class ScenarioTest extends AbstractRuntimeTest {
 
     ODataServer server = this.rtFacade.startODataServer(uri);
 
-    ODataConsumer c = this.rtFacade.create(uri, null, null);
+    ODataConsumer c = this.rtFacade.createODataConsumer(uri, null, null);
     Assert.assertEquals(0, c.getEntitySets().count());
 
     List<Foo> foos = new ArrayList<Foo>();

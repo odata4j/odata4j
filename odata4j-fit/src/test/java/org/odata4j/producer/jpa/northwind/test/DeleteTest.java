@@ -21,14 +21,14 @@ public class DeleteTest extends JPAProducerTest {
 
   @Test
   public void tunneledDeleteEntity() {
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, null, "PUT");
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, "PUT");
 
     deleteEntityAndTest(consumer, "QUEEN");
   }
 
   @Test
   public void deleteEntity() {
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
 
     deleteEntityAndTest(consumer, "ALFKI");
   }

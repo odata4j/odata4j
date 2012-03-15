@@ -21,13 +21,13 @@ public class UpdateTest extends JPAProducerTest {
 
   @Test
   public void tunneledUpdateEntity() {
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, null, "PUT");
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, "PUT");
     updateEntityAndTest(consumer);
   }
 
   @Test
   public void updateEntity() {
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
 
     updateEntityAndTest(consumer);
   }
@@ -48,7 +48,7 @@ public class UpdateTest extends JPAProducerTest {
 
   @Test
   public void mergeEntityTest() {
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
 
     final long now = System.currentTimeMillis();
     boolean res = consumer

@@ -26,7 +26,7 @@ public class ExceptionTest extends JPAProducerTest {
 
   @Test
   public void test404NoEntityType() {
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
     OEntity customer = null;
     try {
       customer = consumer.getEntity("UnknownEntity", 1).execute();
@@ -39,7 +39,7 @@ public class ExceptionTest extends JPAProducerTest {
 
   @Test
   public void test404NoEntity() {
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
     OEntity customer = null;
     try {
       customer = consumer.getEntity("Customers", "NOUSER").execute();
@@ -56,7 +56,7 @@ public class ExceptionTest extends JPAProducerTest {
     thrown.expect(RuntimeException.class);
     thrown.expectMessage(JUnitMatchers.containsString("found 500"));
 
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
     consumer.getEntity("Customers", 1).execute();
   }
 }

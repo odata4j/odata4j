@@ -24,7 +24,7 @@ public class CompositeKeyEntityTest extends JPAProducerTest {
 
   @Test
   public void updateCompositeKeyEntity() {
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
 
     OEntity orderDetails = consumer.getEntities("Order_Details").top(1).execute().first();
     Assert.assertNotNull(orderDetails);
@@ -38,7 +38,7 @@ public class CompositeKeyEntityTest extends JPAProducerTest {
 
   @Test
   public void mergeCompositeKeyEntity() {
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
 
     OEntity orderDetails = consumer.getEntities("Order_Details").top(1).execute().first();
     Assert.assertNotNull(orderDetails);
@@ -53,7 +53,7 @@ public class CompositeKeyEntityTest extends JPAProducerTest {
   @Test
   public void createCompositeKeyEntityUsingLinks() {
     final long now = System.currentTimeMillis();
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
 
     OEntity product = consumer
         .createEntity("Products")
@@ -87,7 +87,7 @@ public class CompositeKeyEntityTest extends JPAProducerTest {
   @Test
   public void createCompositeKeyEntityUsingProperties() {
     final long now = System.currentTimeMillis();
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
 
     OEntity product = consumer
         .createEntity("Products")
@@ -121,7 +121,7 @@ public class CompositeKeyEntityTest extends JPAProducerTest {
   @Test
   public void deleteCompositeKeyEntityUsingLinks() {
     final long now = System.currentTimeMillis();
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
 
     OEntity product = consumer
         .createEntity("Products")

@@ -14,7 +14,7 @@ import org.odata4j.core.Throwables;
 import org.odata4j.format.FormatType;
 import org.odata4j.jersey.consumer.ODataJerseyConsumer;
 import org.odata4j.jersey.consumer.ODataJerseyConsumer.Builder;
-import org.odata4j.jersey.producer.server.JerseyServer;
+import org.odata4j.jersey.producer.server.ODataJerseyServer;
 import org.odata4j.producer.resources.DefaultODataApplication;
 import org.odata4j.producer.resources.RootApplication;
 import org.odata4j.producer.server.ODataServer;
@@ -52,14 +52,14 @@ public class JerseyRuntimeFacade implements RuntimeFacade {
   @Override
   public ODataServer createODataServer(String baseUri) {
 
-    return new JerseyServer(baseUri, DefaultODataApplication.class, RootApplication.class)
+    return new ODataJerseyServer(baseUri, DefaultODataApplication.class, RootApplication.class)
         .addJerseyRequestFilter(LoggingFilter.class) // log all requests
     //      .addHttpServerFilter(new WhitelistFilter("127.0.0.1","0:0:0:0:0:0:0:1%0")) // only allow local requests
     ;
   }
 
   @Override
-  public ODataConsumer create(String endpointUri, FormatType format, String methodToTunnel) {
+  public ODataConsumer createODataConsumer(String endpointUri, FormatType format, String methodToTunnel) {
     Builder builder = ODataJerseyConsumer.newBuilder(endpointUri);
 
     if (format != null) {

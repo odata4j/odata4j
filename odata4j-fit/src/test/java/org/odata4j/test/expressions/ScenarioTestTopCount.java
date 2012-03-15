@@ -31,7 +31,7 @@ public class ScenarioTestTopCount extends AbstractRuntimeTest {
     DefaultODataProducerProvider.setInstance(producer);
     ODataServer server = this.rtFacade.startODataServer(uri);
     try {
-      ODataConsumer c = this.rtFacade.create(uri, null, null);
+      ODataConsumer c = this.rtFacade.createODataConsumer(uri, null, null);
 
       List<Foo> foos = new ArrayList<Foo>();
       producer.register(Foo.class, "Foos1", Funcs.constant((Iterable<Foo>) foos), "Id");

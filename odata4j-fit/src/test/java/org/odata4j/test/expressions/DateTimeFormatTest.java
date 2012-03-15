@@ -297,7 +297,7 @@ public class DateTimeFormatTest extends AbstractRuntimeTest {
         }, "Key");
     DefaultODataProducerProvider.setInstance(producer);
     ODataServer server = this.rtFacade.startODataServer(endpointUri);
-    ODataConsumer c = this.rtFacade.create(endpointUri, null, null);
+    ODataConsumer c = this.rtFacade.createODataConsumer(endpointUri, null, null);
     List<OEntity> oentities = c.getEntities("DateTimeRoundtrip").execute().toList();
 
     Assert.assertEquals(1, oentities.size());

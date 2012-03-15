@@ -48,7 +48,7 @@ public class FunctionTest extends JPAProducerTest {
     // TODO: NorthwindTestUtils.testAtomResult(endpointUri, uri, inp);
 
     // test client call JSON
-    ODataConsumer c = this.rtFacade.create(endpointUri, FormatType.JSON, null);
+    ODataConsumer c = this.rtFacade.createODataConsumer(endpointUri, FormatType.JSON, null);
 
     // this is also testing that the server can handle all parameter types (simple types for now)
     Enumerable<OObject> e = c.callFunction("TestFunction1")
@@ -92,7 +92,7 @@ public class FunctionTest extends JPAProducerTest {
     // TODO: NorthwindTestUtils.testAtomResult(endpointUri, uri, inp);
 
     // test client call JSON
-    ODataConsumer c = this.rtFacade.create(endpointUri, FormatType.JSON, null);
+    ODataConsumer c = this.rtFacade.createODataConsumer(endpointUri, FormatType.JSON, null);
 
     Enumerable<OObject> e = c.callFunction("TestFunction2")
         .pInt16("NResults", (short) 3)
@@ -122,7 +122,7 @@ public class FunctionTest extends JPAProducerTest {
   @Test
   public void functionWithNoReturnTypeTest() {
     // test client call JSON
-    ODataConsumer c = this.rtFacade.create(endpointUri, FormatType.JSON, null);
+    ODataConsumer c = this.rtFacade.createODataConsumer(endpointUri, FormatType.JSON, null);
 
     Enumerable<OObject> results = c.callFunction("TestFunction3")
         .pString("PString", "hello world")

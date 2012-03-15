@@ -37,9 +37,9 @@ import com.sun.net.httpserver.HttpServer;
 /**
  * OData server using the Jersey JAX-RS and Sun's HTTP server implementation.
  */
-public class JerseyServer implements ODataServer {
+public class ODataJerseyServer implements ODataServer {
 
-  private static final Logger LOG = Logger.getLogger(JerseyServer.class.getName());
+  private static final Logger LOG = Logger.getLogger(ODataJerseyServer.class.getName());
 
   private final String appBaseUri;
   private Class<? extends Application> odataApp;
@@ -53,11 +53,11 @@ public class JerseyServer implements ODataServer {
 
   private HttpServer server;
 
-  public JerseyServer(String appBaseUri) {
+  public ODataJerseyServer(String appBaseUri) {
     this.appBaseUri = appBaseUri;
   }
 
-  public JerseyServer(String appBaseUri, Class<? extends Application> odataApp, Class<? extends Application> rootApp) {
+  public ODataJerseyServer(String appBaseUri, Class<? extends Application> odataApp, Class<? extends Application> rootApp) {
     this.appBaseUri = appBaseUri;
     this.odataApp = odataApp;
     this.rootApp = rootApp;
@@ -75,37 +75,37 @@ public class JerseyServer implements ODataServer {
     return this;
   }
 
-  public <T extends ContainerRequestFilter> JerseyServer addJerseyRequestFilter(Class<T> filter) {
+  public <T extends ContainerRequestFilter> ODataJerseyServer addJerseyRequestFilter(Class<T> filter) {
     jerseyRequestFilters.add(filter.getName());
     return this;
   }
 
-  public <T extends ContainerResponseFilter> JerseyServer addJerseyResponseFilter(Class<T> filter) {
+  public <T extends ContainerResponseFilter> ODataJerseyServer addJerseyResponseFilter(Class<T> filter) {
     jerseyResponseFilters.add(filter.getName());
     return this;
   }
 
-  public <T extends ResourceFilterFactory> JerseyServer addJerseyResourceFilter(Class<T> filter) {
+  public <T extends ResourceFilterFactory> ODataJerseyServer addJerseyResourceFilter(Class<T> filter) {
     jerseyResourceFilters.add(filter.getName());
     return this;
   }
 
   /** Enabling this feature can be useful in tracking down issues related to selecting the resource class */
-  public JerseyServer setJerseyTrace(boolean enabled) {
+  public ODataJerseyServer setJerseyTrace(boolean enabled) {
     return setJerseyFeature(FEATURE_TRACE, enabled);
   }
 
-  public JerseyServer setJerseyFeature(String feature, boolean value) {
+  public ODataJerseyServer setJerseyFeature(String feature, boolean value) {
     jerseyFeatures.put(feature, value);
     return this;
   }
 
-  public JerseyServer addHttpServerFilter(Filter filter) {
+  public ODataJerseyServer addHttpServerFilter(Filter filter) {
     httpServerFilters.add(filter);
     return this;
   }
 
-  public JerseyServer setHttpServerAuthenticator(Authenticator authenticator) {
+  public ODataJerseyServer setHttpServerAuthenticator(Authenticator authenticator) {
     httpServerAuthenticator = authenticator;
     return this;
   }
@@ -120,7 +120,7 @@ public class JerseyServer implements ODataServer {
    * @param delaySeconds
    * @return
    */
-  public JerseyServer stop(int delaySeconds) {
+  public ODataJerseyServer stop(int delaySeconds) {
     server.stop(delaySeconds);
     Executor serverExecutor = server.getExecutor();
     if (serverExecutor instanceof ThreadPoolExecutor) {

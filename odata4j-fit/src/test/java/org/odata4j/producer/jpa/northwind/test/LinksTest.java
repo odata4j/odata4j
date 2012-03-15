@@ -45,7 +45,7 @@ public class LinksTest extends JPAProducerTest {
   @Test
   public void testLinks() {
     ODataConsumer.dump.all(true);
-    ODataConsumer consumer = this.rtFacade.create(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
     OEntity product1 = consumer.getEntity("Products", 1).execute();
 
     // get

@@ -14,7 +14,7 @@ public interface RuntimeFacade {
 
   public ODataServer createODataServer(String baseUri);
 
-  public ODataConsumer create(String endpointUri, FormatType format, String methodToTunnel);
+  public ODataConsumer createODataConsumer(String endpointUri, FormatType format, String methodToTunnel);
 
   public String getWebResource(String uri);
 
