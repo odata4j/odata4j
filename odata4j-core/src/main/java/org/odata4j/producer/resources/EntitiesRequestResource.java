@@ -35,7 +35,7 @@ import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
 
 // ignoreParens below is there to trim the parentheses from the entity set name when they are present - e.g. '/my.svc/Users()'.
-@Path("{entitySetName}{ignoreParens: (\\(\\))?}")
+@Path("{entitySetName: [^/()]+?}{ignoreParens: (?:\\(\\))?}")
 public class EntitiesRequestResource extends BaseResource {
 
   private static final Logger log = Logger.getLogger(EntitiesRequestResource.class.getName());
