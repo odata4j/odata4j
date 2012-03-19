@@ -12,6 +12,9 @@ public abstract class AbstractODataConsumer implements ODataConsumer {
   private String serviceRootUri;
 
   protected AbstractODataConsumer(String serviceRootUri) {
+	if (!serviceRootUri.endsWith("/"))
+	  serviceRootUri = serviceRootUri + "/";
+	
     this.serviceRootUri = serviceRootUri;
   }
 

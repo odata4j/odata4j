@@ -41,9 +41,6 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
   private ODataJerseyConsumer(FormatType type, String serviceRootUri, JerseyClientFactory clientFactory, OClientBehavior... behaviors) {
     super(serviceRootUri);
 
-    if (!serviceRootUri.endsWith("/"))
-      serviceRootUri = serviceRootUri + "/";
-
     this.client = new ODataJerseyClient(type, clientFactory, behaviors);
   }
 
