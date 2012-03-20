@@ -18,7 +18,7 @@ public class AgilitrainConsumerExample extends AbstractExample {
   private void run(String[] args) {
     ODataConsumer c = new ODataConsumerFactory(JERSEY).createODataConsumer(ODataEndpoints.AGILITRAIN, null, null);
 
-    OEntity event = c.getEntity("Events", 225).execute();
+    OEntity event = c.getEntities("Events").top(1).execute().first();
     ORelatedEntityLink link = event.getLink("Workshop", ORelatedEntityLink.class);
     OEntity entity = c.getEntity(link).execute();
     reportEntity("Workshop", entity);
