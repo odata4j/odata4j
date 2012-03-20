@@ -18,9 +18,9 @@ import org.odata4j.producer.server.ODataServer;
 import org.odata4j.test.integration.AbstractRuntimeTest;
 
 @Ignore
-public class AirlineJPAProducerTestBase extends AbstractRuntimeTest {
+public class AirlineJPAProducerBaseTest extends AbstractRuntimeTest {
 
-  public AirlineJPAProducerTestBase(RuntimeFacadeType type) {
+  public AirlineJPAProducerBaseTest(RuntimeFacadeType type) {
     super(type);
   }
 
@@ -73,7 +73,7 @@ public class AirlineJPAProducerTestBase extends AbstractRuntimeTest {
 
         BufferedReader br = null;
         try {
-          InputStream xml = AirlineJPAProducerTestBase.class
+          InputStream xml = AirlineJPAProducerBaseTest.class
               .getResourceAsStream("/META-INF/airline_insert.sql");
 
           br = new BufferedReader(new InputStreamReader(xml, "UTF-8"));

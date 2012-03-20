@@ -15,9 +15,9 @@ import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.producer.server.ODataServer;
 import org.odata4j.test.integration.AbstractRuntimeTest;
 
-public class Issue13 extends AbstractRuntimeTest {
+public class Issue13Test extends AbstractRuntimeTest {
 
-  public Issue13(RuntimeFacadeType type) {
+  public Issue13Test(RuntimeFacadeType type) {
     super(type);
   }
 

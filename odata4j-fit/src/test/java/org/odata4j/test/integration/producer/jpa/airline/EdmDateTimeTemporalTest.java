@@ -31,7 +31,7 @@ import org.odata4j.producer.resources.DefaultODataProducerProvider;
  * using a Edm.DateTime instead of Edm.Time for types annotated with
  * TemporalType.TIME (Date, Calendar) or java.sql.Time.
  */
-public class EdmDateTimeTemporalTest extends AirlineJPAProducerTestBase {
+public class EdmDateTimeTemporalTest extends AirlineJPAProducerBaseTest {
 
   public EdmDateTimeTemporalTest(RuntimeFacadeType type) {
     super(type);

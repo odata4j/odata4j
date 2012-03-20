@@ -11,9 +11,9 @@ import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.test.integration.AbstractODataConsumerTest;
 import org.odata4j.test.integration.TestInMemoryProducers;
 
-public class Simple extends AbstractODataConsumerTest {
+public class SimpleTest extends AbstractODataConsumerTest {
 
-  public Simple(RuntimeFacadeType type) {
+  public SimpleTest(RuntimeFacadeType type) {
     super(type);
   }
 

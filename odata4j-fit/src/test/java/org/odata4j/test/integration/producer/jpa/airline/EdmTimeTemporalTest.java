@@ -20,7 +20,7 @@ import org.odata4j.examples.producer.jpa.JPAProvider;
 import org.odata4j.producer.jpa.JPAProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 
-public class EdmTimeTemporalTest extends AirlineJPAProducerTestBase {
+public class EdmTimeTemporalTest extends AirlineJPAProducerBaseTest {
 
   public EdmTimeTemporalTest(RuntimeFacadeType type) {
     super(type);

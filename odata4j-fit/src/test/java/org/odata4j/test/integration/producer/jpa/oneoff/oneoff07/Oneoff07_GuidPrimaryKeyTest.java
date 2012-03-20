@@ -8,11 +8,11 @@ import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperties;
-import org.odata4j.test.integration.producer.jpa.oneoff.AbstractOneoffTestBase;
+import org.odata4j.test.integration.producer.jpa.oneoff.AbstractOneoffBaseTest;
 
-public class Oneoff07_GuidPrimaryKey extends AbstractOneoffTestBase {
+public class Oneoff07_GuidPrimaryKeyTest extends AbstractOneoffBaseTest {
 
-  public Oneoff07_GuidPrimaryKey(RuntimeFacadeType type) {
+  public Oneoff07_GuidPrimaryKeyTest(RuntimeFacadeType type) {
     super(type);
   }
 

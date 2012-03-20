@@ -14,7 +14,7 @@ import org.odata4j.edm.EdmSchema;
 import org.odata4j.format.xml.AtomFeedFormatParser;
 import org.odata4j.format.xml.AtomFeedFormatParser.AtomFeed;
 
-public class Issue142 {
+public class Issue142Test {
 
   @Test
   public void issue142() {

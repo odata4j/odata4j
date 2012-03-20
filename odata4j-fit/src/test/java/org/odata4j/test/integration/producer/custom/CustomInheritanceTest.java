@@ -10,9 +10,9 @@ import org.odata4j.core.ORelatedEntitiesLinkInline;
 import org.odata4j.core.ORelatedEntityLink;
 import org.odata4j.format.FormatType;
 
-public class CustomTestInheritance extends CustomTestBase {
+public class CustomInheritanceTest extends CustomBaseTest {
 
-  public CustomTestInheritance(RuntimeFacadeType type) {
+  public CustomInheritanceTest(RuntimeFacadeType type) {
     super(type);
   }
 

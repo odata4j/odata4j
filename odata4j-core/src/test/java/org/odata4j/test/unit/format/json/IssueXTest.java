@@ -29,7 +29,7 @@ import org.odata4j.format.json.JsonStreamReaderFactory.JsonStreamTokenizer.JsonT
 /**
  * JSON tokenizer issue
  */
-public class IssueX {
+public class IssueXTest {
   @Test
   public void issueX() {
 

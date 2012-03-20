@@ -3,14 +3,10 @@ package org.odata4j.test.integration.producer.jpa.links;
 import org.junit.Test;
 import org.odata4j.format.FormatType;
 
-public class LinksTestJPA extends LinksTest {
+public class LinksInMemoryTest extends LinksTest {
 
-  public LinksTestJPA(RuntimeFacadeType type) {
+  public LinksInMemoryTest(RuntimeFacadeType type) {
     super(type);
-  }
-
-  static {
-    useJpaProducer = true;
   }
 
   @Test

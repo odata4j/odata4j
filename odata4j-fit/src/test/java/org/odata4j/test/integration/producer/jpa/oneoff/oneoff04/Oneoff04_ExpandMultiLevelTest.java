@@ -7,11 +7,11 @@ import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperties;
-import org.odata4j.test.integration.producer.jpa.oneoff.AbstractOneoffTestBase;
+import org.odata4j.test.integration.producer.jpa.oneoff.AbstractOneoffBaseTest;
 
-public class Oneoff04_ExpandMultiLevel extends AbstractOneoffTestBase {
+public class Oneoff04_ExpandMultiLevelTest extends AbstractOneoffBaseTest {
 
-  public Oneoff04_ExpandMultiLevel(RuntimeFacadeType type) {
+  public Oneoff04_ExpandMultiLevelTest(RuntimeFacadeType type) {
     super(type);
   }
 

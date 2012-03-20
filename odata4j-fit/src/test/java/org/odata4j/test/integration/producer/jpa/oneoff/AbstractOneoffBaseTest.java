@@ -16,9 +16,9 @@ import org.odata4j.producer.server.ODataServer;
 import org.odata4j.test.integration.AbstractRuntimeTest;
 
 @Ignore
-public class AbstractOneoffTestBase extends AbstractRuntimeTest {
+public class AbstractOneoffBaseTest extends AbstractRuntimeTest {
 
-  public AbstractOneoffTestBase(RuntimeFacadeType type) {
+  public AbstractOneoffBaseTest(RuntimeFacadeType type) {
     super(type);
   }
 

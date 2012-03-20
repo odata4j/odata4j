@@ -8,11 +8,11 @@ import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.ORelatedEntitiesLink;
-import org.odata4j.test.integration.producer.jpa.oneoff.AbstractOneoffTestBase;
+import org.odata4j.test.integration.producer.jpa.oneoff.AbstractOneoffBaseTest;
 
-public class Oneoff01_Unidirectional extends AbstractOneoffTestBase {
+public class Oneoff01_UnidirectionalTest extends AbstractOneoffBaseTest {
 
-  public Oneoff01_Unidirectional(RuntimeFacadeType type) {
+  public Oneoff01_UnidirectionalTest(RuntimeFacadeType type) {
     super(type);
   }
 

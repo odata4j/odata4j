@@ -5,14 +5,14 @@ import junit.framework.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
-import org.odata4j.test.integration.producer.jpa.oneoff.AbstractOneoffTestBase;
+import org.odata4j.test.integration.producer.jpa.oneoff.AbstractOneoffBaseTest;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 
-public class Oneoff06_JsonCreate extends AbstractOneoffTestBase {
+public class Oneoff06_JsonCreateTest extends AbstractOneoffBaseTest {
 
-  public Oneoff06_JsonCreate(RuntimeFacadeType type) {
+  public Oneoff06_JsonCreateTest(RuntimeFacadeType type) {
     super(type);
   }
 

@@ -19,9 +19,9 @@ import org.odata4j.test.integration.AbstractRuntimeTest;
 @Ignore
 // we need to look into this issue again, possible loss of time zone and
 // precision information when stored to database
-public class Issue15 extends AbstractRuntimeTest {
+public class Issue15Test extends AbstractRuntimeTest {
 
-  public Issue15(RuntimeFacadeType type) {
+  public Issue15Test(RuntimeFacadeType type) {
     super(type);
   }
 

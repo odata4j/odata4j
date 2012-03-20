@@ -26,7 +26,7 @@ import org.odata4j.edm.EdmStructuralType;
 import org.odata4j.edm.EdmType;
 import org.odata4j.format.FormatType;
 
-public class CustomTest extends CustomTestBase {
+public class CustomTest extends CustomBaseTest {
 
   public CustomTest(RuntimeFacadeType type) {
     super(type);

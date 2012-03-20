@@ -24,9 +24,9 @@ import org.odata4j.test.integration.TestInMemoryProducers;
 import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerRequestFilter;
 
-public class RequestFiltering extends AbstractJettyHttpClientTest {
+public class RequestFilteringTest extends AbstractJettyHttpClientTest {
 
-  public RequestFiltering(RuntimeFacadeType type) {
+  public RequestFilteringTest(RuntimeFacadeType type) {
     super(type);
   }
 

@@ -14,7 +14,7 @@ import org.odata4j.examples.producer.jpa.JPAProvider;
 import org.odata4j.producer.jpa.JPAProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 
-public class CreateWithLinkTest extends AirlineJPAProducerTestBase {
+public class CreateWithLinkTest extends AirlineJPAProducerBaseTest {
 
   public CreateWithLinkTest(RuntimeFacadeType type) {
     super(type);

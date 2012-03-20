@@ -18,9 +18,9 @@ import org.odata4j.producer.server.ODataServer;
 import org.odata4j.test.integration.AbstractRuntimeTest;
 
 @Ignore("currently not working bebause of SkipToken format error detected by CXF run")
-public class ScenarioTestTopCount extends AbstractRuntimeTest {
+public class ScenarioTopCountTest extends AbstractRuntimeTest {
 
-  public ScenarioTestTopCount(RuntimeFacadeType type) {
+  public ScenarioTopCountTest(RuntimeFacadeType type) {
     super(type);
   }
 

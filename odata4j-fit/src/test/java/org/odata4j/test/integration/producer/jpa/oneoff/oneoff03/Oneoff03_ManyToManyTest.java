@@ -1,4 +1,4 @@
-package org.odata4j.test.integration.producer.jpa.oneoff.oneoff02;
+package org.odata4j.test.integration.producer.jpa.oneoff.oneoff03;
 
 import java.util.List;
 
@@ -10,11 +10,11 @@ import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.ORelatedEntitiesLink;
-import org.odata4j.test.integration.producer.jpa.oneoff.AbstractOneoffTestBase;
+import org.odata4j.test.integration.producer.jpa.oneoff.AbstractOneoffBaseTest;
 
-public class Oneoff02_ManyToManyWithoutMappedName extends AbstractOneoffTestBase {
+public class Oneoff03_ManyToManyTest extends AbstractOneoffBaseTest {
 
-  public Oneoff02_ManyToManyWithoutMappedName(RuntimeFacadeType type) {
+  public Oneoff03_ManyToManyTest(RuntimeFacadeType type) {
     super(type);
   }
 
@@ -117,5 +117,7 @@ public class Oneoff02_ManyToManyWithoutMappedName extends AbstractOneoffTestBase
     Assert.assertEquals(0, studentEnum.count());
 
     Assert.assertTrue(beforeCount > consumer.getEntities("Course").execute().count() ? true : false);
+
   }
+
 }

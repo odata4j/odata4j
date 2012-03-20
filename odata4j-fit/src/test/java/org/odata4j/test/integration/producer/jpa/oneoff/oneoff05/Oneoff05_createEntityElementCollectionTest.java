@@ -4,11 +4,11 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OProperties;
-import org.odata4j.test.integration.producer.jpa.oneoff.AbstractOneoffTestBase;
+import org.odata4j.test.integration.producer.jpa.oneoff.AbstractOneoffBaseTest;
 
-public class Oneoff05_createEntityElementCollection extends AbstractOneoffTestBase {
+public class Oneoff05_createEntityElementCollectionTest extends AbstractOneoffBaseTest {
 
-  public Oneoff05_createEntityElementCollection(RuntimeFacadeType type) {
+  public Oneoff05_createEntityElementCollectionTest(RuntimeFacadeType type) {
     super(type);
   }
 
