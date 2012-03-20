@@ -15,6 +15,7 @@
 
   <build>
     <plugins>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-eclipse-plugin</artifactId>
@@ -32,6 +33,7 @@
           </additionalConfig>
         </configuration>
       </plugin>
+
       <!-- OSGi bundle support -->
       <plugin>
         <groupId>org.apache.felix</groupId>
@@ -46,16 +48,16 @@
               *
             </Import-Package>
             <Export-Package>
-              org.odata4j.cxf.*;version=${project.version},
+              org.odata4j.jersey.*;version=${project.version},
             </Export-Package>
             <Bundle-DocURL>${project.url}</Bundle-DocURL>
             <Bundle-ActivationPolicy>lazy</Bundle-ActivationPolicy>
           </instructions>
         </configuration>
       </plugin>
+
     </plugins>
   </build>
-
 
   <dependencies>
     <dependency>
@@ -63,26 +65,44 @@
       <artifactId>odata4j-core</artifactId>
       <version>${project.version}</version>
     </dependency>
+
+    <!-- JAX-RS implementation -->
     <dependency>
       <groupId>com.sun.jersey</groupId>
       <artifactId>jersey-core</artifactId>
       <version>${jersey.version}</version>
     </dependency>
-    <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-client</artifactId>
-      <version>${jersey.version}</version>
-    </dependency>
+
+    <!-- server implementation -->
     <dependency>
       <groupId>com.sun.jersey</groupId>
       <artifactId>jersey-server</artifactId>
       <version>${jersey.version}</version>
     </dependency>
+
+    <!-- client implementation -->
+    <dependency>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-client</artifactId>
+      <version>${jersey.version}</version>
+    </dependency>
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>${junit.version}</version>
-      <type>jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-all</artifactId>
+      <version>${hamcrest.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <version>${mockito.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

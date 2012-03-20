@@ -3,7 +3,6 @@ package org.odata4j.test.integration;
 import org.junit.After;
 import org.junit.Before;
 import org.odata4j.producer.server.ODataServer;
-import org.odata4j.test.AbstractRuntimeTest;
 
 /**
  * Base integration test class that:

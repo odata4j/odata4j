@@ -85,11 +85,22 @@
     <built.by>${project.name}</built.by>
     <odata4j.sign.artifacts.phase>verify</odata4j.sign.artifacts.phase>
 
+    <core4j.version>0.5</core4j.version>
+    <jsr311.version>1.1.1</jsr311.version>
+    <jpa.version>2.0.0</jpa.version>
+    <eclipselink.version>2.1.2</eclipselink.version>
+    <joda.version>1.6</joda.version>
+    <xmlpull.version>1.1.3.4a</xmlpull.version>
     <junit.version>4.8.2</junit.version>
+    <hamcrest.version>1.1</hamcrest.version>
+    <mockito.version>1.9.0</mockito.version>
+    <hsqldb.version>1.8.0.10</hsqldb.version>
     <jersey.version>1.1.5</jersey.version>
     <cxf.version>2.5.2</cxf.version>
-    <httpclient.version>4.1.2</httpclient.version>
     <jetty.version>7.5.3.v20111011</jetty.version>
+    <httpclient.version>4.1.2</httpclient.version>
+    <slf4j.version>1.6.4</slf4j.version>
+    <xmlunit.version>1.3</xmlunit.version>
 
   </properties>
 
@@ -104,7 +115,7 @@
       <name>eclipselink</name>
       <url>http://download.eclipse.org/rt/eclipselink/maven.repo</url>
       <snapshots>
-        <enabled>true</enabled>   <!-- for javax.persistence -->
+        <enabled>true</enabled> <!-- for javax.persistence -->
       </snapshots>
     </repository>
     <repository>
@@ -115,11 +126,11 @@
   </repositories>
 
   <modules>
-    <!-- <module>core4j</module> -->
     <module>odata4j-core</module>
     <module>odata4j-jersey</module>
     <module>odata4j-cxf</module>
     <module>odata4j-fit</module>
+    <module>odata4j-examples</module>
     <module>odata4j-dist</module>
   </modules>
 
