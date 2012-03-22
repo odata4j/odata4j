@@ -8,6 +8,7 @@ import java.util.Locale;
 import javax.ws.rs.core.UriInfo;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.odata4j.core.Guid;
@@ -117,7 +118,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
       jw.writeNumber((Byte) pvalue);
     } else if (type.equals(EdmSimpleType.DATETIME)) {
       LocalDateTime ldt = (LocalDateTime) pvalue;
-      long millis = ldt.toDateTime().getMillis();
+      long millis = ldt.toDateTime(DateTimeZone.UTC).getMillis();
       String date = "\"\\/Date(" + millis + ")\\/\"";
       jw.writeRaw(date);
     } else if (type.equals(EdmSimpleType.DECIMAL)) {
