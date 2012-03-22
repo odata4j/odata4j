@@ -23,9 +23,10 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.junit.Assert;
 import org.odata4j.core.Throwables;
 import org.odata4j.edm.EdmSimpleType;
-import org.odata4j.examples.producer.jpa.northwind.NorthwindUtils;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.test.integration.RuntimeFacade;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -33,7 +34,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 import org.xml.sax.InputSource;
 
-public class NorthwindTestUtils extends NorthwindUtils {
+public class NorthwindTestUtils {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(NorthwindTestUtils.class);
 
   private RuntimeFacade rtFacade;
 

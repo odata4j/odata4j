@@ -9,7 +9,7 @@ import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OProperties;
 
-public class CompositeKeyEntityTest extends JPAProducerTest {
+public class CompositeKeyEntityTest extends NorthwindJpaProducerTest {
 
   public CompositeKeyEntityTest(RuntimeFacadeType type) {
     super(type);

@@ -8,7 +8,7 @@ import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperties;
 
-public class UpdateTest extends JPAProducerTest {
+public class UpdateTest extends NorthwindJpaProducerTest {
 
   public UpdateTest(RuntimeFacadeType type) {
     super(type);

@@ -8,7 +8,7 @@ import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OPredicates;
 
-public class DeleteTest extends JPAProducerTest {
+public class DeleteTest extends NorthwindJpaProducerTest {
 
   public DeleteTest(RuntimeFacadeType type) {
     super(type);

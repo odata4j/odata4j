@@ -42,8 +42,8 @@ import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.examples.AbstractExample;
 import org.odata4j.examples.ODataServerFactory;
+import org.odata4j.examples.producer.jpa.DatabaseUtils;
 import org.odata4j.examples.producer.jpa.northwind.Customers;
-import org.odata4j.examples.producer.jpa.northwind.NorthwindUtils;
 import org.odata4j.producer.BaseResponse;
 import org.odata4j.producer.CountResponse;
 import org.odata4j.producer.EntitiesResponse;
@@ -93,7 +93,7 @@ public class XmlDataProducerExample extends AbstractExample {
     // create an fill temporary database
     emf = Persistence.createEntityManagerFactory(persistenceUnitName);
     emf.createEntityManager().close();
-    NorthwindUtils.fillDatabase(emf);
+    DatabaseUtils.fillDatabase("northwind", "/META-INF/northwind_insert.sql");
 
     // select the customers
     EntityManager em = emf.createEntityManager();

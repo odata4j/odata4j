@@ -12,7 +12,7 @@ import org.odata4j.core.OEntity;
 import org.odata4j.core.OFuncs;
 import org.odata4j.core.OLink;
 
-public class ConsumerLinksTest extends JPAProducerTest {
+public class ConsumerLinksTest extends NorthwindJpaProducerTest {
 
   public ConsumerLinksTest(RuntimeFacadeType type) {
     super(type);

@@ -3,7 +3,7 @@ package org.odata4j.test.integration.producer.jpa.northwind;
 import org.junit.Before;
 import org.junit.Test;
 
-public class QueryOptionAtomTest extends JPAProducerTest {
+public class QueryOptionAtomTest extends NorthwindJpaProducerTest {
 
   public QueryOptionAtomTest(RuntimeFacadeType type) {
     super(type);

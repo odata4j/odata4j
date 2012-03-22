@@ -17,7 +17,7 @@ import org.odata4j.format.json.JsonSingleLinkFormatParser;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.test.integration.producer.jpa.northwind.InterceptLinkModificationCalls.LinksMethod;
 
-public class LinksTest extends JPAProducerTest {
+public class LinksTest extends NorthwindJpaProducerTest {
 
   public LinksTest(RuntimeFacadeType type) {
     super(type);

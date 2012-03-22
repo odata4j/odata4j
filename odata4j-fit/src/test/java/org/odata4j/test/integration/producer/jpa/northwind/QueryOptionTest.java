@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class QueryOptionTest extends JPAProducerTest {
+public class QueryOptionTest extends NorthwindJpaProducerTest {
 
   public QueryOptionTest(RuntimeFacadeType type) {
     super(type);

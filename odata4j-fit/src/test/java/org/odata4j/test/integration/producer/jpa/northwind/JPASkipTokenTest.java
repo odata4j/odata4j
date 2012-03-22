@@ -18,7 +18,7 @@ import org.odata4j.producer.jpa.JPQLGenerator;
  *
  * @author rozan04
  */
-public class JPASkipTokenTest extends JPAProducerTest {
+public class JPASkipTokenTest extends NorthwindJpaProducerTest {
 
   public JPASkipTokenTest(RuntimeFacadeType type) {
     super(type);

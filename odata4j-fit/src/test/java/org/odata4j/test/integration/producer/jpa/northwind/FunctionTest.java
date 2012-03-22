@@ -23,7 +23,7 @@ import org.odata4j.producer.jpa.JPAProducer;
  * Some basic tests for functions.
  *
  */
-public class FunctionTest extends JPAProducerTest {
+public class FunctionTest extends NorthwindJpaProducerTest {
 
   public FunctionTest(RuntimeFacadeType type) {
     super(type);

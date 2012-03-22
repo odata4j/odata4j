@@ -1,4 +1,4 @@
-package org.odata4j.examples.producer.jpa.northwind;
+package org.odata4j.examples.producer.jpa;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -8,20 +8,18 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import javax.persistence.EntityManagerFactory;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class NorthwindUtils {
+public class DatabaseUtils {
 
-  protected static final Logger LOGGER = LoggerFactory.getLogger(NorthwindUtils.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseUtils.class);
 
-  public static void fillDatabase(EntityManagerFactory emf) {
+  public static void fillDatabase(String namespace, String pathToSqlFile) {
     try {
       Class.forName("org.hsqldb.jdbcDriver");
     } catch (Exception ex) {
-      NorthwindUtils.LOGGER.error("ERROR: failed to load HSQLDB JDBC driver.", ex);
+      DatabaseUtils.LOGGER.error("ERROR: failed to load HSQLDB JDBC driver.", ex);
       return;
     }
 
@@ -29,14 +27,14 @@ public class NorthwindUtils {
     String line = "";
     try {
       conn = DriverManager.getConnection(
-          "jdbc:hsqldb:mem:northwind",
+          "jdbc:hsqldb:mem:" + namespace,
           "sa",
           "");
 
       Statement statement = conn.createStatement();
 
-      InputStream xml = NorthwindUtils.class.getResourceAsStream(
-          "/META-INF/northwind_insert.sql");
+      InputStream xml = DatabaseUtils.class.getResourceAsStream(
+          pathToSqlFile);
 
       BufferedReader br = new BufferedReader(
           new InputStreamReader(xml, "UTF-8"));
@@ -55,13 +53,13 @@ public class NorthwindUtils {
       statement.close();
 
     } catch (Exception ex) {
-      NorthwindUtils.LOGGER.error(ex.getMessage(), ex);
+      DatabaseUtils.LOGGER.error(ex.getMessage(), ex);
     } finally {
       if (conn != null) {
         try {
           conn.close();
         } catch (SQLException ex) {
-          NorthwindUtils.LOGGER.error(ex.getMessage(), ex);
+          DatabaseUtils.LOGGER.error(ex.getMessage(), ex);
         }
       }
     }

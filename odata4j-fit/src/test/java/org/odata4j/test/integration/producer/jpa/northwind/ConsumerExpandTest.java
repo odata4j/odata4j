@@ -10,7 +10,7 @@ import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.ORelatedEntityLinkInline;
 
-public class ConsumerExpandTest extends JPAProducerTest {
+public class ConsumerExpandTest extends NorthwindJpaProducerTest {
 
   public ConsumerExpandTest(RuntimeFacadeType type) {
     super(type);

@@ -7,20 +7,19 @@ import javax.persistence.Persistence;
 
 import org.odata4j.examples.AbstractExample;
 import org.odata4j.examples.ODataServerFactory;
-import org.odata4j.examples.producer.jpa.northwind.NorthwindUtils;
 import org.odata4j.producer.jpa.JPAProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 
-public class JPAProducerExample extends AbstractExample {
+public class NorthwindJpaProducerExample extends AbstractExample {
 
   public static void main(String[] args) {
-    JPAProducerExample example = new JPAProducerExample();
+    NorthwindJpaProducerExample example = new NorthwindJpaProducerExample();
     example.run(args);
   }
 
   private void run(String[] args) {
 
-    String endpointUri = "http://localhost:8886/JPAProducerExample.svc/";
+    String endpointUri = "http://localhost:8886/NortwindJpaProducerExample.svc/";
 
     // this example assumes you have an appropriate persistence.xml containing a valid persistence unit definition 
     // (in this case named NorthwindServiceEclipseLink) mapping your jpa entity classes, etc
@@ -31,7 +30,7 @@ public class JPAProducerExample extends AbstractExample {
     EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceUnitName);
 
     JPAProducer producer = new JPAProducer(emf, namespace, 50);
-    NorthwindUtils.fillDatabase(emf);
+    DatabaseUtils.fillDatabase(namespace.toLowerCase(), "/META-INF/northwind_insert.sql");
 
     // register the producer as the static instance, then launch the http server
     DefaultODataProducerProvider.setInstance(producer);

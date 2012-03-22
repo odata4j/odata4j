@@ -16,13 +16,13 @@ import org.odata4j.core.ORelatedEntityLinkInline;
 import org.odata4j.examples.producer.jpa.northwind.Orders;
 import org.odata4j.format.FormatType;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
-import org.odata4j.test.integration.producer.jpa.northwind.JPAProducerTest;
+import org.odata4j.test.integration.producer.jpa.northwind.NorthwindJpaProducerTest;
 
 /**
  * Tests for new OLink semantics.
  */
 @Ignore
-public class LinksTest extends JPAProducerTest {
+public class LinksTest extends NorthwindJpaProducerTest {
 
   public LinksTest(RuntimeFacadeType type) {
     super(type);

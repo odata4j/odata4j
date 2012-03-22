@@ -5,7 +5,7 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ResourcePathTest extends JPAProducerTest {
+public class ResourcePathTest extends NorthwindJpaProducerTest {
 
   public ResourcePathTest(RuntimeFacadeType type) {
     super(type);

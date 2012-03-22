@@ -9,7 +9,7 @@ import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.ORelatedEntityLink;
 
-public class CreateWithLink2Test extends JPAProducerTest {
+public class CreateWithLink2Test extends NorthwindJpaProducerTest {
 
   public CreateWithLink2Test(RuntimeFacadeType type) {
     super(type);

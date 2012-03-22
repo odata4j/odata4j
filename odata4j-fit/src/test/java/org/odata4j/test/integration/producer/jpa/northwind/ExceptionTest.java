@@ -10,7 +10,7 @@ import org.junit.rules.ExpectedException;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 
-public class ExceptionTest extends JPAProducerTest {
+public class ExceptionTest extends NorthwindJpaProducerTest {
 
   public ExceptionTest(RuntimeFacadeType type) {
     super(type);

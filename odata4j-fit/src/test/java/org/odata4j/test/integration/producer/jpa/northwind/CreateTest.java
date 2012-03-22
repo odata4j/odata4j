@@ -10,7 +10,7 @@ import org.odata4j.core.OPredicates;
 import org.odata4j.core.OProperties;
 import org.odata4j.format.FormatType;
 
-public class CreateTest extends JPAProducerTest {
+public class CreateTest extends NorthwindJpaProducerTest {
 
   public CreateTest(RuntimeFacadeType type) {
     super(type);

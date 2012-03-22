@@ -6,6 +6,7 @@ import javax.persistence.Persistence;
 import org.core4j.Func1;
 import org.junit.After;
 import org.junit.Ignore;
+import org.odata4j.examples.producer.jpa.DatabaseUtils;
 import org.odata4j.examples.producer.jpa.JPAProvider;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.jpa.JPAProducer;
@@ -14,9 +15,9 @@ import org.odata4j.producer.server.ODataServer;
 import org.odata4j.test.integration.AbstractRuntimeTest;
 
 @Ignore
-public class JPAProducerTest extends AbstractRuntimeTest {
+public class NorthwindJpaProducerTest extends AbstractRuntimeTest {
 
-  public JPAProducerTest(RuntimeFacadeType type) {
+  public NorthwindJpaProducerTest(RuntimeFacadeType type) {
     super(type);
     this.utils = new NorthwindTestUtils(this.rtFacade);
   }
@@ -45,7 +46,7 @@ public class JPAProducerTest extends AbstractRuntimeTest {
     // using 20 as maxResult in almost any case but not
     // for every
 
-    NorthwindTestUtils.fillDatabase(emf);
+    DatabaseUtils.fillDatabase(namespace.toLowerCase(), "/META-INF/northwind_insert.sql");
 
     if (producerModification != null)
       producer = producerModification.apply(producer);
