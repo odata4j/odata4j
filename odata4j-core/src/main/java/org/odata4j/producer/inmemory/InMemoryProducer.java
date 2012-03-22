@@ -28,7 +28,9 @@ import org.odata4j.edm.EdmEntityType;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.edm.EdmMultiplicity;
 import org.odata4j.edm.EdmNavigationProperty;
+import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSimpleType;
+import org.odata4j.edm.EdmType;
 import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.Expression;
@@ -36,13 +38,13 @@ import org.odata4j.expression.OrderByExpression;
 import org.odata4j.expression.OrderByExpression.Direction;
 import org.odata4j.producer.BaseResponse;
 import org.odata4j.producer.CountResponse;
-import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityIdResponse;
 import org.odata4j.producer.EntityQueryInfo;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.InlineCount;
 import org.odata4j.producer.ODataProducer;
+import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.Responses;
 import org.odata4j.producer.edm.MetadataProducer;
 import org.odata4j.producer.exceptions.NotFoundException;
@@ -475,10 +477,96 @@ public class InMemoryProducer implements ODataProducer {
     return iter;
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public EntityResponse getEntity(String entitySetName, final OEntityKey entityKey, EntityQueryInfo queryInfo) {
+    final Object rt = getEntity(entitySetName, entityKey);
+    if (rt == null) throw new NotFoundException();
+
     final EdmEntitySet ees = getMetadata().getEdmEntitySet(entitySetName);
+    OEntity oe = toOEntity(ees, rt, queryInfo.expand);
+
+    return Responses.entity(oe);
+  }
+
+  @Override
+  public void mergeEntity(String entitySetName, OEntity entity) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public void updateEntity(String entitySetName, OEntity entity) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public void deleteEntity(String entitySetName, OEntityKey entityKey) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public EntityResponse createEntity(String entitySetName, OEntity entity) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public EntityResponse createEntity(String entitySetName, OEntityKey entityKey, String navProp, OEntity entity) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public BaseResponse getNavProperty(String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
+    EdmEntitySet edmEntitySet = getMetadata().getEdmEntitySet(entitySetName); // throws NotFoundException
+    // currently only properties are supported
+    EdmProperty edmProperty = edmEntitySet.getType().findProperty(navProp);
+    if (edmProperty == null)
+      throw new NotFoundException("Property " + navProp + " is not found");
+    // currently only simple types are supported
+    EdmType edmType = edmProperty.getType();
+    if (!edmType.isSimple())
+      throw new NotImplementedException("Only simple types are supported. Property type is '" + edmType.getFullyQualifiedTypeName() + "'");
+
+    // get property value...
+    InMemoryEntityInfo<?> entityInfo = eis.get(entitySetName);
+    Object target = getEntity(entitySetName, entityKey);
+    Object propertyValue = entityInfo.properties.getPropertyValue(target, navProp);
+    // ... and create OProperty
+    OProperty<?> property = OProperties.simple(navProp, (EdmSimpleType<?>) edmType, propertyValue);
+
+    return Responses.property(property);
+  }
+
+  @Override
+  public CountResponse getNavPropertyCount(String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public EntityIdResponse getLinks(OEntityId sourceEntity, String targetNavProp) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public void createLink(OEntityId sourceEntity, String targetNavProp, OEntityId targetEntity) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public void updateLink(OEntityId sourceEntity, String targetNavProp, OEntityKey oldTargetEntityKey, OEntityId newTargetEntity) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public void deleteLink(OEntityId sourceEntity, String targetNavProp, OEntityKey targetEntityKey) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public BaseResponse callFunction(EdmFunctionImport name, java.util.Map<String, OFunctionParameter> params, QueryInfo queryInfo) {
+    throw new NotImplementedException();
+  }
+
+  @SuppressWarnings("unchecked")
+  private Object getEntity(String entitySetName, final OEntityKey entityKey) {
     final InMemoryEntityInfo<?> ei = eis.get(entitySetName);
 
     final String[] keyList = ei.keys;
@@ -514,71 +602,6 @@ public class InMemoryProducer implements ODataProducer {
         }
       }
     });
-    if (rt == null) throw new NotFoundException();
-
-    OEntity oe = toOEntity(ees, rt, queryInfo.expand);
-
-    return Responses.entity(oe);
+    return rt;
   }
-
-  @Override
-  public void mergeEntity(String entitySetName, OEntity entity) {
-    throw new NotImplementedException();
-  }
-
-  @Override
-  public void updateEntity(String entitySetName, OEntity entity) {
-    throw new NotImplementedException();
-  }
-
-  @Override
-  public void deleteEntity(String entitySetName, OEntityKey entityKey) {
-    throw new NotImplementedException();
-  }
-
-  @Override
-  public EntityResponse createEntity(String entitySetName, OEntity entity) {
-    throw new NotImplementedException();
-  }
-
-  @Override
-  public EntityResponse createEntity(String entitySetName, OEntityKey entityKey, String navProp, OEntity entity) {
-    throw new NotImplementedException();
-  }
-
-  @Override
-  public BaseResponse getNavProperty(String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
-    throw new NotImplementedException();
-  }
-
-  @Override
-  public CountResponse getNavPropertyCount(String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
-    throw new NotImplementedException();
-  }
-
-  @Override
-  public EntityIdResponse getLinks(OEntityId sourceEntity, String targetNavProp) {
-    throw new NotImplementedException();
-  }
-
-  @Override
-  public void createLink(OEntityId sourceEntity, String targetNavProp, OEntityId targetEntity) {
-    throw new NotImplementedException();
-  }
-
-  @Override
-  public void updateLink(OEntityId sourceEntity, String targetNavProp, OEntityKey oldTargetEntityKey, OEntityId newTargetEntity) {
-    throw new NotImplementedException();
-  }
-
-  @Override
-  public void deleteLink(OEntityId sourceEntity, String targetNavProp, OEntityKey targetEntityKey) {
-    throw new NotImplementedException();
-  }
-
-  @Override
-  public BaseResponse callFunction(EdmFunctionImport name, java.util.Map<String, OFunctionParameter> params, QueryInfo queryInfo) {
-    throw new NotImplementedException();
-  }
-
 }

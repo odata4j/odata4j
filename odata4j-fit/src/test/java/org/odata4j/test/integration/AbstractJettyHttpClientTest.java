@@ -36,6 +36,7 @@ public abstract class AbstractJettyHttpClientTest extends AbstractIntegrationTes
     ContentExchange exchange = new ContentExchange(true);
     exchange.setURL(url);
     client.send(exchange);
+    exchange.waitForDone();
     return exchange;
   }
 }
