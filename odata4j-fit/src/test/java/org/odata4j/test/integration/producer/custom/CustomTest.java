@@ -210,11 +210,11 @@ public class CustomTest extends CustomBaseTest {
     List<OProperty<?>> props = (List<OProperty<?>>) cx.getValue(); // uggh...why isn't this an OComplexObject?
     assertTrue(props.size() == 2);
     OProperty<?> prop = findProp("Prop1", props);
-    assertTrue(null != prop);
+    assertTrue(prop != null);
     assertTrue(prop.getValue() instanceof String);
     assertTrue(((String) prop.getValue()).equals("Val1"));
     prop = findProp("Prop2", props);
-    assertTrue(null != prop);
+    assertTrue(prop != null);
     assertTrue(prop.getValue() instanceof String);
     assertTrue(((String) prop.getValue()).equals("Val2"));
 
@@ -243,7 +243,7 @@ public class CustomTest extends CustomBaseTest {
   @SuppressWarnings("unchecked")
   private void checkCollection(OProperty<?> prop, EdmType itemType, ValueGenerator vg) {
     //OProperty<?> prop = e.getProperty("BagOStrings");
-    assertTrue(null != prop);
+    assertTrue(prop != null);
     assertTrue(prop.getType() instanceof EdmCollectionType);
     EdmCollectionType ct = (EdmCollectionType) prop.getType();
     assertTrue(ct.getItemType().equals(itemType));

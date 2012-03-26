@@ -199,7 +199,7 @@ public class EdmxFormatParser extends XmlFormatParser {
       // resolve type hierarchy
       for (Entry<String, EdmEntityType.Builder> entry : allEetsByFQName.entrySet()) {
         String baseTypeName = entry.getValue().getFQBaseTypeName();
-        if (null != baseTypeName) {
+        if (baseTypeName != null) {
           EdmEntityType.Builder baseType = allEetsByFQName.get(baseTypeName);
           if (baseType == null) {
             throw new IllegalArgumentException("Invalid baseType: " + baseTypeName);
@@ -291,7 +291,7 @@ public class EdmxFormatParser extends XmlFormatParser {
     String returnType = returnTypeAttr != null ? returnTypeAttr.getValue() : null;
 
     // strict parsing
-    boolean isCollection = null != returnType && returnType.matches("^Collection\\(.*\\)$");
+    boolean isCollection = returnType != null && returnType.matches("^Collection\\(.*\\)$");
     if (isCollection) {
       returnType = returnType.substring(11, returnType.length() - 1);
     }

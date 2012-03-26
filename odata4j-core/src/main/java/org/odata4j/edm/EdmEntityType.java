@@ -142,12 +142,12 @@ public class EdmEntityType extends EdmStructuralType {
       context.register(entityType, this);
       this.alias = entityType.alias;
       this.hasStream = entityType.hasStream;
-      if (null != entityType.keys) {
+      if (entityType.keys != null) {
         // subtypes don't have keys!
         this.keys.addAll(entityType.keys);
       }
 
-      if (null != entityType.getBaseType()) {
+      if (entityType.getBaseType() != null) {
         baseTypeBuilder = EdmEntityType.newBuilder(entityType.getBaseType(), context);
       }
 

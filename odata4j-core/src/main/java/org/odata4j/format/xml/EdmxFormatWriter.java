@@ -55,7 +55,7 @@ public class EdmxFormatWriter extends XmlFormatWriter {
         writer.startElement(new QName2("ComplexType"));
 
         writer.writeAttribute("Name", ect.getName());
-        if (null != ect.getIsAbstract()) {
+        if (ect.getIsAbstract() != null) {
           writer.writeAttribute("Abstract", ect.getIsAbstract().toString());
         }
         writeAnnotationAttributes(ect, writer);
@@ -70,7 +70,7 @@ public class EdmxFormatWriter extends XmlFormatWriter {
         writer.startElement(new QName2("EntityType"));
 
         writer.writeAttribute("Name", eet.getName());
-        if (null != eet.getIsAbstract()) {
+        if (eet.getIsAbstract() != null) {
           writer.writeAttribute("Abstract", eet.getIsAbstract().toString());
         }
 
@@ -163,7 +163,7 @@ public class EdmxFormatWriter extends XmlFormatWriter {
         for (EdmFunctionImport fi : container.getFunctionImports()) {
           writer.startElement(new QName2("FunctionImport"));
           writer.writeAttribute("Name", fi.getName());
-          if (null != fi.getEntitySet()) {
+          if (fi.getEntitySet() != null) {
             writer.writeAttribute("EntitySet", fi.getEntitySet().getName());
           }
           if (fi.getReturnType() != null) {
@@ -227,7 +227,7 @@ public class EdmxFormatWriter extends XmlFormatWriter {
    * of namespaces.
    */
   private static void writeExtensionNamespaces(EdmDataServices services, XMLWriter2 writer) {
-    if (null != services.getNamespaces()) {
+    if (services.getNamespaces() != null) {
       for (PrefixedNamespace ns : services.getNamespaces()) {
         writer.writeNamespace(ns.getPrefix(), ns.getUri());
       }
@@ -263,7 +263,7 @@ public class EdmxFormatWriter extends XmlFormatWriter {
   }
 
   private static void writeAnnotationAttributes(EdmItem item, XMLWriter2 writer) {
-    if (null != item.getAnnotations()) {
+    if (item.getAnnotations() != null) {
       for (NamespacedAnnotation<?> a : item.getAnnotations()) {
         if (a instanceof EdmAnnotationAttribute) {
           writer.writeAttribute(
@@ -275,7 +275,7 @@ public class EdmxFormatWriter extends XmlFormatWriter {
   }
 
   private static void writeAnnotationElements(EdmItem item, XMLWriter2 writer) {
-    if (null != item.getAnnotations()) {
+    if (item.getAnnotations() != null) {
       for (NamespacedAnnotation<?> a : item.getAnnotations()) {
         if (a instanceof EdmAnnotationElement) {
           // TODO: please don't throw an exception here.
@@ -290,17 +290,17 @@ public class EdmxFormatWriter extends XmlFormatWriter {
 
   private static void writeDocumentation(EdmItem item, XMLWriter2 writer) {
     EdmDocumentation doc = item.getDocumentation();
-    if (null != doc && (null != doc.getSummary() || null != doc.getLongDescription())) {
+    if (doc != null && (doc.getSummary() != null || doc.getLongDescription() != null)) {
       QName2 d = new QName2(edm, "Documentation");
       writer.startElement(d);
       {
-        if (null != doc.getSummary()) {
+        if (doc.getSummary() != null) {
           QName2 s = new QName2(edm, "Summary");
           writer.startElement(s);
           writer.writeText(doc.getSummary());
           writer.endElement(s.getLocalPart());
         }
-        if (null != doc.getLongDescription()) {
+        if (doc.getLongDescription() != null) {
           QName2 s = new QName2(edm, "LongDescription");
           writer.startElement(s);
           writer.writeText(doc.getLongDescription());

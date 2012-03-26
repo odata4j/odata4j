@@ -52,7 +52,7 @@ public class JsonFeedFormatWriter extends JsonFormatWriter<EntitiesResponse> {
         // we are returning now.
         String tops = uriInfo.getQueryParameters().getFirst("$top");
         int top = -1;
-        if (null != tops) {
+        if (tops != null) {
           // query param value already validated
           top = Integer.parseInt(tops);
           top -= target.getEntities().size();

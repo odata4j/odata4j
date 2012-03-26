@@ -258,7 +258,7 @@ public class SetResponseCommand implements Command {
       // OLink if the nav prop is selected
       for (final EdmNavigationProperty ep : ees.getType().getNavigationProperties()) {
         if (JPAProducer.isSelected(ep.getName(), select)) {
-          boolean expanded = null != Enumerable.create(links).firstOrNull(new Predicate1<OLink>() {
+          boolean expanded = Enumerable.create(links).any(new Predicate1<OLink>() {
             @Override
             public boolean apply(OLink t) {
               return t.getTitle().equals(ep.getName());

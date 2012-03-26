@@ -78,7 +78,7 @@ public class LinksTest extends NorthwindJpaProducerTest {
       System.out.println("inserted empty order: " + o1.getOrderID());
       emptyId = o1.getOrderID();
     } finally {
-      if (null != em) {
+      if (em != null) {
         if (em.getTransaction().isActive()) {
           try {
             em.getTransaction().rollback();

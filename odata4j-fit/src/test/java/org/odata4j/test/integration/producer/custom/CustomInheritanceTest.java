@@ -31,7 +31,7 @@ public class CustomInheritanceTest extends CustomBaseTest {
   private void testGetEntity(FormatType ft) {
     ODataConsumer consumer = createConsumer(ft);
 
-    //this.dumpResource("FileSystemItems('Dir-3')", ft);    
+    //this.dumpResource("FileSystemItems('Dir-3')", ft);
     //this.dumpResource("FileSystemItems('File-2-Dir-2')", ft);
 
     checkEntityType(consumer.getEntity("FileSystemItems", "Dir-3").execute());
@@ -114,7 +114,7 @@ public class CustomInheritanceTest extends CustomBaseTest {
     for (OEntity e : consumer.getEntities("Directories").expand("Items")) {
       checkEntityType(e);
       ORelatedEntitiesLink l = e.getLink("Items", ORelatedEntitiesLinkInline.class);
-      if (null != l.getRelatedEntities()) {
+      if (l.getRelatedEntities() != null) {
         for (OEntity i : l.getRelatedEntities()) {
           checkEntityType(i);
         }

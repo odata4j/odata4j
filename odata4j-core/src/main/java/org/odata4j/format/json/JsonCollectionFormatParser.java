@@ -115,7 +115,7 @@ public class JsonCollectionFormatParser extends JsonFormatParser implements Form
         if (parser instanceof JsonComplexObjectFormatParser) {
           OComplexObject obj = ((JsonComplexObjectFormatParser) parser).parseSingleObject(jsr);
           // null if not there
-          if (null != obj) {
+          if (obj != null) {
             c = c.add(obj);
           } else {
             break;

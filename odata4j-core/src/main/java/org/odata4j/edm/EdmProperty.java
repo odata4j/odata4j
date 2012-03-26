@@ -179,7 +179,7 @@ public class EdmProperty extends EdmPropertyBase {
     Builder newBuilder(EdmProperty property, BuilderContext context) {
       this.declaringType = property.declaringType;
       this.type = property.type;
-      if (null != type) {
+      if (type != null) {
         if (!type.isSimple()) {
           // we want to use the re-built version of this type, not the original object
           this.typeBuilder = EdmType.newDeferredBuilder(type.getFullyQualifiedTypeName(), context.getDataServices());

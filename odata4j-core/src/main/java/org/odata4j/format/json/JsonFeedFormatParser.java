@@ -55,7 +55,7 @@ public class JsonFeedFormatParser extends JsonFormatParser implements FormatPars
 
     public JsonEntry(EdmEntitySet eset, JsonEntryMetaData jemd) {
       this.entitySet = eset;
-      this.entityType = null != eset ? eset.getType() : null;
+      this.entityType = eset != null ? eset.getType() : null;
       this.jemd = jemd;
     }
 

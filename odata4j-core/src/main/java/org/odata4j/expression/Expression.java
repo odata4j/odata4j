@@ -1370,7 +1370,7 @@ public class Expression {
       visitor.beforeDescend();
       getSource().visit(visitor);
       visitor.betweenDescend();
-      if (null != getPredicate()) {
+      if (getPredicate() != null) {
         getPredicate().visit(visitor);
       }
       visitor.afterDescend();

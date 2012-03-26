@@ -191,7 +191,7 @@ public class JPQLGenerator {
     if (expression instanceof RoundMethodCallExpression) {
       RoundMethodCallExpression e = (RoundMethodCallExpression) expression;
 
-      // TODO: don't work while HSQL implementation expecting ROUND(a ,b)
+      // TODO: doesn't work, HSQL implementation expecting ROUND(a ,b)
       return String.format(
           "FUNC('ROUND', %s)",
           toJpql(e.getTarget()));
@@ -200,8 +200,7 @@ public class JPQLGenerator {
     if (expression instanceof DayMethodCallExpression) {
       DayMethodCallExpression e = (DayMethodCallExpression) expression;
 
-      // TODO: don't work could be trim bug in EclipseLink ... or wrong
-      // syntax here
+      // TODO: doesn't work, could be a trim bug in EclipseLink ... or wrong syntax here
       return String.format(
           "TRIM(LEADING '0' FROM SUBSTRING(%s, 9, 2))",
           toJpql(e.getTarget()));
@@ -308,7 +307,7 @@ public class JPQLGenerator {
         clazz = tableAlias;
       }
 
-      // TODO: don't work, for me its bug in EclipseLink
+      // TODO: doesn't work, perhaps a bug in EclipseLink
       return String.format(
           "TYPE(%s) = '%s'",
           clazz,
@@ -332,11 +331,11 @@ public class JPQLGenerator {
     return binaryCommonExpressionToJpql(format, null, null, bce);
   }
 
-  private String binaryCommonExpressionToJpql(String format, String formatIfLeftNull, String formatIfRightNull, BinaryCommonExpression bce) {
-    if (formatIfLeftNull != null && bce.getLHS() instanceof NullLiteral)
-      format = formatIfLeftNull;
-    else if (formatIfRightNull != null && bce.getRHS() instanceof NullLiteral)
-      format = formatIfRightNull;
+  private String binaryCommonExpressionToJpql(String format, String ifLeftNullFormat, String ifRightNullFormat, BinaryCommonExpression bce) {
+    if (ifLeftNullFormat != null && bce.getLHS() instanceof NullLiteral)
+      format = ifLeftNullFormat;
+    else if (ifRightNullFormat != null && bce.getRHS() instanceof NullLiteral)
+      format = ifRightNullFormat;
     return String.format(format, toJpql(bce.getLHS()), toJpql(bce.getRHS()));
   }
 

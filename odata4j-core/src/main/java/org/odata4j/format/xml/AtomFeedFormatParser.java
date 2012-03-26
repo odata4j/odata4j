@@ -199,7 +199,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
           }
         }
 
-        if (null != et && (!et.isSimple())) {
+        if (et != null && (!et.isSimple())) {
           op = OProperties.complex(name, (EdmComplexType) et, isNull ? null : Enumerable.create(parseProperties(reader, event.asStartElement(), metadata)).toList());
         } else {
           op = OProperties.parseSimple(name, type, isNull ? null : reader.getElementText());
@@ -490,7 +490,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
         } else if (link.type.equals(XmlFormatWriter.atom_entry_content_type))
           if (link.inlineContentExpected) {
             OEntity relatedEntity = null;
-            if (null != link.inlineEntry) {
+            if (link.inlineEntry != null) {
               EdmNavigationProperty navProperty = fromRoleEntitySet != null
                   ? fromRoleEntitySet.getType().findNavigationProperty(link.title)
                   : null;

@@ -61,7 +61,7 @@ public class EdmFunctionParameter extends EdmItem {
     }
 
     public EdmFunctionParameter build() {
-      return new EdmFunctionParameter(name, null != typeBuilder ? typeBuilder.build() : type,
+      return new EdmFunctionParameter(name, typeBuilder != null ? typeBuilder.build() : type,
           mode, getDocumentation(), ImmutableList.copyOf(getAnnotations()));
     }
 

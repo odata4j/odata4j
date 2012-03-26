@@ -100,7 +100,7 @@ public class JsonFormatParser {
 
   protected void resolveEntityType(JsonEntry entry) {
     // does the metadata refine the type of entity to expect?
-    if (null != entry.jemd && entry.jemd.type != null && !entry.getEntitySet().getType().getFullyQualifiedTypeName().equals(entry.jemd.type)) {
+    if (entry.jemd != null && entry.jemd.type != null && !entry.getEntitySet().getType().getFullyQualifiedTypeName().equals(entry.jemd.type)) {
       // yes it does.
 
       entry.setEntityType((EdmEntityType) this.metadata.findEdmEntityType(entry.jemd.type));
@@ -220,7 +220,7 @@ public class JsonFormatParser {
         // like a scalar property here with a null value
         if (event.asEndProperty().getValue() == null) {
           EdmNavigationProperty navProp = entry.getEntityType().findNavigationProperty(name);
-          if (null != navProp) {
+          if (navProp != null) {
             // aha
             entry.links.add(OLinks.relatedEntityInline(name, name, entry.getUri() + "/" + name, null));
             return ees;
@@ -325,7 +325,7 @@ public class JsonFormatParser {
       // inlined feed or a collection property
       EdmNavigationProperty navProp = entry.getEntityType().findNavigationProperty(name);
 
-      if (null != navProp) {
+      if (navProp != null) {
         // [
         ensureStartArray(jsr.nextEvent());
 
@@ -341,7 +341,7 @@ public class JsonFormatParser {
             }).toList();
       } else {
         EdmProperty eprop = entry.getEntityType().findProperty(name);
-        if (null != eprop && eprop.getCollectionKind() != CollectionKind.NONE) {
+        if (eprop != null && eprop.getCollectionKind() != CollectionKind.NONE) {
           rt.collectionType = new EdmCollectionType(eprop.getCollectionKind(), eprop.getType());
           JsonCollectionFormatParser cfp = new JsonCollectionFormatParser(rt.collectionType, this.metadata);
           rt.collection = cfp.parseCollection(jsr);
@@ -376,7 +376,7 @@ public class JsonFormatParser {
       // inlined entity or complex object
 
       EdmNavigationProperty navProp = entry.getEntityType().findNavigationProperty(name);
-      if (null != navProp) {
+      if (navProp != null) {
         ees = metadata.getEdmEntitySet(navProp.getToRole().getType());
 
         JsonEntry refentry = new JsonEntry(ees);
@@ -398,7 +398,7 @@ public class JsonFormatParser {
           EdmComplexType ct = (eprop.getType() instanceof EdmComplexType) ? ((EdmComplexType) eprop.getType())
               : metadata.findEdmComplexType(eprop.getType().getFullyQualifiedTypeName());
 
-          if (null != ct) {
+          if (ct != null) {
             JsonComplexObjectFormatParser cofp = new JsonComplexObjectFormatParser(ct);
             rt.complexObject = cofp.parseSingleObject(jsr, event);
           } else {

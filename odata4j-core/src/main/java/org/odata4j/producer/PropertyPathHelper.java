@@ -76,34 +76,34 @@ public class PropertyPathHelper {
   public PropertyPathHelper(List<EntitySimpleProperty> select, List<EntitySimpleProperty> expand, String selectR, String expandR) {
     setup(select,
         expand,
-        null != selectR && selectR.length() > 0 ? ExpressionParser.parseExpand(selectR) : null,
-        null != expandR && expandR.length() > 0 ? ExpressionParser.parseExpand(expandR) : null);
+        selectR != null && selectR.length() > 0 ? ExpressionParser.parseExpand(selectR) : null,
+        expandR != null && expandR.length() > 0 ? ExpressionParser.parseExpand(expandR) : null);
   }
 
   private void setup(String select, String expand, String selectR, String expandR) {
-    setup(null != select && select.length() > 0 ? ExpressionParser.parseExpand(select) : null,
-        null != expand && expand.length() > 0 ? ExpressionParser.parseExpand(expand) : null,
-        null != selectR && selectR.length() > 0 ? ExpressionParser.parseExpand(selectR) : null,
-        null != expandR && expandR.length() > 0 ? ExpressionParser.parseExpand(expandR) : null);
+    setup(select != null && select.length() > 0 ? ExpressionParser.parseExpand(select) : null,
+        expand != null && expand.length() > 0 ? ExpressionParser.parseExpand(expand) : null,
+        selectR != null && selectR.length() > 0 ? ExpressionParser.parseExpand(selectR) : null,
+        expandR != null && expandR.length() > 0 ? ExpressionParser.parseExpand(expandR) : null);
   }
 
   private void setup(List<EntitySimpleProperty> select, List<EntitySimpleProperty> expand,
       List<EntitySimpleProperty> selectR, List<EntitySimpleProperty> expandR) {
-    if (null != select && select.size() > 0) {
+    if (select != null && select.size() > 0) {
       selectPaths = new ArrayList<PropertyPath>(select.size());
       for (EntitySimpleProperty p : select) {
         selectPaths.add(new PropertyPath(p.getPropertyName()));
       }
     }
 
-    if (null != expand && expand.size() > 0) {
+    if (expand != null && expand.size() > 0) {
       expandPaths = new ArrayList<PropertyPath>(expand.size());
       for (EntitySimpleProperty p : expand) {
         expandPaths.add(new PropertyPath(p.getPropertyName()));
       }
     }
 
-    if (null != selectR && selectR.size() > 0) {
+    if (selectR != null && selectR.size() > 0) {
       selectRPaths = new ArrayList<PropertyPath>(selectR.size());
       for (EntitySimpleProperty p : selectR) {
         PropertyPath path = new PropertyPath(p.getPropertyName());
@@ -115,7 +115,7 @@ public class PropertyPathHelper {
       }
     }
 
-    if (null != expandR && expandR.size() > 0) {
+    if (expandR != null && expandR.size() > 0) {
       expandRPaths = new ArrayList<RecursivePropertyPath>(expandR.size());
       for (EntitySimpleProperty p : expandR) {
         PropertyPath path = new PropertyPath(p.getPropertyName());
@@ -279,7 +279,7 @@ public class PropertyPathHelper {
   }
 
   public boolean isRecursive() {
-    return null != selectRPaths || null != expandRPaths;
+    return selectRPaths != null || expandRPaths != null;
   }
 
   @Override

@@ -337,7 +337,7 @@ public class PrintExpressionVisitor implements ExpressionVisitor {
 
   @Override
   public void visit(AggregateAnyFunction expr) {
-    if (null != expr.getVariable()) {
+    if (expr.getVariable() != null) {
       append("any:(%s =>)", expr.getVariable());
     } else {
       append("any()");

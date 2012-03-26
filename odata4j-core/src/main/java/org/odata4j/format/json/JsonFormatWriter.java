@@ -222,7 +222,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
 
       // TODO: I'm keeping this pattern of writing the __metadata if we have a non-null type..it seems like we could still
       //       write the uri even if we don't have a type.  Also, are there any scenarios where the entity type would be null?  Not sure.
-      if (isResponse && null != oe.getEntityType()) {
+      if (isResponse && oe.getEntityType() != null) {
         baseUri = uriInfo.getBaseUri().toString();
 
         jw.writeName("__metadata");

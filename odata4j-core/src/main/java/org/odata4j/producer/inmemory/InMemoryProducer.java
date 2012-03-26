@@ -315,8 +315,7 @@ public class InMemoryProducer implements ODataProducer {
     for (final EdmNavigationProperty ep : ees.getType().getNavigationProperties()) {
       // if $select is ever supported, check here and only include nave props
       // that are selected
-      boolean expanded = null != Enumerable.create(links).firstOrNull(new Predicate1<OLink>() {
-
+      boolean expanded = Enumerable.create(links).any(new Predicate1<OLink>() {
         @Override
         public boolean apply(OLink t) {
           return t.getTitle().equals(ep.getName());

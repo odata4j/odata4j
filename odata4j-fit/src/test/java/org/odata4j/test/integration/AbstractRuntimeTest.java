@@ -34,6 +34,8 @@ public abstract class AbstractRuntimeTest extends AbstractTest {
     }
   }
 
+  protected final RuntimeFacade rtFacade;
+
   public AbstractRuntimeTest(RuntimeFacadeType type) {
     switch (type) {
     case JERSEY:
@@ -54,21 +56,21 @@ public abstract class AbstractRuntimeTest extends AbstractTest {
   public static List<Object[]> data() {
 
     /*
-       TODO Ideally the test suite runs twice using CXF and Jersey as runtime. 
-       Unfortunately CXF has issues and throws errors if Jersey did run first. This 
+       TODO Ideally the test suite runs twice using CXF and Jersey as runtime.
+       Unfortunately CXF has issues and throws errors if Jersey did run first. This
        issues are addressed to CXF mailing list: users@cxf.apache.org
-       
+
        Intermediate wise the runtime is selected from environment variable. Allowed configurations:
-       
+
        org.odata4j.jaxrs.runtime = jersey
        org.odata4j.jaxrs.runtime = cxf
        org.odata4j.jaxrs.runtime = jersey, cxf // currently not supported by CXF
-       
+
      */
 
     Object[][] a;
     String value = System.getProperty(AbstractRuntimeTest.RUNTIME_ENVIRONMENT_PROPERTY);
-    if (null == value) {
+    if (value == null) {
       a = new Object[][] { { RuntimeFacadeType.JERSEY } }; // default
     }
     else {
@@ -81,7 +83,5 @@ public abstract class AbstractRuntimeTest extends AbstractTest {
 
     return Arrays.asList(a);
   }
-
-  protected RuntimeFacade rtFacade;
 
 }

@@ -63,7 +63,7 @@ public class EdmxFormatWriterTest extends AbstractRuntimeTest implements EdmDeco
 
   @After
   public void tearDown() {
-    if (null != server) {
+    if (server != null) {
       server.stop();
     }
   }
@@ -86,7 +86,7 @@ public class EdmxFormatWriterTest extends AbstractRuntimeTest implements EdmDeco
     assertXMLEqual("bad $metadata", myDiff, true);
 
     EdmDataServices pds = new EdmxFormatParser().parseMetadata(InternalUtil.newXMLEventReader(new StringReader(metadata)));
-    Assert.assertTrue(null != pds); // we parsed it!
+    Assert.assertTrue(pds != null); // we parsed it!
 
     // TODO: once EdmxFormatParser supports doc and annotations we can check pds
     // for the expected objects.

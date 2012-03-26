@@ -33,7 +33,7 @@ public class EdmxFormatParserTest {
     XMLEventReader2 reader = InternalUtil.newXMLEventReader(new BufferedReader(
         new InputStreamReader(getClass().getResourceAsStream(edmxFile))));
     EdmDataServices d = new EdmxFormatParser().parseMetadata(reader);
-    assertTrue("parsed", null != d);
+    assertTrue("parsed", d != null);
 
     checkTypeHierarchy(d);
 
@@ -42,7 +42,7 @@ public class EdmxFormatParserTest {
     EdmxFormatWriter.write(d, sw);
 
     EdmDataServices d2 = new EdmxFormatParser().parseMetadata(InternalUtil.newXMLEventReader(new StringReader(sw.toString())));
-    assertTrue("parsed", null != d2);
+    assertTrue("parsed", d2 != null);
 
     checkTypeHierarchy(d2);
   }
@@ -52,7 +52,7 @@ public class EdmxFormatParserTest {
     XMLEventReader2 reader = InternalUtil.newXMLEventReader(new BufferedReader(
         new InputStreamReader(getClass().getResourceAsStream(sapDsSampleEdmxFile))));
     EdmDataServices d = new EdmxFormatParser().parseMetadata(reader);
-    assertTrue("parsed", null != d);
+    assertTrue("parsed", d != null);
   }
 
   private void checkTypeHierarchy(EdmDataServices d) {
