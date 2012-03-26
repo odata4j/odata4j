@@ -14,10 +14,11 @@ public class XmlFormatParser {
 
   public static final String NS_METADATA = "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata";
   public static final String NS_DATASERVICES = "http://schemas.microsoft.com/ado/2007/08/dataservices";
-  public static final String NS_EDM2006 = "http://schemas.microsoft.com/ado/2006/04/edm";
-  public static final String NS_EDM2007 = "http://schemas.microsoft.com/ado/2007/05/edm";
-  public static final String NS_EDM2008 = "http://schemas.microsoft.com/ado/2008/09/edm";
-  public static final String NS_EDM2009 = "http://schemas.microsoft.com/ado/2009/08/edm";
+  public static final String NS_EDM2006 = "http://schemas.microsoft.com/ado/2006/04/edm";   // edm 1.0
+  public static final String NS_EDM2007 = "http://schemas.microsoft.com/ado/2007/05/edm";   // edm 1.1
+  public static final String NS_EDM2008_1 = "http://schemas.microsoft.com/ado/2008/01/edm"; // edm 1.2
+  public static final String NS_EDM2008_9 = "http://schemas.microsoft.com/ado/2008/09/edm"; // edm 2.0
+  public static final String NS_EDM2009 = "http://schemas.microsoft.com/ado/2009/08/edm";   // edm ???
   public static final String NS_EDMX = "http://schemas.microsoft.com/ado/2007/06/edmx";
   public static final String NS_EDMANNOTATION = "http://schemas.microsoft.com/ado/2009/02/edm/annotation";
 
@@ -52,19 +53,33 @@ public class XmlFormatParser {
   public static final QName2 EDM2007_PROPERTY = new QName2(NS_EDM2007, "Property");
   public static final QName2 EDM2007_NAVIGATIONPROPERTY = new QName2(NS_EDM2007, "NavigationProperty");
 
-  public static final QName2 EDM2008_SCHEMA = new QName2(NS_EDM2008, "Schema");
-  public static final QName2 EDM2008_ENTITYTYPE = new QName2(NS_EDM2008, "EntityType");
-  public static final QName2 EDM2008_ASSOCIATION = new QName2(NS_EDM2008, "Association");
-  public static final QName2 EDM2008_COMPLEXTYPE = new QName2(NS_EDM2008, "ComplexType");
-  public static final QName2 EDM2008_ENTITYCONTAINER = new QName2(NS_EDM2008, "EntityContainer");
-  public static final QName2 EDM2008_ENTITYSET = new QName2(NS_EDM2008, "EntitySet");
-  public static final QName2 EDM2008_ASSOCIATIONSET = new QName2(NS_EDM2008, "AssociationSet");
-  public static final QName2 EDM2008_FUNCTIONIMPORT = new QName2(NS_EDM2008, "FunctionImport");
-  public static final QName2 EDM2008_PARAMETER = new QName2(NS_EDM2008, "Parameter");
-  public static final QName2 EDM2008_END = new QName2(NS_EDM2008, "End");
-  public static final QName2 EDM2008_PROPERTYREF = new QName2(NS_EDM2008, "PropertyRef");
-  public static final QName2 EDM2008_PROPERTY = new QName2(NS_EDM2008, "Property");
-  public static final QName2 EDM2008_NAVIGATIONPROPERTY = new QName2(NS_EDM2008, "NavigationProperty");
+  public static final QName2 EDM2008_1_SCHEMA = new QName2(NS_EDM2008_1, "Schema");
+  public static final QName2 EDM2008_1_ENTITYTYPE = new QName2(NS_EDM2008_1, "EntityType");
+  public static final QName2 EDM2008_1_ASSOCIATION = new QName2(NS_EDM2008_1, "Association");
+  public static final QName2 EDM2008_1_COMPLEXTYPE = new QName2(NS_EDM2008_1, "ComplexType");
+  public static final QName2 EDM2008_1_ENTITYCONTAINER = new QName2(NS_EDM2008_1, "EntityContainer");
+  public static final QName2 EDM2008_1_ENTITYSET = new QName2(NS_EDM2008_1, "EntitySet");
+  public static final QName2 EDM2008_1_ASSOCIATIONSET = new QName2(NS_EDM2008_1, "AssociationSet");
+  public static final QName2 EDM2008_1_FUNCTIONIMPORT = new QName2(NS_EDM2008_1, "FunctionImport");
+  public static final QName2 EDM2008_1_PARAMETER = new QName2(NS_EDM2008_1, "Parameter");
+  public static final QName2 EDM2008_1_END = new QName2(NS_EDM2008_1, "End");
+  public static final QName2 EDM2008_1_PROPERTYREF = new QName2(NS_EDM2008_1, "PropertyRef");
+  public static final QName2 EDM2008_1_PROPERTY = new QName2(NS_EDM2008_1, "Property");
+  public static final QName2 EDM2008_1_NAVIGATIONPROPERTY = new QName2(NS_EDM2008_1, "NavigationProperty");
+
+  public static final QName2 EDM2008_9_SCHEMA = new QName2(NS_EDM2008_9, "Schema");
+  public static final QName2 EDM2008_9_ENTITYTYPE = new QName2(NS_EDM2008_9, "EntityType");
+  public static final QName2 EDM2008_9_ASSOCIATION = new QName2(NS_EDM2008_9, "Association");
+  public static final QName2 EDM2008_9_COMPLEXTYPE = new QName2(NS_EDM2008_9, "ComplexType");
+  public static final QName2 EDM2008_9_ENTITYCONTAINER = new QName2(NS_EDM2008_9, "EntityContainer");
+  public static final QName2 EDM2008_9_ENTITYSET = new QName2(NS_EDM2008_9, "EntitySet");
+  public static final QName2 EDM2008_9_ASSOCIATIONSET = new QName2(NS_EDM2008_9, "AssociationSet");
+  public static final QName2 EDM2008_9_FUNCTIONIMPORT = new QName2(NS_EDM2008_9, "FunctionImport");
+  public static final QName2 EDM2008_9_PARAMETER = new QName2(NS_EDM2008_9, "Parameter");
+  public static final QName2 EDM2008_9_END = new QName2(NS_EDM2008_9, "End");
+  public static final QName2 EDM2008_9_PROPERTYREF = new QName2(NS_EDM2008_9, "PropertyRef");
+  public static final QName2 EDM2008_9_PROPERTY = new QName2(NS_EDM2008_9, "Property");
+  public static final QName2 EDM2008_9_NAVIGATIONPROPERTY = new QName2(NS_EDM2008_9, "NavigationProperty");
 
   public static final QName2 EDM2009_SCHEMA = new QName2(NS_EDM2009, "Schema");
   public static final QName2 EDM2009_ENTITYTYPE = new QName2(NS_EDM2009, "EntityType");

@@ -284,6 +284,25 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
     return OEntityKey.parse(atomEntryId.substring(m.end() - 1));
   }
 
+  private EdmEntitySet getEntitySet(String atomEntryId) {
+    EdmEntitySet entitySet = null;
+    String entitySetName = this.entitySetName;
+    if (atomEntryId != null && atomEntryId.endsWith(")"))
+      entitySetName = parseEntitySetName(atomEntryId);
+    if (!metadata.getSchemas().isEmpty()) {
+      entitySet = metadata.findEdmEntitySet(entitySetName);
+      if (entitySet == null) {
+        // panic! could not determine the entity-set, is it a function?
+        EdmFunctionImport efi = metadata.findEdmFunctionImport(entitySetName);
+        if (efi != null)
+          entitySet = efi.getEntitySet();
+      }
+    }
+    if (entitySet == null)
+      throw new RuntimeException("Could not derive the entity-set for entry: " + atomEntryId);
+    return entitySet;
+  }
+
   private AtomEntry parseEntry(XMLEventReader2 reader, StartElement2 entryElement) {
 
     String id = null;
@@ -314,19 +333,9 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
 
         if (rt instanceof DataServicesAtomEntry) {
           DataServicesAtomEntry dsae = (DataServicesAtomEntry) rt;
-          String entitySetName = this.entitySetName;
-          if (rt.id != null && rt.id.endsWith(")"))
-            entitySetName = parseEntitySetName(rt.id);
-          EdmEntitySet ees = metadata.findEdmEntitySet(entitySetName);
-          if (ees == null) {
-            // panic! could not determine the entity-set, is it a function?
-            EdmFunctionImport efi = metadata.findEdmFunctionImport(entitySetName);
-            if (efi != null)
-              ees = efi.getEntitySet();
-          }
-          if (ees == null)
-            throw new RuntimeException("Could not derive the entity-set for entry: " + rt.id);
-          dsae.setOEntity(entityFromAtomEntry(metadata, ees, dsae, fcMapping));
+          EdmEntitySet entitySet = getEntitySet(rt.id);
+          OEntity entity = entityFromAtomEntry(metadata, entitySet, dsae, fcMapping);
+          dsae.setOEntity(entity);
         }
         return rt;
       }
@@ -396,7 +405,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
     }
 
     EdmEntityType entityType = entitySet.getType();
-    if (null != dsae.categoryTerm) {
+    if (dsae.categoryTerm != null) {
       // The type of an entity set is polymorphic...
       entityType = (EdmEntityType) metadata.findEdmEntityType(dsae.categoryTerm);
       if (entityType == null) {

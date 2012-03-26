@@ -3,12 +3,13 @@ package org.odata4j.examples.consumer;
 import static org.odata4j.examples.JaxRsImplementation.JERSEY;
 
 import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.consumer.behaviors.OClientBehaviors;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OProperties;
-import org.odata4j.examples.ODataConsumerFactory;
+import org.odata4j.examples.AbstractExample;
 
-public class AzureTableStorageConsumerExample extends AbstractCredentialsExample {
+public class AzureTableStorageConsumerExample extends AbstractExample {
 
   public static void main(String[] args) {
     AzureTableStorageConsumerExample example = new AzureTableStorageConsumerExample();
@@ -18,12 +19,14 @@ public class AzureTableStorageConsumerExample extends AbstractCredentialsExample
   private void run(String[] args) {
 
     String[] azureCreds = args.length > 0 ? args : System.getenv("AZURESTORAGE").split(":");
-    this.setLoginName(azureCreds[0]);
-    this.setLoginPassword(azureCreds[1]);
+    String accountKey = azureCreds[0];
+    String secretKey = azureCreds[1];
 
-    String url = "http://" + this.getLoginName() + ".table.core.windows.net/";
+    String url = "http://" + accountKey + ".table.core.windows.net/";
 
-    ODataConsumer c = new ODataConsumerFactory(JERSEY).createODataConsumer(url, null, null);
+    ODataConsumer c = JERSEY.newConsumerBuilder(url)
+        .setClientBehaviors(OClientBehaviors.azureTables(accountKey, secretKey))
+        .build();
 
     report("Create a new temp table to use for the test");
     String tableName = "TempTable" + System.currentTimeMillis();

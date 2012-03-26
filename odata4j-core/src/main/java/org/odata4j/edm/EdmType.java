@@ -49,7 +49,12 @@ public abstract class EdmType extends EdmItem {
   public static EdmSimpleType<?> getSimple(String fullyQualifiedTypeName) {
     if (fullyQualifiedTypeName == null)
       return null;
-    return LazyInit.POOL.get(fullyQualifiedTypeName);
+    EdmSimpleType<?> simpleType = LazyInit.POOL.get(fullyQualifiedTypeName);
+    if (simpleType == null && !fullyQualifiedTypeName.contains("."))  // allow "string, Int32" for old dallas service functions
+      for (EdmSimpleType<?> simpleTypeInPool : LazyInit.POOL.values())
+        if (simpleTypeInPool.getFullyQualifiedTypeName().equalsIgnoreCase("Edm." + fullyQualifiedTypeName))
+          return simpleTypeInPool;
+    return simpleType;
   }
 
   /** Gets the corresponding instance type of a given edm type. e.g. {@code OEntity} for {@code EdmEntityType} */

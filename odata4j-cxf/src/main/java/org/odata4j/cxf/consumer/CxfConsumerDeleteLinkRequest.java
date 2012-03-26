@@ -28,7 +28,7 @@ class CxfConsumerDeleteLinkRequest extends CxfConsumerEntityRequestBase<Void> {
       client.deleteLink(request);
       return null;
     } finally {
-      client.shuttdown();
+      client.shutdown();
     }
   }
 

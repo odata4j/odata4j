@@ -71,7 +71,7 @@ class CxfConsumerCreateEntityRequest<T> extends AbstractConsumerEntityPayloadReq
     } catch (Exception e) {
       throw Throwables.propagate(e);
     } finally {
-      client.shuttdown();
+      client.shutdown();
     }
   }
 

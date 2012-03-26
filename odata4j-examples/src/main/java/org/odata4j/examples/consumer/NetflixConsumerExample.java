@@ -8,7 +8,6 @@ import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperty;
 import org.odata4j.examples.AbstractExample;
-import org.odata4j.examples.ODataConsumerFactory;
 
 public class NetflixConsumerExample extends AbstractExample {
 
@@ -19,7 +18,7 @@ public class NetflixConsumerExample extends AbstractExample {
 
   private void run(String[] args) {
 
-    ODataConsumer c = new ODataConsumerFactory(JERSEY).createODataConsumer(ODataEndpoints.NETFLIX, null, null);
+    ODataConsumer c = JERSEY.newConsumer(ODataEndpoints.NETFLIX);
 
     // locate the netflix id for Morgan Spurlock
     int morganSpurlockId = c.getEntities("People").filter("substringof('Spurlock',Name)").execute().first().getProperty("Id", Integer.class).getValue();

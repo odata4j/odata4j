@@ -65,7 +65,7 @@ public class EdmxFormatParser extends XmlFormatParser {
             : null;
       }
 
-      if (isStartElement(event, EDM2006_SCHEMA, EDM2007_SCHEMA, EDM2008_SCHEMA, EDM2009_SCHEMA)) {
+      if (isStartElement(event, EDM2006_SCHEMA, EDM2007_SCHEMA, EDM2008_1_SCHEMA, EDM2008_9_SCHEMA, EDM2009_SCHEMA)) {
         schemas.add(parseEdmSchema(reader, event.asStartElement()));
         if (!foundDataServices) // some dallas services have Schema as the document element!
           shouldReturn = true;
@@ -224,19 +224,19 @@ public class EdmxFormatParser extends XmlFormatParser {
     while (reader.hasNext()) {
       XMLEvent2 event = reader.nextEvent();
 
-      if (isStartElement(event, EDM2006_ENTITYTYPE, EDM2007_ENTITYTYPE, EDM2008_ENTITYTYPE, EDM2009_ENTITYTYPE)) {
+      if (isStartElement(event, EDM2006_ENTITYTYPE, EDM2007_ENTITYTYPE, EDM2008_1_ENTITYTYPE, EDM2008_9_ENTITYTYPE, EDM2009_ENTITYTYPE)) {
         EdmEntityType.Builder edmEntityType = parseEdmEntityType(reader, schemaNamespace, schemaAlias, event.asStartElement());
         edmEntityTypes.add(edmEntityType);
       }
-      if (isStartElement(event, EDM2006_ASSOCIATION, EDM2007_ASSOCIATION, EDM2008_ASSOCIATION, EDM2009_ASSOCIATION)) {
+      if (isStartElement(event, EDM2006_ASSOCIATION, EDM2007_ASSOCIATION, EDM2008_1_ASSOCIATION, EDM2008_9_ASSOCIATION, EDM2009_ASSOCIATION)) {
         EdmAssociation.Builder edmAssociation = parseEdmAssociation(reader, schemaNamespace, schemaAlias, event.asStartElement());
         edmAssociations.add(edmAssociation);
       }
-      if (isStartElement(event, EDM2006_COMPLEXTYPE, EDM2007_COMPLEXTYPE, EDM2008_COMPLEXTYPE, EDM2009_COMPLEXTYPE)) {
+      if (isStartElement(event, EDM2006_COMPLEXTYPE, EDM2007_COMPLEXTYPE, EDM2008_1_COMPLEXTYPE, EDM2008_9_COMPLEXTYPE, EDM2009_COMPLEXTYPE)) {
         EdmComplexType.Builder edmComplexType = parseEdmComplexType(reader, schemaNamespace, event.asStartElement());
         edmComplexTypes.add(edmComplexType);
       }
-      if (isStartElement(event, EDM2006_ENTITYCONTAINER, EDM2007_ENTITYCONTAINER, EDM2008_ENTITYCONTAINER, EDM2009_ENTITYCONTAINER)) {
+      if (isStartElement(event, EDM2006_ENTITYCONTAINER, EDM2007_ENTITYCONTAINER, EDM2008_1_ENTITYCONTAINER, EDM2008_9_ENTITYCONTAINER, EDM2009_ENTITYCONTAINER)) {
         EdmEntityContainer.Builder edmEntityContainer = parseEdmEntityContainer(reader, schemaNamespace, event.asStartElement());
         edmEntityContainers.add(edmEntityContainer);
       }
@@ -266,13 +266,13 @@ public class EdmxFormatParser extends XmlFormatParser {
     while (reader.hasNext()) {
       XMLEvent2 event = reader.nextEvent();
 
-      if (isStartElement(event, EDM2006_ENTITYSET, EDM2007_ENTITYSET, EDM2008_ENTITYSET, EDM2009_ENTITYSET))
+      if (isStartElement(event, EDM2006_ENTITYSET, EDM2007_ENTITYSET, EDM2008_1_ENTITYSET, EDM2008_9_ENTITYSET, EDM2009_ENTITYSET))
         edmEntitySets.add(EdmEntitySet.newBuilder().setName(getAttributeValueIfExists(event.asStartElement(), "Name")).setEntityTypeName(getAttributeValueIfExists(event.asStartElement(), "EntityType")));
 
-      if (isStartElement(event, EDM2006_ASSOCIATIONSET, EDM2007_ASSOCIATIONSET, EDM2008_ASSOCIATIONSET, EDM2009_ASSOCIATIONSET))
+      if (isStartElement(event, EDM2006_ASSOCIATIONSET, EDM2007_ASSOCIATIONSET, EDM2008_1_ASSOCIATIONSET, EDM2008_9_ASSOCIATIONSET, EDM2009_ASSOCIATIONSET))
         edmAssociationSets.add(parseEdmAssociationSet(reader, schemaNamespace, event.asStartElement()));
 
-      if (isStartElement(event, EDM2006_FUNCTIONIMPORT, EDM2007_FUNCTIONIMPORT, EDM2008_FUNCTIONIMPORT, EDM2009_FUNCTIONIMPORT))
+      if (isStartElement(event, EDM2006_FUNCTIONIMPORT, EDM2007_FUNCTIONIMPORT, EDM2008_1_FUNCTIONIMPORT, EDM2008_9_FUNCTIONIMPORT, EDM2009_FUNCTIONIMPORT))
         edmFunctionImports.add(parseEdmFunctionImport(reader, schemaNamespace, event.asStartElement()));
 
       if (isEndElement(event, entityContainerElement.getName())) {
@@ -302,7 +302,7 @@ public class EdmxFormatParser extends XmlFormatParser {
     while (reader.hasNext()) {
       XMLEvent2 event = reader.nextEvent();
 
-      if (isStartElement(event, EDM2006_PARAMETER, EDM2007_PARAMETER, EDM2008_PARAMETER, EDM2009_PARAMETER)) {
+      if (isStartElement(event, EDM2006_PARAMETER, EDM2007_PARAMETER, EDM2008_1_PARAMETER, EDM2008_9_PARAMETER, EDM2009_PARAMETER)) {
         // Mode attribute is optional and thus can be null
         Attribute2 modeAttribute = event.asStartElement().getAttributeByName("Mode");
         parameters.add(EdmFunctionParameter.newBuilder()
@@ -330,7 +330,7 @@ public class EdmxFormatParser extends XmlFormatParser {
     while (reader.hasNext()) {
       XMLEvent2 event = reader.nextEvent();
 
-      if (isStartElement(event, EDM2006_END, EDM2007_END, EDM2008_END, EDM2009_END))
+      if (isStartElement(event, EDM2006_END, EDM2007_END, EDM2008_1_END, EDM2008_9_END, EDM2009_END))
         ends.add(EdmAssociationSetEnd.newBuilder()
             .setRoleName(event.asStartElement().getAttributeByName("Role").getValue())
             .setEntitySetName(event.asStartElement().getAttributeByName("EntitySet").getValue()));
@@ -351,7 +351,7 @@ public class EdmxFormatParser extends XmlFormatParser {
     while (reader.hasNext()) {
       XMLEvent2 event = reader.nextEvent();
 
-      if (isStartElement(event, EDM2006_END, EDM2007_END, EDM2008_END, EDM2009_END))
+      if (isStartElement(event, EDM2006_END, EDM2007_END, EDM2008_1_END, EDM2008_9_END, EDM2009_END))
         ends.add(EdmAssociationEnd.newBuilder()
             .setRole(event.asStartElement().getAttributeByName("Role").getValue())
             .setTypeName(event.asStartElement().getAttributeByName("Type").getValue())
@@ -374,7 +374,7 @@ public class EdmxFormatParser extends XmlFormatParser {
     String fixedLength = getAttributeValueIfExists(event.asStartElement(), "FixedLength");
     String collectionKindS = getAttributeValueIfExists(event.asStartElement(), "CollectionKind");
     CollectionKind ckind = CollectionKind.NONE;
-    if (null != collectionKindS) {
+    if (collectionKindS != null) {
       ckind = Enum.valueOf(CollectionKind.class, collectionKindS);
     }
     String defaultValue = getAttributeValueIfExists(event.asStartElement(), "DefaultValue");
@@ -391,10 +391,10 @@ public class EdmxFormatParser extends XmlFormatParser {
 
     return EdmProperty.newBuilder(propertyName)
         .setType(EdmType.newDeferredBuilder(propertyType, dataServices))
-        .setNullable("false".equals(propertyNullable))
+        .setNullable("true".equalsIgnoreCase(propertyNullable))
         .setMaxLength(maxLength == null ? null : maxLength.equals("Max") ? Integer.MAX_VALUE : Integer.parseInt(maxLength))
-        .setUnicode("false".equals(unicode))
-        .setFixedLength("false".equals(fixedLength))
+        .setUnicode("true".equalsIgnoreCase(unicode))
+        .setFixedLength("true".equalsIgnoreCase(fixedLength))
         .setStoreGeneratedPattern(storeGeneratedPattern)
         .setFcTargetPath(fcTargetPath)
         .setFcContentKind(fcContentKind)
@@ -415,7 +415,7 @@ public class EdmxFormatParser extends XmlFormatParser {
     while (reader.hasNext()) {
       XMLEvent2 event = reader.nextEvent();
 
-      if (isStartElement(event, EDM2006_PROPERTY, EDM2007_PROPERTY, EDM2008_PROPERTY, EDM2009_PROPERTY)) {
+      if (isStartElement(event, EDM2006_PROPERTY, EDM2007_PROPERTY, EDM2008_1_PROPERTY, EDM2008_9_PROPERTY, EDM2009_PROPERTY)) {
         edmProperties.add(parseEdmProperty(event));
       }
 
@@ -445,14 +445,14 @@ public class EdmxFormatParser extends XmlFormatParser {
     while (reader.hasNext()) {
       XMLEvent2 event = reader.nextEvent();
 
-      if (isStartElement(event, EDM2006_PROPERTYREF, EDM2007_PROPERTYREF, EDM2008_PROPERTYREF, EDM2009_PROPERTYREF))
+      if (isStartElement(event, EDM2006_PROPERTYREF, EDM2007_PROPERTYREF, EDM2008_1_PROPERTYREF, EDM2008_9_PROPERTYREF, EDM2009_PROPERTYREF))
         keys.add(event.asStartElement().getAttributeByName("Name").getValue());
 
-      if (isStartElement(event, EDM2006_PROPERTY, EDM2007_PROPERTY, EDM2008_PROPERTY, EDM2009_PROPERTY)) {
+      if (isStartElement(event, EDM2006_PROPERTY, EDM2007_PROPERTY, EDM2008_1_PROPERTY, EDM2008_9_PROPERTY, EDM2009_PROPERTY)) {
         edmProperties.add(parseEdmProperty(event));
       }
 
-      if (isStartElement(event, EDM2006_NAVIGATIONPROPERTY, EDM2007_NAVIGATIONPROPERTY, EDM2008_NAVIGATIONPROPERTY, EDM2009_NAVIGATIONPROPERTY)) {
+      if (isStartElement(event, EDM2006_NAVIGATIONPROPERTY, EDM2007_NAVIGATIONPROPERTY, EDM2008_1_NAVIGATIONPROPERTY, EDM2008_9_NAVIGATIONPROPERTY, EDM2009_NAVIGATIONPROPERTY)) {
         String associationName = event.asStartElement().getAttributeByName("Name").getValue();
         String relationshipName = event.asStartElement().getAttributeByName("Relationship").getValue();
         String fromRoleName = event.asStartElement().getAttributeByName("FromRole").getValue();

@@ -22,7 +22,7 @@ class CxfConsumerDeleteEntityRequest extends CxfConsumerEntityRequestBase<Void> 
       client.deleteEntity(request);
       return null;
     } finally {
-      client.shuttdown();
+      client.shutdown();
     }
   }
 

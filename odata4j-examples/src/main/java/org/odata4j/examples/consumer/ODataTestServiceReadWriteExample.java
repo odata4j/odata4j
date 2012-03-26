@@ -8,7 +8,6 @@ import org.odata4j.core.OEntity;
 import org.odata4j.core.OFuncs;
 import org.odata4j.core.OProperties;
 import org.odata4j.examples.AbstractExample;
-import org.odata4j.examples.ODataConsumerFactory;
 
 public class ODataTestServiceReadWriteExample extends AbstractExample {
 
@@ -18,7 +17,7 @@ public class ODataTestServiceReadWriteExample extends AbstractExample {
   }
 
   private void run(String[] args) {
-    ODataConsumer c = new ODataConsumerFactory(JERSEY).createODataConsumer(ODataEndpoints.ODATA_TEST_SERVICE_READWRITE2, null, null);
+    ODataConsumer c = JERSEY.newConsumer(ODataEndpoints.ODATA_TEST_SERVICE_READWRITE2);
 
     //ODataConsumer.dump.all(true);
 

@@ -71,7 +71,7 @@ class CxfConsumerEntityModificationRequest<T> extends AbstractConsumerEntityPayl
       boolean rt = client.updateEntity(request);
       return rt;
     } finally {
-      client.shuttdown();
+      client.shutdown();
     }
   }
 

@@ -70,7 +70,7 @@ class CxfConsumerFunctionCallRequest<T extends OObject>
           });
       return (Enumerable<T>) results;
     } finally {
-      client.shuttdown();
+      client.shutdown();
     }
   }
 
@@ -269,7 +269,7 @@ class CxfConsumerFunctionCallRequest<T extends OObject>
         } */
 
       } finally {
-        this.client.shuttdown();
+        this.client.shutdown();
       }
     }
   }

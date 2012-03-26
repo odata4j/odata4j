@@ -289,9 +289,11 @@ public class EdmDataServices {
 
     public EdmEntityType.Builder findEdmEntityType(String fqName) {
       // TODO share or remove
+      if (fqName == null)
+        return null;
       for (EdmSchema.Builder schema : this.schemas) {
         for (EdmEntityType.Builder et : schema.getEntityTypes()) {
-          if (et.getFullyQualifiedTypeName().equals(fqName)) {
+          if (fqName.equals(et.getFQAliasName()) || et.getFullyQualifiedTypeName().equals(fqName)) {
             return et;
           }
         }
@@ -310,6 +312,8 @@ public class EdmDataServices {
     }
 
     public EdmType.Builder<?, ?> resolveType(String fqTypeName) {
+      if (fqTypeName == null || fqTypeName.isEmpty())
+        return null;
       // type resolution:
       // NOTE: this will likely change if RowType is ever implemented. I'm
       //       guessing that in that case, the TempEdmFunctionImport will already
@@ -317,8 +321,7 @@ public class EdmDataServices {
       // first, try to resolve the type name as a simple or complex type
       EdmType type = EdmType.getSimple(fqTypeName);
       EdmType.Builder<?, ?> builder = null;
-
-      if (null != type) {
+      if (type != null) {
         builder = EdmSimpleType.newBuilder(type);
       } else {
         builder = findEdmEntityType(fqTypeName);

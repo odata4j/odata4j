@@ -3,29 +3,31 @@ package org.odata4j.examples.consumer;
 import static org.odata4j.examples.JaxRsImplementation.JERSEY;
 
 import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.consumer.behaviors.OClientBehavior;
+import org.odata4j.consumer.behaviors.OClientBehaviors;
 import org.odata4j.core.OEntity;
-import org.odata4j.examples.ODataConsumerFactory;
+import org.odata4j.examples.AbstractExample;
 
-public class DataMarketConsumerExample extends AbstractCredentialsExample {
+public class DataMarketUnitedNationsExample extends AbstractExample {
 
   public static void main(String[] args) {
-    DataMarketConsumerExample example = new DataMarketConsumerExample();
+    DataMarketUnitedNationsExample example = new DataMarketUnitedNationsExample();
     example.run(args);
   }
 
   private void run(String[] args) {
 
     String[] datamarketCreds = args.length > 0 ? args : System.getenv("DATAMARKET").split(":");
-    this.setLoginPassword(datamarketCreds[0]);
 
     String url = "https://api.datamarket.azure.com/Data.ashx/UnitedNations/MDG/";
 
-    ODataConsumer c = new ODataConsumerFactory(JERSEY).createODataConsumer(url, null, null);
+    ODataConsumer c = JERSEY.newConsumerBuilder(url)
+        .setClientBehaviors(OClientBehaviors.basicAuth("accountKey", datamarketCreds[0]))
+        .build();
 
     OEntity firstDataSeries = c.getEntities("DataSeries").top(1).execute().first();
     String filter = String.format("DataSeriesId eq '%s'", firstDataSeries.getProperty("Id").getValue());
     reportEntities(firstDataSeries.getProperty("Name", String.class).getValue(), c.getEntities("Values").filter(filter).top(10).execute());
-
   }
 
 }

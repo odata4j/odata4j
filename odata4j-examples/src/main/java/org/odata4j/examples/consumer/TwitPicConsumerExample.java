@@ -4,7 +4,6 @@ import static org.odata4j.examples.JaxRsImplementation.JERSEY;
 
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.examples.AbstractExample;
-import org.odata4j.examples.ODataConsumerFactory;
 
 public class TwitPicConsumerExample extends AbstractExample {
 
@@ -14,7 +13,7 @@ public class TwitPicConsumerExample extends AbstractExample {
   }
 
   private void run(String[] args) {
-    ODataConsumer c = new ODataConsumerFactory(JERSEY).createODataConsumer(ODataEndpoints.TWITPIC, null, null);
+    ODataConsumer c = JERSEY.newConsumer(ODataEndpoints.TWITPIC);
 
     String tag = "starbucks";
     reportEntities("images tagged '" + tag + "'",

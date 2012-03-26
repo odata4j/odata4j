@@ -4,11 +4,12 @@ import static org.odata4j.examples.JaxRsImplementation.JERSEY;
 
 import org.core4j.Enumerable;
 import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.consumer.behaviors.OClientBehaviors;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.ORelatedEntitiesLink;
-import org.odata4j.examples.ODataConsumerFactory;
+import org.odata4j.examples.AbstractExample;
 
-public class CodePlexConsumerExample extends AbstractCredentialsExample {
+public class CodePlexConsumerExample extends AbstractExample {
 
   // for more info: https://codeplexodata.cloudapp.net/
 
@@ -25,12 +26,13 @@ public class CodePlexConsumerExample extends AbstractCredentialsExample {
 
     String[] codeplexCreds = args.length > 0 ? args : System.getenv("CODEPLEX").split(":");
 
-    this.setLoginName("snd\\" + codeplexCreds[0] + "_cp");
-    this.setLoginPassword(codeplexCreds[1]);
+    String codeplexUser = "snd\\" + codeplexCreds[0] + "_cp";
+    String codeplexPassword = codeplexCreds[1];
 
     for (String collection : Enumerable.create("TFS03", "TFS05", "TFS09")) {
-      //      ODataConsumer c = ODataJerseyConsumer.newBuilder("https://codeplexodata.cloudapp.net/" + collection).setClientBehaviors(OClientBehaviors.basicAuth(codeplexUser, codeplexPassword)).build();
-      ODataConsumer c = new ODataConsumerFactory(JERSEY).createODataConsumer("https://codeplexodata.cloudapp.net/" + collection, null, null);
+      ODataConsumer c = JERSEY.newConsumerBuilder("https://codeplexodata.cloudapp.net/" + collection)
+          .setClientBehaviors(OClientBehaviors.basicAuth(codeplexUser, codeplexPassword))
+          .build();
 
       for (OEntity p : c.getEntities("Projects").execute()) {
         reportEntity("project:", p);

@@ -8,7 +8,6 @@ import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.ORelatedEntitiesLink;
 import org.odata4j.examples.AbstractExample;
-import org.odata4j.examples.ODataConsumerFactory;
 import org.odata4j.internal.InternalUtil;
 
 public class ODataValidatorExample extends AbstractExample {
@@ -22,7 +21,7 @@ public class ODataValidatorExample extends AbstractExample {
 
     String uri = ODataEndpoints.NORTHWIND;
 
-    ODataConsumer c = new ODataConsumerFactory(JERSEY).createODataConsumer("http://services.odata.org/validation/odatavalidator/", null, null);
+    ODataConsumer c = JERSEY.newConsumer("http://services.odata.org/validation/odatavalidator/");
 
     Guid validationJobId = Guid.fromString("f4aa9495-ef40-469e-818c-29c4ec5fb2ed");
     if (true) {

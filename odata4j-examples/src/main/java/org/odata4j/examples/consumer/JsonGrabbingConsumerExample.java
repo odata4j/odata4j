@@ -4,7 +4,6 @@ import static org.odata4j.examples.JaxRsImplementation.JERSEY;
 
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.examples.AbstractExample;
-import org.odata4j.examples.ODataConsumerFactory;
 
 public class JsonGrabbingConsumerExample extends AbstractExample {
 
@@ -16,7 +15,7 @@ public class JsonGrabbingConsumerExample extends AbstractExample {
   private void run(String[] args) {
 
     String serviceUri = "http://services.odata.org/Northwind/Northwind.svc";
-    ODataConsumer c = new ODataConsumerFactory(JERSEY).createODataConsumer(serviceUri, null, null);
+    ODataConsumer c = JERSEY.newConsumer(serviceUri);
 
     c.getEntity("Customers", "VICTE").execute();
   }

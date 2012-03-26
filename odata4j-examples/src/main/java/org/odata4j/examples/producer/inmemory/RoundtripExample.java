@@ -8,7 +8,6 @@ import java.util.List;
 import org.core4j.Func;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.examples.AbstractExample;
-import org.odata4j.examples.ODataConsumerFactory;
 import org.odata4j.examples.ODataServerFactory;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
@@ -77,7 +76,7 @@ public class RoundtripExample extends AbstractExample {
     try {
       // create the client
       ODataConsumer.dump.responseHeaders(true);
-      ODataConsumer consumer = new ODataConsumerFactory(JERSEY).createODataConsumer(endpointUri, null, null);
+      ODataConsumer consumer = JERSEY.newConsumer(endpointUri);
 
       reportEntities("Customers", consumer.getEntities("Customers").execute());
 

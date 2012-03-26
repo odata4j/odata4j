@@ -88,7 +88,7 @@ public class MetadataEdmGenerator implements EdmGenerator {
     props.add(ep);
 
     EdmComplexType.Builder propertyRef = EdmComplexType.newBuilder().setNamespace(Edm.namespace).setName(
-        XmlFormatParser.EDM2008_PROPERTYREF.getLocalPart()).addProperties(props);
+        XmlFormatParser.EDM2008_9_PROPERTYREF.getLocalPart()).addProperties(props);
     ctypes.add(propertyRef);
 
     // ----------------------------- EntityKey --------------------------

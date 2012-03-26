@@ -6,11 +6,11 @@ import org.core4j.Enumerable;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.EntitySetInfo;
 import org.odata4j.examples.AbstractExample;
-import org.odata4j.examples.ODataConsumerFactory;
+import org.odata4j.examples.JaxRsImplementation;
 
 public class ServiceListingConsumerExample extends AbstractExample {
 
-  private static final ODataConsumerFactory ODATA_CONSUMER_FACTORY = new ODataConsumerFactory(JERSEY);
+  private static final JaxRsImplementation impl = JERSEY;
 
   public static void main(String[] args) {
     ServiceListingConsumerExample example = new ServiceListingConsumerExample();
@@ -52,10 +52,10 @@ public class ServiceListingConsumerExample extends AbstractExample {
     Enumerable<String> largeServices = Enumerable.create(
         ODataEndpoints.BASEBALL_STATS,
         ODataEndpoints.NETFLIX,
-        // ODataEndpoints.STACK_OVERFLOW, // Votes entity-sets return 500 
-        // ODataEndpoints.SUPER_USER,   
-        // ODataEndpoints.SERVER_FAULT,  
-        // ODataEndpoints.META_STACK_OVERFLOW, 
+        // ODataEndpoints.STACK_OVERFLOW, // Votes entity-sets return 500
+        // ODataEndpoints.SUPER_USER,
+        // ODataEndpoints.SERVER_FAULT,
+        // ODataEndpoints.META_STACK_OVERFLOW,
         ODataEndpoints.WORLD_CUP
         );
 
@@ -73,7 +73,7 @@ public class ServiceListingConsumerExample extends AbstractExample {
 
   private void printOutFirstEntities(Iterable<String> services) {
     for (String endpoint : services) {
-      ODataConsumer c = ODATA_CONSUMER_FACTORY.createODataConsumer(endpoint, null, null);
+      ODataConsumer c = impl.newConsumer(endpoint);
       for (EntitySetInfo entitySet : c.getEntitySets()) {
         reportEntities(entitySet.getHref(), c.getEntities(entitySet.getHref()).top(1).execute());
       }
@@ -82,7 +82,7 @@ public class ServiceListingConsumerExample extends AbstractExample {
 
   private void printOutAllEntities(Iterable<String> services) {
     for (String endpoint : services) {
-      ODataConsumer c = ODATA_CONSUMER_FACTORY.createODataConsumer(endpoint, null, null);
+      ODataConsumer c = impl.newConsumer(endpoint);
       for (EntitySetInfo entitySet : c.getEntitySets()) {
         reportEntities(entitySet.getTitle(), c.getEntities(entitySet.getHref()).execute());
       }

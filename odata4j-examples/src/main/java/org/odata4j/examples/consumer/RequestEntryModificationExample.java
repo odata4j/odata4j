@@ -7,7 +7,6 @@ import java.util.Date;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OProperties;
 import org.odata4j.examples.AbstractExample;
-import org.odata4j.examples.ODataConsumerFactory;
 
 public class RequestEntryModificationExample extends AbstractExample {
 
@@ -21,7 +20,7 @@ public class RequestEntryModificationExample extends AbstractExample {
 
     // create a consumer with additional behavior
     String serviceUri = "http://services.odata.org/Northwind/Northwind.svc";
-    ODataConsumer consumer = new ODataConsumerFactory(JERSEY).createODataConsumer(serviceUri, null, null);
+    ODataConsumer consumer = JERSEY.newConsumer(serviceUri);
 
     consumer.createEntity("Categories")
         .properties(OProperties.string("CategoryName", "Category " + new Date()))

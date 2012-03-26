@@ -39,7 +39,7 @@ public class ODataCxfConsumer extends AbstractODataConsumer {
   private FormatType formatType;
   private OClientBehavior[] clientBehaviors = new OClientBehavior[] {};
 
-  public static class Builder {
+  public static class Builder implements ODataConsumer.Builder {
 
     private FormatType formatType;
     private String serviceRootUri;
@@ -108,7 +108,7 @@ public class ODataCxfConsumer extends AbstractODataConsumer {
     ODataCxfClient client = new ODataCxfClient(this.formatType, this.clientBehaviors);
     ODataClientRequest request = ODataClientRequest.get(this.getServiceRootUri());
     Enumerable<EntitySetInfo> result = Enumerable.create(client.getCollections(request)).cast(EntitySetInfo.class);
-    client.shuttdown();
+    client.shutdown();
     return result;
   }
 
@@ -251,7 +251,7 @@ public class ODataCxfConsumer extends AbstractODataConsumer {
       ODataClientRequest request = ODataClientRequest.get(ODataCxfConsumer.this.getServiceRootUri() + "$metadata");
       ODataCxfClient client = new ODataCxfClient(ODataCxfConsumer.this.formatType, ODataCxfConsumer.this.clientBehaviors);
       EdmDataServices metadata = client.getMetadata(request);
-      client.shuttdown();
+      client.shutdown();
       delegate = metadata == null ? EdmDataServices.EMPTY : metadata;
     }
 

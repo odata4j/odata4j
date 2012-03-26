@@ -3,9 +3,11 @@ package org.odata4j.examples.consumer;
 import static org.odata4j.examples.JaxRsImplementation.JERSEY;
 
 import org.odata4j.consumer.ODataConsumer;
-import org.odata4j.examples.ODataConsumerFactory;
+import org.odata4j.consumer.behaviors.OClientBehavior;
+import org.odata4j.consumer.behaviors.OClientBehaviors;
+import org.odata4j.examples.AbstractExample;
 
-public class DallasConsumerExampleAP extends AbstractCredentialsExample {
+public class DallasConsumerExampleAP extends AbstractExample {
 
   public static void main(String[] args) {
     DallasConsumerExampleAP example = new DallasConsumerExampleAP();
@@ -15,10 +17,9 @@ public class DallasConsumerExampleAP extends AbstractCredentialsExample {
   private void run(String[] args) {
 
     String[] dallasCreds = args.length > 0 ? args : System.getenv("DALLAS").split(":");
-    this.setLoginPassword(dallasCreds[0]);
-    this.setLoginName(dallasCreds[1]);
+    OClientBehavior basicAuth = OClientBehaviors.basicAuth("accountKey", dallasCreds[0]);
 
-    ODataConsumer c = new ODataConsumerFactory(JERSEY).createODataConsumer(ODataEndpoints.DALLAS_CTP3_AP, null, null);
+    ODataConsumer c = JERSEY.newConsumerBuilder(ODataEndpoints.DALLAS_CTP3_AP).setClientBehaviors(basicAuth).build();
 
     // all breaking news categories
     reportEntities(c, "GetBreakingNewsCategories", 1000);

@@ -85,7 +85,7 @@ class CxfConsumerGetEntityRequest<T> extends CxfConsumerEntityRequestBase<T> imp
 
       return (T) InternalUtil.toEntity(entityType, entry.getEntity());
     } finally {
-      client.shuttdown();
+      client.shutdown();
     }
   }
 

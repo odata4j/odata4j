@@ -43,7 +43,9 @@ public class EdmEntityType extends EdmStructuralType {
     this.alias = alias;
     this.hasStream = hasStream;
 
-    this.keys = keys == null || keys.isEmpty() ? null : keys;
+    this.keys = (keys == null || keys.isEmpty()) ?
+        (baseType == null ? findConventionalKeys() : null) :
+        keys;
 
     if (baseType == null && this.keys == null)
       throw new IllegalArgumentException("Root types must have keys");
@@ -51,6 +53,15 @@ public class EdmEntityType extends EdmStructuralType {
       throw new IllegalArgumentException("Keys on root types only");
 
     this.navigationProperties = navigationProperties;
+  }
+
+  private List<String> findConventionalKeys() {
+    for (EdmProperty prop : getProperties()) {
+      if (prop.getName().equalsIgnoreCase("Id") && prop.getType().isSimple() && !prop.isNullable()) {
+        Enumerable.create(prop.getName()).toList();
+      }
+    }
+    return null;
   }
 
   public String getAlias() {

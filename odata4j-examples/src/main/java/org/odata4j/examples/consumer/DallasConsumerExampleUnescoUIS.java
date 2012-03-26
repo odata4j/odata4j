@@ -3,11 +3,13 @@ package org.odata4j.examples.consumer;
 import static org.odata4j.examples.JaxRsImplementation.JERSEY;
 
 import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.consumer.behaviors.OClientBehavior;
+import org.odata4j.consumer.behaviors.OClientBehaviors;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OFuncs;
-import org.odata4j.examples.ODataConsumerFactory;
+import org.odata4j.examples.AbstractExample;
 
-public class DallasConsumerExampleUnescoUIS extends AbstractCredentialsExample {
+public class DallasConsumerExampleUnescoUIS extends AbstractExample {
 
   public static void main(String[] args) {
     DallasConsumerExampleUnescoUIS example = new DallasConsumerExampleUnescoUIS();
@@ -17,10 +19,10 @@ public class DallasConsumerExampleUnescoUIS extends AbstractCredentialsExample {
   private void run(String[] args) {
 
     String[] dallasCreds = args.length > 0 ? args : System.getenv("DALLAS").split(":");
-    this.setLoginPassword(dallasCreds[0]);
-    this.setLoginName(dallasCreds[1]);
 
-    ODataConsumer c = new ODataConsumerFactory(JERSEY).createODataConsumer(ODataEndpoints.DALLAS_CTP2_UNESCO_UIS, null, null);
+    ODataConsumer c = JERSEY.newConsumerBuilder(ODataEndpoints.DALLAS_CTP2_UNESCO_UIS)
+        .setClientBehaviors(OClientBehaviors.basicAuth("accountKey", dallasCreds[0]))
+        .build();
 
     // Public expenditure on education as % of GDP [XGDP_FSGOV]
     for (OEntity entity : c.getEntities("UNESCO/XGDP_FSGOV").execute()

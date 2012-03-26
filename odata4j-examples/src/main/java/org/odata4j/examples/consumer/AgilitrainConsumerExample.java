@@ -6,7 +6,6 @@ import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.ORelatedEntityLink;
 import org.odata4j.examples.AbstractExample;
-import org.odata4j.examples.ODataConsumerFactory;
 
 public class AgilitrainConsumerExample extends AbstractExample {
 
@@ -16,7 +15,7 @@ public class AgilitrainConsumerExample extends AbstractExample {
   }
 
   private void run(String[] args) {
-    ODataConsumer c = new ODataConsumerFactory(JERSEY).createODataConsumer(ODataEndpoints.AGILITRAIN, null, null);
+    ODataConsumer c = JERSEY.newConsumer(ODataEndpoints.AGILITRAIN);
 
     OEntity event = c.getEntities("Events").top(1).execute().first();
     ORelatedEntityLink link = event.getLink("Workshop", ORelatedEntityLink.class);

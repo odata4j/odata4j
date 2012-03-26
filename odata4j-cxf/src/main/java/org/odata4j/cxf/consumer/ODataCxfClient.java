@@ -80,7 +80,7 @@ public class ODataCxfClient extends AbstractODataClient {
     this.behaviors = Enumerable.create(this.behaviors).concat(Enumerable.create(additionalBehaviors)).toArray(OClientBehavior.class);
   }
 
-  public void shuttdown() {
+  public void shutdown() {
     if (this.httpClient != null) {
       // this.client.getConnectionManager().shutdown();
     }

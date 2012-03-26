@@ -1,6 +1,7 @@
 package org.odata4j.consumer;
 
 import org.core4j.Enumerable;
+import org.odata4j.consumer.behaviors.OClientBehavior;
 import org.odata4j.core.EntitySetInfo;
 import org.odata4j.core.OCreateRequest;
 import org.odata4j.core.OEntity;
@@ -15,6 +16,7 @@ import org.odata4j.core.OQueryRequest;
 import org.odata4j.core.ORelatedEntitiesLink;
 import org.odata4j.core.ORelatedEntityLink;
 import org.odata4j.edm.EdmDataServices;
+import org.odata4j.format.FormatType;
 
 public interface ODataConsumer {
 
@@ -102,6 +104,16 @@ public interface ODataConsumer {
    * Sends http request and/or response information to standard out.  Useful for debugging.
    */
   public static final Dump dump = Dump.INSTANCE;
+
+  public interface Builder {
+
+    Builder setFormatType(FormatType formatType);
+
+    Builder setClientBehaviors(OClientBehavior... clientBehaviors);
+
+    ODataConsumer build();
+
+  }
 
   /**
    * Gets the OData service uri.

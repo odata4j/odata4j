@@ -6,7 +6,6 @@ import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperties;
 import org.odata4j.examples.AbstractExample;
-import org.odata4j.examples.ODataConsumerFactory;
 
 public class AppEngineConsumerExample extends AbstractExample {
 
@@ -16,7 +15,7 @@ public class AppEngineConsumerExample extends AbstractExample {
   }
 
   private void run(String[] args) {
-    ODataConsumer c = new ODataConsumerFactory(JERSEY).createODataConsumer(ODataEndpoints.ODATA4JSAMPLE_APPSPOT, null, null);
+    ODataConsumer c = JERSEY.newConsumer(ODataEndpoints.ODATA4JSAMPLE_APPSPOT);
     String newCategoryName = "NewCategory" + System.currentTimeMillis();
 
     report("Create a new category");

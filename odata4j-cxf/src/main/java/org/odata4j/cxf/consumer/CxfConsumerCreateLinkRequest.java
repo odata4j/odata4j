@@ -29,7 +29,7 @@ class CxfConsumerCreateLinkRequest extends CxfConsumerEntityRequestBase<Void> {
       client.createLink(request);
       return null;
     } finally {
-      client.shuttdown();
+      client.shutdown();
     }
   }
 

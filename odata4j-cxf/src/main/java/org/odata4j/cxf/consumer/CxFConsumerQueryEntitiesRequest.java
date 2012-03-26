@@ -125,7 +125,7 @@ class CxFConsumerQueryEntitiesRequest<T> extends CxfConsumerQueryRequestBase<T> 
 
         return advance(); // TODO stackoverflow possible here
       } finally {
-        client.shuttdown();
+        client.shutdown();
       }
     }
 

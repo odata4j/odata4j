@@ -41,7 +41,7 @@ class CxfConsumerQueryLinksRequest extends CxfConsumerQueryRequestBase<OEntityId
         }
       });
     } finally {
-      client.shuttdown();
+      client.shutdown();
     }
   }
 }

@@ -6,6 +6,7 @@ import java.util.Map;
 import org.core4j.Enumerable;
 import org.odata4j.consumer.AbstractODataConsumer;
 import org.odata4j.consumer.ODataClientRequest;
+import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.consumer.behaviors.OClientBehavior;
 import org.odata4j.core.EntitySetInfo;
 import org.odata4j.core.OCreateRequest;
@@ -47,7 +48,7 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
   /**
    * Builder for {@link ODataJerseyConsumer} objects.
    */
-  public static class Builder {
+  public static class Builder implements ODataConsumer.Builder {
 
     private FormatType formatType;
     private String serviceRootUri;
@@ -276,6 +277,7 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
     return new ConsumerFunctionCallRequest<OObject>(client, this.getServiceRootUri(), getMetadata(), functionName);
   }
 
+  private static final FeedCustomizationMapping EMPTY_MAPPING = new FeedCustomizationMapping();
   private FeedCustomizationMapping getFeedCustomizationMapping(String entitySetName) {
     if (!cachedMappings.containsKey(entitySetName)) {
       FeedCustomizationMapping rt = new FeedCustomizationMapping();
@@ -283,7 +285,7 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
       if (metadata != null) {
         EdmEntitySet ees = metadata.findEdmEntitySet(entitySetName);
         if (ees == null) {
-          rt = null;
+          rt = EMPTY_MAPPING;
         } else {
           EdmEntityType eet = ees.getType();
           for (EdmProperty ep : eet.getProperties()) {
@@ -296,7 +298,8 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
       }
       cachedMappings.put(entitySetName, rt);
     }
-    return cachedMappings.get(entitySetName);
+    FeedCustomizationMapping mapping = cachedMappings.get(entitySetName);
+    return mapping == null || mapping == EMPTY_MAPPING ? null : mapping;
   }
 
   private class CachedEdmDataServices extends EdmDataServicesDecorator {
@@ -321,7 +324,7 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
     @Override
     public EdmEntitySet findEdmEntitySet(String entitySetName) {
       EdmEntitySet rt = super.findEdmEntitySet(entitySetName);
-      if (rt == null) {
+      if (rt == null && delegate != EdmDataServices.EMPTY) {
         refreshDelegate();
         rt = super.findEdmEntitySet(entitySetName);
       }
