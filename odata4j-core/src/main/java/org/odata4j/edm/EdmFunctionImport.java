@@ -77,8 +77,8 @@ public class EdmFunctionImport extends EdmItem {
       List<EdmFunctionParameter.Builder> functionParameters = new ArrayList<EdmFunctionParameter.Builder>();
       for (EdmFunctionParameter functionParameter : functionImport.parameters)
         functionParameters.add(EdmFunctionParameter.newBuilder(functionParameter, context));
-      return new Builder().setName(functionImport.name).setEntitySet(EdmEntitySet.newBuilder(functionImport.entitySet, context)).setReturnType(functionImport.returnType).setHttpMethod(functionImport.httpMethod)
-          .addParameters(functionParameters);
+      return new Builder().setName(functionImport.name).setEntitySet(functionImport.entitySet != null ? EdmEntitySet.newBuilder(functionImport.entitySet, context) : null)
+      	.setReturnType(functionImport.returnType).setHttpMethod(functionImport.httpMethod).addParameters(functionParameters);
     }
 
     public EdmFunctionImport build() {
