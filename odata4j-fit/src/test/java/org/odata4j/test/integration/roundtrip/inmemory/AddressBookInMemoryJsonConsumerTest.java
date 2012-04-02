@@ -2,11 +2,11 @@ package org.odata4j.test.integration.roundtrip.inmemory;
 
 import org.odata4j.examples.producer.inmemory.AddressBookInMemoryExample;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
-import org.odata4j.test.integration.roundtrip.AbstractAddressBookConsumerTest;
+import org.odata4j.test.integration.roundtrip.AbstractAddressBookJsonConsumerTest;
 
-public class AddressBookInMemoryConsumerTest extends AbstractAddressBookConsumerTest {
+public class AddressBookInMemoryJsonConsumerTest extends AbstractAddressBookJsonConsumerTest {
 
-  public AddressBookInMemoryConsumerTest(RuntimeFacadeType type) {
+  public AddressBookInMemoryJsonConsumerTest(RuntimeFacadeType type) {
     super(type);
   }
 

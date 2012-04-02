@@ -2,6 +2,7 @@ package org.odata4j.format.json;
 
 import java.math.BigDecimal;
 
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.odata4j.core.Guid;
@@ -61,16 +62,16 @@ public class JsonTypeConverter {
         if (idx > 0) {
           offset = ticks.substring(idx + 1);
           ticks = ticks.substring(0, idx);
-          dValue = new LocalDateTime(Long.parseLong(ticks));
+          dValue = new LocalDateTime(Long.parseLong(ticks), DateTimeZone.UTC);
           dValue = dValue.minusMinutes(Integer.valueOf(offset));
         } else if ((idx = ticks.indexOf('+')) > 0) {
           offset = ticks.substring(idx + 1);
           ticks = ticks.substring(0, idx);
-          dValue = new LocalDateTime(Long.parseLong(ticks));
+          dValue = new LocalDateTime(Long.parseLong(ticks), DateTimeZone.UTC);
           dValue = dValue.plusMinutes(Integer.valueOf(offset));
         } else {
           // ticks are the milliseconds from 1970-01-01T00:00:00Z
-          dValue = new LocalDateTime(Long.parseLong(ticks));
+          dValue = new LocalDateTime(Long.parseLong(ticks), DateTimeZone.UTC);
         }
       }
       return OProperties.datetime(name, dValue);

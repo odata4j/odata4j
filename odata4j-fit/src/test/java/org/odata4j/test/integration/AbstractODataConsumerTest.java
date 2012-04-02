@@ -1,6 +1,7 @@
 package org.odata4j.test.integration;
 
 import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.format.FormatType;
 
 /**
  * Base integration test class that uses an ODataConsumer as client.
@@ -12,13 +13,24 @@ public abstract class AbstractODataConsumerTest extends AbstractIntegrationTest 
    */
   protected ODataConsumer consumer;
 
+  /**
+   * The preferred FormatType.
+   */
+  protected final FormatType format;
+
+  public AbstractODataConsumerTest(RuntimeFacadeType type, FormatType format) {
+    super(type);
+    this.format = format;
+  }
+
   public AbstractODataConsumerTest(RuntimeFacadeType type) {
     super(type);
+    this.format = null;
   }
 
   @Override
   protected void startClient() throws Exception {
-    consumer = rtFacade.createODataConsumer(BASE_URI, null, null);
+    consumer = rtFacade.createODataConsumer(BASE_URI, format, null);
   }
 
   @Override

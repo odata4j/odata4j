@@ -1,7 +1,11 @@
 package org.odata4j.examples.producer.jpa.addressbook;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 @Entity
 public class Employees {
@@ -10,6 +14,8 @@ public class Employees {
   private String EmployeeId;
   private String EmployeeName;
   private short Age;
+  @Temporal(TemporalType.TIMESTAMP)
+  private Date EntryDate;
 
   public String getEmployeeId() {
     return EmployeeId;
@@ -33,5 +39,13 @@ public class Employees {
 
   public void setAge(short Age) {
     this.Age = Age;
+  }
+
+  public Date getEntryDate() {
+    return EntryDate;
+  }
+
+  public void setEntryDate(Date EntryDate) {
+    this.EntryDate = EntryDate;
   }
 }

@@ -20,4 +20,11 @@ public abstract class AbstractAddressBookTest extends AbstractJettyHttpClientTes
     ContentExchange exchange = sendRequest(BASE_URI + "Employees('2')/Age?$format=json");
     assertThat(exchange.getResponseContent(), allOf(containsString("\"Age\""), containsString("32")));
   }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void dateTimePropertyJson() throws Exception {
+    ContentExchange exchange = sendRequest(BASE_URI + "Employees('2')/EntryDate?$format=json");
+    assertThat(exchange.getResponseContent(), allOf(containsString("\"EntryDate\""), containsString("\\/Date(1057017600000)\\/")));
+  }
 }
