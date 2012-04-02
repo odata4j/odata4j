@@ -216,7 +216,7 @@ public class JsonFormatParser {
       // scalar property
       EdmProperty ep = entry.getEntityType().findProperty(name);
       if (ep == null) {
-        // a navigation property with muliplicty 1 and a null associated element looks
+        // a navigation property with multiplicity 1 and a null associated element looks
         // like a scalar property here with a null value
         if (event.asEndProperty().getValue() == null) {
           EdmNavigationProperty navProp = entry.getEntityType().findNavigationProperty(name);

@@ -55,7 +55,7 @@ public class AbstractOneoffBaseTest extends AbstractRuntimeTest {
     if (JPAProvider.JPA_PROVIDER == JPAProvider.ECLIPSELINK) {
       p.put("eclipselink.target-database", "HSQL");
       p.put("eclipselink.jdbc.driver", "org.hsqldb.jdbcDriver");
-      p.put("eclipselink.jdbc.url", "jdbc:hsqldb:mem:" + name + ";shutdown=true;ifxeists=true");
+      p.put("eclipselink.jdbc.url", "jdbc:hsqldb:mem:" + name + ";shutdown=true;ifexists=false");
       p.put("eclipselink.jdbc.user", "sa");
       p.put("eclipselink.jdbc.password", "");
       p.put("eclipselink.ddl-generation", "create-tables");
@@ -65,7 +65,7 @@ public class AbstractOneoffBaseTest extends AbstractRuntimeTest {
       p.put("javax.persistence.jdbc.driver", "org.hsqldb.jdbcDriver");
       p.put("javax.persistence.jdbc.user", "sa");
       p.put("javax.persistence.jdbc.password", "");
-      p.put("javax.persistence.jdbc.url", "jdbc:hsqldb:mem:" + name + ";shutdown=true;ifxeists=true");
+      p.put("javax.persistence.jdbc.url", "jdbc:hsqldb:mem:" + name + ";shutdown=true;ifexists=false");
       p.put("hibernate.dialect", "org.hibernate.dialect.HSQLDialect");
       p.put("hibernate.max_fetch_depth", "3");
       p.put("hibernate.hbm2ddl.auto", "create-drop");
