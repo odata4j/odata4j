@@ -78,7 +78,14 @@ public class JsonTypeConverter {
     } else if (EdmSimpleType.DATETIMEOFFSET.equals(type)) {
       return OProperties.datetimeOffset(name, InternalUtil.parseDateTime(value.substring(value.indexOf('\'') + 1, value.length() - 1)));
     } else if (EdmSimpleType.TIME.equals(type)) {
-      LocalTime tValue = value == null ? null : new LocalTime(value);
+      String tval = null;
+      if (value != null) {
+        if (!value.startsWith("time'") || !value.endsWith("'")) {
+          throw new IllegalArgumentException("invalid time format: " + value);
+        }
+        tval = value.substring(5, value.length() - 1);
+      }
+      LocalTime tValue = value == null ? null : new LocalTime(tval);
       return OProperties.time(name, tValue);
     } else if (EdmSimpleType.STRING.equals(type) || type == null) {
       return OProperties.string(name, value);

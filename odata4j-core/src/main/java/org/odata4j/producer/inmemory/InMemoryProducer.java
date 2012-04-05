@@ -11,26 +11,8 @@ import org.core4j.Enumerable;
 import org.core4j.Func;
 import org.core4j.Func1;
 import org.core4j.Predicate1;
-import org.odata4j.core.OAtomStreamEntity;
-import org.odata4j.core.OEntities;
-import org.odata4j.core.OEntity;
-import org.odata4j.core.OEntityId;
-import org.odata4j.core.OEntityKey;
-import org.odata4j.core.OFunctionParameter;
-import org.odata4j.core.OLink;
-import org.odata4j.core.OLinks;
-import org.odata4j.core.OProperties;
-import org.odata4j.core.OProperty;
-import org.odata4j.edm.EdmDataServices;
-import org.odata4j.edm.EdmDecorator;
-import org.odata4j.edm.EdmEntitySet;
-import org.odata4j.edm.EdmEntityType;
-import org.odata4j.edm.EdmFunctionImport;
-import org.odata4j.edm.EdmMultiplicity;
-import org.odata4j.edm.EdmNavigationProperty;
-import org.odata4j.edm.EdmProperty;
-import org.odata4j.edm.EdmSimpleType;
-import org.odata4j.edm.EdmType;
+import org.odata4j.core.*;
+import org.odata4j.edm.*;
 import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.Expression;
@@ -62,10 +44,13 @@ public class InMemoryProducer implements ODataProducer {
   private final String containerName;
   private final int maxResults;
   private final Map<String, InMemoryEntityInfo<?>> eis = new HashMap<String, InMemoryEntityInfo<?>>();
+  private final Map<String, InMemoryComplexTypeInfo<?>> complexTypes = new HashMap<String, InMemoryComplexTypeInfo<?>>();
   private EdmDataServices metadata;
   private final EdmDecorator decorator;
   private final MetadataProducer metadataProducer;
   private final InMemoryTypeMapping typeMapping;
+  
+  private boolean includeNullPropertyValues = true;
 
   private static final int DEFAULT_MAX_RESULTS = 100;
 
@@ -109,13 +94,14 @@ public class InMemoryProducer implements ODataProducer {
   @Override
   public EdmDataServices getMetadata() {
     if (metadata == null) {
-      metadata = newEdmGenerator(namespace, typeMapping, ID_PROPNAME, eis).generateEdm(decorator).build();
+      metadata = newEdmGenerator(namespace, typeMapping, ID_PROPNAME, eis, complexTypes).generateEdm(decorator).build();
     }
     return metadata;
   }
 
-  protected InMemoryEdmGenerator newEdmGenerator(String namespace, InMemoryTypeMapping typeMapping, String idPropName, Map<String, InMemoryEntityInfo<?>> eis) {
-    return new InMemoryEdmGenerator(namespace, containerName, typeMapping, ID_PROPNAME, eis);
+  protected InMemoryEdmGenerator newEdmGenerator(String namespace, InMemoryTypeMapping typeMapping, String idPropName, Map<String, InMemoryEntityInfo<?>> eis,
+          Map<String, InMemoryComplexTypeInfo<?>> complexTypesInfo) {
+    return new InMemoryEdmGenerator(namespace, containerName, typeMapping, ID_PROPNAME, eis, complexTypesInfo);
   }
 
   @Override
@@ -128,6 +114,29 @@ public class InMemoryProducer implements ODataProducer {
 
   }
 
+  public void setIncludeNullPropertyValues(boolean value) { this.includeNullPropertyValues = value; }
+  
+  /**
+   * register a POJO class as an EdmComplexType.
+   * 
+   * @param complexTypeClass    The POJO Class
+   * @param typeName            The name of the EdmComplexType
+   */
+  public <TEntity> void registerComplexType(Class<TEntity> complexTypeClass, String typeName) {
+    registerComplexType(complexTypeClass, typeName,
+        new EnumsAsStringsPropertyModelDelegate(new BeanBasedPropertyModel(complexTypeClass)));
+  }
+  
+  public <TEntity> void registerComplexType(Class<TEntity> complexTypeClass, String typeName, PropertyModel propertyModel) {
+    InMemoryComplexTypeInfo<TEntity> i = new InMemoryComplexTypeInfo<TEntity>();
+    i.typeName = (null == typeName) ? complexTypeClass.getSimpleName() : typeName;
+    i.entityClass = complexTypeClass;
+    i.propertyModel = propertyModel;
+    
+    complexTypes.put(i.typeName, i);
+    metadata = null;
+  }
+  
   /**
    * Registers a new entity based on a POJO, with support for composite keys.
    *
@@ -215,6 +224,47 @@ public class InMemoryProducer implements ODataProducer {
     metadata = null;
   }
 
+  private InMemoryComplexTypeInfo<?> findComplexTypeInfoForClass(Class<?> clazz) {
+    for (InMemoryComplexTypeInfo<?> typeInfo : this.complexTypes.values()) {
+      if (typeInfo.entityClass.equals(clazz)) {
+        return typeInfo;
+      }
+    }
+    
+    return null;
+  }
+  
+  protected void addPropertiesFromObject(Object obj, PropertyModel propertyModel, List<OProperty<?>> properties) {
+    for (String propName : propertyModel.getPropertyNames()) {
+      EdmSimpleType<?> type;
+      Object value = propertyModel.getPropertyValue(obj, propName);
+      if (value == null && !this.includeNullPropertyValues) {
+        // this is not permitted by the spec but makes debugging wide entity types
+        // much easier.
+        continue;
+      }
+      Class<?> propType = propertyModel.getPropertyType(propName);
+      type = typeMapping.findEdmType(propType);
+      if (type != null) {
+        properties.add(OProperties.simple(propName, type, value));
+      } else {
+        InMemoryComplexTypeInfo<?> typeInfo = findComplexTypeInfoForClass(propType);
+        if (null == typeInfo) { continue; }
+
+        EdmComplexType ctype = this.getMetadata().findEdmComplexType(this.namespace + "." + typeInfo.typeName);
+        if (null == ctype) { continue; }
+        
+        if (value == null) {
+          properties.add(OProperties.complex(propName, ctype, null));
+        } else {
+          List<OProperty<?>> cprops = new ArrayList<OProperty<?>>();
+          addPropertiesFromObject(value, typeInfo.propertyModel, cprops);
+          properties.add(OProperties.complex(propName, ctype, cprops));
+        }
+      }
+    }
+  }
+  
   protected OEntity toOEntity(EdmEntitySet ees, Object obj, List<EntitySimpleProperty> expand) {
     InMemoryEntityInfo<?> ei = eis.get(ees.getName());
     final List<OLink> links = new ArrayList<OLink>();
@@ -225,17 +275,9 @@ public class InMemoryProducer implements ODataProducer {
       Object keyValue = ei.properties.getPropertyValue(obj, key);
       keyKVPair.put(key, keyValue);
     }
-
-    for (String propName : ei.properties.getPropertyNames()) {
-      EdmSimpleType<?> type;
-      Object value = ei.properties.getPropertyValue(obj, propName);
-      Class<?> propType = ei.properties.getPropertyType(propName);
-      type = typeMapping.findEdmType(propType);
-      if (type == null) continue;
-
-      properties.add(OProperties.simple(propName, type, value));
-    }
-
+    
+    addPropertiesFromObject(obj, ei.properties, properties);
+    
     if (expand != null && !expand.isEmpty()) {
       EdmEntityType edmEntityType = ees.getType();
 

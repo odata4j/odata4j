@@ -228,10 +228,16 @@ public class JsonFormatParser {
         }
         throw new IllegalArgumentException("unknown property " + name + " for " + entry.getEntityType().getName());
       }
-      // TODO support complex type properties
-      if (!ep.getType().isSimple())
-        throw new UnsupportedOperationException("Only simple properties supported");
-      entry.properties.add(JsonTypeConverter.parse(name, (EdmSimpleType<?>) ep.getType(), event.asEndProperty().getValue()));
+      if (!ep.getType().isSimple()) {
+        // the only context that lands us here is a null value for a complex property
+        if (event.asEndProperty().getValue() == null) {
+          entry.properties.add(OProperties.complex(name, (EdmComplexType)ep.getType(), null));
+        } else {
+          throw new UnsupportedOperationException("complex property unknown parse state");
+        }
+      } else {
+        entry.properties.add(JsonTypeConverter.parse(name, (EdmSimpleType<?>) ep.getType(), event.asEndProperty().getValue()));
+      }
     } else if (event.isStartObject()) {
       // reference deferred or inlined
 

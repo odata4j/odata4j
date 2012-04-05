@@ -13,21 +13,7 @@ import java.util.logging.Logger;
 import org.core4j.Enumerable;
 import org.core4j.Func1;
 import org.core4j.Predicate1;
-import org.odata4j.edm.EdmAssociation;
-import org.odata4j.edm.EdmAssociationEnd;
-import org.odata4j.edm.EdmAssociationSet;
-import org.odata4j.edm.EdmAssociationSetEnd;
-import org.odata4j.edm.EdmDataServices;
-import org.odata4j.edm.EdmDecorator;
-import org.odata4j.edm.EdmEntityContainer;
-import org.odata4j.edm.EdmEntitySet;
-import org.odata4j.edm.EdmEntityType;
-import org.odata4j.edm.EdmGenerator;
-import org.odata4j.edm.EdmMultiplicity;
-import org.odata4j.edm.EdmNavigationProperty;
-import org.odata4j.edm.EdmProperty;
-import org.odata4j.edm.EdmSchema;
-import org.odata4j.edm.EdmSimpleType;
+import org.odata4j.edm.*;
 
 public class InMemoryEdmGenerator implements EdmGenerator {
 
@@ -37,12 +23,17 @@ public class InMemoryEdmGenerator implements EdmGenerator {
   private final String containerName;
   private final InMemoryTypeMapping typeMapping;
   private final Map<String, InMemoryEntityInfo<?>> eis;
-
-  public InMemoryEdmGenerator(String namespace, String containerName, InMemoryTypeMapping typeMapping, String idPropertyName, Map<String, InMemoryEntityInfo<?>> eis) {
+  private final Map<String, InMemoryComplexTypeInfo<?>> complexTypeInfo;
+  List<EdmComplexType.Builder> edmComplexTypes = new ArrayList<EdmComplexType.Builder>();
+  
+  public InMemoryEdmGenerator(String namespace, String containerName, InMemoryTypeMapping typeMapping, 
+          String idPropertyName, Map<String, InMemoryEntityInfo<?>> eis,
+          Map<String, InMemoryComplexTypeInfo<?>> complexTypes) {
     this.namespace = namespace;
     this.containerName = containerName;
     this.typeMapping = typeMapping;
     this.eis = eis;
+    this.complexTypeInfo = complexTypes;
   }
 
   @Override
@@ -54,7 +45,10 @@ public class InMemoryEdmGenerator implements EdmGenerator {
     List<EdmEntityType.Builder> entityTypes = new ArrayList<EdmEntityType.Builder>();
     List<EdmAssociation.Builder> associations = new ArrayList<EdmAssociation.Builder>();
     List<EdmAssociationSet.Builder> associationSets = new ArrayList<EdmAssociationSet.Builder>();
+    
 
+    createComplexTypes(decorator, edmComplexTypes);
+    
     // creates id other basic SUPPORTED_TYPE properties(structural) entities
     createStructuralEntities(decorator, entitySets, entityTypes);
 
@@ -90,8 +84,12 @@ public class InMemoryEdmGenerator implements EdmGenerator {
 
     containers.add(container);
 
-    EdmSchema.Builder schema = EdmSchema.newBuilder().setNamespace(namespace).addEntityTypes(entityTypes)
-        .addAssociations(associations).addEntityContainers(containers);
+    EdmSchema.Builder schema = EdmSchema.newBuilder().setNamespace(namespace)
+        .addEntityTypes(entityTypes)
+        .addAssociations(associations)
+        .addEntityContainers(containers)
+        .addComplexTypes(edmComplexTypes);
+    
     if (decorator != null) {
       schema.setDocumentation(decorator.getDocumentationForSchema(namespace));
       schema.setAnnotations(decorator.getAnnotationsForSchema(namespace));
@@ -104,6 +102,29 @@ public class InMemoryEdmGenerator implements EdmGenerator {
     return rt;
   }
 
+  private void createComplexTypes(EdmDecorator decorator, List<EdmComplexType.Builder> complexTypes) {
+    for (String complexTypeName : complexTypeInfo.keySet()) {
+      InMemoryComplexTypeInfo<?> typeInfo = complexTypeInfo.get(complexTypeName);
+
+      List<EdmProperty.Builder> properties = new ArrayList<EdmProperty.Builder>();
+
+      // no keys
+      properties.addAll(toEdmProperties(decorator, typeInfo.propertyModel, new String[]{}, complexTypeName));
+
+      EdmComplexType.Builder typeBuilder = EdmComplexType.newBuilder()
+          .setNamespace(namespace)
+          .setName(typeInfo.typeName)
+          .addProperties(properties);
+
+      if (decorator != null) {
+        typeBuilder.setDocumentation(decorator.getDocumentationForEntityType(namespace, complexTypeName));
+        typeBuilder.setAnnotations(decorator.getAnnotationsForEntityType(namespace, complexTypeName));
+      }
+
+      complexTypes.add(typeBuilder);
+    }
+  }
+  
   private void createStructuralEntities(EdmDecorator decorator, List<EdmEntitySet.Builder> entitySets,
       List<EdmEntityType.Builder> entityTypes) {
 
@@ -282,6 +303,27 @@ public class InMemoryEdmGenerator implements EdmGenerator {
     }
   }
 
+  private EdmComplexType.Builder findComplexTypeBuilder(String typeName) {
+    String fqName = this.namespace + "." + typeName;
+    for (EdmComplexType.Builder builder : this.edmComplexTypes) {
+      if (builder.getFullyQualifiedTypeName().equals(fqName)) {
+        return builder;
+      }
+    }
+    return null;
+  }
+  
+  private EdmComplexType.Builder findComplexTypeForClass(Class<?> clazz) {
+    for (InMemoryComplexTypeInfo<?> typeInfo : this.complexTypeInfo.values()) {
+      if (typeInfo.entityClass.equals(clazz)) {
+        // the typeName defines the edm type name
+        return findComplexTypeBuilder(typeInfo.typeName);
+      }
+    }
+    
+    return null;
+  }
+  
   private Collection<EdmProperty.Builder> toEdmProperties(
       EdmDecorator decorator,
       PropertyModel model,
@@ -293,14 +335,26 @@ public class InMemoryEdmGenerator implements EdmGenerator {
 
     for (String propName : model.getPropertyNames()) {
       Class<?> propType = model.getPropertyType(propName);
-      EdmSimpleType<?> type = typeMapping.findEdmType(propType);
-      if (type == null)
+      EdmType type = typeMapping.findEdmType(propType);
+      EdmComplexType.Builder typeBuilder = null;
+      if (type == null) {
+         typeBuilder = findComplexTypeForClass(propType);
+      }
+      
+      if (type == null && typeBuilder == null) {
         continue;
+      }
 
       EdmProperty.Builder ep = EdmProperty
           .newBuilder(propName)
-          .setType(type)
           .setNullable(!keySet.contains(propName));
+      
+      if (type != null) { 
+        ep.setType(type); }
+      else { 
+        ep.setType(typeBuilder); 
+      }
+      
       if (decorator != null) {
         ep.setDocumentation(decorator.getDocumentationForProperty(namespace, structuralTypename, propName));
         ep.setAnnotations(decorator.getAnnotationsForProperty(namespace, structuralTypename, propName));

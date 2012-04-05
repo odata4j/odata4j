@@ -397,7 +397,7 @@ class JsonStreamTokenizerImpl implements JsonStreamTokenizer {
       } else {
         if ('-' == c || Character.isDigit(c)
             || 'E' == c || 'e' == c
-            || '+' == c) {
+            || '+' == c || '.' == c) {
           buffer.append(c); // a valid character in a number
         } else {
           // must be done with the number.
