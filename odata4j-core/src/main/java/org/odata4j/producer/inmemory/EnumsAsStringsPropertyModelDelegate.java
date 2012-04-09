@@ -16,7 +16,7 @@ public class EnumsAsStringsPropertyModelDelegate extends PropertyModelDelegate {
   @Override
   public Class<?> getPropertyType(String propertyName) {
     Class<?> rt = super.getPropertyType(propertyName);
-    if (rt.isEnum())
+    if (rt != null && rt.isEnum())
       return String.class;
     return rt;
   }
@@ -25,7 +25,7 @@ public class EnumsAsStringsPropertyModelDelegate extends PropertyModelDelegate {
   public Object getPropertyValue(Object target, String propertyName) {
     Class<?> baseType = super.getPropertyType(propertyName);
     Object rt = super.getPropertyValue(target, propertyName);
-    if (baseType.isEnum())
+    if (baseType != null && baseType.isEnum() && rt != null)
       return ((Enum<?>) rt).name();
     return rt;
   }

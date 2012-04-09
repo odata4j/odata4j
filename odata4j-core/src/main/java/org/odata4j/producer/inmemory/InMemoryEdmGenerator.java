@@ -24,7 +24,10 @@ public class InMemoryEdmGenerator implements EdmGenerator {
   private final InMemoryTypeMapping typeMapping;
   private final Map<String, InMemoryEntityInfo<?>> eis;
   private final Map<String, InMemoryComplexTypeInfo<?>> complexTypeInfo;
-  List<EdmComplexType.Builder> edmComplexTypes = new ArrayList<EdmComplexType.Builder>();
+  private final List<EdmComplexType.Builder> edmComplexTypes = new ArrayList<EdmComplexType.Builder>(); 
+  private final Map<Class<?>, String> entityNameByClass = new HashMap<Class<?>, String>();
+
+
   
   public InMemoryEdmGenerator(String namespace, String containerName, InMemoryTypeMapping typeMapping, 
           String idPropertyName, Map<String, InMemoryEntityInfo<?>> eis,
@@ -34,6 +37,10 @@ public class InMemoryEdmGenerator implements EdmGenerator {
     this.typeMapping = typeMapping;
     this.eis = eis;
     this.complexTypeInfo = complexTypes;
+    
+    for (Entry<String, InMemoryEntityInfo<?>> e : eis.entrySet()) {
+      entityNameByClass.put(e.getValue().entityClass, e.getKey());
+    }
   }
 
   @Override
@@ -71,11 +78,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
       }
     });
 
-    Map<Class<?>, String> entityNameByClass = new HashMap<Class<?>, String>();
-
-    for (Entry<String, InMemoryEntityInfo<?>> e : eis.entrySet())
-      entityNameByClass.put(e.getValue().entityClass, e.getKey());
-
+   
     createNavigationProperties(associations, associationSets,
         entityTypesByName, entitySetByName, entityNameByClass);
 
@@ -358,6 +361,39 @@ public class InMemoryEdmGenerator implements EdmGenerator {
       if (decorator != null) {
         ep.setDocumentation(decorator.getDocumentationForProperty(namespace, structuralTypename, propName));
         ep.setAnnotations(decorator.getAnnotationsForProperty(namespace, structuralTypename, propName));
+      }
+      rt.add(ep);
+    }
+    
+    // collections of primitives and complex types
+    for (String collectionPropName : model.getCollectionNames()) {
+      Class<?> collectionElementType = model.getCollectionElementType(collectionPropName);
+      if (entityNameByClass.get(collectionElementType) != null) {
+        // this will be a nav prop
+        continue;
+      }
+      
+      EdmType type = typeMapping.findEdmType(collectionElementType);
+      EdmType.Builder typeBuilder = null;
+      if (type == null) {
+        typeBuilder = findComplexTypeForClass(collectionElementType);
+      } else {
+        typeBuilder = EdmSimpleType.newBuilder(type);
+      }
+     
+      if (typeBuilder == null) {
+        continue;
+      }
+      
+      // either a simple or complex type.
+      EdmProperty.Builder ep = EdmProperty.newBuilder(collectionPropName)
+          .setNullable(true)
+          .setCollectionKind(EdmProperty.CollectionKind.Collection)
+          .setType(typeBuilder);
+      
+      if (decorator != null) {
+        ep.setDocumentation(decorator.getDocumentationForProperty(namespace, structuralTypename, collectionPropName));
+        ep.setAnnotations(decorator.getAnnotationsForProperty(namespace, structuralTypename, collectionPropName));
       }
       rt.add(ep);
     }

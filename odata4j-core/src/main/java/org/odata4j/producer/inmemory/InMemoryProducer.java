@@ -13,6 +13,7 @@ import org.core4j.Func1;
 import org.core4j.Predicate1;
 import org.odata4j.core.*;
 import org.odata4j.edm.*;
+import org.odata4j.edm.EdmProperty.CollectionKind;
 import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.Expression;
@@ -234,33 +235,66 @@ public class InMemoryProducer implements ODataProducer {
     return null;
   }
   
-  protected void addPropertiesFromObject(Object obj, PropertyModel propertyModel, List<OProperty<?>> properties) {
-    for (String propName : propertyModel.getPropertyNames()) {
-      EdmSimpleType<?> type;
-      Object value = propertyModel.getPropertyValue(obj, propName);
+  /**
+   * transforms a POJO into a list of OProperties based on a given EdmStructuralType.
+   * 
+   * @param obj             the POJO to transform
+   * @param propertyModel   the PropertyModel to use to access POJO class structure and values.
+   * @param structuralType  the EdmStructuralType 
+   * @param properties      put properties into this list.
+   */
+  protected void addPropertiesFromObject(Object obj, PropertyModel propertyModel, EdmStructuralType structuralType, List<OProperty<?>> properties) {
+    for (Iterator<EdmProperty> it = structuralType.getProperties().iterator(); it.hasNext();) {
+      EdmProperty property = it.next();
+      Object value = propertyModel.getPropertyValue(obj, property.getName());
       if (value == null && !this.includeNullPropertyValues) {
         // this is not permitted by the spec but makes debugging wide entity types
         // much easier.
         continue;
       }
-      Class<?> propType = propertyModel.getPropertyType(propName);
-      type = typeMapping.findEdmType(propType);
-      if (type != null) {
-        properties.add(OProperties.simple(propName, type, value));
-      } else {
-        InMemoryComplexTypeInfo<?> typeInfo = findComplexTypeInfoForClass(propType);
-        if (null == typeInfo) { continue; }
 
-        EdmComplexType ctype = this.getMetadata().findEdmComplexType(this.namespace + "." + typeInfo.typeName);
-        if (null == ctype) { continue; }
-        
-        if (value == null) {
-          properties.add(OProperties.complex(propName, ctype, null));
+      if (property.getCollectionKind() == CollectionKind.NONE) {
+        if (property.getType().isSimple()) {
+          properties.add(OProperties.simple(property.getName(), (EdmSimpleType) property.getType(), value));
         } else {
-          List<OProperty<?>> cprops = new ArrayList<OProperty<?>>();
-          addPropertiesFromObject(value, typeInfo.propertyModel, cprops);
-          properties.add(OProperties.complex(propName, ctype, cprops));
+          // complex. 
+          if (value == null) {
+            properties.add(OProperties.complex(property.getName(), (EdmComplexType) property.getType(), null));
+          } else {
+            Class<?> propType = propertyModel.getPropertyType(property.getName());
+            InMemoryComplexTypeInfo<?> typeInfo = findComplexTypeInfoForClass(propType);
+            if (null == typeInfo) {
+              continue;
+            }
+            List<OProperty<?>> cprops = new ArrayList<OProperty<?>>();
+            addPropertiesFromObject(value, typeInfo.propertyModel, (EdmComplexType) property.getType(), cprops);
+            properties.add(OProperties.complex(property.getName(), (EdmComplexType) property.getType(), cprops));
+          }
         }
+      } else {
+        // collection.
+        Iterable<?> values = propertyModel.getCollectionValue(obj, property.getName());
+        OCollection.Builder<OObject> b = OCollections.newBuilder(property.getType());
+        if (values != null) {
+          Class<?> propType = propertyModel.getCollectionElementType(property.getName());
+          InMemoryComplexTypeInfo<?> typeInfo = property.getType().isSimple() ? null : findComplexTypeInfoForClass(propType);
+          if ((!property.getType().isSimple()) && null == typeInfo) {
+            continue;
+          }
+          for (Object v : values) {
+            if (property.getType().isSimple()) {
+              b.add(OSimpleObjects.create((EdmSimpleType) property.getType(), v));
+            } else {
+              List<OProperty<?>> cprops = new ArrayList<OProperty<?>>();
+              addPropertiesFromObject(v, typeInfo.propertyModel, (EdmComplexType) property.getType(), cprops);
+              b.add(OComplexObjects.create((EdmComplexType) property.getType(), cprops));
+            }
+          }
+        }
+        properties.add(OProperties.collection(property.getName(), 
+            // hmmmh...is something is wrong here if I have to create a new EdmCollectionType?
+            new EdmCollectionType(CollectionKind.Collection, 
+                property.getType()), b.build()));
       }
     }
   }
@@ -276,7 +310,7 @@ public class InMemoryProducer implements ODataProducer {
       keyKVPair.put(key, keyValue);
     }
     
-    addPropertiesFromObject(obj, ei.properties, properties);
+    addPropertiesFromObject(obj, ei.properties, ees.getType(), properties);
     
     if (expand != null && !expand.isEmpty()) {
       EdmEntityType edmEntityType = ees.getType();
