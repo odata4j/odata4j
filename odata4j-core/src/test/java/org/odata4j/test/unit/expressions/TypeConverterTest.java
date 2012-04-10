@@ -41,25 +41,36 @@ public class TypeConverterTest {
 
     cal.setTime(timeParser.parse("7:20:21 pm"));
     Assert.assertEquals(cal,
-        TypeConverter.convert(new LocalDateTime(1970, 1, 1, 19, 20, 21), Calendar.class));
+        TypeConverter.convert(new LocalTime(19, 20, 21), Calendar.class));
 
-    Assert.assertEquals(new java.sql.Time(dateTimeParser.parse("03/28/2011 7:20:21 pm").getTime()),
-        TypeConverter.convert(new LocalDateTime(2011, 03, 28, 19, 20, 21), java.sql.Time.class));
+    Assert.assertEquals(new java.sql.Time(timeParser.parse("7:20:21 pm").getTime()),
+        TypeConverter.convert(new LocalDateTime(1970, 1, 1, 19, 20, 21), java.sql.Time.class));
 
     Assert.assertEquals(new java.sql.Time(timeParser.parse("7:20:21 pm").getTime()),
         TypeConverter.convert(new LocalTime(19, 20, 21), java.sql.Time.class));
 
-    Assert.assertEquals(new java.sql.Date(dateTimeParser.parse("03/28/2011 7:20:21 pm").getTime()),
-        TypeConverter.convert(new LocalDateTime(2011, 03, 28, 19, 20, 21), java.sql.Date.class));
-
-    Assert.assertEquals(new java.sql.Date(timeParser.parse("7:20:21 pm").getTime()),
-        TypeConverter.convert(new LocalTime(19, 20, 21), java.sql.Date.class));
+    Assert.assertEquals(new java.sql.Date(dateTimeParser.parse("03/28/2011 0:00:00 am").getTime()),
+        TypeConverter.convert(new LocalDateTime(2011, 03, 28, 0, 0), java.sql.Date.class));
 
     Assert.assertEquals(new java.sql.Timestamp(dateTimeParser.parse("03/28/2011 7:20:21 pm").getTime()),
         TypeConverter.convert(new LocalDateTime(2011, 03, 28, 19, 20, 21), java.sql.Timestamp.class));
 
     Assert.assertEquals(new java.sql.Timestamp(timeParser.parse("7:20:21 pm").getTime()),
         TypeConverter.convert(new LocalTime(19, 20, 21), java.sql.Timestamp.class));
+  }
 
+  @Test(expected = IllegalArgumentException.class)
+  public void convertLocalDateTimeWithDateComponentsToSqlTimeFails() throws Exception {
+    TypeConverter.convert(new LocalDateTime(2011, 03, 28, 19, 20, 21), java.sql.Time.class);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void convertLocalDateTimeWithTimeComponentsToSqlDateFails() throws Exception {
+    TypeConverter.convert(new LocalDateTime(2011, 03, 28, 19, 20, 21), java.sql.Date.class);
+  }
+
+  @Test(expected = UnsupportedOperationException.class)
+  public void convertLocalTimeToSqlDateFails() throws Exception {
+    TypeConverter.convert(new LocalTime(19, 20, 21), java.sql.Date.class);
   }
 }
