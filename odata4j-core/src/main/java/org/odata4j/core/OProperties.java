@@ -2,11 +2,14 @@ package org.odata4j.core;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import org.joda.time.DateTime;
+import org.joda.time.Instant;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.odata4j.edm.EdmCollectionType;
@@ -252,7 +255,7 @@ public class OProperties {
    * @param value  the property value
    * @return a new OData property instance
    */
-  public static OProperty<LocalDateTime> datetime(String name, Date value) {
+  public static OProperty<LocalDateTime> datetime(String name, Instant value) {
     return new Impl<LocalDateTime>(name, EdmSimpleType.DATETIME, new LocalDateTime(value));
   }
 
@@ -263,7 +266,51 @@ public class OProperties {
    * @param value  the property value
    * @return a new OData property instance
    */
+  public static OProperty<LocalDateTime> datetime(String name, Date value) {
+    return new Impl<LocalDateTime>(name, EdmSimpleType.DATETIME, LocalDateTime.fromDateFields(value));
+  }
+
+  /**
+   * Creates a new LocalDateTime-valued OData property with {@link EdmSimpleType#DATETIME}
+   *
+   * @param name  the property name
+   * @param value  the property value
+   * @return a new OData property instance
+   */
   public static OProperty<LocalDateTime> datetime(String name, Calendar value) {
+    return new Impl<LocalDateTime>(name, EdmSimpleType.DATETIME, LocalDateTime.fromCalendarFields(value));
+  }
+
+  /**
+   * Creates a new LocalDateTime-valued OData property with {@link EdmSimpleType#DATETIME}
+   *
+   * @param name  the property name
+   * @param value  the property value
+   * @return a new OData property instance
+   */
+  public static OProperty<LocalDateTime> datetime(String name, Timestamp value) {
+    return new Impl<LocalDateTime>(name, EdmSimpleType.DATETIME, new LocalDateTime(value));
+  }
+
+  /**
+   * Creates a new LocalDateTime-valued OData property with {@link EdmSimpleType#DATETIME}
+   *
+   * @param name  the property name
+   * @param value  the property value
+   * @return a new OData property instance
+   */
+  public static OProperty<LocalDateTime> datetime(String name, java.sql.Date value) {
+    return new Impl<LocalDateTime>(name, EdmSimpleType.DATETIME, new LocalDateTime(value));
+  }
+
+  /**
+   * Creates a new LocalDateTime-valued OData property with {@link EdmSimpleType#DATETIME}
+   *
+   * @param name  the property name
+   * @param value  the property value
+   * @return a new OData property instance
+   */
+  public static OProperty<LocalDateTime> datetime(String name, Time value) {
     return new Impl<LocalDateTime>(name, EdmSimpleType.DATETIME, new LocalDateTime(value));
   }
 
@@ -297,6 +344,39 @@ public class OProperties {
    * @return a new OData property instance
    */
   public static OProperty<LocalTime> time(String name, Date value) {
+    return new Impl<LocalTime>(name, EdmSimpleType.TIME, LocalTime.fromDateFields(value));
+  }
+
+  /**
+   * Creates a new LocalTime-valued OData property with {@link EdmSimpleType#TIME}
+   *
+   * @param name  the property name
+   * @param value  the property value
+   * @return a new OData property instance
+   */
+  public static OProperty<LocalTime> time(String name, Calendar value) {
+    return new Impl<LocalTime>(name, EdmSimpleType.TIME, LocalTime.fromCalendarFields(value));
+  }
+
+  /**
+   * Creates a new LocalTime-valued OData property with {@link EdmSimpleType#TIME}
+   *
+   * @param name  the property name
+   * @param value  the property value
+   * @return a new OData property instance
+   */
+  public static OProperty<LocalTime> time(String name, Timestamp value) {
+    return new Impl<LocalTime>(name, EdmSimpleType.TIME, new LocalTime(value));
+  }
+
+  /**
+   * Creates a new LocalTime-valued OData property with {@link EdmSimpleType#TIME}
+   *
+   * @param name  the property name
+   * @param value  the property value
+   * @return a new OData property instance
+   */
+  public static OProperty<LocalTime> time(String name, Time value) {
     return new Impl<LocalTime>(name, EdmSimpleType.TIME, new LocalTime(value));
   }
 

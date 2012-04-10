@@ -4,11 +4,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -32,7 +28,6 @@ import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.core4j.Enumerable;
 import org.core4j.Predicate1;
-import org.joda.time.Instant;
 import org.odata4j.core.OFuncs;
 import org.odata4j.core.OPredicates;
 import org.odata4j.edm.EdmAssociation;
@@ -238,36 +233,17 @@ public class JPAEdmGenerator implements EdmGenerator {
   }
 
   protected EdmSimpleType<?> toEdmType(SingularAttribute<?, ?> sa) {
-
     Class<?> javaType = sa.getType().getJavaType();
 
-    if (javaType.equals(Date.class) || javaType.equals(Calendar.class)) {
+    EdmSimpleType<?> type = EdmSimpleType.forJavaType(javaType);
+    if (type == EdmSimpleType.DATETIME) {
       TemporalType temporal = getTemporalType(sa);
-      if (temporal == null) {
-        return EdmSimpleType.DATETIME;
-      } else {
-        switch (temporal) {
-        case DATE:
-        case TIMESTAMP:
-          return EdmSimpleType.DATETIME;
-        case TIME:
-          return EdmSimpleType.TIME;
-        }
-      }
-    }
-    if (javaType.equals(Time.class)) {
-      return EdmSimpleType.TIME;
-    }
-    if (javaType.equals(Instant.class)) {
-      return EdmSimpleType.DATETIME;
-    }
-    if (javaType.equals(Timestamp.class)) {
-      return EdmSimpleType.DATETIME;
+      if (temporal != null && temporal == TemporalType.TIME)
+        type = EdmSimpleType.TIME;
     }
 
-    EdmSimpleType<?> rt = EdmSimpleType.forJavaType(javaType);
-    if (rt != null)
-      return rt;
+    if (type != null)
+      return type;
 
     throw new UnsupportedOperationException(javaType.toString());
   }
