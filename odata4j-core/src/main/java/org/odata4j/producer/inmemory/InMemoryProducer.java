@@ -554,7 +554,7 @@ public class InMemoryProducer implements ODataProducer {
 
   @Override
   public EntityResponse getEntity(String entitySetName, final OEntityKey entityKey, EntityQueryInfo queryInfo) {
-    final Object rt = getEntity(entitySetName, entityKey);
+    final Object rt = getEntityPojo(entitySetName, entityKey, queryInfo);
     if (rt == null) throw new NotFoundException();
 
     final EdmEntitySet ees = getMetadata().getEdmEntitySet(entitySetName);
@@ -602,7 +602,7 @@ public class InMemoryProducer implements ODataProducer {
 
     // get property value...
     InMemoryEntityInfo<?> entityInfo = eis.get(entitySetName);
-    Object target = getEntity(entitySetName, entityKey);
+    Object target = getEntityPojo(entitySetName, entityKey, queryInfo);
     Object propertyValue = entityInfo.properties.getPropertyValue(target, navProp);
     // ... and create OProperty
     OProperty<?> property = OProperties.simple(navProp, (EdmSimpleType<?>) edmType, propertyValue);
@@ -640,8 +640,18 @@ public class InMemoryProducer implements ODataProducer {
     throw new NotImplementedException();
   }
 
+  /**
+   * given an entity set and an entity key, return the pojo that is that entity instance.
+   * The default implementation iterates over the entire set of pojos to find the
+   * desired instance.
+   * 
+   * @param entitySetName
+   * @param entityKey
+   * @param queryInfo - custom query options may be useful
+   * @return 
+   */
   @SuppressWarnings("unchecked")
-  private Object getEntity(String entitySetName, final OEntityKey entityKey) {
+  protected Object getEntityPojo(String entitySetName, final OEntityKey entityKey, QueryInfo queryInfo) {
     final InMemoryEntityInfo<?> ei = eis.get(entitySetName);
 
     final String[] keyList = ei.keys;
