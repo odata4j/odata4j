@@ -15,6 +15,7 @@ import org.odata4j.producer.PropertyResponse;
 public abstract class AbstractPropertyFormatWriterTest {
 
   protected static final OProperty<LocalDateTime> DATE_TIME_PROPERTY = OProperties.simple("DateTime", EdmSimpleType.DATETIME, new LocalDateTime(2003, 7, 1, 0, 0));
+  protected static final OProperty<Boolean> BOOLEAN_PROPERTY = OProperties.simple("Boolean", EdmSimpleType.BOOLEAN, Boolean.FALSE);
 
   protected static FormatWriter<PropertyResponse> formatWriter;
 
