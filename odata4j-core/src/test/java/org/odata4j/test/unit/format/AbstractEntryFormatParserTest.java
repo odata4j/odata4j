@@ -3,7 +3,10 @@ package org.odata4j.test.unit.format;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
 import org.odata4j.core.ODataVersion;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntityContainer;
@@ -20,8 +23,21 @@ import org.odata4j.format.Settings;
 
 public abstract class AbstractEntryFormatParserTest {
 
-  protected static final String DATE_TIME = "DateTime";
-  protected static final String ENTITY_SET_NAME = "EntitySetName";
+  protected static final String DATETIME_NAME = "DateTime";
+  protected static final String DATETIMEOFFSET_NAME = "DateTimeOffset";
+  protected static final String TIME_NAME = "Time";
+  protected static final String ENTITYSET_NAME = "EntitySet";
+
+  protected static final LocalDateTime DATETIME = new LocalDateTime(2005, 4, 3, 1, 2);
+  protected static final LocalDateTime DATETIME_WITH_SECONDS = new LocalDateTime(2006, 5, 4, 1, 2, 3);
+  protected static final LocalDateTime DATETIME_WITH_MILLIS = new LocalDateTime(2007, 6, 5, 1, 2, 3, 4);
+
+  protected static final DateTime DATETIME_BEFORE_1970_NO_OFFSET = new DateTime(1969, 8, 7, 5, 6, 0, 0, DateTimeZone.UTC);
+  protected static final DateTime DATETIME_WITH_SECONDS_POSITIVE_OFFSET = new DateTime(2006, 5, 4, 1, 2, 3, 0, DateTimeZone.forOffsetHours(7)); // => 2006-05-03T18:02:03Z, 1146679323000
+  protected static final DateTime DATETIME_WITH_MILLIS_NEGATIVE_OFFSET = new DateTime(2007, 6, 5, 1, 2, 3, 4, DateTimeZone.forOffsetHours(-8)); // => 2007-06-05T09:02:03Z, 1181034123004
+
+  protected static final LocalTime TIME = new LocalTime(1, 2, 3);
+  protected static final LocalTime TIME_WITH_MILLIS = new LocalTime(1, 2, 3, 4);
 
   protected static FormatParser<Entry> formatParser;
 
@@ -29,18 +45,28 @@ public abstract class AbstractEntryFormatParserTest {
     formatParser = FormatParserFactory.getParser(Entry.class, format, getSettings());
   }
 
-  protected void verifyDateTimePropertyValue(Entry entry) {
-    assertThat((LocalDateTime) entry.getEntity().getProperty(DATE_TIME).getValue(), is(new LocalDateTime(2003, 7, 1, 0, 0)));
+  protected void verifyDateTimePropertyValue(Entry entry, LocalDateTime dateTime) {
+    assertThat((LocalDateTime) entry.getEntity().getProperty(DATETIME_NAME).getValue(), is(dateTime));
+  }
+
+  protected void verifyDateTimeOffsetPropertyValue(Entry entry, DateTime dateTime) {
+    assertThat((DateTime) entry.getEntity().getProperty(DATETIMEOFFSET_NAME).getValue(), is(dateTime));
+  }
+
+  protected void verifyTimePropertyValue(Entry entry, LocalTime time) {
+    assertThat((LocalTime) entry.getEntity().getProperty(TIME_NAME).getValue(), is(time));
   }
 
   private static Settings getSettings() {
-    return new Settings(ODataVersion.V1, getMetadata(), ENTITY_SET_NAME, null, null);
+    return new Settings(ODataVersion.V1, getMetadata(), ENTITYSET_NAME, null, null);
   }
 
   private static EdmDataServices getMetadata() {
-    EdmProperty.Builder property = EdmProperty.newBuilder(DATE_TIME).setType(EdmSimpleType.DATETIME);
-    EdmEntityType.Builder entityType = new EdmEntityType.Builder().setName("EntityType").addKeys("EntityKey").addProperties(property);
-    EdmEntitySet.Builder entitySet = new EdmEntitySet.Builder().setName(ENTITY_SET_NAME).setEntityType(entityType);
+    EdmProperty.Builder dateTimeProperty = EdmProperty.newBuilder(DATETIME_NAME).setType(EdmSimpleType.DATETIME);
+    EdmProperty.Builder dateTimeOffsetProperty = EdmProperty.newBuilder(DATETIMEOFFSET_NAME).setType(EdmSimpleType.DATETIMEOFFSET);
+    EdmProperty.Builder timeProperty = EdmProperty.newBuilder(TIME_NAME).setType(EdmSimpleType.TIME);
+    EdmEntityType.Builder entityType = new EdmEntityType.Builder().setName("EntityType").addKeys("EntityKey").addProperties(dateTimeProperty, dateTimeOffsetProperty, timeProperty);
+    EdmEntitySet.Builder entitySet = new EdmEntitySet.Builder().setName(ENTITYSET_NAME).setEntityType(entityType);
     EdmEntityContainer.Builder container = new EdmEntityContainer.Builder().addEntitySets(entitySet);
     EdmSchema.Builder schema = new EdmSchema.Builder().addEntityContainers(container).addEntityTypes(entityType);
     return new EdmDataServices.Builder().addSchemas(schema).build();

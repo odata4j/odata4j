@@ -77,12 +77,12 @@ public class PrintExpressionVisitor implements ExpressionVisitor {
 
   @Override
   public void visit(DateTimeLiteral expr) {
-    append("datetime(%s)", InternalUtil.formatDateTime(expr.getValue()));
+    append("datetime(%s)", InternalUtil.formatDateTimeForXml(expr.getValue()));
   }
 
   @Override
   public void visit(DateTimeOffsetLiteral expr) {
-    append("datetime(%s)", InternalUtil.formatDateTimeOffset(expr.getValue()));
+    append("datetime(%s)", InternalUtil.formatDateTimeOffsetForXml(expr.getValue()));
   }
 
   @Override

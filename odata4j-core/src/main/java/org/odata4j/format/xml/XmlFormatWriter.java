@@ -133,7 +133,7 @@ public class XmlFormatWriter {
         }
       } else if (type == EdmSimpleType.DATETIME) {
         if (value != null)
-          sValue = InternalUtil.formatDateTime(
+          sValue = InternalUtil.formatDateTimeForXml(
               (LocalDateTime) value);
       } else if (type == EdmSimpleType.BINARY) {
         byte[] bValue = (byte[]) value;
@@ -146,13 +146,13 @@ public class XmlFormatWriter {
         }
       } else if (type == EdmSimpleType.TIME) {
         if (value != null) {
-          sValue = InternalUtil.toString((LocalTime) value);
+          sValue = InternalUtil.formatTimeForXml((LocalTime) value);
         }
       } else if (type == EdmSimpleType.DATETIMEOFFSET) {
         // Edm.DateTimeOffset '-'? yyyy '-' mm '-' dd 'T' hh ':' mm
         // ':' ss ('.' s+)? (zzzzzz)?
         if (value != null) {
-          sValue = InternalUtil.formatDateTimeOffset((DateTime) value);
+          sValue = InternalUtil.formatDateTimeOffsetForXml((DateTime) value);
         }
       } else {
         throw new UnsupportedOperationException("Implement " + type);

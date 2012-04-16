@@ -2,7 +2,7 @@ package org.odata4j.format.json;
 
 import java.math.BigDecimal;
 
-import org.joda.time.DateTimeZone;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.odata4j.core.Guid;
@@ -51,41 +51,13 @@ public class JsonTypeConverter {
       byte[] bValue = value == null ? null : new Base64().decode(value);
       return OProperties.binary(name, bValue);
     } else if (EdmSimpleType.DATETIME.equals(type)) {
-      LocalDateTime dValue = null;
-      if (value != null) {
-        if (!value.startsWith("/Date(") || !value.endsWith(")/")) {
-          throw new IllegalArgumentException("invalid date format");
-        }
-        String ticks = value.substring(6, value.length() - 2);
-        String offset = null;
-        int idx = ticks.indexOf('-');
-        if (idx > 0) {
-          offset = ticks.substring(idx + 1);
-          ticks = ticks.substring(0, idx);
-          dValue = new LocalDateTime(Long.parseLong(ticks), DateTimeZone.UTC);
-          dValue = dValue.minusMinutes(Integer.valueOf(offset));
-        } else if ((idx = ticks.indexOf('+')) > 0) {
-          offset = ticks.substring(idx + 1);
-          ticks = ticks.substring(0, idx);
-          dValue = new LocalDateTime(Long.parseLong(ticks), DateTimeZone.UTC);
-          dValue = dValue.plusMinutes(Integer.valueOf(offset));
-        } else {
-          // ticks are the milliseconds from 1970-01-01T00:00:00Z
-          dValue = new LocalDateTime(Long.parseLong(ticks), DateTimeZone.UTC);
-        }
-      }
-      return OProperties.datetime(name, dValue);
+      LocalDateTime ldValue = value == null ? null : InternalUtil.parseDateTimeFromJson(value);
+      return OProperties.datetime(name, ldValue);
     } else if (EdmSimpleType.DATETIMEOFFSET.equals(type)) {
-      return OProperties.datetimeOffset(name, InternalUtil.parseDateTime(value.substring(value.indexOf('\'') + 1, value.length() - 1)));
+      DateTime dValue = value == null ? null : InternalUtil.parseDateTimeOffsetFromJson(value);
+      return OProperties.datetimeOffset(name, dValue);
     } else if (EdmSimpleType.TIME.equals(type)) {
-      String tval = null;
-      if (value != null) {
-        if (!value.startsWith("time'") || !value.endsWith("'")) {
-          throw new IllegalArgumentException("invalid time format: " + value);
-        }
-        tval = value.substring(5, value.length() - 1);
-      }
-      LocalTime tValue = value == null ? null : new LocalTime(tval);
+      LocalTime tValue = value == null ? null : InternalUtil.parseTime(value);
       return OProperties.time(name, tValue);
     } else if (EdmSimpleType.STRING.equals(type) || type == null) {
       return OProperties.string(name, value);

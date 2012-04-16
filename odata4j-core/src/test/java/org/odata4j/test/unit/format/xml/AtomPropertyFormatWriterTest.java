@@ -1,5 +1,6 @@
 package org.odata4j.test.unit.format.xml;
 
+import static org.hamcrest.CoreMatchers.allOf;
 import static org.junit.Assert.assertThat;
 import static org.junit.matchers.JUnitMatchers.containsString;
 
@@ -9,6 +10,7 @@ import org.odata4j.format.FormatType;
 import org.odata4j.producer.Responses;
 import org.odata4j.test.unit.format.AbstractPropertyFormatWriterTest;
 
+@SuppressWarnings("unchecked")
 public class AtomPropertyFormatWriterTest extends AbstractPropertyFormatWriterTest {
 
   @BeforeClass
@@ -18,7 +20,50 @@ public class AtomPropertyFormatWriterTest extends AbstractPropertyFormatWriterTe
 
   @Test
   public void dateTime() throws Exception {
-    formatWriter.write(null, stringWriter, Responses.property(DATE_TIME_PROPERTY));
-    assertThat(stringWriter.toString(), containsString("2003-07-01T00:00:00"));
+    formatWriter.write(null, stringWriter, Responses.property(DATETIME));
+    // m:type=\"Edm.DateTime\"
+    assertThat(stringWriter.toString(), allOf(containsString("m:type=\"Edm.DateTime\""), containsString(">2005-04-03T01:02<")));
+  }
+
+  @Test
+  public void dateTimeWithSeconds() throws Exception {
+    formatWriter.write(null, stringWriter, Responses.property(DATETIME_WITH_SECONDS));
+    assertThat(stringWriter.toString(), allOf(containsString("m:type=\"Edm.DateTime\""), containsString(">2006-05-04T01:02:03<")));
+  }
+
+  @Test
+  public void dateTimeWithMillis() throws Exception {
+    formatWriter.write(null, stringWriter, Responses.property(DATETIME_WITH_MILLIS));
+    assertThat(stringWriter.toString(), allOf(containsString("m:type=\"Edm.DateTime\""), containsString(">2007-06-05T01:02:03.004<")));
+  }
+
+  @Test
+  public void dateTimeNoOffset() throws Exception {
+    formatWriter.write(null, stringWriter, Responses.property(DATETIME_BEFORE_1970_NO_OFFSET));
+    assertThat(stringWriter.toString(), allOf(containsString("m:type=\"Edm.DateTimeOffset\""), containsString(">1969-08-07T05:06:00Z<")));
+  }
+
+  @Test
+  public void dateTimeWithSecondsPositiveOffset() throws Exception {
+    formatWriter.write(null, stringWriter, Responses.property(DATETIME_WITH_SECONDS_POSITIVE_OFFSET));
+    assertThat(stringWriter.toString(), allOf(containsString("m:type=\"Edm.DateTimeOffset\""), containsString(">2006-05-04T01:02:03+07:00<")));
+  }
+
+  @Test
+  public void dateTimeWithMillisNegativeOffset() throws Exception {
+    formatWriter.write(null, stringWriter, Responses.property(DATETIME_WITH_MILLIS_NEGATIVE_OFFSET));
+    assertThat(stringWriter.toString(), allOf(containsString("m:type=\"Edm.DateTimeOffset\""), containsString(">2007-06-05T01:02:03.004-08:00<")));
+  }
+
+  @Test
+  public void time() throws Exception {
+    formatWriter.write(null, stringWriter, Responses.property(TIME));
+    assertThat(stringWriter.toString(), allOf(containsString("m:type=\"Edm.Time\""), containsString(">PT1H2M3S<")));
+  }
+
+  @Test
+  public void timeWithMillis() throws Exception {
+    formatWriter.write(null, stringWriter, Responses.property(TIME_WITH_MILLIS));
+    assertThat(stringWriter.toString(), allOf(containsString("m:type=\"Edm.Time\""), containsString(">PT1H2M3.004S<")));
   }
 }

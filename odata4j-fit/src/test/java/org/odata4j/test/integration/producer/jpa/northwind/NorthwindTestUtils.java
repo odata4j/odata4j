@@ -293,8 +293,8 @@ public class NorthwindTestUtils {
             && expectedChildNode.getNodeType() == Node.TEXT_NODE) {
           String ed = ((Text) expectedChildNode).getData();
           String rd = ((Text) resultChildNode).getData();
-          Assert.assertEquals(InternalUtil.parseDateTime(ed),
-              InternalUtil.parseDateTime(rd));
+          Assert.assertEquals(InternalUtil.parseDateTimeFromXml(ed),
+              InternalUtil.parseDateTimeFromXml(rd));
         } else {
           assertEquals(expectedChildNode, resultChildNode, isTopLevel);
         }

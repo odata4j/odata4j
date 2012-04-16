@@ -72,17 +72,17 @@ public class FilterExpressionVisitor implements ExpressionVisitor {
 
   @Override
   public void visit(DateTimeLiteral expr) {
-    push("datetime'" + InternalUtil.formatDateTime(expr.getValue()) + "'");
+    push("datetime'" + InternalUtil.formatDateTimeForXml(expr.getValue()) + "'");
   }
 
   @Override
   public void visit(DateTimeOffsetLiteral expr) {
-    push("datetimeoffset'" + InternalUtil.formatDateTimeOffset(expr.getValue()) + "'");
+    push("datetimeoffset'" + InternalUtil.formatDateTimeOffsetForXml(expr.getValue()) + "'");
   }
 
   @Override
   public void visit(TimeLiteral expr) {
-    push("time'" + InternalUtil.toString(expr.getValue()) + "'");
+    push("time'" + InternalUtil.formatTimeForXml(expr.getValue()) + "'");
   }
 
   @Override

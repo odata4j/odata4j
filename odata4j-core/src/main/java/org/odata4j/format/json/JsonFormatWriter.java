@@ -8,7 +8,6 @@ import java.util.Locale;
 import javax.ws.rs.core.UriInfo;
 
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.odata4j.core.Guid;
@@ -117,15 +116,10 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
     } else if (type.equals(EdmSimpleType.SBYTE)) {
       jw.writeNumber((Byte) pvalue);
     } else if (type.equals(EdmSimpleType.DATETIME)) {
-      LocalDateTime ldt = (LocalDateTime) pvalue;
-      long millis = ldt.toDateTime(DateTimeZone.UTC).getMillis();
-      String date = "\"\\/Date(" + millis + ")\\/\"";
-      jw.writeRaw(date);
+      jw.writeRaw(InternalUtil.formatDateTimeForJson((LocalDateTime) pvalue));
     } else if (type.equals(EdmSimpleType.DECIMAL)) {
-      // jw.writeString("decimal'" + (BigDecimal) pvalue + "'");
       jw.writeString(String.format(Locale.ENGLISH, "%1$.4f", pvalue));
     } else if (type.equals(EdmSimpleType.DOUBLE)) {
-      // jw.writeString(pvalue.toString());
       jw.writeString(String.format(Locale.ENGLISH, "%1$.4f", pvalue));
     } else if (type.equals(EdmSimpleType.GUID)) {
       jw.writeString("guid'" + (Guid) pvalue + "'");
@@ -138,10 +132,9 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
     } else if (type.equals(EdmSimpleType.SINGLE)) {
       jw.writeNumber((Float) pvalue);
     } else if (type.equals(EdmSimpleType.TIME)) {
-      LocalTime ldt = (LocalTime) pvalue;
-      jw.writeString("time'" + ldt + "'");
+      jw.writeRaw(InternalUtil.formatTimeForJson((LocalTime) pvalue));
     } else if (type.equals(EdmSimpleType.DATETIMEOFFSET)) {
-      jw.writeString("datetimeoffset'" + InternalUtil.formatDateTimeOffset((DateTime) pvalue) + "'");
+      jw.writeRaw(InternalUtil.formatDateTimeOffsetForJson((DateTime) pvalue));
     } else if (type instanceof EdmComplexType || (type instanceof EdmSimpleType && (!((EdmSimpleType<?>) type).isSimple()))) {
       // the OComplexObject value type is not in use everywhere yet, fix TODO
       if (pvalue instanceof OComplexObject) {

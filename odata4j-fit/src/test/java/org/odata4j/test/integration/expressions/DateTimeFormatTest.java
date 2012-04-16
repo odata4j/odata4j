@@ -30,46 +30,46 @@ public class DateTimeFormatTest extends AbstractRuntimeTest {
 
   @Test
   public void testyyyyMMddHHmm() {
-    DateTime dt = InternalUtil.parseDateTime("2010-12-20T17:34");
+    LocalDateTime ldt = InternalUtil.parseDateTimeFromXml("2010-12-20T17:34");
 
-    Assert.assertEquals(2010, dt.getYear());
-    Assert.assertEquals(12, dt.getMonthOfYear());
-    Assert.assertEquals(20, dt.getDayOfMonth());
-    Assert.assertEquals(17, dt.getHourOfDay());
-    Assert.assertEquals(34, dt.getMinuteOfHour());
-    Assert.assertEquals(0, dt.getSecondOfMinute());
-    Assert.assertEquals(0, dt.getMillisOfSecond());
+    Assert.assertEquals(2010, ldt.getYear());
+    Assert.assertEquals(12, ldt.getMonthOfYear());
+    Assert.assertEquals(20, ldt.getDayOfMonth());
+    Assert.assertEquals(17, ldt.getHourOfDay());
+    Assert.assertEquals(34, ldt.getMinuteOfHour());
+    Assert.assertEquals(0, ldt.getSecondOfMinute());
+    Assert.assertEquals(0, ldt.getMillisOfSecond());
   }
 
   @Test
   public void testyyyyMMddHHmmss() {
-    DateTime dt = InternalUtil.parseDateTime("2010-12-20T17:34:05");
+    LocalDateTime ldt = InternalUtil.parseDateTimeFromXml("2010-12-20T17:34:05");
 
-    Assert.assertEquals(2010, dt.getYear());
-    Assert.assertEquals(12, dt.getMonthOfYear());
-    Assert.assertEquals(20, dt.getDayOfMonth());
-    Assert.assertEquals(17, dt.getHourOfDay());
-    Assert.assertEquals(34, dt.getMinuteOfHour());
-    Assert.assertEquals(5, dt.getSecondOfMinute());
-    Assert.assertEquals(0, dt.getMillisOfSecond());
+    Assert.assertEquals(2010, ldt.getYear());
+    Assert.assertEquals(12, ldt.getMonthOfYear());
+    Assert.assertEquals(20, ldt.getDayOfMonth());
+    Assert.assertEquals(17, ldt.getHourOfDay());
+    Assert.assertEquals(34, ldt.getMinuteOfHour());
+    Assert.assertEquals(5, ldt.getSecondOfMinute());
+    Assert.assertEquals(0, ldt.getMillisOfSecond());
   }
 
   @Test
   public void testyyyyMMddHHmmssfffffff() {
-    DateTime dt = InternalUtil.parseDateTime("2010-12-20T17:34:05.1234567");
+    LocalDateTime ldt = InternalUtil.parseDateTimeFromXml("2010-12-20T17:34:05.1234567");
 
-    Assert.assertEquals(2010, dt.getYear());
-    Assert.assertEquals(12, dt.getMonthOfYear());
-    Assert.assertEquals(20, dt.getDayOfMonth());
-    Assert.assertEquals(17, dt.getHourOfDay());
-    Assert.assertEquals(34, dt.getMinuteOfHour());
-    Assert.assertEquals(5, dt.getSecondOfMinute());
-    Assert.assertEquals(123, dt.getMillisOfSecond());
+    Assert.assertEquals(2010, ldt.getYear());
+    Assert.assertEquals(12, ldt.getMonthOfYear());
+    Assert.assertEquals(20, ldt.getDayOfMonth());
+    Assert.assertEquals(17, ldt.getHourOfDay());
+    Assert.assertEquals(34, ldt.getMinuteOfHour());
+    Assert.assertEquals(5, ldt.getSecondOfMinute());
+    Assert.assertEquals(123, ldt.getMillisOfSecond());
   }
 
   @Test
   public void testyyyyMMddHHmmssfffffffZZ() {
-    DateTime dt = InternalUtil.parseDateTime("2010-12-20T17:34:05.1234567Z");
+    DateTime dt = InternalUtil.parseDateTimeOffsetFromXml("2010-12-20T17:34:05.1234567Z");
     dt = dt.toDateTime(DateTimeZone.UTC);
 
     Assert.assertEquals(2010, dt.getYear());
@@ -83,7 +83,7 @@ public class DateTimeFormatTest extends AbstractRuntimeTest {
 
   @Test
   public void testyyyyMMddHHmmssZZ() {
-    DateTime dt = InternalUtil.parseDateTime("2010-12-20T17:34:05Z");
+    DateTime dt = InternalUtil.parseDateTimeOffsetFromXml("2010-12-20T17:34:05Z");
     dt = dt.toDateTime(DateTimeZone.UTC);
 
     Assert.assertEquals(2010, dt.getYear());
@@ -95,51 +95,24 @@ public class DateTimeFormatTest extends AbstractRuntimeTest {
     Assert.assertEquals(0, dt.getMillisOfSecond());
   }
 
-  @Test
+  @Test(expected=IllegalArgumentException.class)
   public void testyyyyMMddHHmmZZ() {
-    DateTime dt = InternalUtil.parseDateTime("2010-12-20T17:34Z");
-    dt = dt.toDateTime(DateTimeZone.UTC);
-
-    Assert.assertEquals(2010, dt.getYear());
-    Assert.assertEquals(12, dt.getMonthOfYear());
-    Assert.assertEquals(20, dt.getDayOfMonth());
-    Assert.assertEquals(17, dt.getHourOfDay());
-    Assert.assertEquals(34, dt.getMinuteOfHour());
-    Assert.assertEquals(0, dt.getSecondOfMinute());
-    Assert.assertEquals(0, dt.getMillisOfSecond());
+    InternalUtil.parseDateTimeOffsetFromXml("2010-12-20T17:34Z");
   }
 
-  @Test
+  @Test(expected=IllegalArgumentException.class)
   public void testyyyyMMddHHmmp0200() {
-    DateTime dt = InternalUtil.parseDateTime("2010-12-20T17:34+02:00");
-    dt = dt.toDateTime(DateTimeZone.UTC);
-
-    Assert.assertEquals(2010, dt.getYear());
-    Assert.assertEquals(12, dt.getMonthOfYear());
-    Assert.assertEquals(20, dt.getDayOfMonth());
-    Assert.assertEquals(15, dt.getHourOfDay());
-    Assert.assertEquals(34, dt.getMinuteOfHour());
-    Assert.assertEquals(0, dt.getSecondOfMinute());
-    Assert.assertEquals(0, dt.getMillisOfSecond());
+    InternalUtil.parseDateTimeOffsetFromXml("2010-12-20T17:34+02:00");
   }
 
-  @Test
+  @Test(expected=IllegalArgumentException.class)
   public void testyyyyMMddHHmmm0600() {
-    DateTime dt = InternalUtil.parseDateTime("2010-12-20T17:34-06:00");
-    dt = dt.toDateTime(DateTimeZone.UTC);
-
-    Assert.assertEquals(2010, dt.getYear());
-    Assert.assertEquals(12, dt.getMonthOfYear());
-    Assert.assertEquals(20, dt.getDayOfMonth());
-    Assert.assertEquals(23, dt.getHourOfDay());
-    Assert.assertEquals(34, dt.getMinuteOfHour());
-    Assert.assertEquals(0, dt.getSecondOfMinute());
-    Assert.assertEquals(0, dt.getMillisOfSecond());
+    InternalUtil.parseDateTimeOffsetFromXml("2010-12-20T17:34-06:00");
   }
 
   @Test
   public void testyyyyMMddHHmmssm0600() {
-    DateTime dt = InternalUtil.parseDateTime("2010-12-20T17:34:05-06:00");
+    DateTime dt = InternalUtil.parseDateTimeOffsetFromXml("2010-12-20T17:34:05-06:00");
     dt = dt.toDateTime(DateTimeZone.UTC);
 
     Assert.assertEquals(2010, dt.getYear());
@@ -153,7 +126,7 @@ public class DateTimeFormatTest extends AbstractRuntimeTest {
 
   @Test
   public void testyyyyMMddHHmmssfffffffm0600() {
-    DateTime dt = InternalUtil.parseDateTime("2010-12-20T17:34:05.1234567-06:00");
+    DateTime dt = InternalUtil.parseDateTimeOffsetFromXml("2010-12-20T17:34:05.1234567-06:00");
     dt = dt.toDateTime(DateTimeZone.UTC);
 
     Assert.assertEquals(2010, dt.getYear());
@@ -167,7 +140,7 @@ public class DateTimeFormatTest extends AbstractRuntimeTest {
 
   @Test
   public void testyyyyMMddHHmmssfffm0600() {
-    DateTime dt = InternalUtil.parseDateTime("2010-12-20T17:34:05.123-06:00");
+    DateTime dt = InternalUtil.parseDateTimeOffsetFromXml("2010-12-20T17:34:05.123-06:00");
     dt = dt.toDateTime(DateTimeZone.UTC);
 
     Assert.assertEquals(2010, dt.getYear());
@@ -181,7 +154,7 @@ public class DateTimeFormatTest extends AbstractRuntimeTest {
 
   @Test
   public void testyyyyMMddHHmmssffm0600() {
-    DateTime dt = InternalUtil.parseDateTime("2010-12-20T17:34:05.12-06:00");
+    DateTime dt = InternalUtil.parseDateTimeOffsetFromXml("2010-12-20T17:34:05.12-06:00");
     dt = dt.toDateTime(DateTimeZone.UTC);
 
     Assert.assertEquals(2010, dt.getYear());
@@ -195,7 +168,7 @@ public class DateTimeFormatTest extends AbstractRuntimeTest {
 
   @Test
   public void testyyyyMMddHHmmssfm0600() {
-    DateTime dt = InternalUtil.parseDateTime("2010-12-20T17:34:05.1-06:00");
+    DateTime dt = InternalUtil.parseDateTimeOffsetFromXml("2010-12-20T17:34:05.1-06:00");
     dt = dt.toDateTime(DateTimeZone.UTC);
 
     Assert.assertEquals(2010, dt.getYear());
@@ -209,51 +182,51 @@ public class DateTimeFormatTest extends AbstractRuntimeTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void testyyyyMMddHHmmsspm0600() {
-    InternalUtil.parseDateTime("2010-12-20T17:34:05.-06:00");
+    InternalUtil.parseDateTimeFromXml("2010-12-20T17:34:05.-06:00");
   }
 
   @Test
   public void testFormatDateTimeyyyyMMddHHmm() {
     LocalDateTime dt = new LocalDateTime(2010, 12, 20, 17, 34);
-    Assert.assertEquals("2010-12-20T17:34:00", InternalUtil.formatDateTime(dt));
+    Assert.assertEquals("2010-12-20T17:34", InternalUtil.formatDateTimeForXml(dt));
   }
 
   @Test
   public void testFormatDateTimeyyyyMMddHHmmss() {
     LocalDateTime dt = new LocalDateTime(2010, 12, 20, 17, 34, 5);
-    Assert.assertEquals("2010-12-20T17:34:05", InternalUtil.formatDateTime(dt));
+    Assert.assertEquals("2010-12-20T17:34:05", InternalUtil.formatDateTimeForXml(dt));
   }
 
   @Test
   public void testFormatDateTimeyyyyMMddHHmmssfffffff() {
     LocalDateTime dt = new LocalDateTime(2010, 12, 20, 17, 34, 5, 123);
-    Assert.assertEquals("2010-12-20T17:34:05.123", InternalUtil.formatDateTime(dt));
+    Assert.assertEquals("2010-12-20T17:34:05.123", InternalUtil.formatDateTimeForXml(dt));
   }
 
   @Test
   public void testFormatDateTimeOffsetyyyyMMddHHmm() {
     Chronology c = ISOChronology.getInstance(DateTimeZone.forOffsetHours(1));
     DateTime dt = new DateTime(2010, 12, 20, 17, 34, 0, 0, c);
-    Assert.assertEquals("2010-12-20T17:34:00+01:00", InternalUtil.formatDateTimeOffset(dt));
+    Assert.assertEquals("2010-12-20T17:34:00+01:00", InternalUtil.formatDateTimeOffsetForXml(dt));
   }
 
   @Test
   public void testFormatDateTimeOffsetyyyyMMddHHmmss() {
     Chronology c = ISOChronology.getInstance(DateTimeZone.forOffsetHours(1));
     DateTime dt = new DateTime(2010, 12, 20, 17, 34, 5, 0, c);
-    Assert.assertEquals("2010-12-20T17:34:05+01:00", InternalUtil.formatDateTimeOffset(dt));
+    Assert.assertEquals("2010-12-20T17:34:05+01:00", InternalUtil.formatDateTimeOffsetForXml(dt));
   }
 
   @Test
   public void testFormatDateTimeOffsetyyyyMMddHHmmssfffffff() {
     Chronology c = ISOChronology.getInstance(DateTimeZone.forOffsetHours(1));
     DateTime dt = new DateTime(2010, 12, 20, 17, 34, 5, 123, c);
-    Assert.assertEquals("2010-12-20T17:34:05.123+01:00", InternalUtil.formatDateTimeOffset(dt));
+    Assert.assertEquals("2010-12-20T17:34:05.123+01:00", InternalUtil.formatDateTimeOffsetForXml(dt));
   }
 
   @Test
   public void testDateTimeOffsetParseFormat() {
-    dtoCheck(new DateTime(1967, 01, 02, 03, 04, 05, 123, DateTimeZone.UTC), "+00:00", 0);
+    dtoCheck(new DateTime(1967, 01, 02, 03, 04, 05, 123, DateTimeZone.UTC), "Z", 0);
     dtoCheck(new DateTime(1967, 01, 02, 03, 04, 05, 123, DateTimeZone.forOffsetHours(-7)), "-07:00", -7 * 60 * 60 * 1000);
     dtoCheck(new DateTime(1967, 01, 02, 03, 04, 05, 123, DateTimeZone.forOffsetHours(+5)), "+05:00", 5 * 60 * 60 * 1000);
     dtoCheck(new DateTime(1967, 01, 02, 03, 04, 05, 123, DateTimeZone.forOffsetHoursMinutes(3, 30)), "+03:30", ((3 * 60) + 30) * 60 * 1000);
@@ -262,13 +235,13 @@ public class DateTimeFormatTest extends AbstractRuntimeTest {
   private void dtoCheck(DateTime lhs, String tzS, int tzOffsetMillis) {
     // DateTime---->String
     Assert.assertTrue(lhs.getZone().getOffset(0) == tzOffsetMillis);
-    String f = InternalUtil.formatDateTimeOffset(lhs);
+    String f = InternalUtil.formatDateTimeOffsetForXml(lhs);
     //System.out.println("lhs : " + f);
     Assert.assertTrue(f.endsWith(tzS));
 
     // back to DateTime
-    DateTime utcp = InternalUtil.parseDateTime(f);
-    f = InternalUtil.formatDateTimeOffset(lhs);
+    DateTime utcp = InternalUtil.parseDateTimeOffsetFromXml(f);
+    f = InternalUtil.formatDateTimeOffsetForXml(lhs);
     //System.out.println("rhs: " + f);
     Assert.assertTrue(f.endsWith(tzS));
 

@@ -1,9 +1,6 @@
 package org.odata4j.test.integration.producer.jpa.airline;
 
-import java.sql.Time;
 import java.text.DateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 
 import javax.persistence.Persistence;
@@ -46,14 +43,10 @@ public class EdmDateTimeTemporalTest extends AirlineJPAProducerBaseTest {
 
     JPAProducer producer = new JPAProducer(emf, new JPAEdmGenerator(emf, namespace) {
       protected EdmSimpleType<?> toEdmType(SingularAttribute<?, ?> sa) {
-        Class<?> javaType = sa.getType().getJavaType();
-        if (javaType.equals(Date.class)
-            || javaType.equals(Calendar.class)
-            || javaType.equals(Time.class)) {
-          return EdmSimpleType.DATETIME;
-        } else {
-          return super.toEdmType(sa);
-        }
+        EdmSimpleType<?> type = super.toEdmType(sa);
+        if (type == EdmSimpleType.TIME)
+          type = EdmSimpleType.DATETIME;
+        return type;
       }
     }.generateEdm(null).build(), 20);
 

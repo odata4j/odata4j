@@ -97,7 +97,7 @@ public class JPASkipTokenTest extends NorthwindJpaProducerTest {
   public void testCreateOneSortDate() {
 
     test("OrderDate",
-        "datetime'1996-07-04T00:00:00',10248",
+        "datetime'1996-07-04T00:00',10248",
         "(t.OrderDate > '1996-07-04 00:00:00.0' OR (t.OrderDate = '1996-07-04 00:00:00.0' AND t.OrderID > 10248))",
         order,
         "OrderID");

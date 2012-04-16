@@ -117,10 +117,10 @@ public class OSimpleObjects {
     } else if (EdmSimpleType.DATETIME.equals(type)) {
       LocalDateTime dValue = value == null
           ? null
-          : new LocalDateTime(InternalUtil.parseDateTime(value));
+          : new LocalDateTime(InternalUtil.parseDateTimeFromXml(value));
       return (OSimpleObject<V>) Impl.create(EdmSimpleType.DATETIME, dValue);
     } else if (EdmSimpleType.DATETIMEOFFSET.equals(type)) {
-      return (OSimpleObject<V>) Impl.create(EdmSimpleType.DATETIMEOFFSET, InternalUtil.parseDateTime(value));
+      return (OSimpleObject<V>) Impl.create(EdmSimpleType.DATETIMEOFFSET, InternalUtil.parseDateTimeOffsetFromXml(value));
     } else if (EdmSimpleType.TIME.equals(type)) {
       LocalTime tValue = value == null
           ? null

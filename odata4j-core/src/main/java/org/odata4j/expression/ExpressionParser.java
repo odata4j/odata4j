@@ -8,9 +8,6 @@ import java.util.Set;
 import org.core4j.Enumerable;
 import org.core4j.Func1;
 import org.core4j.Func2;
-import org.joda.time.DateTime;
-import org.joda.time.LocalDateTime;
-import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.odata4j.core.Guid;
@@ -462,14 +459,11 @@ public class ExpressionParser {
       String word = tokens.get(0).value;
       String value = unquote(tokens.get(1).value);
       if (word.equals("datetime")) {
-        DateTime dt = InternalUtil.parseDateTime(value);
-        return Expression.dateTime(new LocalDateTime(dt));
+        return Expression.dateTime(InternalUtil.parseDateTimeFromXml(value));
       } else if (word.equals("time")) {
-        LocalTime t = InternalUtil.parseTime(value);
-        return Expression.time(t);
+        return Expression.time(InternalUtil.parseTime(value));
       } else if (word.equals("datetimeoffset")) {
-        DateTime dt = InternalUtil.parseDateTime(value);
-        return Expression.dateTimeOffset(dt);
+        return Expression.dateTimeOffset(InternalUtil.parseDateTimeOffsetFromXml(value));
       } else if (word.equals("guid")) {
         // odata: dddddddd-dddd-dddd-dddddddddddd
         // java: dddddddd-dd-dd-dddd-dddddddddddd
