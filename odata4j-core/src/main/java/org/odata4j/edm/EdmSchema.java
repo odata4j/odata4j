@@ -2,6 +2,7 @@ package org.odata4j.edm;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.odata4j.core.ImmutableList;
@@ -151,7 +152,7 @@ public class EdmSchema extends EdmItem {
       return this;
     }
 
-    public Builder addEntityTypes(List<EdmEntityType.Builder> entityTypes) {
+    public Builder addEntityTypes(Collection<EdmEntityType.Builder> entityTypes) {
       this.entityTypes.addAll(entityTypes);
       return this;
     }
@@ -161,12 +162,12 @@ public class EdmSchema extends EdmItem {
       return this;
     }
 
-    public Builder addComplexTypes(List<EdmComplexType.Builder> complexTypes) {
+    public Builder addComplexTypes(Collection<EdmComplexType.Builder> complexTypes) {
       this.complexTypes.addAll(complexTypes);
       return this;
     }
 
-    public Builder addAssociations(List<EdmAssociation.Builder> associations) {
+    public Builder addAssociations(Collection<EdmAssociation.Builder> associations) {
       this.associations.addAll(associations);
       return this;
     }
@@ -176,7 +177,7 @@ public class EdmSchema extends EdmItem {
       return this;
     }
 
-    public Builder addEntityContainers(List<EdmEntityContainer.Builder> entityContainers) {
+    public Builder addEntityContainers(Collection<EdmEntityContainer.Builder> entityContainers) {
       this.entityContainers.addAll(entityContainers);
       return this;
     }

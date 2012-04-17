@@ -34,4 +34,13 @@ public abstract class PropertyModelDelegate implements Delegate<PropertyModel>, 
     return getDelegate().getCollectionElementType(collectionName);
   }
 
+  @Override
+  public Iterable<String> getDeclaredPropertyNames() {
+    return getDelegate().getDeclaredPropertyNames();
+  }
+  
+  @Override
+  public Iterable<String> getDeclaredCollectionNames() {
+    return getDelegate().getDeclaredCollectionNames();
+  }
 }

@@ -30,18 +30,37 @@ public class BeanModel {
   private final Map<String, Method> setters;
   private final Map<String, Class<?>> types;
   private final Map<String, Class<?>> collections;
-
+  
+  private final boolean flatten;
+  private final BeanModel superClass;
+  
   /**
    * Constructs the abstract bean representation of a class.
+   * Flattens inheritance.
    *
    * @param beanClass  the class to introspect
    */
   public BeanModel(Class<?> beanClass) {
+    this(beanClass, true);
+  }
+  
+  /**
+   * Constructs the abstract bean representation of a class.
+   *
+   * @param beanClass  the class to introspect
+   * @param flatten    flatten inheritance or not (@see BeanBasePropertyModel)
+   */
+  public BeanModel(Class<?> beanClass, boolean flatten) {
     this.beanClass = beanClass;
-    this.getters = getBeanGetters(beanClass);
-    this.setters = getBeanSetters(beanClass);
+    this.getters = getBeanGetters(beanClass, flatten);
+    this.setters = getBeanSetters(beanClass, flatten);
     this.types = computeTypes(getters, setters);
     this.collections = computeCollections(getters, setters);
+    this.flatten = flatten;
+    
+    // work up the hierarchy
+    Class<?> sc = beanClass.getSuperclass();
+    superClass = (!flatten && null != sc) ? new BeanModel(sc, flatten) : null;
   }
 
   /**
@@ -51,6 +70,14 @@ public class BeanModel {
    */
   public Class<?> getBeanClass() {
     return beanClass;
+  }
+  
+  /**
+   * Returns the BeanModel for the superclass of this.beanClass
+   * @return the superclass of this.beanClass
+   */
+  public BeanModel getSuperClassModel() {
+    return superClass;
   }
 
   /**
@@ -62,17 +89,30 @@ public class BeanModel {
    * @return the list of identified properties
    */
   public Iterable<String> getPropertyNames() {
-    return types.keySet();
+    List<String> props = new ArrayList<String>(); 
+    props.addAll(types.keySet());
+    if (null != superClass) {
+      Iterable<String> sprops = superClass.getPropertyNames();
+      for (String p : sprops) {
+        props.add(p);
+      }
+    }
+    return props;
   }
 
   /**
    * Discovers the type of a property.
+   * Will walk up the inheritance hierarchy
    *
    * @param propertyName  the property you are interested in
    * @return the type of the property
    */
   public Class<?> getPropertyType(String propertyName) {
-    return types.get(propertyName);
+    Class<?> ptype = types.get(propertyName);
+    if (null == ptype && null != superClass) {
+      ptype = superClass.getPropertyType(propertyName);
+    }
+    return ptype;
   }
 
   /**
@@ -81,7 +121,15 @@ public class BeanModel {
    * @return the list of properties
    */
   public Iterable<String> getCollectionNames() {
-    return collections.keySet();
+    List<String> props = new ArrayList<String>(); 
+    props.addAll(collections.keySet());
+    if (null != superClass) {
+      Iterable<String> sprops = superClass.getCollectionNames();
+      for (String p : sprops) {
+        props.add(p);
+      }
+    }
+    return props;
   }
 
   /**
@@ -91,21 +139,33 @@ public class BeanModel {
    * @return the type of the elements of the named collection
    */
   public Class<?> getCollectionElementType(String collectionName) {
-    return collections.get(collectionName);
+    Class<?> ctype = collections.get(collectionName);
+    if (null == ctype && null != superClass) {
+      ctype = superClass.getCollectionElementType(collectionName);
+    }
+    return ctype;
   }
 
   /**
    * Returns true if the property has a getter.
    */
   public boolean canRead(String propertyName) {
-    return getters.containsKey(propertyName);
+    boolean hasGetter = getters.containsKey(propertyName);
+    if (!hasGetter && null != superClass) {
+      hasGetter = superClass.canRead(propertyName);
+    }
+    return hasGetter;
   }
 
   /**
    * Returns true if the property has a setter.
    */
   public boolean canWrite(String propertyName) {
-    return setters.containsKey(propertyName);
+    boolean hasSetter = setters.containsKey(propertyName);
+     if (!hasSetter && null != superClass) {
+      hasSetter = superClass.canWrite(propertyName);
+    }
+    return hasSetter;
   }
 
   /**
@@ -119,6 +179,9 @@ public class BeanModel {
    */
   public Object getPropertyValue(Object target, String propertyName) {
     Method method = getGetter(propertyName);
+    if (null == method && null != superClass) {
+      method = superClass.getGetter(propertyName);
+    }
     if (!method.isAccessible())
       method.setAccessible(true);
     try {
@@ -138,6 +201,9 @@ public class BeanModel {
    */
   public void setPropertyValue(Object target, String propertyName, Object propertyValue) {
     Method method = getSetter(propertyName);
+    if (null == method && null != superClass) {
+      method = superClass.getSetter(propertyName);
+    }
     if (!method.isAccessible())
       method.setAccessible(true);
     try {
@@ -208,13 +274,20 @@ public class BeanModel {
 
   private Method getGetter(String propertyName) {
     Method method = getters.get(propertyName);
+    if (method == null && null != superClass) {
+      method = superClass.getGetter(propertyName);
+    }
     if (method == null)
       throw new IllegalArgumentException("No getter found for propertyName " + propertyName);
+    
     return method;
   }
 
   private Method getSetter(String propertyName) {
     Method method = setters.get(propertyName);
+    if (method == null && null != superClass) {
+      method = superClass.getSetter(propertyName);
+    }
     if (method == null)
       throw new IllegalArgumentException("No setter found for propertyName " + propertyName);
     return method;
@@ -291,10 +364,11 @@ public class BeanModel {
     return clazz.isArray() || Iterable.class.isAssignableFrom(clazz);
   }
 
-  private static Map<String, Method> getBeanGetters(Class<?> clazz) {
+  private static Map<String, Method> getBeanGetters(Class<?> clazz, boolean flatten) {
 
     Map<String, Method> rt = new HashMap<String, Method>();
-    for (Method method : clazz.getMethods()) {
+    Method[] methods = flatten ? clazz.getMethods() : clazz.getDeclaredMethods();
+    for (Method method : methods) {
       String methodName = method.getName();
       if (methodName.startsWith("get") && methodName.length() > 3 && Character.isUpperCase(methodName.charAt(3)) && method.getParameterTypes().length == 0 && !method.getReturnType().equals(Void.TYPE) && !Modifier.isStatic(method.getModifiers())) {
         String name = methodName.substring(3);
@@ -308,10 +382,11 @@ public class BeanModel {
     return rt;
   }
 
-  private static Map<String, Method> getBeanSetters(Class<?> clazz) {
+  private static Map<String, Method> getBeanSetters(Class<?> clazz, boolean flatten) {
 
     Map<String, Method> rt = new HashMap<String, Method>();
-    for (Method method : clazz.getMethods()) {
+    Method[] methods = flatten ? clazz.getMethods() : clazz.getDeclaredMethods();
+    for (Method method : methods) {
       String methodName = method.getName();
       if (methodName.startsWith("set") && methodName.length() > 3 && Character.isUpperCase(methodName.charAt(3)) && method.getParameterTypes().length == 1 && method.getReturnType().equals(Void.TYPE) && !Modifier.isStatic(method.getModifiers())) {
         String name = methodName.substring(3);
@@ -319,6 +394,24 @@ public class BeanModel {
       }
     }
     return rt;
+  }
+
+  /**
+   * Get the property names that were defined in this.beanClass only (i.e.
+   * does not include inherited property names)
+   * @return property names 
+   */
+  public Iterable<String> getDeclaredPropertyNames() {
+    return types.keySet();
+  }
+  
+  /**
+   * Get the collection names that were defined in this.beanClass only (i.e.
+   * does not include inherited collection names)
+   * @return collection names 
+   */
+  public Iterable<String> getDeclaredCollectionNames() {
+    return collections.keySet();
   }
 
 }

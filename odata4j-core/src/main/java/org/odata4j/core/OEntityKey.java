@@ -261,6 +261,22 @@ public class OEntityKey {
     return toSortedSet(Enumerable.create(values).cast(NamedValue.class).select(OFuncs.namedValueToPropertyRaw()), OComparators.propertyByName());
   }
 
+  /**
+   * returns the value for a named value in a complex key.
+   * @param name
+   * @return the value
+   */
+  public Object getComplexKeyValue(String name) {
+    assertComplex();
+    for (Object o : this.values) {
+      NamedValue<?> nv = (NamedValue<?>) o;
+      if (nv.getName().equals(name)) {
+        return nv.getValue();
+      }
+    }
+    return null;
+  }
+  
   private static <T> SortedSet<T> toSortedSet(Enumerable<T> enumerable, Comparator<T> comparator) {
     TreeSet<T> rt = new TreeSet<T>(comparator);
     rt.addAll(enumerable.toSet());
