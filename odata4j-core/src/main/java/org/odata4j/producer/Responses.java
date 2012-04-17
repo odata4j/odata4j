@@ -12,6 +12,7 @@ import org.odata4j.core.OObject;
 import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmMultiplicity;
+import org.odata4j.edm.EdmSimpleType;
 
 /**
  * A static factory to create immutable {@link EntitiesResponse}, {@link EntityResponse}, {@link PropertyResponse}, {@link EntityIdResponse},
@@ -95,6 +96,22 @@ public class Responses {
       public OProperty<?> getProperty() {
         return property;
       }
+    };
+  }
+  
+  public static SimpleResponse simple(final  EdmSimpleType type, final Object value) {
+    return new SimpleResponse() {
+
+      @Override
+      public EdmSimpleType getType() {
+        return type;
+      }
+
+      @Override
+      public Object getValue() {
+        return value;
+      }
+      
     };
   }
 

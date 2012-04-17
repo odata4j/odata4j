@@ -39,7 +39,7 @@ import org.odata4j.producer.exceptions.NotImplementedException;
  */
 public class InMemoryProducer implements ODataProducer {
 
-  private static final String ID_PROPNAME = "EntityId";
+  public static final String ID_PROPNAME = "EntityId";
 
   private final String namespace;
   private final String containerName;
@@ -52,7 +52,8 @@ public class InMemoryProducer implements ODataProducer {
   private final InMemoryTypeMapping typeMapping;
   
   private boolean includeNullPropertyValues = true;
-
+  private final boolean flattenEdm;
+  
   private static final int DEFAULT_MAX_RESULTS = 100;
 
   /**
@@ -84,12 +85,19 @@ public class InMemoryProducer implements ODataProducer {
    * @param typeMapping  optional mapping between java types and edm types, null for default
    */
   public InMemoryProducer(String namespace, String containerName, int maxResults, EdmDecorator decorator, InMemoryTypeMapping typeMapping) {
+    this(namespace, containerName, maxResults, decorator, typeMapping,
+            true); // legacy: flatten edm
+  }
+  
+  public InMemoryProducer(String namespace, String containerName, int maxResults, EdmDecorator decorator, InMemoryTypeMapping typeMapping,
+          boolean flattenEdm) {
     this.namespace = namespace;
     this.containerName = containerName != null && !containerName.isEmpty() ? containerName : "Container";
     this.maxResults = maxResults;
     this.decorator = decorator;
     this.metadataProducer = new MetadataProducer(this, decorator);
     this.typeMapping = typeMapping == null ? InMemoryTypeMapping.DEFAULT : typeMapping;
+    this.flattenEdm = flattenEdm;
   }
 
   @Override
@@ -99,10 +107,14 @@ public class InMemoryProducer implements ODataProducer {
     }
     return metadata;
   }
+  
+  public String getContainerName() {
+    return containerName;
+  }
 
   protected InMemoryEdmGenerator newEdmGenerator(String namespace, InMemoryTypeMapping typeMapping, String idPropName, Map<String, InMemoryEntityInfo<?>> eis,
           Map<String, InMemoryComplexTypeInfo<?>> complexTypesInfo) {
-    return new InMemoryEdmGenerator(namespace, containerName, typeMapping, ID_PROPNAME, eis, complexTypesInfo);
+    return new InMemoryEdmGenerator(namespace, containerName, typeMapping, ID_PROPNAME, eis, complexTypesInfo, this.flattenEdm);
   }
 
   @Override
@@ -225,8 +237,18 @@ public class InMemoryProducer implements ODataProducer {
     metadata = null;
   }
 
-  private InMemoryComplexTypeInfo<?> findComplexTypeInfoForClass(Class<?> clazz) {
+  protected InMemoryComplexTypeInfo<?> findComplexTypeInfoForClass(Class<?> clazz) {
     for (InMemoryComplexTypeInfo<?> typeInfo : this.complexTypes.values()) {
+      if (typeInfo.entityClass.equals(clazz)) {
+        return typeInfo;
+      }
+    }
+    
+    return null;
+  }
+  
+  protected InMemoryEntityInfo<?> findEntityInfoForClass(Class<?> clazz) {
+    for (InMemoryEntityInfo<?> typeInfo : this.eis.values()) {
       if (typeInfo.entityClass.equals(clazz)) {
         return typeInfo;
       }
@@ -554,7 +576,7 @@ public class InMemoryProducer implements ODataProducer {
 
   @Override
   public EntityResponse getEntity(String entitySetName, final OEntityKey entityKey, EntityQueryInfo queryInfo) {
-    final Object rt = getEntity(entitySetName, entityKey);
+    final Object rt = getEntityPojo(entitySetName, entityKey, queryInfo);
     if (rt == null) throw new NotFoundException();
 
     final EdmEntitySet ees = getMetadata().getEdmEntitySet(entitySetName);
@@ -602,7 +624,7 @@ public class InMemoryProducer implements ODataProducer {
 
     // get property value...
     InMemoryEntityInfo<?> entityInfo = eis.get(entitySetName);
-    Object target = getEntity(entitySetName, entityKey);
+    Object target = getEntityPojo(entitySetName, entityKey, queryInfo);
     Object propertyValue = entityInfo.properties.getPropertyValue(target, navProp);
     // ... and create OProperty
     OProperty<?> property = OProperties.simple(navProp, (EdmSimpleType<?>) edmType, propertyValue);
@@ -640,8 +662,18 @@ public class InMemoryProducer implements ODataProducer {
     throw new NotImplementedException();
   }
 
+  /**
+   * given an entity set and an entity key, return the pojo that is that entity instance.
+   * The default implementation iterates over the entire set of pojos to find the
+   * desired instance.
+   * 
+   * @param entitySetName
+   * @param entityKey
+   * @param queryInfo - custom query options may be useful
+   * @return 
+   */
   @SuppressWarnings("unchecked")
-  private Object getEntity(String entitySetName, final OEntityKey entityKey) {
+  protected Object getEntityPojo(String entitySetName, final OEntityKey entityKey, QueryInfo queryInfo) {
     final InMemoryEntityInfo<?> ei = eis.get(entitySetName);
 
     final String[] keyList = ei.keys;

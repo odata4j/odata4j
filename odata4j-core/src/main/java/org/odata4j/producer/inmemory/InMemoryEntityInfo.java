@@ -15,4 +15,8 @@ public class InMemoryEntityInfo<TEntity> {
   Func1<Object, HashMap<String, Object>> id;
   PropertyModel properties;
   boolean hasStream;
+  
+  public Class<?> getSuperClass() {
+    return entityClass.getSuperclass() != null && !entityClass.getSuperclass().equals(Object.class) ? entityClass.getSuperclass() : null;
+  }
 }
