@@ -2,6 +2,7 @@ package org.odata4j.stax2.xppimpl;
 
 import java.io.Reader;
 import java.io.Writer;
+import org.core4j.Enumerable;
 
 import org.odata4j.core.Throwables;
 import org.odata4j.stax2.Attribute2;
@@ -188,6 +189,11 @@ public class XmlPullXMLFactoryProvider2 extends XMLFactoryProvider2 {
         public String getValue() {
           return value;
         }
+
+        @Override
+        public QName2 getName() {
+          throw new UnsupportedOperationException("Not supported yet.");
+        }
       };
 
     }
@@ -205,12 +211,22 @@ public class XmlPullXMLFactoryProvider2 extends XMLFactoryProvider2 {
         public String getValue() {
           return value;
         }
+
+        @Override
+        public QName2 getName() {
+          throw new UnsupportedOperationException("Not supported yet.");
+        }
       };
     }
 
     @Override
     public QName2 getName() {
       return name;
+    }
+
+    @Override
+    public Enumerable<Attribute2> getAttributes() {
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
   }

@@ -40,11 +40,32 @@ public class PojoWithAllTypesComplex extends PojoWithAllTypes {
     stringList = value;
   }
   
+  public static class Complex2 {
+    public Complex2(String a, String b) {
+      z1 = a;
+      z2 = b;
+    }
+
+    public String getZ1() {
+      return z1;
+    }
+
+    public String getZ2() {
+      return z2;
+    }
+
+    private String z1;
+    private String z2;
+  }
+  
   public static class Complex1 {
 
-    public Complex1(String a, String b) {
+    public Complex1(String a, String b, Complex2 c2, List<Complex2> cc, List<String> cs) {
       s1 = a;
       s2 = b;
+      this.embeddedComplex2 = c2;
+      this.embeddedCollectionComplex2 = cc;
+      this.embeddedCollectionString = cs;
     }
 
     public String getS1() {
@@ -54,9 +75,21 @@ public class PojoWithAllTypesComplex extends PojoWithAllTypes {
     public String getS2() {
       return s2;
     }
-
+    
+    public Complex2 getEmbeddedComplex2() { return this.embeddedComplex2; }
+    public void setEmbeddedComplex2(Complex2 value) { this.embeddedComplex2 = value; }
+    
+    public List<Complex2> getEmbeddedCollectionComplex2() { return this.embeddedCollectionComplex2; }
+    public void setEmbeddedCollectionComplex2(List<Complex2> value) { this.embeddedCollectionComplex2 = value; }
+    
+    public List<String> getEmbeddedCollectionString() { return this.embeddedCollectionString; }
+    public void setEmbeddedCollectionString(List<String> value) { this.embeddedCollectionString = value; }
+    
     private String s1;
     private String s2;
+    private Complex2 embeddedComplex2;
+    private List<Complex2> embeddedCollectionComplex2;
+    private List<String> embeddedCollectionString;
   }
   
   public List<Complex1> getComplexes() {

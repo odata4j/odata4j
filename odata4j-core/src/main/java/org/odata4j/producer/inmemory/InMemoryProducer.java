@@ -1,11 +1,6 @@
 package org.odata4j.producer.inmemory;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.core4j.Enumerable;
 import org.core4j.Func;
@@ -44,8 +39,9 @@ public class InMemoryProducer implements ODataProducer {
   private final String namespace;
   private final String containerName;
   private final int maxResults;
-  private final Map<String, InMemoryEntityInfo<?>> eis = new HashMap<String, InMemoryEntityInfo<?>>();
-  private final Map<String, InMemoryComplexTypeInfo<?>> complexTypes = new HashMap<String, InMemoryComplexTypeInfo<?>>();
+  // preserve the order of registration
+  private final Map<String, InMemoryEntityInfo<?>> eis = new LinkedHashMap<String, InMemoryEntityInfo<?>>();
+  private final Map<String, InMemoryComplexTypeInfo<?>> complexTypes = new LinkedHashMap<String, InMemoryComplexTypeInfo<?>>();
   private EdmDataServices metadata;
   private final EdmDecorator decorator;
   private final MetadataProducer metadataProducer;
@@ -266,9 +262,11 @@ public class InMemoryProducer implements ODataProducer {
    * @param properties      put properties into this list.
    */
   protected void addPropertiesFromObject(Object obj, PropertyModel propertyModel, EdmStructuralType structuralType, List<OProperty<?>> properties) {
+    //System.out.println("addPropertiesFromObject: " + obj.getClass().getName());
     for (Iterator<EdmProperty> it = structuralType.getProperties().iterator(); it.hasNext();) {
       EdmProperty property = it.next();
       Object value = propertyModel.getPropertyValue(obj, property.getName());
+      //System.out.println("  prop: " + property.getName() + " val: " + value);
       if (value == null && !this.includeNullPropertyValues) {
         // this is not permitted by the spec but makes debugging wide entity types
         // much easier.
@@ -319,6 +317,7 @@ public class InMemoryProducer implements ODataProducer {
                 property.getType()), b.build()));
       }
     }
+    //System.out.println("done addPropertiesFromObject: " + obj.getClass().getName());
   }
   
   protected OEntity toOEntity(EdmEntitySet ees, Object obj, List<EntitySimpleProperty> expand) {
@@ -619,6 +618,7 @@ public class InMemoryProducer implements ODataProducer {
       throw new NotFoundException("Property " + navProp + " is not found");
     // currently only simple types are supported
     EdmType edmType = edmProperty.getType();
+    
     if (!edmType.isSimple())
       throw new NotImplementedException("Only simple types are supported. Property type is '" + edmType.getFullyQualifiedTypeName() + "'");
 

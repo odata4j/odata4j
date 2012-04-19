@@ -1,5 +1,7 @@
 package org.odata4j.stax2;
 
+import org.core4j.Enumerable;
+
 public interface StartElement2 {
 
   QName2 getName();
@@ -8,4 +10,5 @@ public interface StartElement2 {
 
   Attribute2 getAttributeByName(String name);
 
+  Enumerable<Attribute2> getAttributes();
 }

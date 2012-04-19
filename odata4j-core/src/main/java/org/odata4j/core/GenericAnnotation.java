@@ -22,6 +22,7 @@ public class GenericAnnotation<T> implements NamespacedAnnotation<T> {
     return namespace;
   }
 
+  @Override
   public String getName() {
     return localName;
   }
@@ -30,12 +31,18 @@ public class GenericAnnotation<T> implements NamespacedAnnotation<T> {
     return namespace.getPrefix() + ":" + localName;
   }
 
+  @Override
   public Class<T> getValueType() {
     return valueType;
   }
 
+  @Override
   public T getValue() {
     return value;
   }
 
+  @Override
+  public String toString() {
+    return "Annotation: " + namespace + ":" + localName + " = " + value;
+  }
 }

@@ -51,6 +51,7 @@ public class BeanModel {
    * @param flatten    flatten inheritance or not (@see BeanBasePropertyModel)
    */
   public BeanModel(Class<?> beanClass, boolean flatten) {
+    //System.out.println("bean model: " + beanClass);
     this.beanClass = beanClass;
     this.getters = getBeanGetters(beanClass, flatten);
     this.setters = getBeanSetters(beanClass, flatten);
@@ -305,6 +306,7 @@ public class BeanModel {
     for (Entry<String, Method> setter : setters.entrySet()) {
       String propertyName = setter.getKey();
       Class<?> getterType = rt.get(propertyName);
+      //System.out.println("bean prop?: " + propertyName + " getterType: " + getterType);
       if (getterType != null) {
         Class<?> setterType = setter.getValue().getParameterTypes()[0];
 
@@ -315,6 +317,7 @@ public class BeanModel {
               getterType.getName(),
               setterType.getName()));
 
+        //System.out.println("bean yes");
         rt.put(propertyName, setterType);
       }
     }
@@ -334,6 +337,8 @@ public class BeanModel {
         Class<?> setterType = setters.containsKey(propertyName)
             ? setters.get(propertyName).getParameterTypes()[0]
             : null;
+        //System.out.println("bean colllectionProp?: " + propertyName + " getterType: " + getterType.getName() + " setterType: " + setterType);
+
         if (setterType != null) {
           if (!getterType.equals(setterType))
             throw new RuntimeException(String.format("Inconsistent types for association %s.%s: getter type %s, setter type %s",
@@ -351,7 +356,8 @@ public class BeanModel {
                 : Object.class;
           } else
             elementClass = Object.class;
-
+          
+          //System.out.println("bean yes");
           rt.put(propertyName, elementClass);
         }
       }
@@ -369,14 +375,17 @@ public class BeanModel {
     Map<String, Method> rt = new HashMap<String, Method>();
     Method[] methods = flatten ? clazz.getMethods() : clazz.getDeclaredMethods();
     for (Method method : methods) {
+      //System.out.println("bean gettter? " + method.getName());
       String methodName = method.getName();
       if (methodName.startsWith("get") && methodName.length() > 3 && Character.isUpperCase(methodName.charAt(3)) && method.getParameterTypes().length == 0 && !method.getReturnType().equals(Void.TYPE) && !Modifier.isStatic(method.getModifiers())) {
         String name = methodName.substring(3);
         rt.put(name, method);
+        //System.out.println("bean gettter yes");
       }
       if (methodName.startsWith("is") && methodName.length() > 2 && Character.isUpperCase(methodName.charAt(2)) && method.getParameterTypes().length == 0 && (method.getReturnType().equals(Boolean.class) || method.getReturnType().equals(Boolean.TYPE)) && !Modifier.isStatic(method.getModifiers())) {
         String name = methodName.substring(2);
         rt.put(name, method);
+        //System.out.println("bean gettter yes");
       }
     }
     return rt;
@@ -387,10 +396,12 @@ public class BeanModel {
     Map<String, Method> rt = new HashMap<String, Method>();
     Method[] methods = flatten ? clazz.getMethods() : clazz.getDeclaredMethods();
     for (Method method : methods) {
+      //System.out.println("bean settter? " + method.getName());
       String methodName = method.getName();
       if (methodName.startsWith("set") && methodName.length() > 3 && Character.isUpperCase(methodName.charAt(3)) && method.getParameterTypes().length == 1 && method.getReturnType().equals(Void.TYPE) && !Modifier.isStatic(method.getModifiers())) {
         String name = methodName.substring(3);
         rt.put(name, method);
+        //System.out.println("bean settter yes");
       }
     }
     return rt;

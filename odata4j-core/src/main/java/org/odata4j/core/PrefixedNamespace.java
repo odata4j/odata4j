@@ -21,4 +21,8 @@ public class PrefixedNamespace {
     return prefix;
   }
 
+  @Override
+  public String toString() {
+    return uri + " " + prefix;
+  }
 }

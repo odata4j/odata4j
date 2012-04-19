@@ -1,9 +1,11 @@
 package org.odata4j.format.xml;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import javax.xml.stream.events.Attribute;
 
 import org.core4j.Enumerable;
 import org.core4j.Func1;
@@ -11,30 +13,15 @@ import org.core4j.Predicate1;
 import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OPredicates;
 import org.odata4j.core.PrefixedNamespace;
-import org.odata4j.edm.EdmAssociation;
-import org.odata4j.edm.EdmAssociationEnd;
-import org.odata4j.edm.EdmAssociationSet;
-import org.odata4j.edm.EdmAssociationSetEnd;
-import org.odata4j.edm.EdmCollectionType;
-import org.odata4j.edm.EdmComplexType;
-import org.odata4j.edm.EdmDataServices;
-import org.odata4j.edm.EdmEntityContainer;
-import org.odata4j.edm.EdmEntitySet;
-import org.odata4j.edm.EdmEntityType;
-import org.odata4j.edm.EdmFunctionImport;
-import org.odata4j.edm.EdmFunctionParameter;
+import org.odata4j.edm.*;
 import org.odata4j.edm.EdmFunctionParameter.Mode;
-import org.odata4j.edm.EdmMultiplicity;
-import org.odata4j.edm.EdmNavigationProperty;
-import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmProperty.CollectionKind;
-import org.odata4j.edm.EdmSchema;
-import org.odata4j.edm.EdmType;
 import org.odata4j.stax2.Attribute2;
 import org.odata4j.stax2.QName2;
 import org.odata4j.stax2.StartElement2;
 import org.odata4j.stax2.XMLEvent2;
 import org.odata4j.stax2.XMLEventReader2;
+import org.odata4j.stax2.staximpl.StaxXMLFactoryProvider2.StaxStartElement2;
 
 public class EdmxFormatParser extends XmlFormatParser {
 
@@ -245,7 +232,8 @@ public class EdmxFormatParser extends XmlFormatParser {
             .addEntityTypes(edmEntityTypes)
             .addComplexTypes(edmComplexTypes)
             .addAssociations(edmAssociations)
-            .addEntityContainers(edmEntityContainers);
+            .addEntityContainers(edmEntityContainers)
+            .setAnnotations(getAnnotations(schemaElement));
       }
     }
 
@@ -266,8 +254,13 @@ public class EdmxFormatParser extends XmlFormatParser {
     while (reader.hasNext()) {
       XMLEvent2 event = reader.nextEvent();
 
-      if (isStartElement(event, EDM2006_ENTITYSET, EDM2007_ENTITYSET, EDM2008_1_ENTITYSET, EDM2008_9_ENTITYSET, EDM2009_ENTITYSET))
-        edmEntitySets.add(EdmEntitySet.newBuilder().setName(getAttributeValueIfExists(event.asStartElement(), "Name")).setEntityTypeName(getAttributeValueIfExists(event.asStartElement(), "EntityType")));
+      if (isStartElement(event, EDM2006_ENTITYSET, EDM2007_ENTITYSET, EDM2008_1_ENTITYSET, EDM2008_9_ENTITYSET, EDM2009_ENTITYSET)) {
+        StartElement2 entitySetStartElement = event.asStartElement();
+        edmEntitySets.add(EdmEntitySet.newBuilder()
+                .setName(getAttributeValueIfExists(entitySetStartElement, "Name"))
+                .setEntityTypeName(getAttributeValueIfExists(entitySetStartElement, "EntityType"))
+                .setAnnotations(getAnnotations(entitySetStartElement)));
+      }
 
       if (isStartElement(event, EDM2006_ASSOCIATIONSET, EDM2007_ASSOCIATIONSET, EDM2008_1_ASSOCIATIONSET, EDM2008_9_ASSOCIATIONSET, EDM2009_ASSOCIATIONSET))
         edmAssociationSets.add(parseEdmAssociationSet(reader, schemaNamespace, event.asStartElement()));
@@ -277,7 +270,8 @@ public class EdmxFormatParser extends XmlFormatParser {
 
       if (isEndElement(event, entityContainerElement.getName())) {
         return EdmEntityContainer.newBuilder().setName(name).setIsDefault(isDefault).setLazyLoadingEnabled(lazyLoadingEnabled)
-            .addEntitySets(edmEntitySets).addAssociationSets(edmAssociationSets).addFunctionImports(edmFunctionImports);
+            .addEntitySets(edmEntitySets).addAssociationSets(edmAssociationSets).addFunctionImports(edmFunctionImports)
+                .setAnnotations(getAnnotations(entityContainerElement));
       }
     }
     throw new UnsupportedOperationException();
@@ -304,17 +298,19 @@ public class EdmxFormatParser extends XmlFormatParser {
 
       if (isStartElement(event, EDM2006_PARAMETER, EDM2007_PARAMETER, EDM2008_1_PARAMETER, EDM2008_9_PARAMETER, EDM2009_PARAMETER)) {
         // Mode attribute is optional and thus can be null
-        Attribute2 modeAttribute = event.asStartElement().getAttributeByName("Mode");
+        StartElement2 paramStartElement = event.asStartElement();
+        Attribute2 modeAttribute = paramStartElement.getAttributeByName("Mode");
         parameters.add(EdmFunctionParameter.newBuilder()
-            .setName(event.asStartElement().getAttributeByName("Name").getValue())
+            .setName(paramStartElement.getAttributeByName("Name").getValue())
             //.setType(EdmType.get(event.asStartElement().getAttributeByName("Type").getValue()))
-            .setType(EdmType.newDeferredBuilder(event.asStartElement().getAttributeByName("Type").getValue(), dataServices))
-            .setMode(modeAttribute != null ? Mode.valueOf(modeAttribute.getValue()) : null));
+            .setType(EdmType.newDeferredBuilder(paramStartElement.getAttributeByName("Type").getValue(), dataServices))
+            .setMode(modeAttribute != null ? Mode.valueOf(modeAttribute.getValue()) : null)
+            .setAnnotations(getAnnotations(paramStartElement)));
       }
 
       if (isEndElement(event, functionImportElement.getName())) {
         return EdmFunctionImport.newBuilder().setName(name).setEntitySetName(entitySet).setReturnTypeName(returnType).setIsCollection(isCollection).setHttpMethod(httpMethod)
-            .addParameters(parameters);
+            .addParameters(parameters).setAnnotations(getAnnotations(functionImportElement));
       }
     }
     throw new UnsupportedOperationException();
@@ -330,13 +326,18 @@ public class EdmxFormatParser extends XmlFormatParser {
     while (reader.hasNext()) {
       XMLEvent2 event = reader.nextEvent();
 
-      if (isStartElement(event, EDM2006_END, EDM2007_END, EDM2008_1_END, EDM2008_9_END, EDM2009_END))
+      if (isStartElement(event, EDM2006_END, EDM2007_END, EDM2008_1_END, EDM2008_9_END, EDM2009_END)) {
+        StartElement2 endStartElement = event.asStartElement();
         ends.add(EdmAssociationSetEnd.newBuilder()
-            .setRoleName(event.asStartElement().getAttributeByName("Role").getValue())
-            .setEntitySetName(event.asStartElement().getAttributeByName("EntitySet").getValue()));
+            .setRoleName(endStartElement.getAttributeByName("Role").getValue())
+            .setEntitySetName(endStartElement.getAttributeByName("EntitySet").getValue())
+            .setAnnotations(getAnnotations(endStartElement)));
+      }
 
       if (isEndElement(event, associationSetElement.getName())) {
-        return EdmAssociationSet.newBuilder().setName(name).setAssociationName(associationName).setEnds(ends.get(0), ends.get(1));
+        return EdmAssociationSet.newBuilder().setName(name).setAssociationName(associationName)
+                .setEnds(ends.get(0), ends.get(1))
+                .setAnnotations(getAnnotations(associationSetElement));
       }
     }
     throw new UnsupportedOperationException();
@@ -351,14 +352,20 @@ public class EdmxFormatParser extends XmlFormatParser {
     while (reader.hasNext()) {
       XMLEvent2 event = reader.nextEvent();
 
-      if (isStartElement(event, EDM2006_END, EDM2007_END, EDM2008_1_END, EDM2008_9_END, EDM2009_END))
+      if (isStartElement(event, EDM2006_END, EDM2007_END, EDM2008_1_END, EDM2008_9_END, EDM2009_END)) {
+        StartElement2 endStartElement = event.asStartElement();
         ends.add(EdmAssociationEnd.newBuilder()
-            .setRole(event.asStartElement().getAttributeByName("Role").getValue())
-            .setTypeName(event.asStartElement().getAttributeByName("Type").getValue())
-            .setMultiplicity(EdmMultiplicity.fromSymbolString(event.asStartElement().getAttributeByName("Multiplicity").getValue())));
+            .setRole(endStartElement.getAttributeByName("Role").getValue())
+            .setTypeName(endStartElement.getAttributeByName("Type").getValue())
+            .setMultiplicity(EdmMultiplicity.fromSymbolString(endStartElement.getAttributeByName("Multiplicity").getValue()))
+            .setAnnotations(getAnnotations(endStartElement)));
+      }
 
       if (isEndElement(event, associationElement.getName())) {
-        return EdmAssociation.newBuilder().setNamespace(schemaNamespace).setAlias(schemaAlias).setName(name).setEnds(ends.get(0), ends.get(1));
+        return EdmAssociation.newBuilder().setNamespace(schemaNamespace)
+                .setAlias(schemaAlias).setName(name)
+                .setEnds(ends.get(0), ends.get(1))
+                .setAnnotations(getAnnotations(associationElement));
       }
     }
     throw new UnsupportedOperationException();
@@ -366,28 +373,29 @@ public class EdmxFormatParser extends XmlFormatParser {
   }
 
   private EdmProperty.Builder parseEdmProperty(XMLEvent2 event) {
-    String propertyName = getAttributeValueIfExists(event.asStartElement(), "Name");
-    String propertyType = getAttributeValueIfExists(event.asStartElement(), "Type");
-    String propertyNullable = getAttributeValueIfExists(event.asStartElement(), "Nullable");
-    String maxLength = getAttributeValueIfExists(event.asStartElement(), "MaxLength");
-    String unicode = getAttributeValueIfExists(event.asStartElement(), "Unicode");
-    String fixedLength = getAttributeValueIfExists(event.asStartElement(), "FixedLength");
-    String collectionKindS = getAttributeValueIfExists(event.asStartElement(), "CollectionKind");
+    StartElement2 startElement = event.asStartElement();
+    String propertyName = getAttributeValueIfExists(startElement, "Name");
+    String propertyType = getAttributeValueIfExists(startElement, "Type");
+    String propertyNullable = getAttributeValueIfExists(startElement, "Nullable");
+    String maxLength = getAttributeValueIfExists(startElement, "MaxLength");
+    String unicode = getAttributeValueIfExists(startElement, "Unicode");
+    String fixedLength = getAttributeValueIfExists(startElement, "FixedLength");
+    String collectionKindS = getAttributeValueIfExists(startElement, "CollectionKind");
     CollectionKind ckind = CollectionKind.NONE;
     if (collectionKindS != null) {
       ckind = Enum.valueOf(CollectionKind.class, collectionKindS);
     }
-    String defaultValue = getAttributeValueIfExists(event.asStartElement(), "DefaultValue");
-    String precision = getAttributeValueIfExists(event.asStartElement(), "Precision");
-    String scale = getAttributeValueIfExists(event.asStartElement(), "Scale");
+    String defaultValue = getAttributeValueIfExists(startElement, "DefaultValue");
+    String precision = getAttributeValueIfExists(startElement, "Precision");
+    String scale = getAttributeValueIfExists(startElement, "Scale");
 
-    String storeGeneratedPattern = getAttributeValueIfExists(event.asStartElement(), new QName2(NS_EDMANNOTATION, "StoreGeneratedPattern"));
+    String storeGeneratedPattern = getAttributeValueIfExists(startElement, new QName2(NS_EDMANNOTATION, "StoreGeneratedPattern"));
 
-    String fcTargetPath = getAttributeValueIfExists(event.asStartElement(), M_FC_TARGETPATH);
-    String fcContentKind = getAttributeValueIfExists(event.asStartElement(), M_FC_CONTENTKIND);
-    String fcKeepInContent = getAttributeValueIfExists(event.asStartElement(), M_FC_KEEPINCONTENT);
-    String fcEpmContentKind = getAttributeValueIfExists(event.asStartElement(), M_FC_EPMCONTENTKIND);
-    String fcEpmKeepInContent = getAttributeValueIfExists(event.asStartElement(), M_FC_EPMKEEPINCONTENT);
+    String fcTargetPath = getAttributeValueIfExists(startElement, M_FC_TARGETPATH);
+    String fcContentKind = getAttributeValueIfExists(startElement, M_FC_CONTENTKIND);
+    String fcKeepInContent = getAttributeValueIfExists(startElement, M_FC_KEEPINCONTENT);
+    String fcEpmContentKind = getAttributeValueIfExists(startElement, M_FC_EPMCONTENTKIND);
+    String fcEpmKeepInContent = getAttributeValueIfExists(startElement, M_FC_EPMKEEPINCONTENT);
 
     return EdmProperty.newBuilder(propertyName)
         .setType(EdmType.newDeferredBuilder(propertyType, dataServices))
@@ -404,7 +412,8 @@ public class EdmxFormatParser extends XmlFormatParser {
         .setCollectionKind(ckind)
         .setDefaultValue(defaultValue)
         .setPrecision(precision == null ? null : Integer.parseInt(precision))
-        .setScale(scale == null ? null : Integer.parseInt(scale));
+        .setScale(scale == null ? null : Integer.parseInt(scale))
+        .setAnnotations(getAnnotations(startElement));
   }
 
   private EdmComplexType.Builder parseEdmComplexType(XMLEventReader2 reader, String schemaNamespace, StartElement2 complexTypeElement) {
@@ -420,7 +429,11 @@ public class EdmxFormatParser extends XmlFormatParser {
       }
 
       if (isEndElement(event, complexTypeElement.getName())) {
-        EdmComplexType.Builder complexType = EdmComplexType.newBuilder().setNamespace(schemaNamespace).setName(name).addProperties(edmProperties);
+        EdmComplexType.Builder complexType = EdmComplexType.newBuilder()
+                .setNamespace(schemaNamespace)
+                .setName(name)
+                .addProperties(edmProperties)
+                .setAnnotations(getAnnotations(complexTypeElement));
         if (isAbstractS != null)
           complexType.setIsAbstract("true".equals(isAbstractS));
         return complexType;
@@ -438,6 +451,7 @@ public class EdmxFormatParser extends XmlFormatParser {
     String baseType = getAttributeValueIfExists(entityTypeElement, "BaseType");
     String isAbstractS = getAttributeValueIfExists(entityTypeElement, "Abstract");
 
+   
     List<String> keys = new ArrayList<String>();
     List<EdmProperty.Builder> edmProperties = new ArrayList<EdmProperty.Builder>();
     List<EdmNavigationProperty.Builder> edmNavigationProperties = new ArrayList<EdmNavigationProperty.Builder>();
@@ -453,13 +467,16 @@ public class EdmxFormatParser extends XmlFormatParser {
       }
 
       if (isStartElement(event, EDM2006_NAVIGATIONPROPERTY, EDM2007_NAVIGATIONPROPERTY, EDM2008_1_NAVIGATIONPROPERTY, EDM2008_9_NAVIGATIONPROPERTY, EDM2009_NAVIGATIONPROPERTY)) {
-        String associationName = event.asStartElement().getAttributeByName("Name").getValue();
-        String relationshipName = event.asStartElement().getAttributeByName("Relationship").getValue();
-        String fromRoleName = event.asStartElement().getAttributeByName("FromRole").getValue();
-        String toRoleName = event.asStartElement().getAttributeByName("ToRole").getValue();
+        StartElement2 navPropStartElement = event.asStartElement();
+        String associationName = navPropStartElement.getAttributeByName("Name").getValue();
+        String relationshipName = navPropStartElement.getAttributeByName("Relationship").getValue();
+        String fromRoleName = navPropStartElement.getAttributeByName("FromRole").getValue();
+        String toRoleName = navPropStartElement.getAttributeByName("ToRole").getValue();
 
-        edmNavigationProperties.add(EdmNavigationProperty.newBuilder(associationName).setRelationshipName(relationshipName).setFromToName(fromRoleName, toRoleName));
-
+        edmNavigationProperties.add(EdmNavigationProperty.newBuilder(associationName)
+                .setRelationshipName(relationshipName)
+                .setFromToName(fromRoleName, toRoleName)
+                .setAnnotations(getAnnotations(navPropStartElement)));
       }
 
       if (isEndElement(event, entityTypeElement.getName())) {
@@ -472,12 +489,31 @@ public class EdmxFormatParser extends XmlFormatParser {
             .addProperties(edmProperties)
             .addNavigationProperties(edmNavigationProperties)
             .setBaseType(baseType)
-            .setIsAbstract(isAbstractS == null ? null : "true".equals(isAbstractS));
-
+            .setIsAbstract(isAbstractS == null ? null : "true".equals(isAbstractS))
+            .setAnnotations(getAnnotations(entityTypeElement));
       }
     }
 
     throw new UnsupportedOperationException();
+  }
+  
+  protected List<EdmAnnotation<?>> getAnnotations(StartElement2 element) {
+     // extract Annotation attributes
+    try {
+      Enumerable<Attribute2> atts = element.getAttributes();
+      List<EdmAnnotation<?>> annots = new ArrayList<EdmAnnotation<?>>();
+      for (Attribute2 att : atts) {
+        QName2 q = att.getName();
+        if (q.getNamespaceUri() != null && !q.getNamespaceUri().isEmpty() && !q.getNamespaceUri().contains("schemas.microsoft.com")) {
+          // a user extension
+          annots.add(EdmAnnotation.attribute(q.getNamespaceUri(), q.getPrefix(), q.getLocalPart(), att.getValue()));
+        }
+      }
+      return annots;
+    } catch (Exception ex) {
+      // not all of the xml parsing implementations implement getAttributes() yet.
+      return null;
+    }     
   }
 
 }

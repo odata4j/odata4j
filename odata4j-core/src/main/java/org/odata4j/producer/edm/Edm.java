@@ -108,6 +108,7 @@ public class Edm {
   public static class EntityType extends StructuralType {
 
     public static final String Key = "Key";
+    public static final String Documentation = "Documentation";
     public static final String OpenType = "OpenType";
 
     public static String name() {

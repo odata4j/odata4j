@@ -4,18 +4,14 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.odata4j.core.OComplexObject;
-import org.odata4j.core.OComplexObjects;
-import org.odata4j.core.ODataVersion;
-import org.odata4j.core.OProperty;
-import org.odata4j.edm.EdmComplexType;
-import org.odata4j.edm.EdmProperty;
-import org.odata4j.edm.EdmSimpleType;
+import org.odata4j.core.*;
+import org.odata4j.edm.*;
 import org.odata4j.format.FormatParser;
 import org.odata4j.format.Settings;
 import org.odata4j.format.json.JsonStreamReaderFactory.JsonParseException;
 import org.odata4j.format.json.JsonStreamReaderFactory.JsonStreamReader;
 import org.odata4j.format.json.JsonStreamReaderFactory.JsonStreamReader.JsonEvent;
+import org.odata4j.format.json.JsonStreamReaderFactory.JsonStreamReader.JsonStartPropertyEvent;
 
 /**
  * Parser for OComplexObjects in JSON
@@ -83,20 +79,21 @@ public class JsonComplexObjectFormatParser extends JsonFormatParser implements F
   }
 
   public OComplexObject parseSingleObject(JsonStreamReader jsr) {
+    //System.out.println("json parseSingleObject: " + returnType.getFullyQualifiedTypeName());
     ensureNext(jsr);
 
     // this can be used in a context where we require an object and one
     // where there *may* be an object...like a collection
-
+    OComplexObject result = null;
     JsonEvent event = jsr.nextEvent();
     if (event.isStartObject()) {
 
       List<OProperty<?>> props = new ArrayList<OProperty<?>>();
-      return eatProps(props, jsr);
-    } else {
-      // not a start object.
-      return null;
-    }
+      result = eatProps(props, jsr);
+    } // else not a start object.
+    
+    //System.out.println("json done parseSingleObject: " + returnType.getFullyQualifiedTypeName());
+    return result;
   }
 
   public OComplexObject parseSingleObject(JsonStreamReader jsr, JsonEvent startPropertyEvent) {
@@ -110,7 +107,7 @@ public class JsonComplexObjectFormatParser extends JsonFormatParser implements F
   }
 
   private OComplexObject eatProps(List<OProperty<?>> props, JsonStreamReader jsr) {
-
+   // System.out.println("json eatProps: " + returnType.getFullyQualifiedTypeName());
     ensureNext(jsr);
     while (jsr.hasNext()) {
       JsonEvent event = jsr.nextEvent();
@@ -123,6 +120,7 @@ public class JsonComplexObjectFormatParser extends JsonFormatParser implements F
         throw new JsonParseException("unexpected parse event: " + event.toString());
       }
     }
+    //System.out.println("json done eatProps: " + returnType.getFullyQualifiedTypeName());
     return OComplexObjects.create(returnType, props);
   }
 
@@ -130,6 +128,7 @@ public class JsonComplexObjectFormatParser extends JsonFormatParser implements F
 
     JsonEvent event = jsr.nextEvent();
 
+    //System.out.println("json addProperty: " + name);
     if (event.isEndProperty()) {
       // scalar property
       EdmProperty ep = returnType.findProperty(name);
@@ -137,16 +136,72 @@ public class JsonComplexObjectFormatParser extends JsonFormatParser implements F
       if (ep == null) {
         throw new IllegalArgumentException("unknown property " + name + " for " + returnType.getFullyQualifiedTypeName());
       }
-      // TODO support complex type properties
-      if (!ep.getType().isSimple())
-        throw new UnsupportedOperationException("Only simple properties supported");
-      props.add(JsonTypeConverter.parse(name, (EdmSimpleType<?>) ep.getType(), event.asEndProperty().getValue()));
+      
+      if (!ep.getType().isSimple()) {
+        if (null == event.asEndProperty().getValue()) {
+          // a complex property can be null in which case it looks like a simple property
+          props.add(OProperties.complex(name, (EdmComplexType)ep.getType(), null));
+        } else {
+          // we should not get here...
+          throw new UnsupportedOperationException("Only simple properties supported");
+        }
+      } else {
+        props.add(JsonTypeConverter.parse(name, (EdmSimpleType<?>) ep.getType(), event.asEndProperty().getValue()));
+      }
     } else if (event.isStartObject()) {
       // embedded complex object or array.
-      throw new JsonParseException("embedded collections or complex types not supported");
+      parseEmbedded(name, event, jsr, props);
     } else {
       throw new JsonParseException("expecting endproperty or startobject, got: " + event.toString());
     }
+    //System.out.println("json done addProperty: " + name);
+  }
+  
+  protected void parseEmbedded(String propName, JsonEvent event, JsonStreamReader jsr, List<OProperty<?>> props) {
+    
+    //System.out.println("json parseEmbedded " + propName);
+    ensureStartObject(event);
+    event = jsr.nextEvent();
+    ensureStartProperty(event);
+    JsonStartPropertyEvent startProp = event.asStartProperty();
+    EdmProperty eprop = this.returnType.findProperty(propName);
+    
+    if (RESULTS_PROPERTY.equals(startProp.getName())) {
+      // embedded collection
+     
+      //System.out.println("json embeddedCollection" + (null != eprop ? eprop.getName() : "null"));
+      if (eprop != null && eprop.getCollectionKind() != EdmProperty.CollectionKind.NONE) {
+        EdmCollectionType collectionType = new EdmCollectionType(eprop.getCollectionKind(), eprop.getType());
+        JsonCollectionFormatParser cfp = new JsonCollectionFormatParser(collectionType, this.metadata);
+        OCollection<? extends OObject> collection = cfp.parseCollection(jsr);
+        ensureEndArray(jsr.previousEvent());
+        props.add(OProperties.collection(propName, collectionType, collection));
+        ensureEndProperty(jsr.nextEvent()); // embedded "results" property
+        ensureEndObject(jsr.nextEvent());   // the collection object
+        ensureEndProperty(jsr.nextEvent()); // propName
+      } else {
+        throw new RuntimeException("unhandled property: " + startProp.getName());
+      }
+      //System.out.println("json done embeddedCollection" + (null != eprop ? eprop.getName() : "null"));
+      
+    } else if (eprop.getType() instanceof EdmComplexType) {
+      // a "regular property", must be an embedded complex object
+      EdmComplexType outerType = this.returnType;
+      this.returnType = (EdmComplexType) eprop.getType();
+      //System.out.println("json embedded complex" + returnType.getFullyQualifiedTypeName());
+      try {
+        OComplexObject o = this.parseSingleObject(jsr, startProp);
+        ensureEndObject(jsr.previousEvent());
+        props.add(OProperties.complex(propName, this.returnType, o.getProperties()));
+        ensureEndProperty(jsr.nextEvent());
+      } finally {
+        this.returnType = outerType;
+      }
+      //System.out.println("json done embedded complex" + returnType.getFullyQualifiedTypeName());
+    } else {
+      throw new RuntimeException("unhandled property: " + startProp.getName());
+    }
+    //System.out.println("json done parseEmbedded " + propName);
   }
 
 }

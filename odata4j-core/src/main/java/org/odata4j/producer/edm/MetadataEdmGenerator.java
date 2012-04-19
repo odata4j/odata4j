@@ -212,7 +212,9 @@ public class MetadataEdmGenerator implements EdmGenerator {
     navprops = new ArrayList<EdmNavigationProperty.Builder>();
 
     ep = EdmProperty.newBuilder(Edm.EntityType.Key).setType(this.entityKeyType).setNullable(true);
+    props.add(ep);
 
+    ep = EdmProperty.newBuilder(Edm.EntityType.Documentation).setType(this.documentationType).setNullable(true);
     props.add(ep);
 
     EdmEntityType.Builder entityType = EdmEntityType.newBuilder()

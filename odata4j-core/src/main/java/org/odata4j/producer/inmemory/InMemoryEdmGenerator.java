@@ -102,6 +102,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
 
   private void createComplexTypes(EdmDecorator decorator, List<EdmComplexType.Builder> complexTypes) {
     for (String complexTypeName : complexTypeInfo.keySet()) {
+      //System.out.println("edm complexType: " + complexTypeName);
       InMemoryComplexTypeInfo<?> typeInfo = complexTypeInfo.get(complexTypeName);
 
       List<EdmProperty.Builder> properties = new ArrayList<EdmProperty.Builder>();
@@ -435,6 +436,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
 
     Iterable<String> propertyNames = this.flatten ? model.getPropertyNames() : model.getDeclaredPropertyNames();
     for (String propName : propertyNames) {
+      //System.out.println("edm property: " + propName);
       Class<?> propType = model.getPropertyType(propName);
       EdmType type = typeMapping.findEdmType(propType);
       EdmComplexType.Builder typeBuilder = null;
@@ -442,6 +444,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
          typeBuilder = findComplexTypeForClass(propType);
       }
       
+      //System.out.println("edm property: " + propName + " type: " + type + " builder: " + typeBuilder);
       if (type == null && typeBuilder == null) {
         continue;
       }

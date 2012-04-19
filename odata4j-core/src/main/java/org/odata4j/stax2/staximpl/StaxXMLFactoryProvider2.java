@@ -2,6 +2,9 @@ package org.odata4j.stax2.staximpl;
 
 import java.io.Reader;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
@@ -13,6 +16,7 @@ import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
+import org.core4j.Enumerable;
 
 import org.odata4j.core.Throwables;
 import org.odata4j.stax2.Attribute2;
@@ -198,8 +202,8 @@ public class StaxXMLFactoryProvider2 extends XMLFactoryProvider2 {
     }
   }
 
-  private static class StaxStartElement2 implements StartElement2 {
-    private final StartElement real;
+  public static class StaxStartElement2 implements StartElement2 {
+    public final StartElement real;
 
     public StaxStartElement2(StartElement real) {
       this.real = real;
@@ -222,6 +226,16 @@ public class StaxXMLFactoryProvider2 extends XMLFactoryProvider2 {
         return null;
       return new StaxAttribute2(att);
     }
+    
+    @Override
+    public Enumerable<Attribute2> getAttributes() {
+      Iterator i = real.getAttributes();
+      List<Attribute2> atts = new ArrayList<Attribute2>();
+      while (i.hasNext()) {
+        atts.add(new StaxAttribute2((Attribute)i.next()));
+      }
+      return Enumerable.create(atts);
+    }
   }
 
   private static class StaxAttribute2 implements Attribute2 {
@@ -234,6 +248,12 @@ public class StaxXMLFactoryProvider2 extends XMLFactoryProvider2 {
     @Override
     public String getValue() {
       return real.getValue();
+    }
+
+    @Override
+    public QName2 getName() {
+      return new QName2(real.getName().getNamespaceURI(), 
+              real.getName().getLocalPart(), real.getName().getPrefix());
     }
   }
 

@@ -5,7 +5,7 @@ public class BeanBasedPropertyModel implements PropertyModel {
   private final BeanModel beanModel;
   
   public BeanBasedPropertyModel(Class<?> clazz) {
-    this(clazz, false);
+    this(clazz, true);
   }
   
   /**

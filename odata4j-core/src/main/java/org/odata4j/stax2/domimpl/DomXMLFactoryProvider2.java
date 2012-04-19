@@ -5,6 +5,7 @@ import java.io.Writer;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import org.core4j.Enumerable;
 
 import org.core4j.ReadOnlyIterator;
 import org.odata4j.core.Throwables;
@@ -230,6 +231,11 @@ public class DomXMLFactoryProvider2 extends XMLFactoryProvider2 {
         public String getValue() {
           return attr.getValue();
         }
+
+        @Override
+        public QName2 getName() {
+          throw new UnsupportedOperationException("Not supported yet.");
+        }
       };
 
     }
@@ -242,6 +248,11 @@ public class DomXMLFactoryProvider2 extends XMLFactoryProvider2 {
     @Override
     public String toString() {
       return "StartElement " + getName() + " " + PlatformUtil.getTextContent(element);
+    }
+
+    @Override
+    public Enumerable<Attribute2> getAttributes() {
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
   }
