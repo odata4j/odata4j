@@ -167,7 +167,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
       ei.keys = subclass.keys;
       ei.entityClass = (Class) clazz;
       ei.properties = new EnumsAsStringsPropertyModelDelegate(
-              new BeanBasedPropertyModel(ei.entityClass));
+              new BeanBasedPropertyModel(ei.entityClass, this.flatten));
     }
     return ei;
   }

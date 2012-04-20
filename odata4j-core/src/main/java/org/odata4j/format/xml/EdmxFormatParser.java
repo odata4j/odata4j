@@ -21,7 +21,7 @@ import org.odata4j.stax2.QName2;
 import org.odata4j.stax2.StartElement2;
 import org.odata4j.stax2.XMLEvent2;
 import org.odata4j.stax2.XMLEventReader2;
-import org.odata4j.stax2.staximpl.StaxXMLFactoryProvider2.StaxStartElement2;
+import org.odata4j.stax2.Namespace2;
 
 public class EdmxFormatParser extends XmlFormatParser {
 
@@ -41,7 +41,7 @@ public class EdmxFormatParser extends XmlFormatParser {
       boolean shouldReturn = false;
 
       if (isStartElement(event, XmlFormatParser.EDMX_EDMX)) {
-        // should extract the declared namespaces here...
+        namespaces = getExtensionNamespaces(event.asStartElement());
       }
 
       if (isStartElement(event, EDMX_DATASERVICES)) {
@@ -497,6 +497,12 @@ public class EdmxFormatParser extends XmlFormatParser {
     throw new UnsupportedOperationException();
   }
   
+  protected boolean isExtensionNamespace(String namespaceUri) {
+    return namespaceUri != null && 
+           !namespaceUri.trim().isEmpty() && 
+           !namespaceUri.contains("schemas.microsoft.com");
+  }
+  
   protected List<EdmAnnotation<?>> getAnnotations(StartElement2 element) {
      // extract Annotation attributes
     try {
@@ -504,7 +510,7 @@ public class EdmxFormatParser extends XmlFormatParser {
       List<EdmAnnotation<?>> annots = new ArrayList<EdmAnnotation<?>>();
       for (Attribute2 att : atts) {
         QName2 q = att.getName();
-        if (q.getNamespaceUri() != null && !q.getNamespaceUri().isEmpty() && !q.getNamespaceUri().contains("schemas.microsoft.com")) {
+        if (isExtensionNamespace(q.getNamespaceUri())) {
           // a user extension
           annots.add(EdmAnnotation.attribute(q.getNamespaceUri(), q.getPrefix(), q.getLocalPart(), att.getValue()));
         }
@@ -514,6 +520,23 @@ public class EdmxFormatParser extends XmlFormatParser {
       // not all of the xml parsing implementations implement getAttributes() yet.
       return null;
     }     
+  }
+  
+  protected List<PrefixedNamespace> getExtensionNamespaces(StartElement2 startElement) {
+
+    try {
+      Enumerable<Namespace2> nse = startElement.getNamespaces();
+      List<PrefixedNamespace> nsl = new ArrayList<PrefixedNamespace>();
+      for (Namespace2 ns : nse) {
+        if (this.isExtensionNamespace(ns.getNamespaceURI())) {
+          nsl.add(new PrefixedNamespace(ns.getNamespaceURI(), ns.getPrefix()));
+        }
+      }
+      return nsl;
+    } catch (Exception ex) {
+      // not all of the xml parsing implementations implement getNamespaces() yet.
+      return null;
+    }
   }
 
 }

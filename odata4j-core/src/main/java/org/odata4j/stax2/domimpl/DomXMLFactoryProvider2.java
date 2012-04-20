@@ -22,6 +22,7 @@ import org.odata4j.stax2.XMLInputFactory2;
 import org.odata4j.stax2.XMLOutputFactory2;
 import org.odata4j.stax2.XMLWriter2;
 import org.odata4j.stax2.XMLWriterFactory2;
+import org.odata4j.stax2.Namespace2;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -252,6 +253,11 @@ public class DomXMLFactoryProvider2 extends XMLFactoryProvider2 {
 
     @Override
     public Enumerable<Attribute2> getAttributes() {
+      throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Enumerable<Namespace2> getNamespaces() {
       throw new UnsupportedOperationException("Not supported yet.");
     }
 

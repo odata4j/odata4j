@@ -68,8 +68,8 @@ public class InMemoryEdmTest {
     public void setSub2(Sub2 value) {}
   }
   
-  private void register(InMemoryProducer p, Class clazz, String... keys) {
-    p.register(clazz, new EnumsAsStringsPropertyModelDelegate(new BeanBasedPropertyModel(clazz)), 
+  private void register(InMemoryProducer p, Class clazz, boolean flat, String... keys) {
+    p.register(clazz, new EnumsAsStringsPropertyModelDelegate(new BeanBasedPropertyModel(clazz, flat)), 
             clazz.getSimpleName() + "s",  // set
             clazz.getSimpleName(),        // type
             null,           
@@ -114,11 +114,11 @@ public class InMemoryEdmTest {
           null,   // InMemoryTypeMapping typeMapping,
           false); // boolean flattenEdm);
       
-      register(p, RHS.class, "RHSProp1");
-      register(p, Base.class, "BaseProp1");
-      register(p, Sub1.class, "BaseProp1");
-      register(p, Sub1_2.class, "BaseProp1");
-      register(p, Sub2.class, "BaseProp1");
+      register(p, RHS.class, false, "RHSProp1");
+      register(p, Base.class, false, "BaseProp1");
+      register(p, Sub1.class, false, "BaseProp1");
+      register(p, Sub1_2.class, false, "BaseProp1");
+      register(p, Sub2.class, false, "BaseProp1");
       
       EdmDataServices edm = p.getMetadata();
       //EdmxFormatWriter.write(edm, new OutputStreamWriter(System.out));
@@ -183,8 +183,8 @@ public class InMemoryEdmTest {
   @Test
   public void testFlatEdm() {
       InMemoryProducer p = new InMemoryProducer("myns");
-      register(p, RHS.class, "RHSProp1");
-      register(p, Sub1.class, "BaseProp1");
+      register(p, RHS.class, true, "RHSProp1");
+      register(p, Sub1.class, true, "BaseProp1");
      
       EdmDataServices edm = p.getMetadata();
       // EdmxFormatWriter.write(edm, new OutputStreamWriter(System.out));
@@ -207,8 +207,8 @@ public class InMemoryEdmTest {
   public void testUniqueAssociationNames() {
       InMemoryProducer p = new InMemoryProducer("myns");
       
-      register(p, RHS.class, "RHSProp1");
-      register(p, Base.class, "BaseProp1");
+      register(p, RHS.class, true, "RHSProp1");
+      register(p, Base.class, true, "BaseProp1");
      
       EdmDataServices edm = p.getMetadata();
       EdmEntityType base = (EdmEntityType) edm.findEdmEntityType("myns.Base");

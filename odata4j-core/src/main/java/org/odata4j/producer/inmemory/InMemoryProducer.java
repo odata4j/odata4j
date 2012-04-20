@@ -133,7 +133,7 @@ public class InMemoryProducer implements ODataProducer {
    */
   public <TEntity> void registerComplexType(Class<TEntity> complexTypeClass, String typeName) {
     registerComplexType(complexTypeClass, typeName,
-        new EnumsAsStringsPropertyModelDelegate(new BeanBasedPropertyModel(complexTypeClass)));
+        new EnumsAsStringsPropertyModelDelegate(new BeanBasedPropertyModel(complexTypeClass, this.flattenEdm)));
   }
   
   public <TEntity> void registerComplexType(Class<TEntity> complexTypeClass, String typeName, PropertyModel propertyModel) {
@@ -168,7 +168,7 @@ public class InMemoryProducer implements ODataProducer {
    * @param keys  one or more keys for the entity
    */
   public <TEntity> void register(Class<TEntity> entityClass, String entitySetName, String entityTypeName, Func<Iterable<TEntity>> get, String... keys) {
-    PropertyModel model = new BeanBasedPropertyModel(entityClass);
+    PropertyModel model = new BeanBasedPropertyModel(entityClass, this.flattenEdm);
     model = new EnumsAsStringsPropertyModelDelegate(model);
     register(entityClass, model, entitySetName, entityTypeName, get, keys);
   }
@@ -177,7 +177,7 @@ public class InMemoryProducer implements ODataProducer {
    * Registers a new entity set based on a POJO type using the default property model.
    */
   public <TEntity, TKey> void register(Class<TEntity> entityClass, Class<TKey> keyClass, String entitySetName, Func<Iterable<TEntity>> get, Func1<TEntity, TKey> id) {
-    PropertyModel model = new BeanBasedPropertyModel(entityClass);
+    PropertyModel model = new BeanBasedPropertyModel(entityClass, this.flattenEdm);
     model = new EnumsAsStringsPropertyModelDelegate(model);
     model = new EntityIdFunctionPropertyModelDelegate<TEntity, TKey>(model, ID_PROPNAME, keyClass, id);
     register(entityClass, model, entitySetName, get, ID_PROPNAME);
