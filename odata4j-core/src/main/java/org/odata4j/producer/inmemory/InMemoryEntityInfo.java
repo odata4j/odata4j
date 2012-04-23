@@ -16,6 +16,15 @@ public class InMemoryEntityInfo<TEntity> {
   PropertyModel properties;
   boolean hasStream;
   
+  public String getEntitySetName() { return entitySetName; }
+  public String getEntityTypeName() { return entityTypeName; }
+  public String[] getKeys() { return keys; }
+  public Class<TEntity> getEntityClass() { return entityClass; }
+  public Func<Iterable<TEntity>> getGet() { return get; }
+  public Func1<Object, HashMap<String, Object>> getId() { return id; }
+  public PropertyModel getPropertyModel() { return properties; }
+  public boolean getHasStream() { return hasStream; }
+  
   public Class<?> getSuperClass() {
     return entityClass.getSuperclass() != null && !entityClass.getSuperclass().equals(Object.class) ? entityClass.getSuperclass() : null;
   }
