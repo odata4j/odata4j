@@ -1,5 +1,7 @@
 package org.odata4j.producer.inmemory;
 
+import java.util.Collection;
+
 public class BeanBasedPropertyModel implements PropertyModel {
 
   private final BeanModel beanModel;
@@ -40,6 +42,11 @@ public class BeanBasedPropertyModel implements PropertyModel {
   }
 
   @Override
+  public void setPropertyValue(Object target, String propertyName, Object value) {
+    beanModel.setPropertyValue(target, propertyName, value);
+  }
+
+  @Override
   public Iterable<String> getCollectionNames() {
     return beanModel.getCollectionNames();
   }
@@ -47,6 +54,11 @@ public class BeanBasedPropertyModel implements PropertyModel {
   @Override
   public Iterable<?> getCollectionValue(Object target, String collectionName) {
     return beanModel.getCollectionValue(target, collectionName);
+  }
+  
+  @Override
+  public void setCollectionValue(Object target, String collectionName, Collection<?> value) {
+    beanModel.setCollectionValue(target, collectionName, value);
   }
 
   @Override
@@ -63,5 +75,4 @@ public class BeanBasedPropertyModel implements PropertyModel {
   public Iterable<String> getDeclaredCollectionNames() {
     return beanModel.getDeclaredCollectionNames();
   }
-
 }

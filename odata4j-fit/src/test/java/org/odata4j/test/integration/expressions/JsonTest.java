@@ -1,11 +1,14 @@
 package org.odata4j.test.integration.expressions;
 
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import junit.framework.Assert;
+import org.core4j.Func;
 
 import org.core4j.Funcs;
 import org.joda.time.DateTime;
@@ -21,6 +24,7 @@ import org.odata4j.producer.server.ODataServer;
 import org.odata4j.test.integration.AbstractRuntimeTest;
 import org.odata4j.test.integration.expressions.PojoWithAllTypesComplex.Complex1;
 import org.odata4j.test.integration.expressions.PojoWithAllTypesComplex.Complex2;
+import org.odata4j.test.integration.expressions.PojoWithAllTypesComplex.Entity1;
 
 public class JsonTest extends AbstractRuntimeTest {
 
@@ -29,13 +33,16 @@ public class JsonTest extends AbstractRuntimeTest {
   }
 
   @Test
-  public void testJsonEntity() {
+  public void testJsonEntity() throws InstantiationException, IllegalAccessException, NoSuchMethodException {
 
     try {
       setup();
       // did the properties round trip ok?
-      OEntity e = consumer.getEntity("Pojo", (int)1).execute();
-      assertPojoEqualsOEntity(pojo, e.getProperties());
+      OEntity e = consumer.getEntity("Pojo", (int)1).expand("FavoriteEntity,OnNoticeEntities").execute();
+      assertPojoEqualsOEntity(pojo, e, e.getProperties());
+          
+      PojoWithAllTypesComplex rpojo = producer.toPojo(e, PojoWithAllTypesComplex.class);
+      assertPojoEqualsOEntity(rpojo, e, e.getProperties());
       
     } finally {
       server.stop();
@@ -43,14 +50,14 @@ public class JsonTest extends AbstractRuntimeTest {
 
   }
   
-  public void testJsonCollection() {
+  public void testJsonCollection() throws NoSuchMethodException {
 
     try {
       setup();
       // hmmh, apparently the consumer client is not capable of somethign like this?
       OEntity e = consumer.getEntity("Pojo/Complexes", (int)1).execute();
-      assertPojoEqualsOEntity(pojo, e.getProperties());
-      
+      assertPojoEqualsOEntity(pojo, e, e.getProperties());
+
     } finally {
       
       server.stop();
@@ -59,13 +66,26 @@ public class JsonTest extends AbstractRuntimeTest {
   }
   
   private PojoWithAllTypesComplex pojo;
+  private InMemoryProducer producer;
   private ODataServer server;
   private ODataConsumer consumer;
   
-  private void setup() {
+  private static List<Entity1> getOnNoticeEntities() {
+    List<Entity1> l = new ArrayList<Entity1>();
+   
+    l.add(new Entity1("Bears", 2));
+    l.add(new Entity1("Irony", 33));
+    return l;
+  }
+  
+  private static Entity1 getNDGT() {
+    return new Entity1("Neil DeGrasse-Tyson", 1);
+  }
+  
+  private void setup() throws NoSuchMethodException {
     String uri = "http://localhost:18890/TestService.svc/";
 
-    InMemoryProducer producer = new InMemoryProducer("JsonTest");
+    producer = new InMemoryProducer("JsonTest");
     DefaultODataProducerProvider.setInstance(producer);
 
     server = this.rtFacade.startODataServer(uri);
@@ -78,6 +98,15 @@ public class JsonTest extends AbstractRuntimeTest {
     producer.registerComplexType(PojoWithAllTypesComplex.Complex2.class, "Complex2");
     producer.registerComplexType(PojoWithAllTypesComplex.Complex1.class, "Complex1");
 
+    producer.register(PojoWithAllTypesComplex.Entity1.class, "Relations", new Func<Iterable<Entity1>>() {
+
+      @Override
+      public Iterable<Entity1> apply() {
+        List<Entity1> l = getOnNoticeEntities(); 
+        l.add(getNDGT());
+        return l;
+      } 
+            }, "Prop1");
 
     List<PojoWithAllTypesComplex> pojos = new ArrayList<PojoWithAllTypesComplex>();
     producer.register(PojoWithAllTypesComplex.class, "Pojo", Funcs.constant((Iterable<PojoWithAllTypesComplex>) pojos), "Int32");
@@ -95,6 +124,8 @@ public class JsonTest extends AbstractRuntimeTest {
             new PojoWithAllTypesComplex(new byte[]{0x01, 0x02, 0x03}, true, UnsignedByte.valueOf(0xFF), (byte) -0x05, new LocalDateTime(), new BigDecimal("123.456"), 123.456,
             Guid.randomGuid(), (short) 123, 1, Long.MAX_VALUE, 123.456F, "John", new LocalTime(), new DateTime(), stringList, embeddedPojo);
     pojo.addComplex1(new Complex1("c1a", "c1b", new Complex2("c2a", "c2b"), null, null)).addComplex1(new Complex1("c2a", "c2b", null, Arrays.asList(new Complex2[]{new Complex2("cc2a", "cc2b")}), Arrays.asList(new String[]{"es1", "es2"})));
+    pojo.setFavoriteEntity(getNDGT());
+    pojo.setOnNoticeEntities(getOnNoticeEntities());
     pojos.add(pojo);
 
 
@@ -102,7 +133,7 @@ public class JsonTest extends AbstractRuntimeTest {
       String output = this.rtFacade.getWebResource(uri + "$metadata");
       System.out.println(output);
     }
-    String output = this.rtFacade.getWebResource(uri + "Pojo?$format=json");
+    String output = this.rtFacade.getWebResource(uri + "Pojo?$format=json&$expand=FavoriteEntity,OnNoticeEntities");
     System.out.println(output);
 
 
@@ -117,7 +148,7 @@ public class JsonTest extends AbstractRuntimeTest {
     return null;
   }
 
-  private static void assertPojoEqualsOEntity(PojoWithAllTypes pojo, List<OProperty<?>> props) {
+  private static void assertPojoEqualsOEntity(PojoWithAllTypes pojo, OStructuralObject sobject, List<OProperty<?>> props) {
     Assert.assertEquals(pojo.getBoolean(), getPropertyValue("Boolean", props));
     // TODO when Edm.Binary supported by InMemoryProducer
     // assertArrayEquals(pojo.getBinary(), (byte[])getPropertyValue("Binary", props));
@@ -138,7 +169,7 @@ public class JsonTest extends AbstractRuntimeTest {
 
       // embedded EdmComplexType
       PojoWithAllTypesComplex pojoC = (PojoWithAllTypesComplex) pojo;
-      assertPojoEqualsOEntity(pojoC.getComplexType(), (List<OProperty<?>>) getPropertyValue("ComplexType", props));
+      assertPojoEqualsOEntity(pojoC.getComplexType(), null, (List<OProperty<?>>) getPropertyValue("ComplexType", props));
 
       // embedded collection(Edm.String)
       OCollection<OSimpleObject> scollection = (OCollection<OSimpleObject>) getPropertyValue("StringList", props);
@@ -160,6 +191,24 @@ public class JsonTest extends AbstractRuntimeTest {
           if (((String)getPropertyValue("S1", co.getProperties())).equals(c1.getS1()) &&
               ((String)getPropertyValue("S2", co.getProperties())).equals(c1.getS2())) { 
             found = true; break; 
+          }
+        }
+        Assert.assertTrue(found);
+      }
+      
+      // TODO need a generalized differ here...
+      // inlined entity
+      OEntity ndgt = ((OEntity)sobject).getLink("FavoriteEntity", ORelatedEntityLinkInline.class).getRelatedEntity();
+      Assert.assertEquals(getNDGT().getProp1(), getPropertyValue("Prop1", ndgt.getProperties()));
+      
+      List<OEntity> one = ((OEntity)sobject).getLink("OnNoticeEntities", ORelatedEntitiesLinkInline.class).getRelatedEntities();
+      Assert.assertEquals(2, one.size());
+      for (OEntity onNotice : one) {
+        boolean found = false; 
+        for (Entity1 e1 : getOnNoticeEntities()) {
+          if (e1.getProp1().equals(getPropertyValue("Prop1", onNotice.getProperties())) &&
+              getPropertyValue("Prop2", onNotice.getProperties()).equals(e1.getProp2())) {
+            found = true; break;
           }
         }
         Assert.assertTrue(found);

@@ -711,4 +711,151 @@ public class InMemoryProducer implements ODataProducer {
     });
     return rt;
   }
+  
+  /**
+   * transform an OComplexObject into a POJO of the given class
+   * 
+   * @param <T>
+   * @param entity
+   * @param pojoClass
+   * @return
+   * @throws InstantiationException
+   * @throws IllegalAccessException 
+   */
+  public <T> T toPojo(OComplexObject entity, Class<T> pojoClass) throws InstantiationException, IllegalAccessException {
+    InMemoryComplexTypeInfo<?> e = this.findComplexTypeInfoForClass(pojoClass);
+
+    T pojo = fillInPojo(entity, this.getMetadata().findEdmComplexType(
+              this.namespace + "." + e.getTypeName()), e.getPropertyModel(), pojoClass);
+    
+    return pojo;  
+  }
+
+  /**
+   * populate a new POJO instance of type pojoClass using data fromn the given structural object
+   * 
+   * @param <T>
+   * @param sobj
+   * @param stype
+   * @param propertyModel
+   * @param pojoClass
+   * @return
+   * @throws InstantiationException
+   * @throws IllegalAccessException 
+   */
+  protected <T> T fillInPojo(OStructuralObject sobj, EdmStructuralType stype, PropertyModel propertyModel,
+          Class<T> pojoClass) throws InstantiationException, IllegalAccessException {
+
+    T pojo = pojoClass.newInstance();
+
+    for (Iterator<EdmProperty> it = stype.getProperties().iterator(); it.hasNext();) {
+      EdmProperty property = it.next();
+      Object value = null;
+      try {
+        value = sobj.getProperty(property.getName()).getValue();
+      } catch(Exception ex) {
+        // property not define on object
+        if (property.isNullable()) {
+          continue;
+        } else {
+          throw new RuntimeException("missing required property " + property.getName());
+        }
+      }
+
+      if (property.getCollectionKind() == EdmProperty.CollectionKind.NONE) {
+        if (property.getType().isSimple()) {
+          // call the setter.
+          propertyModel.setPropertyValue(pojo, property.getName(), value);
+        } else {
+          // complex.
+          // hmmh, value is a Collection<OProperty<?>>...why is it not an OComplexObject.
+          
+          propertyModel.setPropertyValue(
+                  pojo,
+                  property.getName(),
+                  null == value 
+                    ? null 
+                    : toPojo(
+                        OComplexObjects.create((EdmComplexType)property.getType(), (List<OProperty<?>>)value), 
+                        propertyModel.getPropertyType(property.getName())));
+        }
+      } else {
+        // collection. 
+        OCollection<? extends OObject> collection = (OCollection<? extends OObject>) value;
+        List<Object> pojos = new ArrayList<Object>();
+        for (OObject item : collection) {
+          if (collection.getType().isSimple()) {
+            pojos.add(((OSimpleObject)item).getValue());
+          } else {
+            // turn OComplexObject into a pojo
+            pojos.add(toPojo((OComplexObject) item, propertyModel.getCollectionElementType(property.getName())));
+          }
+        }
+        propertyModel.setCollectionValue(pojo, property.getName(), pojos);
+      }
+    }
+
+    return pojo;
+  }
+
+  /*
+   * Design note:
+   * toPojo is functionality that is useful on both the producer and consumer side.
+   * I'm putting it in the producer class for now although I suspect there is a
+   * more elegant design that factors out POJO Classes and PropertyModels into
+   * some kind of "PojoModelDefinition" class.  The producer side would then
+   * layer and extended definition that defined how the PojoModelDefinition maps
+   * to entity sets and such.
+   * 
+   * with all that said, hopefully this start is useful.  I'm going to use it on
+   * our producer side for now to handle createEntity payloads.
+   */
+  
+  /**
+   * transform the given entity into a POJO of type pojoClass.
+   * 
+   * @param <T>
+   * @param entity
+   * @param pojoClass
+   * @return
+   * @throws InstantiationException
+   * @throws IllegalAccessException 
+   */
+  public <T> T toPojo(OEntity entity, Class<T> pojoClass) throws InstantiationException, IllegalAccessException {
+
+    InMemoryEntityInfo<?> e = this.findEntityInfoForClass(pojoClass);
+
+    // so, how is this going to work?
+    // we have the PropertyModel available.  We can lookup the EdmStructuredType if necessary.
+
+    EdmEntitySet entitySet = this.getMetadata().findEdmEntitySet(e.getEntitySetName());
+
+    T pojo = fillInPojo(entity, entitySet.getType(), e.getPropertyModel(), pojoClass);
+
+    // nav props
+    for (Iterator<EdmNavigationProperty> it = entitySet.getType().getNavigationProperties().iterator(); it.hasNext();) {
+      EdmNavigationProperty np = it.next();
+      OLink link = null;
+      try {
+        link = entity.getLink(np.getName(), OLink.class);
+      } catch(IllegalArgumentException nolinkex) {
+        continue;
+      }
+
+      if (link.isInline()) {
+        if (link.isCollection()) {
+          List<Object> pojos = new ArrayList<Object>();
+          for (OEntity relatedEntity : link.getRelatedEntities()) {
+            pojos.add(toPojo(relatedEntity, e.getPropertyModel().getCollectionElementType(np.getName())));
+          }
+          e.getPropertyModel().setCollectionValue(pojo, np.getName(), pojos);
+        } else {
+          e.getPropertyModel().setPropertyValue(pojo, np.getName(), 
+                  toPojo(link.getRelatedEntity(), e.getPropertyModel().getPropertyType(np.getName())));
+        }
+      } // else ignore deferred links.
+    }
+
+    return pojo;
+  }
 }

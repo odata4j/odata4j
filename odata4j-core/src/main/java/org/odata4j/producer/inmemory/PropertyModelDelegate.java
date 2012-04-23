@@ -1,5 +1,6 @@
 package org.odata4j.producer.inmemory;
 
+import java.util.Collection;
 import org.odata4j.core.Delegate;
 
 public abstract class PropertyModelDelegate implements Delegate<PropertyModel>, PropertyModel {
@@ -7,6 +8,11 @@ public abstract class PropertyModelDelegate implements Delegate<PropertyModel>, 
   @Override
   public Object getPropertyValue(Object target, String propertyName) {
     return getDelegate().getPropertyValue(target, propertyName);
+  }
+  
+  @Override
+  public void setPropertyValue(Object target, String propertyName, Object value) {
+    getDelegate().setPropertyValue(target, propertyName, value);
   }
 
   @Override
@@ -22,6 +28,12 @@ public abstract class PropertyModelDelegate implements Delegate<PropertyModel>, 
   @Override
   public Iterable<?> getCollectionValue(Object target, String collectionName) {
     return getDelegate().getCollectionValue(target, collectionName);
+  }
+  
+
+  @Override
+  public void setCollectionValue(Object target, String collectionName, Collection<?> value) {
+    getDelegate().setCollectionValue(target, collectionName, value);
   }
 
   @Override
