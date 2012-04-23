@@ -1,5 +1,5 @@
 
-package org.odata4j.test.integration.roundtrip.inmemory;
+package org.odata4j.test.unit.producer.inmemory;
 
 import java.io.OutputStreamWriter;
 import java.util.Collection;
