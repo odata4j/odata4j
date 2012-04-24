@@ -8,6 +8,7 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.odata4j.core.Guid;
+import org.odata4j.core.OStructuralObject;
 import org.odata4j.core.UnsignedByte;
 
 /**
@@ -20,6 +21,9 @@ public class PojoWithAllTypesComplex extends PojoWithAllTypes {
   private List<Complex1> complexes;
   private Entity1 favoriteEntity;
   private List<Entity1> onNoticeEntities;
+  public boolean beforeUnmarshalCalled = false;
+  public boolean afterUnmarshalCalled = false;
+  
   
   public PojoWithAllTypesComplex() {}
   
@@ -63,6 +67,16 @@ public class PojoWithAllTypesComplex extends PojoWithAllTypes {
   
   public void setOnNoticeEntities(List<Entity1> value) {
     this.onNoticeEntities = value;
+  }
+  
+  
+  public void beforeOEntityUnmarshal(OStructuralObject sobj) {
+    this.beforeUnmarshalCalled = true;
+  }
+  
+  
+  public void afterOEntityUnmarshal(OStructuralObject sobj) {
+    this.afterUnmarshalCalled = true;
   }
   
   public static class Complex2 {

@@ -1,5 +1,7 @@
 package org.odata4j.producer.inmemory;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 
 import org.core4j.Enumerable;
@@ -712,6 +714,18 @@ public class InMemoryProducer implements ODataProducer {
     return rt;
   }
   
+  private enum TriggerType { Before, After };
+  protected void fireUnmarshalEvent(Object pojo, OStructuralObject sobj, TriggerType ttype) 
+          throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+     try {
+      Method m = pojo.getClass().getMethod(ttype == TriggerType.Before ? "beforeOEntityUnmarshal" : "afterOEntityUnmarshal", OStructuralObject.class);
+      if (null != m) {
+        m.invoke(pojo, sobj);
+      }
+    } catch (NoSuchMethodException ex) {
+    }
+  }
+  
   /**
    * transform an OComplexObject into a POJO of the given class
    * 
@@ -722,12 +736,14 @@ public class InMemoryProducer implements ODataProducer {
    * @throws InstantiationException
    * @throws IllegalAccessException 
    */
-  public <T> T toPojo(OComplexObject entity, Class<T> pojoClass) throws InstantiationException, IllegalAccessException {
+  public <T> T toPojo(OComplexObject entity, Class<T> pojoClass) throws InstantiationException, 
+          IllegalAccessException, IllegalArgumentException, InvocationTargetException {
     InMemoryComplexTypeInfo<?> e = this.findComplexTypeInfoForClass(pojoClass);
 
     T pojo = fillInPojo(entity, this.getMetadata().findEdmComplexType(
               this.namespace + "." + e.getTypeName()), e.getPropertyModel(), pojoClass);
     
+    fireUnmarshalEvent(pojo, entity, TriggerType.After);
     return pojo;  
   }
 
@@ -744,10 +760,11 @@ public class InMemoryProducer implements ODataProducer {
    * @throws IllegalAccessException 
    */
   protected <T> T fillInPojo(OStructuralObject sobj, EdmStructuralType stype, PropertyModel propertyModel,
-          Class<T> pojoClass) throws InstantiationException, IllegalAccessException {
+          Class<T> pojoClass) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
     T pojo = pojoClass.newInstance();
-
+    fireUnmarshalEvent(pojo, sobj, TriggerType.Before);
+    
     for (Iterator<EdmProperty> it = stype.getProperties().iterator(); it.hasNext();) {
       EdmProperty property = it.next();
       Object value = null;
@@ -821,7 +838,8 @@ public class InMemoryProducer implements ODataProducer {
    * @throws InstantiationException
    * @throws IllegalAccessException 
    */
-  public <T> T toPojo(OEntity entity, Class<T> pojoClass) throws InstantiationException, IllegalAccessException {
+  public <T> T toPojo(OEntity entity, Class<T> pojoClass) throws InstantiationException, 
+          IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
     InMemoryEntityInfo<?> e = this.findEntityInfoForClass(pojoClass);
 
@@ -856,6 +874,7 @@ public class InMemoryProducer implements ODataProducer {
       } // else ignore deferred links.
     }
 
+    fireUnmarshalEvent(pojo, entity, TriggerType.After);
     return pojo;
   }
 }

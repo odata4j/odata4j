@@ -1,5 +1,6 @@
 package org.odata4j.test.integration.expressions;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public class JsonTest extends AbstractRuntimeTest {
   }
 
   @Test
-  public void testJsonEntity() throws InstantiationException, IllegalAccessException, NoSuchMethodException {
+  public void testJsonEntity() throws InstantiationException, IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException {
 
     try {
       setup();
@@ -43,7 +44,8 @@ public class JsonTest extends AbstractRuntimeTest {
           
       PojoWithAllTypesComplex rpojo = producer.toPojo(e, PojoWithAllTypesComplex.class);
       assertPojoEqualsOEntity(rpojo, e, e.getProperties());
-      
+      Assert.assertTrue(rpojo.beforeUnmarshalCalled);
+      Assert.assertTrue(rpojo.afterUnmarshalCalled);
     } finally {
       server.stop();
     }
