@@ -90,6 +90,8 @@ public class JsonStreamReaderFactory {
      */
     JsonEvent previousEvent();
 
+    void skipNestedEvents();
+
     void close();
   }
 
@@ -730,13 +732,24 @@ class JsonStreamReaderImpl implements JsonStreamReader {
   }
 
   @Override
-  public void close() {
-    tokenizer.close();
+  public JsonEvent previousEvent() {
+    return previousEvent;
   }
 
   @Override
-  public JsonEvent previousEvent() {
-    return previousEvent;
+  public void skipNestedEvents() {
+    if (!previousEvent.isStartProperty() && !previousEvent.isStartObject() && !previousEvent.isStartArray())
+      return;
+
+    // skip until stack element pushed by a start event has been removed by the corresponding end event
+    int stackSize = state.size();
+    while (hasNext() && state.size() >= stackSize)
+      nextEvent();
+  }
+
+  @Override
+  public void close() {
+    tokenizer.close();
   }
 
 }

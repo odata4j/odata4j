@@ -184,6 +184,9 @@ public class JsonFormatParser {
           && ETAG_PROPERTY.equals(event.asStartProperty().getName())) {
         ensureEndProperty(event = jsr.nextEvent());
         jemd.etag = event.asEndProperty().getValue();
+      } else if (event.isStartProperty() || event.isStartObject() || event.isStartArray()) {
+        // ignore unsupported metadata, i.e. everything besides uri, type and etag
+        jsr.skipNestedEvents();
       } else if (event.isEndObject()) {
         break;
       }
@@ -398,7 +401,7 @@ public class JsonFormatParser {
         if (eprop == null) {
           throw new RuntimeException("can't find property: " + name + " on type: " + entry.getEntityType().getName());
         } else {
-          // why the lookup?  well, duing metadata parsing, currently, EdmProperties with type=EdmComplexType are created
+          // why the lookup?  well, during metadata parsing, currently, EdmProperties with type=EdmComplexType are created
           // by using EdmType.get(typname).  This results in a useless instance of EdmNonSimpleType.  To fix,
           // someone is going to have to make EdmxFormatParser resolve property types at parse time.
           EdmComplexType ct = (eprop.getType() instanceof EdmComplexType) ? ((EdmComplexType) eprop.getType())
