@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import javax.ws.rs.core.Application;
+import javax.ws.rs.ext.RuntimeDelegate;
 
 import org.core4j.CoreUtils;
 import org.core4j.Enumerable;
@@ -55,10 +56,14 @@ public class ODataJerseyServer implements ODataServer {
 
   public ODataJerseyServer(String appBaseUri) {
     this.appBaseUri = appBaseUri;
+
+    // ensure that the correct JAX-RS implementation (Jersey, server) is loaded
+    if (!(RuntimeDelegate.getInstance() instanceof com.sun.jersey.server.impl.provider.RuntimeDelegateImpl))
+      RuntimeDelegate.setInstance(new com.sun.jersey.server.impl.provider.RuntimeDelegateImpl());
   }
 
   public ODataJerseyServer(String appBaseUri, Class<? extends Application> odataApp, Class<? extends Application> rootApp) {
-    this.appBaseUri = appBaseUri;
+    this(appBaseUri);
     this.odataApp = odataApp;
     this.rootApp = rootApp;
   }

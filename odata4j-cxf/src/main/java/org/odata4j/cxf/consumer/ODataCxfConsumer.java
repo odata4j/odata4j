@@ -3,6 +3,8 @@ package org.odata4j.cxf.consumer;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.ws.rs.ext.RuntimeDelegate;
+
 import org.core4j.Enumerable;
 import org.odata4j.consumer.AbstractODataConsumer;
 import org.odata4j.consumer.ODataClientRequest;
@@ -92,15 +94,19 @@ public class ODataCxfConsumer extends AbstractODataConsumer {
     }
   }
 
-  public ODataCxfConsumer(FormatType formatType, String serviceRootUri) {
+  private ODataCxfConsumer(FormatType formatType, String serviceRootUri) {
     super(serviceRootUri);
+
+    // ensure that the correct JAX-RS implementation (CXF) is loaded
+    if (!(RuntimeDelegate.getInstance() instanceof org.apache.cxf.jaxrs.impl.RuntimeDelegateImpl))
+      RuntimeDelegate.setInstance(new org.apache.cxf.jaxrs.impl.RuntimeDelegateImpl());
+
     this.formatType = formatType;
   }
 
-  public ODataCxfConsumer(FormatType formatType, String serviceRootUri, OClientBehavior[] clientBehaviors) {
+  private ODataCxfConsumer(FormatType formatType, String serviceRootUri, OClientBehavior[] clientBehaviors) {
     this(formatType, serviceRootUri);
     this.clientBehaviors = clientBehaviors;
-
   }
 
   @Override

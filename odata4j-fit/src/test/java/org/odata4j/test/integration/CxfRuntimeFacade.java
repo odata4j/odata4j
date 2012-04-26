@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.RuntimeDelegate;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -15,7 +14,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.junit.Assert;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.Throwables;
 import org.odata4j.cxf.consumer.ODataCxfConsumer;
@@ -29,13 +27,6 @@ import org.odata4j.producer.server.ODataServer;
 public class CxfRuntimeFacade implements RuntimeFacade {
 
   MediaType mediaType = null;
-
-  static {
-    // ensure that the correct JAX-RS implementation is loaded
-    RuntimeDelegate runtimeDelegate = new org.apache.cxf.jaxrs.impl.RuntimeDelegateImpl();
-    RuntimeDelegate.setInstance(runtimeDelegate);
-    Assert.assertEquals(runtimeDelegate, RuntimeDelegate.getInstance());
-  }
 
   @Override
   public void hostODataServer(String baseUri) {

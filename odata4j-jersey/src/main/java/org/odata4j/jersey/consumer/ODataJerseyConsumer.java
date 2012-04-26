@@ -3,6 +3,8 @@ package org.odata4j.jersey.consumer;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.ws.rs.ext.RuntimeDelegate;
+
 import org.core4j.Enumerable;
 import org.odata4j.consumer.AbstractODataConsumer;
 import org.odata4j.consumer.ODataClientRequest;
@@ -41,6 +43,10 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
 
   private ODataJerseyConsumer(FormatType type, String serviceRootUri, JerseyClientFactory clientFactory, OClientBehavior... behaviors) {
     super(serviceRootUri);
+
+    // ensure that a correct JAX-RS implementation (Jersey, server or default) is loaded
+    if (!(RuntimeDelegate.getInstance() instanceof com.sun.jersey.core.spi.factory.AbstractRuntimeDelegate))
+      RuntimeDelegate.setInstance(new com.sun.ws.rs.ext.RuntimeDelegateImpl());
 
     this.client = new ODataJerseyClient(type, clientFactory, behaviors);
   }

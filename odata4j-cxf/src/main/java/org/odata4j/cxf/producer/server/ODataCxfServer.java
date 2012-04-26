@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.core.Application;
+import javax.ws.rs.ext.RuntimeDelegate;
 
 import org.apache.cxf.jaxrs.servlet.CXFNonSpringJaxrsServlet;
 import org.core4j.Enumerable;
@@ -30,10 +31,14 @@ public class ODataCxfServer implements ODataServer {
 
   public ODataCxfServer(String appBaseUri) {
     this.appBaseUri = appBaseUri;
+
+    // ensure that the correct JAX-RS implementation (CXF) is loaded
+    if (!(RuntimeDelegate.getInstance() instanceof org.apache.cxf.jaxrs.impl.RuntimeDelegateImpl))
+      RuntimeDelegate.setInstance(new org.apache.cxf.jaxrs.impl.RuntimeDelegateImpl());
   }
 
   public ODataCxfServer(String appBaseUri, Class<? extends Application> odataApp, Class<? extends Application> rootApp) {
-    this.appBaseUri = appBaseUri;
+    this(appBaseUri);
     this.odataApp = odataApp;
     this.rootApp = rootApp;
   }
