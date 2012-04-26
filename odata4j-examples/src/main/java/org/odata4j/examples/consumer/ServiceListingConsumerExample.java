@@ -1,16 +1,12 @@
 package org.odata4j.examples.consumer;
 
-import static org.odata4j.examples.JaxRsImplementation.JERSEY;
-
 import org.core4j.Enumerable;
 import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.consumer.ODataConsumers;
 import org.odata4j.core.EntitySetInfo;
 import org.odata4j.examples.AbstractExample;
-import org.odata4j.examples.JaxRsImplementation;
 
 public class ServiceListingConsumerExample extends AbstractExample {
-
-  private static final JaxRsImplementation impl = JERSEY;
 
   public static void main(String[] args) {
     ServiceListingConsumerExample example = new ServiceListingConsumerExample();
@@ -73,7 +69,7 @@ public class ServiceListingConsumerExample extends AbstractExample {
 
   private void printOutFirstEntities(Iterable<String> services) {
     for (String endpoint : services) {
-      ODataConsumer c = impl.newConsumer(endpoint);
+      ODataConsumer c = ODataConsumers.create(endpoint);
       for (EntitySetInfo entitySet : c.getEntitySets()) {
         reportEntities(entitySet.getHref(), c.getEntities(entitySet.getHref()).top(1).execute());
       }
@@ -82,7 +78,7 @@ public class ServiceListingConsumerExample extends AbstractExample {
 
   private void printOutAllEntities(Iterable<String> services) {
     for (String endpoint : services) {
-      ODataConsumer c = impl.newConsumer(endpoint);
+      ODataConsumer c = ODataConsumers.create(endpoint);
       for (EntitySetInfo entitySet : c.getEntitySets()) {
         reportEntities(entitySet.getTitle(), c.getEntities(entitySet.getHref()).execute());
       }

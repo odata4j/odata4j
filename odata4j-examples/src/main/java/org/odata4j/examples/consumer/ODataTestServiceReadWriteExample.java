@@ -1,9 +1,8 @@
 package org.odata4j.examples.consumer;
 
-import static org.odata4j.examples.JaxRsImplementation.JERSEY;
-
 import org.joda.time.LocalDateTime;
 import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.consumer.ODataConsumers;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OFuncs;
 import org.odata4j.core.OProperties;
@@ -17,7 +16,7 @@ public class ODataTestServiceReadWriteExample extends AbstractExample {
   }
 
   private void run(String[] args) {
-    ODataConsumer c = JERSEY.newConsumer(ODataEndpoints.ODATA_TEST_SERVICE_READWRITE2);
+    ODataConsumer c = ODataConsumers.create(ODataEndpoints.ODATA_TEST_SERVICE_READWRITE2);
 
     //ODataConsumer.dump.all(true);
 

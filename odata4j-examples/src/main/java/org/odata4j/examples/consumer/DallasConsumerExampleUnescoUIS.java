@@ -1,8 +1,7 @@
 package org.odata4j.examples.consumer;
 
-import static org.odata4j.examples.JaxRsImplementation.JERSEY;
-
 import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.consumer.ODataConsumers;
 import org.odata4j.consumer.behaviors.OClientBehaviors;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OFuncs;
@@ -19,7 +18,7 @@ public class DallasConsumerExampleUnescoUIS extends AbstractExample {
 
     String[] dallasCreds = args.length > 0 ? args : System.getenv("DALLAS").split(":");
 
-    ODataConsumer c = JERSEY.newConsumerBuilder(ODataEndpoints.DALLAS_CTP2_UNESCO_UIS)
+    ODataConsumer c = ODataConsumers.newBuilder(ODataEndpoints.DALLAS_CTP2_UNESCO_UIS)
         .setClientBehaviors(OClientBehaviors.basicAuth("accountKey", dallasCreds[0]))
         .build();
 

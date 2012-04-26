@@ -1,10 +1,9 @@
 package org.odata4j.examples.consumer;
 
-import static org.odata4j.examples.JaxRsImplementation.JERSEY;
-
 import java.util.Date;
 
 import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.consumer.ODataConsumers;
 import org.odata4j.core.OProperties;
 import org.odata4j.examples.AbstractExample;
 
@@ -20,7 +19,7 @@ public class RequestEntryModificationExample extends AbstractExample {
 
     // create a consumer with additional behavior
     String serviceUri = "http://services.odata.org/Northwind/Northwind.svc";
-    ODataConsumer consumer = JERSEY.newConsumer(serviceUri);
+    ODataConsumer consumer = ODataConsumers.create(serviceUri);
 
     consumer.createEntity("Categories")
         .properties(OProperties.string("CategoryName", "Category " + new Date()))

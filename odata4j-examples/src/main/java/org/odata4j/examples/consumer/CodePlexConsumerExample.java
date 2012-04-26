@@ -1,9 +1,8 @@
 package org.odata4j.examples.consumer;
 
-import static org.odata4j.examples.JaxRsImplementation.JERSEY;
-
 import org.core4j.Enumerable;
 import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.consumer.ODataConsumers;
 import org.odata4j.consumer.behaviors.OClientBehaviors;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.ORelatedEntitiesLink;
@@ -30,7 +29,7 @@ public class CodePlexConsumerExample extends AbstractExample {
     String codeplexPassword = codeplexCreds[1];
 
     for (String collection : Enumerable.create("TFS03", "TFS05", "TFS09")) {
-      ODataConsumer c = JERSEY.newConsumerBuilder("https://codeplexodata.cloudapp.net/" + collection)
+      ODataConsumer c = ODataConsumers.newBuilder("https://codeplexodata.cloudapp.net/" + collection)
           .setClientBehaviors(OClientBehaviors.basicAuth(codeplexUser, codeplexPassword))
           .build();
 

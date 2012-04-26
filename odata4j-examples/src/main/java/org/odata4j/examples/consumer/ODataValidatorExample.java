@@ -1,8 +1,7 @@
 package org.odata4j.examples.consumer;
 
-import static org.odata4j.examples.JaxRsImplementation.JERSEY;
-
 import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.consumer.ODataConsumers;
 import org.odata4j.core.Guid;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperties;
@@ -21,7 +20,7 @@ public class ODataValidatorExample extends AbstractExample {
 
     String uri = ODataEndpoints.NORTHWIND;
 
-    ODataConsumer c = JERSEY.newConsumer("http://services.odata.org/validation/odatavalidator/");
+    ODataConsumer c = ODataConsumers.create("http://services.odata.org/validation/odatavalidator/");
 
     Guid validationJobId = Guid.fromString("f4aa9495-ef40-469e-818c-29c4ec5fb2ed");
     if (true) {

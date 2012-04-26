@@ -1,8 +1,7 @@
 package org.odata4j.examples.consumer;
 
-import static org.odata4j.examples.JaxRsImplementation.JERSEY;
-
 import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.consumer.ODataConsumers;
 import org.odata4j.consumer.behaviors.OClientBehaviors;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
@@ -24,7 +23,7 @@ public class AzureTableStorageConsumerExample extends AbstractExample {
 
     String url = "http://" + accountKey + ".table.core.windows.net/";
 
-    ODataConsumer c = JERSEY.newConsumerBuilder(url)
+    ODataConsumer c = ODataConsumers.newBuilder(url)
         .setClientBehaviors(OClientBehaviors.azureTables(accountKey, secretKey))
         .build();
 

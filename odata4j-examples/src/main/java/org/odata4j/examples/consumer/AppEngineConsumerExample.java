@@ -1,8 +1,7 @@
 package org.odata4j.examples.consumer;
 
-import static org.odata4j.examples.JaxRsImplementation.JERSEY;
-
 import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.consumer.ODataConsumers;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperties;
 import org.odata4j.examples.AbstractExample;
@@ -15,7 +14,7 @@ public class AppEngineConsumerExample extends AbstractExample {
   }
 
   private void run(String[] args) {
-    ODataConsumer c = JERSEY.newConsumer(ODataEndpoints.ODATA4JSAMPLE_APPSPOT);
+    ODataConsumer c = ODataConsumers.create(ODataEndpoints.ODATA4JSAMPLE_APPSPOT);
     String newCategoryName = "NewCategory" + System.currentTimeMillis();
 
     report("Create a new category");
