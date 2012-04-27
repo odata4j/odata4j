@@ -5,11 +5,8 @@ import javax.ws.rs.core.MediaType;
 import org.odata4j.core.OCollection;
 import org.odata4j.core.OComplexObject;
 import org.odata4j.core.OObject;
-import org.odata4j.format.json.JsonCollectionFormatParser;
-import org.odata4j.format.json.JsonComplexObjectFormatParser;
-import org.odata4j.format.json.JsonEntryFormatParser;
-import org.odata4j.format.json.JsonFeedFormatParser;
-import org.odata4j.format.json.JsonSingleLinkFormatParser;
+import org.odata4j.core.OSimpleObject;
+import org.odata4j.format.json.*;
 import org.odata4j.format.xml.AtomEntryFormatParser;
 import org.odata4j.format.xml.AtomFeedFormatParser;
 import org.odata4j.format.xml.AtomSingleLinkFormatParser;
@@ -31,6 +28,7 @@ public class FormatParserFactory {
 
     FormatParser<OCollection<? extends OObject>> getCollectionFormatParser(Settings settings);
 
+    FormatParser<OSimpleObject> getSimpleObjectFormatParser(Settings settings);
   }
 
   @SuppressWarnings("unchecked")
@@ -50,6 +48,8 @@ public class FormatParserFactory {
       return (FormatParser<T>) formatParsers.getComplexObjectFormatParser(settings);
     } else if (OCollection.class.isAssignableFrom(targetType)) {
       return (FormatParser<T>) formatParsers.getCollectionFormatParser(settings);
+    } else if (OSimpleObject.class.isAssignableFrom(targetType)) {
+      return (FormatParser<T>) formatParsers.getSimpleObjectFormatParser(settings);
     }
     throw new IllegalArgumentException("Unable to locate format parser for " + targetType.getName() + " and format " + type);
   }
@@ -96,6 +96,11 @@ public class FormatParserFactory {
       return new JsonCollectionFormatParser(settings);
     }
 
+    @Override
+    public FormatParser<OSimpleObject> getSimpleObjectFormatParser(Settings settings) {
+      return new JsonSimpleObjectFormatParser(settings);
+    }
+
   }
 
   public static class AtomParsers implements FormatParsers {
@@ -122,6 +127,11 @@ public class FormatParserFactory {
 
     @Override
     public FormatParser<OCollection<? extends OObject>> getCollectionFormatParser(Settings settings) {
+      throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public FormatParser<OSimpleObject> getSimpleObjectFormatParser(Settings settings) {
       throw new UnsupportedOperationException("Not supported yet.");
     }
 
