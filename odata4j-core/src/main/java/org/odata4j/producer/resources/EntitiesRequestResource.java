@@ -3,6 +3,7 @@ package org.odata4j.producer.resources;
 import java.io.StringWriter;
 import java.net.URI;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
@@ -122,6 +123,7 @@ public class EntitiesRequestResource extends BaseResource {
   @Path("{count: [$]count}")
   @Produces({ ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8,
       ODataConstants.TEXT_JAVASCRIPT_CHARSET_UTF8,
+      ODataConstants.TEXT_PLAIN_CHARSET_UTF8,
       ODataConstants.APPLICATION_JAVASCRIPT_CHARSET_UTF8 })
   public Response getEntitiesCount(
       @Context HttpHeaders httpHeaders,
@@ -308,6 +310,8 @@ public class EntitiesRequestResource extends BaseResource {
   }
 
   private static void log(String operation, Object... namedArgs) {
+    if (!log.isLoggable(Level.FINE))
+      return;
     StringBuilder sb = new StringBuilder(operation).append('(');
     if (namedArgs != null && namedArgs.length > 0) {
       for (int i = 0; i < namedArgs.length; i += 2) {
@@ -316,7 +320,7 @@ public class EntitiesRequestResource extends BaseResource {
         sb.append(namedArgs[i]).append('=').append(namedArgs[i + 1]);
       }
     }
-    log.info(sb.append(')').toString());
+    log.fine(sb.append(')').toString());
   }
 
 }
