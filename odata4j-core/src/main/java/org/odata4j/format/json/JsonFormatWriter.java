@@ -3,7 +3,6 @@ package org.odata4j.format.json;
 import java.io.Writer;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
 import javax.ws.rs.core.UriInfo;
 
@@ -118,9 +117,9 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
     } else if (type.equals(EdmSimpleType.DATETIME)) {
       jw.writeRaw(InternalUtil.formatDateTimeForJson((LocalDateTime) pvalue));
     } else if (type.equals(EdmSimpleType.DECIMAL)) {
-      jw.writeString(String.format(Locale.ENGLISH, "%1$.4f", pvalue));
+      jw.writeString(pvalue.toString());
     } else if (type.equals(EdmSimpleType.DOUBLE)) {
-      jw.writeString(String.format(Locale.ENGLISH, "%1$.4f", pvalue));
+      jw.writeString(pvalue.toString());
     } else if (type.equals(EdmSimpleType.GUID)) {
       jw.writeString(((Guid) pvalue).toString());
     } else if (type.equals(EdmSimpleType.INT16)) {

@@ -3,6 +3,8 @@ package org.odata4j.test.unit.format;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.math.BigDecimal;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
@@ -30,6 +32,8 @@ public abstract class AbstractEntryFormatParserTest {
   protected static final String BOOLEAN_NAME = "Boolean";
   protected static final String STRING_NAME = "String";
   protected static final String GUID_NAME = "Guid";
+  protected static final String DECIMAL_NAME = "Decimal";
+  protected static final String DOUBLE_NAME = "Double";
 
   protected static final String ENTITYSET_NAME = "EntitySet";
 
@@ -49,6 +53,10 @@ public abstract class AbstractEntryFormatParserTest {
   protected static final String STRING = "<\"\t€\">";
 
   protected static final Guid GUID = Guid.fromString("4786c33c-1e3d-4b57-b5cf-a4b759acac44");
+
+  protected static final BigDecimal DECIMAL = BigDecimal.valueOf(-1234567890, 5);
+
+  protected static final Double DOUBLE = Double.valueOf("-1.23456789E-10");
 
   protected static FormatParser<Entry> formatParser;
 
@@ -79,8 +87,10 @@ public abstract class AbstractEntryFormatParserTest {
     EdmProperty.Builder booleanProperty = EdmProperty.newBuilder(BOOLEAN_NAME).setType(EdmSimpleType.BOOLEAN);
     EdmProperty.Builder stringProperty = EdmProperty.newBuilder(STRING_NAME).setType(EdmSimpleType.STRING);
     EdmProperty.Builder guidProperty = EdmProperty.newBuilder(GUID_NAME).setType(EdmSimpleType.GUID);
+    EdmProperty.Builder decimalProperty = EdmProperty.newBuilder(DECIMAL_NAME).setType(EdmSimpleType.DECIMAL);
+    EdmProperty.Builder doubleProperty = EdmProperty.newBuilder(DOUBLE_NAME).setType(EdmSimpleType.DOUBLE);
     EdmEntityType.Builder entityType = new EdmEntityType.Builder().setName("EntityType").addKeys("EntityKey")
-        .addProperties(dateTimeProperty, dateTimeOffsetProperty, timeProperty, booleanProperty, stringProperty, guidProperty);
+        .addProperties(dateTimeProperty, dateTimeOffsetProperty, timeProperty, booleanProperty, stringProperty, guidProperty, decimalProperty, doubleProperty);
     EdmEntitySet.Builder entitySet = new EdmEntitySet.Builder().setName(ENTITYSET_NAME).setEntityType(entityType);
     EdmEntityContainer.Builder container = new EdmEntityContainer.Builder().addEntitySets(entitySet);
     EdmSchema.Builder schema = new EdmSchema.Builder().addEntityContainers(container).addEntityTypes(entityType);

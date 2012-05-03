@@ -85,4 +85,16 @@ public class JsonPropertyFormatWriterTest extends AbstractPropertyFormatWriterTe
     formatWriter.write(null, stringWriter, Responses.property(GUID_PROPERTY));
     assertThat(stringWriter.toString(), containsString("\"4786c33c-1e3d-4b57-b5cf-a4b759acac44\""));
   }
+
+  @Test
+  public void decimal() throws Exception {
+    formatWriter.write(null, stringWriter, Responses.property(DECIMAL_PROPERTY));
+    assertThat(stringWriter.toString(), containsString("\"-12345.67890\""));
+  }
+
+  @Test
+  public void doubleWithExponent() throws Exception {
+    formatWriter.write(null, stringWriter, Responses.property(DOUBLE_PROPERTY));
+    assertThat(stringWriter.toString(), containsString("\"-1.23456789E-10\""));
+  }
 }

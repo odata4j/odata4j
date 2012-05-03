@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.io.StringReader;
+import java.math.BigDecimal;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -112,6 +113,21 @@ public class AtomEntryFormatParserTest extends AbstractEntryFormatParserTest {
   @Test(expected=IllegalArgumentException.class)
   public void illegalGuid() throws Exception {
     formatParser.parse(buildAtom("<d:Guid m:type=\"Edm.Guid\">a-b-c-d</d:Guid>"));
+  }
+
+  @Test
+  public void decimal() throws Exception {
+    assertThat((BigDecimal) formatParser.parse(buildAtom("<d:Decimal m:type=\"Edm.Decimal\">-12345.67890</d:Decimal>")).getEntity().getProperty(DECIMAL_NAME).getValue(), is(DECIMAL));
+  }
+
+  @Test(expected=IllegalArgumentException.class)
+  public void illegalDecimal() throws Exception {
+    formatParser.parse(buildAtom("<d:Decimal m:type=\"Edm.Decimal\">1Ee+01</d:Decimal>"));
+  }
+
+  @Test
+  public void doubleWithExponent() throws Exception {
+    assertThat((Double) formatParser.parse(buildAtom("<d:Double m:type=\"Edm.Double\">-1.23456789E-10</d:Double>")).getEntity().getProperty(DOUBLE_NAME).getValue(), is(DOUBLE));
   }
 
   private StringReader buildAtom(String property) {

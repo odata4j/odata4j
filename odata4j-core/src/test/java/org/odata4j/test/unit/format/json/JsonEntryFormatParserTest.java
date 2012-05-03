@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.io.StringReader;
+import java.math.BigDecimal;
 
 import org.joda.time.DateTimeZone;
 import org.junit.BeforeClass;
@@ -124,6 +125,21 @@ public class JsonEntryFormatParserTest extends AbstractEntryFormatParserTest {
   @Test(expected=IllegalArgumentException.class)
   public void illegalGuid() throws Exception {
     formatParser.parse(buildJson("\"Guid\": \"a-b-c-d\""));
+  }
+
+  @Test
+  public void decimal() throws Exception {
+    assertThat((BigDecimal) formatParser.parse(buildJson("\"Decimal\": \"-12345.67890\"")).getEntity().getProperty(DECIMAL_NAME).getValue(), is(DECIMAL));
+  }
+
+  @Test(expected=IllegalArgumentException.class)
+  public void illegalDecimal() throws Exception {
+    formatParser.parse(buildJson("\"Decimal\": \"1eE+01\""));
+  }
+
+  @Test
+  public void doubleWithExponent() throws Exception {
+    assertThat((Double) formatParser.parse(buildJson("\"Double\": \"-1.23456789E-10\"")).getEntity().getProperty(DOUBLE_NAME).getValue(), is(DOUBLE));
   }
 
   private StringReader buildJson(String property) {
