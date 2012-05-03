@@ -1,6 +1,7 @@
 package org.odata4j.test.unit.format.xml;
 
-import static org.junit.Assert.fail;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 import java.io.StringReader;
 
@@ -39,10 +40,10 @@ public class AtomEntryFormatParserTest extends AbstractEntryFormatParserTest {
     verifyDateTimePropertyValue(formatParser.parse(buildAtom("<d:DateTime m:type=\"Edm.DateTime\">2007-06-05T01:02:03.0095</d:DateTime>")), DATETIME_WITH_MILLIS.withMillisOfSecond(10));
   }
 
-  @Test
-  public void illegalDateTime() throws Exception {// @formatter:off
-    try { formatParser.parse(buildAtom("<d:DateTime m:type=\"Edm.DateTime\">1969-08-07T05:06:00Z</d:DateTime>")); fail(); } catch (IllegalArgumentException e) {}
-  }// @formatter:on
+  @Test(expected=IllegalArgumentException.class)
+  public void illegalDateTime() throws Exception {
+    formatParser.parse(buildAtom("<d:DateTime m:type=\"Edm.DateTime\">1969-08-07T05:06:00Z</d:DateTime>"));
+  }
 
   @Test
   public void dateTimeNoOffset() throws Exception {
@@ -67,10 +68,10 @@ public class AtomEntryFormatParserTest extends AbstractEntryFormatParserTest {
     verifyDateTimeOffsetPropertyValue(formatParser.parse(buildAtom("<d:DateTimeOffset m:type=\"Edm.DateTimeOffset\">2007-06-05T01:02:03.0095-08:00</d:DateTimeOffset>")), DATETIME_WITH_MILLIS_NEGATIVE_OFFSET.withMillisOfSecond(10));
   }
 
-  @Test
-  public void illegalDateTimeOffset() throws Exception {// @formatter:off
-    try { formatParser.parse(buildAtom("<d:DateTimeOffset m:type=\"Edm.DateTimeOffset\">2005-04-03T01:02</d:DateTimeOffset>")); fail(); } catch (IllegalArgumentException e) {}
-  }// @formatter:on
+  @Test(expected=IllegalArgumentException.class)
+  public void illegalDateTimeOffset() throws Exception {
+    formatParser.parse(buildAtom("<d:DateTimeOffset m:type=\"Edm.DateTimeOffset\">2005-04-03T01:02</d:DateTimeOffset>"));
+  }
 
   @Test
   public void time() throws Exception {
@@ -82,10 +83,20 @@ public class AtomEntryFormatParserTest extends AbstractEntryFormatParserTest {
     verifyTimePropertyValue(formatParser.parse(buildAtom("<d:Time m:type=\"Edm.Time\">PT1H2M3.004S</d:Time>")), TIME_WITH_MILLIS);
   }
 
+  @Test(expected=IllegalArgumentException.class)
+  public void illegalTime() throws Exception {
+    formatParser.parse(buildAtom("<d:Time m:type=\"Edm.Time\">01:02:03</d:Time>"));
+  }
+
   @Test
-  public void illegalTime() throws Exception {// @formatter:off
-    try { formatParser.parse(buildAtom("<d:Time m:type=\"Edm.Time\">01:02:03</d:Time>")); fail(); } catch (IllegalArgumentException e) {}
-  }// @formatter:on
+  public void bool() throws Exception {
+    assertThat((Boolean) formatParser.parse(buildAtom("<d:Boolean m:type=\"Edm.Boolean\">true</d:Boolean>")).getEntity().getProperty(BOOLEAN_NAME).getValue(), is(BOOLEAN));
+  }
+
+  @Test(expected=IllegalArgumentException.class)
+  public void illegalBoolean() throws Exception {
+    formatParser.parse(buildAtom("<d:Boolean m:type=\"Edm.Boolean\">undefined</d:Boolean>"));
+  }
 
   private StringReader buildAtom(String property) {
     return new StringReader("" +

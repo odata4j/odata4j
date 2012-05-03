@@ -66,4 +66,10 @@ public class AtomPropertyFormatWriterTest extends AbstractPropertyFormatWriterTe
     formatWriter.write(null, stringWriter, Responses.property(TIME_WITH_MILLIS));
     assertThat(stringWriter.toString(), allOf(containsString("m:type=\"Edm.Time\""), containsString(">PT1H2M3.004S<")));
   }
+
+  @Test
+  public void bool() throws Exception {
+    formatWriter.write(null, stringWriter, Responses.property(BOOLEAN_PROPERTY));
+    assertThat(stringWriter.toString(), allOf(containsString("m:type=\"Edm.Boolean\""), containsString(">false<")));
+  }
 }

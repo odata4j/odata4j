@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
+import org.odata4j.core.Boole;
 import org.odata4j.core.Guid;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
@@ -21,7 +22,7 @@ public class JsonTypeConverter {
       Guid uValue = value == null ? null : Guid.fromString(value.substring(5, value.length() - 1));
       return OProperties.guid(name, uValue);
     } else if (EdmSimpleType.BOOLEAN.equals(type)) {
-      Boolean bValue = value == null ? null : Boolean.parseBoolean(value);
+      Boolean bValue = value == null ? null : Boole.fromString(value).toBoolean();
       return OProperties.boolean_(name, bValue);
     } else if (EdmSimpleType.BYTE.equals(type)) {
       UnsignedByte bValue = value == null ? null : UnsignedByte.parseUnsignedByte(value);

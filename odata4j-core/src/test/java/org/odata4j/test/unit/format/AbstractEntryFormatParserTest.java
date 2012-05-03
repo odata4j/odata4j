@@ -26,6 +26,8 @@ public abstract class AbstractEntryFormatParserTest {
   protected static final String DATETIME_NAME = "DateTime";
   protected static final String DATETIMEOFFSET_NAME = "DateTimeOffset";
   protected static final String TIME_NAME = "Time";
+  protected static final String BOOLEAN_NAME = "Boolean";
+
   protected static final String ENTITYSET_NAME = "EntitySet";
 
   protected static final LocalDateTime DATETIME = new LocalDateTime(2005, 4, 3, 1, 2);
@@ -38,6 +40,8 @@ public abstract class AbstractEntryFormatParserTest {
 
   protected static final LocalTime TIME = new LocalTime(1, 2, 3);
   protected static final LocalTime TIME_WITH_MILLIS = new LocalTime(1, 2, 3, 4);
+
+  protected static final boolean BOOLEAN = true;
 
   protected static FormatParser<Entry> formatParser;
 
@@ -65,7 +69,9 @@ public abstract class AbstractEntryFormatParserTest {
     EdmProperty.Builder dateTimeProperty = EdmProperty.newBuilder(DATETIME_NAME).setType(EdmSimpleType.DATETIME);
     EdmProperty.Builder dateTimeOffsetProperty = EdmProperty.newBuilder(DATETIMEOFFSET_NAME).setType(EdmSimpleType.DATETIMEOFFSET);
     EdmProperty.Builder timeProperty = EdmProperty.newBuilder(TIME_NAME).setType(EdmSimpleType.TIME);
-    EdmEntityType.Builder entityType = new EdmEntityType.Builder().setName("EntityType").addKeys("EntityKey").addProperties(dateTimeProperty, dateTimeOffsetProperty, timeProperty);
+    EdmProperty.Builder booleanProperty = EdmProperty.newBuilder(BOOLEAN_NAME).setType(EdmSimpleType.BOOLEAN);
+    EdmEntityType.Builder entityType = new EdmEntityType.Builder().setName("EntityType").addKeys("EntityKey")
+        .addProperties(dateTimeProperty, dateTimeOffsetProperty, timeProperty, booleanProperty);
     EdmEntitySet.Builder entitySet = new EdmEntitySet.Builder().setName(ENTITYSET_NAME).setEntityType(entityType);
     EdmEntityContainer.Builder container = new EdmEntityContainer.Builder().addEntitySets(entitySet);
     EdmSchema.Builder schema = new EdmSchema.Builder().addEntityContainers(container).addEntityTypes(entityType);

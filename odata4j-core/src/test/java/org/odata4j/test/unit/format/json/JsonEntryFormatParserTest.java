@@ -1,6 +1,7 @@
 package org.odata4j.test.unit.format.json;
 
-import static org.junit.Assert.fail;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 import java.io.StringReader;
 
@@ -8,6 +9,7 @@ import org.joda.time.DateTimeZone;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.odata4j.format.FormatType;
+import org.odata4j.format.json.JsonStreamReaderFactory.JsonParseException;
 import org.odata4j.test.unit.format.AbstractEntryFormatParserTest;
 
 public class JsonEntryFormatParserTest extends AbstractEntryFormatParserTest {
@@ -43,10 +45,10 @@ public class JsonEntryFormatParserTest extends AbstractEntryFormatParserTest {
     verifyDateTimePropertyValue(formatParser.parse(buildJson("\"DateTime\" : \"2005-04-03T01:02\"")), DATETIME);
   }
 
-  @Test
-  public void illegalDateTime() throws Exception {// @formatter:off
-    try { formatParser.parse(buildJson("\"DateTime\" : \"1969-08-07T05:06:00Z\"")); fail(); } catch (IllegalArgumentException e) {}
-  }// @formatter:on
+  @Test(expected=IllegalArgumentException.class)
+  public void illegalDateTime() throws Exception {
+    formatParser.parse(buildJson("\"DateTime\" : \"1969-08-07T05:06:00Z\""));
+  }
 
   @Test
   public void dateTimeNoOffset() throws Exception {
@@ -73,10 +75,10 @@ public class JsonEntryFormatParserTest extends AbstractEntryFormatParserTest {
     verifyDateTimeOffsetPropertyValue(formatParser.parse(buildJson("\"DateTimeOffset\" : \"1969-08-07T05:06:00Z\"")), DATETIME_BEFORE_1970_NO_OFFSET);
   }
 
-  @Test
-  public void illegalDateTimeOffset() throws Exception {// @formatter:off
-    try { formatParser.parse(buildJson("\"DateTimeOffset\" : \"2005-04-03T01:02\"")); fail(); } catch (IllegalArgumentException e) {}
-  }// @formatter:on
+  @Test(expected=IllegalArgumentException.class)
+  public void illegalDateTimeOffset() throws Exception {
+    formatParser.parse(buildJson("\"DateTimeOffset\" : \"2005-04-03T01:02\""));
+  }
 
   @Test
   public void time() throws Exception {
@@ -88,10 +90,25 @@ public class JsonEntryFormatParserTest extends AbstractEntryFormatParserTest {
     verifyTimePropertyValue(formatParser.parse(buildJson("\"Time\" : \"PT1H2M3.004S\"")), TIME_WITH_MILLIS);
   }
 
+  @Test(expected=IllegalArgumentException.class)
+  public void illegalTime() throws Exception {
+    formatParser.parse(buildJson("\"Time\" : \"01:02:03\""));
+  }
+
   @Test
-  public void illegalTime() throws Exception {// @formatter:off
-    try { formatParser.parse(buildJson("\"Time\" : \"01:02:03\"")); fail(); } catch (IllegalArgumentException e) {}
-  }// @formatter:on
+  public void bool() throws Exception {
+    assertThat((Boolean) formatParser.parse(buildJson("\"Boolean\": true")).getEntity().getProperty(BOOLEAN_NAME).getValue(), is(BOOLEAN));
+  }
+
+  @Test(expected=JsonParseException.class)
+  public void illegalBoolean() throws Exception {
+    formatParser.parse(buildJson("\"Boolean\": undefined"));
+  }
+
+  @Test(expected=IllegalArgumentException.class)
+  public void illegalBooleanFormat() throws Exception {
+    formatParser.parse(buildJson("\"Boolean\": \"falsetrue\""));
+  }
 
   private StringReader buildJson(String property) {
     return new StringReader("" +

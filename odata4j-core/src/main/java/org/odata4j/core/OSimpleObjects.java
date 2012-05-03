@@ -85,7 +85,7 @@ public class OSimpleObjects {
       Guid uValue = value == null ? null : Guid.fromString(value);
       return (OSimpleObject<V>) Impl.create(EdmSimpleType.GUID, uValue);
     } else if (EdmSimpleType.BOOLEAN.equals(type)) {
-      Boolean bValue = value == null ? null : Boolean.parseBoolean(value);
+      Boolean bValue = value == null ? null : Boole.fromString(value).toBoolean();
       return (OSimpleObject<V>) Impl.create(EdmSimpleType.BOOLEAN, bValue);
     } else if (EdmSimpleType.BYTE.equals(type)) {
       UnsignedByte bValue = value == null ? null : UnsignedByte.parseUnsignedByte(value);
