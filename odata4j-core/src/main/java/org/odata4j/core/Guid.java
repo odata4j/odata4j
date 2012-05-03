@@ -1,6 +1,7 @@
 package org.odata4j.core;
 
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 /**
  * A custom Guid class is necessary to interop with .net Guid strings incompatible with {@link UUID}.
@@ -8,6 +9,7 @@ import java.util.UUID;
  */
 public class Guid {
 
+  private static final Pattern GUID_FORMAT = Pattern.compile("^\\p{XDigit}{8}-\\p{XDigit}{4}-\\p{XDigit}{4}-\\p{XDigit}{4}-\\p{XDigit}{12}$");
   private final String value;
 
   private Guid(String value) {
@@ -21,7 +23,10 @@ public class Guid {
    * @return a new Guid
    */
   public static Guid fromString(String value) {
-    return new Guid(value);
+    if (GUID_FORMAT.matcher(value).matches())
+      return new Guid(value);
+    else
+      throw new IllegalArgumentException("Illegal GUID format " + value);
   }
 
   /**

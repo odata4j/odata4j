@@ -7,6 +7,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
+import org.odata4j.core.Guid;
 import org.odata4j.core.ODataVersion;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntityContainer;
@@ -27,6 +28,8 @@ public abstract class AbstractEntryFormatParserTest {
   protected static final String DATETIMEOFFSET_NAME = "DateTimeOffset";
   protected static final String TIME_NAME = "Time";
   protected static final String BOOLEAN_NAME = "Boolean";
+  protected static final String STRING_NAME = "String";
+  protected static final String GUID_NAME = "Guid";
 
   protected static final String ENTITYSET_NAME = "EntitySet";
 
@@ -42,6 +45,10 @@ public abstract class AbstractEntryFormatParserTest {
   protected static final LocalTime TIME_WITH_MILLIS = new LocalTime(1, 2, 3, 4);
 
   protected static final boolean BOOLEAN = true;
+
+  protected static final String STRING = "<\"\t€\">";
+
+  protected static final Guid GUID = Guid.fromString("4786c33c-1e3d-4b57-b5cf-a4b759acac44");
 
   protected static FormatParser<Entry> formatParser;
 
@@ -70,8 +77,10 @@ public abstract class AbstractEntryFormatParserTest {
     EdmProperty.Builder dateTimeOffsetProperty = EdmProperty.newBuilder(DATETIMEOFFSET_NAME).setType(EdmSimpleType.DATETIMEOFFSET);
     EdmProperty.Builder timeProperty = EdmProperty.newBuilder(TIME_NAME).setType(EdmSimpleType.TIME);
     EdmProperty.Builder booleanProperty = EdmProperty.newBuilder(BOOLEAN_NAME).setType(EdmSimpleType.BOOLEAN);
+    EdmProperty.Builder stringProperty = EdmProperty.newBuilder(STRING_NAME).setType(EdmSimpleType.STRING);
+    EdmProperty.Builder guidProperty = EdmProperty.newBuilder(GUID_NAME).setType(EdmSimpleType.GUID);
     EdmEntityType.Builder entityType = new EdmEntityType.Builder().setName("EntityType").addKeys("EntityKey")
-        .addProperties(dateTimeProperty, dateTimeOffsetProperty, timeProperty, booleanProperty);
+        .addProperties(dateTimeProperty, dateTimeOffsetProperty, timeProperty, booleanProperty, stringProperty, guidProperty);
     EdmEntitySet.Builder entitySet = new EdmEntitySet.Builder().setName(ENTITYSET_NAME).setEntityType(entityType);
     EdmEntityContainer.Builder container = new EdmEntityContainer.Builder().addEntitySets(entitySet);
     EdmSchema.Builder schema = new EdmSchema.Builder().addEntityContainers(container).addEntityTypes(entityType);

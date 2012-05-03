@@ -7,6 +7,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.junit.Before;
+import org.odata4j.core.Guid;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmSimpleType;
@@ -29,6 +30,10 @@ public abstract class AbstractPropertyFormatWriterTest {
   protected static final OProperty<LocalTime> TIME_WITH_MILLIS = OProperties.simple("Time", EdmSimpleType.TIME, new LocalTime(1, 2, 3, 4));
 
   protected static final OProperty<Boolean> BOOLEAN_PROPERTY = OProperties.simple("Boolean", EdmSimpleType.BOOLEAN, Boolean.FALSE);
+
+  protected static final OProperty<String> STRING_PROPERTY = OProperties.simple("String", EdmSimpleType.STRING, "<\"\t€\">");
+
+  protected static final OProperty<Guid> GUID_PROPERTY = OProperties.simple("Guid", EdmSimpleType.GUID, Guid.fromString("4786c33c-1e3d-4b57-b5cf-a4b759acac44"));
 
   protected static FormatWriter<PropertyResponse> formatWriter;
 

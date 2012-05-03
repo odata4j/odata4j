@@ -72,4 +72,16 @@ public class AtomPropertyFormatWriterTest extends AbstractPropertyFormatWriterTe
     formatWriter.write(null, stringWriter, Responses.property(BOOLEAN_PROPERTY));
     assertThat(stringWriter.toString(), allOf(containsString("m:type=\"Edm.Boolean\""), containsString(">false<")));
   }
+
+  @Test
+  public void string() throws Exception {
+    formatWriter.write(null, stringWriter, Responses.property(STRING_PROPERTY));
+    assertThat(stringWriter.toString(), containsString(">&lt;\"\t€\"&gt;<"));
+  }
+
+  @Test
+  public void guid() throws Exception {
+    formatWriter.write(null, stringWriter, Responses.property(GUID_PROPERTY));
+    assertThat(stringWriter.toString(), containsString(">4786c33c-1e3d-4b57-b5cf-a4b759acac44<"));
+  }
 }

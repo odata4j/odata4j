@@ -122,7 +122,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
     } else if (type.equals(EdmSimpleType.DOUBLE)) {
       jw.writeString(String.format(Locale.ENGLISH, "%1$.4f", pvalue));
     } else if (type.equals(EdmSimpleType.GUID)) {
-      jw.writeString("guid'" + (Guid) pvalue + "'");
+      jw.writeString(((Guid) pvalue).toString());
     } else if (type.equals(EdmSimpleType.INT16)) {
       jw.writeNumber((Short) pvalue);
     } else if (type.equals(EdmSimpleType.INT32)) {

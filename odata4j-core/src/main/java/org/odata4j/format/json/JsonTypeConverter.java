@@ -19,7 +19,7 @@ public class JsonTypeConverter {
   public static OProperty<?> parse(String name, EdmSimpleType<?> type, String value) {
 
     if (EdmSimpleType.GUID.equals(type)) {
-      Guid uValue = value == null ? null : Guid.fromString(value.substring(5, value.length() - 1));
+      Guid uValue = value == null ? null : Guid.fromString(value);
       return OProperties.guid(name, uValue);
     } else if (EdmSimpleType.BOOLEAN.equals(type)) {
       Boolean bValue = value == null ? null : Boole.fromString(value).toBoolean();

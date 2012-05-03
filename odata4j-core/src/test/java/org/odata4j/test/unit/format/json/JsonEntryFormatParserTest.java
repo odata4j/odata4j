@@ -8,6 +8,7 @@ import java.io.StringReader;
 import org.joda.time.DateTimeZone;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.odata4j.core.Guid;
 import org.odata4j.format.FormatType;
 import org.odata4j.format.json.JsonStreamReaderFactory.JsonParseException;
 import org.odata4j.test.unit.format.AbstractEntryFormatParserTest;
@@ -108,6 +109,21 @@ public class JsonEntryFormatParserTest extends AbstractEntryFormatParserTest {
   @Test(expected=IllegalArgumentException.class)
   public void illegalBooleanFormat() throws Exception {
     formatParser.parse(buildJson("\"Boolean\": \"falsetrue\""));
+  }
+
+  @Test
+  public void string() throws Exception {
+    assertThat((String) formatParser.parse(buildJson("\"String\": \"<\\\"\\t€\\\">\"")).getEntity().getProperty(STRING_NAME).getValue(), is(STRING));
+  }
+
+  @Test
+  public void guid() throws Exception {
+    assertThat((Guid) formatParser.parse(buildJson("\"Guid\": \"4786c33c-1e3d-4b57-b5cf-a4b759acac44\"")).getEntity().getProperty(GUID_NAME).getValue(), is(GUID));
+  }
+
+  @Test(expected=IllegalArgumentException.class)
+  public void illegalGuid() throws Exception {
+    formatParser.parse(buildJson("\"Guid\": \"a-b-c-d\""));
   }
 
   private StringReader buildJson(String property) {

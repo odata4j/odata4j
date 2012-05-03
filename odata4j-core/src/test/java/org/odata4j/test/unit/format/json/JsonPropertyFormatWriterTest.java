@@ -73,4 +73,16 @@ public class JsonPropertyFormatWriterTest extends AbstractPropertyFormatWriterTe
     assertTrue(Pattern.compile(".+\\{\\s*\"Boolean\"\\s*:\\s*false\\s*\\}.+", Pattern.DOTALL)
         .matcher(stringWriter.toString()).matches());
   }
+
+  @Test
+  public void string() throws Exception {
+    formatWriter.write(null, stringWriter, Responses.property(STRING_PROPERTY));
+    assertThat(stringWriter.toString(), containsString("\"<\\\"\\t€\\\">\""));
+  }
+
+  @Test
+  public void guid() throws Exception {
+    formatWriter.write(null, stringWriter, Responses.property(GUID_PROPERTY));
+    assertThat(stringWriter.toString(), containsString("\"4786c33c-1e3d-4b57-b5cf-a4b759acac44\""));
+  }
 }

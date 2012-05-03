@@ -117,7 +117,7 @@ public class ExpressionTest {
     DateTime dto = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZZ").withOffsetParsed().parseDateTime("2008-10-13T00:00:00-04:00");
     t(Expression.dateTimeOffset(dto), "datetimeoffset'2008-10-13T00:00:00-04:00'");
     t(Expression.time(new LocalTime("13:20:00")), "time'PT13H20M'");
-    t(Expression.guid(Guid.fromString("12345678-aaaa-bbbb-ccccddddffff")), "guid'12345678-aaaa-bbbb-ccccddddffff'");
+    t(Expression.guid(Guid.fromString("12345678-aaaa-bbbb-cccc-ddddeeeeffff")), "guid'12345678-aaaa-bbbb-cccc-ddddeeeeffff'");
     t(Expression.guid(Guid.fromString("bf4eeb4d-2ded-4aa6-a167-0571e1057e3b")), "guid'bf4eeb4d-2ded-4aa6-a167-0571e1057e3b'");
 
     t(Expression.decimal(new BigDecimal("2.345")), "decimal'2.345'");
