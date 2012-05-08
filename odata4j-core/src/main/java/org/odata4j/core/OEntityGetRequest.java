@@ -13,7 +13,7 @@ public interface OEntityGetRequest<T> extends OEntityRequest<T> {
    * @param select  a comma-separated list of selection clauses
    * @return the entity-request builder
    */
-  OEntityRequest<T> select(String select);
+  OEntityGetRequest<T> select(String select);
 
   /**
    * Specifies related entities to expand inline as part of the response.
@@ -21,6 +21,6 @@ public interface OEntityGetRequest<T> extends OEntityRequest<T> {
    * @param expand  a comma-separated list of navigation properties
    * @return the entity-request builder
    */
-  OEntityRequest<T> expand(String expand);
+  OEntityGetRequest<T> expand(String expand);
 
 }

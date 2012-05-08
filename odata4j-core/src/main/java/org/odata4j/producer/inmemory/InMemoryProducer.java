@@ -16,16 +16,7 @@ import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.Expression;
 import org.odata4j.expression.OrderByExpression;
 import org.odata4j.expression.OrderByExpression.Direction;
-import org.odata4j.producer.BaseResponse;
-import org.odata4j.producer.CountResponse;
-import org.odata4j.producer.EntitiesResponse;
-import org.odata4j.producer.EntityIdResponse;
-import org.odata4j.producer.EntityQueryInfo;
-import org.odata4j.producer.EntityResponse;
-import org.odata4j.producer.InlineCount;
-import org.odata4j.producer.ODataProducer;
-import org.odata4j.producer.QueryInfo;
-import org.odata4j.producer.Responses;
+import org.odata4j.producer.*;
 import org.odata4j.producer.edm.MetadataProducer;
 import org.odata4j.producer.exceptions.NotFoundException;
 import org.odata4j.producer.exceptions.NotImplementedException;
@@ -256,17 +247,25 @@ public class InMemoryProducer implements ODataProducer {
   }
   
   /**
-   * transforms a POJO into a list of OProperties based on a given EdmStructuralType.
-   * 
-   * @param obj             the POJO to transform
-   * @param propertyModel   the PropertyModel to use to access POJO class structure and values.
-   * @param structuralType  the EdmStructuralType 
-   * @param properties      put properties into this list.
+   * transforms a POJO into a list of OProperties based on a given
+   * EdmStructuralType.
+   *
+   * @param obj the POJO to transform
+   * @param propertyModel the PropertyModel to use to access POJO class
+   * structure and values.
+   * @param structuralType the EdmStructuralType
+   * @param properties put properties into this list.
    */
-  protected void addPropertiesFromObject(Object obj, PropertyModel propertyModel, EdmStructuralType structuralType, List<OProperty<?>> properties) {
+  protected void addPropertiesFromObject(Object obj, PropertyModel propertyModel, EdmStructuralType structuralType, List<OProperty<?>> properties, PropertyPathHelper pathHelper) {
     //System.out.println("addPropertiesFromObject: " + obj.getClass().getName());
     for (Iterator<EdmProperty> it = structuralType.getProperties().iterator(); it.hasNext();) {
       EdmProperty property = it.next();
+
+      // $select projections not allowed for complex types....hmmh...why?
+      if (structuralType instanceof EdmEntityType && !pathHelper.isSelected(property.getName())) {
+        continue;
+      }
+
       Object value = propertyModel.getPropertyValue(obj, property.getName());
       //System.out.println("  prop: " + property.getName() + " val: " + value);
       if (value == null && !this.includeNullPropertyValues) {
@@ -275,7 +274,7 @@ public class InMemoryProducer implements ODataProducer {
         continue;
       }
 
-      if (property.getCollectionKind() == CollectionKind.NONE) {
+      if (property.getCollectionKind() == EdmProperty.CollectionKind.NONE) {
         if (property.getType().isSimple()) {
           properties.add(OProperties.simple(property.getName(), (EdmSimpleType) property.getType(), value));
         } else {
@@ -289,7 +288,7 @@ public class InMemoryProducer implements ODataProducer {
               continue;
             }
             List<OProperty<?>> cprops = new ArrayList<OProperty<?>>();
-            addPropertiesFromObject(value, typeInfo.propertyModel, (EdmComplexType) property.getType(), cprops);
+            addPropertiesFromObject(value, typeInfo.getPropertyModel(), (EdmComplexType) property.getType(), cprops, pathHelper);
             properties.add(OProperties.complex(property.getName(), (EdmComplexType) property.getType(), cprops));
           }
         }
@@ -308,130 +307,97 @@ public class InMemoryProducer implements ODataProducer {
               b.add(OSimpleObjects.create((EdmSimpleType) property.getType(), v));
             } else {
               List<OProperty<?>> cprops = new ArrayList<OProperty<?>>();
-              addPropertiesFromObject(v, typeInfo.propertyModel, (EdmComplexType) property.getType(), cprops);
+              addPropertiesFromObject(v, typeInfo.getPropertyModel(), (EdmComplexType) property.getType(), cprops, pathHelper);
               b.add(OComplexObjects.create((EdmComplexType) property.getType(), cprops));
             }
           }
         }
-        properties.add(OProperties.collection(property.getName(), 
-            // hmmmh...is something is wrong here if I have to create a new EdmCollectionType?
-            new EdmCollectionType(CollectionKind.Collection, 
+        properties.add(OProperties.collection(property.getName(),
+                // hmmmh...is something is wrong here if I have to create a new EdmCollectionType?
+                new EdmCollectionType(EdmProperty.CollectionKind.Collection,
                 property.getType()), b.build()));
       }
     }
     //System.out.println("done addPropertiesFromObject: " + obj.getClass().getName());
   }
   
-  protected OEntity toOEntity(EdmEntitySet ees, Object obj, List<EntitySimpleProperty> expand) {
-    InMemoryEntityInfo<?> ei = eis.get(ees.getName());
+  protected OEntity toOEntity(EdmEntitySet ees, Object obj, PropertyPathHelper pathHelper) {
+
+    InMemoryEntityInfo<?> ei = this.findEntityInfoForClass(obj.getClass()); //  eis.get(ees.getName());
     final List<OLink> links = new ArrayList<OLink>();
     final List<OProperty<?>> properties = new ArrayList<OProperty<?>>();
 
     Map<String, Object> keyKVPair = new HashMap<String, Object>();
-    for (String key : ei.keys) {
-      Object keyValue = ei.properties.getPropertyValue(obj, key);
+    for (String key : ei.getKeys()) {
+      Object keyValue = ei.getPropertyModel().getPropertyValue(obj, key);
       keyKVPair.put(key, keyValue);
     }
-    
-    addPropertiesFromObject(obj, ei.properties, ees.getType(), properties);
-    
-    if (expand != null && !expand.isEmpty()) {
-      EdmEntityType edmEntityType = ees.getType();
 
-      HashMap<String, List<EntitySimpleProperty>> expandedProps = new HashMap<String, List<EntitySimpleProperty>>();
+    // "regular" properties
+    addPropertiesFromObject(obj, ei.getPropertyModel(), ees.getType(), properties, pathHelper);
 
-      //process all the expanded properties and add them to map
-      for (final EntitySimpleProperty propPath : expand) {
-        String[] props = propPath.getPropertyName().split("/", 2);
-        String prop = props[0];
-        String remainingPropPath = props.length > 1 ? props[1] : null;
-        //if link is already set to be expanded, add other remaining prop path to the list
-        if (expandedProps.containsKey(prop)) {
-          if (remainingPropPath != null) {
-            List<EntitySimpleProperty> remainingPropPaths = expandedProps.get(prop);
-            remainingPropPaths.add(Expression.simpleProperty(remainingPropPath));
-          }
-        } else {
-          List<EntitySimpleProperty> remainingPropPaths = new ArrayList<EntitySimpleProperty>();
-          if (remainingPropPath != null)
-            remainingPropPaths.add(Expression.simpleProperty(remainingPropPath));
-          expandedProps.put(prop, remainingPropPaths);
-        }
+    // navigation properties
+    EdmEntityType edmEntityType = ees.getType();
+
+    for (final EdmNavigationProperty navProp : ees.getType().getNavigationProperties()) {
+
+      if (!pathHelper.isSelected(navProp.getName())) {
+        continue;
       }
 
-      for (final String prop : expandedProps.keySet()) {
-        List<EntitySimpleProperty> remainingPropPath = expandedProps.get(prop);
-
-        EdmNavigationProperty edmNavProperty = edmEntityType.findNavigationProperty(prop);
-
-        if (edmNavProperty == null) continue;
-
-        if (edmNavProperty.getToRole().getMultiplicity() == EdmMultiplicity.MANY) {
-          List<OEntity> relatedEntities = new ArrayList<OEntity>();
-          Iterable<?> values = ei.properties.getCollectionValue(obj, prop);
-          if (values != null) {
-            EdmEntitySet relEntitySet = null;
-
-            for (final Object entity : values) {
-              if (relEntitySet == null) {
-                InMemoryEntityInfo<?> oei = Enumerable.create(eis.values()).firstOrNull(new Predicate1<InMemoryEntityInfo<?>>() {
-                  @Override
-                  public boolean apply(InMemoryEntityInfo<?> input) {
-                    return entity.getClass().equals(input.entityClass);
-                  }
-                });
-                relEntitySet = getMetadata().getEdmEntitySet(oei.entitySetName);
-              }
-
-              relatedEntities.add(toOEntity(relEntitySet, entity, remainingPropPath));
-            }
-          }
-          // relation and href will be filled in later for atom or json
-          links.add(OLinks.relatedEntitiesInline(null, edmNavProperty.getName(), null, relatedEntities));
+      if (!pathHelper.isExpanded(navProp.getName())) {
+        // defer
+        if (navProp.getToRole().getMultiplicity() == EdmMultiplicity.MANY) {
+          links.add(OLinks.relatedEntities(null, navProp.getName(), null));
         } else {
-          final Object entity = ei.properties.getPropertyValue(obj, prop);
+          links.add(OLinks.relatedEntity(null, navProp.getName(), null));
+        }
+      } else {
+        // inline
+        pathHelper.navigate(navProp.getName());
+        if (navProp.getToRole().getMultiplicity() == EdmMultiplicity.MANY) {
+          List<OEntity> relatedEntities = new ArrayList<OEntity>();
+
+          EdmEntitySet relEntitySet = null;
+
+          for (final Object entity : getRelatedPojos(navProp, obj, ei)) {
+            if (relEntitySet == null) {
+              InMemoryEntityInfo<?> oei = this.findEntityInfoForClass(entity.getClass());
+              relEntitySet = getMetadata().getEdmEntitySet(oei.getEntitySetName());
+            }
+
+            relatedEntities.add(toOEntity(relEntitySet, entity, pathHelper));
+          }
+          
+          // relation and href will be filled in later for atom or json
+          links.add(OLinks.relatedEntitiesInline(null, navProp.getName(), null, relatedEntities));
+        } else {
+          final Object entity = ei.getPropertyModel().getPropertyValue(obj, navProp.getName());
           OEntity relatedEntity = null;
 
           if (entity != null) {
-            InMemoryEntityInfo<?> oei = Enumerable.create(eis.values()).firstOrNull(new Predicate1<InMemoryEntityInfo<?>>() {
-              @Override
-              public boolean apply(InMemoryEntityInfo<?> input) {
-                return entity.getClass().equals(input.entityClass);
-              }
-            });
-
-            EdmEntitySet relEntitySet = getMetadata().getEdmEntitySet(oei.entitySetName);
-
-            relatedEntity = toOEntity(relEntitySet, entity, remainingPropPath);
+            InMemoryEntityInfo<?> oei = this.findEntityInfoForClass(entity.getClass());
+            EdmEntitySet relEntitySet = getMetadata().getEdmEntitySet(oei.getEntitySetName());
+            relatedEntity = toOEntity(relEntitySet, entity, pathHelper);
           }
-          links.add(OLinks.relatedEntityInline(null, edmNavProperty.getName(), null, relatedEntity));
+          links.add(OLinks.relatedEntityInline(null, navProp.getName(), null, relatedEntity));
         }
-      }
-    }
 
-    // for every navigation propety that we didn' expand we must place an deferred
-    // OLink if the nav prop is selected
-    for (final EdmNavigationProperty ep : ees.getType().getNavigationProperties()) {
-      // if $select is ever supported, check here and only include nave props
-      // that are selected
-      boolean expanded = Enumerable.create(links).any(new Predicate1<OLink>() {
-        @Override
-        public boolean apply(OLink t) {
-          return t.getTitle().equals(ep.getName());
-        }
-      });
-
-      if (!expanded) {
-        // defer
-        if (ep.getToRole().getMultiplicity() == EdmMultiplicity.MANY) {
-          links.add(OLinks.relatedEntities(null, ep.getName(), null));
-        } else {
-          links.add(OLinks.relatedEntity(null, ep.getName(), null));
-        }
+        pathHelper.popPath();
       }
     }
 
     return OEntities.create(ees, OEntityKey.create(keyKVPair), properties, links, obj);
+  }
+  
+  protected Iterable<?> getRelatedPojos(EdmNavigationProperty navProp, Object srcObject, InMemoryEntityInfo<?> srcInfo) {
+    if (navProp.getToRole().getMultiplicity() == EdmMultiplicity.MANY) {
+      Iterable<?> i =  srcInfo.getPropertyModel().getCollectionValue(srcObject, navProp.getName());
+      return null == i ? Collections.EMPTY_LIST : i;
+    } else {
+      // can be null
+      return Collections.singletonList(srcInfo.getPropertyModel().getPropertyValue(srcObject, navProp.getName()));
+    }
   }
 
   private static Predicate1<Object> filterToPredicate(final BoolCommonExpression filter, final PropertyModel properties) {
@@ -467,9 +433,10 @@ public class InMemoryProducer implements ODataProducer {
     }
 
     // work with oentities
+    final PropertyPathHelper pathHelper = new PropertyPathHelper(queryInfo);
     Enumerable<OEntity> entities = objects.select(new Func1<Object, OEntity>() {
       public OEntity apply(Object input) {
-        return toOEntity(ees, input, queryInfo != null ? queryInfo.expand : null);
+        return toOEntity(ees, input, pathHelper);
       }
     });
 
@@ -534,9 +501,10 @@ public class InMemoryProducer implements ODataProducer {
     // ignore ordering for count
 
     // work with oentities.
+    final PropertyPathHelper pathHelper = new PropertyPathHelper(queryInfo);
     Enumerable<OEntity> entities = objects.select(new Func1<Object, OEntity>() {
       public OEntity apply(Object input) {
-        return toOEntity(ees, input, queryInfo != null ? queryInfo.expand : null);
+        return toOEntity(ees, input, pathHelper);
       }
     });
 
@@ -581,7 +549,7 @@ public class InMemoryProducer implements ODataProducer {
     if (rt == null) throw new NotFoundException();
 
     final EdmEntitySet ees = getMetadata().getEdmEntitySet(entitySetName);
-    OEntity oe = toOEntity(ees, rt, queryInfo.expand);
+    OEntity oe = toOEntity(ees, rt, new PropertyPathHelper(queryInfo));
 
     return Responses.entity(oe);
   }
@@ -614,7 +582,13 @@ public class InMemoryProducer implements ODataProducer {
   @Override
   public BaseResponse getNavProperty(String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
     EdmEntitySet edmEntitySet = getMetadata().getEdmEntitySet(entitySetName); // throws NotFoundException
-    // currently only properties are supported
+    EdmNavigationProperty navProperty = edmEntitySet.getType().findNavigationProperty(navProp);
+    if (navProperty != null) {
+      return getNavProperty(edmEntitySet, entityKey, navProperty, queryInfo);
+    }
+    
+    // not a NavigationProperty:
+    
     EdmProperty edmProperty = edmEntitySet.getType().findProperty(navProp);
     if (edmProperty == null)
       throw new NotFoundException("Property " + navProp + " is not found");
@@ -632,6 +606,48 @@ public class InMemoryProducer implements ODataProducer {
     OProperty<?> property = OProperties.simple(navProp, (EdmSimpleType<?>) edmType, propertyValue);
 
     return Responses.property(property);
+  }
+  
+  protected EdmEntitySet findEntitySetForNavProperty(EdmNavigationProperty navProp) {
+    EdmEntityType et = navProp.getToRole().getType();
+    // assumes one set per type...
+    for (EdmEntitySet set : this.getMetadata().getEntitySets()) {
+      if (set.getType().equals(et)) {
+        return set;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * gets the entity(s) on the target end of a NavigationProperty
+   * @param set         the entityset of the source entity
+   * @param entityKey   the key of the source entity
+   * @param navProp     the navigation property
+   * @param queryInfo   the query information
+   * @return a BaseResponse with either a single Entity (can be null) or a set of entities.
+   */
+  protected BaseResponse getNavProperty(EdmEntitySet set, OEntityKey entityKey, EdmNavigationProperty navProp, QueryInfo queryInfo) {
+    
+    // First, get the source POJO.  We must create a queryInfo that expands navPropName
+    // because the given queryInfo is only correct in the context of the related entities.
+    Object obj = getEntityPojo(set.getName(), entityKey,
+            new QueryInfo.Builder().setExpand(Collections.singletonList(Expression.simpleProperty(navProp.getName()))).build()); // throw NotFoundException
+
+    Iterable<?> relatedPojos = this.getRelatedPojos(navProp, obj, this.findEntityInfoForClass(obj.getClass()));
+    PropertyPathHelper pathHelper = new PropertyPathHelper(queryInfo);
+
+    EdmEntitySet targetEntitySet = findEntitySetForNavProperty(navProp);
+                       
+    if (navProp.getToRole().getMultiplicity() == EdmMultiplicity.MANY) {
+      List<OEntity> relatedEntities = new ArrayList<OEntity>();
+      for (Object relatedObj : relatedPojos) {
+        relatedEntities.add(this.toOEntity(targetEntitySet, relatedObj, pathHelper));
+      }
+      return Responses.entities(relatedEntities, targetEntitySet, null, null);
+    } else {
+      return Responses.entity(this.toOEntity(targetEntitySet, relatedPojos.iterator().next(), pathHelper));
+    }
   }
 
   @Override

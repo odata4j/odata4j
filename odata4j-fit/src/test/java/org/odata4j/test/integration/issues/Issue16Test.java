@@ -33,10 +33,12 @@ public class Issue16Test extends AbstractRuntimeTest {
       public EntitiesResponse getNavProperty(String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
 
         actualNavProp[0] = navProp;
-        return Responses.entities(Enumerable.<OEntity> create().toList(), EdmEntitySet.newBuilder().setName("messageLog").build(), null, null);
+        return Responses.entities(Enumerable.<OEntity> create().toList(), getMetadata().findEdmEntitySet("messageLog"), null, null);
       }
     };
-
+    // parser requires this now.
+    producer.register(this.getClass(), "messageLog", null, "foo");
+    
     DefaultODataProducerProvider.setInstance(producer);
     ODataServer server = this.rtFacade.startODataServer(endpointUri);
     ODataConsumer c = this.rtFacade.createODataConsumer(endpointUri, null, null);

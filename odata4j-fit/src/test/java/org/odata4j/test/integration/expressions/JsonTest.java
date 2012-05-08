@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 import junit.framework.Assert;
+import org.core4j.Enumerable;
 import org.core4j.Func;
 
 import org.core4j.Funcs;
@@ -28,6 +29,8 @@ import org.odata4j.test.integration.expressions.PojoWithAllTypesComplex.Complex2
 import org.odata4j.test.integration.expressions.PojoWithAllTypesComplex.Entity1;
 
 public class JsonTest extends AbstractRuntimeTest {
+
+  public static final String uri = "http://localhost:18890/TestService.svc/";
 
   public JsonTest(RuntimeFacadeType type) {
     super(type);
@@ -52,19 +55,46 @@ public class JsonTest extends AbstractRuntimeTest {
 
   }
   
-  public void testJsonCollection() throws NoSuchMethodException {
+  @Test
+  public void testGetNavProps() throws NoSuchMethodException {
 
     try {
       setup();
-      // hmmh, apparently the consumer client is not capable of somethign like this?
-      OEntity e = consumer.getEntity("Pojo/Complexes", (int)1).execute();
-      assertPojoEqualsOEntity(pojo, e, e.getProperties());
-
-    } finally {
+      // a to-1 nav prop
+      OEntity e = consumer.getEntity("Pojo", (int)1).nav("FavoriteEntity").execute();
+      assertNDGT(e);
       
+      // a to-many nav prop
+      Enumerable<OEntity> es = consumer.getEntities("Pojo").nav((int)1, "OnNoticeEntities").execute();
+      assertOnNoticeEntities(es.toList());
+    } finally {
       server.stop();
     }
 
+  }
+
+  @Test
+  public void testSelect() throws NoSuchMethodException {
+    // $select now supported in InMemoryProducer.
+     try {
+      setup();
+      String output = this.rtFacade.getWebResource(uri + "Pojo(1)?$format=json&$select=ComplexType,StringList,FavoriteEntity,FavoriteEntity/Prop2&$expand=FavoriteEntity");
+      System.out.println(output);
+      // did the properties round trip ok?
+      OEntity e = consumer.getEntity("Pojo", (int)1).expand("FavoriteEntity").select("ComplexType,StringList,FavoriteEntity,FavoriteEntity/Prop2").execute();
+      
+      Assert.assertTrue(e.getProperties().size() == 2);
+      Assert.assertNotNull(getPropertyValue("ComplexType", e.getProperties()));
+      Assert.assertNotNull(getPropertyValue("StringList", e.getProperties()));
+      
+      OEntity ndgt = ((OEntity)e).getLink("FavoriteEntity", ORelatedEntityLinkInline.class).getRelatedEntity();
+      Assert.assertTrue(ndgt.getProperties().size() == 1);
+      Assert.assertEquals(getPropertyValue("Prop2", ndgt.getProperties()), 1);
+      
+    } finally {
+      server.stop();
+    }
+    
   }
   
   private PojoWithAllTypesComplex pojo;
@@ -85,8 +115,7 @@ public class JsonTest extends AbstractRuntimeTest {
   }
   
   private void setup() throws NoSuchMethodException {
-    String uri = "http://localhost:18890/TestService.svc/";
-
+    
     producer = new InMemoryProducer("JsonTest");
     DefaultODataProducerProvider.setInstance(producer);
 
@@ -132,13 +161,11 @@ public class JsonTest extends AbstractRuntimeTest {
 
 
     {
-      String output = this.rtFacade.getWebResource(uri + "$metadata");
-      System.out.println(output);
+      //String output = this.rtFacade.getWebResource(uri + "$metadata");
+      //System.out.println(output);
     }
-    String output = this.rtFacade.getWebResource(uri + "Pojo?$format=json&$expand=FavoriteEntity,OnNoticeEntities");
-    System.out.println(output);
-
-
+    //String output = this.rtFacade.getWebResource(uri + "Pojo?$format=json&$expand=FavoriteEntity,OnNoticeEntities");
+    //System.out.println(output);
   }
   
   private static Object getPropertyValue(String name, List<OProperty<?>> props) {
@@ -185,8 +212,40 @@ public class JsonTest extends AbstractRuntimeTest {
       }
 
       // embedded collection(Edm.ComplexType)
-      OCollection<OComplexObject> ccollection = (OCollection<OComplexObject>) getPropertyValue("Complexes", props);
-      Assert.assertEquals(ccollection.size(), pojoC.getComplexes().size());
+      assertComplexes((OCollection<OComplexObject>) getPropertyValue("Complexes", props), pojoC);
+      
+      
+      // TODO need a generalized differ here...
+      // inlined entity
+      OEntity ndgt = ((OEntity)sobject).getLink("FavoriteEntity", ORelatedEntityLinkInline.class).getRelatedEntity();
+      assertNDGT(ndgt);
+      
+      List<OEntity> one = ((OEntity)sobject).getLink("OnNoticeEntities", ORelatedEntitiesLinkInline.class).getRelatedEntities();
+      assertOnNoticeEntities(one);
+    }
+  }
+  
+  private static void assertNDGT(OEntity ndgt) {
+    Assert.assertEquals(getNDGT().getProp1(), getPropertyValue("Prop1", ndgt.getProperties()));
+  }
+  
+  private static void assertOnNoticeEntities(List<OEntity> one) {
+    Assert.assertEquals(2, one.size());
+    for (OEntity onNotice : one) {
+      boolean found = false;
+      for (Entity1 e1 : getOnNoticeEntities()) {
+        if (e1.getProp1().equals(getPropertyValue("Prop1", onNotice.getProperties()))
+                && getPropertyValue("Prop2", onNotice.getProperties()).equals(e1.getProp2())) {
+          found = true;
+          break;
+        }
+      }
+      Assert.assertTrue(found);
+    }
+  }
+  
+  private static void assertComplexes(OCollection<OComplexObject> ccollection, PojoWithAllTypesComplex pojoC) {
+    Assert.assertEquals(ccollection.size(), pojoC.getComplexes().size());
       for (Complex1 c1 : pojoC.getComplexes()) {
         boolean found = false;
         for (OComplexObject co : ccollection) {
@@ -197,25 +256,6 @@ public class JsonTest extends AbstractRuntimeTest {
         }
         Assert.assertTrue(found);
       }
-      
-      // TODO need a generalized differ here...
-      // inlined entity
-      OEntity ndgt = ((OEntity)sobject).getLink("FavoriteEntity", ORelatedEntityLinkInline.class).getRelatedEntity();
-      Assert.assertEquals(getNDGT().getProp1(), getPropertyValue("Prop1", ndgt.getProperties()));
-      
-      List<OEntity> one = ((OEntity)sobject).getLink("OnNoticeEntities", ORelatedEntitiesLinkInline.class).getRelatedEntities();
-      Assert.assertEquals(2, one.size());
-      for (OEntity onNotice : one) {
-        boolean found = false; 
-        for (Entity1 e1 : getOnNoticeEntities()) {
-          if (e1.getProp1().equals(getPropertyValue("Prop1", onNotice.getProperties())) &&
-              getPropertyValue("Prop2", onNotice.getProperties()).equals(e1.getProp2())) {
-            found = true; break;
-          }
-        }
-        Assert.assertTrue(found);
-      }
-    }
   }
   
   private static void assertArrayEquals(byte[] a, byte[] b) {

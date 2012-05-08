@@ -132,6 +132,31 @@ public class QueryInfo {
       this.filter = filter;
       return this;
     }
+    
+    public Builder setOrderBy(List<OrderByExpression> value) {
+      this.orderBy = orderBy;
+      return this;
+    }
+    
+    public Builder setSkipToken(String value) {
+      this.skipToken = value;
+      return this;
+    }
+    
+    public Builder setCustomOptions(Map<String, String> value) {
+      this.customOptions = value;
+      return this;
+    }
+    
+    public Builder setExpand(List<EntitySimpleProperty> value) {
+      this.expand = value;
+      return this;
+    }
+    
+    public Builder setSelect(List<EntitySimpleProperty> value) {
+      this.select = value;
+      return this;
+    }
 
     public QueryInfo build() {
       return new QueryInfo(inlineCount, top, skip, filter, orderBy, skipToken, customOptions, expand, select);

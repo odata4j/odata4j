@@ -146,4 +146,7 @@ public abstract class ConsumerQueryRequestBase<T> implements OQueryRequest<T> {
     return execute().iterator();
   }
 
+  protected List<EntitySegment> getSegments() {
+    return this.segments;
+  }
 }
