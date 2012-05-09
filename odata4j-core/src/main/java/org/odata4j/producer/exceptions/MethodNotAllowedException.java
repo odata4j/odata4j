@@ -1,5 +1,6 @@
 package org.odata4j.producer.exceptions;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 public class MethodNotAllowedException extends ODataException {
@@ -11,7 +12,7 @@ public class MethodNotAllowedException extends ODataException {
   }
 
   public MethodNotAllowedException(String message) {
-    super(Response.status(405).entity(message).build());
+    super(Response.status(405).entity(message).type(MediaType.TEXT_PLAIN_TYPE).build());
   }
 
 }

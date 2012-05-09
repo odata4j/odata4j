@@ -1,5 +1,6 @@
 package org.odata4j.producer.exceptions;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 public class ForbiddenException extends ODataException {
@@ -11,7 +12,7 @@ public class ForbiddenException extends ODataException {
   }
 
   public ForbiddenException(String message) {
-    super(Response.status(403).entity(message).build());
+    super(Response.status(403).entity(message).type(MediaType.TEXT_PLAIN_TYPE).build());
   }
 
 }

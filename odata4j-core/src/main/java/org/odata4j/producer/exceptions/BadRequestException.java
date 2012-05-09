@@ -1,5 +1,6 @@
 package org.odata4j.producer.exceptions;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 public class BadRequestException extends ODataException {
@@ -11,7 +12,7 @@ public class BadRequestException extends ODataException {
   }
 
   public BadRequestException(String message) {
-    super(Response.status(400).entity(message).build(), message);
+    super(Response.status(400).entity(message).type(MediaType.TEXT_PLAIN_TYPE).build(), message);
   }
 
 }

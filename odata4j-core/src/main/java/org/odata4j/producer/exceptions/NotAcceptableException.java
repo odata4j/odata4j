@@ -1,5 +1,6 @@
 package org.odata4j.producer.exceptions;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 public class NotAcceptableException extends ODataException {
@@ -11,7 +12,7 @@ public class NotAcceptableException extends ODataException {
   }
 
   public NotAcceptableException(String message) {
-    super(Response.status(406).entity(message).build());
+    super(Response.status(406).entity(message).type(MediaType.TEXT_PLAIN_TYPE).build());
   }
 
 }

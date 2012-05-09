@@ -19,7 +19,7 @@ public class NorthwindJpaProducerExample extends AbstractExample {
 
   private void run(String[] args) {
 
-    String endpointUri = "http://localhost:8886/NortwindJpaProducerExample.svc/";
+    String endpointUri = "http://localhost:8886/NorthwindJpaProducerExample.svc/";
 
     // this example assumes you have an appropriate persistence.xml containing a valid persistence unit definition 
     // (in this case named NorthwindServiceEclipseLink) mapping your jpa entity classes, etc
