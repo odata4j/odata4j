@@ -53,7 +53,7 @@ public class FormatWriterFactory {
     // if header accepts json, use that
     if (type == null && acceptTypes != null) {
       for (MediaType acceptType : acceptTypes) {
-        if (acceptType.equals(MediaType.APPLICATION_JSON_TYPE)) {
+        if (isApplicationJsonWithParametersIgnored(acceptType)) {
           type = FormatType.JSON;
           break;
         }
@@ -100,6 +100,11 @@ public class FormatWriterFactory {
 
     throw new IllegalArgumentException("Unable to locate format writer for " + targetType.getName() + " and format " + type);
 
+  }
+
+  private static boolean isApplicationJsonWithParametersIgnored(MediaType acceptType) {
+    return acceptType.getType().equals(MediaType.APPLICATION_JSON_TYPE.getType()) &&
+        acceptType.getSubtype().equals(MediaType.APPLICATION_JSON_TYPE.getSubtype());
   }
 
   public static class JsonWriters implements FormatWriters {
