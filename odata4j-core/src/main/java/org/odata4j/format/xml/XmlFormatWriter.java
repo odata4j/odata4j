@@ -1,5 +1,6 @@
 package org.odata4j.format.xml;
 
+import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.List;
 
@@ -117,7 +118,7 @@ public class XmlFormatWriter {
         }
       } else if (type == EdmSimpleType.DECIMAL) {
         if (value != null) {
-          sValue = value.toString();
+          sValue = ((BigDecimal) value).toPlainString();
         }
       } else if (type == EdmSimpleType.SINGLE) {
         if (value != null) {

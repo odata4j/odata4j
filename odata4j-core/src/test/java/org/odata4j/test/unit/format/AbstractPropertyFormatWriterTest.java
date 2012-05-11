@@ -37,6 +37,7 @@ public abstract class AbstractPropertyFormatWriterTest {
   protected static final OProperty<Guid> GUID_PROPERTY = OProperties.simple("Guid", EdmSimpleType.GUID, Guid.fromString("4786c33c-1e3d-4b57-b5cf-a4b759acac44"));
 
   protected static final OProperty<BigDecimal> DECIMAL_PROPERTY = OProperties.simple("Decimal", EdmSimpleType.DECIMAL, BigDecimal.valueOf(-1234567890, 5));
+  protected static final OProperty<BigDecimal> DECIMAL_PROPERTY_LARGE = OProperties.simple("DecimalLarge", EdmSimpleType.DECIMAL, BigDecimal.valueOf(1234567890123456789L, -1));
 
   protected static final OProperty<Double> DOUBLE_PROPERTY = OProperties.simple("Double", EdmSimpleType.DOUBLE, Double.valueOf("-1.23456789E-10"));
 
