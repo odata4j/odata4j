@@ -8,6 +8,7 @@ import org.core4j.Enumerable;
 import org.core4j.Func;
 import org.core4j.Func1;
 import org.core4j.Predicate1;
+import org.odata4j.command.CommandContext;
 import org.odata4j.core.*;
 import org.odata4j.edm.*;
 import org.odata4j.edm.EdmProperty.CollectionKind;
@@ -17,9 +18,11 @@ import org.odata4j.expression.Expression;
 import org.odata4j.expression.OrderByExpression;
 import org.odata4j.expression.OrderByExpression.Direction;
 import org.odata4j.producer.*;
+import org.odata4j.producer.command.GetEntityCommandContext;
 import org.odata4j.producer.edm.MetadataProducer;
 import org.odata4j.producer.exceptions.NotFoundException;
 import org.odata4j.producer.exceptions.NotImplementedException;
+import org.odata4j.producer.inmemory.InMemoryProducer.RequestContext.RequestType;
 
 /**
  * An in-memory implementation of an ODATA Producer.  Uses the standard Java bean
@@ -201,12 +204,25 @@ public class InMemoryProducer implements ODataProducer {
       final String entityTypeName,
       final Func<Iterable<TEntity>> get,
       final String... keys) {
-
+    register(entityClass, propertyModel, entitySetName, entityTypeName,
+            get, null, keys);
+  }
+  
+  public <TEntity> void register(
+      final Class<TEntity> entityClass,
+      final PropertyModel propertyModel,
+      final String entitySetName,
+      final String entityTypeName,
+      final Func<Iterable<TEntity>> get,
+      final Func1<RequestContext, Iterable<TEntity>> getWithContext,
+      final String... keys) {
+     
     InMemoryEntityInfo<TEntity> ei = new InMemoryEntityInfo<TEntity>();
     ei.entitySetName = entitySetName;
     ei.entityTypeName = entityTypeName;
     ei.properties = propertyModel;
     ei.get = get;
+    ei.getWithContext = getWithContext;
     ei.keys = keys;
     ei.entityClass = entityClass;
     ei.hasStream = OAtomStreamEntity.class.isAssignableFrom(entityClass);
@@ -260,7 +276,7 @@ public class InMemoryProducer implements ODataProducer {
     //System.out.println("addPropertiesFromObject: " + obj.getClass().getName());
     for (Iterator<EdmProperty> it = structuralType.getProperties().iterator(); it.hasNext();) {
       EdmProperty property = it.next();
-
+    
       // $select projections not allowed for complex types....hmmh...why?
       if (structuralType instanceof EdmEntityType && !pathHelper.isSelected(property.getName())) {
         continue;
@@ -273,7 +289,7 @@ public class InMemoryProducer implements ODataProducer {
         // much easier.
         continue;
       }
-
+    
       if (property.getCollectionKind() == EdmProperty.CollectionKind.NONE) {
         if (property.getType().isSimple()) {
           properties.add(OProperties.simple(property.getName(), (EdmSimpleType) property.getType(), value));
@@ -335,7 +351,7 @@ public class InMemoryProducer implements ODataProducer {
 
     // "regular" properties
     addPropertiesFromObject(obj, ei.getPropertyModel(), ees.getType(), properties, pathHelper);
-
+    
     // navigation properties
     EdmEntityType edmEntityType = ees.getType();
 
@@ -410,10 +426,18 @@ public class InMemoryProducer implements ODataProducer {
 
   @Override
   public EntitiesResponse getEntities(String entitySetName, final QueryInfo queryInfo) {
-    final EdmEntitySet ees = getMetadata().getEdmEntitySet(entitySetName);
+    
+    final RequestContext rc = RequestContext.newBuilder(RequestType.GetEntities)
+            .entitySetName(entitySetName)
+            .entitySet(getMetadata().getEdmEntitySet(entitySetName))
+            .queryInfo(queryInfo)
+            .pathHelper(new PropertyPathHelper(queryInfo)).build();
+    
     final InMemoryEntityInfo<?> ei = eis.get(entitySetName);
 
-    Enumerable<Object> objects = Enumerable.create(ei.get.apply()).cast(Object.class);
+    Enumerable<Object> objects = null == ei.getWithContext 
+            ? Enumerable.create(ei.get.apply()).cast(Object.class)
+            : Enumerable.create(ei.getWithContext.apply(rc)).cast(Object.class);
 
     // apply filter
     if (queryInfo != null && queryInfo.filter != null) {
@@ -433,10 +457,10 @@ public class InMemoryProducer implements ODataProducer {
     }
 
     // work with oentities
-    final PropertyPathHelper pathHelper = new PropertyPathHelper(queryInfo);
     Enumerable<OEntity> entities = objects.select(new Func1<Object, OEntity>() {
+      @Override
       public OEntity apply(Object input) {
-        return toOEntity(ees, input, pathHelper);
+        return toOEntity(rc.getEntitySet(), input, rc.getPathHelper());
       }
     });
 
@@ -444,6 +468,7 @@ public class InMemoryProducer implements ODataProducer {
     if (queryInfo != null && queryInfo.skipToken != null) {
       final Boolean[] skipping = new Boolean[] { true };
       entities = entities.skipWhile(new Predicate1<OEntity>() {
+        @Override
         public boolean apply(OEntity input) {
           if (skipping[0]) {
             String inputKey = input.getEntityKey().toKeyString();
@@ -477,17 +502,27 @@ public class InMemoryProducer implements ODataProducer {
       skipToken = entitiesList.size() == 0 ? null : Enumerable.create(entitiesList).last().getEntityKey().toKeyString();
     }
 
-    return Responses.entities(entitiesList, ees, inlineCount, skipToken);
+    return Responses.entities(entitiesList, rc.getEntitySet(), inlineCount, skipToken);
 
   }
 
   @Override
   public CountResponse getEntitiesCount(String entitySetName, final QueryInfo queryInfo) {
-    final EdmEntitySet ees = getMetadata().getEdmEntitySet(entitySetName);
+     
+    final RequestContext rc = RequestContext.newBuilder(RequestType.GetEntitiesCount)
+            .entitySetName(entitySetName)
+            .entitySet(getMetadata().getEdmEntitySet(entitySetName))
+            .queryInfo(queryInfo)
+            .build();
+     
     final InMemoryEntityInfo<?> ei = eis.get(entitySetName);
 
-    Enumerable<Object> objects = Enumerable.create(ei.get.apply()).cast(Object.class);
-
+    final PropertyPathHelper pathHelper = new PropertyPathHelper(queryInfo);
+    
+    Enumerable<Object> objects = null == ei.getWithContext 
+            ? Enumerable.create(ei.get.apply()).cast(Object.class)
+            : Enumerable.create(ei.getWithContext.apply(rc)).cast(Object.class);
+    
     // apply filter
     if (queryInfo != null && queryInfo.filter != null) {
       objects = objects.where(filterToPredicate(queryInfo.filter, ei.properties));
@@ -501,10 +536,10 @@ public class InMemoryProducer implements ODataProducer {
     // ignore ordering for count
 
     // work with oentities.
-    final PropertyPathHelper pathHelper = new PropertyPathHelper(queryInfo);
     Enumerable<OEntity> entities = objects.select(new Func1<Object, OEntity>() {
+      @Override
       public OEntity apply(Object input) {
-        return toOEntity(ees, input, pathHelper);
+        return toOEntity(rc.getEntitySet(), input, pathHelper);
       }
     });
 
@@ -544,12 +579,22 @@ public class InMemoryProducer implements ODataProducer {
   }
 
   @Override
-  public EntityResponse getEntity(String entitySetName, final OEntityKey entityKey, EntityQueryInfo queryInfo) {
-    final Object rt = getEntityPojo(entitySetName, entityKey, queryInfo);
+  public EntityResponse getEntity(final String entitySetName, final OEntityKey entityKey, final EntityQueryInfo queryInfo) {
+    
+    PropertyPathHelper pathHelper = new PropertyPathHelper(queryInfo);
+    
+    RequestContext rc = RequestContext.newBuilder(RequestType.GetEntity)
+            .entitySetName(entitySetName)
+            .entitySet(getMetadata()
+            .getEdmEntitySet(entitySetName))
+            .entityKey(entityKey)
+            .queryInfo(queryInfo)
+            .pathHelper(pathHelper).build();
+    
+    final Object rt = getEntityPojo(rc);
     if (rt == null) throw new NotFoundException();
 
-    final EdmEntitySet ees = getMetadata().getEdmEntitySet(entitySetName);
-    OEntity oe = toOEntity(ees, rt, new PropertyPathHelper(queryInfo));
+    OEntity oe = toOEntity(rc.getEntitySet(), rt, rc.getPathHelper());
 
     return Responses.entity(oe);
   }
@@ -581,15 +626,23 @@ public class InMemoryProducer implements ODataProducer {
 
   @Override
   public BaseResponse getNavProperty(String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
-    EdmEntitySet edmEntitySet = getMetadata().getEdmEntitySet(entitySetName); // throws NotFoundException
-    EdmNavigationProperty navProperty = edmEntitySet.getType().findNavigationProperty(navProp);
+    
+    RequestContext rc = RequestContext.newBuilder(RequestType.GetNavProperty)
+            .entitySetName(entitySetName)
+            .entitySet(getMetadata().getEdmEntitySet(entitySetName))
+            .entityKey(entityKey)
+            .navPropName(navProp)
+            .queryInfo(queryInfo)
+            .pathHelper(new PropertyPathHelper(queryInfo)).build();
+    
+    EdmNavigationProperty navProperty = rc.getEntitySet().getType().findNavigationProperty(navProp);
     if (navProperty != null) {
-      return getNavProperty(edmEntitySet, entityKey, navProperty, queryInfo);
+      return getNavProperty(navProperty, rc);
     }
     
     // not a NavigationProperty:
     
-    EdmProperty edmProperty = edmEntitySet.getType().findProperty(navProp);
+    EdmProperty edmProperty = rc.getEntitySet().getType().findProperty(navProp);
     if (edmProperty == null)
       throw new NotFoundException("Property " + navProp + " is not found");
     // currently only simple types are supported
@@ -600,7 +653,7 @@ public class InMemoryProducer implements ODataProducer {
 
     // get property value...
     InMemoryEntityInfo<?> entityInfo = eis.get(entitySetName);
-    Object target = getEntityPojo(entitySetName, entityKey, queryInfo);
+    Object target = getEntityPojo(rc);
     Object propertyValue = entityInfo.properties.getPropertyValue(target, navProp);
     // ... and create OProperty
     OProperty<?> property = OProperties.simple(navProp, (EdmSimpleType<?>) edmType, propertyValue);
@@ -627,26 +680,23 @@ public class InMemoryProducer implements ODataProducer {
    * @param queryInfo   the query information
    * @return a BaseResponse with either a single Entity (can be null) or a set of entities.
    */
-  protected BaseResponse getNavProperty(EdmEntitySet set, OEntityKey entityKey, EdmNavigationProperty navProp, QueryInfo queryInfo) {
+  protected BaseResponse getNavProperty(EdmNavigationProperty navProp, RequestContext rc) {
     
-    // First, get the source POJO.  We must create a queryInfo that expands navPropName
-    // because the given queryInfo is only correct in the context of the related entities.
-    Object obj = getEntityPojo(set.getName(), entityKey,
-            new QueryInfo.Builder().setExpand(Collections.singletonList(Expression.simpleProperty(navProp.getName()))).build()); // throw NotFoundException
-
+    // First, get the source POJO.
+    Object obj = getEntityPojo(rc);
+    
     Iterable<?> relatedPojos = this.getRelatedPojos(navProp, obj, this.findEntityInfoForClass(obj.getClass()));
-    PropertyPathHelper pathHelper = new PropertyPathHelper(queryInfo);
-
+    
     EdmEntitySet targetEntitySet = findEntitySetForNavProperty(navProp);
                        
     if (navProp.getToRole().getMultiplicity() == EdmMultiplicity.MANY) {
       List<OEntity> relatedEntities = new ArrayList<OEntity>();
       for (Object relatedObj : relatedPojos) {
-        relatedEntities.add(this.toOEntity(targetEntitySet, relatedObj, pathHelper));
+        relatedEntities.add(this.toOEntity(targetEntitySet, relatedObj, rc.getPathHelper()));
       }
       return Responses.entities(relatedEntities, targetEntitySet, null, null);
     } else {
-      return Responses.entity(this.toOEntity(targetEntitySet, relatedPojos.iterator().next(), pathHelper));
+      return Responses.entity(this.toOEntity(targetEntitySet, relatedPojos.iterator().next(), rc.getPathHelper()));
     }
   }
 
@@ -680,35 +730,148 @@ public class InMemoryProducer implements ODataProducer {
     throw new NotImplementedException();
   }
 
+  /*
+   * Design Note:
+   * I took a look at the CommandProducer stuff as a way of carrying context into
+   * POJO get functions.  The command pattern is cool and stuff but it doesn't quite
+   * fit the needs of POJO get functions.  A single POJO get function can be called
+   * from different request types like getEntity, getEntities, etc.  The CommandProducer
+   * requires a type specific CommandContext for each request type.  
+   */
+  public static class RequestContext {
+
+    public enum RequestType { GetEntity, GetEntities, GetEntitiesCount, GetNavProperty };
+    
+    public final RequestType requestType;
+    private final String entitySetName;
+    private EdmEntitySet entitySet;
+    private final String navPropName;
+    private final OEntityKey entityKey;
+    private final QueryInfo queryInfo;
+    private final PropertyPathHelper pathHelper;
+
+    public RequestType getRequestType() {
+      return requestType;
+    }
+    
+    public String getEntitySetName() {
+      return entitySetName;
+    }
+    
+    public EdmEntitySet getEntitySet() {
+      return entitySet;
+    }
+
+    public String getNavPropName() {
+      return navPropName;
+    }
+
+    public OEntityKey getEntityKey() {
+      return entityKey;
+    }
+
+    public QueryInfo getQueryInfo() {
+      return queryInfo;
+    }
+
+    public PropertyPathHelper getPathHelper() {
+      return pathHelper;
+    }
+
+    public static Builder newBuilder(RequestType requestType) {
+      return new Builder().requestType(requestType);
+    }
+
+    public static class Builder {
+
+      private RequestType requestType;
+      private String entitySetName;
+      private EdmEntitySet entitySet;
+      private String navPropName;
+      private OEntityKey entityKey;
+      private QueryInfo queryInfo;
+      private PropertyPathHelper pathHelper;
+
+      public Builder requestType(RequestType value) {
+        this.requestType = value;
+        return this;
+      }
+      
+      public Builder entitySetName(String value) {
+        this.entitySetName = value;
+        return this;
+      }
+      
+      public Builder entitySet(EdmEntitySet value) {
+        this.entitySet = value;
+        return this;
+      }
+      
+      public Builder navPropName(String value) {
+        this.navPropName = value;
+        return this;
+      }
+
+      public Builder entityKey(OEntityKey value) {
+        this.entityKey = value;
+        return this;
+      }
+
+      public Builder queryInfo(QueryInfo value) {
+        this.queryInfo = value;
+        return this;
+      }
+
+      public Builder pathHelper(PropertyPathHelper value) {
+        this.pathHelper = value;
+        return this;
+      }
+
+      public RequestContext build() {
+        return new RequestContext(requestType, entitySetName, entitySet, navPropName, entityKey, queryInfo, pathHelper);
+      }
+    }
+
+    private RequestContext(RequestType requestType, String entitySetName, EdmEntitySet entitySet, 
+            String navPropName, OEntityKey entityKey, QueryInfo queryInfo, PropertyPathHelper pathHelper) {
+      this.requestType = requestType;
+      this.entitySetName = entitySetName;
+      this.entitySet = entitySet;
+      this.navPropName = navPropName;
+      this.entityKey = entityKey;
+      this.queryInfo = queryInfo;
+      this.pathHelper = pathHelper;
+    }
+  }
+  
   /**
    * given an entity set and an entity key, return the pojo that is that entity instance.
    * The default implementation iterates over the entire set of pojos to find the
    * desired instance.
    * 
-   * @param entitySetName
-   * @param entityKey
-   * @param queryInfo - custom query options may be useful
+   * @param rc - the current ReqeustContext, may be valuable to the ei.getWithContext impl
    * @return 
    */
   @SuppressWarnings("unchecked")
-  protected Object getEntityPojo(String entitySetName, final OEntityKey entityKey, QueryInfo queryInfo) {
-    final InMemoryEntityInfo<?> ei = eis.get(entitySetName);
+  protected Object getEntityPojo(final RequestContext rc) {
+    final InMemoryEntityInfo<?> ei = eis.get(rc.getEntitySetName());
 
     final String[] keyList = ei.keys;
 
-    Iterable<Object> iter = (Iterable<Object>) ei.get.apply();
+    Iterable<Object> iter = null == ei.getWithContext ? ((Iterable<Object>) ei.get.apply())
+            : ((Iterable<Object>)ei.getWithContext.apply(rc));
 
     final Object rt = Enumerable.create(iter).firstOrNull(new Predicate1<Object>() {
       public boolean apply(Object input) {
         HashMap<String, Object> idObjectMap = ei.id.apply(input);
 
         if (keyList.length == 1) {
-          Object idValue = entityKey.asSingleValue();
+          Object idValue = rc.getEntityKey().asSingleValue();
           return idObjectMap.get(keyList[0]).equals(idValue);
         } else if (keyList.length > 1) {
           for (String key : keyList) {
             Object curValue = null;
-            Iterator<OProperty<?>> keyProps = entityKey.asComplexProperties().iterator();
+            Iterator<OProperty<?>> keyProps = rc.getEntityKey().asComplexProperties().iterator();
             while (keyProps.hasNext()) {
               OProperty<?> keyProp = keyProps.next();
               if (keyProp.getName().equalsIgnoreCase(key)) {
