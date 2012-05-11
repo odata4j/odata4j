@@ -23,12 +23,12 @@ import org.odata4j.internal.EntitySegment;
 import org.odata4j.internal.FeedCustomizationMapping;
 import org.odata4j.internal.InternalUtil;
 
-class CxFConsumerQueryEntitiesRequest<T> extends CxfConsumerQueryRequestBase<T> {
+class CxfConsumerQueryEntitiesRequest<T> extends CxfConsumerQueryRequestBase<T> {
 
   private final Class<T> entityType;
   private final FeedCustomizationMapping fcMapping;
 
-  CxFConsumerQueryEntitiesRequest(FormatType formatType, Class<T> entityType, String serviceRootUri, EdmDataServices metadata, String entitySetName, FeedCustomizationMapping fcMapping) {
+  CxfConsumerQueryEntitiesRequest(FormatType formatType, Class<T> entityType, String serviceRootUri, EdmDataServices metadata, String entitySetName, FeedCustomizationMapping fcMapping) {
     super(formatType, serviceRootUri, metadata, entitySetName);
     this.entityType = entityType;
     this.fcMapping = fcMapping;
@@ -49,7 +49,7 @@ class CxFConsumerQueryEntitiesRequest<T> extends CxfConsumerQueryRequestBase<T> 
   private Enumerable<Entry> getEntries(final ODataClientRequest request) {
     return Enumerable.createFromIterator(new Func<Iterator<Entry>>() {
       public Iterator<Entry> apply() {
-        return new EntryIterator(request, CxFConsumerQueryEntitiesRequest.this.getFormatType());
+        return new EntryIterator(request, CxfConsumerQueryEntitiesRequest.this.getFormatType());
       }
     });
   }
