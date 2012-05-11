@@ -1,6 +1,7 @@
 package org.odata4j.format.json;
 
 import java.io.Writer;
+import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.List;
 
@@ -117,7 +118,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
     } else if (type.equals(EdmSimpleType.DATETIME)) {
       jw.writeRaw(InternalUtil.formatDateTimeForJson((LocalDateTime) pvalue));
     } else if (type.equals(EdmSimpleType.DECIMAL)) {
-      jw.writeString(pvalue.toString());
+      jw.writeString(((BigDecimal) pvalue).toPlainString());
     } else if (type.equals(EdmSimpleType.DOUBLE)) {
       jw.writeString(pvalue.toString());
     } else if (type.equals(EdmSimpleType.GUID)) {

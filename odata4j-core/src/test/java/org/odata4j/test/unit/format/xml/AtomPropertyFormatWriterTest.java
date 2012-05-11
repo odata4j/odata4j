@@ -92,6 +92,12 @@ public class AtomPropertyFormatWriterTest extends AbstractPropertyFormatWriterTe
   }
 
   @Test
+  public void decimalLarge() throws Exception {
+    formatWriter.write(null, stringWriter, Responses.property(DECIMAL_PROPERTY_LARGE));
+    assertThat(stringWriter.toString(), containsString(">12345678901234567890<"));
+  }
+
+  @Test
   public void doubleWithExponent() throws Exception {
     formatWriter.write(null, stringWriter, Responses.property(DOUBLE_PROPERTY));
     assertThat(stringWriter.toString(), containsString(">-1.23456789E-10<"));

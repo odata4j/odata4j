@@ -146,7 +146,7 @@ public class JsonComplexObjectFormatParser extends JsonFormatParser implements F
           throw new UnsupportedOperationException("Only simple properties supported");
         }
       } else {
-        props.add(JsonTypeConverter.parse(name, (EdmSimpleType<?>) ep.getType(), event.asEndProperty().getValue()));
+        props.add(JsonTypeConverter.parse(name, (EdmSimpleType<?>) ep.getType(), event.asEndProperty().getValue(), event.asEndProperty().getValueTokenType()));
       }
     } else if (event.isStartObject()) {
       // embedded complex object or array.

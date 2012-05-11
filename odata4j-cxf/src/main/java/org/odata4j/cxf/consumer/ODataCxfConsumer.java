@@ -128,7 +128,7 @@ public class ODataCxfConsumer extends AbstractODataConsumer {
   @Override
   public <T> OQueryRequest<T> getEntities(Class<T> entityType, String entitySetHref) {
     FeedCustomizationMapping mapping = this.getFeedCustomizationMapping(entitySetHref);
-    CxFConsumerQueryEntitiesRequest<T> result = new CxFConsumerQueryEntitiesRequest<T>(this.formatType, entityType, this.getServiceRootUri(), getMetadata(), entitySetHref, mapping);
+    CxfConsumerQueryEntitiesRequest<T> result = new CxfConsumerQueryEntitiesRequest<T>(this.formatType, entityType, this.getServiceRootUri(), getMetadata(), entitySetHref, mapping);
     return result;
   }
 
