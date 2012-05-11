@@ -239,7 +239,7 @@ public class JsonFormatParser {
           throw new UnsupportedOperationException("complex property unknown parse state");
         }
       } else {
-        entry.properties.add(JsonTypeConverter.parse(name, (EdmSimpleType<?>) ep.getType(), event.asEndProperty().getValue()));
+        entry.properties.add(JsonTypeConverter.parse(name, (EdmSimpleType<?>) ep.getType(), event.asEndProperty().getValue(), event.asEndProperty().getValueTokenType()));
       }
     } else if (event.isStartObject()) {
       // reference deferred or inlined

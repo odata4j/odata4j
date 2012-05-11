@@ -73,6 +73,7 @@ public class JsonStreamReaderFactory {
       // returns a value if it is a simple property and 
       // not an other JsonObject or JsonArray
       String getValue();
+      JsonTokenType getValueTokenType();
     }
 
     public static interface JsonValueEvent extends JsonEvent {
@@ -263,6 +264,10 @@ class JsonEndPropertyEventImpl extends JsonEventImpl implements JsonEndPropertyE
     return null;
   }
 
+  @Override
+  public JsonTokenType getValueTokenType() {
+    return null;
+  }
 }
 
 class JsonValueEventImpl extends JsonEventImpl implements JsonValueEvent {
@@ -527,7 +532,7 @@ class JsonStreamReaderImpl implements JsonStreamReader {
         throw new IllegalStateException("State is " + state.peek());
       }
       fireEndPropertyEvent = false;
-      return createEndPropertyEvent(null);
+      return createEndPropertyEvent(null, JsonTokenType.NULL);
     }
 
     if (hasNext()) {
@@ -573,9 +578,9 @@ class JsonStreamReaderImpl implements JsonStreamReader {
         case NUMBER:
         case TRUE:
         case FALSE:
-          return createEndPropertyEvent(token.value);
+          return createEndPropertyEvent(token.value, token.type);
         case NULL:
-          return createEndPropertyEvent(null);
+          return createEndPropertyEvent(null, token.type);
         case LEFT_CURLY_BRACKET:
           return createStartObjectEvent();
         case LEFT_BRACKET:
@@ -636,7 +641,7 @@ class JsonStreamReaderImpl implements JsonStreamReader {
     return this.previousEvent;
   }
 
-  private JsonEvent createEndPropertyEvent(final String value) {
+  private JsonEvent createEndPropertyEvent(final String value, final JsonTokenType valueTokenType) {
     state.pop();
     //System.out.println("jsonp end property: " + value);
 
@@ -644,6 +649,10 @@ class JsonStreamReaderImpl implements JsonStreamReader {
       @Override
       public String getValue() {
         return value;
+      }
+      @Override
+      public JsonTokenType getValueTokenType() {
+        return valueTokenType;
       }
     };
     return this.previousEvent;

@@ -107,14 +107,19 @@ public class JsonEntryFormatParserTest extends AbstractEntryFormatParserTest {
     formatParser.parse(buildJson("\"Boolean\": undefined"));
   }
 
-  @Test(expected=IllegalArgumentException.class)
+  @Test(expected=JsonParseException.class)
   public void illegalBooleanFormat() throws Exception {
-    formatParser.parse(buildJson("\"Boolean\": \"falsetrue\""));
+    formatParser.parse(buildJson("\"Boolean\": \"false\""));
   }
 
   @Test
   public void string() throws Exception {
     assertThat((String) formatParser.parse(buildJson("\"String\": \"<\\\"\\t€\\\">\"")).getEntity().getProperty(STRING_NAME).getValue(), is(STRING));
+  }
+
+  @Test(expected=JsonParseException.class)
+  public void illegalStringType() throws Exception {
+    formatParser.parse(buildJson("\"String\": 123"));
   }
 
   @Test
