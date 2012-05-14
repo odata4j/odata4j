@@ -254,7 +254,7 @@ public class EdmxFormatWriter extends XmlFormatWriter {
         writer.writeAttribute("Precision", Integer.toString(prop.getPrecision()));
       }
       if (prop.getScale() != null) {
-        writer.writeAttribute("Scale", Integer.toString(prop.getPrecision()));
+        writer.writeAttribute("Scale", Integer.toString(prop.getScale()));
       }
       writeAnnotationAttributes(prop, writer);
       writeAnnotationElements(prop, writer);
