@@ -12,6 +12,8 @@ import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OQueryRequest;
 import org.odata4j.edm.EdmDataServices;
+import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.internal.EntitySegment;
 
 public abstract class ConsumerQueryRequestBase<T> implements OQueryRequest<T> {
@@ -25,8 +27,10 @@ public abstract class ConsumerQueryRequestBase<T> implements OQueryRequest<T> {
   private String orderBy;
   private String filter;
   private String select;
-  private String lastSegment;
   private String expand;
+
+  private String lastSegment;
+  private EdmEntitySet entitySet;
 
   private final List<EntitySegment> segments = new ArrayList<EntitySegment>();
   private final Map<String, String> customs = new HashMap<String, String>();
@@ -36,14 +40,21 @@ public abstract class ConsumerQueryRequestBase<T> implements OQueryRequest<T> {
     this.serviceRootUri = serviceRootUri;
     this.metadata = metadata;
     this.lastSegment = lastSegment;
+    
+    this.entitySet = metadata.findEdmEntitySet(lastSegment);
+    if (this.entitySet == null) {
+      EdmFunctionImport function = metadata.findEdmFunctionImport(lastSegment);
+      if (function != null)
+        this.entitySet = function.getEntitySet();
+    }
   }
 
   protected ODataJerseyClient getClient() {
     return client;
   }
 
-  protected String getLastSegment() {
-    return lastSegment;
+  protected EdmEntitySet getEntitySet() {
+    return entitySet;
   }
 
   protected String getServiceRootUri() {
@@ -132,6 +143,7 @@ public abstract class ConsumerQueryRequestBase<T> implements OQueryRequest<T> {
   public OQueryRequest<T> nav(OEntityKey key, String navProperty) {
     segments.add(new EntitySegment(lastSegment, key));
     lastSegment = navProperty;
+    entitySet = metadata.getEdmEntitySet(entitySet.getType().findNavigationProperty(navProperty).getToRole().getType());
     return this;
   }
 

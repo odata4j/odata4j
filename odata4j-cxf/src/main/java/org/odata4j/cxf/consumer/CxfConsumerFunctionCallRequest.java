@@ -213,7 +213,7 @@ class CxfConsumerFunctionCallRequest<T extends OObject>
               new Settings(
                   version,
                   getMetadata(),
-                  getLastSegment(),
+                  function.getName(),
                   null, // entitykey
                   null, // fcMapping
                   true, // isResponse

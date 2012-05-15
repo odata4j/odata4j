@@ -95,6 +95,11 @@ public class AtomEntryFormatParserTest extends AbstractEntryFormatParserTest {
     assertThat((Boolean) formatParser.parse(buildAtom("<d:Boolean m:type=\"Edm.Boolean\">true</d:Boolean>")).getEntity().getProperty(BOOLEAN_NAME).getValue(), is(BOOLEAN));
   }
 
+  @Test
+  public void booleanWithoutType() throws Exception {
+    assertThat((Boolean) formatParser.parse(buildAtom("<d:Boolean>true</d:Boolean>")).getEntity().getProperty(BOOLEAN_NAME).getValue(), is(BOOLEAN));
+  }
+
   @Test(expected=IllegalArgumentException.class)
   public void illegalBoolean() throws Exception {
     formatParser.parse(buildAtom("<d:Boolean m:type=\"Edm.Boolean\">undefined</d:Boolean>"));
@@ -122,12 +127,12 @@ public class AtomEntryFormatParserTest extends AbstractEntryFormatParserTest {
 
   @Test(expected=IllegalArgumentException.class)
   public void illegalDecimal() throws Exception {
-    formatParser.parse(buildAtom("<d:Decimal m:type=\"Edm.Decimal\">1Ee+01</d:Decimal>"));
+    formatParser.parse(buildAtom("<d:Decimal>1Ee+01</d:Decimal>"));
   }
 
   @Test
   public void doubleWithExponent() throws Exception {
-    assertThat((Double) formatParser.parse(buildAtom("<d:Double m:type=\"Edm.Double\">-1.23456789E-10</d:Double>")).getEntity().getProperty(DOUBLE_NAME).getValue(), is(DOUBLE));
+    assertThat((Double) formatParser.parse(buildAtom("<d:Double>-1.23456789E-10</d:Double>")).getEntity().getProperty(DOUBLE_NAME).getValue(), is(DOUBLE));
   }
 
   private StringReader buildAtom(String property) {
