@@ -13,11 +13,7 @@
         <include>org.odata4j:odata4j-core</include>
         <include>org.odata4j:odata4j-cxf</include>
         <include>org.core4j:core4j</include>
-        <include>*:cxf-bundle-jaxrs:*</include>
-        <!-- provided by RT <include>*:jetty-servlet:*</include> -->
-        <!-- provided by RT <include>*:jetty-client:*</include> -->
-        <!-- provided by RT <include>*:slf4j-api:*</include> -->
-        <!-- provided by RT <include>*:slf4j-log4j12:*</include> -->
+        <include>*:cxf-rt-frontend-jaxrs:*</include>
         <include>*:httpclient:*</include>
         <include>*:httpcore:*</include>
         <include>*:httpmime:*</include>
