@@ -349,13 +349,15 @@ public class InMemoryProducer implements ODataProducer {
       keyKVPair.put(key, keyValue);
     }
 
+    // the entity set being queried may contain objects of subtypes of the entity set's type
+    EdmEntityType edmEntityType = (EdmEntityType) this.getMetadata().findEdmEntityType(namespace + "." + ei.getEntityTypeName());
+
     // "regular" properties
-    addPropertiesFromObject(obj, ei.getPropertyModel(), ees.getType(), properties, pathHelper);
+    addPropertiesFromObject(obj, ei.getPropertyModel(), edmEntityType, properties, pathHelper);
     
     // navigation properties
-    EdmEntityType edmEntityType = ees.getType();
-
-    for (final EdmNavigationProperty navProp : ees.getType().getNavigationProperties()) {
+    
+    for (final EdmNavigationProperty navProp : edmEntityType.getNavigationProperties()) {
 
       if (!pathHelper.isSelected(navProp.getName())) {
         continue;
@@ -403,7 +405,7 @@ public class InMemoryProducer implements ODataProducer {
       }
     }
 
-    return OEntities.create(ees, OEntityKey.create(keyKVPair), properties, links, obj);
+    return OEntities.create(ees, edmEntityType, OEntityKey.create(keyKVPair), properties, links, obj);
   }
   
   protected Iterable<?> getRelatedPojos(EdmNavigationProperty navProp, Object srcObject, InMemoryEntityInfo<?> srcInfo) {

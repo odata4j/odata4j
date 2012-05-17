@@ -43,6 +43,20 @@ public class OEntities {
   public static OEntity create(EdmEntitySet entitySet, OEntityKey entityKey, List<OProperty<?>> properties, List<OLink> links, Object... extensions) {
     return new OEntityImpl(entitySet, null, entityKey, true, properties, links, extensions);
   }
+  
+   /**
+   * Creates a new entity.
+   *
+   * @param entitySet  the entity-set
+   * @param entityKey  the entity-key
+   * @param properties  the entity properties, if any
+   * @param links  the entity links, if any
+   * @param extensions  entity extensions, if any
+   * @return the new entity
+   */
+  public static OEntity create(EdmEntitySet entitySet, EdmEntityType entityType, OEntityKey entityKey, List<OProperty<?>> properties, List<OLink> links, Object... extensions) {
+    return new OEntityImpl(entitySet, entityType, entityKey, true, properties, links, extensions);
+  }
 
   /**
    * Creates a new entity.
