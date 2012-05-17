@@ -10,7 +10,9 @@ import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntityContainer;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmEntityType;
+import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSchema;
+import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.format.xml.AtomFeedFormatParser;
 import org.odata4j.format.xml.AtomFeedFormatParser.AtomFeed;
 
@@ -20,7 +22,7 @@ public class Issue142Test {
   public void issue142() {
     InputStream xml = getClass().getResourceAsStream("/META-INF/no_content_type.xml");
     EdmDataServices metadata = getMetadata();
-    AtomFeed feed = new AtomFeedFormatParser(metadata, null, null, null).parse(new InputStreamReader(xml));
+    AtomFeed feed = new AtomFeedFormatParser(metadata, "WorkflowTaskCollection", null, null).parse(new InputStreamReader(xml));
     Assert.assertNotNull(feed);
   }
 
@@ -28,7 +30,10 @@ public class Issue142Test {
     EdmDataServices.Builder metadata = new EdmDataServices.Builder();
     EdmSchema.Builder schema = new EdmSchema.Builder();
     EdmEntityContainer.Builder container = new EdmEntityContainer.Builder();
-    EdmEntityType.Builder entityType = new EdmEntityType.Builder().addKeys("Key1").setNamespace("WFSERVICE").setName("WorkflowTask");
+    EdmEntityType.Builder entityType = new EdmEntityType.Builder().addKeys("workitem_id").setNamespace("WFSERVICE").setName("WorkflowTask").addProperties(
+        EdmProperty.newBuilder("workitem_id").setType(EdmSimpleType.STRING),
+        EdmProperty.newBuilder("subject").setType(EdmSimpleType.STRING),
+        EdmProperty.newBuilder("created_at").setType(EdmSimpleType.DATETIME));
     EdmEntitySet.Builder entitySet = new EdmEntitySet.Builder().setName("WorkflowTaskCollection").setEntityType(entityType);
     container.addEntitySets(entitySet);
     schema.addEntityContainers(container);

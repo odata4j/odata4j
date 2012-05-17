@@ -110,10 +110,11 @@ public class OProperties {
    * @return a new OData property instance
    */
   @SuppressWarnings({ "unchecked", "rawtypes" })
-  public static OProperty<?> parseSimple(String name, String type, String value) {
-    EdmSimpleType edmType = type == null ? EdmSimpleType.STRING : EdmType.getSimple(type);
-    OSimpleObject<?> simple = OSimpleObjects.parse(edmType, value);
-    return new Impl(name, edmType, simple.getValue());
+  public static OProperty<?> parseSimple(String name, EdmSimpleType type, String value) {
+    if (type == null)
+      type = EdmSimpleType.STRING;
+    OSimpleObject<?> simple = OSimpleObjects.parse(type, value);
+    return new Impl(name, type, simple.getValue());
   }
 
   /**

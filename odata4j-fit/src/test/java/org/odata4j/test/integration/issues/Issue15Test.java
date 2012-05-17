@@ -37,7 +37,7 @@ public class Issue15Test extends AbstractRuntimeTest {
     reader.nextEvent();
     StartElement2 propertiesElement = reader.nextEvent().asStartElement();
     for (OProperty<?> prop : AtomFeedFormatParser.parseProperties(reader,
-        propertiesElement, null)) {
+        propertiesElement, null, null)) {
       if (prop.getName().equals("update_date")) {
         Assert.assertEquals("2010-11-21T12:21:51.000", prop.getValue()
             .toString());
