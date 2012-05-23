@@ -262,6 +262,16 @@ public class InMemoryProducer implements ODataProducer {
     return null;
   }
   
+  protected InMemoryEntityInfo<?> findEntityInfoForEntitySet(String entitySetName) {
+    for (InMemoryEntityInfo<?> typeInfo : this.eis.values()) {
+      if (typeInfo.entitySetName.equals(entitySetName)) {
+        return typeInfo;
+      }
+    }
+
+    return null;
+  }
+  
   /**
    * transforms a POJO into a list of OProperties based on a given
    * EdmStructuralType.
@@ -441,9 +451,14 @@ public class InMemoryProducer implements ODataProducer {
             ? Enumerable.create(ei.get.apply()).cast(Object.class)
             : Enumerable.create(ei.getWithContext.apply(rc)).cast(Object.class);
 
+    return getEntitiesResponse(rc, rc.getEntitySet(), objects, ei.getPropertyModel());
+  }
+  
+  protected EntitiesResponse getEntitiesResponse(final RequestContext rc, final EdmEntitySet targetEntitySet, Enumerable<Object> objects, PropertyModel propertyModel) {
     // apply filter
+    final QueryInfo queryInfo = rc.getQueryInfo();
     if (queryInfo != null && queryInfo.filter != null) {
-      objects = objects.where(filterToPredicate(queryInfo.filter, ei.properties));
+      objects = objects.where(filterToPredicate(queryInfo.filter, propertyModel));
     }
 
     // compute inlineCount, must be done after applying filter
@@ -455,14 +470,14 @@ public class InMemoryProducer implements ODataProducer {
 
     // apply ordering
     if (queryInfo != null && queryInfo.orderBy != null) {
-      objects = orderBy(objects, queryInfo.orderBy, ei.properties);
+      objects = orderBy(objects, queryInfo.orderBy, propertyModel);
     }
 
     // work with oentities
     Enumerable<OEntity> entities = objects.select(new Func1<Object, OEntity>() {
       @Override
       public OEntity apply(Object input) {
-        return toOEntity(rc.getEntitySet(), input, rc.getPathHelper());
+        return toOEntity(targetEntitySet, input, rc.getPathHelper());
       }
     });
 
@@ -504,7 +519,7 @@ public class InMemoryProducer implements ODataProducer {
       skipToken = entitiesList.size() == 0 ? null : Enumerable.create(entitiesList).last().getEntityKey().toKeyString();
     }
 
-    return Responses.entities(entitiesList, rc.getEntitySet(), inlineCount, skipToken);
+    return Responses.entities(entitiesList, targetEntitySet, inlineCount, skipToken);
 
   }
 
@@ -686,17 +701,13 @@ public class InMemoryProducer implements ODataProducer {
     
     // First, get the source POJO.
     Object obj = getEntityPojo(rc);
-    
-    Iterable<?> relatedPojos = this.getRelatedPojos(navProp, obj, this.findEntityInfoForClass(obj.getClass()));
+    Iterable relatedPojos = this.getRelatedPojos(navProp, obj, this.findEntityInfoForClass(obj.getClass()));
     
     EdmEntitySet targetEntitySet = findEntitySetForNavProperty(navProp);
                        
     if (navProp.getToRole().getMultiplicity() == EdmMultiplicity.MANY) {
-      List<OEntity> relatedEntities = new ArrayList<OEntity>();
-      for (Object relatedObj : relatedPojos) {
-        relatedEntities.add(this.toOEntity(targetEntitySet, relatedObj, rc.getPathHelper()));
-      }
-      return Responses.entities(relatedEntities, targetEntitySet, null, null);
+      // apply filter, orderby, etc.
+      return getEntitiesResponse(rc, targetEntitySet, Enumerable.create(relatedPojos), findEntityInfoForEntitySet(targetEntitySet.getName()).getPropertyModel());
     } else {
       return Responses.entity(this.toOEntity(targetEntitySet, relatedPojos.iterator().next(), rc.getPathHelper()));
     }
