@@ -3,6 +3,8 @@ package org.odata4j.format.json;
 import javax.ws.rs.core.UriInfo;
 
 import org.odata4j.core.OCollection;
+import org.odata4j.core.OEntity;
+import org.odata4j.edm.EdmEntityType;
 import org.odata4j.edm.EdmType;
 import org.odata4j.producer.CollectionResponse;
 
@@ -29,7 +31,12 @@ public class JsonCollectionFormatWriter extends JsonFormatWriter<CollectionRespo
         else {
           isFirst = false;
         }
-        super.writeValue(jw, ctype, o);
+        if (ctype instanceof EdmEntityType) {
+          OEntity entity = (OEntity) o;
+          super.writeOEntity(uriInfo, jw, entity, entity.getEntitySet(), true); // its a response.
+        } else {
+          super.writeValue(jw, ctype, o);
+        }
       }
     }
     jw.endArray();
