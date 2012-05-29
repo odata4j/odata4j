@@ -75,19 +75,19 @@ public class ODataConsumersTest {
 
   @AfterClass
   public static void teardownClass() throws Exception {
-    if (oldConsumerImplProperty != null) {
+    if (oldConsumerImplProperty != null)
       System.setProperty(CONSUMERIMPL_PROPERTY, oldConsumerImplProperty);
-    } else {
-      Properties props = System.getProperties();
-      props.remove(CONSUMERIMPL_PROPERTY);
-      System.setProperties(props);
-    }
   }
 
   @After
   public void teardown() throws Exception {
-    // reset 'classLoader' field after each test
+    // reset 'classLoader' field
     injectClassLoader(null);
+
+    // remove 'odata4j.consumerimpl' property
+    Properties props = System.getProperties();
+    props.remove(CONSUMERIMPL_PROPERTY);
+    System.setProperties(props);
   }
 
   @Test
