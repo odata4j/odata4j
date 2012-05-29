@@ -1,8 +1,7 @@
 package org.odata4j.cxf.consumer;
 
-import java.util.Arrays;
-
 import org.apache.http.HttpResponse;
+import org.core4j.Enumerable;
 import org.odata4j.consumer.AbstractConsumerEntityPayloadRequest;
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.core.OCreateRequest;
@@ -11,19 +10,15 @@ import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
-import org.odata4j.core.OLinks;
 import org.odata4j.core.OProperty;
 import org.odata4j.core.Throwables;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
-import org.odata4j.edm.EdmMultiplicity;
-import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.format.Entry;
 import org.odata4j.format.FormatParser;
 import org.odata4j.format.FormatParserFactory;
 import org.odata4j.format.FormatType;
 import org.odata4j.format.Settings;
-import org.odata4j.format.xml.XmlFormatWriter;
 import org.odata4j.internal.FeedCustomizationMapping;
 import org.odata4j.internal.InternalUtil;
 
@@ -115,25 +110,12 @@ class CxfConsumerCreateEntityRequest<T> extends AbstractConsumerEntityPayloadReq
 
   @Override
   public OCreateRequest<T> inline(String navProperty, OEntity... entities) {
-    EdmEntitySet entitySet = metadata.getEdmEntitySet(entitySetName);
-    EdmNavigationProperty navProp = entitySet.getType().findNavigationProperty(navProperty);
-    if (navProp == null)
-      throw new IllegalArgumentException("unknown navigation property " + navProperty);
+    return super.inline(this, navProperty, entities);
+  }
 
-    // TODO get rid of XmlFormatWriter
-    String rel = XmlFormatWriter.related + navProperty;
-    String href = entitySetName + "/" + navProperty;
-    if (navProp.getToRole().getMultiplicity() == EdmMultiplicity.MANY) {
-      links.add(OLinks.relatedEntitiesInline(rel, navProperty, href, Arrays.asList(entities)));
-    } else {
-      if (entities.length > 1)
-        throw new IllegalArgumentException("only one entity is allowed for this navigation property " + navProperty);
-
-      links.add(OLinks.relatedEntityInline(rel, navProperty, href,
-          entities.length > 0 ? entities[0] : null));
-    }
-
-    return this;
+  @Override
+  public OCreateRequest<T> inline(String navProperty, Iterable<OEntity> entities) {
+    return super.inline(this, navProperty, Enumerable.create(entities).toArray(OEntity.class));
   }
 
 }

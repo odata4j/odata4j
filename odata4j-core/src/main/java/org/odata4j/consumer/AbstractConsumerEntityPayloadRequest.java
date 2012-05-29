@@ -1,6 +1,7 @@
 package org.odata4j.consumer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.odata4j.core.OEntity;
@@ -79,4 +80,25 @@ public abstract class AbstractConsumerEntityPayloadRequest {
     return rt;
   }
 
+  protected <T> T inline(T rt, String navProperty, OEntity... entities) {
+    EdmEntitySet entitySet = metadata.getEdmEntitySet(entitySetName);
+    EdmNavigationProperty navProp = entitySet.getType().findNavigationProperty(navProperty);
+    if (navProp == null)
+      throw new IllegalArgumentException("unknown navigation property " + navProperty);
+
+    // TODO get rid of XmlFormatWriter
+    String rel = XmlFormatWriter.related + navProperty;
+    String href = entitySetName + "/" + navProperty;
+    if (navProp.getToRole().getMultiplicity() == EdmMultiplicity.MANY) {
+      links.add(OLinks.relatedEntitiesInline(rel, navProperty, href, Arrays.asList(entities)));
+    } else {
+      if (entities.length > 1)
+        throw new IllegalArgumentException("only one entity is allowed for this navigation property " + navProperty);
+
+      links.add(OLinks.relatedEntityInline(rel, navProperty, href,
+          entities.length > 0 ? entities[0] : null));
+    }
+
+    return rt;
+  }
 }
