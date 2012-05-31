@@ -31,7 +31,6 @@ public class BeanModel {
   private final Map<String, Class<?>> types;
   private final Map<String, Class<?>> collections;
   
-  private final boolean flatten;
   private final BeanModel superClass;
   
   /**
@@ -57,7 +56,6 @@ public class BeanModel {
     this.setters = getBeanSetters(beanClass, flatten);
     this.types = computeTypes(getters, setters);
     this.collections = computeCollections(getters, setters);
-    this.flatten = flatten;
     
     // work up the hierarchy
     Class<?> sc = beanClass.getSuperclass();

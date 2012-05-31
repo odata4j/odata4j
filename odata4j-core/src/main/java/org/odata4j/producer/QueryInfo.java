@@ -133,7 +133,7 @@ public class QueryInfo {
       return this;
     }
     
-    public Builder setOrderBy(List<OrderByExpression> value) {
+    public Builder setOrderBy(List<OrderByExpression> orderBy) {
       this.orderBy = orderBy;
       return this;
     }

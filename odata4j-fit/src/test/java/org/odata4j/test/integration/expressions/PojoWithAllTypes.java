@@ -1,7 +1,6 @@
 package org.odata4j.test.integration.expressions;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;

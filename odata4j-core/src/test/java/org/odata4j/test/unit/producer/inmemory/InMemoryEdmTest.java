@@ -1,7 +1,6 @@
 
 package org.odata4j.test.unit.producer.inmemory;
 
-import java.io.OutputStreamWriter;
 import java.util.Collection;
 import java.util.List;
 import static junit.framework.Assert.*;
@@ -10,7 +9,6 @@ import org.core4j.Predicate1;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.odata4j.edm.*;
-import org.odata4j.format.xml.EdmxFormatWriter;
 import org.odata4j.producer.inmemory.BeanBasedPropertyModel;
 import org.odata4j.producer.inmemory.EnumsAsStringsPropertyModelDelegate;
 import org.odata4j.producer.inmemory.InMemoryProducer;

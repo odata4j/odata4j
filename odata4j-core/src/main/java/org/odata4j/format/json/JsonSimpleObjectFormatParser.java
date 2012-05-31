@@ -1,9 +1,8 @@
 
 package org.odata4j.format.json;
 
-import java.io.IOException;
 import java.io.Reader;
-import org.odata4j.core.OProperty;
+
 import org.odata4j.core.OSimpleObject;
 import org.odata4j.core.OSimpleObjects;
 import org.odata4j.edm.EdmSimpleType;

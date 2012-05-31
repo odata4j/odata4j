@@ -1,11 +1,9 @@
 package org.odata4j.format.xml;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import javax.xml.stream.events.Attribute;
 
 import org.core4j.Enumerable;
 import org.core4j.Func1;

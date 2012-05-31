@@ -11,7 +11,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.core4j.Enumerable;
-import org.core4j.Func1;
 import org.core4j.Predicate1;
 import org.odata4j.edm.*;
 

@@ -2,7 +2,6 @@ package org.odata4j.format.json;
 
 import java.math.BigDecimal;
 
-import org.odata4j.core.Boole;
 import org.odata4j.core.Guid;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;

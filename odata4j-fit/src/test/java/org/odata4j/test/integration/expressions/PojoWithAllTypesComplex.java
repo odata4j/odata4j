@@ -1,6 +1,5 @@
 package org.odata4j.test.integration.expressions;
 
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
