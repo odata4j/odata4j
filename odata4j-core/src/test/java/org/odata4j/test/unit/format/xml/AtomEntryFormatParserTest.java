@@ -135,6 +135,16 @@ public class AtomEntryFormatParserTest extends AbstractEntryFormatParserTest {
     assertThat((Double) formatParser.parse(buildAtom("<d:Double>-1.23456789E-10</d:Double>")).getEntity().getProperty(DOUBLE_NAME).getValue(), is(DOUBLE));
   }
 
+  @Test
+  public void int16() throws Exception {
+    assertThat((Short) formatParser.parse(buildAtom("<d:Int16>-32768</d:Int16>")).getEntity().getProperty(INT16_NAME).getValue(), is(Short.MIN_VALUE));
+  }
+
+  @Test(expected=IllegalArgumentException.class)
+  public void int16TooLarge() throws Exception {
+    formatParser.parse(buildAtom("<d:Int16>32768</d:Int16>"));
+  }
+
   private StringReader buildAtom(String property) {
     return new StringReader("" +
         "<entry" +

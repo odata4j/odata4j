@@ -34,6 +34,7 @@ public abstract class AbstractEntryFormatParserTest {
   protected static final String GUID_NAME = "Guid";
   protected static final String DECIMAL_NAME = "Decimal";
   protected static final String DOUBLE_NAME = "Double";
+  protected static final String INT16_NAME = "Int16";
 
   protected static final String ENTITYSET_NAME = "EntitySet";
 
@@ -89,8 +90,9 @@ public abstract class AbstractEntryFormatParserTest {
     EdmProperty.Builder guidProperty = EdmProperty.newBuilder(GUID_NAME).setType(EdmSimpleType.GUID);
     EdmProperty.Builder decimalProperty = EdmProperty.newBuilder(DECIMAL_NAME).setType(EdmSimpleType.DECIMAL);
     EdmProperty.Builder doubleProperty = EdmProperty.newBuilder(DOUBLE_NAME).setType(EdmSimpleType.DOUBLE);
+    EdmProperty.Builder int16Property = EdmProperty.newBuilder(INT16_NAME).setType(EdmSimpleType.INT16);
     EdmEntityType.Builder entityType = new EdmEntityType.Builder().setName("EntityType").addKeys("EntityKey")
-        .addProperties(dateTimeProperty, dateTimeOffsetProperty, timeProperty, booleanProperty, stringProperty, guidProperty, decimalProperty, doubleProperty);
+        .addProperties(dateTimeProperty, dateTimeOffsetProperty, timeProperty, booleanProperty, stringProperty, guidProperty, decimalProperty, doubleProperty, int16Property);
     EdmEntitySet.Builder entitySet = new EdmEntitySet.Builder().setName(ENTITYSET_NAME).setEntityType(entityType);
     EdmEntityContainer.Builder container = new EdmEntityContainer.Builder().addEntitySets(entitySet);
     EdmSchema.Builder schema = new EdmSchema.Builder().addEntityContainers(container).addEntityTypes(entityType);

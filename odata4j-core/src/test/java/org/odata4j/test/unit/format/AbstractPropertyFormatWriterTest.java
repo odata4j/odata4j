@@ -41,6 +41,8 @@ public abstract class AbstractPropertyFormatWriterTest {
 
   protected static final OProperty<Double> DOUBLE_PROPERTY = OProperties.simple("Double", EdmSimpleType.DOUBLE, Double.valueOf("-1.23456789E-10"));
 
+  protected static final OProperty<Short> INT16_PROPERTY = OProperties.simple("Int16", EdmSimpleType.INT16, Short.MIN_VALUE);
+
   protected static FormatWriter<PropertyResponse> formatWriter;
 
   protected StringWriter stringWriter;

@@ -102,4 +102,10 @@ public class AtomPropertyFormatWriterTest extends AbstractPropertyFormatWriterTe
     formatWriter.write(null, stringWriter, Responses.property(DOUBLE_PROPERTY));
     assertThat(stringWriter.toString(), containsString(">-1.23456789E-10<"));
   }
+
+  @Test
+  public void int16() throws Exception {
+    formatWriter.write(null, stringWriter, Responses.property(INT16_PROPERTY));
+    assertThat(stringWriter.toString(), containsString(">-32768<"));
+  }
 }
