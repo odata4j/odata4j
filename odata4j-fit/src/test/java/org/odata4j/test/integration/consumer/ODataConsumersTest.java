@@ -13,7 +13,6 @@ import static org.odata4j.consumer.ODataConsumers.JERSEY_CONSUMER_CLASSNAME;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import org.core4j.Enumerable;
 import org.junit.After;
@@ -85,9 +84,7 @@ public class ODataConsumersTest {
     injectClassLoader(null);
 
     // remove 'odata4j.consumerimpl' property
-    Properties props = System.getProperties();
-    props.remove(CONSUMERIMPL_PROPERTY);
-    System.setProperties(props);
+    System.clearProperty(CONSUMERIMPL_PROPERTY);
   }
 
   @Test

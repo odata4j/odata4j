@@ -81,54 +81,40 @@ public class OSimpleObjects {
   /** Parses a string value into a new {@link OSimpleObject} given an edm type. */
   @SuppressWarnings("unchecked")
   public static <V> OSimpleObject<V> parse(EdmSimpleType<V> type, String value) {
-    if (EdmSimpleType.GUID.equals(type)) {
-      Guid uValue = value == null ? null : Guid.fromString(value);
-      return (OSimpleObject<V>) Impl.create(EdmSimpleType.GUID, uValue);
-    } else if (EdmSimpleType.BOOLEAN.equals(type)) {
-      Boolean bValue = value == null ? null : Boole.fromString(value).toBoolean();
-      return (OSimpleObject<V>) Impl.create(EdmSimpleType.BOOLEAN, bValue);
-    } else if (EdmSimpleType.BYTE.equals(type)) {
-      UnsignedByte bValue = value == null ? null : UnsignedByte.parseUnsignedByte(value);
-      return (OSimpleObject<V>) Impl.create(EdmSimpleType.BYTE, bValue);
-    } else if (EdmSimpleType.SBYTE.equals(type)) {
-      Byte bValue = value == null ? null : Byte.parseByte(value);
-      return (OSimpleObject<V>) Impl.create(EdmSimpleType.SBYTE, bValue);
-    } else if (EdmSimpleType.INT16.equals(type)) {
-      Short sValue = value == null ? null : Short.parseShort(value);
-      return (OSimpleObject<V>) Impl.create(EdmSimpleType.INT16, sValue);
-    } else if (EdmSimpleType.INT32.equals(type)) {
-      Integer iValue = value == null ? null : Integer.parseInt(value);
-      return (OSimpleObject<V>) Impl.create(EdmSimpleType.INT32, iValue);
-    } else if (EdmSimpleType.INT64.equals(type)) {
-      Long lValue = value == null ? null : Long.parseLong(value);
-      return (OSimpleObject<V>) Impl.create(EdmSimpleType.INT64, lValue);
-    } else if (EdmSimpleType.SINGLE.equals(type)) {
-      Float fValue = value == null ? null : Float.parseFloat(value);
-      return (OSimpleObject<V>) Impl.create(EdmSimpleType.SINGLE, fValue);
-    } else if (EdmSimpleType.DOUBLE.equals(type)) {
-      Double dValue = value == null ? null : Double.parseDouble(value);
-      return (OSimpleObject<V>) Impl.create(EdmSimpleType.DOUBLE, dValue);
-    } else if (EdmSimpleType.DECIMAL.equals(type)) {
-      BigDecimal dValue = value == null ? null : new BigDecimal(value);
-      return (OSimpleObject<V>) Impl.create(EdmSimpleType.DECIMAL, dValue);
-    } else if (EdmSimpleType.BINARY.equals(type)) {
-      byte[] bValue = new Base64().decode(value);
-      return (OSimpleObject<V>) Impl.create(EdmSimpleType.BINARY, bValue);
-    } else if (EdmSimpleType.DATETIME.equals(type)) {
-      LocalDateTime dValue = value == null
-          ? null
-          : new LocalDateTime(InternalUtil.parseDateTimeFromXml(value));
-      return (OSimpleObject<V>) Impl.create(EdmSimpleType.DATETIME, dValue);
-    } else if (EdmSimpleType.DATETIMEOFFSET.equals(type)) {
+    if (value == null)
+      return (OSimpleObject<V>) Impl.create(type, null);
+
+    if (EdmSimpleType.GUID.equals(type))
+      return (OSimpleObject<V>) Impl.create(EdmSimpleType.GUID, Guid.fromString(value));
+    if (EdmSimpleType.BOOLEAN.equals(type))
+      return (OSimpleObject<V>) Impl.create(EdmSimpleType.BOOLEAN, Boole.fromString(value).toBoolean());
+    if (EdmSimpleType.BYTE.equals(type))
+      return (OSimpleObject<V>) Impl.create(EdmSimpleType.BYTE, UnsignedByte.parseUnsignedByte(value));
+    if (EdmSimpleType.SBYTE.equals(type))
+      return (OSimpleObject<V>) Impl.create(EdmSimpleType.SBYTE, Byte.parseByte(value));
+    if (EdmSimpleType.INT16.equals(type))
+      return (OSimpleObject<V>) Impl.create(EdmSimpleType.INT16, Short.parseShort(value));
+    if (EdmSimpleType.INT32.equals(type))
+      return (OSimpleObject<V>) Impl.create(EdmSimpleType.INT32, Integer.parseInt(value));
+    if (EdmSimpleType.INT64.equals(type))
+      return (OSimpleObject<V>) Impl.create(EdmSimpleType.INT64, Long.parseLong(value));
+    if (EdmSimpleType.SINGLE.equals(type))
+      return (OSimpleObject<V>) Impl.create(EdmSimpleType.SINGLE, Float.parseFloat(value));
+    if (EdmSimpleType.DOUBLE.equals(type))
+      return (OSimpleObject<V>) Impl.create(EdmSimpleType.DOUBLE, Double.parseDouble(value));
+    if (EdmSimpleType.DECIMAL.equals(type))
+      return (OSimpleObject<V>) Impl.create(EdmSimpleType.DECIMAL, new BigDecimal(value));
+    if (EdmSimpleType.BINARY.equals(type))
+      return (OSimpleObject<V>) Impl.create(EdmSimpleType.BINARY, new Base64().decode(value));
+    if (EdmSimpleType.DATETIME.equals(type))
+      return (OSimpleObject<V>) Impl.create(EdmSimpleType.DATETIME, InternalUtil.parseDateTimeFromXml(value));
+    if (EdmSimpleType.DATETIMEOFFSET.equals(type))
       return (OSimpleObject<V>) Impl.create(EdmSimpleType.DATETIMEOFFSET, InternalUtil.parseDateTimeOffsetFromXml(value));
-    } else if (EdmSimpleType.TIME.equals(type)) {
-      LocalTime tValue = value == null
-          ? null
-          : InternalUtil.parseTime(value);
-      return (OSimpleObject<V>) Impl.create(EdmSimpleType.TIME, tValue);
-    } else if (EdmSimpleType.STRING.equals(type)) {
+    if (EdmSimpleType.TIME.equals(type))
+      return (OSimpleObject<V>) Impl.create(EdmSimpleType.TIME, InternalUtil.parseTime(value));
+    if (EdmSimpleType.STRING.equals(type))
       return (OSimpleObject<V>) Impl.create(EdmSimpleType.STRING, value);
-    }
+
     throw new UnsupportedOperationException("type:" + type);
   }
 

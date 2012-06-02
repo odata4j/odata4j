@@ -1,5 +1,8 @@
 package org.odata4j.test.unit.core;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
 import junit.framework.Assert;
 
 import org.junit.Test;
@@ -24,5 +27,14 @@ public class OSimpleObjectsTest {
     OSimpleObject<byte[]> simpleObject = OSimpleObjects.create(EdmSimpleType.BINARY, VALUE.getBytes());
     String toString = simpleObject.toString();
     Assert.assertTrue(toString.contains(HEX_VALUE));
+  }
+
+  @Test
+  public void parseNullProperty() throws Exception {
+    for (EdmSimpleType<?> simpleType : EdmSimpleType.ALL) {
+      OSimpleObject<?> simpleObject = OSimpleObjects.parse(simpleType, null);
+      assertThat(simpleObject.getType(), is(simpleType.getClass()));
+      assertThat(simpleObject.getValue(), nullValue());
+    }
   }
 }

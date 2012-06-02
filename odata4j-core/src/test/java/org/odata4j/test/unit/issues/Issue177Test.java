@@ -14,7 +14,7 @@ import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.format.xml.EdmxFormatWriter;
 
-public class Issue177 {
+public class Issue177Test {
 
   /*
    * http://code.google.com/p/odata4j/issues/detail?id=177
