@@ -60,16 +60,24 @@ public class JPAEdmGenerator implements EdmGenerator {
     this.namespace = namespace;
   }
 
+  protected EntityManagerFactory getEntityManagerFactory() {
+    return emf;
+  }
+
+  protected String getNamespace() {
+    return namespace;
+  }
+
   protected String getEntityContainerName() {
-    return namespace + "Entities";
+    return getNamespace() + "Entities";
   }
 
   protected String getModelSchemaNamespace() {
-    return namespace + "Model";
+    return getNamespace() + "Model";
   }
 
   protected String getContainerSchemaNamespace() {
-    return namespace + "Container";
+    return getNamespace() + "Container";
   }
 
   @Override
@@ -84,7 +92,7 @@ public class JPAEdmGenerator implements EdmGenerator {
     List<EdmEntitySet.Builder> entitySets = new ArrayList<EdmEntitySet.Builder>();
     List<EdmAssociationSet.Builder> associationSets = new ArrayList<EdmAssociationSet.Builder>();
 
-    Metamodel mm = emf.getMetamodel();
+    Metamodel mm = getEntityManagerFactory().getMetamodel();
 
     // complex types
     for (EmbeddableType<?> et : mm.getEmbeddables()) {
