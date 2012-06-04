@@ -23,10 +23,15 @@ import org.odata4j.format.FormatType;
 import org.odata4j.producer.resources.DefaultODataApplication;
 import org.odata4j.producer.resources.RootApplication;
 import org.odata4j.producer.server.ODataServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CxfRuntimeFacade implements RuntimeFacade {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(CxfRuntimeFacade.class);
+
   MediaType mediaType = null;
+  int lastStatusCode;
 
   @Override
   public void hostODataServer(String baseUri) {
@@ -92,14 +97,14 @@ public class CxfRuntimeFacade implements RuntimeFacade {
     try {
       HttpClient httpClient = new DefaultHttpClient();
 
-        if (System.getProperties().containsKey("http.proxyHost") && System.getProperties().containsKey("http.proxyPort")) {
-          // support proxy settings
-          String hostName = System.getProperties().getProperty("http.proxyHost");
-          String hostPort = System.getProperties().getProperty("http.proxyPort");
+      if (System.getProperties().containsKey("http.proxyHost") && System.getProperties().containsKey("http.proxyPort")) {
+        // support proxy settings
+        String hostName = System.getProperties().getProperty("http.proxyHost");
+        String hostPort = System.getProperties().getProperty("http.proxyPort");
 
-          HttpHost proxy = new HttpHost(hostName, Integer.parseInt(hostPort));
-          httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
-        }
+        HttpHost proxy = new HttpHost(hostName, Integer.parseInt(hostPort));
+        httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+      }
 
       // Prepare a request object
       HttpGet httpget = new HttpGet(uri);
@@ -113,7 +118,8 @@ public class CxfRuntimeFacade implements RuntimeFacade {
       // Execute the request
       HttpResponse response = httpClient.execute(httpget);
       // Examine the response status
-      System.out.println(response.getStatusLine());
+      CxfRuntimeFacade.LOGGER.debug(response.getStatusLine().toString());
+      this.lastStatusCode = response.getStatusLine().getStatusCode();
       // Get hold of the response entity
       HttpEntity entity = response.getEntity();
       // If the response does not enclose an entity, there is no need
@@ -125,5 +131,10 @@ public class CxfRuntimeFacade implements RuntimeFacade {
     } catch (Exception e) {
       throw Throwables.propagate(e);
     }
+  }
+
+  @Override
+  public int getLastStatusCode() {
+    return this.lastStatusCode;
   }
 }

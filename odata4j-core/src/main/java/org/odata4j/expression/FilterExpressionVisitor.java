@@ -52,7 +52,7 @@ public class FilterExpressionVisitor implements ExpressionVisitor {
 
   @Override
   public void visit(DoubleLiteral expr) {
-    push(Double.toString(expr.getValue()));
+    push(Double.toString(expr.getValue()) + "d");
   }
 
   @Override

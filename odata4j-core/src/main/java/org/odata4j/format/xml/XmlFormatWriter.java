@@ -55,10 +55,13 @@ public class XmlFormatWriter {
 
   @SuppressWarnings("unchecked")
   protected void writeProperty(XMLWriter2 writer, String name, EdmType type, Object value, boolean isDocumentElement, boolean writeType) {
-    if (isDocumentElement)
-      writer.startElement(new QName2(name), d);
-    else
-      writer.startElement(new QName2(d, name, "d"));
+
+    writer.startElement(new QName2(d, name, "d"));
+
+    if (isDocumentElement) {
+      writer.writeNamespace("m", m);
+      writer.writeNamespace("d", d);
+    }
 
     String sValue = null;
 
@@ -165,8 +168,8 @@ public class XmlFormatWriter {
     } else if (sValue != null) {
       writer.writeText(sValue);
     }
-    writer.endElement(name);
 
+    writer.endElement(name);
   }
 
   private OAtomEntity getAtomInfo(OEntity oe) {

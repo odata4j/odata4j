@@ -150,14 +150,14 @@ public class QueryOptionTest extends NorthwindJpaProducerTest {
   public void SystemQueryOptionFilterLogicalAndTest() {
     String inp = "SystemQueryOptionFilterLogicalAndTest";
     String uri =
-        "Products?$top=20&$filter=UnitPrice le 200 and UnitPrice gt 3.5";
+        "Products?$top=20&$filter=UnitPrice le 200 and UnitPrice gt 3.5f";
     this.utils.testJSONResult(endpointUri, uri, inp);
   }
 
   @Test
   public void SystemQueryOptionFilterLogicalOrTest() {
     String inp = "SystemQueryOptionFilterLogicalOrTest";
-    String uri = "Products?$filter=UnitPrice le 3.5 or UnitPrice gt 200";
+    String uri = "Products?$filter=UnitPrice le 3.5f or UnitPrice gt 200";
     this.utils.testJSONResult(endpointUri, uri, inp);
   }
 

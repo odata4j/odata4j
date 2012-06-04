@@ -18,10 +18,13 @@ import org.odata4j.producer.resources.RootApplication;
 import org.odata4j.producer.server.ODataServer;
 
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.container.filter.LoggingFilter;
 
 public class JerseyRuntimeFacade implements RuntimeFacade {
+
+  private int lastStatusCode;
 
   @Override
   public void hostODataServer(String baseUri) {
@@ -44,9 +47,7 @@ public class JerseyRuntimeFacade implements RuntimeFacade {
   public ODataServer createODataServer(String baseUri) {
 
     return new ODataJerseyServer(baseUri, DefaultODataApplication.class, RootApplication.class)
-        .addJerseyRequestFilter(LoggingFilter.class) // log all requests
-    //      .addHttpServerFilter(new WhitelistFilter("127.0.0.1","0:0:0:0:0:0:0:1%0")) // only allow local requests
-    ;
+        .addJerseyRequestFilter(LoggingFilter.class); // log all requests
   }
 
   @Override
@@ -67,20 +68,36 @@ public class JerseyRuntimeFacade implements RuntimeFacade {
   @Override
   public String getWebResource(String uri) {
     WebResource webResource = new Client().resource(uri);
-    return webResource.get(String.class);
+
+    ClientResponse response = webResource.get(ClientResponse.class);
+    this.lastStatusCode = response.getStatus();
+    String body = response.getEntity(String.class);
+
+    return body;
   }
 
   @Override
   public String acceptAndReturn(String uri, MediaType mediaType) {
     uri = uri.replace(" ", "%20");
+    
     WebResource webResource = new Client().resource(uri);
-    return webResource.accept(mediaType).get(String.class);
+
+    ClientResponse response = webResource.accept(mediaType).get(ClientResponse.class);
+    this.lastStatusCode = response.getStatus();
+    String body = response.getEntity(String.class);
+
+    return body;
   }
 
   @Override
   public String getWebResource(String uri, String accept) {
-    String resource = new Client().resource(uri).accept(accept).get(String.class);
-    return resource;
+    WebResource webResource = new Client().resource(uri);
+
+    ClientResponse response = webResource.accept(accept).get(ClientResponse.class);
+    this.lastStatusCode = response.getStatus();
+    String body = response.getEntity(String.class);
+
+    return body;
   }
 
   @Override
@@ -88,6 +105,11 @@ public class JerseyRuntimeFacade implements RuntimeFacade {
     uri = uri.replace(" ", "%20");
     WebResource webResource = new Client().resource(uri);
     webResource.accept(mediaType);
+  }
+
+  @Override
+  public int getLastStatusCode() {
+    return this.lastStatusCode;
   }
 
 }

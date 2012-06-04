@@ -122,7 +122,7 @@ public class QueryOptionAtomTest extends NorthwindJpaProducerTest {
   @Test
   public void SystemQueryOptionFilterLogicalAndTest() {
     String inp = "SystemQueryOptionFilterLogicalAndTest";
-    String uri = "Products?$top=20&$filter=UnitPrice le 200 and UnitPrice gt 3.5";
+    String uri = "Products?$top=20&$filter=UnitPrice le 200 and UnitPrice gt 3.5f";
     this.utils.testAtomResult(endpointUri, uri, inp);
   }
 

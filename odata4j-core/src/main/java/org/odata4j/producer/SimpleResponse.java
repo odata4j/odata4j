@@ -23,4 +23,11 @@ public interface SimpleResponse extends BaseResponse {
    */
   Object getValue();
 
+  /**
+   * Gets the (optional) name of the value
+   *  
+   * @return the property name if available or null
+   */
+  String getName();
+  
 }

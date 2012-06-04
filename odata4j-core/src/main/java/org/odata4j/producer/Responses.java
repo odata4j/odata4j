@@ -99,11 +99,11 @@ public class Responses {
     };
   }
   
-  public static SimpleResponse simple(final  EdmSimpleType type, final Object value) {
+  public static SimpleResponse simple(final  EdmSimpleType<?> type, final Object value) {
     return new SimpleResponse() {
 
       @Override
-      public EdmSimpleType getType() {
+      public EdmSimpleType<?> getType() {
         return type;
       }
 
@@ -111,10 +111,37 @@ public class Responses {
       public Object getValue() {
         return value;
       }
+
+      @Override
+      public String getName() {
+        return null;
+      }
       
     };
   }
 
+  public static SimpleResponse simple(final  EdmSimpleType<?> type, final String name, final Object value) {
+    return new SimpleResponse() {
+
+      @Override
+      public EdmSimpleType<?> getType() {
+        return type;
+      }
+
+      @Override
+      public Object getValue() {
+        return value;
+      }
+
+      @Override
+      public String getName() {
+        return name;
+      }
+      
+    };
+  }
+
+  
   /**
    * Creates a new <code>EntityIdResponse</code> instance for payloads with a cardinality of {@link EdmMultiplicity#ONE}.
    *

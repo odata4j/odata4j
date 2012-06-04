@@ -23,5 +23,7 @@ public interface RuntimeFacade {
   public void accept(String uri, MediaType mediaType);
 
   public String getWebResource(String uri, String accept);
+  
+  public int getLastStatusCode(); 
 
 }

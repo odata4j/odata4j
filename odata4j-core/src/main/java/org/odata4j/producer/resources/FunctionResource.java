@@ -110,6 +110,16 @@ public class FunctionResource extends BaseResource {
 
       fw.write(uriInfo, sw, (SimpleResponse) response);
       fwBase = fw;
+    } else if (response instanceof EntityResponse) {
+      FormatWriter<EntityResponse> fw =
+          FormatWriterFactory.getFormatWriter(
+              EntityResponse.class,
+              httpHeaders.getAcceptableMediaTypes(),
+              format,
+              callback);
+
+      fw.write(uriInfo, sw, (EntityResponse) response);
+      fwBase = fw;
     } else {
       // TODO add in other response types.
       throw new NotImplementedException("Unknown BaseResponse type: " + response.getClass().getName());

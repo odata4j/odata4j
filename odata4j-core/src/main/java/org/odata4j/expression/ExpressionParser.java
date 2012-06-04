@@ -481,32 +481,37 @@ public class ExpressionParser {
       }
     }
     // long literal: 1234L
-    if (tokens.size() == 2 && tokens.get(0).type == TokenType.NUMBER && tokens.get(1).type == TokenType.WORD && tokens.get(1).value.equals("L")) {
+    if (tokens.size() == 2 && tokens.get(0).type == TokenType.NUMBER && tokens.get(1).type == TokenType.WORD && tokens.get(1).value.equalsIgnoreCase("L")) {
       long longValue = Long.parseLong(tokens.get(0).value);
       return Expression.int64(longValue);
     }
     // single literal: 2f
-    if (tokens.size() == 2 && tokens.get(0).type == TokenType.NUMBER && tokens.get(1).type == TokenType.WORD && tokens.get(1).value.equals("f")) {
+    if (tokens.size() == 2 && tokens.get(0).type == TokenType.NUMBER && tokens.get(1).type == TokenType.WORD && tokens.get(1).value.equalsIgnoreCase("f")) {
       float floatValue = Float.parseFloat(tokens.get(0).value);
       return Expression.single(floatValue);
     }
     // single literal: 2.0f
-    if (tokens.size() == 4 && tokens.get(0).type == TokenType.NUMBER && tokens.get(1).type == TokenType.SYMBOL && tokens.get(1).value.equals(".") && tokens.get(2).type == TokenType.NUMBER && tokens.get(3).value.equals("f")) {
+    if (tokens.size() == 4 && tokens.get(0).type == TokenType.NUMBER && tokens.get(1).type == TokenType.SYMBOL && tokens.get(1).value.equals(".") && tokens.get(2).type == TokenType.NUMBER && tokens.get(3).value.equalsIgnoreCase("f")) {
       float floatValue = Float.parseFloat(tokens.get(0).value + "." + tokens.get(2).value);
       return Expression.single(floatValue);
     }
-    // double literal: 2.0
-    if (tokens.size() == 3 && tokens.get(0).type == TokenType.NUMBER && tokens.get(1).type == TokenType.SYMBOL && tokens.get(1).value.equals(".") && tokens.get(2).type == TokenType.NUMBER) {
+    // double literal: 2d
+    if (tokens.size() == 2 && tokens.get(0).type == TokenType.NUMBER && tokens.get(1).type == TokenType.WORD && tokens.get(1).value.equalsIgnoreCase("d")) {
+      double doubleValue = Double.parseDouble(tokens.get(0).value);
+      return Expression.double_(doubleValue);
+    }
+    // double literal: 2.0d
+    if (tokens.size() == 4 && tokens.get(0).type == TokenType.NUMBER && tokens.get(1).type == TokenType.SYMBOL && tokens.get(1).value.equals(".") && tokens.get(2).type == TokenType.NUMBER && tokens.get(3).value.equalsIgnoreCase("d")) {
       double doubleValue = Double.parseDouble(tokens.get(0).value + "." + tokens.get(2).value);
       return Expression.double_(doubleValue);
     }
     // double literal: 1E+10
-    if (tokens.size() == 4 && tokens.get(0).type == TokenType.NUMBER && tokens.get(1).type == TokenType.WORD && tokens.get(1).value.equals("E") && tokens.get(2).type == TokenType.SYMBOL && tokens.get(2).value.equals("+") && tokens.get(3).type == TokenType.NUMBER) {
+    if (tokens.size() == 4 && tokens.get(0).type == TokenType.NUMBER && tokens.get(1).type == TokenType.WORD && tokens.get(1).value.equalsIgnoreCase("E") && tokens.get(2).type == TokenType.SYMBOL && tokens.get(2).value.equals("+") && tokens.get(3).type == TokenType.NUMBER) {
       double doubleValue = Double.parseDouble(tokens.get(0).value + "E+" + tokens.get(3).value);
       return Expression.double_(doubleValue);
     }
     // double literal: 1E-10
-    if (tokens.size() == 3 && tokens.get(0).type == TokenType.NUMBER && tokens.get(1).type == TokenType.WORD && tokens.get(1).value.equals("E") && tokens.get(2).type == TokenType.NUMBER) {
+    if (tokens.size() == 3 && tokens.get(0).type == TokenType.NUMBER && tokens.get(1).type == TokenType.WORD && tokens.get(1).value.equalsIgnoreCase("E") && tokens.get(2).type == TokenType.NUMBER) {
       int e = Integer.parseInt(tokens.get(2).value);
       if (e < 1) {
         double doubleValue = Double.parseDouble(tokens.get(0).value + "E" + tokens.get(2).value);
@@ -514,12 +519,12 @@ public class ExpressionParser {
       }
     }
     // double literal: 1.2E+10
-    if (tokens.size() == 6 && tokens.get(0).type == TokenType.NUMBER && tokens.get(1).type == TokenType.SYMBOL && tokens.get(1).value.equals(".") && tokens.get(2).type == TokenType.NUMBER && tokens.get(3).type == TokenType.WORD && tokens.get(3).value.equals("E") && tokens.get(4).type == TokenType.SYMBOL && tokens.get(4).value.equals("+") && tokens.get(5).type == TokenType.NUMBER) {
+    if (tokens.size() == 6 && tokens.get(0).type == TokenType.NUMBER && tokens.get(1).type == TokenType.SYMBOL && tokens.get(1).value.equals(".") && tokens.get(2).type == TokenType.NUMBER && tokens.get(3).type == TokenType.WORD && tokens.get(3).value.equalsIgnoreCase("E") && tokens.get(4).type == TokenType.SYMBOL && tokens.get(4).value.equals("+") && tokens.get(5).type == TokenType.NUMBER) {
       double doubleValue = Double.parseDouble(tokens.get(0).value + "." + tokens.get(2).value + "E+" + tokens.get(5).value);
       return Expression.double_(doubleValue);
     }
     // double literal: 1.2E-10
-    if (tokens.size() == 5 && tokens.get(0).type == TokenType.NUMBER && tokens.get(1).type == TokenType.SYMBOL && tokens.get(1).value.equals(".") && tokens.get(2).type == TokenType.NUMBER && tokens.get(3).type == TokenType.WORD && tokens.get(3).value.equals("E") && tokens.get(4).type == TokenType.NUMBER) {
+    if (tokens.size() == 5 && tokens.get(0).type == TokenType.NUMBER && tokens.get(1).type == TokenType.SYMBOL && tokens.get(1).value.equals(".") && tokens.get(2).type == TokenType.NUMBER && tokens.get(3).type == TokenType.WORD && tokens.get(3).value.equalsIgnoreCase("E") && tokens.get(4).type == TokenType.NUMBER) {
       int e = Integer.parseInt(tokens.get(4).value);
       if (e < 1) {
         double doubleValue = Double.parseDouble(tokens.get(0).value + "." + tokens.get(2).value + "E" + tokens.get(4).value);
