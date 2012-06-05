@@ -1,5 +1,8 @@
 package org.odata4j.test.integration.function;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -7,15 +10,22 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.custommonkey.xmlunit.NamespaceContext;
+import org.custommonkey.xmlunit.SimpleNamespaceContext;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.XpathEngine;
+import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.odata4j.core.OSimpleObjects;
 import org.odata4j.edm.EdmSimpleType;
+import org.odata4j.format.FormatType;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.producer.server.ODataServer;
 import org.odata4j.test.integration.AbstractRuntimeTest;
@@ -27,11 +37,11 @@ public class FunctionImportTest extends AbstractRuntimeTest {
     super(type);
   }
 
-  private static ArrayList<String> formats;
+  private static ArrayList<FormatType> formats;
   static {
-    FunctionImportTest.formats = new ArrayList<String>();
-    FunctionImportTest.formats.add("$format=json");
-    FunctionImportTest.formats.add("$format=atom");
+    FunctionImportTest.formats = new ArrayList<FormatType>();
+    FunctionImportTest.formats.add(FormatType.JSON);
+    FunctionImportTest.formats.add(FormatType.ATOM);
   }
 
   private ODataServer server;
@@ -83,8 +93,40 @@ public class FunctionImportTest extends AbstractRuntimeTest {
     FunctionImportTest.testCases.add(new TestCase("p15", "time'PT10H30M'", "10:30:00.000", EdmSimpleType.TIME));
   }
 
+  private String formatQuery(FormatType type) {
+    String query;
+
+    switch (type) {
+    case ATOM:
+      query = "$format=atom";
+      break;
+    case JSON:
+      query = "$format=json";
+      break;
+    default:
+      throw new RuntimeException("Unknown Format Type: " + type);
+    }
+
+    return query;
+  }
+
+  private void initializeXmlUnit() {
+    HashMap<String, String> m = new HashMap<String, String>();
+    m.put("m", "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata");
+    m.put("d", "http://schemas.microsoft.com/ado/2007/08/dataservices");
+    m.put("edmx", "http://schemas.microsoft.com/ado/2007/06/edmx");
+    m.put("", "http://www.w3.org/2005/Atom");
+
+    NamespaceContext ctx = new SimpleNamespaceContext(m);
+    XMLUnit.setXpathNamespaceContext(ctx);
+    XpathEngine engine = XMLUnit.newXpathEngine();
+    engine.setNamespaceContext(ctx);
+  }
+
   @Before
   public void before() {
+
+    this.initializeXmlUnit();
 
     this.mockProducer = new FunctionImportProducerMock();
 
@@ -103,114 +145,231 @@ public class FunctionImportTest extends AbstractRuntimeTest {
 
   @Test
   public void callMetaData() throws SAXException, IOException, ParserConfigurationException {
-    String metadata = this.rtFacade.getWebResource(endpointUri + "$metadata/");
+    String metadataByService = this.rtFacade.getWebResource(endpointUri + "$metadata/");
     assertEquals(200, this.rtFacade.getLastStatusCode());
-    assertEquals(this.metadata, metadata);
+    assertXMLEqual(this.metadata, metadataByService);
   }
 
   @Test
-  public void tesFunctionReturnStringWithAllParameter() {
+  public void tesFunctionReturnStringWithAllParameter() throws XpathException, SAXException, IOException {
     String query = "?p1=X'1F'&p2=true&p3=1&p4=datetime'2010-12-12T23:44:57'&p5=22.5m&p6=1d&p7=1f&p8=datetimeoffset'2012-12-12T22:07:44Z'&p9=guid'11111111-1111-1111-1111-111111111111'&p10=1&p11=1&p12=1L&p13=1&p14='hugo'&p15=time'PT10H30M'";
 
-    for (String format : FunctionImportTest.formats) {
-      String resource = this.rtFacade.getWebResource(endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_STRING + query + "&" + format);
+    for (FormatType format : FunctionImportTest.formats) {
+      String resource = this.rtFacade.getWebResource(endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_STRING + query + "&" + this.formatQuery(format));
 
-      assertEquals(format, 200, this.rtFacade.getLastStatusCode());
-      assertTrue(format, resource.contains(FunctionImportProducerMock.SOME_TEXT));
+      assertEquals(format.toString(), 200, this.rtFacade.getLastStatusCode());
+      assertNotNull(format.toString(), this.mockProducer.getQueryParameter());
 
-      assertNotNull(format, this.mockProducer.getQueryParameter());
+      switch (format) {
+      case ATOM:
+        assertXpathExists("/d:TestFunctionReturnString", resource);
+        assertXpathEvaluatesTo(FunctionImportProducerMock.SOME_TEXT, "/d:TestFunctionReturnString/text()", resource);
+        break;
+      case JSON:
+        assertTrue(format.toString(), resource.contains(MetadataUtil.TEST_FUNCTION_RETURN_STRING));
+        assertTrue(format.toString(), resource.contains(FunctionImportProducerMock.SOME_TEXT));
+        break;
+      default:
+        throw new RuntimeException("Unknown Format Type: " + format);
+      }
+
     }
   }
 
   @Test
-  public void tesFunctionReturnBoolean() {
-    for (String format : FunctionImportTest.formats) {
-      String resource = this.rtFacade.getWebResource(endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_BOOLEAN + "?" + format);
+  public void tesFunctionReturnBoolean() throws XpathException, IOException, SAXException {
+    for (FormatType format : FunctionImportTest.formats) {
+      String resource = this.rtFacade.getWebResource(endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_BOOLEAN + "?" + this.formatQuery(format));
 
-      assertEquals(format, 200, this.rtFacade.getLastStatusCode());
-      assertTrue(format, resource.contains(Boolean.toString(FunctionImportProducerMock.BOOLEAN_VALUE)));
-      assertNotNull(format, this.mockProducer.getQueryParameter());
-    }
-  }
+      assertEquals(format.toString(), 200, this.rtFacade.getLastStatusCode());
+      assertNotNull(format.toString(), this.mockProducer.getQueryParameter());
 
-  @Test
-  public void tesFunctionReturnString() {
-    for (TestCase testCase : FunctionImportTest.testCases) {
-
-      String query = "?" + testCase.parameterName + "=" + testCase.valueLiteral;
-
-      for (String format : FunctionImportTest.formats) {
-        String resource = this.rtFacade.getWebResource(endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_STRING + query + "&" + format);
-
-        String msg = format + " | TestCase: " + testCase.toString();
-
-        assertEquals(msg, 200, this.rtFacade.getLastStatusCode());
-        assertTrue(msg, resource.contains(FunctionImportProducerMock.SOME_TEXT));
-
-        assertNotNull(msg, this.mockProducer.getQueryParameter());
-
-        assertTrue(msg, this.mockProducer.getQueryParameter().containsKey(testCase.parameterName));
-        assertEquals(msg, testCase.parameterName, this.mockProducer.getQueryParameter().get(testCase.parameterName).getName());
-        assertEquals(msg, testCase.type, this.mockProducer.getQueryParameter().get(testCase.parameterName).getType());
-        assertEquals(msg, testCase.valueString, OSimpleObjects.getValueDisplayString(this.mockProducer.getQueryParameter().get(testCase.parameterName).getValue()));
+      switch (format) {
+      case ATOM:
+        assertXpathExists("/d:TestFunctionReturnBoolean", resource);
+        assertXpathEvaluatesTo(Boolean.toString(FunctionImportProducerMock.BOOLEAN_VALUE), "/d:TestFunctionReturnBoolean/text()", resource);
+        break;
+      case JSON:
+        assertTrue(format.toString(), resource.contains(MetadataUtil.TEST_FUNCTION_RETURN_BOOLEAN));
+        assertTrue(format.toString(), resource.contains(Boolean.toString(FunctionImportProducerMock.BOOLEAN_VALUE)));
+        break;
+      default:
+        throw new RuntimeException("Unknown Format Type: " + format);
       }
     }
   }
 
   @Test
-  public void tesFunctionReturnStringWithNoQueryParameter() {
-    for (String format : FunctionImportTest.formats) {
+  public void tesFunctionReturnString() throws XpathException, IOException, SAXException {
+    for (TestCase testCase : FunctionImportTest.testCases) {
 
-      String resource = this.rtFacade.getWebResource(endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_STRING + "?" + format);
+      String query = "?" + testCase.parameterName + "=" + testCase.valueLiteral;
 
-      assertEquals(format, 200, this.rtFacade.getLastStatusCode());
-      assertTrue(format, resource.contains(FunctionImportProducerMock.SOME_TEXT));
+      for (FormatType format : FunctionImportTest.formats) {
+        String resource = this.rtFacade.getWebResource(endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_STRING + query + "&" + this.formatQuery(format));
 
-      assertNotNull(format, this.mockProducer.getQueryParameter());
+        String msg = format + " | TestCase: " + testCase.toString();
 
-      assertFalse(format, this.mockProducer.getQueryParameter().containsKey("p0"));
-      assertTrue(format, this.mockProducer.getQueryParameter().containsKey("p1"));
-      assertTrue(format, this.mockProducer.getQueryParameter().containsKey("p2"));
-      assertTrue(format, this.mockProducer.getQueryParameter().containsKey("p3"));
-      assertTrue(format, this.mockProducer.getQueryParameter().containsKey("p4"));
-      assertTrue(format, this.mockProducer.getQueryParameter().containsKey("p5"));
-      assertTrue(format, this.mockProducer.getQueryParameter().containsKey("p6"));
-      assertTrue(format, this.mockProducer.getQueryParameter().containsKey("p7"));
-      assertTrue(format, this.mockProducer.getQueryParameter().containsKey("p8"));
-      assertTrue(format, this.mockProducer.getQueryParameter().containsKey("p9"));
-      assertTrue(format, this.mockProducer.getQueryParameter().containsKey("p10"));
-      assertTrue(format, this.mockProducer.getQueryParameter().containsKey("p11"));
-      assertTrue(format, this.mockProducer.getQueryParameter().containsKey("p12"));
-      assertTrue(format, this.mockProducer.getQueryParameter().containsKey("p13"));
-      assertTrue(format, this.mockProducer.getQueryParameter().containsKey("p14"));
-      assertTrue(format, this.mockProducer.getQueryParameter().containsKey("p15"));
-      assertFalse(format, this.mockProducer.getQueryParameter().containsKey("p16"));
+        assertEquals(msg, 200, this.rtFacade.getLastStatusCode());
+        assertNotNull(msg, this.mockProducer.getQueryParameter());
+        assertTrue(msg, this.mockProducer.getQueryParameter().containsKey(testCase.parameterName));
+
+        assertEquals(msg, testCase.parameterName, this.mockProducer.getQueryParameter().get(testCase.parameterName).getName());
+        assertEquals(msg, testCase.type, this.mockProducer.getQueryParameter().get(testCase.parameterName).getType());
+        assertEquals(msg, testCase.valueString, OSimpleObjects.getValueDisplayString(this.mockProducer.getQueryParameter().get(testCase.parameterName).getValue()));
+
+        switch (format) {
+        case ATOM:
+          assertXpathExists("/d:TestFunctionReturnString", resource);
+          assertXpathEvaluatesTo(FunctionImportProducerMock.SOME_TEXT, "/d:TestFunctionReturnString/text()", resource);
+          break;
+        case JSON:
+          assertTrue(format.toString(), resource.contains(MetadataUtil.TEST_FUNCTION_RETURN_STRING));
+          assertTrue(format.toString(), resource.contains(FunctionImportProducerMock.SOME_TEXT));
+          break;
+        default:
+          throw new RuntimeException("Unknown Format Type: " + format);
+        }
+      }
     }
   }
 
   @Test
-  public void testFunctionReturnEmployee() {
-    for (String format : FunctionImportTest.formats) {
+  public void tesFunctionReturnInt16() throws XpathException, IOException, SAXException {
+    for (FormatType format : FunctionImportTest.formats) {
+      String resource = this.rtFacade.getWebResource(endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_INT16 + "?" + this.formatQuery(format));
 
-      String resource = this.rtFacade.getWebResource(endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_EMPLOYEE + "?" + format);
-      this.logger.debug(resource);
+      assertEquals(format.toString(), 200, this.rtFacade.getLastStatusCode());
+      assertNotNull(format.toString(), this.mockProducer.getQueryParameter());
 
-      assertTrue(format, resource.contains(FunctionImportProducerMock.EMPLOYEE_NAME));
-      assertTrue(format, resource.contains(FunctionImportProducerMock.EMPLOYEE_ID));
+      switch (format) {
+      case ATOM:
+        assertXpathExists("/d:TestFunctionReturnInt16", resource);
+        assertXpathEvaluatesTo(Integer.toString(FunctionImportProducerMock.INT16_VALUE), "/d:TestFunctionReturnInt16/text()", resource);
+        break;
+      case JSON:
+        assertTrue(format.toString(), resource.contains(MetadataUtil.TEST_FUNCTION_RETURN_INT16));
+        assertTrue(format.toString(), resource.contains(Integer.toString(FunctionImportProducerMock.INT16_VALUE)));
+        break;
+      default:
+        throw new RuntimeException("Unknown Format Type: " + format);
+      }
     }
   }
 
+  @Test
+  public void tesFunctionReturnStringWithNoQueryParameter() throws XpathException, IOException, SAXException {
+    for (FormatType format : FunctionImportTest.formats) {
+
+      String resource = this.rtFacade.getWebResource(endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_STRING + "?" + this.formatQuery(format));
+
+      assertEquals(format.toString(), 200, this.rtFacade.getLastStatusCode());
+
+      assertNotNull(format.toString(), this.mockProducer.getQueryParameter());
+
+      assertFalse(format.toString(), this.mockProducer.getQueryParameter().containsKey("p0"));
+      assertTrue(format.toString(), this.mockProducer.getQueryParameter().containsKey("p1"));
+      assertTrue(format.toString(), this.mockProducer.getQueryParameter().containsKey("p2"));
+      assertTrue(format.toString(), this.mockProducer.getQueryParameter().containsKey("p3"));
+      assertTrue(format.toString(), this.mockProducer.getQueryParameter().containsKey("p4"));
+      assertTrue(format.toString(), this.mockProducer.getQueryParameter().containsKey("p5"));
+      assertTrue(format.toString(), this.mockProducer.getQueryParameter().containsKey("p6"));
+      assertTrue(format.toString(), this.mockProducer.getQueryParameter().containsKey("p7"));
+      assertTrue(format.toString(), this.mockProducer.getQueryParameter().containsKey("p8"));
+      assertTrue(format.toString(), this.mockProducer.getQueryParameter().containsKey("p9"));
+      assertTrue(format.toString(), this.mockProducer.getQueryParameter().containsKey("p10"));
+      assertTrue(format.toString(), this.mockProducer.getQueryParameter().containsKey("p11"));
+      assertTrue(format.toString(), this.mockProducer.getQueryParameter().containsKey("p12"));
+      assertTrue(format.toString(), this.mockProducer.getQueryParameter().containsKey("p13"));
+      assertTrue(format.toString(), this.mockProducer.getQueryParameter().containsKey("p14"));
+      assertTrue(format.toString(), this.mockProducer.getQueryParameter().containsKey("p15"));
+      assertFalse(format.toString(), this.mockProducer.getQueryParameter().containsKey("p16"));
+
+      switch (format) {
+      case ATOM:
+        assertXpathExists("/d:TestFunctionReturnString", resource);
+        assertXpathEvaluatesTo(FunctionImportProducerMock.SOME_TEXT, "/d:TestFunctionReturnString/text()", resource);
+        break;
+      case JSON:
+        assertTrue(format.toString(), resource.contains(MetadataUtil.TEST_FUNCTION_RETURN_STRING));
+        assertTrue(format.toString(), resource.contains(FunctionImportProducerMock.SOME_TEXT));
+        break;
+      default:
+        throw new RuntimeException("Unknown Format Type: " + format);
+      }
+
+    }
+  }
+
+  @Test
   @Ignore
-  @Test
-  public void testFunctionReturnComplexType() {
-    for (String format : FunctionImportTest.formats) {
+  public void XmlUnitIssue() throws XpathException, IOException, SAXException {
+    /*
+     * TODO
+     * enable this test case with a new version (> 1.3) of XMLUnit
+     * - 1.3 has an issue with default namespace (here atom)
+     */
+    String xml = "<entry xml:base='http://localhost:8811/FunctionImportScenario.svc/' xmlns='http://www.w3.org/2005/Atom' ></entry>";
+    assertXpathExists("/entry", xml);
+  }
 
-      String resource = this.rtFacade.getWebResource(endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_COMPLEX_TYPE + "?" + format);
+  @Test
+  public void testFunctionReturnEmployee() throws XpathException, IOException, SAXException {
+    for (FormatType format : FunctionImportTest.formats) {
+
+      String resource = this.rtFacade.getWebResource(endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_EMPLOYEE + "?" + this.formatQuery(format));
       this.logger.debug(resource);
 
-      assertTrue(format, resource.contains(FunctionImportProducerMock.CITY));
-      assertTrue(format, resource.contains(FunctionImportProducerMock.COUNTRY));
-      assertTrue(format, resource.contains(FunctionImportProducerMock.POSTAL_CODE));
+      switch (format) {
+      case ATOM:
+
+        /*
+         * TODO
+         * BUG in XMLUNnit (1.3): Built in XPath engine does not handle default namespace of atom correctly
+         * 
+         *   assertXpathEvaluatesTo("RefScenario.Employee", "/entry/category/@term", resource);
+         *   assertXpathEvaluatesTo(FunctionImportProducerMock.EMPLOYEE_ID, "/entry/content/m:properties/d:EmployeeName/text()", resource);
+         *   assertXpathEvaluatesTo(FunctionImportProducerMock.EMPLOYEE_NAME, "/entry/content/m:properties/d:EmployeeId/text()", resource);
+         */
+
+        assertTrue(format.toString(), resource.contains(FunctionImportProducerMock.EMPLOYEE_NAME));
+        assertTrue(format.toString(), resource.contains(FunctionImportProducerMock.EMPLOYEE_ID));
+        break;
+      case JSON:
+        assertTrue(format.toString(), resource.contains(FunctionImportProducerMock.EMPLOYEE_NAME));
+        assertTrue(format.toString(), resource.contains(FunctionImportProducerMock.EMPLOYEE_ID));
+        break;
+      default:
+        throw new RuntimeException("Unknown Format Type: " + format);
+      }
+    }
+  }
+
+  @Test
+  public void testFunctionReturnComplexType() throws XpathException, IOException, SAXException {
+    for (FormatType format : FunctionImportTest.formats) {
+
+      String resource = this.rtFacade.getWebResource(endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_COMPLEX_TYPE + "?" + this.formatQuery(format));
+      this.logger.debug(resource);
+
+      switch (format) {
+      case ATOM:
+        assertXpathExists("/d:TestFunctionReturnComplexType", resource);
+        assertXpathEvaluatesTo("RefScenario.c_Location", "/d:TestFunctionReturnComplexType/@m:type", resource);
+        assertXpathEvaluatesTo("RefScenario.c_City", "/d:TestFunctionReturnComplexType/d:City/@m:type", resource);
+        assertXpathEvaluatesTo(FunctionImportProducerMock.POSTAL_CODE, "/d:TestFunctionReturnComplexType/d:City/d:PostalCode/text()", resource);
+        assertXpathEvaluatesTo(FunctionImportProducerMock.CITY, "/d:TestFunctionReturnComplexType/d:City/d:CityName/text()", resource);
+        assertXpathEvaluatesTo(FunctionImportProducerMock.COUNTRY, "/d:TestFunctionReturnComplexType/d:Country/text()", resource);
+        break;
+      case JSON:
+        assertTrue(format.toString(), resource.contains(MetadataUtil.TEST_FUNCTION_RETURN_COMPLEX_TYPE));
+        assertTrue(format.toString(), resource.contains(FunctionImportProducerMock.CITY));
+        assertTrue(format.toString(), resource.contains(FunctionImportProducerMock.COUNTRY));
+        assertTrue(format.toString(), resource.contains(FunctionImportProducerMock.POSTAL_CODE));
+        break;
+      default:
+        throw new RuntimeException("Unknown Format Type: " + format);
+      }
     }
   }
 

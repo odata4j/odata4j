@@ -24,5 +24,4 @@ public enum FormatType {
       return ATOM;
     throw new UnsupportedOperationException("Unsupported format " + format);
   }
-
 }

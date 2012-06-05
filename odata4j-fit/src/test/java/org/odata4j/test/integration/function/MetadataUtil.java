@@ -16,7 +16,6 @@ public class MetadataUtil {
   public static final String TEST_FUNCTION_RETURN_STRING = "TestFunctionReturnString";
   public static final String TEST_FUNCTION_RETURN_BOOLEAN = "TestFunctionReturnBoolean";
   public static final String TEST_FUNCTION_RETURN_EMPLOYEE = "TestFunctionReturnEmployee";
-  public static final String TEST_FUNCTION_RETURN_BOOLEN = "TestFunctionReturnBoolen";
   public static final String TEST_FUNCTION_RETURN_COMPLEX_TYPE = "TestFunctionReturnComplexType";
   public static final String TEST_FUNCTION_RETURN_INT16 = "TestFunctionReturnInt16";
   public static final String TEST_FUNCTION_RETURN_COLLECTION_STRING = "TestFunctionReturnCollectionString";

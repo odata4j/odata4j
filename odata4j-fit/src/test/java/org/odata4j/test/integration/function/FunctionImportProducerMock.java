@@ -44,6 +44,7 @@ public class FunctionImportProducerMock implements ODataProducer {
   public static final String SOME_TEXT = "some text";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(FunctionImportProducerMock.class);
+  public static final short INT16_VALUE = 4711;
 
   private Map<String, OFunctionParameter> queryParameter;
 
@@ -140,6 +141,8 @@ public class FunctionImportProducerMock implements ODataProducer {
       response = Responses.simple(EdmSimpleType.STRING, name.getName(), FunctionImportProducerMock.SOME_TEXT);
     } else if (MetadataUtil.TEST_FUNCTION_RETURN_BOOLEAN.equals(name.getName())) {
       response = Responses.simple(EdmSimpleType.BOOLEAN, name.getName(), FunctionImportProducerMock.BOOLEAN_VALUE);
+    } else if (MetadataUtil.TEST_FUNCTION_RETURN_INT16.equals(name.getName())) {
+      response = Responses.simple(EdmSimpleType.INT16, name.getName(), FunctionImportProducerMock.INT16_VALUE);
     } else if (MetadataUtil.TEST_FUNCTION_RETURN_EMPLOYEE.equals(name.getName())) {
       OEntity entity = this.createEmployeeEntity();
       response = Responses.entity(entity);
@@ -158,12 +161,19 @@ public class FunctionImportProducerMock implements ODataProducer {
     ArrayList<OProperty<?>> propertiesCity = new ArrayList<OProperty<?>>();
     propertiesCity.add(OProperties.string("PostalCode", FunctionImportProducerMock.POSTAL_CODE));
     propertiesCity.add(OProperties.string("CityName", FunctionImportProducerMock.CITY));
-    OComplexObject cityType = OComplexObjects.create(this.getMetadata().findEdmComplexType(FunctionImportProducerMock.COMPLEY_TYPE_NAME_CITY), propertiesCity);
+    // OComplexObject cityType = OComplexObjects.create(this.getMetadata().findEdmComplexType(FunctionImportProducerMock.COMPLEY_TYPE_NAME_CITY), propertiesCity);
 
     ArrayList<OProperty<?>> propertiesLocation = new ArrayList<OProperty<?>>();
     propertiesLocation.add(OProperties.complex("City", this.getMetadata().findEdmComplexType(FunctionImportProducerMock.COMPLEY_TYPE_NAME_CITY), propertiesCity));
     propertiesLocation.add(OProperties.string("Country", FunctionImportProducerMock.COUNTRY));
-    return OComplexObjects.create(this.getMetadata().findEdmComplexType(FunctionImportProducerMock.COMPLEY_TYPE_NAME_LOCATION), propertiesLocation);
+    
+    // OComplexObject locationType = OComplexObjects.create(this.getMetadata().findEdmComplexType(FunctionImportProducerMock.COMPLEY_TYPE_NAME_LOCATION), propertiesLocation);
+    ArrayList<OProperty<?>> propertiesFunction = new ArrayList<OProperty<?>>();
+    propertiesFunction.add(OProperties.complex(MetadataUtil.TEST_FUNCTION_RETURN_COMPLEX_TYPE, this.getMetadata().findEdmComplexType(FunctionImportProducerMock.COMPLEY_TYPE_NAME_LOCATION), propertiesLocation));
+    
+    OComplexObject functionType = OComplexObjects.create(this.getMetadata().findEdmComplexType(FunctionImportProducerMock.COMPLEY_TYPE_NAME_LOCATION), propertiesFunction);
+    
+    return functionType;
   }
 
   private OEntity createEmployeeEntity() {

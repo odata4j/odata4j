@@ -1,4 +1,3 @@
-
 package org.odata4j.format.json;
 
 import javax.ws.rs.core.UriInfo;
@@ -15,7 +14,9 @@ public class JsonSimpleFormatWriter extends JsonFormatWriter<SimpleResponse> {
 
   @Override
   protected void writeContent(UriInfo uriInfo, JsonWriter jw, SimpleResponse target) {
+    jw.startObject();
+    jw.writeName(target.getName());
     this.writeValue(jw, target.getType(), target.getValue());
+    jw.endObject();
   }
 }
-
