@@ -13,6 +13,7 @@ import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmMultiplicity;
 import org.odata4j.edm.EdmSimpleType;
+import org.odata4j.edm.EdmType;
 
 /**
  * A static factory to create immutable {@link EntitiesResponse}, {@link EntityResponse}, {@link PropertyResponse}, {@link EntityIdResponse},
@@ -195,11 +196,16 @@ public class Responses {
    * @param complexObject  the complex object
    * @return a new <code>ComplexObjectResponse</code> instance
    */
-  public static ComplexObjectResponse complexObject(final OComplexObject complexObject) {
+  public static ComplexObjectResponse complexObject(final OComplexObject complexObject, final String complexObjectName) {
     return new ComplexObjectResponse() {
       @Override
       public OComplexObject getObject() {
         return complexObject;
+      }
+      
+      @Override
+      public String getComplexObjectName() {
+        return complexObjectName;
       }
     };
   }
@@ -208,13 +214,19 @@ public class Responses {
    * Creates a new <code>CollectionResponse</code> instance.
    *
    * @param collection  the collection
+   * @param collectionName the name used for collection
    * @return a new <code>ComplexObjectResponse</code> instance
    */
-  public static <T extends OObject> CollectionResponse<?> collection(final OCollection<T> collection) {
+  public static <T extends OObject> CollectionResponse<?> collection(final OCollection<T> collection, final String collectionName) {
     return new CollectionResponse<T>() {
       @Override
       public OCollection<T> getCollection() {
         return collection;
+      }
+
+      @Override
+      public String getCollectionName() {
+        return collectionName;
       }
     };
   }

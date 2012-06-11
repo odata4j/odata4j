@@ -11,5 +11,7 @@ import org.odata4j.core.OObject;
 public interface CollectionResponse<T extends OObject> extends BaseResponse {
 
   OCollection<T> getCollection();
+  
+  String getCollectionName();
 
 }

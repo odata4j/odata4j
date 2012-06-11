@@ -15,6 +15,7 @@ import org.odata4j.format.json.JsonServiceDocumentFormatWriter;
 import org.odata4j.format.json.JsonSimpleFormatWriter;
 import org.odata4j.format.json.JsonSingleLinkFormatWriter;
 import org.odata4j.format.json.JsonSingleLinksFormatWriter;
+import org.odata4j.format.xml.AtomCollectionFormatWriter;
 import org.odata4j.format.xml.AtomComplexFormatWriter;
 import org.odata4j.format.xml.AtomEntryFormatWriter;
 import org.odata4j.format.xml.AtomFeedFormatWriter;
@@ -30,7 +31,6 @@ import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.PropertyResponse;
 import org.odata4j.producer.SimpleResponse;
-import org.odata4j.producer.exceptions.NotImplementedException;
 
 public class FormatWriterFactory {
 
@@ -226,7 +226,7 @@ public class FormatWriterFactory {
 
     @Override
     public FormatWriter<CollectionResponse<?>> getCollectionFormatWriter() {
-      throw new NotImplementedException();
+      return new AtomCollectionFormatWriter();
     }
 
     @Override

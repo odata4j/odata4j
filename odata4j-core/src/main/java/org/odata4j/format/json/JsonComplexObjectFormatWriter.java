@@ -15,7 +15,7 @@ public class JsonComplexObjectFormatWriter extends JsonFormatWriter<ComplexObjec
 
   @Override
   protected void writeContent(UriInfo uriInfo, JsonWriter jw, ComplexObjectResponse target) {
-    super.writeComplexObject(jw, target.getObject().getType().getFullyQualifiedTypeName(), target.getObject().getProperties());
+    super.writeComplexObject(jw, target.getComplexObjectName(), target.getObject().getType().getFullyQualifiedTypeName(), target.getObject().getProperties());
   }
 
 }

@@ -4,34 +4,32 @@ import java.io.Writer;
 
 import javax.ws.rs.core.UriInfo;
 
-import org.odata4j.core.OComplexObject;
+import org.odata4j.core.OCollection;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.format.FormatWriter;
-import org.odata4j.producer.ComplexObjectResponse;
+import org.odata4j.producer.CollectionResponse;
 import org.odata4j.stax2.QName2;
 import org.odata4j.stax2.XMLFactoryProvider2;
 import org.odata4j.stax2.XMLWriter2;
 
-public class AtomComplexFormatWriter extends XmlFormatWriter implements FormatWriter<ComplexObjectResponse> {
+public class AtomCollectionFormatWriter extends XmlFormatWriter implements FormatWriter<CollectionResponse<?>> {
 
   @Override
-  public void write(UriInfo uriInfo, Writer w, ComplexObjectResponse target) {
+  public void write(UriInfo uriInfo, Writer w, CollectionResponse<?> target) {
     XMLWriter2 writer = XMLFactoryProvider2.getInstance().newXMLWriterFactory2().createXMLWriter(w);
-
-    OComplexObject obj = target.getObject();
 
     writer.startDocument();
 
-    writer.startElement(new QName2(d, target.getComplexObjectName(), "d"));
-    
-    writer.writeAttribute(new QName2(m, "type", "m"), obj.getType().getFullyQualifiedTypeName());
-    
+    writer.startElement(new QName2(d, target.getCollectionName(), "d"));
     writer.writeNamespace("d", d);
     writer.writeNamespace("m", m);
 
-    this.writeProperties(writer, obj.getProperties());
+    OCollection<?> coll = target.getCollection();
+    for (Object e : coll) {
+      this.writeProperty(writer, "element", coll.getType(), e, false, !coll.getType().isSimple());
+    }
 
-    writer.endElement(target.getComplexObjectName());
+    writer.endElement(target.getCollectionName());
     writer.endDocument();
 
   }

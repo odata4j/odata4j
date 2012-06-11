@@ -3,6 +3,9 @@ package org.odata4j.test.integration.function;
 import java.util.ArrayList;
 import java.util.Map;
 
+import org.odata4j.core.OCollection;
+import org.odata4j.core.OCollection.Builder;
+import org.odata4j.core.OCollections;
 import org.odata4j.core.OComplexObject;
 import org.odata4j.core.OComplexObjects;
 import org.odata4j.core.OEntities;
@@ -10,8 +13,11 @@ import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityId;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OFunctionParameter;
+import org.odata4j.core.OObject;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
+import org.odata4j.core.OSimpleObjects;
+import org.odata4j.edm.EdmComplexType;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmFunctionImport;
@@ -31,6 +37,10 @@ import org.slf4j.LoggerFactory;
 
 public class FunctionImportProducerMock implements ODataProducer {
 
+  public static final String COLLECTION_STRING2 = "efg";
+  public static final String COLLECTION_STRING1 = "abc";
+  public static final double COLLECTION_DOUBLE2 = 1e12;
+  public static final double COLLECTION_DOUBLE1 = -0.34;
   public static final String COMPLEY_TYPE_NAME_LOCATION = "RefScenario.c_Location";
   public static final String COMPLEY_TYPE_NAME_CITY = "RefScenario.c_City";
   public static final String COUNTRY = "Bavaria";
@@ -147,8 +157,32 @@ public class FunctionImportProducerMock implements ODataProducer {
       OEntity entity = this.createEmployeeEntity();
       response = Responses.entity(entity);
     } else if (MetadataUtil.TEST_FUNCTION_RETURN_COMPLEX_TYPE.equals(name.getName())) {
-      OComplexObject complexObject = this.createCompleyTypeLocation();
-      response = Responses.complexObject(complexObject);
+      OComplexObject complexObject = this.createComplexTypeLocation();
+      response = Responses.complexObject(complexObject, MetadataUtil.TEST_FUNCTION_RETURN_COMPLEX_TYPE);
+    } else if (MetadataUtil.TEST_FUNCTION_RETURN_COLLECTION_STRING.equals(name.getName())) {
+      Builder<OObject> collectionBuilder = OCollections.newBuilder(EdmSimpleType.STRING);
+      collectionBuilder.add(OSimpleObjects.create(EdmSimpleType.STRING, FunctionImportProducerMock.COLLECTION_STRING1)).build();
+      collectionBuilder.add(OSimpleObjects.create(EdmSimpleType.STRING, FunctionImportProducerMock.COLLECTION_STRING2)).build();
+      OCollection<OObject> collection = collectionBuilder.build();
+      response = Responses.collection(collection, MetadataUtil.TEST_FUNCTION_RETURN_COLLECTION_STRING);
+    } else if (MetadataUtil.TEST_FUNCTION_RETURN_COLLECTION_DOUBLE.equals(name.getName())) {
+      Builder<OObject> collectionBuilder = OCollections.newBuilder(EdmSimpleType.DOUBLE);
+      collectionBuilder.add(OSimpleObjects.create(EdmSimpleType.DOUBLE, FunctionImportProducerMock.COLLECTION_DOUBLE1)).build();
+      collectionBuilder.add(OSimpleObjects.create(EdmSimpleType.DOUBLE, FunctionImportProducerMock.COLLECTION_DOUBLE2)).build();
+      OCollection<OObject> collection = collectionBuilder.build();
+      response = Responses.collection(collection, MetadataUtil.TEST_FUNCTION_RETURN_COLLECTION_DOUBLE);
+    } else if (MetadataUtil.TEST_FUNCTION_RETURN_COLLECTION_COMPLEX_TYPE.equals(name.getName())) {
+      OComplexObject complexObject1 = this.createComplexTypeLocation();
+      OComplexObject complexObject2 = this.createComplexTypeLocation();
+      
+      EdmComplexType type = this.getMetadata().findEdmComplexType(FunctionImportProducerMock.COMPLEY_TYPE_NAME_LOCATION);
+      Builder<OObject> collectionBuilder = OCollections.newBuilder(type);
+ 
+      collectionBuilder.add(complexObject1);
+      collectionBuilder.add(complexObject2);
+      
+      OCollection<OObject> collection = collectionBuilder.build();
+      response = Responses.collection(collection, MetadataUtil.TEST_FUNCTION_RETURN_COLLECTION_COMPLEX_TYPE);
     }
     else {
       throw new RuntimeException("Unsupported Test Case for FunctionImport: " + name.getName());
@@ -157,23 +191,18 @@ public class FunctionImportProducerMock implements ODataProducer {
     return response;
   }
 
-  private OComplexObject createCompleyTypeLocation() {
+  private OComplexObject createComplexTypeLocation() {
     ArrayList<OProperty<?>> propertiesCity = new ArrayList<OProperty<?>>();
     propertiesCity.add(OProperties.string("PostalCode", FunctionImportProducerMock.POSTAL_CODE));
     propertiesCity.add(OProperties.string("CityName", FunctionImportProducerMock.CITY));
-    // OComplexObject cityType = OComplexObjects.create(this.getMetadata().findEdmComplexType(FunctionImportProducerMock.COMPLEY_TYPE_NAME_CITY), propertiesCity);
 
     ArrayList<OProperty<?>> propertiesLocation = new ArrayList<OProperty<?>>();
     propertiesLocation.add(OProperties.complex("City", this.getMetadata().findEdmComplexType(FunctionImportProducerMock.COMPLEY_TYPE_NAME_CITY), propertiesCity));
     propertiesLocation.add(OProperties.string("Country", FunctionImportProducerMock.COUNTRY));
-    
-    // OComplexObject locationType = OComplexObjects.create(this.getMetadata().findEdmComplexType(FunctionImportProducerMock.COMPLEY_TYPE_NAME_LOCATION), propertiesLocation);
-    ArrayList<OProperty<?>> propertiesFunction = new ArrayList<OProperty<?>>();
-    propertiesFunction.add(OProperties.complex(MetadataUtil.TEST_FUNCTION_RETURN_COMPLEX_TYPE, this.getMetadata().findEdmComplexType(FunctionImportProducerMock.COMPLEY_TYPE_NAME_LOCATION), propertiesLocation));
-    
-    OComplexObject functionType = OComplexObjects.create(this.getMetadata().findEdmComplexType(FunctionImportProducerMock.COMPLEY_TYPE_NAME_LOCATION), propertiesFunction);
-    
-    return functionType;
+
+    OComplexObject locationType = OComplexObjects.create(this.getMetadata().findEdmComplexType(FunctionImportProducerMock.COMPLEY_TYPE_NAME_LOCATION), propertiesLocation);
+
+    return locationType;
   }
 
   private OEntity createEmployeeEntity() {

@@ -31,6 +31,7 @@
         <FunctionImport Name="TestFunctionReturnCollectionComplexType" ReturnType="Collection(RefScenario.c_Location)"
           m:HttpMethod="GET" />
         <FunctionImport Name="TestFunctionReturnCollectionString" ReturnType="Collection(Edm.String)" m:HttpMethod="GET" />
+        <FunctionImport Name="TestFunctionReturnCollectionDouble" ReturnType="Collection(Edm.Double)" m:HttpMethod="GET" />
         <FunctionImport Name="TestFunctionReturnComplexType" ReturnType="RefScenario.c_Location" m:HttpMethod="GET" />
         <FunctionImport Name="TestFunctionReturnEmployee" ReturnType="RefScenario.Employee" EntitySet="Employees"
           m:HttpMethod="GET" />

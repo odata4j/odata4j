@@ -140,7 +140,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
       if (pvalue instanceof OComplexObject) {
         pvalue = ((OComplexObject) pvalue).getProperties();
       }
-      writeComplexObject(jw, type.getFullyQualifiedTypeName(), (List<OProperty<?>>) pvalue);
+      writeComplexObject(jw, null, type.getFullyQualifiedTypeName(), (List<OProperty<?>>) pvalue);
     } else if (type instanceof EdmCollectionType) {
       writeCollection(jw, (EdmCollectionType) type, (OCollection<? extends OObject>) pvalue);
     } else {
@@ -167,7 +167,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
             jw.writeSeparator();
           }
           if (obj instanceof OComplexObject) {
-            writeComplexObject(jw, obj.getType().getFullyQualifiedTypeName(), ((OComplexObject) obj).getProperties());
+            writeComplexObject(jw, null, obj.getType().getFullyQualifiedTypeName(), ((OComplexObject) obj).getProperties());
           } else if (obj instanceof OSimpleObject) {
             writeValue(jw, obj.getType(), ((OSimpleObject) obj).getValue());
           }
@@ -187,7 +187,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
     jw.endObject();
   }
 
-  protected void writeComplexObject(JsonWriter jw, String fullyQualifiedTypeName, List<OProperty<?>> props) {
+  protected void writeComplexObject(JsonWriter jw, String complexObjectName, String fullyQualifiedTypeName, List<OProperty<?>> props) {
     jw.startObject();
     {
       /* Confused:  The live OData producers that have complex types (ebay, netflix)
@@ -202,7 +202,14 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
       jw.endObject();
       jw.writeSeparator();
        */
+      if (null != complexObjectName) {
+        jw.writeName(complexObjectName);
+        jw.startObject();
+      }
       writeOProperties(jw, props);
+      if (null != complexObjectName) {
+        jw.endObject();
+      }
     }
     jw.endObject();
   }

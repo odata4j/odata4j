@@ -2,7 +2,7 @@ package org.odata4j.test.integration.function;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.custommonkey.xmlunit.XMLAssert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -371,6 +371,88 @@ public class FunctionImportTest extends AbstractRuntimeTest {
         throw new RuntimeException("Unknown Format Type: " + format);
       }
     }
+  }
+  
+  @Test
+  public void testFunctionReturnCollectionString() throws XpathException, IOException, SAXException {
+    for (FormatType format : FunctionImportTest.formats) {
+      String resource = this.rtFacade.getWebResource(endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_COLLECTION_STRING + "?" + this.formatQuery(format));
+      this.logger.debug(resource);
+
+      assertEquals(format.toString(), 200, this.rtFacade.getLastStatusCode());
+
+      switch (format) {
+      case ATOM:
+        assertXpathExists("/d:TestFunctionReturnCollectionString", resource);
+        assertXpathNotExists("/d:TestFunctionReturnCollectionString/d:element/@m:type", resource);
+        assertXpathEvaluatesTo(FunctionImportProducerMock.COLLECTION_STRING1, "/d:TestFunctionReturnCollectionString/d:element[1]/text()", resource);
+        assertXpathEvaluatesTo(FunctionImportProducerMock.COLLECTION_STRING2, "/d:TestFunctionReturnCollectionString/d:element[2]/text()", resource);
+        break;
+      case JSON:
+        assertTrue(format.toString(), resource.contains(FunctionImportProducerMock.COLLECTION_STRING1));
+        assertTrue(format.toString(), resource.contains(FunctionImportProducerMock.COLLECTION_STRING2));
+        break;
+      default:
+        throw new RuntimeException("Unknown Format Type: " + format);
+      }
+    }    
+  }
+
+  @Test
+  public void testFunctionReturnCollectionDouble() throws XpathException, IOException, SAXException {
+    for (FormatType format : FunctionImportTest.formats) {
+      String resource = this.rtFacade.getWebResource(endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_COLLECTION_DOUBLE + "?" + this.formatQuery(format));
+      this.logger.debug(resource);
+
+      assertEquals(format.toString(), 200, this.rtFacade.getLastStatusCode());
+
+      switch (format) {
+      case ATOM:
+        assertXpathExists("/d:TestFunctionReturnCollectionDouble", resource);
+        assertXpathNotExists("/d:TestFunctionReturnCollectionDouble/d:element/@m:type", resource);
+        assertXpathEvaluatesTo(Double.toString(FunctionImportProducerMock.COLLECTION_DOUBLE1), "/d:TestFunctionReturnCollectionDouble/d:element[1]/text()", resource);
+        assertXpathEvaluatesTo(Double.toString(FunctionImportProducerMock.COLLECTION_DOUBLE2), "/d:TestFunctionReturnCollectionDouble/d:element[2]/text()", resource);
+        break;
+      case JSON:
+        assertTrue(format.toString(), resource.contains(Double.toString(FunctionImportProducerMock.COLLECTION_DOUBLE1)));
+        assertTrue(format.toString(), resource.contains(Double.toString(FunctionImportProducerMock.COLLECTION_DOUBLE2)));
+        break;
+      default:
+        throw new RuntimeException("Unknown Format Type: " + format);
+      }
+    }    
+  }
+
+  @Test
+  public void testFunctionReturnCollectionComplexType() throws XpathException, IOException, SAXException {
+    for (FormatType format : FunctionImportTest.formats) {
+      String resource = this.rtFacade.getWebResource(endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_COLLECTION_COMPLEX_TYPE + "?" + this.formatQuery(format));
+      this.logger.debug(resource);
+
+      assertEquals(format.toString(), 200, this.rtFacade.getLastStatusCode());
+
+      switch (format) {
+      case ATOM:
+        assertXpathExists("/d:TestFunctionReturnCollectionComplexType", resource);
+        assertXpathEvaluatesTo("RefScenario.c_Location", "/d:TestFunctionReturnCollectionComplexType/d:element/@m:type", resource);
+        assertXpathEvaluatesTo("RefScenario.c_City", "/d:TestFunctionReturnCollectionComplexType/d:element[1]/d:City/@m:type", resource);
+        assertXpathEvaluatesTo("RefScenario.c_City", "/d:TestFunctionReturnCollectionComplexType/d:element[1]/d:City/@m:type", resource);
+        assertXpathEvaluatesTo(FunctionImportProducerMock.CITY, "/d:TestFunctionReturnCollectionComplexType/d:element[1]/d:City/d:CityName/text()", resource);
+        assertXpathEvaluatesTo(FunctionImportProducerMock.CITY, "/d:TestFunctionReturnCollectionComplexType/d:element[2]/d:City/d:CityName/text()", resource);
+        assertXpathEvaluatesTo(FunctionImportProducerMock.POSTAL_CODE, "/d:TestFunctionReturnCollectionComplexType/d:element[1]/d:City/d:PostalCode/text()", resource);
+        assertXpathEvaluatesTo(FunctionImportProducerMock.POSTAL_CODE, "/d:TestFunctionReturnCollectionComplexType/d:element[2]/d:City/d:PostalCode/text()", resource);
+        assertXpathEvaluatesTo(FunctionImportProducerMock.COUNTRY, "/d:TestFunctionReturnCollectionComplexType/d:element[1]/d:Country", resource);
+        assertXpathEvaluatesTo(FunctionImportProducerMock.COUNTRY, "/d:TestFunctionReturnCollectionComplexType/d:element[2]/d:Country", resource);
+        break;
+      case JSON:
+        assertTrue(format.toString(), resource.contains(FunctionImportProducerMock.COUNTRY));
+        assertTrue(format.toString(), resource.contains(FunctionImportProducerMock.POSTAL_CODE));
+        assertTrue(format.toString(), resource.contains(FunctionImportProducerMock.CITY));
+        break;
+      default:
+        throw new RuntimeException("Unknown Format Type: " + format);
+      }
+    }    
   }
 
 }

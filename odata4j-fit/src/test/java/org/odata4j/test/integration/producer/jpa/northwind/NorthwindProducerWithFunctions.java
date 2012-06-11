@@ -71,7 +71,7 @@ public class NorthwindProducerWithFunctions extends ODataProducerDelegate {
     props.add(OProperties.int32("ProductID", 44));
 
     OComplexObject o = OComplexObjects.create(this.getMetadata().findEdmComplexType("NorthwindModel.Order_DetailsPK"), props);
-    return Responses.complexObject(o);
+    return Responses.complexObject(o, function.getName());
   }
 
   private BaseResponse testFunction2(EdmFunctionImport function, java.util.Map<String, OFunctionParameter> params, QueryInfo queryInfo) {
@@ -93,7 +93,7 @@ public class NorthwindProducerWithFunctions extends ODataProducerDelegate {
       c = c.add(OComplexObjects.create(ct, props));
     }
 
-    return Responses.collection(c.build());
+    return Responses.collection(c.build(), function.getName());
   }
 
   private BaseResponse testFunction3(EdmFunctionImport function, java.util.Map<String, OFunctionParameter> params, QueryInfo queryInfo) {
