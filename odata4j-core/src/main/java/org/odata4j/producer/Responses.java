@@ -184,10 +184,41 @@ public class Responses {
    * @return a new <code>ComplexObjectResponse</code> instance
    */
   public static <T extends OObject> CollectionResponse<?> collection(final OCollection<T> collection) {
+    return collection(collection, null, null, null);
+  }
+  
+  /**
+   * Creates a new <code>CollectionResponse</code> instance.
+   *
+   * @param collection  the collection
+   * @return a new <code>ComplexObjectResponse</code> instance
+   */
+  public static <T extends OObject> CollectionResponse<?> collection(
+          final OCollection<T> collection, 
+          final EdmEntitySet entitySet, 
+          final Integer inlineCount, 
+          final String skipToken) {
+    
     return new CollectionResponse<T>() {
+
       @Override
       public OCollection<T> getCollection() {
         return collection;
+      }
+
+      @Override
+      public Integer getInlineCount() {
+        return inlineCount;
+      }
+
+      @Override
+      public String getSkipToken() {
+        return skipToken;
+      }
+
+      @Override
+      public EdmEntitySet getEntitySet() {
+        return entitySet;
       }
     };
   }

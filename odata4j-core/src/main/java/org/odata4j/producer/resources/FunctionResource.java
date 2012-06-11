@@ -1,7 +1,9 @@
 package org.odata4j.producer.resources;
 
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.ws.rs.core.HttpHeaders;
@@ -9,10 +11,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
-import org.odata4j.core.ODataConstants;
-import org.odata4j.core.ODataVersion;
-import org.odata4j.core.OFunctionParameter;
-import org.odata4j.core.OFunctionParameters;
+import org.odata4j.core.*;
+import org.odata4j.edm.EdmEntityType;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.edm.EdmFunctionParameter;
 import org.odata4j.format.FormatWriter;
@@ -47,9 +47,7 @@ public class FunctionResource extends BaseResource {
       String functionName,
       String format,
       String callback,
-      String skipToken) throws Exception {
-
-    Map<String, String> opts = OptionsQueryParser.parseCustomOptions(uriInfo);
+      QueryInfo queryInfo) throws Exception {
 
     // do we have this function?
     EdmFunctionImport function = producer.getMetadata().findEdmFunctionImport(functionName);
@@ -58,7 +56,7 @@ public class FunctionResource extends BaseResource {
     }
 
     BaseResponse response = producer.callFunction(
-        function, getFunctionParameters(function, opts), null);
+        function, getFunctionParameters(function, queryInfo.customOptions), queryInfo);
 
     if (response == null) {
       return Response.status(Status.NO_CONTENT).build();
@@ -81,15 +79,40 @@ public class FunctionResource extends BaseResource {
       fw.write(uriInfo, sw, (ComplexObjectResponse) response);
       fwBase = fw;
     } else if (response instanceof CollectionResponse) {
-      FormatWriter<CollectionResponse> fw =
-          FormatWriterFactory.getFormatWriter(
-              CollectionResponse.class,
-              httpHeaders.getAcceptableMediaTypes(),
-              format,
-              callback);
+      CollectionResponse<?> collectionResponse = (CollectionResponse<?>) response;
+      
+      if (collectionResponse.getCollection().getType() instanceof EdmEntityType) {
+        FormatWriter<EntitiesResponse> fw = FormatWriterFactory.getFormatWriter(
+                EntitiesResponse.class,
+                httpHeaders.getAcceptableMediaTypes(),
+                format,
+                callback);
 
-      fw.write(uriInfo, sw, (CollectionResponse<?>) response);
-      fwBase = fw;
+        // collection of entities.
+        // Does anyone else see this in the v2 spec?  I sure don't.  This seems 
+        // reasonable though given that inlinecount and skip tokens might be included...
+        ArrayList<OEntity> entities = new ArrayList<OEntity>(collectionResponse.getCollection().size());
+        Iterator iter = collectionResponse.getCollection().iterator();
+        while (iter.hasNext()) {
+          entities.add((OEntity)iter.next());
+        }
+        EntitiesResponse er = Responses.entities(entities, 
+                collectionResponse.getEntitySet(), 
+                collectionResponse.getInlineCount(), 
+                collectionResponse.getSkipToken());
+        fw.write(uriInfo, sw, er);
+        fwBase = fw;
+      } else {
+        // non-entities
+        FormatWriter<CollectionResponse> fw = FormatWriterFactory.getFormatWriter(
+                CollectionResponse.class,
+                httpHeaders.getAcceptableMediaTypes(),
+                format,
+                callback);
+        fw.write(uriInfo, sw, collectionResponse);
+        fwBase = fw;
+      }
+      
     } else if (response instanceof PropertyResponse) {
       FormatWriter<PropertyResponse> fw =
           FormatWriterFactory.getFormatWriter(

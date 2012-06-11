@@ -178,12 +178,6 @@ public class EntitiesRequestResource extends BaseResource {
       String expand,
       String select) throws Exception {
 
-    // the OData URI scheme makes it impossible to have unique @Paths that refer
-    // to functions and entity sets
-    if (producer.getMetadata().findEdmFunctionImport(entitySetName) != null) {
-      return FunctionResource.callFunction(httpHeaders, uriInfo, producer, entitySetName, format, callback, skipToken);
-    }
-
     QueryInfo query = new QueryInfo(
         OptionsQueryParser.parseInlineCount(inlineCount),
         OptionsQueryParser.parseTop(top),
@@ -194,6 +188,14 @@ public class EntitiesRequestResource extends BaseResource {
         OptionsQueryParser.parseCustomOptions(uriInfo),
         OptionsQueryParser.parseExpand(expand),
         OptionsQueryParser.parseSelect(select));
+    
+    // the OData URI scheme makes it impossible to have unique @Paths that refer
+    // to functions and entity sets
+    if (producer.getMetadata().findEdmFunctionImport(entitySetName) != null) {
+      // functions that return collections of entities should support the
+      // same set of query options as entity set queries so give them everything.
+      return FunctionResource.callFunction(httpHeaders, uriInfo, producer, entitySetName, format, callback, query);
+    }
 
     Response response = null;
     if (isCount) {
