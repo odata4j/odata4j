@@ -36,12 +36,21 @@ public class JsonComplexObjectFormatParser extends JsonFormatParser implements F
     try {
 
       if (isResponse) {
+        // the response object
         ensureNext(jsr);
-        ensureStartObject(jsr.nextEvent()); // the response object
+        ensureStartObject(jsr.nextEvent());
 
         // "d" property
         ensureNext(jsr);
         ensureStartProperty(jsr.nextEvent(), DATA_PROPERTY);
+
+        // the function object
+        ensureNext(jsr);
+        ensureStartObject(jsr.nextEvent());
+
+        // "function" property
+        ensureNext(jsr);
+        ensureStartProperty(jsr.nextEvent());
 
         // "aresult" for DataServiceVersion > 1.0
         if (version.compareTo(ODataVersion.V1) > 0) {
@@ -79,7 +88,7 @@ public class JsonComplexObjectFormatParser extends JsonFormatParser implements F
   }
 
   public OComplexObject parseSingleObject(JsonStreamReader jsr) {
-    //System.out.println("json parseSingleObject: " + returnType.getFullyQualifiedTypeName());
+    System.out.println("json parseSingleObject: " + returnType.getFullyQualifiedTypeName());
     ensureNext(jsr);
 
     // this can be used in a context where we require an object and one
@@ -87,10 +96,6 @@ public class JsonComplexObjectFormatParser extends JsonFormatParser implements F
     OComplexObject result = null;
     JsonEvent event = jsr.nextEvent();
     if (event.isStartObject()) {
-      
-        event = jsr.nextEvent(); // skip nested object: d
-        event = jsr.nextEvent(); // skip nested object: function name
-     
       List<OProperty<?>> props = new ArrayList<OProperty<?>>();
       result = eatProps(props, jsr);
     } // else not a start object.

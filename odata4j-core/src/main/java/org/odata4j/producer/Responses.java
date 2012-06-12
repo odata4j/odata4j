@@ -99,8 +99,8 @@ public class Responses {
       }
     };
   }
-  
-  public static SimpleResponse simple(final  EdmSimpleType<?> type, final Object value) {
+
+  public static SimpleResponse simple(final EdmSimpleType<?> type, final Object value) {
     return new SimpleResponse() {
 
       @Override
@@ -117,11 +117,11 @@ public class Responses {
       public String getName() {
         return null;
       }
-      
+
     };
   }
 
-  public static SimpleResponse simple(final  EdmSimpleType<?> type, final String name, final Object value) {
+  public static SimpleResponse simple(final EdmSimpleType<?> type, final String name, final Object value) {
     return new SimpleResponse() {
 
       @Override
@@ -138,11 +138,10 @@ public class Responses {
       public String getName() {
         return name;
       }
-      
+
     };
   }
 
-  
   /**
    * Creates a new <code>EntityIdResponse</code> instance for payloads with a cardinality of {@link EdmMultiplicity#ONE}.
    *
@@ -202,7 +201,7 @@ public class Responses {
       public OComplexObject getObject() {
         return complexObject;
       }
-      
+
       @Override
       public String getComplexObjectName() {
         return complexObjectName;
@@ -217,8 +216,25 @@ public class Responses {
    * @param collectionName the name used for collection
    * @return a new <code>ComplexObjectResponse</code> instance
    */
-  public static <T extends OObject> CollectionResponse<?> collection(final OCollection<T> collection, final String collectionName) {
+  public static <T extends OObject> CollectionResponse<?> collection(final OCollection<T> collection) {
+    return collection(collection, null, null, null, null);
+  }
+
+  /**
+   * Creates a new <code>CollectionResponse</code> instance.
+   *
+   * @param collection  the collection
+   * @return a new <code>ComplexObjectResponse</code> instance
+   */
+  public static <T extends OObject> CollectionResponse<?> collection(
+      final OCollection<T> collection,
+      final EdmEntitySet entitySet,
+      final Integer inlineCount,
+      final String skipToken,
+      final String collectionName) {
+
     return new CollectionResponse<T>() {
+
       @Override
       public OCollection<T> getCollection() {
         return collection;
@@ -228,7 +244,20 @@ public class Responses {
       public String getCollectionName() {
         return collectionName;
       }
+
+      public Integer getInlineCount() {
+        return inlineCount;
+      }
+
+      @Override
+      public String getSkipToken() {
+        return skipToken;
+      }
+
+      @Override
+      public EdmEntitySet getEntitySet() {
+        return entitySet;
+      }
     };
   }
-
 }

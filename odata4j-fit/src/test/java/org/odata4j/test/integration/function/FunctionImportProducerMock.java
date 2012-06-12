@@ -164,25 +164,25 @@ public class FunctionImportProducerMock implements ODataProducer {
       collectionBuilder.add(OSimpleObjects.create(EdmSimpleType.STRING, FunctionImportProducerMock.COLLECTION_STRING1)).build();
       collectionBuilder.add(OSimpleObjects.create(EdmSimpleType.STRING, FunctionImportProducerMock.COLLECTION_STRING2)).build();
       OCollection<OObject> collection = collectionBuilder.build();
-      response = Responses.collection(collection, MetadataUtil.TEST_FUNCTION_RETURN_COLLECTION_STRING);
+      response = Responses.collection(collection, null, null, null, MetadataUtil.TEST_FUNCTION_RETURN_COLLECTION_STRING);
     } else if (MetadataUtil.TEST_FUNCTION_RETURN_COLLECTION_DOUBLE.equals(name.getName())) {
       Builder<OObject> collectionBuilder = OCollections.newBuilder(EdmSimpleType.DOUBLE);
       collectionBuilder.add(OSimpleObjects.create(EdmSimpleType.DOUBLE, FunctionImportProducerMock.COLLECTION_DOUBLE1)).build();
       collectionBuilder.add(OSimpleObjects.create(EdmSimpleType.DOUBLE, FunctionImportProducerMock.COLLECTION_DOUBLE2)).build();
       OCollection<OObject> collection = collectionBuilder.build();
-      response = Responses.collection(collection, MetadataUtil.TEST_FUNCTION_RETURN_COLLECTION_DOUBLE);
+      response = Responses.collection(collection, null, null, null, MetadataUtil.TEST_FUNCTION_RETURN_COLLECTION_DOUBLE);
     } else if (MetadataUtil.TEST_FUNCTION_RETURN_COLLECTION_COMPLEX_TYPE.equals(name.getName())) {
       OComplexObject complexObject1 = this.createComplexTypeLocation();
       OComplexObject complexObject2 = this.createComplexTypeLocation();
-      
+
       EdmComplexType type = this.getMetadata().findEdmComplexType(FunctionImportProducerMock.COMPLEY_TYPE_NAME_LOCATION);
       Builder<OObject> collectionBuilder = OCollections.newBuilder(type);
- 
+
       collectionBuilder.add(complexObject1);
       collectionBuilder.add(complexObject2);
-      
+
       OCollection<OObject> collection = collectionBuilder.build();
-      response = Responses.collection(collection, MetadataUtil.TEST_FUNCTION_RETURN_COLLECTION_COMPLEX_TYPE);
+      response = Responses.collection(collection, null, null, null, MetadataUtil.TEST_FUNCTION_RETURN_COLLECTION_COMPLEX_TYPE);
     }
     else {
       throw new RuntimeException("Unsupported Test Case for FunctionImport: " + name.getName());

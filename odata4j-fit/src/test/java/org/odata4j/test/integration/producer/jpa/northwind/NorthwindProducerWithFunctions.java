@@ -93,7 +93,7 @@ public class NorthwindProducerWithFunctions extends ODataProducerDelegate {
       c = c.add(OComplexObjects.create(ct, props));
     }
 
-    return Responses.collection(c.build(), function.getName());
+    return Responses.collection(c.build(), null, null, null, function.getName());
   }
 
   private BaseResponse testFunction3(EdmFunctionImport function, java.util.Map<String, OFunctionParameter> params, QueryInfo queryInfo) {
