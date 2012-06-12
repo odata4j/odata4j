@@ -314,11 +314,13 @@ public class FunctionImportTest extends AbstractRuntimeTest {
   }
 
   @Test
-  public void testFunctionReturnEmployee() throws XpathException, IOException, SAXException {
+  public void testFunctionReturnEntity() throws XpathException, IOException, SAXException {
     for (FormatType format : FunctionImportTest.formats) {
 
-      String resource = this.rtFacade.getWebResource(endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_EMPLOYEE + "?" + this.formatQuery(format));
+      String resource = this.rtFacade.getWebResource(endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_ENTITY + "?" + this.formatQuery(format));
       this.logger.debug(resource);
+
+      assertEquals(format.toString(), 200, this.rtFacade.getLastStatusCode());
 
       switch (format) {
       case ATOM:
@@ -352,6 +354,8 @@ public class FunctionImportTest extends AbstractRuntimeTest {
       String resource = this.rtFacade.getWebResource(endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_COMPLEX_TYPE + "?" + this.formatQuery(format));
       this.logger.debug(resource);
 
+      assertEquals(format.toString(), 200, this.rtFacade.getLastStatusCode());
+
       switch (format) {
       case ATOM:
         assertXpathExists("/d:TestFunctionReturnComplexType", resource);
@@ -372,7 +376,7 @@ public class FunctionImportTest extends AbstractRuntimeTest {
       }
     }
   }
-  
+
   @Test
   public void testFunctionReturnCollectionString() throws XpathException, IOException, SAXException {
     for (FormatType format : FunctionImportTest.formats) {
@@ -395,7 +399,7 @@ public class FunctionImportTest extends AbstractRuntimeTest {
       default:
         throw new RuntimeException("Unknown Format Type: " + format);
       }
-    }    
+    }
   }
 
   @Test
@@ -420,7 +424,7 @@ public class FunctionImportTest extends AbstractRuntimeTest {
       default:
         throw new RuntimeException("Unknown Format Type: " + format);
       }
-    }    
+    }
   }
 
   @Test
@@ -452,7 +456,47 @@ public class FunctionImportTest extends AbstractRuntimeTest {
       default:
         throw new RuntimeException("Unknown Format Type: " + format);
       }
-    }    
+    }
+  }
+
+  @Test
+  public void testFunctionReturnCollectionEntityType() throws XpathException, IOException, SAXException {
+    for (FormatType format : FunctionImportTest.formats) {
+      String resource = this.rtFacade.getWebResource(endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_COLLECTION_ENTITY + "?" + this.formatQuery(format));
+      this.logger.debug(resource);
+
+      assertEquals(format.toString(), 200, this.rtFacade.getLastStatusCode());
+
+      switch (format) {
+      case ATOM:
+
+        /*
+         * TODO
+         * BUG in XMLUNnit (1.3): Built in XPath engine does not handle default namespace of atom correctly
+         * 
+         *  assertXpathExists("/feed", resource);
+         *  assertXpathEvaluatesTo("RefScenario.Employee", "/feed/entry/category/@term", resource);
+         *  assertXpathEvaluatesTo(FunctionImportProducerMock.EMPLOYEE_ID, "/feed/entry/content/m:properties/d:EmployeeId/text()", resource);
+         *  assertXpathEvaluatesTo(FunctionImportProducerMock.EMPLOYEE_NAME, "/feed/entry/content/m:properties/d:EmployeeName/text()", resource);
+         */
+
+        assertTrue(format.toString(), resource.contains("<feed"));
+        assertTrue(format.toString(), resource.contains("Employees"));
+               assertTrue(format.toString(), resource.contains("RefScenario.Employee"));
+        assertTrue(format.toString(), resource.contains(FunctionImportProducerMock.EMPLOYEE_NAME));
+        assertTrue(format.toString(), resource.contains(FunctionImportProducerMock.EMPLOYEE_ID));
+
+        break;
+      case JSON:
+        assertTrue(format.toString(), resource.contains("\"results\" : ["));
+        assertTrue(format.toString(), resource.contains("\"__metadata\" : {"));
+        assertTrue(format.toString(), resource.contains(FunctionImportProducerMock.EMPLOYEE_NAME));
+        assertTrue(format.toString(), resource.contains(FunctionImportProducerMock.EMPLOYEE_ID));
+        break;
+      default:
+        throw new RuntimeException("Unknown Format Type: " + format);
+      }
+    }
   }
 
 }

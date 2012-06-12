@@ -15,13 +15,13 @@ public class MetadataUtil {
 
   public static final String TEST_FUNCTION_RETURN_STRING = "TestFunctionReturnString";
   public static final String TEST_FUNCTION_RETURN_BOOLEAN = "TestFunctionReturnBoolean";
-  public static final String TEST_FUNCTION_RETURN_EMPLOYEE = "TestFunctionReturnEmployee";
+  public static final String TEST_FUNCTION_RETURN_ENTITY = "TestFunctionReturnEmployee";
   public static final String TEST_FUNCTION_RETURN_COMPLEX_TYPE = "TestFunctionReturnComplexType";
   public static final String TEST_FUNCTION_RETURN_INT16 = "TestFunctionReturnInt16";
   public static final String TEST_FUNCTION_RETURN_COLLECTION_STRING = "TestFunctionReturnCollectionString";
   public static final String TEST_FUNCTION_RETURN_COLLECTION_DOUBLE = "TestFunctionReturnCollectionDouble";
   public static final String TEST_FUNCTION_RETURN_COLLECTION_COMPLEX_TYPE = "TestFunctionReturnCollectionComplexType";
-  public static final String TEST_FUNCTION_RETURN_COLLECTION_EMPLOYEES = "TestFunctionReturnCollectionEmployees";
+  public static final String TEST_FUNCTION_RETURN_COLLECTION_ENTITY = "TestFunctionReturnCollectionEmployees";
 
   private static final String REF_SCENARIO_EDMX = "/META-INF/FunctionImportScenario.edmx.xml";
 

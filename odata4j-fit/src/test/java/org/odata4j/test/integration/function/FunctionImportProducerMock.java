@@ -153,7 +153,7 @@ public class FunctionImportProducerMock implements ODataProducer {
       response = Responses.simple(EdmSimpleType.BOOLEAN, name.getName(), FunctionImportProducerMock.BOOLEAN_VALUE);
     } else if (MetadataUtil.TEST_FUNCTION_RETURN_INT16.equals(name.getName())) {
       response = Responses.simple(EdmSimpleType.INT16, name.getName(), FunctionImportProducerMock.INT16_VALUE);
-    } else if (MetadataUtil.TEST_FUNCTION_RETURN_EMPLOYEE.equals(name.getName())) {
+    } else if (MetadataUtil.TEST_FUNCTION_RETURN_ENTITY.equals(name.getName())) {
       OEntity entity = this.createEmployeeEntity();
       response = Responses.entity(entity);
     } else if (MetadataUtil.TEST_FUNCTION_RETURN_COMPLEX_TYPE.equals(name.getName())) {
@@ -183,6 +183,14 @@ public class FunctionImportProducerMock implements ODataProducer {
 
       OCollection<OObject> collection = collectionBuilder.build();
       response = Responses.collection(collection, null, null, null, MetadataUtil.TEST_FUNCTION_RETURN_COLLECTION_COMPLEX_TYPE);
+    } else if (MetadataUtil.TEST_FUNCTION_RETURN_COLLECTION_ENTITY.equals(name.getName())) {
+      OEntity entity = this.createEmployeeEntity();
+
+      Builder<OObject> collectionBuilder = OCollections.newBuilder(entity.getType());
+      collectionBuilder.add(entity);
+      OCollection<OObject> collection = collectionBuilder.build();
+      
+      response = Responses.collection(collection, entity.getEntitySet(), null, null, MetadataUtil.TEST_FUNCTION_RETURN_COLLECTION_ENTITY);
     }
     else {
       throw new RuntimeException("Unsupported Test Case for FunctionImport: " + name.getName());
