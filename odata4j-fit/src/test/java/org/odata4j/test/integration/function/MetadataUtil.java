@@ -1,13 +1,13 @@
 package org.odata4j.test.integration.function;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.StringWriter;
 
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.format.xml.EdmxFormatParser;
-import org.odata4j.format.xml.EdmxFormatWriter;
 import org.odata4j.stax2.XMLInputFactory2;
 import org.odata4j.stax2.staximpl.StaxXMLFactoryProvider2;
 
@@ -25,14 +25,6 @@ public class MetadataUtil {
 
   private static final String REF_SCENARIO_EDMX = "/META-INF/FunctionImportScenario.edmx.xml";
 
-  public static String readMetadataFromFile() {
-    EdmDataServices eds = MetadataUtil.readMetadataServiceFromFile();
-
-    StringWriter writer = new StringWriter();
-    EdmxFormatWriter.write(eds, writer);
-
-    return writer.toString();
-  }
 
   public static EdmDataServices readMetadataServiceFromFile() {
     InputStream inputStream = FunctionImportProducerMock.class.getResourceAsStream(MetadataUtil.REF_SCENARIO_EDMX);
@@ -45,4 +37,23 @@ public class MetadataUtil {
     return edmDataService;
   }
 
+  public static String readMetadataFromFile() {
+    try {
+      InputStream inputStream = MetadataUtil.class.getResourceAsStream(MetadataUtil.REF_SCENARIO_EDMX);
+
+      BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+      String line = null;
+      StringBuilder stringBuilder = new StringBuilder();
+      String ls = System.getProperty("line.separator");
+      while ((line = reader.readLine()) != null) {
+        stringBuilder.append(line);
+        stringBuilder.append(ls);
+      }
+      return stringBuilder.toString();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  
 }

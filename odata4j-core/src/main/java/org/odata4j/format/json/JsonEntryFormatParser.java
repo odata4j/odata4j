@@ -2,7 +2,6 @@ package org.odata4j.format.json;
 
 import java.io.Reader;
 
-import org.odata4j.core.ODataVersion;
 import org.odata4j.format.Entry;
 import org.odata4j.format.FormatParser;
 import org.odata4j.format.Settings;
@@ -27,17 +26,6 @@ public class JsonEntryFormatParser extends JsonFormatParser implements FormatPar
         // "d" property
         ensureNext(jsr);
         ensureStartProperty(jsr.nextEvent(), DATA_PROPERTY);
-
-        // skip the StartObject event
-        ensureStartObject(jsr.nextEvent());
-      }
-
-      // "result" for DataServiceVersion > 1.0
-      if (version.compareTo(ODataVersion.V1) > 0) {
-        ensureNext(jsr);
-        ensureStartObject(jsr.nextEvent());
-        ensureNext(jsr);
-        ensureStartProperty(jsr.nextEvent(), RESULTS_PROPERTY);
 
         // skip the StartObject event
         ensureStartObject(jsr.nextEvent());
