@@ -17,8 +17,14 @@ public class JsonSingleLinksFormatWriter extends JsonFormatWriter<SingleLinks> {
     {
       jw.writeName("results");
       jw.startArray();
-      for (SingleLink link : links)
+      boolean isFirst = true;
+      for (SingleLink link : links) {
+        if (!isFirst)
+          jw.writeSeparator();
+        else
+          isFirst = false;
         JsonSingleLinkFormatWriter.writeUri(jw, link);
+      }
       jw.endArray();
     }
     jw.endObject();
