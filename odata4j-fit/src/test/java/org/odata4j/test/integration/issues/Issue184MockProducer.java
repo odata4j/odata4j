@@ -150,5 +150,10 @@ public class Issue184MockProducer implements ODataProducer {
     // TODO Auto-generated method stub
     return null;
   }
+  
+  @Override
+  public Object findService(Class<?> clazz, Map<String, Object> params) {
+    return null;
+  }
 
 }

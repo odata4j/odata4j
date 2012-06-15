@@ -850,5 +850,9 @@ public class MetadataProducer implements ODataProducer {
   public MetadataProducer getMetadataProducer() {
     return null; // stop the brutal recursion :)
   }
-
+  
+  @Override
+  public Object findService(Class<?> clazz, Map<String, Object> params) {
+    return null;
+  }
 }

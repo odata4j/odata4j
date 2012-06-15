@@ -698,4 +698,8 @@ public class JPAProducer implements ODataProducer {
     return true;
   }
 
+  @Override
+  public Object findService(Class<?> clazz, Map<String, Object> params) {
+    return null;
+  }
 }

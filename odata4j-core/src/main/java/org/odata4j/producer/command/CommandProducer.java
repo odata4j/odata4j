@@ -138,4 +138,8 @@ public class CommandProducer implements ODataProducer {
     return executeCommand(CallFunctionCommandContext.class, BaseResponse.class, backend.newCallFunctionCommandContext(name, params, queryInfo));
   }
 
+  @Override
+  public Object findService(Class<?> clazz, Map<String, Object> params) {
+    return null;
+  }
 }

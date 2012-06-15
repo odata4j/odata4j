@@ -2,6 +2,8 @@ package org.odata4j.producer.resources;
 
 import java.io.StringWriter;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.ws.rs.DELETE;
@@ -28,13 +30,7 @@ import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.format.FormatWriter;
 import org.odata4j.format.FormatWriterFactory;
 import org.odata4j.internal.InternalUtil;
-import org.odata4j.producer.BaseResponse;
-import org.odata4j.producer.CountResponse;
-import org.odata4j.producer.EntitiesResponse;
-import org.odata4j.producer.EntityResponse;
-import org.odata4j.producer.ODataProducer;
-import org.odata4j.producer.PropertyResponse;
-import org.odata4j.producer.QueryInfo;
+import org.odata4j.producer.*;
 import org.odata4j.producer.exceptions.NotFoundException;
 import org.odata4j.producer.exceptions.NotImplementedException;
 
@@ -121,7 +117,10 @@ public class PropertyRequestResource extends BaseResource {
   @Produces({
       ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8,
       ODataConstants.TEXT_JAVASCRIPT_CHARSET_UTF8,
-      ODataConstants.APPLICATION_JAVASCRIPT_CHARSET_UTF8 })
+      ODataConstants.APPLICATION_JAVASCRIPT_CHARSET_UTF8})
+      // "*/*"}) // hmmh...kinda interesting:  for Media Link Entries we don't know
+                 // the entire set of possible content types here...either we leave this out here
+                 // and force clients to Accept: */* + the real list of content types?
   public Response getNavProperty(
       @Context HttpHeaders httpHeaders,
       @Context UriInfo uriInfo,
@@ -179,7 +178,26 @@ public class PropertyRequestResource extends BaseResource {
           .ok(entity, ODataConstants.TEXT_PLAIN_CHARSET_UTF8)
           .header(ODataConstants.Headers.DATA_SERVICE_VERSION, version.asString)
           .build();
-    } else {
+    } 
+    else {
+      
+      
+      // is this a request for a media resource?
+      if (navProp.equals("$value")) {
+      
+        EdmEntitySet entitySet = producer.getMetadata().findEdmEntitySet(entitySetName);
+        if (null == entitySet) { throw new NotFoundException(); }
+        
+        if (entitySet.getType().getHasStream()) {
+          // hey, it is!
+          return getStreamResponse(entitySet, id, query, new EntityQueryInfo(
+                  null,
+                  OptionsQueryParser.parseCustomOptions(uriInfo),
+                  OptionsQueryParser.parseExpand(expand),
+                  OptionsQueryParser.parseSelect(select)), producer);
+        } // else process as a normal property
+      } 
+      
       BaseResponse response = producer.getNavProperty(
           entitySetName,
           OEntityKey.parse(id),
@@ -236,5 +254,29 @@ public class PropertyRequestResource extends BaseResource {
           .header(ODataConstants.Headers.DATA_SERVICE_VERSION, version.asString)
           .build();
     }
+  }
+  
+  protected Response getStreamResponse(EdmEntitySet entitySet, String entityId, QueryInfo query, EntityQueryInfo entityQuery, ODataProducer producer) {
+    
+    // does the producer have a stream service?
+    // Note: parameters make it possible for the producer to have type-specific
+    //       OMediaLinkProvider implementations.
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put("EdmEntitySet", entitySet); // TODO make constant somewhere
+    params.put("Query", query);
+    
+    OMediaLinkProvider p = (OMediaLinkProvider) producer.findService(OMediaLinkProvider.class, params);
+    
+    if (null == p) {
+      throw new NotImplementedException();
+    }
+    
+    // next, we ask the producer for the Media Link Entry object:
+    // (EntityQueryInfo is strange....I'm not sure why someone decided to create this subtype of QueryInfo..)
+    EntityResponse er = producer.getEntity(entitySet.getName(), OEntityKey.parse(entityId), entityQuery);
+    
+    // finally, the mle provider gives us the stream:
+    return Response.ok(p.getInputStreamForMediaLinkEntry(er.getEntity(), null, query), 
+            p.getMediaLinkContentType(er.getEntity())).build();
   }
 }

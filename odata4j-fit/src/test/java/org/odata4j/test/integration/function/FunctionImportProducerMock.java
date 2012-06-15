@@ -230,4 +230,9 @@ public class FunctionImportProducerMock implements ODataProducer {
   public QueryInfo getQueryInfo() {
     return this.queryInfo;
   }
+  
+  @Override
+  public Object findService(Class<?> clazz, Map<String, Object> params) {
+    return null;
+  }
 }

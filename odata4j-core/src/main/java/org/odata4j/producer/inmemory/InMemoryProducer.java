@@ -738,6 +738,11 @@ public class InMemoryProducer implements ODataProducer {
     throw new NotImplementedException();
   }
 
+  @Override
+  public Object findService(Class<?> clazz, Map<String, Object> params) {
+    return null;
+  }
+
   /*
    * Design Note:
    * I took a look at the CommandProducer stuff as a way of carrying context into

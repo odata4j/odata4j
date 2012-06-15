@@ -304,5 +304,10 @@ public class XmlDataProducerExample extends AbstractExample {
       return null;
     }
 
+    @Override
+    public Object findService(Class<?> clazz, Map<String, Object> params) {
+      throw new UnsupportedOperationException("Not supported yet.");
+    }
+
   }
 }

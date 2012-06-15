@@ -1,6 +1,9 @@
 package org.odata4j.test.integration.producer.custom;
 
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -255,5 +258,16 @@ public class CustomTest extends CustomBaseTest {
       assertTrue(((OSimpleObject<?>) obj).getValue().equals(vg.getValue(idx)));
       idx += 1;
     }
+  }
+  
+  @Test
+  public void testMLE() throws InterruptedException {
+    Client client = Client.create();
+    String content = client.resource(endpointUri)
+        .path("MLEs('foobar')/$value").queryParam("$format", "json")
+        // can't do this:  see PropertyRequestResource getNavProperty for comment....accept("text/plain")
+        .get(String.class);
+    //System.out.println("got content: '" + content + "'");
+    assertEquals("here we have some content for the mle with id: ('foobar')", content);
   }
 }

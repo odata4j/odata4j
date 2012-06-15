@@ -104,4 +104,8 @@ public abstract class ODataProducerDelegate implements Delegate<ODataProducer>, 
     return getDelegate().callFunction(name, params, queryInfo);
   }
 
+  @Override
+  public Object findService(Class<?> clazz, Map<String, Object> params) {
+    return getDelegate().findService(clazz, params);
+  }
 }
