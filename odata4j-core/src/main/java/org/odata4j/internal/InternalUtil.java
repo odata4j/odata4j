@@ -4,7 +4,6 @@ import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -70,7 +69,7 @@ public class InternalUtil {
   private static final String DATETIME_JSON_SUFFIX = ")\\/\"";
   private static final String DATETIME_JSON_PREFIX = "\"\\/Date(";
 
-  private static final DecimalFormat MILLIS = new DecimalFormat(".###", DecimalFormatSymbols.getInstance(Locale.US));
+  private static final DecimalFormat MILLIS = new DecimalFormat(".###", AndroidCompat.DecimalFormatSymbols_getInstance(Locale.US));
 
   public static LocalDateTime parseDateTimeFromXml(String value) {
     Matcher matcher = DATETIME_XML_PATTERN.matcher(value);

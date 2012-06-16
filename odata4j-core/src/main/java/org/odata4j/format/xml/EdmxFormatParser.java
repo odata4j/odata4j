@@ -11,15 +11,33 @@ import org.core4j.Predicate1;
 import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OPredicates;
 import org.odata4j.core.PrefixedNamespace;
-import org.odata4j.edm.*;
+import org.odata4j.edm.EdmAnnotation;
+import org.odata4j.edm.EdmAssociation;
+import org.odata4j.edm.EdmAssociationEnd;
+import org.odata4j.edm.EdmAssociationSet;
+import org.odata4j.edm.EdmAssociationSetEnd;
+import org.odata4j.edm.EdmCollectionType;
+import org.odata4j.edm.EdmComplexType;
+import org.odata4j.edm.EdmDataServices;
+import org.odata4j.edm.EdmEntityContainer;
+import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.edm.EdmEntityType;
+import org.odata4j.edm.EdmFunctionImport;
+import org.odata4j.edm.EdmFunctionParameter;
 import org.odata4j.edm.EdmFunctionParameter.Mode;
+import org.odata4j.edm.EdmMultiplicity;
+import org.odata4j.edm.EdmNavigationProperty;
+import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmProperty.CollectionKind;
+import org.odata4j.edm.EdmSchema;
+import org.odata4j.edm.EdmType;
+import org.odata4j.internal.AndroidCompat;
 import org.odata4j.stax2.Attribute2;
+import org.odata4j.stax2.Namespace2;
 import org.odata4j.stax2.QName2;
 import org.odata4j.stax2.StartElement2;
 import org.odata4j.stax2.XMLEvent2;
 import org.odata4j.stax2.XMLEventReader2;
-import org.odata4j.stax2.Namespace2;
 
 public class EdmxFormatParser extends XmlFormatParser {
 
@@ -449,7 +467,7 @@ public class EdmxFormatParser extends XmlFormatParser {
     String baseType = getAttributeValueIfExists(entityTypeElement, "BaseType");
     String isAbstractS = getAttributeValueIfExists(entityTypeElement, "Abstract");
 
-   
+
     List<String> keys = new ArrayList<String>();
     List<EdmProperty.Builder> edmProperties = new ArrayList<EdmProperty.Builder>();
     List<EdmNavigationProperty.Builder> edmNavigationProperties = new ArrayList<EdmNavigationProperty.Builder>();
@@ -494,13 +512,13 @@ public class EdmxFormatParser extends XmlFormatParser {
 
     throw new UnsupportedOperationException();
   }
-  
+
   protected boolean isExtensionNamespace(String namespaceUri) {
-    return namespaceUri != null && 
-           !namespaceUri.trim().isEmpty() && 
+    return namespaceUri != null &&
+           !AndroidCompat.String_isEmpty(namespaceUri.trim()) &&
            !namespaceUri.contains("schemas.microsoft.com");
   }
-  
+
   protected List<EdmAnnotation<?>> getAnnotations(StartElement2 element) {
      // extract Annotation attributes
     try {
@@ -517,9 +535,9 @@ public class EdmxFormatParser extends XmlFormatParser {
     } catch (Exception ex) {
       // not all of the xml parsing implementations implement getAttributes() yet.
       return null;
-    }     
+    }
   }
-  
+
   protected List<PrefixedNamespace> getExtensionNamespaces(StartElement2 startElement) {
 
     try {

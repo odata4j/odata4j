@@ -1,8 +1,5 @@
 package org.odata4j.internal;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 public class PlatformUtil {
 
@@ -27,19 +24,6 @@ public class PlatformUtil {
 
   public static boolean runningOnAndroid() {
     return RUNNING_ON_ANDROID;
-  }
-
-  public static String getTextContent(Element element) {
-    // FOR ANDROID
-    StringBuilder buffer = new StringBuilder();
-    NodeList childList = element.getChildNodes();
-    for (int i = 0; i < childList.getLength(); i++) {
-      Node child = childList.item(i);
-      if (child.getNodeType() == Node.TEXT_NODE)
-        buffer.append(child.getNodeValue());
-    }
-
-    return buffer.toString();
   }
 
 }

@@ -11,6 +11,7 @@ import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OPredicates;
 import org.odata4j.core.PrefixedNamespace;
 import org.odata4j.edm.EdmItem.BuilderContext;
+import org.odata4j.internal.AndroidCompat;
 import org.odata4j.producer.exceptions.NotFoundException;
 
 /**
@@ -312,7 +313,7 @@ public class EdmDataServices {
     }
 
     public EdmType.Builder<?, ?> resolveType(String fqTypeName) {
-      if (fqTypeName == null || fqTypeName.isEmpty())
+      if (fqTypeName == null || AndroidCompat.String_isEmpty(fqTypeName))
         return null;
       // type resolution:
       // NOTE: this will likely change if RowType is ever implemented. I'm

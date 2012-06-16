@@ -5,13 +5,14 @@ import java.io.Writer;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import org.core4j.Enumerable;
 
+import org.core4j.Enumerable;
 import org.core4j.ReadOnlyIterator;
 import org.odata4j.core.Throwables;
-import org.odata4j.internal.PlatformUtil;
+import org.odata4j.internal.AndroidCompat;
 import org.odata4j.stax2.Attribute2;
 import org.odata4j.stax2.EndElement2;
+import org.odata4j.stax2.Namespace2;
 import org.odata4j.stax2.QName2;
 import org.odata4j.stax2.StartElement2;
 import org.odata4j.stax2.XMLEvent2;
@@ -22,7 +23,6 @@ import org.odata4j.stax2.XMLInputFactory2;
 import org.odata4j.stax2.XMLOutputFactory2;
 import org.odata4j.stax2.XMLWriter2;
 import org.odata4j.stax2.XMLWriterFactory2;
-import org.odata4j.stax2.Namespace2;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -136,7 +136,7 @@ public class DomXMLFactoryProvider2 extends XMLFactoryProvider2 {
       }
 
       public String getElementText() {
-        return PlatformUtil.getTextContent(current);
+        return AndroidCompat.getTextContent(current);
       }
 
       private IterationResult<XMLEvent2> startElement2() {
@@ -248,7 +248,7 @@ public class DomXMLFactoryProvider2 extends XMLFactoryProvider2 {
 
     @Override
     public String toString() {
-      return "StartElement " + getName() + " " + PlatformUtil.getTextContent(element);
+      return "StartElement " + getName() + " " + AndroidCompat.getTextContent(element);
     }
 
     @Override
@@ -278,7 +278,7 @@ public class DomXMLFactoryProvider2 extends XMLFactoryProvider2 {
 
     @Override
     public String toString() {
-      return "EndElement " + getName() + " " + PlatformUtil.getTextContent(element);
+      return "EndElement " + getName() + " " + AndroidCompat.getTextContent(element);
     }
 
   }
