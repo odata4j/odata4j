@@ -2,12 +2,29 @@ package org.odata4j.test.integration.producer.custom;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.odata4j.core.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import org.odata4j.core.OCollection.Builder;
+import org.odata4j.core.OCollections;
+import org.odata4j.core.OComplexObject;
+import org.odata4j.core.OComplexObjects;
+import org.odata4j.core.OEntities;
+import org.odata4j.core.OEntity;
+import org.odata4j.core.OEntityId;
+import org.odata4j.core.OEntityKey;
+import org.odata4j.core.OExtension;
+import org.odata4j.core.OFunctionParameter;
+import org.odata4j.core.OLink;
+import org.odata4j.core.OLinks;
+import org.odata4j.core.OObject;
+import org.odata4j.core.OProperties;
+import org.odata4j.core.OProperty;
+import org.odata4j.core.OSimpleObjects;
 import org.odata4j.edm.EdmCollectionType;
 import org.odata4j.edm.EdmComplexType;
 import org.odata4j.edm.EdmDataServices;
@@ -15,7 +32,17 @@ import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.edm.EdmProperty.CollectionKind;
 import org.odata4j.edm.EdmSimpleType;
-import org.odata4j.producer.*;
+import org.odata4j.producer.BaseResponse;
+import org.odata4j.producer.CountResponse;
+import org.odata4j.producer.EntitiesResponse;
+import org.odata4j.producer.EntityIdResponse;
+import org.odata4j.producer.EntityQueryInfo;
+import org.odata4j.producer.EntityResponse;
+import org.odata4j.producer.ODataProducer;
+import org.odata4j.producer.OMediaLinkExtension;
+import org.odata4j.producer.PropertyPathHelper;
+import org.odata4j.producer.QueryInfo;
+import org.odata4j.producer.Responses;
 import org.odata4j.producer.edm.MetadataProducer;
 import org.odata4j.producer.exceptions.NotFoundException;
 import org.odata4j.producer.exceptions.NotImplementedException;
@@ -226,10 +253,13 @@ public class CustomProducer implements ODataProducer {
   }
 
   public OEntity getMLE(OEntityKey entityKey, QueryInfo queryInfo) {
-    ArrayList<OProperty<?>> props = new ArrayList<OProperty<?>>();
-    return OEntities.create(this.getMetadata().findEdmEntitySet("MLEs"), entityKey, props, Collections.<OLink>emptyList()); 
+    return OEntities.create(
+        getMetadata().findEdmEntitySet("MLEs"),
+        entityKey,
+        Collections.<OProperty<?>>emptyList(),
+        Collections.<OLink>emptyList());
   }
-  
+
   @Override
   public EntityResponse getEntity(String entitySetName, OEntityKey entityKey, EntityQueryInfo queryInfo) {
     if (entitySetName.equals("Type1s")) {
@@ -302,20 +332,20 @@ public class CustomProducer implements ODataProducer {
   @Override
   public BaseResponse callFunction(EdmFunctionImport name, Map<String, OFunctionParameter> params, QueryInfo queryInfo) {
     throw new UnsupportedOperationException("Not supported yet.");
-    
   }
 
+  @SuppressWarnings("unchecked")
   @Override
-  public Object findService(Class<?> clazz, Map<String, Object> params) {
-    return new MLEProvider();
+  public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz) {
+    if (clazz.equals(OMediaLinkExtension.class))
+      return (TExtension) new MediaLinkExtension();
+    throw new UnsupportedOperationException();
   }
-  
-  private static class MLEProvider implements OMediaLinkProvider, OExtension<ODataProducer> {
 
-    public MLEProvider() {}
-    
+  private static class MediaLinkExtension implements OMediaLinkExtension {
+
     @Override
-    public InputStream getInputStreamForMediaLinkEntry(OEntity mle, String etag, QueryInfo query) {
+    public InputStream getInputStreamForMediaLinkEntry(OEntity mle, String etag, EntityQueryInfo query) {
       String content = "here we have some content for the mle with id: " + mle.getEntityKey().toKeyString();
       return new ByteArrayInputStream(content.getBytes());
     }
@@ -324,6 +354,6 @@ public class CustomProducer implements ODataProducer {
     public String getMediaLinkContentType(OEntity mle) {
       return "text/plain";
     }
-    
+
   }
 }

@@ -2,7 +2,11 @@ package org.odata4j.producer;
 
 import java.util.Map;
 
-import org.odata4j.core.*;
+import org.odata4j.core.OEntity;
+import org.odata4j.core.OEntityId;
+import org.odata4j.core.OEntityKey;
+import org.odata4j.core.OExtensible;
+import org.odata4j.core.OFunctionParameter;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.producer.edm.MetadataProducer;
@@ -15,7 +19,7 @@ import org.odata4j.producer.edm.MetadataProducer;
  *
  * <p>Note that all client requests/responses are normalized - all details involving the OData http protocol, query expression model, EDM structure are handled by odata4j at a higher level.</p>
  */
-public interface ODataProducer extends OServiceProvider {
+public interface ODataProducer extends OExtensible<ODataProducer> {
 
   /**
    * Obtains the service metadata for this producer.

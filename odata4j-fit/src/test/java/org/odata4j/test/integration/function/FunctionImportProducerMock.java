@@ -12,6 +12,7 @@ import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityId;
 import org.odata4j.core.OEntityKey;
+import org.odata4j.core.OExtension;
 import org.odata4j.core.OFunctionParameter;
 import org.odata4j.core.OObject;
 import org.odata4j.core.OProperties;
@@ -189,7 +190,7 @@ public class FunctionImportProducerMock implements ODataProducer {
       Builder<OObject> collectionBuilder = OCollections.newBuilder(entity.getType());
       collectionBuilder.add(entity);
       OCollection<OObject> collection = collectionBuilder.build();
-      
+
       response = Responses.collection(collection, entity.getEntitySet(), null, null, MetadataUtil.TEST_FUNCTION_RETURN_COLLECTION_ENTITY);
     }
     else {
@@ -230,9 +231,9 @@ public class FunctionImportProducerMock implements ODataProducer {
   public QueryInfo getQueryInfo() {
     return this.queryInfo;
   }
-  
+
   @Override
-  public Object findService(Class<?> clazz, Map<String, Object> params) {
-    return null;
+  public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz) {
+    throw new UnsupportedOperationException();
   }
 }

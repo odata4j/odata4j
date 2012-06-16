@@ -156,6 +156,11 @@ public class EntityRequestResource extends BaseResource {
     return new LinksRequestResource(OEntityIds.create(entitySetName, OEntityKey.parse(id)), targetNavProp, targetEntityKey);
   }
 
+  @Path("{first: \\$}value")
+  public ValueRequestResource getValue() {
+    return new ValueRequestResource();
+  }
+
   @Path("{navProp: .+}")
   public PropertyRequestResource getNavProperty() {
     return new PropertyRequestResource();

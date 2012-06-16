@@ -21,6 +21,7 @@ import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityId;
 import org.odata4j.core.OEntityKey;
+import org.odata4j.core.OExtension;
 import org.odata4j.core.OFunctionParameter;
 import org.odata4j.core.OLink;
 import org.odata4j.core.OLinks;
@@ -850,9 +851,9 @@ public class MetadataProducer implements ODataProducer {
   public MetadataProducer getMetadataProducer() {
     return null; // stop the brutal recursion :)
   }
-  
+
   @Override
-  public Object findService(Class<?> clazz, Map<String, Object> params) {
-    return null;
+  public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz) {
+    throw new UnsupportedOperationException();
   }
 }

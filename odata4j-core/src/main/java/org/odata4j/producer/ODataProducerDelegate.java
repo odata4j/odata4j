@@ -6,6 +6,7 @@ import org.odata4j.core.Delegate;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityId;
 import org.odata4j.core.OEntityKey;
+import org.odata4j.core.OExtension;
 import org.odata4j.core.OFunctionParameter;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmFunctionImport;
@@ -105,7 +106,7 @@ public abstract class ODataProducerDelegate implements Delegate<ODataProducer>, 
   }
 
   @Override
-  public Object findService(Class<?> clazz, Map<String, Object> params) {
-    return getDelegate().findService(clazz, params);
+  public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz) {
+    return getDelegate().findExtension(clazz);
   }
 }

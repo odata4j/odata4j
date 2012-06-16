@@ -28,6 +28,7 @@ import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityId;
 import org.odata4j.core.OEntityKey;
+import org.odata4j.core.OExtension;
 import org.odata4j.core.OFunctionParameter;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
@@ -305,8 +306,8 @@ public class XmlDataProducerExample extends AbstractExample {
     }
 
     @Override
-    public Object findService(Class<?> clazz, Map<String, Object> params) {
-      throw new UnsupportedOperationException("Not supported yet.");
+    public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz) {
+      throw new UnsupportedOperationException();
     }
 
   }

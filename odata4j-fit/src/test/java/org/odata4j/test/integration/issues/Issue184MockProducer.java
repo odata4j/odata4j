@@ -10,6 +10,7 @@ import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityId;
 import org.odata4j.core.OEntityKey;
+import org.odata4j.core.OExtension;
 import org.odata4j.core.OFunctionParameter;
 import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmDataServices;
@@ -89,7 +90,7 @@ public class Issue184MockProducer implements ODataProducer {
 
   @Override
   public EntityResponse createEntity(String entitySetName, OEntity entity) {
-    
+
     OEntityKey entityKey = OEntityKey.parse("1");
     List<OProperty<?>> properties = entity.getProperties();
     EdmEntitySet entitySet = this.getMetadata().findEdmEntitySet(entitySetName);
@@ -150,10 +151,10 @@ public class Issue184MockProducer implements ODataProducer {
     // TODO Auto-generated method stub
     return null;
   }
-  
+
   @Override
-  public Object findService(Class<?> clazz, Map<String, Object> params) {
-    return null;
+  public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz) {
+    throw new UnsupportedOperationException();
   }
 
 }

@@ -7,6 +7,7 @@ import org.odata4j.command.CommandExecution;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityId;
 import org.odata4j.core.OEntityKey;
+import org.odata4j.core.OExtension;
 import org.odata4j.core.OFunctionParameter;
 import org.odata4j.core.Throwables;
 import org.odata4j.edm.EdmDataServices;
@@ -139,7 +140,7 @@ public class CommandProducer implements ODataProducer {
   }
 
   @Override
-  public Object findService(Class<?> clazz, Map<String, Object> params) {
-    return null;
+  public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz) {
+    throw new UnsupportedOperationException();
   }
 }

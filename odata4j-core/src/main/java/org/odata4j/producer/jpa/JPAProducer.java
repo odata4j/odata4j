@@ -29,6 +29,7 @@ import org.core4j.Predicate1;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityId;
 import org.odata4j.core.OEntityKey;
+import org.odata4j.core.OExtension;
 import org.odata4j.core.OFunctionParameter;
 import org.odata4j.core.OLink;
 import org.odata4j.core.OProperty;
@@ -403,6 +404,11 @@ public class JPAProducer implements ODataProducer {
     return (CountResponse) context.getResponse();
   }
 
+  @Override
+  public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz) {
+    throw new UnsupportedOperationException();
+  }
+
   /**** utility functions ***/
 
   static void applyOProperties(EntityManager em,
@@ -698,8 +704,4 @@ public class JPAProducer implements ODataProducer {
     return true;
   }
 
-  @Override
-  public Object findService(Class<?> clazz, Map<String, Object> params) {
-    return null;
-  }
 }

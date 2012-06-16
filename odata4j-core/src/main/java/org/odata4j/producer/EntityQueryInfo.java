@@ -8,6 +8,8 @@ import org.odata4j.expression.EntitySimpleProperty;
 
 /**
  * <code>QueryInfo</code> represents an OData single-entity query as a strongly-typed immutable data structure.
+ *
+ * The constructor for this subtype limits to only the query options applicable for single-entity queries.
  */
 public class EntityQueryInfo extends QueryInfo {
 
