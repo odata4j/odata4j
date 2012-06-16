@@ -26,6 +26,7 @@ import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSimpleType;
+import org.odata4j.edm.EdmStructuralType;
 import org.odata4j.edm.EdmType;
 import org.odata4j.format.Entry;
 import org.odata4j.format.Feed;
@@ -101,7 +102,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
     public AtomFeed inlineFeed;
     public AtomEntry inlineEntry;
     public boolean inlineContentExpected;
-    
+
     public String getNavProperty() {
       if (relation != null && relation.startsWith(XmlFormatWriter.related))
         return relation.substring(XmlFormatWriter.related.length());
@@ -178,7 +179,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
 
   }
 
-  public static Iterable<OProperty<?>> parseProperties(XMLEventReader2 reader, StartElement2 propertiesElement, EdmDataServices metadata, EdmEntityType entityType) {
+  public static Iterable<OProperty<?>> parseProperties(XMLEventReader2 reader, StartElement2 propertiesElement, EdmDataServices metadata, EdmStructuralType structuralType) {
     List<OProperty<?>> rt = new ArrayList<OProperty<?>>();
 
     while (reader.hasNext()) {
@@ -206,7 +207,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
             throw new RuntimeException("unknown property type: " + type);
           }
         } else {
-          EdmProperty property = (EdmProperty) entityType.findProperty(name);
+          EdmProperty property = (EdmProperty) structuralType.findProperty(name);
           if (property != null)
             et = property.getType();
           else
@@ -214,7 +215,8 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
         }
 
         if (et != null && (!et.isSimple())) {
-          op = OProperties.complex(name, (EdmComplexType) et, isNull ? null : Enumerable.create(parseProperties(reader, event.asStartElement(), metadata, entityType)).toList());
+          EdmStructuralType est = (EdmStructuralType) et;
+          op = OProperties.complex(name, (EdmComplexType) et, isNull ? null : Enumerable.create(parseProperties(reader, event.asStartElement(), metadata, est)).toList());
         } else {
           op = OProperties.parseSimple(name, (EdmSimpleType<?>) et, isNull ? null : reader.getElementText());
         }

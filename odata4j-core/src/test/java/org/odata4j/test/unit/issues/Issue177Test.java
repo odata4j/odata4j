@@ -1,6 +1,6 @@
 package org.odata4j.test.unit.issues;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -14,11 +14,8 @@ import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.format.xml.EdmxFormatWriter;
 
+// http://code.google.com/p/odata4j/issues/detail?id=177
 public class Issue177Test {
-
-  /*
-   * http://code.google.com/p/odata4j/issues/detail?id=177
-   */
 
   @Test
   public void testPrecisionAndScale() {
@@ -27,14 +24,14 @@ public class Issue177Test {
     EdmProperty.Builder edmPropertyBuilder = EdmProperty.newBuilder("DecimalProperty").setType(EdmSimpleType.DECIMAL).setPrecision(2).setScale(10);
     List<EdmProperty.Builder> builderProperties = new ArrayList<EdmProperty.Builder>();
     builderProperties.add(edmPropertyBuilder);
-    
+
     List<String> keys = new ArrayList<String>();
     keys.add("DecimalProperty");
 
     EdmEntityType.Builder entityTypeBuilder = EdmEntityType.newBuilder().setName("TypeName");
     entityTypeBuilder.addProperties(builderProperties);
     entityTypeBuilder.addKeys(keys);
-    
+
     ArrayList<EdmEntityType.Builder> builderEntityTypes = new ArrayList<EdmEntityType.Builder>();
     builderEntityTypes.add(entityTypeBuilder);
 
@@ -48,7 +45,7 @@ public class Issue177Test {
     StringWriter sw = new StringWriter();
     EdmxFormatWriter.write(edmDataServiceBuilder.build(), sw);
     String edmAsString = sw.toString();
-    
+
     // check it
     assertTrue(edmAsString.contains("<Property Name=\"DecimalProperty\" Type=\"Edm.Decimal\" Nullable=\"false\" Precision=\"2\" Scale=\"10\"></Property>"));
   }

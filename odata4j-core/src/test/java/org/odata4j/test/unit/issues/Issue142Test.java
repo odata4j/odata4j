@@ -16,6 +16,7 @@ import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.format.xml.AtomFeedFormatParser;
 import org.odata4j.format.xml.AtomFeedFormatParser.AtomFeed;
 
+// http://code.google.com/p/odata4j/issues/detail?id=142
 public class Issue142Test {
 
   @Test
