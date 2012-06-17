@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.core4j.Enumerable;
 import org.core4j.Func;
+import org.core4j.Func1;
 import org.odata4j.core.ImmutableList;
 import org.odata4j.core.Named;
 import org.odata4j.core.OPredicates;
@@ -237,6 +238,14 @@ public class EdmEntityType extends EdmStructuralType {
           return (EdmEntityType) build();
         }
       };
+    }
+
+    public static Func1<EdmEntityType.Builder, String> func1_getFullyQualifiedTypeName() {
+      return new Func1<EdmEntityType.Builder, String>() {
+        @Override
+        public String apply(Builder input) {
+          return input.getFullyQualifiedTypeName();
+        }};
     }
 
   }

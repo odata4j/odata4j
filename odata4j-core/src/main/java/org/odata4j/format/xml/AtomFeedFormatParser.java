@@ -211,7 +211,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
           if (property != null)
             et = property.getType();
           else
-            throw new RuntimeException("unknown property: " + name);
+            et = EdmSimpleType.STRING;  // we must support open types
         }
 
         if (et != null && (!et.isSimple())) {

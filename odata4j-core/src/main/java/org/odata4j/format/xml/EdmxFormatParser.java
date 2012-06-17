@@ -89,16 +89,13 @@ public class EdmxFormatParser extends XmlFormatParser {
 
   private void resolve() {
 
-    final Map<String, EdmEntityType.Builder> allEetsByFQName = Enumerable.create(dataServices.getEntityTypes()).toMap(new Func1<EdmEntityType.Builder, String>() {
-      public String apply(EdmEntityType.Builder input) {
-        return input.getFQAliasName() != null ? input.getFQAliasName() : input.getFullyQualifiedTypeName();
-      }
-    });
-    final Map<String, EdmAssociation.Builder> allEasByFQName = Enumerable.create(dataServices.getAssociations()).toMap(new Func1<EdmAssociation.Builder, String>() {
-      public String apply(EdmAssociation.Builder input) {
-        return input.getFQAliasName() != null ? input.getFQAliasName() : input.getFQNamespaceName();
-      }
-    });
+    final Map<String, EdmEntityType.Builder> allEetsByFQName = Enumerable
+        .create(dataServices.getEntityTypes())
+        .toMap(EdmEntityType.Builder.func1_getFullyQualifiedTypeName());
+
+    final Map<String, EdmAssociation.Builder> allEasByFQName = Enumerable
+        .create(dataServices.getAssociations())
+        .toMap(EdmAssociation.Builder.func1_getFQNamespaceName());
 
     for (EdmSchema.Builder edmSchema : dataServices.getSchemas()) {
 
@@ -116,6 +113,8 @@ public class EdmxFormatParser extends XmlFormatParser {
         for (int i = 0; i < navProps.size(); i++) {
           final EdmNavigationProperty.Builder tmp = navProps.get(i);
           final EdmAssociation.Builder ea = allEasByFQName.get(tmp.getRelationshipName());
+          if (ea == null)
+            throw new IllegalArgumentException("Invalid relationship name " + tmp.getRelationshipName());
 
           List<EdmAssociationEnd.Builder> finalEnds = Enumerable.create(tmp.getFromRoleName(), tmp.getToRoleName()).select(new Func1<String, EdmAssociationEnd.Builder>() {
             public EdmAssociationEnd.Builder apply(String input) {

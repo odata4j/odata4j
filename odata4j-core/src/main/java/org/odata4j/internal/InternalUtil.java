@@ -44,6 +44,7 @@ public class InternalUtil {
       "(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2})" + // group 1 (datetime)
       "(:\\d{2})?" + // group 2 (seconds)
       "(\\.\\d{1,7})?" + // group 3 (nanoseconds)
+      "(Z)?" + // group 4 (tz, ignored - handles bad services)
       "$");
 
   private static final Pattern DATETIMEOFFSET_XML_PATTERN = Pattern.compile("" +

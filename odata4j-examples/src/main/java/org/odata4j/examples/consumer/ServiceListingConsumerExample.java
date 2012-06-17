@@ -29,7 +29,6 @@ public class ServiceListingConsumerExample extends AbstractExample {
         ODataEndpoints.EU_TECH_ED,
         ODataEndpoints.PLURALSIGHT,
         ODataEndpoints.TELERIK_TV,
-        ODataEndpoints.AGILITRAIN,
         ODataEndpoints.PROAGORA_FR,
         ODataEndpoints.PROAGORA_EN,
         ODataEndpoints.INETA_LIVE,
@@ -43,6 +42,7 @@ public class ServiceListingConsumerExample extends AbstractExample {
     //    ODataEndpoints.LOGMYTIME, // returning proper 4xx, we should handle better in listing
     //    ODataEndpoints.PDC_2010, // four of the entity types return 404
     //    ODataEndpoints.MIX10 // down
+    //    ODataEndpoints.AGILITRAIN,  // bad cert, redirect - down?
     //    );
 
     Enumerable<String> largeServices = Enumerable.create(

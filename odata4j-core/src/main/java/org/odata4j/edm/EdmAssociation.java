@@ -1,5 +1,6 @@
 package org.odata4j.edm;
 
+import org.core4j.Func1;
 import org.odata4j.core.ImmutableList;
 import org.odata4j.core.Named;
 
@@ -154,6 +155,14 @@ public class EdmAssociation extends EdmItem {
 
     public String getName() {
       return name;
+    }
+
+    public static Func1<EdmAssociation.Builder, String> func1_getFQNamespaceName() {
+      return new Func1<EdmAssociation.Builder, String>() {
+        @Override
+        public String apply(Builder input) {
+          return input.getFQNamespaceName();
+        }};
     }
 
   }

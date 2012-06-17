@@ -52,6 +52,19 @@ public class DateTimeFormatTest {
   }
 
   @Test
+  public void testyyyyMMddHHmmssffffffIgnoreZ() {
+    LocalDateTime ldt = InternalUtil.parseDateTimeFromXml("2012-02-09T20:21:10.283459Z");
+
+    Assert.assertEquals(2012, ldt.getYear());
+    Assert.assertEquals(2, ldt.getMonthOfYear());
+    Assert.assertEquals(9, ldt.getDayOfMonth());
+    Assert.assertEquals(20, ldt.getHourOfDay());
+    Assert.assertEquals(21, ldt.getMinuteOfHour());
+    Assert.assertEquals(10, ldt.getSecondOfMinute());
+    Assert.assertEquals(283, ldt.getMillisOfSecond());
+  }
+
+  @Test
   public void testyyyyMMddHHmmssfffffffZZ() {
     DateTime dt = InternalUtil.parseDateTimeOffsetFromXml("2010-12-20T17:34:05.1234567Z");
     dt = dt.toDateTime(DateTimeZone.UTC);
