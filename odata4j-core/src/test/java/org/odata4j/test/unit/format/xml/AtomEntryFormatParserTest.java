@@ -7,7 +7,6 @@ import java.io.StringReader;
 import java.math.BigDecimal;
 
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.odata4j.core.Guid;
 import org.odata4j.format.FormatType;
@@ -43,10 +42,9 @@ public class AtomEntryFormatParserTest extends AbstractEntryFormatParserTest {
     verifyDateTimePropertyValue(formatParser.parse(buildAtom("<d:DateTime m:type=\"Edm.DateTime\">2007-06-05T01:02:03.0095</d:DateTime>")), DATETIME_WITH_MILLIS.withMillisOfSecond(10));
   }
 
-  @Ignore("We should be liberal in what we accept here")
-  @Test(expected=IllegalArgumentException.class)
-  public void illegalDateTime() throws Exception {
-    formatParser.parse(buildAtom("<d:DateTime m:type=\"Edm.DateTime\">1969-08-07T05:06:00Z</d:DateTime>"));
+  @Test
+  public void dateTimeWithSecondsZIgnored() throws Exception {
+    verifyDateTimePropertyValue(formatParser.parse(buildAtom("<d:DateTime m:type=\"Edm.DateTime\">2006-05-04T01:02:03Z</d:DateTime>")), DATETIME_WITH_SECONDS);
   }
 
   @Test

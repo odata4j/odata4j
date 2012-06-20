@@ -8,7 +8,6 @@ import java.math.BigDecimal;
 
 import org.joda.time.DateTimeZone;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.odata4j.core.Guid;
 import org.odata4j.format.FormatType;
@@ -48,10 +47,9 @@ public class JsonEntryFormatParserTest extends AbstractEntryFormatParserTest {
     verifyDateTimePropertyValue(formatParser.parse(buildJson("\"DateTime\" : \"2005-04-03T01:02\"")), DATETIME);
   }
 
-  @Ignore("We should be liberal in what we accept here")
-  @Test(expected=IllegalArgumentException.class)
-  public void illegalDateTime() throws Exception {
-    formatParser.parse(buildJson("\"DateTime\" : \"1969-08-07T05:06:00Z\""));
+  @Test
+  public void dateTimeWithSecondsInXmlFormatZIgnored() throws Exception {
+    verifyDateTimePropertyValue(formatParser.parse(buildJson("\"DateTime\" : \"2006-05-04T01:02:03Z\"")), DATETIME_WITH_SECONDS);
   }
 
   @Test
