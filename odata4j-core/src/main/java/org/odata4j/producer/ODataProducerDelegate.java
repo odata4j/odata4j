@@ -106,7 +106,8 @@ public abstract class ODataProducerDelegate implements Delegate<ODataProducer>, 
   }
 
   @Override
-  public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz) {
-    return getDelegate().findExtension(clazz);
+  public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz,
+    Map<String, Object> params) {
+    return getDelegate().findExtension(clazz, params);
   }
 }

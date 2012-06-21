@@ -1,10 +1,17 @@
 package org.odata4j.test.integration.producer.custom;
 
+import com.sun.jersey.api.container.filter.LoggingFilter;
+import java.io.ByteArrayInputStream;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
@@ -262,5 +269,19 @@ public class CustomTest extends CustomBaseTest {
   public void testMLE() throws InterruptedException {
     String content = rtFacade.getWebResource(endpointUri + "MLEs('foobar')/$value" + "?$format=json");
     assertEquals("here we have some content for the mle with id: ('foobar')", content);
+  }
+  
+  @Test
+  public void testCreateMLE() throws InterruptedException {
+    Map<String, Object> headers = new HashMap<String, Object>();
+    headers.put("Slug", "ANewMLE");   // the Id
+    
+    //Thread.sleep(60000);
+    String content = "This MLE was created by the test testCreateMLE()";
+    int status = rtFacade.postWebResource(endpointUri + "MLEs", new ByteArrayInputStream(content.getBytes()), MediaType.TEXT_PLAIN_TYPE, headers);
+    assertEquals(Status.CREATED.getStatusCode(), status);
+    
+    String content2 = rtFacade.getWebResource(endpointUri + "MLEs('ANewMLE')/$value" + "?$format=json");
+    assertEquals(content, content2);
   }
 }

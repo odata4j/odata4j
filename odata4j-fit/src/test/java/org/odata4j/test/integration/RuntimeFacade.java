@@ -1,5 +1,7 @@
 package org.odata4j.test.integration;
 
+import java.io.InputStream;
+import java.util.Map;
 import javax.ws.rs.core.MediaType;
 
 import org.odata4j.consumer.ODataConsumer;
@@ -26,4 +28,5 @@ public interface RuntimeFacade {
   
   public int getLastStatusCode(); 
 
+  public int postWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers);
 }

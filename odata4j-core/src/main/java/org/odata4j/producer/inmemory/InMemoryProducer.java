@@ -786,7 +786,8 @@ public class InMemoryProducer implements ODataProducer {
   }
 
   @Override
-  public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz) {
+  public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz,
+    Map<String, Object> params) {
     throw new UnsupportedOperationException();
   }
 
