@@ -2,7 +2,9 @@ package org.odata4j.test.integration;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
 
@@ -136,5 +138,10 @@ public class CxfRuntimeFacade implements RuntimeFacade {
   @Override
   public int getLastStatusCode() {
     return this.lastStatusCode;
+  }
+
+  @Override
+  public int postWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers) {
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 }

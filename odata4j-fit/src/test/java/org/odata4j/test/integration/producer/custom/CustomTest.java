@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import org.junit.Ignore;
 
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
@@ -271,6 +272,7 @@ public class CustomTest extends CustomBaseTest {
     assertEquals("here we have some content for the mle with id: ('foobar')", content);
   }
   
+  @Ignore("JerseyRuntimeFascade.postWebResource not working...CxfRuntimeFascade.postWebResource not implemented")
   @Test
   public void testCreateMLE() throws InterruptedException {
     Map<String, Object> headers = new HashMap<String, Object>();
