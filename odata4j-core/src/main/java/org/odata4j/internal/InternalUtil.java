@@ -1,5 +1,8 @@
 package org.odata4j.internal;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -356,4 +359,13 @@ public class InternalUtil {
     return version;
   }
 
+  public static final int COPY_BUFFER_SIZE = 8 * 1024;
+  public static void copyInputToOutput(InputStream inStream, OutputStream outStream) throws IOException {
+    byte[] buf = new byte[COPY_BUFFER_SIZE];
+    int n;
+    while ((n = inStream.read(buf)) != -1) {
+      outStream.write(buf, 0, n);
+    }
+    outStream.flush();
+  }
 }

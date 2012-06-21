@@ -19,8 +19,14 @@ import org.odata4j.producer.server.ODataServer;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.container.filter.LoggingFilter;
+import java.io.InputStream;
+import java.util.Map;
+import java.util.Map.Entry;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 public class JerseyRuntimeFacade implements RuntimeFacade {
 
@@ -74,6 +80,25 @@ public class JerseyRuntimeFacade implements RuntimeFacade {
     String body = response.getEntity(String.class);
 
     return body;
+  }
+  
+  @Override
+  public int postWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers) {
+    Client client = new Client();
+    WebResource.Builder webResource = client.resource(uri).type(mediaType);
+
+    try {
+      if (null != headers) {
+        for (Entry<String, Object> entry : headers.entrySet()) {
+          webResource = webResource.header(entry.getKey(), entry.getValue());
+        }
+      }
+      ClientResponse response = webResource.post(ClientResponse.class, content);
+      this.lastStatusCode = response.getStatus();
+    } catch(UniformInterfaceException ex) {
+      this.lastStatusCode = ex.getResponse().getStatus();
+    }
+    return this.lastStatusCode;
   }
 
   @Override

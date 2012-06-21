@@ -1,8 +1,12 @@
 package org.odata4j.producer.resources;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.StringWriter;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,6 +30,7 @@ import org.odata4j.core.Guid;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OEntity;
+import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.format.FormatWriter;
 import org.odata4j.format.FormatWriterFactory;
 import org.odata4j.internal.InternalUtil;
@@ -33,7 +38,10 @@ import org.odata4j.producer.CountResponse;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.ODataProducer;
+import org.odata4j.producer.OMediaLinkExtension;
 import org.odata4j.producer.QueryInfo;
+import org.odata4j.producer.exceptions.NotFoundException;
+import org.odata4j.producer.exceptions.NotImplementedException;
 
 // ignoreParens below is there to trim the parentheses from the entity set name when they are present - e.g. '/my.svc/Users()'.
 @Path("{entitySetName: [^/()]+?}{ignoreParens: (?:\\(\\))?}")
@@ -48,7 +56,7 @@ public class EntitiesRequestResource extends BaseResource {
       @Context UriInfo uriInfo,
       @Context ContextResolver<ODataProducer> producerResolver,
       @PathParam("entitySetName") String entitySetName,
-      String payload) throws Exception {
+      InputStream payload) throws Exception {
 
     // visual studio will send a soap mex request
     if (entitySetName.equals("mex") && httpHeaders.getMediaType() != null && httpHeaders.getMediaType().toString().startsWith("application/soap+xml"))
@@ -57,9 +65,31 @@ public class EntitiesRequestResource extends BaseResource {
     log("createEntity", "entitySetName", entitySetName);
 
     ODataProducer producer = producerResolver.getContext(ODataProducer.class);
-
-    OEntity entity = this.getRequestEntity(httpHeaders, uriInfo, payload, producer.getMetadata(), entitySetName, null);
-
+  
+    // is this a new media resource?
+    // check for HasStream
+    EdmEntitySet entitySet = producer.getMetadata().findEdmEntitySet(entitySetName);
+    if (null == entitySet) {
+      throw new NotFoundException();
+    }
+    
+    if (Boolean.TRUE.equals(entitySet.getType().getHasStream())) { // getHasStream can return null
+      // yes it is!
+      return createMediaLinkEntry(httpHeaders, uriInfo, producer, entitySet, payload);
+    }
+    
+    // also on the plus side we can now parse the stream directly off the wire....
+    return createEntity(httpHeaders, uriInfo, producer, entitySetName, 
+            this.getRequestEntity(httpHeaders, uriInfo, payload, producer.getMetadata(), entitySetName, null));
+  }
+  
+  protected Response createEntity(
+      HttpHeaders httpHeaders,
+      UriInfo uriInfo,
+      ODataProducer producer,
+      String entitySetName,
+      OEntity entity) throws Exception {
+    
     EntityResponse response = producer.createEntity(entitySetName, entity);
 
     FormatWriter<EntityResponse> writer = FormatWriterFactory
@@ -78,6 +108,60 @@ public class EntitiesRequestResource extends BaseResource {
         .location(URI.create(entryId))
         .header(ODataConstants.Headers.DATA_SERVICE_VERSION,
             ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
+  }
+  
+  protected Response createMediaLinkEntry(
+          HttpHeaders httpHeaders,
+          UriInfo uriInfo,
+          ODataProducer producer,
+          EdmEntitySet entitySet,
+          InputStream payload) throws Exception {
+
+    log("createMediaLinkEntity", "entitySetName", entitySet.getName());
+
+    /* 
+     * this post has a great descriptions of the twists and turns of creating
+     * a media resource + media link entry:  http://blogs.msdn.com/b/astoriateam/archive/2010/08/04/data-services-streaming-provider-series-implementing-a-streaming-provider-part-1.aspx
+     */
+    
+    // first, the producer must support OMediaLinkExtension
+    OMediaLinkExtension mediaLinkExtension = null;
+    try {
+      Map<String, Object> params = new HashMap<String, Object>();
+      params.put(ODataConstants.Params.EdmEntitySet, entitySet);
+      params.put(ODataConstants.Params.HttpHeaders, httpHeaders);
+      params.put(ODataConstants.Params.ODataProducer, producer);
+      params.put(ODataConstants.Params.UriInfo, uriInfo);
+      
+      mediaLinkExtension = producer.findExtension(OMediaLinkExtension.class, params);
+    } catch (UnsupportedOperationException e) { }
+
+    if (mediaLinkExtension == null) {
+      throw new NotImplementedException();
+    }
+    
+    // get a media link entry from the extension
+    OEntity mle = mediaLinkExtension.createMediaLinkEntry(entitySet, httpHeaders);
+    
+    // now get a stream we can write the incoming bytes into.
+    OutputStream outStream = mediaLinkExtension.getOutputStreamForMediaLinkEntry(mle, null /*etag*/, null /*QueryInfo, may get rid of this */);
+    
+    // write the stream
+    try {
+      InternalUtil.copyInputToOutput(payload, outStream);
+    } finally {
+      try { outStream.close(); } catch(Exception ex) { }
+    }
+    
+    // more info about the mle may be available now.
+    mle = mediaLinkExtension.updateMediaLinkEntry(mle, outStream);
+    
+    // return the mle
+    return createEntity(httpHeaders,
+      uriInfo,
+      producer,
+      entitySet.getName(),
+      mle);
   }
 
   @GET
@@ -262,26 +346,29 @@ public class EntitiesRequestResource extends BaseResource {
 
     batchResponse.append('\n');
 
+    ODataProducer producer = producerResolver.getContext(ODataProducer.class);
+    
     for (BatchBodyPart bodyPart : bodyParts) {
       HttpHeaders httpHeaders = bodyPart.getHttpHeaders();
       UriInfo uriInfo = bodyPart.getUriInfo();
       String entitySetName = bodyPart.getEntitySetName();
       String entityId = bodyPart.getEntityKey();
-      String entity = bodyPart.getEntity();
+      String entityString = bodyPart.getEntity();
       Response response = null;
 
       switch (bodyPart.getHttpMethod()) {
       case POST:
-        response = this.createEntity(httpHeaders, uriInfo, producerResolver,
-            entitySetName, entity);
+        response = this.createEntity(httpHeaders, uriInfo, producer,
+            entitySetName, 
+            getRequestEntity(httpHeaders, uriInfo, entityString, producer.getMetadata(), entitySetName, null));
         break;
       case PUT:
         response = er.updateEntity(httpHeaders, uriInfo, producerResolver,
-            entitySetName, entityId, entity);
+            entitySetName, entityId, entityString);
         break;
       case MERGE:
         response = er.mergeEntity(httpHeaders, uriInfo, producerResolver, entitySetName,
-            entityId, entity);
+            entityId, entityString);
         break;
       case DELETE:
         response = er.deleteEntity(producerResolver, entitySetName, entityId);

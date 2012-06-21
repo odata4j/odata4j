@@ -1,13 +1,17 @@
 package org.odata4j.test.integration.producer.custom;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import javax.ws.rs.core.HttpHeaders;
 
 import org.odata4j.core.OCollection.Builder;
 import org.odata4j.core.OCollections;
@@ -44,6 +48,7 @@ import org.odata4j.producer.PropertyPathHelper;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.Responses;
 import org.odata4j.producer.edm.MetadataProducer;
+import org.odata4j.producer.exceptions.BadRequestException;
 import org.odata4j.producer.exceptions.NotFoundException;
 import org.odata4j.producer.exceptions.NotImplementedException;
 
@@ -286,7 +291,12 @@ public class CustomProducer implements ODataProducer {
 
   @Override
   public EntityResponse createEntity(String entitySetName, OEntity entity) {
-    throw new UnsupportedOperationException("Not supported yet.");
+    if (entitySetName.equals("MLEs")) {
+      // just got done uploading a blob
+      return Responses.entity(entity);
+    } else {
+      throw new UnsupportedOperationException("Not supported yet.");
+    }
   }
 
   @Override
@@ -336,17 +346,24 @@ public class CustomProducer implements ODataProducer {
 
   @SuppressWarnings("unchecked")
   @Override
-  public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz) {
+  public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz,
+    Map<String, Object> params) {
     if (clazz.equals(OMediaLinkExtension.class))
       return (TExtension) new MediaLinkExtension();
     throw new UnsupportedOperationException();
   }
 
+  static { MediaLinkExtension.initResources(); }
+  
   private static class MediaLinkExtension implements OMediaLinkExtension {
 
     @Override
     public InputStream getInputStreamForMediaLinkEntry(OEntity mle, String etag, EntityQueryInfo query) {
-      String content = "here we have some content for the mle with id: " + mle.getEntityKey().toKeyString();
+      String id =  mle.getEntityKey().asSingleValue().toString();
+      String content = mediaResources.get(id); //  "here we have some content for the mle with id: " +;
+      if (null == content) {
+        throw new NotFoundException();
+      }
       return new ByteArrayInputStream(content.getBytes());
     }
 
@@ -355,5 +372,61 @@ public class CustomProducer implements ODataProducer {
       return "text/plain";
     }
 
+    @Override
+    public OutputStream getOutputStreamForMediaLinkEntry(OEntity mle, String etag, QueryInfo query) {
+      String id =  mle.getEntityKey().asSingleValue().toString();
+      return new MRStream(id);
+    }
+    
+    private class MRStream extends ByteArrayOutputStream {
+      public MRStream(String id) {
+        this.id = id;
+      }
+ 
+      @Override
+      public void close() throws IOException {
+        super.close();
+        mediaResources.put(id, toString());
+      }
+      
+      private String id;
+    }
+
+    @Override
+    public void deleteStream(OEntity mle, QueryInfo query) {
+      String id =  mle.getEntityKey().asSingleValue().toString();
+      if (mediaResources.containsKey(id)) {
+        mediaResources.remove(id);
+      } else {
+        throw new NotFoundException();
+      }
+    }
+
+    @Override
+    public OEntity createMediaLinkEntry(EdmEntitySet entitySet, HttpHeaders httpHeaders) {
+      List<String> slugs = httpHeaders.getRequestHeader("Slug");
+      if (null == slugs || slugs.isEmpty()) {
+        throw new BadRequestException("missing Slug header");
+      }
+      
+      // slug is the id
+      List<OProperty<?>> props = new ArrayList<OProperty<?>>();
+      props.add(OProperties.string("MLEProp1", "prop1 initial value"));
+      return OEntities.create(entitySet, OEntityKey.create("Id", slugs.get(0)), props, Collections.<OLink>emptyList());
+    }
+
+    @Override
+    public OEntity updateMediaLinkEntry(OEntity mle, OutputStream outStream) {
+      // sometimes after processing the blob we know more about the entity...
+      String content = mediaResources.get(mle.getEntityKey().asSingleValue().toString());
+      List<OProperty<?>> props = new ArrayList<OProperty<?>>();
+      props.add(OProperties.string("MLEProp1", "content length is " + content.length()));
+      return OEntities.create(mle.getEntitySet(), mle.getEntityKey(), props, Collections.<OLink>emptyList());
+    }
+
+    public static void initResources() {
+      mediaResources.put("foobar", "here we have some content for the mle with id: ('foobar')");
+    }
+    private static final Map<String, String> mediaResources  = new HashMap<String, String>();
   }
 }
