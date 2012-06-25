@@ -21,7 +21,6 @@ import org.custommonkey.xmlunit.XpathEngine;
 import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.odata4j.core.OSimpleObjects;
 import org.odata4j.edm.EdmSimpleType;
@@ -113,7 +112,7 @@ public class FunctionImportTest extends AbstractRuntimeTest {
     m.put("m", "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata");
     m.put("d", "http://schemas.microsoft.com/ado/2007/08/dataservices");
     m.put("edmx", "http://schemas.microsoft.com/ado/2007/06/edmx");
-    m.put("", "http://www.w3.org/2005/Atom");
+    m.put("g", "http://www.w3.org/2005/Atom"); // 'g' is a dummy for global namespace
 
     NamespaceContext ctx = new SimpleNamespaceContext(m);
     XMLUnit.setXpathNamespaceContext(ctx);
@@ -298,18 +297,6 @@ public class FunctionImportTest extends AbstractRuntimeTest {
   }
 
   @Test
-  @Ignore
-  public void XmlUnitIssue() throws XpathException, IOException, SAXException {
-    /*
-     * TODO
-     * enable this test case with a new version (> 1.3) of XMLUnit
-     * - 1.3 has an issue with default namespace (here atom)
-     */
-    String xml = "<entry xml:base='http://localhost:8811/FunctionImportScenario.svc/' xmlns='http://www.w3.org/2005/Atom' ></entry>";
-    assertXpathExists("/entry", xml);
-  }
-
-  @Test
   public void testFunctionReturnEntity() throws XpathException, IOException, SAXException {
     for (FormatType format : FunctionImportTest.formats) {
 
@@ -320,18 +307,9 @@ public class FunctionImportTest extends AbstractRuntimeTest {
 
       switch (format) {
       case ATOM:
-
-        /*
-         * TODO
-         * BUG in XMLUNnit (1.3): Built in XPath engine does not handle default namespace of atom correctly
-         * 
-         *   assertXpathEvaluatesTo("RefScenario.Employee", "/entry/category/@term", resource);
-         *   assertXpathEvaluatesTo(FunctionImportProducerMock.EMPLOYEE_ID, "/entry/content/m:properties/d:EmployeeName/text()", resource);
-         *   assertXpathEvaluatesTo(FunctionImportProducerMock.EMPLOYEE_NAME, "/entry/content/m:properties/d:EmployeeId/text()", resource);
-         */
-
-        assertTrue(format.toString(), resource.contains(FunctionImportProducerMock.EMPLOYEE_NAME));
-        assertTrue(format.toString(), resource.contains(FunctionImportProducerMock.EMPLOYEE_ID));
+        assertXpathEvaluatesTo("RefScenario.Employee", "/g:entry/g:category/@term", resource);
+        assertXpathEvaluatesTo(FunctionImportProducerMock.EMPLOYEE_NAME, "/g:entry/g:content/m:properties/d:EmployeeName/text()", resource);
+        assertXpathEvaluatesTo(FunctionImportProducerMock.EMPLOYEE_ID, "/g:entry/g:content/m:properties/d:EmployeeId/text()", resource);
         break;
       case JSON:
         assertTrue(format.toString(), resource.contains(FunctionImportProducerMock.EMPLOYEE_NAME));
@@ -465,23 +443,10 @@ public class FunctionImportTest extends AbstractRuntimeTest {
 
       switch (format) {
       case ATOM:
-
-        /*
-         * TODO
-         * BUG in XMLUNnit (1.3): Built in XPath engine does not handle default namespace of atom correctly
-         * 
-         *  assertXpathExists("/feed", resource);
-         *  assertXpathEvaluatesTo("RefScenario.Employee", "/feed/entry/category/@term", resource);
-         *  assertXpathEvaluatesTo(FunctionImportProducerMock.EMPLOYEE_ID, "/feed/entry/content/m:properties/d:EmployeeId/text()", resource);
-         *  assertXpathEvaluatesTo(FunctionImportProducerMock.EMPLOYEE_NAME, "/feed/entry/content/m:properties/d:EmployeeName/text()", resource);
-         */
-
-        assertTrue(format.toString(), resource.contains("<feed"));
-        assertTrue(format.toString(), resource.contains("Employees"));
-        assertTrue(format.toString(), resource.contains("RefScenario.Employee"));
-        assertTrue(format.toString(), resource.contains(FunctionImportProducerMock.EMPLOYEE_NAME));
-        assertTrue(format.toString(), resource.contains(FunctionImportProducerMock.EMPLOYEE_ID));
-
+        assertXpathExists("/g:feed", resource);
+        assertXpathEvaluatesTo("RefScenario.Employee", "/g:feed/g:entry/g:category/@term", resource);
+        assertXpathEvaluatesTo(FunctionImportProducerMock.EMPLOYEE_ID, "/g:feed/g:entry/g:content/m:properties/d:EmployeeId/text()", resource);
+        assertXpathEvaluatesTo(FunctionImportProducerMock.EMPLOYEE_NAME, "/g:feed/g:entry/g:content/m:properties/d:EmployeeName/text()", resource);
         break;
       case JSON:
         assertTrue(format.toString(), resource.contains("\"results\" : ["));
