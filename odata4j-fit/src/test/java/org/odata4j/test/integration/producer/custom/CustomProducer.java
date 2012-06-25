@@ -258,11 +258,12 @@ public class CustomProducer implements ODataProducer {
   }
 
   public OEntity getMLE(OEntityKey entityKey, QueryInfo queryInfo) {
-    return OEntities.create(
-        getMetadata().findEdmEntitySet("MLEs"),
-        entityKey,
-        Collections.<OProperty<?>>emptyList(),
-        Collections.<OLink>emptyList());
+    
+    String id = entityKey.asSingleValue().toString();
+    if (!MediaLinkExtension.mediaResources.containsKey(id)) {
+      throw new NotFoundException("can't find MLE with id: " + id);
+    }
+    return MediaLinkExtension.getMLE(getMetadata().findEdmEntitySet("MLEs"), id, MediaLinkExtension.mediaResources.get(id));
   }
 
   @Override
@@ -373,9 +374,31 @@ public class CustomProducer implements ODataProducer {
     }
 
     @Override
-    public OutputStream getOutputStreamForMediaLinkEntry(OEntity mle, String etag, QueryInfo query) {
+    public OutputStream getOutputStreamForMediaLinkEntryCreate(OEntity mle, String etag, QueryInfo query) {
+      // create:
       String id =  mle.getEntityKey().asSingleValue().toString();
+      if (mediaResources.containsKey(id)) {
+        throw new BadRequestException("MLE with id: " + id + " already exists");
+      }
       return new MRStream(id);
+    }
+
+    @Override
+    public OutputStream getOutputStreamForMediaLinkEntryUpdate(OEntity mle, String etag, QueryInfo query) {
+      String id =  mle.getEntityKey().asSingleValue().toString();
+      if (!mediaResources.containsKey(id)) {
+        throw new NotFoundException("MLE with id: " + id + " not found");
+      }
+      return new MRStream(id);
+    }
+
+    @Override
+    public OEntity getMediaLinkEntryForUpdateOrDelete(EdmEntitySet entitySet, OEntityKey key, HttpHeaders httpHeaders) {
+      String id =  key.asSingleValue().toString();
+      if (!mediaResources.containsKey(id)) {
+        throw new NotFoundException("MLE with id: " + id + " not found");
+      }
+      return getMLE(entitySet, id, mediaResources.get(id));
     }
     
     private class MRStream extends ByteArrayOutputStream {
@@ -398,7 +421,7 @@ public class CustomProducer implements ODataProducer {
       if (mediaResources.containsKey(id)) {
         mediaResources.remove(id);
       } else {
-        throw new NotFoundException();
+        throw new NotFoundException("MLE with id: " + id + " not found");
       }
     }
 
@@ -418,14 +441,19 @@ public class CustomProducer implements ODataProducer {
     @Override
     public OEntity updateMediaLinkEntry(OEntity mle, OutputStream outStream) {
       // sometimes after processing the blob we know more about the entity...
-      String content = mediaResources.get(mle.getEntityKey().asSingleValue().toString());
+      String id = mle.getEntityKey().asSingleValue().toString();
+      return getMLE(mle.getEntitySet(), id, mediaResources.get(id));
+    }
+    
+    protected static OEntity getMLE(EdmEntitySet entitySet, String id, String content) {
       List<OProperty<?>> props = new ArrayList<OProperty<?>>();
       props.add(OProperties.string("MLEProp1", "content length is " + content.length()));
-      return OEntities.create(mle.getEntitySet(), mle.getEntityKey(), props, Collections.<OLink>emptyList());
+      return OEntities.create(entitySet, OEntityKey.create("Id", id), props, Collections.<OLink>emptyList());
     }
 
     public static void initResources() {
       mediaResources.put("foobar", "here we have some content for the mle with id: ('foobar')");
+      mediaResources.put("blatfoo", "please delete this useless mle asap...");
     }
     private static final Map<String, String> mediaResources  = new HashMap<String, String>();
   }

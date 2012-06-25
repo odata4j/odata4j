@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import javax.ws.rs.core.HttpHeaders;
 
 import org.odata4j.core.OEntity;
+import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OExtension;
 import org.odata4j.edm.EdmEntitySet;
 
@@ -25,14 +26,24 @@ public interface OMediaLinkExtension extends OExtension<ODataProducer> {
   InputStream getInputStreamForMediaLinkEntry(OEntity mle, String etag, EntityQueryInfo query);
   
   /**
-   * get an OutputStream for the purpose of creating or updating a media resource.
+   * get an OutputStream for the purpose of creating a media resource.
    * 
    * @param mle   the media link entry entity
    * @param etag  for future extension
    * @param query additional request information
    * @return 
    */
-  OutputStream getOutputStreamForMediaLinkEntry(OEntity mle, String etag, QueryInfo query);
+  OutputStream getOutputStreamForMediaLinkEntryCreate(OEntity mle, String etag, QueryInfo query);
+  
+  /**
+   * get an OutputStream for the purpose of updating an existing media resource.
+   * 
+   * @param mle   the media link entry entity
+   * @param etag  for future extension
+   * @param query additional request information
+   * @return 
+   */
+  OutputStream getOutputStreamForMediaLinkEntryUpdate(OEntity mle, String etag, QueryInfo query);
 
   /**
    * delete the media resource defined by the given media link entry entity
@@ -56,6 +67,16 @@ public interface OMediaLinkExtension extends OExtension<ODataProducer> {
    * @return 
    */
   OEntity createMediaLinkEntry(EdmEntitySet entitySet, HttpHeaders httpHeaders);
+  
+   /**
+   * get an OEntity for an existing media link entry with the given key.
+   * 
+   * @param entitySet
+   * @param key         - entity key
+   * @param httpHeaders - Atom protocol says the Slug header can contain additional create info.
+   * @return 
+   */
+  OEntity getMediaLinkEntryForUpdateOrDelete(EdmEntitySet entitySet, OEntityKey key, HttpHeaders httpHeaders);
   
   
   /**

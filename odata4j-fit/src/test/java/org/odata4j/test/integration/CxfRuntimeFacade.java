@@ -144,4 +144,9 @@ public class CxfRuntimeFacade implements RuntimeFacade {
   public int postWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
+
+  @Override
+  public int putWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
 }

@@ -100,6 +100,24 @@ public class JerseyRuntimeFacade implements RuntimeFacade {
     }
     return this.lastStatusCode;
   }
+  
+  public int putWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers) {
+    Client client = new Client();
+    WebResource.Builder webResource = client.resource(uri).type(mediaType);
+
+    try {
+      if (null != headers) {
+        for (Entry<String, Object> entry : headers.entrySet()) {
+          webResource = webResource.header(entry.getKey(), entry.getValue());
+        }
+      }
+      ClientResponse response = webResource.put(ClientResponse.class, content);
+      this.lastStatusCode = response.getStatus();
+    } catch(UniformInterfaceException ex) {
+      this.lastStatusCode = ex.getResponse().getStatus();
+    }
+    return this.lastStatusCode;
+  }
 
   @Override
   public String acceptAndReturn(String uri, MediaType mediaType) {

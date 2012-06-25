@@ -110,7 +110,7 @@ public class EntitiesRequestResource extends BaseResource {
             ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
   }
   
-  protected Response createMediaLinkEntry(
+   protected Response createMediaLinkEntry(
           HttpHeaders httpHeaders,
           UriInfo uriInfo,
           ODataProducer producer,
@@ -119,42 +119,7 @@ public class EntitiesRequestResource extends BaseResource {
 
     log("createMediaLinkEntity", "entitySetName", entitySet.getName());
 
-    /* 
-     * this post has a great descriptions of the twists and turns of creating
-     * a media resource + media link entry:  http://blogs.msdn.com/b/astoriateam/archive/2010/08/04/data-services-streaming-provider-series-implementing-a-streaming-provider-part-1.aspx
-     */
-    
-    // first, the producer must support OMediaLinkExtension
-    OMediaLinkExtension mediaLinkExtension = null;
-    try {
-      Map<String, Object> params = new HashMap<String, Object>();
-      params.put(ODataConstants.Params.EdmEntitySet, entitySet);
-      params.put(ODataConstants.Params.HttpHeaders, httpHeaders);
-      params.put(ODataConstants.Params.ODataProducer, producer);
-      params.put(ODataConstants.Params.UriInfo, uriInfo);
-      
-      mediaLinkExtension = producer.findExtension(OMediaLinkExtension.class, params);
-    } catch (UnsupportedOperationException e) { }
-
-    if (mediaLinkExtension == null) {
-      throw new NotImplementedException();
-    }
-    
-    // get a media link entry from the extension
-    OEntity mle = mediaLinkExtension.createMediaLinkEntry(entitySet, httpHeaders);
-    
-    // now get a stream we can write the incoming bytes into.
-    OutputStream outStream = mediaLinkExtension.getOutputStreamForMediaLinkEntry(mle, null /*etag*/, null /*QueryInfo, may get rid of this */);
-    
-    // write the stream
-    try {
-      InternalUtil.copyInputToOutput(payload, outStream);
-    } finally {
-      try { outStream.close(); } catch(Exception ex) { }
-    }
-    
-    // more info about the mle may be available now.
-    mle = mediaLinkExtension.updateMediaLinkEntry(mle, outStream);
+    OEntity mle = super.createOrUpdateMediaLinkEntry(httpHeaders, uriInfo, entitySet, producer, payload, null);
     
     // return the mle
     return createEntity(httpHeaders,
@@ -371,7 +336,7 @@ public class EntitiesRequestResource extends BaseResource {
             entityId, entityString);
         break;
       case DELETE:
-        response = er.deleteEntity(producerResolver, entitySetName, entityId);
+        response = er.deleteEntity(httpHeaders, uriInfo, producerResolver, entitySetName, entityId);
         break;
       case GET:
         throw new UnsupportedOperationException("Not supported yet.");

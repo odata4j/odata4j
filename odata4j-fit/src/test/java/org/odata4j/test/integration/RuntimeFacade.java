@@ -29,4 +29,5 @@ public interface RuntimeFacade {
   public int getLastStatusCode(); 
 
   public int postWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers);
+  public int putWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers);
 }

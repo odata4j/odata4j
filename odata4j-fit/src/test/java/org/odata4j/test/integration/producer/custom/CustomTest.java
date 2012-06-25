@@ -12,12 +12,14 @@ import java.util.Map;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import junit.framework.Assert;
 import org.junit.Ignore;
 
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OCollection;
 import org.odata4j.core.OEntity;
+import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OObject;
 import org.odata4j.core.OProperty;
 import org.odata4j.core.OSimpleObject;
@@ -285,5 +287,32 @@ public class CustomTest extends CustomBaseTest {
     
     String content2 = rtFacade.getWebResource(endpointUri + "MLEs('ANewMLE')/$value" + "?$format=json");
     assertEquals(content, content2);
+  }
+  
+  @Ignore("JerseyRuntimeFascade.putWebResource not working...CxfRuntimeFascade.putWebResource not implemented")
+  @Test
+  public void testUpdateMLE() {
+    String content = "This MLE was updated by the test testUpdateMLE()";
+    int status = rtFacade.putWebResource(endpointUri + "MLEs", new ByteArrayInputStream(content.getBytes()), MediaType.TEXT_PLAIN_TYPE, null);
+    assertEquals(Status.NO_CONTENT.getStatusCode(), status);
+    
+    String content2 = rtFacade.getWebResource(endpointUri + "MLEs('ANewMLE')/$value" + "?$format=json");
+    assertEquals(content, content2);
+  }
+  
+  @Test
+  public void testDeleteMLE() {
+    ODataConsumer c = this.rtFacade.createODataConsumer(endpointUri, null, null);
+    OEntityKey key = OEntityKey.create("Id", "blatfoo");
+    c.deleteEntity("MLEs", key).execute();
+    
+    OEntity e = null;
+    try {
+      e = c.getEntity("MLEs", key).execute();
+    } catch(Exception ex) {
+      Assert.fail(ex.getMessage());
+    }
+
+    Assert.assertNull(e);
   }
 }
