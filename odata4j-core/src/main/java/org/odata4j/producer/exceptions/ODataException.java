@@ -29,6 +29,10 @@ public class ODataException extends RuntimeException implements ErrorResponse, E
   @Context
   protected HttpHeaders httpHeaders;
 
+  public ODataException() {
+    super();
+  }
+
   public ODataException(StatusType status) {
     super();
     this.status = status;
