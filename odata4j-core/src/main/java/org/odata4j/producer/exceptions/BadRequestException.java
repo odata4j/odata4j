@@ -1,18 +1,17 @@
 package org.odata4j.producer.exceptions;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 public class BadRequestException extends ODataException {
 
   private static final long serialVersionUID = 1L;
 
   public BadRequestException() {
-    super(Response.status(400).build());
+    super(Status.BAD_REQUEST);
   }
 
   public BadRequestException(String message) {
-    super(Response.status(400).entity(message).type(MediaType.TEXT_PLAIN_TYPE).build(), message);
+    super(Status.BAD_REQUEST, message);
   }
 
 }

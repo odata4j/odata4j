@@ -1,58 +1,77 @@
 package org.odata4j.producer.exceptions;
 
-import javax.ws.rs.WebApplicationException;
+import java.io.StringWriter;
+
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.Response.StatusType;
+import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
-public class ODataException extends WebApplicationException {
+import org.odata4j.core.ODataConstants;
+import org.odata4j.core.OError;
+import org.odata4j.format.FormatWriter;
+import org.odata4j.format.FormatWriterFactory;
+import org.odata4j.producer.ErrorResponse;
+
+@Provider
+public class ODataException extends RuntimeException implements ErrorResponse, ExceptionMapper<ODataException> {
 
   private static final long serialVersionUID = 1L;
 
-  private String message;
+  private StatusType status = Status.INTERNAL_SERVER_ERROR;
 
-  public ODataException() {
+  @Context
+  protected UriInfo uriInfo;
+  @Context
+  protected HttpHeaders httpHeaders;
+
+  public ODataException(StatusType status) {
     super();
+    this.status = status;
   }
 
-  public ODataException(int status) {
-    super(status);
+  public ODataException(StatusType status, String message) {
+    super(message);
+    this.status = status;
   }
 
-  public ODataException(Response response) {
-    super(response);
-  }
-
-  public ODataException(Response response, String message) {
-    super(response);
-    this.message = message;
-  }
-
-  public ODataException(Status status) {
-    super(status);
-  }
-
-  public ODataException(Throwable cause, int status) {
-    super(cause, status);
-  }
-
-  public ODataException(Throwable cause, Response response) {
-    super(cause, response);
-  }
-
-  public ODataException(Throwable cause, Status status) {
-    super(cause, status);
-  }
-
-  public ODataException(Throwable cause) {
+  public ODataException(StatusType status, Throwable cause) {
     super(cause);
+    this.status = status;
   }
 
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder(getClass().getName());
-    if (message != null)
-      sb.append(": " + message);
-    return sb.toString();
+  public ODataException(StatusType status, String message, Throwable cause) {
+    super(message, cause);
+    this.status = status;
+  }
+
+  public Response toResponse(ODataException exception) {
+    String format = uriInfo.getQueryParameters().getFirst("$format");
+    String callback = uriInfo.getQueryParameters().getFirst("$callback");
+    FormatWriter<ErrorResponse> fw = FormatWriterFactory.getFormatWriter(ErrorResponse.class, httpHeaders.getAcceptableMediaTypes(), format, callback);
+    StringWriter sw = new StringWriter();
+    fw.write(uriInfo, sw, exception);
+    return Response.status(exception.status)
+        .type(fw.getContentType())
+        .header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER)
+        .entity(sw.toString())
+        .build();
+  }
+
+  public OError getError() {
+    return new OError() {
+      public String getMessage() {
+        return ODataException.this.getMessage() != null ? ODataException.this.getMessage() : status.getReasonPhrase();
+      }
+
+      public String getCode() {
+        return Integer.toString(status.getStatusCode());
+      }
+    };
   }
 
 }

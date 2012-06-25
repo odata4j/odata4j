@@ -1,18 +1,17 @@
 package org.odata4j.producer.exceptions;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 public class ForbiddenException extends ODataException {
 
   private static final long serialVersionUID = 1L;
 
   public ForbiddenException() {
-    super(Response.status(403).build());
+    super(Status.FORBIDDEN);
   }
 
   public ForbiddenException(String message) {
-    super(Response.status(403).entity(message).type(MediaType.TEXT_PLAIN_TYPE).build());
+    super(Status.FORBIDDEN, message);
   }
 
 }

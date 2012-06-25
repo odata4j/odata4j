@@ -93,9 +93,9 @@ public class QueryInfo {
     this.filter = filter;
     this.orderBy = orderBy;
     this.skipToken = skipToken;
-    this.customOptions = customOptions == null ? Collections.<String, String>emptyMap() : Collections.unmodifiableMap(customOptions);
-    this.expand = expand == null ? Collections.<EntitySimpleProperty>emptyList() : Collections.unmodifiableList(expand);
-    this.select = select == null ? Collections.<EntitySimpleProperty>emptyList() : Collections.unmodifiableList(select);
+    this.customOptions = customOptions == null ? Collections.<String, String> emptyMap() : Collections.unmodifiableMap(customOptions);
+    this.expand = expand == null ? Collections.<EntitySimpleProperty> emptyList() : Collections.unmodifiableList(expand);
+    this.select = select == null ? Collections.<EntitySimpleProperty> emptyList() : Collections.unmodifiableList(select);
   }
 
   public static Builder newBuilder() {
@@ -132,27 +132,27 @@ public class QueryInfo {
       this.filter = filter;
       return this;
     }
-    
+
     public Builder setOrderBy(List<OrderByExpression> orderBy) {
       this.orderBy = orderBy;
       return this;
     }
-    
+
     public Builder setSkipToken(String value) {
       this.skipToken = value;
       return this;
     }
-    
+
     public Builder setCustomOptions(Map<String, String> value) {
       this.customOptions = value;
       return this;
     }
-    
+
     public Builder setExpand(List<EntitySimpleProperty> value) {
       this.expand = value;
       return this;
     }
-    
+
     public Builder setSelect(List<EntitySimpleProperty> value) {
       this.select = value;
       return this;
@@ -163,4 +163,36 @@ public class QueryInfo {
     }
   }
 
+  @Override
+  public String toString() {
+    StringBuffer sb = new StringBuffer();
+    sb.append("[");
+    boolean first = true;
+    first = appendField(sb, "$inlinecount", inlineCount, first);
+    first = appendField(sb, "$top", top, first);
+    first = appendField(sb, "$skip", skip, first);
+    first = appendField(sb, "$filter", filter, first);
+    first = appendField(sb, "$orderby", orderBy, first);
+    first = appendField(sb, "$skiptoken", skipToken, first);
+    first = appendField(sb, "customOptions", customOptions, first);
+    first = appendField(sb, "$expand", expand, first);
+    first = appendField(sb, "$select", select, first);
+    sb.append("]");
+    return sb.toString();
+  }
+
+  private boolean appendField(StringBuffer sb, String name, Object field, boolean first) {
+    if (field == null)
+      return first;
+    if (field instanceof List && ((List<?>) field).isEmpty())
+      return first;
+    if (field instanceof Map && ((Map<?,?>) field).isEmpty())
+      return first;
+    if (first)
+      first = false;
+    else
+      sb.append(",");
+    sb.append(name + "=" + field);
+    return first;
+  }
 }

@@ -651,7 +651,10 @@ public class InMemoryProducer implements ODataProducer {
             .pathHelper(pathHelper).build();
 
     final Object rt = getEntityPojo(rc);
-    if (rt == null) throw new NotFoundException();
+    if (rt == null)
+      throw new NotFoundException("No entity found in entityset " + entitySetName
+          + " for key " + entityKey.toKeyStringWithoutParentheses()
+          + " and query info " + queryInfo);
 
     OEntity oe = toOEntity(rc.getEntitySet(), rt, rc.getPathHelper());
 

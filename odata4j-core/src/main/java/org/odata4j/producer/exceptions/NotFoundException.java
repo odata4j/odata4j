@@ -1,18 +1,17 @@
 package org.odata4j.producer.exceptions;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
-public class NotFoundException extends ODataException {
+public class NotFoundException extends ODataException { 
 
   private static final long serialVersionUID = 1L;
 
   public NotFoundException() {
-    super(Response.status(404).build());
+    super(Status.NOT_FOUND);
   }
 
   public NotFoundException(String message) {
-    super(Response.status(404).entity(message).type(MediaType.TEXT_PLAIN_TYPE).build());
+    super(Status.NOT_FOUND, message);
   }
 
 }
