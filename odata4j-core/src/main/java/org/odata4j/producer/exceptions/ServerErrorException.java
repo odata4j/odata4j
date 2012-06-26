@@ -14,4 +14,7 @@ public class ServerErrorException extends ODataException {
     super(Status.INTERNAL_SERVER_ERROR, message);
   }
 
+  public ServerErrorException(String message, Throwable cause) {
+    super(Status.INTERNAL_SERVER_ERROR, message, cause);
+  }
 }

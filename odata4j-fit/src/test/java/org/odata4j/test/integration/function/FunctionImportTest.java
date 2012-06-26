@@ -57,7 +57,6 @@ public class FunctionImportTest extends AbstractRuntimeTest {
     }
 
     public TestCase(String parameterName, String valueLiteral, String valueString, EdmSimpleType<?> type) {
-      super();
       this.parameterName = parameterName;
       this.valueLiteral = valueLiteral;
       this.valueString = valueString;

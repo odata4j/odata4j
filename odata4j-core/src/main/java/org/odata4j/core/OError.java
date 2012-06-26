@@ -1,7 +1,8 @@
 package org.odata4j.core;
 
 /**
- * An OData error message, consisting of an error code and an error-message text.
+ * An OData error message, consisting of an error code, an error-message text,
+ * and an optional inner error.
  */
 public interface OError {
 
@@ -18,4 +19,11 @@ public interface OError {
    * @return the error-message text
    */
   String getMessage();
+
+  /**
+   * Get the inner error.
+   *
+   * @return the inner error
+   */
+  String getInnerError();
 }

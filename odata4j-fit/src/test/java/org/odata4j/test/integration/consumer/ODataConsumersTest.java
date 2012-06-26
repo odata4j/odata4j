@@ -175,7 +175,6 @@ public class ODataConsumersTest {
     private final Enumerable<String> classesNotToFind;
 
     private TestClassLoader(String... classesNotToFind) {
-      super();
       this.classesNotToFind = Enumerable.create(classesNotToFind);
     }
 

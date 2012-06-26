@@ -14,4 +14,7 @@ public class ForbiddenException extends ODataException {
     super(Status.FORBIDDEN, message);
   }
 
+  public ForbiddenException(String message, Throwable cause) {
+    super(Status.FORBIDDEN, message, cause);
+  }
 }

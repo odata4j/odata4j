@@ -41,9 +41,8 @@ public class ErrorTest extends AbstractJettyHttpClientTest {
     assertThat(exchange.getResponseFields().getStringField(HttpHeaders.CONTENT_TYPE), containsString(MediaType.APPLICATION_XML));
     assertThat(exchange.getResponseContent().length(), greaterThan(0));
     assertTrue(Pattern.compile(".*<error xmlns=\"http://schemas.microsoft.com/ado/2007/08/dataservices/metadata\">\\s*"
-        + "<code>.+</code>\\s*"
+        + "<code>NotFoundException</code>\\s*"
         + "<message lang=\".+\">.+</message>\\s*"
-        + "(?:<innererror>.+</innererror>)?\\s*"
         + "</error>\\s*", Pattern.DOTALL)
         .matcher(exchange.getResponseContent()).matches());
   }
@@ -57,12 +56,47 @@ public class ErrorTest extends AbstractJettyHttpClientTest {
     assertThat(exchange.getResponseFields().getStringField(HttpHeaders.CONTENT_TYPE), containsString(MediaType.APPLICATION_JSON));
     assertThat(exchange.getResponseContent().length(), greaterThan(0));
     assertTrue(Pattern.compile("\\{\\s*\"error\"\\s*:\\s*\\{\\s*"
-        + "\"code\"\\s*:\\s*\".+\"\\s*,\\s*"
+        + "\"code\"\\s*:\\s*\"NotFoundException\"\\s*,\\s*"
         + "\"message\"\\s*:\\s*\\{\\s*"
         + "\"lang\"\\s*:\\s*\".+\"\\s*,\\s*"
         + "\"value\"\\s*:\\s*\".+\"\\s*"
         + "\\}\\s*"
-        + "(?:,\\s*\"innererror\"\\s*:\\s*\".+\"\\s*)?"
+        + "\\}\\s*"
+        + "\\}", Pattern.DOTALL)
+        .matcher(exchange.getResponseContent()).matches());
+  }
+
+  @Test
+  public void badRequestXmlWithInnerError() throws Exception {
+    ContentExchange exchange = sendRequest(FEED_URL + "(1.2)?odata4j.debug=true");
+    exchange.waitForDone();
+    assertThat(exchange.getStatus(), is(HttpExchange.STATUS_COMPLETED));
+    assertThat(exchange.getResponseStatus(), is(HttpStatus.BAD_REQUEST_400));
+    assertThat(exchange.getResponseFields().getStringField(HttpHeaders.CONTENT_TYPE), containsString(MediaType.APPLICATION_XML));
+    assertThat(exchange.getResponseContent().length(), greaterThan(0));
+    assertTrue(Pattern.compile(".*<error xmlns=\"http://schemas.microsoft.com/ado/2007/08/dataservices/metadata\">\\s*"
+        + "<code>BadRequestException</code>\\s*"
+        + "<message lang=\".+\">.+</message>\\s*"
+        + "<innererror>.+</innererror>\\s*"
+        + "</error>\\s*", Pattern.DOTALL)
+        .matcher(exchange.getResponseContent()).matches());
+  }
+
+  @Test
+  public void badRequestJsonWithInnerError() throws Exception {
+    ContentExchange exchange = sendRequest(FEED_URL + "(1.2)?$format=json&odata4j.debug=true");
+    exchange.waitForDone();
+    assertThat(exchange.getStatus(), is(HttpExchange.STATUS_COMPLETED));
+    assertThat(exchange.getResponseStatus(), is(HttpStatus.BAD_REQUEST_400));
+    assertThat(exchange.getResponseFields().getStringField(HttpHeaders.CONTENT_TYPE), containsString(MediaType.APPLICATION_JSON));
+    assertThat(exchange.getResponseContent().length(), greaterThan(0));
+    assertTrue(Pattern.compile("\\{\\s*\"error\"\\s*:\\s*\\{\\s*"
+        + "\"code\"\\s*:\\s*\"BadRequestException\"\\s*,\\s*"
+        + "\"message\"\\s*:\\s*\\{\\s*"
+        + "\"lang\"\\s*:\\s*\".+\"\\s*,\\s*"
+        + "\"value\"\\s*:\\s*\".+\"\\s*"
+        + "\\}\\s*,\\s*"
+        + "\"innererror\"\\s*:\\s*\".+\"\\s*"
         + "\\}\\s*"
         + "\\}", Pattern.DOTALL)
         .matcher(exchange.getResponseContent()).matches());

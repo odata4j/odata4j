@@ -14,4 +14,7 @@ public class BadRequestException extends ODataException {
     super(Status.BAD_REQUEST, message);
   }
 
+  public BadRequestException(String message, Throwable cause) {
+    super(Status.BAD_REQUEST, message, cause);
+  }
 }

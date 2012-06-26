@@ -4,8 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.ws.rs.DELETE;
@@ -33,8 +31,9 @@ import org.odata4j.producer.EntityQueryInfo;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.OMediaLinkExtension;
+import org.odata4j.producer.exceptions.BadRequestException;
+import org.odata4j.producer.exceptions.MethodNotAllowedException;
 import org.odata4j.producer.exceptions.NotFoundException;
-import org.odata4j.producer.exceptions.NotImplementedException;
 
 @Path("{entitySetName: [^/()]+?}{id: \\(.+?\\)}")
 public class EntityRequestResource extends BaseResource {
@@ -177,7 +176,10 @@ public class EntityRequestResource extends BaseResource {
       return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
     }
 
-    throw new RuntimeException("Expected a tunnelled PUT, MERGE or DELETE");
+    if (method != null)    
+      throw new RuntimeException("Expected a tunnelled PUT, MERGE or DELETE");
+    else
+      throw new MethodNotAllowedException("POST is not allowed for an entity");
   }
 
   @DELETE
@@ -252,7 +254,12 @@ public class EntityRequestResource extends BaseResource {
         expand,
         select));
 
-    EntityResponse response = producer.getEntity(entitySetName, OEntityKey.parse(id), query);
+    EntityResponse response;
+    try {
+      response = producer.getEntity(entitySetName, OEntityKey.parse(id), query);
+    } catch (IllegalArgumentException e) {
+      throw new BadRequestException("Illegal key " + id, e);
+    }
 
     StringWriter sw = new StringWriter();
     FormatWriter<EntityResponse> fw = FormatWriterFactory.getFormatWriter(EntityResponse.class, httpHeaders.getAcceptableMediaTypes(), format, callback);

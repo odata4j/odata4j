@@ -14,4 +14,7 @@ public class NotAcceptableException extends ODataException {
     super(Status.NOT_ACCEPTABLE, message);
   }
 
+  public NotAcceptableException(String message, Throwable cause) {
+    super(Status.NOT_ACCEPTABLE, message, cause);
+  }
 }

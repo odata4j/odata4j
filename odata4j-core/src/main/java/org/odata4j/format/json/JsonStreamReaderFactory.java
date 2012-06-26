@@ -24,7 +24,6 @@ public class JsonStreamReaderFactory {
     private static final long serialVersionUID = 2362481232045271688L;
 
     public JsonParseException() {
-      super();
     }
 
     public JsonParseException(String message, Throwable cause) {

@@ -1,5 +1,6 @@
 package org.odata4j.producer.exceptions;
 
+import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import javax.ws.rs.core.Context;
@@ -30,11 +31,9 @@ public class ODataException extends RuntimeException implements ErrorResponse, E
   protected HttpHeaders httpHeaders;
 
   public ODataException() {
-    super();
   }
 
   public ODataException(StatusType status) {
-    super();
     this.status = status;
   }
 
@@ -73,7 +72,13 @@ public class ODataException extends RuntimeException implements ErrorResponse, E
       }
 
       public String getCode() {
-        return Integer.toString(status.getStatusCode());
+        return ODataException.this.getClass().getSimpleName();
+      }
+
+      public String getInnerError() {
+        StringWriter sw = new StringWriter();
+        ODataException.this.getCause().printStackTrace(new PrintWriter(sw));
+        return sw.toString();
       }
     };
   }

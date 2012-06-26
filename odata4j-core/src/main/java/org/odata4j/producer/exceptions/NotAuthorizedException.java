@@ -14,4 +14,7 @@ public class NotAuthorizedException extends ODataException {
     super(Status.UNAUTHORIZED, message);
   }
 
+  public NotAuthorizedException(String message, Throwable cause) {
+    super(Status.UNAUTHORIZED, message, cause);
+  }
 }

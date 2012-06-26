@@ -31,4 +31,7 @@ public class MethodNotAllowedException extends ODataException {
     super(METHOD_NOT_ALLOWED, message);
   }
 
+  public MethodNotAllowedException(String message, Throwable cause) {
+    super(METHOD_NOT_ALLOWED, message, cause);
+  }
 }

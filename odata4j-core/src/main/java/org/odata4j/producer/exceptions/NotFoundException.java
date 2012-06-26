@@ -14,4 +14,7 @@ public class NotFoundException extends ODataException {
     super(Status.NOT_FOUND, message);
   }
 
+  public NotFoundException(String message, Throwable cause) {
+    super(Status.NOT_FOUND, message, cause);
+  }
 }
