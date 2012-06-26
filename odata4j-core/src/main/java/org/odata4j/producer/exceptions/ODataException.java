@@ -77,7 +77,7 @@ public class ODataException extends RuntimeException implements ErrorResponse, E
 
       public String getInnerError() {
         StringWriter sw = new StringWriter();
-        ODataException.this.getCause().printStackTrace(new PrintWriter(sw));
+        ODataException.this.printStackTrace(new PrintWriter(sw));
         return sw.toString();
       }
     };
