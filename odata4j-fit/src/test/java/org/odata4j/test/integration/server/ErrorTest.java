@@ -3,8 +3,8 @@ package org.odata4j.test.integration.server;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 import java.util.regex.Pattern;
 
@@ -40,11 +40,8 @@ public class ErrorTest extends AbstractJettyHttpClientTest {
     assertThat(exchange.getResponseStatus(), is(HttpStatus.NOT_FOUND_404));
     assertThat(exchange.getResponseFields().getStringField(HttpHeaders.CONTENT_TYPE), containsString(MediaType.APPLICATION_XML));
     assertThat(exchange.getResponseContent().length(), greaterThan(0));
-    assertTrue(Pattern.compile(".*<error xmlns=\"http://schemas.microsoft.com/ado/2007/08/dataservices/metadata\">\\s*"
-        + "<code>NotFoundException</code>\\s*"
-        + "<message lang=\".+\">.+</message>\\s*"
-        + "</error>\\s*", Pattern.DOTALL)
-        .matcher(exchange.getResponseContent()).matches());
+    assertRegexMatches(exchange.getResponseContent(), ".*<code>NotFoundException</code>.*");
+    assertRegexNotMatches(exchange.getResponseContent(), ".*<innererror>.+</innererror>.*");
   }
 
   @Test
@@ -55,15 +52,8 @@ public class ErrorTest extends AbstractJettyHttpClientTest {
     assertThat(exchange.getResponseStatus(), is(HttpStatus.NOT_FOUND_404));
     assertThat(exchange.getResponseFields().getStringField(HttpHeaders.CONTENT_TYPE), containsString(MediaType.APPLICATION_JSON));
     assertThat(exchange.getResponseContent().length(), greaterThan(0));
-    assertTrue(Pattern.compile("\\{\\s*\"error\"\\s*:\\s*\\{\\s*"
-        + "\"code\"\\s*:\\s*\"NotFoundException\"\\s*,\\s*"
-        + "\"message\"\\s*:\\s*\\{\\s*"
-        + "\"lang\"\\s*:\\s*\".+\"\\s*,\\s*"
-        + "\"value\"\\s*:\\s*\".+\"\\s*"
-        + "\\}\\s*"
-        + "\\}\\s*"
-        + "\\}", Pattern.DOTALL)
-        .matcher(exchange.getResponseContent()).matches());
+    assertRegexMatches(exchange.getResponseContent(), ".*\"code\"\\s*:\\s*\"NotFoundException\".*");
+    assertRegexNotMatches(exchange.getResponseContent(), ".*\"innererror\"\\s*:\\s*\".+\".*");
   }
 
   @Test
@@ -74,12 +64,7 @@ public class ErrorTest extends AbstractJettyHttpClientTest {
     assertThat(exchange.getResponseStatus(), is(HttpStatus.BAD_REQUEST_400));
     assertThat(exchange.getResponseFields().getStringField(HttpHeaders.CONTENT_TYPE), containsString(MediaType.APPLICATION_XML));
     assertThat(exchange.getResponseContent().length(), greaterThan(0));
-    assertTrue(Pattern.compile(".*<error xmlns=\"http://schemas.microsoft.com/ado/2007/08/dataservices/metadata\">\\s*"
-        + "<code>BadRequestException</code>\\s*"
-        + "<message lang=\".+\">.+</message>\\s*"
-        + "<innererror>.+</innererror>\\s*"
-        + "</error>\\s*", Pattern.DOTALL)
-        .matcher(exchange.getResponseContent()).matches());
+    assertRegexMatches(exchange.getResponseContent(), ".*<code>BadRequestException</code>.*<innererror>.+</innererror>.*");
   }
 
   @Test
@@ -90,15 +75,18 @@ public class ErrorTest extends AbstractJettyHttpClientTest {
     assertThat(exchange.getResponseStatus(), is(HttpStatus.BAD_REQUEST_400));
     assertThat(exchange.getResponseFields().getStringField(HttpHeaders.CONTENT_TYPE), containsString(MediaType.APPLICATION_JSON));
     assertThat(exchange.getResponseContent().length(), greaterThan(0));
-    assertTrue(Pattern.compile("\\{\\s*\"error\"\\s*:\\s*\\{\\s*"
-        + "\"code\"\\s*:\\s*\"BadRequestException\"\\s*,\\s*"
-        + "\"message\"\\s*:\\s*\\{\\s*"
-        + "\"lang\"\\s*:\\s*\".+\"\\s*,\\s*"
-        + "\"value\"\\s*:\\s*\".+\"\\s*"
-        + "\\}\\s*,\\s*"
-        + "\"innererror\"\\s*:\\s*\".+\"\\s*"
-        + "\\}\\s*"
-        + "\\}", Pattern.DOTALL)
-        .matcher(exchange.getResponseContent()).matches());
+    assertRegexMatches(exchange.getResponseContent(), ".*\"code\"\\s*:\\s*\"BadRequestException\".*\"innererror\"\\s*:\\s*\".+\".*");
+  }
+
+  private void assertRegexMatches(String source, String target) throws Exception {
+    assertRegexMatches(source, target, true);
+  }
+
+  private void assertRegexNotMatches(String source, String target) throws Exception {
+    assertRegexMatches(source, target, false);
+  }
+
+  private void assertRegexMatches(String source, String target, boolean matches) throws Exception {
+    assertEquals(matches, Pattern.compile(target, Pattern.DOTALL).matcher(source).matches());
   }
 }
