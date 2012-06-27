@@ -41,7 +41,8 @@ public class JdbcGetEntityCommand extends JdbcBaseCommand implements Command<Get
           return toOEntity(mapping, entitySet, results);
         }
         return null;
-      }});
+      }
+    });
 
     if (entity == null)
       throw new NotFoundException();

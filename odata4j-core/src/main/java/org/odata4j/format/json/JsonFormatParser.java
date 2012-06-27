@@ -234,7 +234,7 @@ public class JsonFormatParser {
       if (!ep.getType().isSimple()) {
         // the only context that lands us here is a null value for a complex property
         if (event.asEndProperty().getValue() == null) {
-          entry.properties.add(OProperties.complex(name, (EdmComplexType)ep.getType(), null));
+          entry.properties.add(OProperties.complex(name, (EdmComplexType) ep.getType(), null));
         } else {
           throw new UnsupportedOperationException("complex property unknown parse state");
         }

@@ -360,6 +360,7 @@ public class InternalUtil {
   }
 
   public static final int COPY_BUFFER_SIZE = 8 * 1024;
+
   public static void copyInputToOutput(InputStream inStream, OutputStream outStream) throws IOException {
     byte[] buf = new byte[COPY_BUFFER_SIZE];
     int n;

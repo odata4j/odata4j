@@ -14,11 +14,11 @@ public class XmlFormatParser {
 
   public static final String NS_METADATA = "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata";
   public static final String NS_DATASERVICES = "http://schemas.microsoft.com/ado/2007/08/dataservices";
-  public static final String NS_EDM2006 = "http://schemas.microsoft.com/ado/2006/04/edm";   // edm 1.0
-  public static final String NS_EDM2007 = "http://schemas.microsoft.com/ado/2007/05/edm";   // edm 1.1
+  public static final String NS_EDM2006 = "http://schemas.microsoft.com/ado/2006/04/edm"; // edm 1.0
+  public static final String NS_EDM2007 = "http://schemas.microsoft.com/ado/2007/05/edm"; // edm 1.1
   public static final String NS_EDM2008_1 = "http://schemas.microsoft.com/ado/2008/01/edm"; // edm 1.2
   public static final String NS_EDM2008_9 = "http://schemas.microsoft.com/ado/2008/09/edm"; // edm 2.0
-  public static final String NS_EDM2009 = "http://schemas.microsoft.com/ado/2009/08/edm";   // edm ???
+  public static final String NS_EDM2009 = "http://schemas.microsoft.com/ado/2009/08/edm"; // edm ???
   public static final String NS_EDMX = "http://schemas.microsoft.com/ado/2007/06/edmx";
   public static final String NS_EDMANNOTATION = "http://schemas.microsoft.com/ado/2009/02/edm/annotation";
 

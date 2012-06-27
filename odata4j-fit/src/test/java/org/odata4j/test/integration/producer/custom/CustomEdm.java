@@ -198,15 +198,14 @@ public class CustomEdm implements EdmGenerator {
 
     EdmEntitySet.Builder fileSet = EdmEntitySet.newBuilder().setName("Files").setEntityType(fileType);
     entitySets.add(fileSet);
-    
-    
+
     // --------------------------- a Media Link Entry thing ------------------------------
     props = new ArrayList<EdmProperty.Builder>();
     navprops = new ArrayList<EdmNavigationProperty.Builder>();
 
     ep = EdmProperty.newBuilder("Id").setType(EdmSimpleType.STRING);
     props.add(ep);
-    
+
     ep = EdmProperty.newBuilder("MLEProp1").setType(EdmSimpleType.STRING);
     props.add(ep);
 

@@ -36,6 +36,7 @@ public class UnsignedByte extends Number implements Comparable<UnsignedByte> {
   public long longValue() {
     return value;
   }
+
   @Override
   public float floatValue() {
     return value;

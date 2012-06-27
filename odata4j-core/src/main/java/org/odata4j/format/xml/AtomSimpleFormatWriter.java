@@ -10,7 +10,7 @@ import org.odata4j.producer.SimpleResponse;
 import org.odata4j.stax2.XMLFactoryProvider2;
 import org.odata4j.stax2.XMLWriter2;
 
-public class AtomSimpleFormatWriter extends XmlFormatWriter implements FormatWriter<SimpleResponse>{
+public class AtomSimpleFormatWriter extends XmlFormatWriter implements FormatWriter<SimpleResponse> {
 
   @Override
   public void write(UriInfo uriInfo, Writer w, SimpleResponse target) {

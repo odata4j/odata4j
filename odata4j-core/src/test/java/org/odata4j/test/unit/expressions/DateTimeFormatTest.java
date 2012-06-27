@@ -92,17 +92,17 @@ public class DateTimeFormatTest {
     Assert.assertEquals(0, dt.getMillisOfSecond());
   }
 
-  @Test(expected=IllegalArgumentException.class)
+  @Test(expected = IllegalArgumentException.class)
   public void testyyyyMMddHHmmZZ() {
     InternalUtil.parseDateTimeOffsetFromXml("2010-12-20T17:34Z");
   }
 
-  @Test(expected=IllegalArgumentException.class)
+  @Test(expected = IllegalArgumentException.class)
   public void testyyyyMMddHHmmp0200() {
     InternalUtil.parseDateTimeOffsetFromXml("2010-12-20T17:34+02:00");
   }
 
-  @Test(expected=IllegalArgumentException.class)
+  @Test(expected = IllegalArgumentException.class)
   public void testyyyyMMddHHmmm0600() {
     InternalUtil.parseDateTimeOffsetFromXml("2010-12-20T17:34-06:00");
   }

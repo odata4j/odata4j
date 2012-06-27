@@ -22,7 +22,7 @@ public class MethodNotAllowedException extends ODataException {
       return "Method Not Allowed";
     }
   };
-  
+
   public MethodNotAllowedException() {
     super(METHOD_NOT_ALLOWED);
   }

@@ -50,7 +50,7 @@ public abstract class EdmType extends EdmItem {
     if (fullyQualifiedTypeName == null)
       return null;
     EdmSimpleType<?> simpleType = LazyInit.POOL.get(fullyQualifiedTypeName);
-    if (simpleType == null && !fullyQualifiedTypeName.contains("."))  // allow "string, Int32" for old dallas service functions
+    if (simpleType == null && !fullyQualifiedTypeName.contains(".")) // allow "string, Int32" for old dallas service functions
       for (EdmSimpleType<?> simpleTypeInPool : LazyInit.POOL.values())
         if (simpleTypeInPool.getFullyQualifiedTypeName().equalsIgnoreCase("Edm." + fullyQualifiedTypeName))
           return simpleTypeInPool;

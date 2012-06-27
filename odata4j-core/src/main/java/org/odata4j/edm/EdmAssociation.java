@@ -162,7 +162,8 @@ public class EdmAssociation extends EdmItem {
         @Override
         public String apply(Builder input) {
           return input.getFQNamespaceName();
-        }};
+        }
+      };
     }
 
   }

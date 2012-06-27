@@ -22,7 +22,7 @@ public class NotImplementedException extends ODataException {
       return "Not Implemented";
     }
   };
-  
+
   public NotImplementedException() {
     super(NOT_IMPLEMENTED);
   }

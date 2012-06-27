@@ -35,7 +35,7 @@ public class JdbcBaseCommand {
     }
 
     OEntityKey entityKey = OEntityKey.infer(entitySet, properties);
-    return OEntities.create(entitySet, entityKey, properties, Collections.<OLink>emptyList());
+    return OEntities.create(entitySet, entityKey, properties, Collections.<OLink> emptyList());
   }
 
   protected BoolCommonExpression prependPrimaryKeyFilter(JdbcMetadataMapping mapping, EdmEntityType entityType,
@@ -45,11 +45,12 @@ public class JdbcBaseCommand {
       String key = entityType.getKeys().iterator().next();
       filters.add(Expression.eq(Expression.simpleProperty(key), Expression.literal(entityKey.asSingleValue())));
     } else {
-      Map<String, NamedValue<?>> complexKey = Enumerable.create(entityKey.asComplexValue()).toMap(new Func1<NamedValue<?>, String>(){
+      Map<String, NamedValue<?>> complexKey = Enumerable.create(entityKey.asComplexValue()).toMap(new Func1<NamedValue<?>, String>() {
         @Override
         public String apply(NamedValue<?> nv) {
           return nv.getName();
-        }});
+        }
+      });
       for (String key : entityType.getKeys()) {
         filters.add(Expression.eq(Expression.simpleProperty(key), Expression.literal(complexKey.get(key).getValue())));
       }

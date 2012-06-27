@@ -12,7 +12,23 @@ import java.util.logging.Logger;
 
 import org.core4j.Enumerable;
 import org.core4j.Predicate1;
-import org.odata4j.edm.*;
+import org.odata4j.edm.EdmAssociation;
+import org.odata4j.edm.EdmAssociationEnd;
+import org.odata4j.edm.EdmAssociationSet;
+import org.odata4j.edm.EdmAssociationSetEnd;
+import org.odata4j.edm.EdmComplexType;
+import org.odata4j.edm.EdmDataServices;
+import org.odata4j.edm.EdmDecorator;
+import org.odata4j.edm.EdmEntityContainer;
+import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.edm.EdmEntityType;
+import org.odata4j.edm.EdmGenerator;
+import org.odata4j.edm.EdmMultiplicity;
+import org.odata4j.edm.EdmNavigationProperty;
+import org.odata4j.edm.EdmProperty;
+import org.odata4j.edm.EdmSchema;
+import org.odata4j.edm.EdmSimpleType;
+import org.odata4j.edm.EdmType;
 
 public class InMemoryEdmGenerator implements EdmGenerator {
 
@@ -22,9 +38,9 @@ public class InMemoryEdmGenerator implements EdmGenerator {
   private final String containerName;
   protected final InMemoryTypeMapping typeMapping;
   protected final Map<String, InMemoryEntityInfo<?>> eis; // key: EntitySet name
-  protected final Map<String, InMemoryComplexTypeInfo<?>> complexTypeInfo;  // key complex type edm type name
+  protected final Map<String, InMemoryComplexTypeInfo<?>> complexTypeInfo; // key complex type edm type name
   protected final List<EdmComplexType.Builder> edmComplexTypes = new ArrayList<EdmComplexType.Builder>();
-  
+
   // Note, assumes each Java type will only have a single Entity Set defined for it.
   protected final Map<Class<?>, String> entitySetNameByClass = new HashMap<Class<?>, String>();
 
@@ -32,22 +48,22 @@ public class InMemoryEdmGenerator implements EdmGenerator {
   protected Map<String, EdmEntityType.Builder> entityTypesByName = new HashMap<String, EdmEntityType.Builder>();
   protected Map<String, EdmEntitySet.Builder> entitySetsByName = new HashMap<String, EdmEntitySet.Builder>();
   protected final boolean flatten;
-  
-  public InMemoryEdmGenerator(String namespace, String containerName, InMemoryTypeMapping typeMapping, 
-          String idPropertyName, Map<String, InMemoryEntityInfo<?>> eis,
-          Map<String, InMemoryComplexTypeInfo<?>> complexTypes) {
+
+  public InMemoryEdmGenerator(String namespace, String containerName, InMemoryTypeMapping typeMapping,
+      String idPropertyName, Map<String, InMemoryEntityInfo<?>> eis,
+      Map<String, InMemoryComplexTypeInfo<?>> complexTypes) {
     this(namespace, containerName, typeMapping, idPropertyName, eis, complexTypes, true);
   }
-  
-  public InMemoryEdmGenerator(String namespace, String containerName, InMemoryTypeMapping typeMapping, 
-          String idPropertyName, Map<String, InMemoryEntityInfo<?>> eis,
-          Map<String, InMemoryComplexTypeInfo<?>> complexTypes, boolean flatten) {
+
+  public InMemoryEdmGenerator(String namespace, String containerName, InMemoryTypeMapping typeMapping,
+      String idPropertyName, Map<String, InMemoryEntityInfo<?>> eis,
+      Map<String, InMemoryComplexTypeInfo<?>> complexTypes, boolean flatten) {
     this.namespace = namespace;
     this.containerName = containerName;
     this.typeMapping = typeMapping;
     this.eis = eis;
     this.complexTypeInfo = complexTypes;
-    
+
     for (Entry<String, InMemoryEntityInfo<?>> e : eis.entrySet()) {
       entitySetNameByClass.put(e.getValue().entityClass, e.getKey());
     }
@@ -61,16 +77,15 @@ public class InMemoryEdmGenerator implements EdmGenerator {
     List<EdmEntityContainer.Builder> containers = new ArrayList<EdmEntityContainer.Builder>();
     List<EdmAssociation.Builder> associations = new ArrayList<EdmAssociation.Builder>();
     List<EdmAssociationSet.Builder> associationSets = new ArrayList<EdmAssociationSet.Builder>();
-    
 
     createComplexTypes(decorator, edmComplexTypes);
-    
+
     // creates id other basic SUPPORTED_TYPE properties(structural) entities
     createStructuralEntities(decorator);
 
     // TODO handle back references too
     // create hashmaps from sets
-    
+
     createNavigationProperties(associations, associationSets,
         entityTypesByName, entitySetsByName, entitySetNameByClass);
 
@@ -84,9 +99,9 @@ public class InMemoryEdmGenerator implements EdmGenerator {
         .addAssociations(associations)
         .addEntityContainers(containers)
         .addComplexTypes(edmComplexTypes);
-    
+
     addFunctions(schema, container);
-    
+
     if (decorator != null) {
       schema.setDocumentation(decorator.getDocumentationForSchema(namespace));
       schema.setAnnotations(decorator.getAnnotationsForSchema(namespace));
@@ -107,7 +122,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
       List<EdmProperty.Builder> properties = new ArrayList<EdmProperty.Builder>();
 
       // no keys
-      properties.addAll(toEdmProperties(decorator, typeInfo.propertyModel, new String[]{}, complexTypeName));
+      properties.addAll(toEdmProperties(decorator, typeInfo.propertyModel, new String[] {}, complexTypeName));
 
       EdmComplexType.Builder typeBuilder = EdmComplexType.newBuilder()
           .setNamespace(namespace)
@@ -122,7 +137,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
       complexTypes.add(typeBuilder);
     }
   }
-  
+
   private void createStructuralEntities(EdmDecorator decorator) {
 
     // eis contains all of the registered entity sets.
@@ -134,10 +149,10 @@ public class InMemoryEdmGenerator implements EdmGenerator {
       if (null == eet) {
         eet = createStructuralType(decorator, entityInfo);
       }
-      
+
       EdmEntitySet.Builder ees = EdmEntitySet.newBuilder().setName(entitySetName).setEntityType(eet);
       entitySetsByName.put(ees.getName(), ees);
-      
+
     }
   }
 
@@ -147,17 +162,17 @@ public class InMemoryEdmGenerator implements EdmGenerator {
         return typeInfo;
       }
     }
-    
+
     return null;
   }
-  
+
   /*
    * contains all generated InMemoryEntityInfos that get created as we walk 
    * up the inheritance hierarchy and find Java types that are not registered.
    */
   private Map<Class<?>, InMemoryEntityInfo<?>> unregisteredEntityInfo =
-          new HashMap<Class<?>, InMemoryEntityInfo<?>>();
-  
+      new HashMap<Class<?>, InMemoryEntityInfo<?>>();
+
   protected InMemoryEntityInfo<?> getUnregisteredEntityInfo(Class<?> clazz, InMemoryEntityInfo<?> subclass) {
     InMemoryEntityInfo<?> ei = unregisteredEntityInfo.get(clazz);
     if (null == ei) {
@@ -166,34 +181,34 @@ public class InMemoryEdmGenerator implements EdmGenerator {
       ei.keys = subclass.keys;
       ei.entityClass = (Class) clazz;
       ei.properties = new EnumsAsStringsPropertyModelDelegate(
-              new BeanBasedPropertyModel(ei.entityClass, this.flatten));
+          new BeanBasedPropertyModel(ei.entityClass, this.flatten));
     }
     return ei;
   }
-  
+
   protected EdmEntityType.Builder createStructuralType(EdmDecorator decorator, InMemoryEntityInfo<?> entityInfo) {
     List<EdmProperty.Builder> properties = new ArrayList<EdmProperty.Builder>();
 
     Class<?> superClass = flatten ? null : entityInfo.getSuperClass();
-    
+
     properties.addAll(toEdmProperties(decorator, entityInfo.properties, entityInfo.keys, entityInfo.entityTypeName));
 
     EdmEntityType.Builder eet = EdmEntityType.newBuilder()
-            .setNamespace(namespace)
-            .setName(entityInfo.entityTypeName)
-            .setHasStream(entityInfo.hasStream)
-            .addProperties(properties);
-    
+        .setNamespace(namespace)
+        .setName(entityInfo.entityTypeName)
+        .setHasStream(entityInfo.hasStream)
+        .addProperties(properties);
+
     if (null == superClass) {
       eet.addKeys(entityInfo.keys);
     }
-    
+
     if (decorator != null) {
       eet.setDocumentation(decorator.getDocumentationForEntityType(namespace, entityInfo.entityTypeName));
       eet.setAnnotations(decorator.getAnnotationsForEntityType(namespace, entityInfo.entityTypeName));
     }
     entityTypesByName.put(eet.getName(), eet);
-    
+
     EdmEntityType.Builder superType = null;
     if (!this.flatten && entityInfo.entityClass.getSuperclass() != null && !entityInfo.entityClass.getSuperclass().equals(Object.class)) {
       InMemoryEntityInfo<?> entityInfoSuper = findEntityInfoForClass(entityInfo.entityClass.getSuperclass());
@@ -202,17 +217,17 @@ public class InMemoryEdmGenerator implements EdmGenerator {
         // synthesize...
         entityInfoSuper = getUnregisteredEntityInfo(entityInfo.entityClass.getSuperclass(), entityInfo);
       }
-      
+
       superType = entityTypesByName.get(entityInfoSuper.entityTypeName);
       if (null == superType) {
-         superType = createStructuralType(decorator, entityInfoSuper);
-      } 
+        superType = createStructuralType(decorator, entityInfoSuper);
+      }
     }
-    
+
     eet.setBaseType(superType);
     return eet;
   }
-  
+
   protected void createNavigationProperties(List<EdmAssociation.Builder> associations,
       List<EdmAssociationSet.Builder> associationSets,
       Map<String, EdmEntityType.Builder> entityTypesByName,
@@ -245,16 +260,15 @@ public class InMemoryEdmGenerator implements EdmGenerator {
     Iterable<String> propertyNames = this.flatten ? ei.properties.getPropertyNames() : ei.properties.getDeclaredPropertyNames();
     for (String assocProp : propertyNames) {
 
-     
       EdmEntityType.Builder eet1 = entityTypesByName.get(entityTypeName);
       Class<?> clazz2 = ei.properties.getPropertyType(assocProp);
       String entitySetName2 = entityNameByClass.get(clazz2);
       InMemoryEntityInfo<?> ei2 = null == entitySetName2 ? null : eis.get(entitySetName2);
 
       if (log.isLoggable(Level.FINE)) {
-        log.log(Level.FINE, "genToOnNavProp {0} - {1}({2}) eetName2: {3}", new Object[]{entityTypeName, assocProp, clazz2, entitySetName2});
+        log.log(Level.FINE, "genToOnNavProp {0} - {1}({2}) eetName2: {3}", new Object[] { entityTypeName, assocProp, clazz2, entitySetName2 });
       }
-       
+
       if (eet1.findProperty(assocProp) != null || ei2 == null)
         continue;
 
@@ -285,7 +299,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
         // entity set name different than entity type name.
         ees2 = getEntitySetForEntityTypeName(eet2.getName());
       }
-          
+
       EdmAssociationSet.Builder eas = EdmAssociationSet.newBuilder().setName(assocName).setAssociation(assoc).setEnds(
           EdmAssociationSetEnd.newBuilder().setRole(assocEnd1).setEntitySet(ees1),
           EdmAssociationSetEnd.newBuilder().setRole(assocEnd2).setEntitySet(ees2));
@@ -300,7 +314,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
   }
 
   protected EdmEntitySet.Builder getEntitySetForEntityTypeName(String entityTypeName) {
-    
+
     for (InMemoryEntityInfo<?> ti : eis.values()) {
       if (ti.entityTypeName.equals(entityTypeName)) {
         return entitySetsByName.get(ti.entitySetName);
@@ -308,7 +322,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
     }
     return null;
   }
-  
+
   protected void generateToManyNavProperties(List<EdmAssociation.Builder> associations,
       List<EdmAssociationSet.Builder> associationSets,
       Map<String, EdmEntityType.Builder> entityTypesByName,
@@ -319,7 +333,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
       Class<?> clazz1) {
 
     Iterable<String> collectionNames = this.flatten ? ei.properties.getCollectionNames() : ei.properties.getDeclaredCollectionNames();
-    
+
     for (String assocProp : collectionNames) {
 
       final EdmEntityType.Builder eet1 = entityTypesByName.get(entityTypeName);
@@ -327,7 +341,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
       Class<?> clazz2 = ei.properties.getCollectionElementType(assocProp);
       String entitySetName2 = entityNameByClass.get(clazz2);
       InMemoryEntityInfo<?> class2eiInfo = null == entitySetName2 ? null : eis.get(entitySetName2);
-      
+
       if (class2eiInfo == null)
         continue;
 
@@ -379,7 +393,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
             // entity set name different than entity type name.
             ees2 = getEntitySetForEntityTypeName(eet2.getName());
           }
-          
+
           EdmAssociationSet.Builder eas = EdmAssociationSet.newBuilder().setName(assocName).setAssociation(assoc).setEnds(
               EdmAssociationSetEnd.newBuilder().setRole(assocEnd1).setEntitySet(ees1),
               EdmAssociationSetEnd.newBuilder().setRole(assocEnd2).setEntitySet(ees2));
@@ -398,7 +412,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
       } catch (Exception e) {
         // hmmh...I guess the build() will fail later
         log.log(Level.WARNING, "Exception building Edm associations: " + entityTypeName + "," + clazz1 + " set: " + ei.entitySetName
-                + " -> " + assocProp, e);
+            + " -> " + assocProp, e);
       }
     }
   }
@@ -412,7 +426,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
     }
     return null;
   }
-  
+
   protected EdmComplexType.Builder findComplexTypeForClass(Class<?> clazz) {
     for (InMemoryComplexTypeInfo<?> typeInfo : this.complexTypeInfo.values()) {
       if (typeInfo.entityClass.equals(clazz)) {
@@ -420,10 +434,10 @@ public class InMemoryEdmGenerator implements EdmGenerator {
         return findComplexTypeBuilder(typeInfo.typeName);
       }
     }
-    
+
     return null;
   }
-  
+
   private Collection<EdmProperty.Builder> toEdmProperties(
       EdmDecorator decorator,
       PropertyModel model,
@@ -440,9 +454,9 @@ public class InMemoryEdmGenerator implements EdmGenerator {
       EdmType type = typeMapping.findEdmType(propType);
       EdmComplexType.Builder typeBuilder = null;
       if (type == null) {
-         typeBuilder = findComplexTypeForClass(propType);
+        typeBuilder = findComplexTypeForClass(propType);
       }
-      
+
       //System.out.println("edm property: " + propName + " type: " + type + " builder: " + typeBuilder);
       if (type == null && typeBuilder == null) {
         continue;
@@ -451,20 +465,21 @@ public class InMemoryEdmGenerator implements EdmGenerator {
       EdmProperty.Builder ep = EdmProperty
           .newBuilder(propName)
           .setNullable(!keySet.contains(propName));
-      
-      if (type != null) { 
-        ep.setType(type); }
-      else { 
-        ep.setType(typeBuilder); 
+
+      if (type != null) {
+        ep.setType(type);
       }
-      
+      else {
+        ep.setType(typeBuilder);
+      }
+
       if (decorator != null) {
         ep.setDocumentation(decorator.getDocumentationForProperty(namespace, structuralTypename, propName));
         ep.setAnnotations(decorator.getAnnotationsForProperty(namespace, structuralTypename, propName));
       }
       rt.add(ep);
     }
-    
+
     // collections of primitives and complex types
     propertyNames = this.flatten ? model.getCollectionNames() : model.getDeclaredCollectionNames();
     for (String collectionPropName : propertyNames) {
@@ -473,7 +488,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
         // this will be a nav prop
         continue;
       }
-      
+
       EdmType type = typeMapping.findEdmType(collectionElementType);
       EdmType.Builder typeBuilder = null;
       if (type == null) {
@@ -481,17 +496,17 @@ public class InMemoryEdmGenerator implements EdmGenerator {
       } else {
         typeBuilder = EdmSimpleType.newBuilder(type);
       }
-     
+
       if (typeBuilder == null) {
         continue;
       }
-      
+
       // either a simple or complex type.
       EdmProperty.Builder ep = EdmProperty.newBuilder(collectionPropName)
           .setNullable(true)
           .setCollectionKind(EdmProperty.CollectionKind.Collection)
           .setType(typeBuilder);
-      
+
       if (decorator != null) {
         ep.setDocumentation(decorator.getDocumentationForProperty(namespace, structuralTypename, collectionPropName));
         ep.setAnnotations(decorator.getAnnotationsForProperty(namespace, structuralTypename, collectionPropName));
@@ -509,7 +524,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
   public String getNamespace() {
     return namespace;
   }
-  
+
   /**
    * provides an override point for applications to add application specific 
    * EdmFunctions to their producer.  

@@ -31,7 +31,7 @@ public class JdbcCreateEntityCommand implements Command<CreateEntityCommandConte
 
     GenerateSqlInsert insertGen = jdbcContext.get(GenerateSqlInsert.class);
     final SqlStatement sqlStatement = insertGen.generate(mapping, entitySet, context.getEntity());
-    jdbcContext.getJdbc().execute(new ThrowingFunc1<Connection, Void>(){
+    jdbcContext.getJdbc().execute(new ThrowingFunc1<Connection, Void>() {
       @Override
       public Void apply(Connection conn) throws Exception {
         PreparedStatement stmt = sqlStatement.asPreparedStatement(conn);

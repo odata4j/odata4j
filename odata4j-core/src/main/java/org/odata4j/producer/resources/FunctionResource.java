@@ -11,13 +11,26 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
-import org.odata4j.core.*;
+import org.odata4j.core.ODataConstants;
+import org.odata4j.core.ODataVersion;
+import org.odata4j.core.OEntity;
+import org.odata4j.core.OFunctionParameter;
+import org.odata4j.core.OFunctionParameters;
 import org.odata4j.edm.EdmEntityType;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.edm.EdmFunctionParameter;
 import org.odata4j.format.FormatWriter;
 import org.odata4j.format.FormatWriterFactory;
-import org.odata4j.producer.*;
+import org.odata4j.producer.BaseResponse;
+import org.odata4j.producer.CollectionResponse;
+import org.odata4j.producer.ComplexObjectResponse;
+import org.odata4j.producer.EntitiesResponse;
+import org.odata4j.producer.EntityResponse;
+import org.odata4j.producer.ODataProducer;
+import org.odata4j.producer.PropertyResponse;
+import org.odata4j.producer.QueryInfo;
+import org.odata4j.producer.Responses;
+import org.odata4j.producer.SimpleResponse;
 import org.odata4j.producer.exceptions.NotImplementedException;
 
 /**
@@ -80,13 +93,13 @@ public class FunctionResource extends BaseResource {
       fwBase = fw;
     } else if (response instanceof CollectionResponse) {
       CollectionResponse<?> collectionResponse = (CollectionResponse<?>) response;
-      
+
       if (collectionResponse.getCollection().getType() instanceof EdmEntityType) {
         FormatWriter<EntitiesResponse> fw = FormatWriterFactory.getFormatWriter(
-                EntitiesResponse.class,
-                httpHeaders.getAcceptableMediaTypes(),
-                format,
-                callback);
+            EntitiesResponse.class,
+            httpHeaders.getAcceptableMediaTypes(),
+            format,
+            callback);
 
         // collection of entities.
         // Does anyone else see this in the v2 spec?  I sure don't.  This seems 
@@ -94,25 +107,25 @@ public class FunctionResource extends BaseResource {
         ArrayList<OEntity> entities = new ArrayList<OEntity>(collectionResponse.getCollection().size());
         Iterator iter = collectionResponse.getCollection().iterator();
         while (iter.hasNext()) {
-          entities.add((OEntity)iter.next());
+          entities.add((OEntity) iter.next());
         }
-        EntitiesResponse er = Responses.entities(entities, 
-                collectionResponse.getEntitySet(), 
-                collectionResponse.getInlineCount(), 
-                collectionResponse.getSkipToken());
+        EntitiesResponse er = Responses.entities(entities,
+            collectionResponse.getEntitySet(),
+            collectionResponse.getInlineCount(),
+            collectionResponse.getSkipToken());
         fw.write(uriInfo, sw, er);
         fwBase = fw;
       } else {
         // non-entities
         FormatWriter<CollectionResponse> fw = FormatWriterFactory.getFormatWriter(
-                CollectionResponse.class,
-                httpHeaders.getAcceptableMediaTypes(),
-                format,
-                callback);
+            CollectionResponse.class,
+            httpHeaders.getAcceptableMediaTypes(),
+            format,
+            callback);
         fw.write(uriInfo, sw, collectionResponse);
         fwBase = fw;
       }
-      
+
     } else if (response instanceof PropertyResponse) {
       FormatWriter<PropertyResponse> fw =
           FormatWriterFactory.getFormatWriter(

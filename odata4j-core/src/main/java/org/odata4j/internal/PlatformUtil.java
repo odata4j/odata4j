@@ -1,6 +1,5 @@
 package org.odata4j.internal;
 
-
 public class PlatformUtil {
 
   private static boolean RUNNING_ON_ANDROID;

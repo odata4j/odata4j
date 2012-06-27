@@ -33,18 +33,18 @@ public class EnumsAsStringsPropertyModelDelegate extends PropertyModelDelegate {
       return ((Enum<?>) rt).name();
     return rt;
   }
-  
+
   @Override
   public void setPropertyValue(Object target, String propertyName, Object value) {
     Class baseType = super.getPropertyType(propertyName);
     if (baseType != null && baseType.isEnum() && value instanceof String) {
       // convert string to enum value
-      getDelegate().setPropertyValue(target, propertyName, Enum.valueOf(baseType, (String)value));
+      getDelegate().setPropertyValue(target, propertyName, Enum.valueOf(baseType, (String) value));
     } else {
       getDelegate().setPropertyValue(target, propertyName, value);
     }
   }
-  
+
   @Override
   public Class<?> getCollectionElementType(String collectionName) {
     Class etype = getDelegate().getCollectionElementType(collectionName);
@@ -53,7 +53,7 @@ public class EnumsAsStringsPropertyModelDelegate extends PropertyModelDelegate {
     }
     return etype;
   }
-  
+
   @Override
   public Iterable<?> getCollectionValue(Object target, String collectionName) {
     Iterable<?> iter = getDelegate().getCollectionValue(target, collectionName);

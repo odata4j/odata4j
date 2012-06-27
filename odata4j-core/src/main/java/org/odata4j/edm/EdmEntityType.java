@@ -245,7 +245,8 @@ public class EdmEntityType extends EdmStructuralType {
         @Override
         public String apply(Builder input) {
           return input.getFullyQualifiedTypeName();
-        }};
+        }
+      };
     }
 
   }

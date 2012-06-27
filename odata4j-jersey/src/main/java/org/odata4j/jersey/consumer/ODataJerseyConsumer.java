@@ -284,6 +284,7 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
   }
 
   private static final FeedCustomizationMapping EMPTY_MAPPING = new FeedCustomizationMapping();
+
   private FeedCustomizationMapping getFeedCustomizationMapping(String entitySetName) {
     if (!cachedMappings.containsKey(entitySetName)) {
       FeedCustomizationMapping rt = new FeedCustomizationMapping();

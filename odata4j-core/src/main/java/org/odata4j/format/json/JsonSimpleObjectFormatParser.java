@@ -1,4 +1,3 @@
-
 package org.odata4j.format.json;
 
 import java.io.Reader;
@@ -22,25 +21,25 @@ public class JsonSimpleObjectFormatParser extends JsonFormatParser implements Fo
 
   @Override
   public OSimpleObject parse(Reader reader) {
-    
+
     JsonStreamReaderFactory.JsonStreamReader jsr = JsonStreamReaderFactory.createJsonStreamReader(reader);
-    
+
     // {
     ensureNext(jsr);
     ensureStartObject(jsr.nextEvent()); // the response object
-    
+
     // "d"
     ensureNext(jsr);
     ensureStartProperty(jsr.nextEvent(), DATA_PROPERTY);
-    
+
     // : <val>
     JsonEvent endProp = jsr.nextEvent();
     ensureEndProperty(endProp);
-    
+
     // }
     ensureEndObject(jsr.nextEvent());
-    
-    return OSimpleObjects.parse((EdmSimpleType)this.parseType, endProp.asEndProperty().getValue());
+
+    return OSimpleObjects.parse((EdmSimpleType) this.parseType, endProp.asEndProperty().getValue());
   }
-  
+
 }

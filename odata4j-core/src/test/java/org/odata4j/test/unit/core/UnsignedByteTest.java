@@ -41,7 +41,8 @@ public class UnsignedByteTest {
       @Override
       public void run() {
         new UnsignedByte(value);
-      }};
+      }
+    };
   }
 
   private static Runnable valueOf(final int value) {
@@ -49,7 +50,8 @@ public class UnsignedByteTest {
       @Override
       public void run() {
         UnsignedByte.valueOf(value);
-      }};
+      }
+    };
   }
 
   private static Runnable parseUnsignedByte(final String value) {
@@ -57,7 +59,8 @@ public class UnsignedByteTest {
       @Override
       public void run() {
         UnsignedByte.parseUnsignedByte(value);
-      }};
+      }
+    };
   }
 
 }

@@ -5,11 +5,11 @@ import java.util.Collection;
 public class BeanBasedPropertyModel implements PropertyModel {
 
   private final BeanModel beanModel;
-  
+
   public BeanBasedPropertyModel(Class<?> clazz) {
     this(clazz, true);
   }
-  
+
   /**
    * construct
    * @param clazz - the POJO class that defines the model
@@ -25,7 +25,7 @@ public class BeanBasedPropertyModel implements PropertyModel {
   public BeanBasedPropertyModel(Class<?> clazz, boolean flatten) {
     beanModel = new BeanModel(clazz, flatten);
   }
-  
+
   @Override
   public Iterable<String> getPropertyNames() {
     return beanModel.getPropertyNames();
@@ -55,7 +55,7 @@ public class BeanBasedPropertyModel implements PropertyModel {
   public Iterable<?> getCollectionValue(Object target, String collectionName) {
     return beanModel.getCollectionValue(target, collectionName);
   }
-  
+
   @Override
   public void setCollectionValue(Object target, String collectionName, Collection<?> value) {
     beanModel.setCollectionValue(target, collectionName, value);

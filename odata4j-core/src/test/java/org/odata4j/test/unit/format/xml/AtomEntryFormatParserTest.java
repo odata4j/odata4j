@@ -70,7 +70,7 @@ public class AtomEntryFormatParserTest extends AbstractEntryFormatParserTest {
     verifyDateTimeOffsetPropertyValue(formatParser.parse(buildAtom("<d:DateTimeOffset m:type=\"Edm.DateTimeOffset\">2007-06-05T01:02:03.0095-08:00</d:DateTimeOffset>")), DATETIME_WITH_MILLIS_NEGATIVE_OFFSET.withMillisOfSecond(10));
   }
 
-  @Test(expected=IllegalArgumentException.class)
+  @Test(expected = IllegalArgumentException.class)
   public void illegalDateTimeOffset() throws Exception {
     formatParser.parse(buildAtom("<d:DateTimeOffset m:type=\"Edm.DateTimeOffset\">2005-04-03T01:02</d:DateTimeOffset>"));
   }
@@ -85,7 +85,7 @@ public class AtomEntryFormatParserTest extends AbstractEntryFormatParserTest {
     verifyTimePropertyValue(formatParser.parse(buildAtom("<d:Time m:type=\"Edm.Time\">PT1H2M3.004S</d:Time>")), TIME_WITH_MILLIS);
   }
 
-  @Test(expected=IllegalArgumentException.class)
+  @Test(expected = IllegalArgumentException.class)
   public void illegalTime() throws Exception {
     formatParser.parse(buildAtom("<d:Time m:type=\"Edm.Time\">01:02:03</d:Time>"));
   }
@@ -100,7 +100,7 @@ public class AtomEntryFormatParserTest extends AbstractEntryFormatParserTest {
     assertThat((Boolean) formatParser.parse(buildAtom("<d:Boolean>true</d:Boolean>")).getEntity().getProperty(BOOLEAN_NAME).getValue(), is(BOOLEAN));
   }
 
-  @Test(expected=IllegalArgumentException.class)
+  @Test(expected = IllegalArgumentException.class)
   public void illegalBoolean() throws Exception {
     formatParser.parse(buildAtom("<d:Boolean m:type=\"Edm.Boolean\">undefined</d:Boolean>"));
   }
@@ -115,7 +115,7 @@ public class AtomEntryFormatParserTest extends AbstractEntryFormatParserTest {
     assertThat((Guid) formatParser.parse(buildAtom("<d:Guid m:type=\"Edm.Guid\">4786c33c-1e3d-4b57-b5cf-a4b759acac44</d:Guid>")).getEntity().getProperty(GUID_NAME).getValue(), is(GUID));
   }
 
-  @Test(expected=IllegalArgumentException.class)
+  @Test(expected = IllegalArgumentException.class)
   public void illegalGuid() throws Exception {
     formatParser.parse(buildAtom("<d:Guid m:type=\"Edm.Guid\">a-b-c-d</d:Guid>"));
   }
@@ -125,7 +125,7 @@ public class AtomEntryFormatParserTest extends AbstractEntryFormatParserTest {
     assertThat((BigDecimal) formatParser.parse(buildAtom("<d:Decimal m:type=\"Edm.Decimal\">-12345.67890</d:Decimal>")).getEntity().getProperty(DECIMAL_NAME).getValue(), is(DECIMAL));
   }
 
-  @Test(expected=IllegalArgumentException.class)
+  @Test(expected = IllegalArgumentException.class)
   public void illegalDecimal() throws Exception {
     formatParser.parse(buildAtom("<d:Decimal>1Ee+01</d:Decimal>"));
   }
@@ -140,7 +140,7 @@ public class AtomEntryFormatParserTest extends AbstractEntryFormatParserTest {
     assertThat((Short) formatParser.parse(buildAtom("<d:Int16>-32768</d:Int16>")).getEntity().getProperty(INT16_NAME).getValue(), is(Short.MIN_VALUE));
   }
 
-  @Test(expected=IllegalArgumentException.class)
+  @Test(expected = IllegalArgumentException.class)
   public void int16TooLarge() throws Exception {
     formatParser.parse(buildAtom("<d:Int16>32768</d:Int16>"));
   }

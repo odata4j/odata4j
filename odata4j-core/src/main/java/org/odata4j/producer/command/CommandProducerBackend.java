@@ -10,8 +10,8 @@ import org.odata4j.core.OEntityId;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OFunctionParameter;
 import org.odata4j.edm.EdmFunctionImport;
-import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.EntityQueryInfo;
+import org.odata4j.producer.QueryInfo;
 
 public interface CommandProducerBackend {
 

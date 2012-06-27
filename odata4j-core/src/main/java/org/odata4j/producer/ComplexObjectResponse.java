@@ -1,7 +1,6 @@
 package org.odata4j.producer;
 
 import org.odata4j.core.OComplexObject;
-import org.odata4j.edm.EdmType;
 
 /**
  * An <code>ComplexObjectResponse</code> is a response to a client request expecting a single instance of a complex type.

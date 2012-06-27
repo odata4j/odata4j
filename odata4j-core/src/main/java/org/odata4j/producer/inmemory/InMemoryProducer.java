@@ -120,11 +120,11 @@ public class InMemoryProducer implements ODataProducer {
    */
   public InMemoryProducer(String namespace, String containerName, int maxResults, EdmDecorator decorator, InMemoryTypeMapping typeMapping) {
     this(namespace, containerName, maxResults, decorator, typeMapping,
-            true); // legacy: flatten edm
+        true); // legacy: flatten edm
   }
 
   public InMemoryProducer(String namespace, String containerName, int maxResults, EdmDecorator decorator, InMemoryTypeMapping typeMapping,
-          boolean flattenEdm) {
+      boolean flattenEdm) {
     this.namespace = namespace;
     this.containerName = containerName != null && !containerName.isEmpty() ? containerName : "Container";
     this.maxResults = maxResults;
@@ -147,7 +147,7 @@ public class InMemoryProducer implements ODataProducer {
   }
 
   protected InMemoryEdmGenerator newEdmGenerator(String namespace, InMemoryTypeMapping typeMapping, String idPropName, Map<String, InMemoryEntityInfo<?>> eis,
-          Map<String, InMemoryComplexTypeInfo<?>> complexTypesInfo) {
+      Map<String, InMemoryComplexTypeInfo<?>> complexTypesInfo) {
     return new InMemoryEdmGenerator(namespace, containerName, typeMapping, ID_PROPNAME, eis, complexTypesInfo, this.flattenEdm);
   }
 
@@ -161,7 +161,9 @@ public class InMemoryProducer implements ODataProducer {
 
   }
 
-  public void setIncludeNullPropertyValues(boolean value) { this.includeNullPropertyValues = value; }
+  public void setIncludeNullPropertyValues(boolean value) {
+    this.includeNullPropertyValues = value;
+  }
 
   /**
    * register a POJO class as an EdmComplexType.
@@ -247,7 +249,7 @@ public class InMemoryProducer implements ODataProducer {
       final Func<Iterable<TEntity>> get,
       final String... keys) {
     register(entityClass, propertyModel, entitySetName, entityTypeName,
-            get, null, keys);
+        get, null, keys);
   }
 
   public <TEntity> void register(
@@ -381,8 +383,8 @@ public class InMemoryProducer implements ODataProducer {
           }
         }
         properties.add(OProperties.collection(property.getName(),
-                // hmmmh...is something is wrong here if I have to create a new EdmCollectionType?
-                new EdmCollectionType(EdmProperty.CollectionKind.Collection,
+            // hmmmh...is something is wrong here if I have to create a new EdmCollectionType?
+            new EdmCollectionType(EdmProperty.CollectionKind.Collection,
                 property.getType()), b.build()));
       }
     }
@@ -462,7 +464,7 @@ public class InMemoryProducer implements ODataProducer {
 
   protected Iterable<?> getRelatedPojos(EdmNavigationProperty navProp, Object srcObject, InMemoryEntityInfo<?> srcInfo) {
     if (navProp.getToRole().getMultiplicity() == EdmMultiplicity.MANY) {
-      Iterable<?> i =  srcInfo.getPropertyModel().getCollectionValue(srcObject, navProp.getName());
+      Iterable<?> i = srcInfo.getPropertyModel().getCollectionValue(srcObject, navProp.getName());
       return null == i ? Collections.EMPTY_LIST : i;
     } else {
       // can be null
@@ -482,16 +484,16 @@ public class InMemoryProducer implements ODataProducer {
   public EntitiesResponse getEntities(String entitySetName, final QueryInfo queryInfo) {
 
     final RequestContext rc = RequestContext.newBuilder(RequestType.GetEntities)
-            .entitySetName(entitySetName)
-            .entitySet(getMetadata().getEdmEntitySet(entitySetName))
-            .queryInfo(queryInfo)
-            .pathHelper(new PropertyPathHelper(queryInfo)).build();
+        .entitySetName(entitySetName)
+        .entitySet(getMetadata().getEdmEntitySet(entitySetName))
+        .queryInfo(queryInfo)
+        .pathHelper(new PropertyPathHelper(queryInfo)).build();
 
     final InMemoryEntityInfo<?> ei = eis.get(entitySetName);
 
     Enumerable<Object> objects = null == ei.getWithContext
-            ? Enumerable.create(ei.get.apply()).cast(Object.class)
-            : Enumerable.create(ei.getWithContext.apply(rc)).cast(Object.class);
+        ? Enumerable.create(ei.get.apply()).cast(Object.class)
+        : Enumerable.create(ei.getWithContext.apply(rc)).cast(Object.class);
 
     return getEntitiesResponse(rc, rc.getEntitySet(), objects, ei.getPropertyModel());
   }
@@ -569,18 +571,18 @@ public class InMemoryProducer implements ODataProducer {
   public CountResponse getEntitiesCount(String entitySetName, final QueryInfo queryInfo) {
 
     final RequestContext rc = RequestContext.newBuilder(RequestType.GetEntitiesCount)
-            .entitySetName(entitySetName)
-            .entitySet(getMetadata().getEdmEntitySet(entitySetName))
-            .queryInfo(queryInfo)
-            .build();
+        .entitySetName(entitySetName)
+        .entitySet(getMetadata().getEdmEntitySet(entitySetName))
+        .queryInfo(queryInfo)
+        .build();
 
     final InMemoryEntityInfo<?> ei = eis.get(entitySetName);
 
     final PropertyPathHelper pathHelper = new PropertyPathHelper(queryInfo);
 
     Enumerable<Object> objects = null == ei.getWithContext
-            ? Enumerable.create(ei.get.apply()).cast(Object.class)
-            : Enumerable.create(ei.getWithContext.apply(rc)).cast(Object.class);
+        ? Enumerable.create(ei.get.apply()).cast(Object.class)
+        : Enumerable.create(ei.getWithContext.apply(rc)).cast(Object.class);
 
     // apply filter
     if (queryInfo != null && queryInfo.filter != null) {
@@ -643,12 +645,12 @@ public class InMemoryProducer implements ODataProducer {
     PropertyPathHelper pathHelper = new PropertyPathHelper(queryInfo);
 
     RequestContext rc = RequestContext.newBuilder(RequestType.GetEntity)
-            .entitySetName(entitySetName)
-            .entitySet(getMetadata()
+        .entitySetName(entitySetName)
+        .entitySet(getMetadata()
             .getEdmEntitySet(entitySetName))
-            .entityKey(entityKey)
-            .queryInfo(queryInfo)
-            .pathHelper(pathHelper).build();
+        .entityKey(entityKey)
+        .queryInfo(queryInfo)
+        .pathHelper(pathHelper).build();
 
     final Object rt = getEntityPojo(rc);
     if (rt == null)
@@ -690,12 +692,12 @@ public class InMemoryProducer implements ODataProducer {
   public BaseResponse getNavProperty(String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
 
     RequestContext rc = RequestContext.newBuilder(RequestType.GetNavProperty)
-            .entitySetName(entitySetName)
-            .entitySet(getMetadata().getEdmEntitySet(entitySetName))
-            .entityKey(entityKey)
-            .navPropName(navProp)
-            .queryInfo(queryInfo)
-            .pathHelper(new PropertyPathHelper(queryInfo)).build();
+        .entitySetName(entitySetName)
+        .entitySet(getMetadata().getEdmEntitySet(entitySetName))
+        .entityKey(entityKey)
+        .navPropName(navProp)
+        .queryInfo(queryInfo)
+        .pathHelper(new PropertyPathHelper(queryInfo)).build();
 
     EdmNavigationProperty navProperty = rc.getEntitySet().getType().findNavigationProperty(navProp);
     if (navProperty != null) {
@@ -790,7 +792,7 @@ public class InMemoryProducer implements ODataProducer {
 
   @Override
   public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz,
-    Map<String, Object> params) {
+      Map<String, Object> params) {
     throw new UnsupportedOperationException();
   }
 
@@ -804,7 +806,9 @@ public class InMemoryProducer implements ODataProducer {
    */
   public static class RequestContext {
 
-    public enum RequestType { GetEntity, GetEntities, GetEntitiesCount, GetNavProperty };
+    public enum RequestType {
+      GetEntity, GetEntities, GetEntitiesCount, GetNavProperty
+    };
 
     public final RequestType requestType;
     private final String entitySetName;
@@ -897,7 +901,7 @@ public class InMemoryProducer implements ODataProducer {
     }
 
     private RequestContext(RequestType requestType, String entitySetName, EdmEntitySet entitySet,
-            String navPropName, OEntityKey entityKey, QueryInfo queryInfo, PropertyPathHelper pathHelper) {
+        String navPropName, OEntityKey entityKey, QueryInfo queryInfo, PropertyPathHelper pathHelper) {
       this.requestType = requestType;
       this.entitySetName = entitySetName;
       this.entitySet = entitySet;
@@ -923,7 +927,7 @@ public class InMemoryProducer implements ODataProducer {
     final String[] keyList = ei.keys;
 
     Iterable<Object> iter = null == ei.getWithContext ? ((Iterable<Object>) ei.get.apply())
-            : ((Iterable<Object>)ei.getWithContext.apply(rc));
+        : ((Iterable<Object>) ei.getWithContext.apply(rc));
 
     final Object rt = Enumerable.create(iter).firstOrNull(new Predicate1<Object>() {
       public boolean apply(Object input) {
@@ -957,16 +961,18 @@ public class InMemoryProducer implements ODataProducer {
     return rt;
   }
 
-  private enum TriggerType { Before, After };
+  private enum TriggerType {
+    Before, After
+  };
+
   protected void fireUnmarshalEvent(Object pojo, OStructuralObject sobj, TriggerType ttype)
-          throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-     try {
+      throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    try {
       Method m = pojo.getClass().getMethod(ttype == TriggerType.Before ? "beforeOEntityUnmarshal" : "afterOEntityUnmarshal", OStructuralObject.class);
       if (null != m) {
         m.invoke(pojo, sobj);
       }
-    } catch (NoSuchMethodException ex) {
-    }
+    } catch (NoSuchMethodException ex) {}
   }
 
   /**
@@ -980,11 +986,11 @@ public class InMemoryProducer implements ODataProducer {
    * @throws IllegalAccessException
    */
   public <T> T toPojo(OComplexObject entity, Class<T> pojoClass) throws InstantiationException,
-          IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+      IllegalAccessException, IllegalArgumentException, InvocationTargetException {
     InMemoryComplexTypeInfo<?> e = this.findComplexTypeInfoForClass(pojoClass);
 
     T pojo = fillInPojo(entity, this.getMetadata().findEdmComplexType(
-              this.namespace + "." + e.getTypeName()), e.getPropertyModel(), pojoClass);
+        this.namespace + "." + e.getTypeName()), e.getPropertyModel(), pojoClass);
 
     fireUnmarshalEvent(pojo, entity, TriggerType.After);
     return pojo;
@@ -1003,7 +1009,7 @@ public class InMemoryProducer implements ODataProducer {
    * @throws IllegalAccessException
    */
   protected <T> T fillInPojo(OStructuralObject sobj, EdmStructuralType stype, PropertyModel propertyModel,
-          Class<T> pojoClass) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+      Class<T> pojoClass) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
     T pojo = pojoClass.newInstance();
     fireUnmarshalEvent(pojo, sobj, TriggerType.Before);
@@ -1013,7 +1019,7 @@ public class InMemoryProducer implements ODataProducer {
       Object value = null;
       try {
         value = sobj.getProperty(property.getName()).getValue();
-      } catch(Exception ex) {
+      } catch (Exception ex) {
         // property not define on object
         if (property.isNullable()) {
           continue;
@@ -1031,13 +1037,13 @@ public class InMemoryProducer implements ODataProducer {
           // hmmh, value is a Collection<OProperty<?>>...why is it not an OComplexObject.
 
           propertyModel.setPropertyValue(
-                  pojo,
-                  property.getName(),
-                  null == value
-                    ? null
-                    : toPojo(
-                        OComplexObjects.create((EdmComplexType)property.getType(), (List<OProperty<?>>)value),
-                        propertyModel.getPropertyType(property.getName())));
+              pojo,
+              property.getName(),
+              null == value
+                  ? null
+                  : toPojo(
+                      OComplexObjects.create((EdmComplexType) property.getType(), (List<OProperty<?>>) value),
+                      propertyModel.getPropertyType(property.getName())));
         }
       } else {
         // collection.
@@ -1045,7 +1051,7 @@ public class InMemoryProducer implements ODataProducer {
         List<Object> pojos = new ArrayList<Object>();
         for (OObject item : collection) {
           if (collection.getType().isSimple()) {
-            pojos.add(((OSimpleObject)item).getValue());
+            pojos.add(((OSimpleObject) item).getValue());
           } else {
             // turn OComplexObject into a pojo
             pojos.add(toPojo((OComplexObject) item, propertyModel.getCollectionElementType(property.getName())));
@@ -1082,7 +1088,7 @@ public class InMemoryProducer implements ODataProducer {
    * @throws IllegalAccessException
    */
   public <T> T toPojo(OEntity entity, Class<T> pojoClass) throws InstantiationException,
-          IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+      IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
     InMemoryEntityInfo<?> e = this.findEntityInfoForClass(pojoClass);
 
@@ -1099,7 +1105,7 @@ public class InMemoryProducer implements ODataProducer {
       OLink link = null;
       try {
         link = entity.getLink(np.getName(), OLink.class);
-      } catch(IllegalArgumentException nolinkex) {
+      } catch (IllegalArgumentException nolinkex) {
         continue;
       }
 
@@ -1112,7 +1118,7 @@ public class InMemoryProducer implements ODataProducer {
           e.getPropertyModel().setCollectionValue(pojo, np.getName(), pojos);
         } else {
           e.getPropertyModel().setPropertyValue(pojo, np.getName(),
-                  toPojo(link.getRelatedEntity(), e.getPropertyModel().getPropertyType(np.getName())));
+              toPojo(link.getRelatedEntity(), e.getPropertyModel().getPropertyType(np.getName())));
         }
       } // else ignore deferred links.
     }

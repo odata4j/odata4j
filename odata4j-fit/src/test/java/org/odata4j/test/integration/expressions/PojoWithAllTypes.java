@@ -25,9 +25,9 @@ public class PojoWithAllTypes {
   private String string;
   private LocalTime time;
   private DateTime dateTimeOffset;
-  
+
   public PojoWithAllTypes() {}
-  
+
   public PojoWithAllTypes(byte[] binary, boolean boolean_, UnsignedByte byte_, byte sbyte, LocalDateTime dateTime, BigDecimal decimal,
       double double_, Guid guid, short int16, int int32, long int64, float single, String string, LocalTime time, DateTime dateTimeOffset) {
     this.binary = binary;
@@ -50,15 +50,15 @@ public class PojoWithAllTypes {
   public byte[] getBinary() {
     return binary;
   }
-  
+
   //public void setBinary(byte[] value) {
   //  binary = value;
- // }
+  // }
 
   public boolean getBoolean() {
     return boolean_;
   }
-  
+
   public void setBoolean(boolean value) {
     boolean_ = value;
   }
@@ -66,7 +66,7 @@ public class PojoWithAllTypes {
   public UnsignedByte getByte() {
     return byte_;
   }
-  
+
   public void setByte(UnsignedByte value) {
     byte_ = value;
   }
@@ -74,7 +74,7 @@ public class PojoWithAllTypes {
   public byte getSByte() {
     return sbyte;
   }
-  
+
   public void setSByte(byte value) {
     sbyte = value;
   }
@@ -86,11 +86,11 @@ public class PojoWithAllTypes {
   public void setDateTime(LocalDateTime value) {
     dateTime = value;
   }
-  
+
   public BigDecimal getDecimal() {
     return decimal;
   }
-  
+
   public void setDecimal(BigDecimal value) {
     decimal = value;
   }
@@ -98,7 +98,7 @@ public class PojoWithAllTypes {
   public double getDouble() {
     return double_;
   }
-  
+
   public void setDouble(double value) {
     double_ = value;
   }
@@ -106,7 +106,7 @@ public class PojoWithAllTypes {
   public Guid getGuid() {
     return guid;
   }
-  
+
   public void setGuid(Guid value) {
     guid = value;
   }
@@ -114,7 +114,7 @@ public class PojoWithAllTypes {
   public short getInt16() {
     return int16;
   }
-  
+
   public void setInt16(short value) {
     int16 = value;
   }
@@ -122,7 +122,7 @@ public class PojoWithAllTypes {
   public int getInt32() {
     return int32;
   }
-  
+
   public void setInt32(int value) {
     int32 = value;
   }
@@ -130,7 +130,7 @@ public class PojoWithAllTypes {
   public long getInt64() {
     return int64;
   }
-  
+
   public void setInt64(long value) {
     int64 = value;
   }
@@ -138,7 +138,7 @@ public class PojoWithAllTypes {
   public float getSingle() {
     return single;
   }
-  
+
   public void setSingle(float value) {
     single = value;
   }
@@ -146,7 +146,7 @@ public class PojoWithAllTypes {
   public String getString() {
     return string;
   }
-  
+
   public void setString(String value) {
     string = value;
   }
@@ -154,7 +154,7 @@ public class PojoWithAllTypes {
   public LocalTime getTime() {
     return time;
   }
-  
+
   public void setTime(LocalTime value) {
     time = value;
   }

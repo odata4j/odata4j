@@ -27,7 +27,6 @@ public class MetadataUtil {
 
   private static final String REF_SCENARIO_EDMX = "/META-INF/FunctionImportScenario.edmx.xml";
 
-
   public static EdmDataServices readMetadataServiceFromFile() {
     InputStream inputStream = FunctionImportProducerMock.class.getResourceAsStream(MetadataUtil.REF_SCENARIO_EDMX);
     Reader reader = new InputStreamReader(inputStream);
@@ -57,5 +56,4 @@ public class MetadataUtil {
     }
   }
 
-  
 }

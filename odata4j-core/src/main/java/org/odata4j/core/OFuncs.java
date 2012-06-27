@@ -83,7 +83,8 @@ public class OFuncs {
       @Override
       public void run() {
         func.apply();
-      }};
+      }
+    };
   }
 
 }

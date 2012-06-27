@@ -11,5 +11,6 @@ public interface StartElement2 {
   Attribute2 getAttributeByName(String name);
 
   Enumerable<Attribute2> getAttributes();
+
   Enumerable<Namespace2> getNamespaces();
 }

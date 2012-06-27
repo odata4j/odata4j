@@ -14,14 +14,15 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.EndElement;
+import javax.xml.stream.events.Namespace;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
-import javax.xml.stream.events.Namespace;
-import org.core4j.Enumerable;
 
+import org.core4j.Enumerable;
 import org.odata4j.core.Throwables;
 import org.odata4j.stax2.Attribute2;
 import org.odata4j.stax2.EndElement2;
+import org.odata4j.stax2.Namespace2;
 import org.odata4j.stax2.QName2;
 import org.odata4j.stax2.StartElement2;
 import org.odata4j.stax2.XMLEvent2;
@@ -32,7 +33,6 @@ import org.odata4j.stax2.XMLInputFactory2;
 import org.odata4j.stax2.XMLOutputFactory2;
 import org.odata4j.stax2.XMLWriter2;
 import org.odata4j.stax2.XMLWriterFactory2;
-import org.odata4j.stax2.Namespace2;
 
 public class StaxXMLFactoryProvider2 extends XMLFactoryProvider2 {
 
@@ -228,17 +228,17 @@ public class StaxXMLFactoryProvider2 extends XMLFactoryProvider2 {
         return null;
       return new StaxAttribute2(att);
     }
-    
+
     @Override
     public Enumerable<Attribute2> getAttributes() {
       Iterator i = real.getAttributes();
       List<Attribute2> atts = new ArrayList<Attribute2>();
       while (i.hasNext()) {
-        atts.add(new StaxAttribute2((Attribute)i.next()));
+        atts.add(new StaxAttribute2((Attribute) i.next()));
       }
       return Enumerable.create(atts);
     }
-    
+
     @Override
     public Enumerable<Namespace2> getNamespaces() {
       Iterator i = real.getNamespaces();
@@ -249,29 +249,28 @@ public class StaxXMLFactoryProvider2 extends XMLFactoryProvider2 {
       return Enumerable.create(namespaces);
     }
   }
-  
+
   private static class StaxNamespace2 extends StaxAttribute2 implements Namespace2 {
 
-    
     public StaxNamespace2(Namespace real) {
       super(real);
     }
-    
+
     @Override
     public String getNamespaceURI() {
-      return ((Namespace)real).getNamespaceURI();
+      return ((Namespace) real).getNamespaceURI();
     }
 
     @Override
     public String getPrefix() {
-      return ((Namespace)real).getPrefix();
+      return ((Namespace) real).getPrefix();
     }
 
     @Override
     public boolean isDefaultNamespaceDeclaration() {
-      return ((Namespace)real).isDefaultNamespaceDeclaration();
+      return ((Namespace) real).isDefaultNamespaceDeclaration();
     }
-    
+
   }
 
   private static class StaxAttribute2 implements Attribute2 {
@@ -288,8 +287,8 @@ public class StaxXMLFactoryProvider2 extends XMLFactoryProvider2 {
 
     @Override
     public QName2 getName() {
-      return new QName2(real.getName().getNamespaceURI(), 
-              real.getName().getLocalPart(), real.getName().getPrefix());
+      return new QName2(real.getName().getNamespaceURI(),
+          real.getName().getLocalPart(), real.getName().getPrefix());
     }
   }
 

@@ -72,7 +72,7 @@ public class LoggingCommand implements Command<ProducerCommandContext<?>> {
         Object val = f.get(arg);
         if (val == null
             || Collection.class.isAssignableFrom(val.getClass()) && ((Collection<?>) val).isEmpty()
-            || Map.class.isAssignableFrom(val.getClass()) && ((Map<?,?>) val).isEmpty())
+            || Map.class.isAssignableFrom(val.getClass()) && ((Map<?, ?>) val).isEmpty())
           continue;
 
         if (sb.length() > 0)

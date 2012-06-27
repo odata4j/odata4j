@@ -62,13 +62,13 @@ public class PropertyPathHelper {
   protected List<RecursivePropertyPath> expandRPaths;
 
   public PropertyPathHelper() {
-    setup((String)null, null, null, null);
+    setup((String) null, null, null, null);
   }
-  
+
   public PropertyPathHelper(QueryInfo qi) {
     setup(null == qi ? null : qi.select, null == qi ? null : qi.expand, null, null);
   }
-  
+
   public PropertyPathHelper(String select, String expand) {
     setup(select, expand, null, null);
   }

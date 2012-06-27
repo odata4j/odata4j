@@ -44,7 +44,7 @@ public class CommandProducer implements ODataProducer {
       throw Throwables.propagate(e);
     }
     if (resultType.equals(Void.class)) {
-      return null;  // ok for Void
+      return null; // ok for Void
     }
     throw new RuntimeException("Command " + contextType.getSimpleName() + " implementation did not return result, expected " + resultType.getSimpleName());
   }

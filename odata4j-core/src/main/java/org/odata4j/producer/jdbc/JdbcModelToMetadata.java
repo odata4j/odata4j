@@ -23,7 +23,7 @@ import org.odata4j.producer.jdbc.JdbcModel.JdbcTable;
 
 public class JdbcModelToMetadata implements Func1<JdbcModel, JdbcMetadataMapping> {
 
-  private static final Map<Integer, EdmType> SIMPLE_TYPE_MAPPING = ImmutableMap.<Integer, EdmType>of(
+  private static final Map<Integer, EdmType> SIMPLE_TYPE_MAPPING = ImmutableMap.<Integer, EdmType> of(
       Types.INTEGER, EdmSimpleType.INT32,
       Types.VARCHAR, EdmSimpleType.STRING,
       Types.BOOLEAN, EdmSimpleType.BOOLEAN);

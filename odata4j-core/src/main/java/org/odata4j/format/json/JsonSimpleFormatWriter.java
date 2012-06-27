@@ -1,6 +1,7 @@
 package org.odata4j.format.json;
 
 import javax.ws.rs.core.UriInfo;
+
 import org.odata4j.producer.SimpleResponse;
 
 /**

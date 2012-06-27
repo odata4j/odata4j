@@ -94,7 +94,7 @@ public class Issue184MockProducer implements ODataProducer {
     OEntityKey entityKey = OEntityKey.parse("1");
     List<OProperty<?>> properties = entity.getProperties();
     EdmEntitySet entitySet = this.getMetadata().findEdmEntitySet(entitySetName);
-    OEntity newEntity = OEntities.create(entitySet , entityKey , properties, null);
+    OEntity newEntity = OEntities.create(entitySet, entityKey, properties, null);
     return Responses.entity(newEntity);
   }
 

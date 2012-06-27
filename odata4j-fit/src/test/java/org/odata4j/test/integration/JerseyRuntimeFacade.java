@@ -2,7 +2,10 @@ package org.odata4j.test.integration;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.ws.rs.core.MediaType;
 
@@ -22,11 +25,6 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.container.filter.LoggingFilter;
-import java.io.InputStream;
-import java.util.Map;
-import java.util.Map.Entry;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 public class JerseyRuntimeFacade implements RuntimeFacade {
 

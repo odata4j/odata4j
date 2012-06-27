@@ -23,6 +23,6 @@ public interface OExtensible<T> {
    * @see OAtomEntity
    */
   <TExtension extends OExtension<T>> TExtension findExtension(Class<TExtension> clazz,
-          Map<String, Object> params);
+      Map<String, Object> params);
 
 }

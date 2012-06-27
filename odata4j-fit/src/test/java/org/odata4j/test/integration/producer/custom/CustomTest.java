@@ -1,20 +1,20 @@
 package org.odata4j.test.integration.producer.custom;
 
-import com.sun.jersey.api.container.filter.LoggingFilter;
-import java.io.ByteArrayInputStream;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import junit.framework.Assert;
-import org.junit.Ignore;
 
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response.Status;
+
+import junit.framework.Assert;
+
+import org.junit.Ignore;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OCollection;
@@ -273,43 +273,43 @@ public class CustomTest extends CustomBaseTest {
     String content = rtFacade.getWebResource(endpointUri + "MLEs('foobar')/$value" + "?$format=json").getEntity();
     assertEquals("here we have some content for the mle with id: ('foobar')", content);
   }
-  
+
   @Ignore("JerseyRuntimeFascade.postWebResource not working...CxfRuntimeFascade.postWebResource not implemented")
   @Test
   public void testCreateMLE() throws InterruptedException {
     Map<String, Object> headers = new HashMap<String, Object>();
-    headers.put("Slug", "ANewMLE");   // the Id
-    
+    headers.put("Slug", "ANewMLE"); // the Id
+
     //Thread.sleep(60000);
     String content = "This MLE was created by the test testCreateMLE()";
     int status = rtFacade.postWebResource(endpointUri + "MLEs", new ByteArrayInputStream(content.getBytes()), MediaType.TEXT_PLAIN_TYPE, headers).getStatusCode();
     assertEquals(Status.CREATED.getStatusCode(), status);
-    
+
     String content2 = rtFacade.getWebResource(endpointUri + "MLEs('ANewMLE')/$value" + "?$format=json").getEntity();
     assertEquals(content, content2);
   }
-  
+
   @Ignore("JerseyRuntimeFascade.putWebResource not working...CxfRuntimeFascade.putWebResource not implemented")
   @Test
   public void testUpdateMLE() {
     String content = "This MLE was updated by the test testUpdateMLE()";
     int status = rtFacade.putWebResource(endpointUri + "MLEs", new ByteArrayInputStream(content.getBytes()), MediaType.TEXT_PLAIN_TYPE, null).getStatusCode();
     assertEquals(Status.NO_CONTENT.getStatusCode(), status);
-    
+
     String content2 = rtFacade.getWebResource(endpointUri + "MLEs('ANewMLE')/$value" + "?$format=json").getEntity();
     assertEquals(content, content2);
   }
-  
+
   @Test
   public void testDeleteMLE() {
     ODataConsumer c = this.rtFacade.createODataConsumer(endpointUri, null, null);
     OEntityKey key = OEntityKey.create("Id", "blatfoo");
     c.deleteEntity("MLEs", key).execute();
-    
+
     OEntity e = null;
     try {
       e = c.getEntity("MLEs", key).execute();
-    } catch(Exception ex) {
+    } catch (Exception ex) {
       Assert.fail(ex.getMessage());
     }
 

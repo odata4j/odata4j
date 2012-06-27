@@ -111,11 +111,11 @@ public class SetResponseCommand implements Command {
 
   private OEntity jpaEntityToOEntity(
       EdmDataServices metadata,
-        EdmEntitySet ees,
-        EntityType<?> entityType,
-        Object jpaEntity,
-        List<EntitySimpleProperty> expand,
-        List<EntitySimpleProperty> select) {
+      EdmEntitySet ees,
+      EntityType<?> entityType,
+      Object jpaEntity,
+      List<EntitySimpleProperty> expand,
+      List<EntitySimpleProperty> select) {
 
     List<OProperty<?>> properties = new ArrayList<OProperty<?>>();
     List<OLink> links = new ArrayList<OLink>();
@@ -123,7 +123,7 @@ public class SetResponseCommand implements Command {
     try {
       SingularAttribute<?, ?> idAtt = JPAEdmGenerator.getIdAttribute(entityType);
       boolean hasEmbeddedCompositeKey =
-            idAtt.getPersistentAttributeType() == PersistentAttributeType.EMBEDDED;
+          idAtt.getPersistentAttributeType() == PersistentAttributeType.EMBEDDED;
 
       // get properties
       for (EdmProperty ep : ees.getType().getProperties()) {
@@ -138,9 +138,9 @@ public class SetResponseCommand implements Command {
           Object value = SetResponseCommand.getIdValue(jpaEntity, idAtt, ep.getName());
 
           properties.add(OProperties.simple(
-                ep.getName(),
-                (EdmSimpleType<?>) ep.getType(),
-                value));
+              ep.getName(),
+              (EdmSimpleType<?>) ep.getType(),
+              value));
 
         } else {
           // get the simple attribute
@@ -150,9 +150,9 @@ public class SetResponseCommand implements Command {
 
           if (ep.getType().isSimple()) {
             properties.add(OProperties.simple(
-                  ep.getName(),
-                  (EdmSimpleType<?>) ep.getType(),
-                  value));
+                ep.getName(),
+                (EdmSimpleType<?>) ep.getType(),
+                value));
           } else {
             // TODO handle embedded entities
           }
@@ -180,7 +180,7 @@ public class SetResponseCommand implements Command {
           } else {
             List<EntitySimpleProperty> remainingPropPaths = new ArrayList<EntitySimpleProperty>();
             if (remainingPropPath != null)
-                remainingPropPaths.add(Expression.simpleProperty(remainingPropPath));
+              remainingPropPaths.add(Expression.simpleProperty(remainingPropPath));
             expandedProps.put(prop, remainingPropPaths);
           }
         }
@@ -190,63 +190,63 @@ public class SetResponseCommand implements Command {
 
           Attribute<?, ?> att = entityType.getAttribute(prop);
           if (att.getPersistentAttributeType() == PersistentAttributeType.ONE_TO_MANY
-                || att.getPersistentAttributeType() == PersistentAttributeType.MANY_TO_MANY) {
+              || att.getPersistentAttributeType() == PersistentAttributeType.MANY_TO_MANY) {
 
             Collection<?> value = JPAMember.create(att, jpaEntity).get();
 
             List<OEntity> relatedEntities = new ArrayList<OEntity>();
             for (Object relatedEntity : value) {
               EntityType<?> elementEntityType = (EntityType<?>) ((PluralAttribute<?, ?, ?>) att)
-                    .getElementType();
+                  .getElementType();
               EdmEntitySet elementEntitySet = metadata
-                    .getEdmEntitySet(JPAEdmGenerator.getEntitySetName(elementEntityType));
+                  .getEdmEntitySet(JPAEdmGenerator.getEntitySetName(elementEntityType));
 
               relatedEntities.add(jpaEntityToOEntity(
                   metadata,
-                    elementEntitySet,
-                    elementEntityType,
-                    relatedEntity,
-                    remainingPropPath,
-                    null));
+                  elementEntitySet,
+                  elementEntityType,
+                  relatedEntity,
+                  remainingPropPath,
+                  null));
             }
 
             links.add(OLinks.relatedEntitiesInline(
-                  null,
-                  prop,
-                  null,
-                  relatedEntities));
+                null,
+                prop,
+                null,
+                relatedEntities));
 
           } else if (att.getPersistentAttributeType() == PersistentAttributeType.ONE_TO_ONE
-                || att.getPersistentAttributeType() == PersistentAttributeType.MANY_TO_ONE) {
+              || att.getPersistentAttributeType() == PersistentAttributeType.MANY_TO_ONE) {
             EntityType<?> relatedEntityType =
-                  (EntityType<?>) ((SingularAttribute<?, ?>) att)
-                      .getType();
+                (EntityType<?>) ((SingularAttribute<?, ?>) att)
+                    .getType();
 
             EdmEntitySet relatedEntitySet =
-                  metadata.getEdmEntitySet(JPAEdmGenerator
-                      .getEntitySetName(relatedEntityType));
+                metadata.getEdmEntitySet(JPAEdmGenerator
+                    .getEntitySetName(relatedEntityType));
 
             Object relatedEntity = JPAMember.create(att, jpaEntity).get();
 
             if (relatedEntity == null) {
               links.add(OLinks.relatedEntityInline(
-                    null,
-                    prop,
-                    null,
-                    null));
+                  null,
+                  prop,
+                  null,
+                  null));
 
             } else {
               links.add(OLinks.relatedEntityInline(
-                    null,
-                    prop,
-                    null,
-                    jpaEntityToOEntity(
-                        metadata,
-                        relatedEntitySet,
-                        relatedEntityType,
-                        relatedEntity,
-                        remainingPropPath,
-                        null)));
+                  null,
+                  prop,
+                  null,
+                  jpaEntityToOEntity(
+                      metadata,
+                      relatedEntitySet,
+                      relatedEntityType,
+                      relatedEntity,
+                      remainingPropPath,
+                      null)));
             }
 
           }
@@ -284,15 +284,15 @@ public class SetResponseCommand implements Command {
   }
 
   static Object getIdValue(
-        Object jpaEntity,
-        SingularAttribute<?, ?> idAtt,
-        String propName) {
+      Object jpaEntity,
+      SingularAttribute<?, ?> idAtt,
+      String propName) {
     try {
       // get the composite id
       Object keyValue = JPAMember.create(idAtt, jpaEntity).get();
 
       if (propName == null)
-          return keyValue;
+        return keyValue;
 
       // get the property from the key
       ManagedType<?> keyType = (ManagedType<?>) idAtt.getType();
@@ -305,7 +305,7 @@ public class SetResponseCommand implements Command {
 
   static OEntityKey toOEntityKey(Object jpaEntity, SingularAttribute<?, ?> idAtt) {
     boolean hasEmbeddedCompositeKey =
-          idAtt.getPersistentAttributeType() == PersistentAttributeType.EMBEDDED;
+        idAtt.getPersistentAttributeType() == PersistentAttributeType.EMBEDDED;
     if (!hasEmbeddedCompositeKey) {
       Object id = SetResponseCommand.getIdValue(jpaEntity, idAtt, null);
       return OEntityKey.create(id);

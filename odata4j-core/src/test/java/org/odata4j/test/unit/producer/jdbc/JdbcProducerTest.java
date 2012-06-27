@@ -217,7 +217,8 @@ public class JdbcProducerTest {
       @Override
       public EntitiesResponse apply() {
         return producer.getEntities(entitySet, queryInfo);
-      }};
+      }
+    };
   }
 
   private static Func<EntityResponse> getEntity(final ODataProducer producer, final String entitySet, final OEntityKey key, final EntityQueryInfo queryInfo) {
@@ -225,7 +226,8 @@ public class JdbcProducerTest {
       @Override
       public EntityResponse apply() {
         return producer.getEntity(entitySet, key, queryInfo);
-      }};
+      }
+    };
   }
 
 }

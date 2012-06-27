@@ -46,7 +46,7 @@ public class FormatWriterFactory {
     FormatWriter<EntityResponse> getEntryFormatWriter();
 
     FormatWriter<PropertyResponse> getPropertyFormatWriter();
-    
+
     FormatWriter<SimpleResponse> getSimpleFormatWriter();
 
     FormatWriter<Entry> getRequestEntryFormatWriter();
@@ -60,7 +60,7 @@ public class FormatWriterFactory {
     FormatWriter<CollectionResponse<?>> getCollectionFormatWriter();
 
     FormatWriter<ErrorResponse> getErrorFormatWriter();
-}
+  }
 
   @SuppressWarnings("unchecked")
   public static <T> FormatWriter<T> getFormatWriter(Class<T> targetType, List<MediaType> acceptTypes, String format, String callback) {
@@ -98,8 +98,8 @@ public class FormatWriterFactory {
 
     if (targetType.equals(PropertyResponse.class))
       return (FormatWriter<T>) formatWriters.getPropertyFormatWriter();
-    
-     if (targetType.equals(SimpleResponse.class))
+
+    if (targetType.equals(SimpleResponse.class))
       return (FormatWriter<T>) formatWriters.getSimpleFormatWriter();
 
     if (Entry.class.isAssignableFrom(targetType))
@@ -156,7 +156,7 @@ public class FormatWriterFactory {
     public FormatWriter<PropertyResponse> getPropertyFormatWriter() {
       return new JsonPropertyFormatWriter(callback);
     }
-    
+
     @Override
     public FormatWriter<SimpleResponse> getSimpleFormatWriter() {
       return new JsonSimpleFormatWriter(callback);
@@ -191,7 +191,7 @@ public class FormatWriterFactory {
     public FormatWriter<ErrorResponse> getErrorFormatWriter() {
       return new JsonErrorFormatWriter(callback);
     }
-}
+  }
 
   public static class AtomWriters implements FormatWriters {
 

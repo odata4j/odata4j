@@ -5,13 +5,15 @@ import java.util.Collection;
 public interface PropertyModel {
 
   Object getPropertyValue(Object target, String propertyName);
+
   void setPropertyValue(Object target, String propertyName, Object value);
-  
+
   /**
    * gets the names of all properties defined by the model
    * @return - property names
    */
   Iterable<String> getPropertyNames();
+
   /**
    * gets the names of properties defined only at this inheritance level
    * in the model
@@ -22,6 +24,7 @@ public interface PropertyModel {
   Class<?> getPropertyType(String propertyName);
 
   Iterable<?> getCollectionValue(Object target, String collectionName);
+
   void setCollectionValue(Object target, String collectionName, Collection<?> value);
 
   /**
@@ -29,6 +32,7 @@ public interface PropertyModel {
    * @return - collection names
    */
   Iterable<String> getCollectionNames();
+
   /**
    * gets the names of collections defined only at this inheritance level
    * in the model

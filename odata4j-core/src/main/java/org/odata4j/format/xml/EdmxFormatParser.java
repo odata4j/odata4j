@@ -272,9 +272,9 @@ public class EdmxFormatParser extends XmlFormatParser {
       if (isStartElement(event, EDM2006_ENTITYSET, EDM2007_ENTITYSET, EDM2008_1_ENTITYSET, EDM2008_9_ENTITYSET, EDM2009_ENTITYSET)) {
         StartElement2 entitySetStartElement = event.asStartElement();
         edmEntitySets.add(EdmEntitySet.newBuilder()
-                .setName(getAttributeValueIfExists(entitySetStartElement, "Name"))
-                .setEntityTypeName(getAttributeValueIfExists(entitySetStartElement, "EntityType"))
-                .setAnnotations(getAnnotations(entitySetStartElement)));
+            .setName(getAttributeValueIfExists(entitySetStartElement, "Name"))
+            .setEntityTypeName(getAttributeValueIfExists(entitySetStartElement, "EntityType"))
+            .setAnnotations(getAnnotations(entitySetStartElement)));
       }
 
       if (isStartElement(event, EDM2006_ASSOCIATIONSET, EDM2007_ASSOCIATIONSET, EDM2008_1_ASSOCIATIONSET, EDM2008_9_ASSOCIATIONSET, EDM2009_ASSOCIATIONSET))
@@ -286,7 +286,7 @@ public class EdmxFormatParser extends XmlFormatParser {
       if (isEndElement(event, entityContainerElement.getName())) {
         return EdmEntityContainer.newBuilder().setName(name).setIsDefault(isDefault).setLazyLoadingEnabled(lazyLoadingEnabled)
             .addEntitySets(edmEntitySets).addAssociationSets(edmAssociationSets).addFunctionImports(edmFunctionImports)
-                .setAnnotations(getAnnotations(entityContainerElement));
+            .setAnnotations(getAnnotations(entityContainerElement));
       }
     }
     throw new UnsupportedOperationException();
@@ -351,8 +351,8 @@ public class EdmxFormatParser extends XmlFormatParser {
 
       if (isEndElement(event, associationSetElement.getName())) {
         return EdmAssociationSet.newBuilder().setName(name).setAssociationName(associationName)
-                .setEnds(ends.get(0), ends.get(1))
-                .setAnnotations(getAnnotations(associationSetElement));
+            .setEnds(ends.get(0), ends.get(1))
+            .setAnnotations(getAnnotations(associationSetElement));
       }
     }
     throw new UnsupportedOperationException();
@@ -378,9 +378,9 @@ public class EdmxFormatParser extends XmlFormatParser {
 
       if (isEndElement(event, associationElement.getName())) {
         return EdmAssociation.newBuilder().setNamespace(schemaNamespace)
-                .setAlias(schemaAlias).setName(name)
-                .setEnds(ends.get(0), ends.get(1))
-                .setAnnotations(getAnnotations(associationElement));
+            .setAlias(schemaAlias).setName(name)
+            .setEnds(ends.get(0), ends.get(1))
+            .setAnnotations(getAnnotations(associationElement));
       }
     }
     throw new UnsupportedOperationException();
@@ -445,10 +445,10 @@ public class EdmxFormatParser extends XmlFormatParser {
 
       if (isEndElement(event, complexTypeElement.getName())) {
         EdmComplexType.Builder complexType = EdmComplexType.newBuilder()
-                .setNamespace(schemaNamespace)
-                .setName(name)
-                .addProperties(edmProperties)
-                .setAnnotations(getAnnotations(complexTypeElement));
+            .setNamespace(schemaNamespace)
+            .setName(name)
+            .addProperties(edmProperties)
+            .setAnnotations(getAnnotations(complexTypeElement));
         if (isAbstractS != null)
           complexType.setIsAbstract("true".equals(isAbstractS));
         return complexType;
@@ -465,7 +465,6 @@ public class EdmxFormatParser extends XmlFormatParser {
     Boolean hasStream = hasStreamValue == null ? null : hasStreamValue.equals("true");
     String baseType = getAttributeValueIfExists(entityTypeElement, "BaseType");
     String isAbstractS = getAttributeValueIfExists(entityTypeElement, "Abstract");
-
 
     List<String> keys = new ArrayList<String>();
     List<EdmProperty.Builder> edmProperties = new ArrayList<EdmProperty.Builder>();
@@ -489,9 +488,9 @@ public class EdmxFormatParser extends XmlFormatParser {
         String toRoleName = navPropStartElement.getAttributeByName("ToRole").getValue();
 
         edmNavigationProperties.add(EdmNavigationProperty.newBuilder(associationName)
-                .setRelationshipName(relationshipName)
-                .setFromToName(fromRoleName, toRoleName)
-                .setAnnotations(getAnnotations(navPropStartElement)));
+            .setRelationshipName(relationshipName)
+            .setFromToName(fromRoleName, toRoleName)
+            .setAnnotations(getAnnotations(navPropStartElement)));
       }
 
       if (isEndElement(event, entityTypeElement.getName())) {
@@ -514,12 +513,12 @@ public class EdmxFormatParser extends XmlFormatParser {
 
   protected boolean isExtensionNamespace(String namespaceUri) {
     return namespaceUri != null &&
-           !AndroidCompat.String_isEmpty(namespaceUri.trim()) &&
-           !namespaceUri.contains("schemas.microsoft.com");
+        !AndroidCompat.String_isEmpty(namespaceUri.trim()) &&
+        !namespaceUri.contains("schemas.microsoft.com");
   }
 
   protected List<EdmAnnotation<?>> getAnnotations(StartElement2 element) {
-     // extract Annotation attributes
+    // extract Annotation attributes
     try {
       Enumerable<Attribute2> atts = element.getAttributes();
       List<EdmAnnotation<?>> annots = new ArrayList<EdmAnnotation<?>>();

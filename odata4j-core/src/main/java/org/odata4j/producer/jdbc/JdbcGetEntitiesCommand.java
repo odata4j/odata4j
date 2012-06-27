@@ -35,7 +35,7 @@ public class JdbcGetEntitiesCommand extends JdbcBaseCommand implements Command<G
     final SqlStatement sqlStatement = queryGen.generate(mapping, entitySet, filter);
     final List<OEntity> entities = new ArrayList<OEntity>();
 
-    jdbcContext.getJdbc().execute(new ThrowingFunc1<Connection, Void>(){
+    jdbcContext.getJdbc().execute(new ThrowingFunc1<Connection, Void>() {
       @Override
       public Void apply(Connection conn) throws Exception {
         PreparedStatement stmt = sqlStatement.asPreparedStatement(conn);
@@ -45,7 +45,8 @@ public class JdbcGetEntitiesCommand extends JdbcBaseCommand implements Command<G
           entities.add(entity);
         }
         return null;
-      }});
+      }
+    });
 
     Integer inlineCount = null;
     String skipToken = null;

@@ -11,8 +11,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
-import org.odata4j.core.ODataConstants;
 
+import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.producer.EntityQueryInfo;
@@ -52,7 +52,7 @@ public class ValueRequestResource {
       params.put(ODataConstants.Params.EdmEntitySet, entitySet);
       params.put(ODataConstants.Params.ODataProducer, producer);
       mediaLinkExtension = producer.findExtension(OMediaLinkExtension.class, params);
-    } catch (UnsupportedOperationException e) { }
+    } catch (UnsupportedOperationException e) {}
 
     if (mediaLinkExtension == null)
       throw new NotImplementedException();

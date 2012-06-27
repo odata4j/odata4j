@@ -26,7 +26,7 @@ public class JdbcDeleteEntityCommand extends JdbcBaseCommand implements Command<
       throw new NotFoundException();
 
     GenerateSqlDelete deleteGen = jdbcContext.get(GenerateSqlDelete.class);
-    BoolCommonExpression filter =  prependPrimaryKeyFilter(mapping, entitySet.getType(), context.getEntityKey(), null);
+    BoolCommonExpression filter = prependPrimaryKeyFilter(mapping, entitySet.getType(), context.getEntityKey(), null);
     final SqlStatement sqlStatement = deleteGen.generate(mapping, entitySet, filter);
     jdbcContext.getJdbc().execute(new ThrowingFunc1<Connection, Void>() {
       @Override

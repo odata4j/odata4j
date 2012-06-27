@@ -18,8 +18,7 @@ import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.producer.server.ODataServer;
 import org.odata4j.test.integration.AbstractRuntimeTest;
 
-
-public class Issue184Test extends AbstractRuntimeTest{
+public class Issue184Test extends AbstractRuntimeTest {
 
   private static final String BODY_JSON = "{\"name\":\"New Product\",\"releaseDate\":\"\\/Date(1337690793987)\\/\",\"rating\":1,\"price\":\"99.99\"}";
 
@@ -28,7 +27,7 @@ public class Issue184Test extends AbstractRuntimeTest{
   private final static String endpointUri = "http://localhost:8810/Issue184.svc/";
 
   private Issue184MockProducer mockProducer;
-  
+
   public Issue184Test(RuntimeFacadeType type) {
     super(type);
   }
@@ -57,23 +56,22 @@ public class Issue184Test extends AbstractRuntimeTest{
     HttpResponse response = httpclient.execute(request);
 
     System.out.println(response.getEntity().toString());
-    
+
     assertEquals(200, response.getStatusLine().getStatusCode());
   }
-  
+
   @Test
   public void testPutDataServiceVersion10() throws ClientProtocolException, IOException {
     HttpPost request = new HttpPost(Issue184Test.endpointUri + "Products");
-    
+
     StringEntity entity = new StringEntity(Issue184Test.BODY_JSON);
     request.setEntity(entity);
 
-    
     request.setHeader("Content-Type", "application/json;odata=verbose");
     request.setHeader("Accept", "application/json");
     request.setHeader("DataServiceVersion", "1.0");
     request.setHeader("MaxDataServiceVersion", "1.0");
-    
+
     HttpClient httpclient = new DefaultHttpClient();
     HttpResponse response = httpclient.execute(request);
 
@@ -83,33 +81,31 @@ public class Issue184Test extends AbstractRuntimeTest{
   @Test
   public void testPutDataServiceVersion20() throws ClientProtocolException, IOException {
     HttpPost request = new HttpPost(Issue184Test.endpointUri + "Products");
-    
+
     StringEntity entity = new StringEntity(Issue184Test.BODY_JSON);
     request.setEntity(entity);
 
-    
     request.setHeader("Content-Type", "application/json;odata=verbose");
     request.setHeader("Accept", "application/json");
     request.setHeader("DataServiceVersion", "2.0");
     request.setHeader("MaxDataServiceVersion", "2.0");
-    
+
     HttpClient httpclient = new DefaultHttpClient();
     HttpResponse response = httpclient.execute(request);
 
     assertEquals(201, response.getStatusLine().getStatusCode());
   }
- 
+
   @Test
   public void testPutDataServiceVersionNone() throws ClientProtocolException, IOException {
     HttpPost request = new HttpPost(Issue184Test.endpointUri + "Products");
-    
+
     StringEntity entity = new StringEntity(Issue184Test.BODY_JSON);
     request.setEntity(entity);
 
-    
     request.setHeader("Content-Type", "application/json;odata=verbose");
     request.setHeader("Accept", "application/json");
-    
+
     HttpClient httpclient = new DefaultHttpClient();
     HttpResponse response = httpclient.execute(request);
 

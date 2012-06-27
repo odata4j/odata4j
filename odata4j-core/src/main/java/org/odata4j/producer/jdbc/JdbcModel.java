@@ -14,14 +14,14 @@ public class JdbcModel {
     public String schemaName;
     public String catalogName;
     public boolean isDefault;
- 
+
     public final List<JdbcModel.JdbcTable> tables = new ArrayList<JdbcModel.JdbcTable>();
   }
 
   public static class JdbcTable {
     public String tableName;
     public String tableType;
- 
+
     public final List<JdbcModel.JdbcColumn> columns = new ArrayList<JdbcModel.JdbcColumn>();
     public final List<JdbcModel.JdbcPrimaryKey> primaryKeys = new ArrayList<JdbcModel.JdbcPrimaryKey>();
   }
@@ -34,7 +34,7 @@ public class JdbcModel {
 
   public static class JdbcColumn {
     public String columnName;
-    public int columnType;  // java.sql.Types
+    public int columnType; // java.sql.Types
     public String columnTypeName;
     public Integer columnSize;
     public boolean isNullable;
@@ -74,27 +74,30 @@ public class JdbcModel {
   }
 
   public static final Predicate1<JdbcSchema> schemaNameEquals(final String schemaName) {
-    return new Predicate1<JdbcSchema>(){
+    return new Predicate1<JdbcSchema>() {
       @Override
       public boolean apply(JdbcSchema schema) {
         return schema.schemaName.equals(schemaName);
-      }};
+      }
+    };
   }
 
   public static final Predicate1<JdbcTable> tableNameEquals(final String tableName) {
-    return new Predicate1<JdbcTable>(){
+    return new Predicate1<JdbcTable>() {
       @Override
       public boolean apply(JdbcTable table) {
         return table.tableName.equals(tableName);
-      }};
+      }
+    };
   }
 
   public static final Predicate1<JdbcColumn> columnNameEquals(final String columnName) {
-    return new Predicate1<JdbcColumn>(){
+    return new Predicate1<JdbcColumn>() {
       @Override
       public boolean apply(JdbcColumn column) {
         return column.columnName.equals(columnName);
-      }};
+      }
+    };
   }
 
   public JdbcTable getTable(String schemaName, String tableName) {

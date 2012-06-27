@@ -1,4 +1,3 @@
-
 package org.odata4j.producer;
 
 import org.odata4j.edm.EdmSimpleType;
@@ -15,7 +14,7 @@ public interface SimpleResponse extends BaseResponse {
    * @return the type of the value
    */
   EdmSimpleType getType();
-  
+
   /**
    * Gets the value.
    *
@@ -29,5 +28,5 @@ public interface SimpleResponse extends BaseResponse {
    * @return the property name if available or null
    */
   String getName();
-  
+
 }

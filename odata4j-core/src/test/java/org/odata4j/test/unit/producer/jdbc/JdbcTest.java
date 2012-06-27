@@ -47,10 +47,11 @@ public class JdbcTest {
         dump(conn.getMetaData().getPrimaryKeys(null, null, null));
         dump(conn.getMetaData().getColumns(null, "INFORMATION_SCHEMA", "SYSTEM_TABLES", null));
 
-//        dumpTable(conn, "INFORMATION_SCHEMA.SYSTEM_TABLES");
+        //        dumpTable(conn, "INFORMATION_SCHEMA.SYSTEM_TABLES");
 
         return null;
-      }});
+      }
+    });
 
   }
 
@@ -62,7 +63,7 @@ public class JdbcTest {
   }
 
   public static void populateExample() {
-    HSQL_DB.execute(new ThrowingFunc1<Connection, Void>(){
+    HSQL_DB.execute(new ThrowingFunc1<Connection, Void>() {
       @Override
       public Void apply(Connection conn) throws Exception {
         conn.createStatement().execute("CREATE TABLE CUSTOMER (CUSTOMER_ID INTEGER NOT NULL, CUSTOMER_NAME VARCHAR(25) NOT NULL, PRIMARY KEY (CUSTOMER_ID))");
@@ -76,7 +77,8 @@ public class JdbcTest {
         conn.createStatement().execute("INSERT INTO CUSTOMER_PRODUCT (CUSTOMER_ID, PRODUCT_ID) VALUES (1, 1)");
         conn.createStatement().execute("INSERT INTO CUSTOMER_PRODUCT (CUSTOMER_ID, PRODUCT_ID) VALUES (2, 1)");
         return null;
-      }});
+      }
+    });
   }
 
   private static String pad(String value, int size) {
@@ -85,7 +87,8 @@ public class JdbcTest {
         @Override
         public String apply(Integer i) {
           return " ";
-        }}).join("");
+        }
+      }).join("");
     }
     return value;
   }
@@ -96,7 +99,7 @@ public class JdbcTest {
     }
     System.out.println();
     while (result.next()) {
-      for (int i = 1; i<= result.getMetaData().getColumnCount(); i++) {
+      for (int i = 1; i <= result.getMetaData().getColumnCount(); i++) {
         String val = result.getString(i);
         val = val == null ? "null" : val;
         System.out.print(pad(val, 20));

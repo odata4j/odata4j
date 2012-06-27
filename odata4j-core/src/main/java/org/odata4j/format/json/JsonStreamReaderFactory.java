@@ -23,8 +23,7 @@ public class JsonStreamReaderFactory {
 
     private static final long serialVersionUID = 2362481232045271688L;
 
-    public JsonParseException() {
-    }
+    public JsonParseException() {}
 
     public JsonParseException(String message, Throwable cause) {
       super(message, cause);
@@ -72,6 +71,7 @@ public class JsonStreamReaderFactory {
       // returns a value if it is a simple property and 
       // not an other JsonObject or JsonArray
       String getValue();
+
       JsonTokenType getValueTokenType();
     }
 
@@ -649,6 +649,7 @@ class JsonStreamReaderImpl implements JsonStreamReader {
       public String getValue() {
         return value;
       }
+
       @Override
       public JsonTokenType getValueTokenType() {
         return valueTokenType;
@@ -660,7 +661,7 @@ class JsonStreamReaderImpl implements JsonStreamReader {
   private JsonEvent createStartObjectEvent() {
     state.push(ReaderState.OBJECT);
     //System.out.println("jsonp start object");
-    
+
     expectCommaOrEndStack.push(expectCommaOrEnd);
     expectCommaOrEnd = false;
     this.previousEvent = new JsonEventImpl() {

@@ -10,17 +10,19 @@ public class SqlStatement {
   public static class SqlParameter {
     public final Object value;
     public final Integer sqlType;
+
     public SqlParameter(Object value, Integer sqlType) {
       this.value = value;
       this.sqlType = sqlType;
     }
   }
+
   public final String sql;
   public final ImmutableList<SqlParameter> params;
 
   public SqlStatement(String sql, ImmutableList<SqlParameter> params) {
-   this.sql = sql;
-   this.params = params;
+    this.sql = sql;
+    this.params = params;
   }
 
   public PreparedStatement asPreparedStatement(Connection conn) throws SQLException {

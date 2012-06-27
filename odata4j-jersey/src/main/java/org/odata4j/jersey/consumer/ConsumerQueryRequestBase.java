@@ -40,7 +40,7 @@ public abstract class ConsumerQueryRequestBase<T> implements OQueryRequest<T> {
     this.serviceRootUri = serviceRootUri;
     this.metadata = metadata;
     this.lastSegment = lastSegment;
-    
+
     this.entitySet = metadata.findEdmEntitySet(lastSegment);
     if (this.entitySet == null) {
       EdmFunctionImport function = metadata.findEdmFunctionImport(lastSegment);

@@ -9,9 +9,9 @@ import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.odata4j.core.ODataConstants;
@@ -47,7 +47,7 @@ public abstract class BaseResource {
     Entry entry = parser.parse(new StringReader(requestEntity));
     return entry.getEntity();
   }
-  
+
   protected OEntity getRequestEntity(HttpHeaders httpHeaders, UriInfo uriInfo, InputStream payload, EdmDataServices metadata, String entitySetName, OEntityKey entityKey) throws ODataException, UnsupportedEncodingException {
     // TODO validation of MaxDataServiceVersion against DataServiceVersion
     // see spec [ms-odata] section 1.7
@@ -55,18 +55,18 @@ public abstract class BaseResource {
     ODataVersion version = InternalUtil.getDataServiceVersion(httpHeaders.getRequestHeaders().getFirst(ODataConstants.Headers.DATA_SERVICE_VERSION));
     FormatParser<Entry> parser = FormatParserFactory.getParser(Entry.class, httpHeaders.getMediaType(),
         new Settings(version, metadata, entitySetName, entityKey, null, false));
-    
+
     String charset = httpHeaders.getMediaType().getParameters().get("charset");
     if (null == charset) {
       charset = "ISO-8859-1"; // from HTTP 1.1
     }
-    
+
     Entry entry = parser.parse(new BufferedReader(
-            new InputStreamReader(payload, charset)));
-    
+        new InputStreamReader(payload, charset)));
+
     return entry.getEntity();
   }
-  
+
   // some helpers for media link entries
   protected OMediaLinkExtension getMediaLinkExtension(HttpHeaders httpHeaders, UriInfo uriInfo, EdmEntitySet entitySet, ODataProducer producer) {
     OMediaLinkExtension mediaLinkExtension = null;
@@ -78,45 +78,44 @@ public abstract class BaseResource {
       params.put(ODataConstants.Params.UriInfo, uriInfo);
 
       mediaLinkExtension = producer.findExtension(OMediaLinkExtension.class, params);
-    } catch (UnsupportedOperationException e) {
-    }
+    } catch (UnsupportedOperationException e) {}
 
     if (mediaLinkExtension == null) {
       throw new NotImplementedException();
     }
-    
+
     return mediaLinkExtension;
   }
-  
-  protected OEntity createOrUpdateMediaLinkEntry(HttpHeaders httpHeaders, 
-          UriInfo uriInfo, EdmEntitySet entitySet, ODataProducer producer, 
-          InputStream payload, OEntityKey key) throws IOException {
-    
+
+  protected OEntity createOrUpdateMediaLinkEntry(HttpHeaders httpHeaders,
+      UriInfo uriInfo, EdmEntitySet entitySet, ODataProducer producer,
+      InputStream payload, OEntityKey key) throws IOException {
+
     /* 
      * this post has a great descriptions of the twists and turns of creating
      * a media resource + media link entry:  http://blogs.msdn.com/b/astoriateam/archive/2010/08/04/data-services-streaming-provider-series-implementing-a-streaming-provider-part-1.aspx
      */
-    
+
     // first, the producer must support OMediaLinkExtension
     OMediaLinkExtension mediaLinkExtension = getMediaLinkExtension(httpHeaders, uriInfo, entitySet, producer);
 
     // get a media link entry from the extension
-    OEntity mle = null == key 
-            ? mediaLinkExtension.createMediaLinkEntry(entitySet, httpHeaders)
-            : mediaLinkExtension.getMediaLinkEntryForUpdateOrDelete(entitySet, key, httpHeaders);
-    
+    OEntity mle = null == key
+        ? mediaLinkExtension.createMediaLinkEntry(entitySet, httpHeaders)
+        : mediaLinkExtension.getMediaLinkEntryForUpdateOrDelete(entitySet, key, httpHeaders);
+
     // now get a stream we can write the incoming bytes into.
     OutputStream outStream = null == key
-            ? mediaLinkExtension.getOutputStreamForMediaLinkEntryCreate(mle, null /*etag*/, null /*QueryInfo, may get rid of this */)
-            : mediaLinkExtension.getOutputStreamForMediaLinkEntryUpdate(mle, null, null);
-    
+        ? mediaLinkExtension.getOutputStreamForMediaLinkEntryCreate(mle, null /*etag*/, null /*QueryInfo, may get rid of this */)
+        : mediaLinkExtension.getOutputStreamForMediaLinkEntryUpdate(mle, null, null);
+
     // write the stream
     try {
       InternalUtil.copyInputToOutput(payload, outStream);
     } finally {
       outStream.close();
     }
-    
+
     // more info about the mle may be available now.
     return mediaLinkExtension.updateMediaLinkEntry(mle, outStream);
   }

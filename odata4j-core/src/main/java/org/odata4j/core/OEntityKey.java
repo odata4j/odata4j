@@ -276,7 +276,7 @@ public class OEntityKey {
     }
     return null;
   }
-  
+
   private static <T> SortedSet<T> toSortedSet(Enumerable<T> enumerable, Comparator<T> comparator) {
     TreeSet<T> rt = new TreeSet<T>(comparator);
     rt.addAll(enumerable.toSet());

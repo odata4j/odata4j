@@ -30,9 +30,9 @@ public class BeanModel {
   private final Map<String, Method> setters;
   private final Map<String, Class<?>> types;
   private final Map<String, Class<?>> collections;
-  
+
   private final BeanModel superClass;
-  
+
   /**
    * Constructs the abstract bean representation of a class.
    * Flattens inheritance.
@@ -42,7 +42,7 @@ public class BeanModel {
   public BeanModel(Class<?> beanClass) {
     this(beanClass, true);
   }
-  
+
   /**
    * Constructs the abstract bean representation of a class.
    *
@@ -56,7 +56,7 @@ public class BeanModel {
     this.setters = getBeanSetters(beanClass, flatten);
     this.types = computeTypes(getters, setters);
     this.collections = computeCollections(getters, setters);
-    
+
     // work up the hierarchy
     Class<?> sc = beanClass.getSuperclass();
     superClass = (!flatten && null != sc) ? new BeanModel(sc, flatten) : null;
@@ -70,7 +70,7 @@ public class BeanModel {
   public Class<?> getBeanClass() {
     return beanClass;
   }
-  
+
   /**
    * Returns the BeanModel for the superclass of this.beanClass
    * @return the superclass of this.beanClass
@@ -88,7 +88,7 @@ public class BeanModel {
    * @return the list of identified properties
    */
   public Iterable<String> getPropertyNames() {
-    List<String> props = new ArrayList<String>(); 
+    List<String> props = new ArrayList<String>();
     props.addAll(types.keySet());
     if (null != superClass) {
       Iterable<String> sprops = superClass.getPropertyNames();
@@ -120,7 +120,7 @@ public class BeanModel {
    * @return the list of properties
    */
   public Iterable<String> getCollectionNames() {
-    List<String> props = new ArrayList<String>(); 
+    List<String> props = new ArrayList<String>();
     props.addAll(collections.keySet());
     if (null != superClass) {
       Iterable<String> sprops = superClass.getCollectionNames();
@@ -161,7 +161,7 @@ public class BeanModel {
    */
   public boolean canWrite(String propertyName) {
     boolean hasSetter = setters.containsKey(propertyName);
-     if (!hasSetter && null != superClass) {
+    if (!hasSetter && null != superClass) {
       hasSetter = superClass.canWrite(propertyName);
     }
     return hasSetter;
@@ -278,7 +278,7 @@ public class BeanModel {
     }
     if (method == null)
       throw new IllegalArgumentException("No getter found for propertyName " + propertyName);
-    
+
     return method;
   }
 
@@ -354,7 +354,7 @@ public class BeanModel {
                 : Object.class;
           } else
             elementClass = Object.class;
-          
+
           //System.out.println("bean yes");
           rt.put(propertyName, elementClass);
         }
@@ -413,7 +413,7 @@ public class BeanModel {
   public Iterable<String> getDeclaredPropertyNames() {
     return types.keySet();
   }
-  
+
   /**
    * Get the collection names that were defined in this.beanClass only (i.e.
    * does not include inherited collection names)

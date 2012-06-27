@@ -24,7 +24,6 @@ import org.junit.Assert;
 import org.odata4j.core.Throwables;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.internal.InternalUtil;
-import org.odata4j.test.integration.ResponseData;
 import org.odata4j.test.integration.RuntimeFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -2,6 +2,7 @@ package org.odata4j.test.integration;
 
 import java.io.InputStream;
 import java.util.Map;
+
 import javax.ws.rs.core.MediaType;
 
 import org.odata4j.consumer.ODataConsumer;
@@ -19,11 +20,14 @@ public interface RuntimeFacade {
   public ODataConsumer createODataConsumer(String endpointUri, FormatType format, String methodToTunnel);
 
   public ResponseData acceptAndReturn(String uri, MediaType mediaType);
+
   public void accept(String uri, MediaType mediaType);
 
   public ResponseData getWebResource(String uri, String accept);
+
   public ResponseData getWebResource(String uri);
-  
+
   public ResponseData postWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers);
+
   public ResponseData putWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers);
 }

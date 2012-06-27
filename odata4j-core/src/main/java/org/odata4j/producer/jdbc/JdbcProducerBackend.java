@@ -76,7 +76,8 @@ public abstract class JdbcProducerBackend implements CommandProducerBackend {
       @Override
       public <T> T get(Class<T> instanceType) {
         return JdbcProducerBackend.this.get(instanceType);
-      }};
+      }
+    };
   }
 
   @Override
@@ -118,7 +119,7 @@ public abstract class JdbcProducerBackend implements CommandProducerBackend {
   private <T> T newContext(Class<?> contextType, Object... args) {
     return (T) Proxy.newProxyInstance(
         getClass().getClassLoader(),
-        new Class<?>[]{ contextType, JdbcProducerCommandContext.class },
+        new Class<?>[] { contextType, JdbcProducerCommandContext.class },
         new JdbcProducerBackendInvocationHandler(this, contextType, args));
   }
 
@@ -143,7 +144,7 @@ public abstract class JdbcProducerBackend implements CommandProducerBackend {
   public GetEntityCommandContext newGetEntityCommandContext(String entitySetName, OEntityKey entityKey, EntityQueryInfo queryInfo) {
     return newContext(GetEntityCommandContext.class,
         "entitySetName", entitySetName,
-        "entityKey",  entityKey,
+        "entityKey", entityKey,
         "queryInfo", queryInfo);
   }
 
@@ -171,7 +172,7 @@ public abstract class JdbcProducerBackend implements CommandProducerBackend {
   public CreateEntityCommandContext newCreateEntityCommandContext(String entitySetName, OEntity entity) {
     return newContext(CreateEntityCommandContext.class,
         "entitySetName", entitySetName,
-        "entity",  entity);
+        "entity", entity);
   }
 
   @Override
@@ -183,7 +184,7 @@ public abstract class JdbcProducerBackend implements CommandProducerBackend {
   public DeleteEntityCommandContext newDeleteEntityCommandContext(String entitySetName, OEntityKey entityKey) {
     return newContext(DeleteEntityCommandContext.class,
         "entitySetName", entitySetName,
-        "entityKey",  entityKey);
+        "entityKey", entityKey);
   }
 
   @Override

@@ -77,7 +77,7 @@ public class JsonEntryFormatParserTest extends AbstractEntryFormatParserTest {
     verifyDateTimeOffsetPropertyValue(formatParser.parse(buildJson("\"DateTimeOffset\" : \"1969-08-07T05:06:00Z\"")), DATETIME_BEFORE_1970_NO_OFFSET);
   }
 
-  @Test(expected=IllegalArgumentException.class)
+  @Test(expected = IllegalArgumentException.class)
   public void illegalDateTimeOffset() throws Exception {
     formatParser.parse(buildJson("\"DateTimeOffset\" : \"2005-04-03T01:02\""));
   }
@@ -92,7 +92,7 @@ public class JsonEntryFormatParserTest extends AbstractEntryFormatParserTest {
     verifyTimePropertyValue(formatParser.parse(buildJson("\"Time\" : \"PT1H2M3.004S\"")), TIME_WITH_MILLIS);
   }
 
-  @Test(expected=IllegalArgumentException.class)
+  @Test(expected = IllegalArgumentException.class)
   public void illegalTime() throws Exception {
     formatParser.parse(buildJson("\"Time\" : \"01:02:03\""));
   }
@@ -102,12 +102,12 @@ public class JsonEntryFormatParserTest extends AbstractEntryFormatParserTest {
     assertThat((Boolean) formatParser.parse(buildJson("\"Boolean\": true")).getEntity().getProperty(BOOLEAN_NAME).getValue(), is(BOOLEAN));
   }
 
-  @Test(expected=JsonParseException.class)
+  @Test(expected = JsonParseException.class)
   public void illegalBoolean() throws Exception {
     formatParser.parse(buildJson("\"Boolean\": undefined"));
   }
 
-  @Test(expected=JsonParseException.class)
+  @Test(expected = JsonParseException.class)
   public void illegalBooleanFormat() throws Exception {
     formatParser.parse(buildJson("\"Boolean\": \"false\""));
   }
@@ -117,7 +117,7 @@ public class JsonEntryFormatParserTest extends AbstractEntryFormatParserTest {
     assertThat((String) formatParser.parse(buildJson("\"String\": \"<\\\"\\t€\\\">\"")).getEntity().getProperty(STRING_NAME).getValue(), is(STRING));
   }
 
-  @Test(expected=JsonParseException.class)
+  @Test(expected = JsonParseException.class)
   public void illegalStringType() throws Exception {
     formatParser.parse(buildJson("\"String\": 123"));
   }
@@ -127,7 +127,7 @@ public class JsonEntryFormatParserTest extends AbstractEntryFormatParserTest {
     assertThat((Guid) formatParser.parse(buildJson("\"Guid\": \"4786c33c-1e3d-4b57-b5cf-a4b759acac44\"")).getEntity().getProperty(GUID_NAME).getValue(), is(GUID));
   }
 
-  @Test(expected=IllegalArgumentException.class)
+  @Test(expected = IllegalArgumentException.class)
   public void illegalGuid() throws Exception {
     formatParser.parse(buildJson("\"Guid\": \"a-b-c-d\""));
   }
@@ -137,7 +137,7 @@ public class JsonEntryFormatParserTest extends AbstractEntryFormatParserTest {
     assertThat((BigDecimal) formatParser.parse(buildJson("\"Decimal\": \"-12345.67890\"")).getEntity().getProperty(DECIMAL_NAME).getValue(), is(DECIMAL));
   }
 
-  @Test(expected=IllegalArgumentException.class)
+  @Test(expected = IllegalArgumentException.class)
   public void illegalDecimal() throws Exception {
     formatParser.parse(buildJson("\"Decimal\": \"1eE+01\""));
   }
@@ -152,7 +152,7 @@ public class JsonEntryFormatParserTest extends AbstractEntryFormatParserTest {
     assertThat((Short) formatParser.parse(buildJson("\"Int16\": -32768")).getEntity().getProperty(INT16_NAME).getValue(), is(Short.MIN_VALUE));
   }
 
-  @Test(expected=IllegalArgumentException.class)
+  @Test(expected = IllegalArgumentException.class)
   public void int16TooLarge() throws Exception {
     formatParser.parse(buildJson("\"Int16\": 32768"));
   }

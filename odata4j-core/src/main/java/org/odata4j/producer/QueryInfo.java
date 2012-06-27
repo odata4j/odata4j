@@ -186,7 +186,7 @@ public class QueryInfo {
       return first;
     if (field instanceof List && ((List<?>) field).isEmpty())
       return first;
-    if (field instanceof Map && ((Map<?,?>) field).isEmpty())
+    if (field instanceof Map && ((Map<?, ?>) field).isEmpty())
       return first;
     if (first)
       first = false;

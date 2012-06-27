@@ -23,9 +23,9 @@ public class AtomComplexFormatWriter extends XmlFormatWriter implements FormatWr
     writer.startDocument();
 
     writer.startElement(new QName2(d, target.getComplexObjectName(), "d"));
-    
+
     writer.writeAttribute(new QName2(m, "type", "m"), obj.getType().getFullyQualifiedTypeName());
-    
+
     writer.writeNamespace("d", d);
     writer.writeNamespace("m", m);
 

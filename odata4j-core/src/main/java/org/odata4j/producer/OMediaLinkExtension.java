@@ -2,6 +2,7 @@ package org.odata4j.producer;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+
 import javax.ws.rs.core.HttpHeaders;
 
 import org.odata4j.core.OEntity;
@@ -24,7 +25,7 @@ public interface OMediaLinkExtension extends OExtension<ODataProducer> {
    * @return InputStream for the media resource
    */
   InputStream getInputStreamForMediaLinkEntry(OEntity mle, String etag, EntityQueryInfo query);
-  
+
   /**
    * get an OutputStream for the purpose of creating a media resource.
    * 
@@ -34,7 +35,7 @@ public interface OMediaLinkExtension extends OExtension<ODataProducer> {
    * @return 
    */
   OutputStream getOutputStreamForMediaLinkEntryCreate(OEntity mle, String etag, QueryInfo query);
-  
+
   /**
    * get an OutputStream for the purpose of updating an existing media resource.
    * 
@@ -51,7 +52,7 @@ public interface OMediaLinkExtension extends OExtension<ODataProducer> {
    * @param query   additional request information
    */
   void deleteStream(OEntity mle, QueryInfo query);
-  
+
   /**
    * get the mime content type for the given media link entry entity
    * @param mle
@@ -67,18 +68,17 @@ public interface OMediaLinkExtension extends OExtension<ODataProducer> {
    * @return 
    */
   OEntity createMediaLinkEntry(EdmEntitySet entitySet, HttpHeaders httpHeaders);
-  
-   /**
-   * get an OEntity for an existing media link entry with the given key.
-   * 
-   * @param entitySet
-   * @param key         - entity key
-   * @param httpHeaders - Atom protocol says the Slug header can contain additional create info.
-   * @return 
-   */
+
+  /**
+  * get an OEntity for an existing media link entry with the given key.
+  * 
+  * @param entitySet
+  * @param key         - entity key
+  * @param httpHeaders - Atom protocol says the Slug header can contain additional create info.
+  * @return 
+  */
   OEntity getMediaLinkEntryForUpdateOrDelete(EdmEntitySet entitySet, OEntityKey key, HttpHeaders httpHeaders);
-  
-  
+
   /**
    * after a create or update of a media resource, more information may be
    * available about the media link entity that was created before the media
@@ -93,5 +93,5 @@ public interface OMediaLinkExtension extends OExtension<ODataProducer> {
    * @return an updated Media Link Entity
    */
   OEntity updateMediaLinkEntry(OEntity mle, OutputStream outStream);
-  
+
 }

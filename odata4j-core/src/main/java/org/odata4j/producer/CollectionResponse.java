@@ -11,16 +11,15 @@ import org.odata4j.edm.EdmEntitySet;
  */
 public interface CollectionResponse<T extends OObject> extends BaseResponse {
 
-   /**
-   * Gets the entity-set for the entities if the collection is a collection of entities.
-   *
-   * @return the entity-set for the entities
-   */
+  /**
+  * Gets the entity-set for the entities if the collection is a collection of entities.
+  *
+  * @return the entity-set for the entities
+  */
   EdmEntitySet getEntitySet();
 
-  
   OCollection<T> getCollection();
-  
+
   String getCollectionName();
 
   /**
@@ -36,6 +35,5 @@ public interface CollectionResponse<T extends OObject> extends BaseResponse {
    * @return a continuation token, if applicable
    */
   String getSkipToken();
-  
-  
+
 }
