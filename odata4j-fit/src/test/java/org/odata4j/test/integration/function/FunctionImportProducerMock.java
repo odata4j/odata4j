@@ -150,6 +150,8 @@ public class FunctionImportProducerMock implements ODataProducer {
 
     if (MetadataUtil.TEST_FUNCTION_RETURN_STRING.equals(name.getName())) {
       response = Responses.simple(EdmSimpleType.STRING, name.getName(), FunctionImportProducerMock.SOME_TEXT);
+    } else if (MetadataUtil.TEST_FUNCTION_RETURN_STRING_POST.equals(name.getName())) {
+      response = Responses.simple(EdmSimpleType.STRING, name.getName(), FunctionImportProducerMock.SOME_TEXT);
     } else if (MetadataUtil.TEST_FUNCTION_RETURN_BOOLEAN.equals(name.getName())) {
       response = Responses.simple(EdmSimpleType.BOOLEAN, name.getName(), FunctionImportProducerMock.BOOLEAN_VALUE);
     } else if (MetadataUtil.TEST_FUNCTION_RETURN_INT16.equals(name.getName())) {

@@ -24,6 +24,7 @@ import org.junit.Assert;
 import org.odata4j.core.Throwables;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.internal.InternalUtil;
+import org.odata4j.test.integration.ResponseData;
 import org.odata4j.test.integration.RuntimeFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +74,7 @@ public class NorthwindTestUtils {
       String RESOURCES_TYPE = "json";
 
       uri = uri.replace(" ", "%20");
-      String result = this.rtFacade.getWebResource(endpointUri + uri, "application/json");
+      String result = this.rtFacade.getWebResource(endpointUri + uri, "application/json").getEntity();
 
       result = URLDecoder.decode(result, "UTF-8");
 
@@ -109,16 +110,16 @@ public class NorthwindTestUtils {
       expect = expect.replace(
           "http://services.odata.org/Northwind",
           "http://services.odata.org/northwind");
-      
+
       // TODO: Implement facet support (precision and scale) for decimals.
       // Until that has happened, the expected result is adapted to the current implementation.
-      expect = expect.replace( ".0000\"", "\"");
-      for (int i=1; i<=9; i++)
-        expect = expect.replace( "." + i + "000\"", "." + i + "\"");
-      for (int i=1; i<=99; i++)
+      expect = expect.replace(".0000\"", "\"");
+      for (int i = 1; i <= 9; i++)
+        expect = expect.replace("." + i + "000\"", "." + i + "\"");
+      for (int i = 1; i <= 99; i++)
         expect = expect.replace(
-            "." + String.format( "%02d", i) + "00\"",
-            "." + String.format( "%02d", i) + "\"");
+            "." + String.format("%02d", i) + "00\"",
+            "." + String.format("%02d", i) + "\"");
 
       expect = normalizeFormat(expect);
       result = normalizeFormat(result);
@@ -145,7 +146,7 @@ public class NorthwindTestUtils {
 
     uri = uri.replace(" ", "%20");
 
-    String result = this.rtFacade.getWebResource(endpointUri + uri, "application/atom+xml");
+    String result = this.rtFacade.getWebResource(endpointUri + uri, "application/atom+xml").getEntity();
 
     result = result.replace(
         "http://localhost:8810/northwind",
@@ -575,6 +576,6 @@ public class NorthwindTestUtils {
   }
 
   public String getCount(String endpointUri, String uri) {
-    return this.rtFacade.acceptAndReturn(endpointUri + uri, MediaType.APPLICATION_ATOM_XML_TYPE);
+    return this.rtFacade.acceptAndReturn(endpointUri + uri, MediaType.APPLICATION_ATOM_XML_TYPE).getEntity();
   }
 }

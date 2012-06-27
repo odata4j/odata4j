@@ -13,6 +13,8 @@ import org.odata4j.stax2.staximpl.StaxXMLFactoryProvider2;
 
 public class MetadataUtil {
 
+  public static final String TEST_FUNCTION_RETURN_STRING_GET = "TestFunctionReturnStringGet";
+  public static final String TEST_FUNCTION_RETURN_STRING_POST = "TestFunctionReturnStringPost";
   public static final String TEST_FUNCTION_RETURN_STRING = "TestFunctionReturnString";
   public static final String TEST_FUNCTION_RETURN_BOOLEAN = "TestFunctionReturnBoolean";
   public static final String TEST_FUNCTION_RETURN_ENTITY = "TestFunctionReturnEmployee";

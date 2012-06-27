@@ -270,7 +270,7 @@ public class CustomTest extends CustomBaseTest {
 
   @Test
   public void testMLE() throws InterruptedException {
-    String content = rtFacade.getWebResource(endpointUri + "MLEs('foobar')/$value" + "?$format=json");
+    String content = rtFacade.getWebResource(endpointUri + "MLEs('foobar')/$value" + "?$format=json").getEntity();
     assertEquals("here we have some content for the mle with id: ('foobar')", content);
   }
   
@@ -282,10 +282,10 @@ public class CustomTest extends CustomBaseTest {
     
     //Thread.sleep(60000);
     String content = "This MLE was created by the test testCreateMLE()";
-    int status = rtFacade.postWebResource(endpointUri + "MLEs", new ByteArrayInputStream(content.getBytes()), MediaType.TEXT_PLAIN_TYPE, headers);
+    int status = rtFacade.postWebResource(endpointUri + "MLEs", new ByteArrayInputStream(content.getBytes()), MediaType.TEXT_PLAIN_TYPE, headers).getStatusCode();
     assertEquals(Status.CREATED.getStatusCode(), status);
     
-    String content2 = rtFacade.getWebResource(endpointUri + "MLEs('ANewMLE')/$value" + "?$format=json");
+    String content2 = rtFacade.getWebResource(endpointUri + "MLEs('ANewMLE')/$value" + "?$format=json").getEntity();
     assertEquals(content, content2);
   }
   
@@ -293,10 +293,10 @@ public class CustomTest extends CustomBaseTest {
   @Test
   public void testUpdateMLE() {
     String content = "This MLE was updated by the test testUpdateMLE()";
-    int status = rtFacade.putWebResource(endpointUri + "MLEs", new ByteArrayInputStream(content.getBytes()), MediaType.TEXT_PLAIN_TYPE, null);
+    int status = rtFacade.putWebResource(endpointUri + "MLEs", new ByteArrayInputStream(content.getBytes()), MediaType.TEXT_PLAIN_TYPE, null).getStatusCode();
     assertEquals(Status.NO_CONTENT.getStatusCode(), status);
     
-    String content2 = rtFacade.getWebResource(endpointUri + "MLEs('ANewMLE')/$value" + "?$format=json");
+    String content2 = rtFacade.getWebResource(endpointUri + "MLEs('ANewMLE')/$value" + "?$format=json").getEntity();
     assertEquals(content, content2);
   }
   

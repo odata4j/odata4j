@@ -30,8 +30,6 @@ import javax.ws.rs.core.Response.Status;
 
 public class JerseyRuntimeFacade implements RuntimeFacade {
 
-  private int lastStatusCode;
-
   @Override
   public void hostODataServer(String baseUri) {
     try {
@@ -72,21 +70,19 @@ public class JerseyRuntimeFacade implements RuntimeFacade {
   }
 
   @Override
-  public String getWebResource(String uri) {
+  public ResponseData getWebResource(String uri) {
     WebResource webResource = new Client().resource(uri);
 
     ClientResponse response = webResource.get(ClientResponse.class);
-    this.lastStatusCode = response.getStatus();
-    String body = response.getEntity(String.class);
-
-    return body;
+    return new ResponseData(response.getStatus(), response.getEntity(String.class));
   }
-  
+
   @Override
-  public int postWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers) {
+  public ResponseData postWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers) {
     Client client = new Client();
     WebResource.Builder webResource = client.resource(uri).type(mediaType);
-
+    int statusCode;
+    String entity = "";
     try {
       if (null != headers) {
         for (Entry<String, Object> entry : headers.entrySet()) {
@@ -94,17 +90,19 @@ public class JerseyRuntimeFacade implements RuntimeFacade {
         }
       }
       ClientResponse response = webResource.post(ClientResponse.class, content);
-      this.lastStatusCode = response.getStatus();
-    } catch(UniformInterfaceException ex) {
-      this.lastStatusCode = ex.getResponse().getStatus();
+      statusCode = response.getStatus();
+      entity = response.getEntity(String.class);
+    } catch (UniformInterfaceException ex) {
+      statusCode = ex.getResponse().getStatus();
     }
-    return this.lastStatusCode;
+    return new ResponseData(statusCode, entity);
   }
-  
-  public int putWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers) {
+
+  public ResponseData putWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers) {
     Client client = new Client();
     WebResource.Builder webResource = client.resource(uri).type(mediaType);
-
+    int statusCode;
+    String entity = "";
     try {
       if (null != headers) {
         for (Entry<String, Object> entry : headers.entrySet()) {
@@ -112,35 +110,34 @@ public class JerseyRuntimeFacade implements RuntimeFacade {
         }
       }
       ClientResponse response = webResource.put(ClientResponse.class, content);
-      this.lastStatusCode = response.getStatus();
-    } catch(UniformInterfaceException ex) {
-      this.lastStatusCode = ex.getResponse().getStatus();
+      statusCode = response.getStatus();
+      entity = response.getEntity(String.class);
+    } catch (UniformInterfaceException ex) {
+      statusCode = ex.getResponse().getStatus();
     }
-    return this.lastStatusCode;
+    return new ResponseData(statusCode, entity);
   }
 
   @Override
-  public String acceptAndReturn(String uri, MediaType mediaType) {
+  public ResponseData acceptAndReturn(String uri, MediaType mediaType) {
     uri = uri.replace(" ", "%20");
-    
+
     WebResource webResource = new Client().resource(uri);
 
     ClientResponse response = webResource.accept(mediaType).get(ClientResponse.class);
-    this.lastStatusCode = response.getStatus();
     String body = response.getEntity(String.class);
 
-    return body;
+    return new ResponseData(response.getStatus(), body);
   }
 
   @Override
-  public String getWebResource(String uri, String accept) {
+  public ResponseData getWebResource(String uri, String accept) {
     WebResource webResource = new Client().resource(uri);
 
     ClientResponse response = webResource.accept(accept).get(ClientResponse.class);
-    this.lastStatusCode = response.getStatus();
     String body = response.getEntity(String.class);
 
-    return body;
+    return new ResponseData(response.getStatus(), body);
   }
 
   @Override
@@ -148,11 +145,6 @@ public class JerseyRuntimeFacade implements RuntimeFacade {
     uri = uri.replace(" ", "%20");
     WebResource webResource = new Client().resource(uri);
     webResource.accept(mediaType);
-  }
-
-  @Override
-  public int getLastStatusCode() {
-    return this.lastStatusCode;
   }
 
 }

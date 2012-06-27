@@ -73,7 +73,7 @@ public class EdmxFormatWriterTest extends AbstractRuntimeTest implements EdmDeco
   public void testExtensions() throws InterruptedException, SAXException, IOException {
     // test to see that documentation and annotations get written correctly
 
-    String metadata = this.rtFacade.getWebResource(endpointUri + "$metadata");
+    String metadata = this.rtFacade.getWebResource(endpointUri + "$metadata").getEntity();
 
     //System.out.println(metadata);
 

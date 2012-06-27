@@ -54,6 +54,10 @@
           <Parameter Name="p14" Type="Edm.String" Nullable="false" />
           <Parameter Name="p15" Type="Edm.Time" Nullable="false" />
         </FunctionImport>
+        <FunctionImport Name="TestFunctionReturnStringGet" ReturnType="Edm.String" m:HttpMethod="GET">
+        </FunctionImport>
+        <FunctionImport Name="TestFunctionReturnStringPost" ReturnType="Edm.String" m:HttpMethod="POST">
+        </FunctionImport>
       </EntityContainer>
     </Schema>
   </edmx:DataServices>

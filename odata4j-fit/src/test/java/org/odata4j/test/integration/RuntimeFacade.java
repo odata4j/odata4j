@@ -18,16 +18,12 @@ public interface RuntimeFacade {
 
   public ODataConsumer createODataConsumer(String endpointUri, FormatType format, String methodToTunnel);
 
-  public String getWebResource(String uri);
-
-  public String acceptAndReturn(String uri, MediaType mediaType);
-
+  public ResponseData acceptAndReturn(String uri, MediaType mediaType);
   public void accept(String uri, MediaType mediaType);
 
-  public String getWebResource(String uri, String accept);
+  public ResponseData getWebResource(String uri, String accept);
+  public ResponseData getWebResource(String uri);
   
-  public int getLastStatusCode(); 
-
-  public int postWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers);
-  public int putWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers);
+  public ResponseData postWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers);
+  public ResponseData putWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers);
 }
