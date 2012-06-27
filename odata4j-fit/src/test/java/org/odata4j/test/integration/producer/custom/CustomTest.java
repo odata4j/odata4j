@@ -274,27 +274,40 @@ public class CustomTest extends CustomBaseTest {
     assertEquals("here we have some content for the mle with id: ('foobar')", content);
   }
 
-  @Ignore("JerseyRuntimeFascade.postWebResource not working...CxfRuntimeFascade.postWebResource not implemented")
   @Test
   public void testCreateMLE() throws InterruptedException {
+    /**
+     * There appears to be a strange race condition or something in the test environment:
+     * if the first request to the server has a payload, the server can
+     * timeout waiting for data from the client.  Not sure why or if it is a client
+     * or server issue. Workaround:  issue a GET first to prime things.
+     */
+    String contentBefore = rtFacade.getWebResource(endpointUri + "MLEs('ANewMLE')/$value" + "?$format=json").getEntity();
+    
     Map<String, Object> headers = new HashMap<String, Object>();
     headers.put("Slug", "ANewMLE"); // the Id
 
-    //Thread.sleep(60000);
     String content = "This MLE was created by the test testCreateMLE()";
-    int status = rtFacade.postWebResource(endpointUri + "MLEs", new ByteArrayInputStream(content.getBytes()), MediaType.TEXT_PLAIN_TYPE, headers).getStatusCode();
+    int status = rtFacade.postWebResource(endpointUri + "MLEs", new ByteArrayInputStream(content.getBytes()), MediaType.APPLICATION_OCTET_STREAM_TYPE, headers).getStatusCode();
     assertEquals(Status.CREATED.getStatusCode(), status);
 
     String content2 = rtFacade.getWebResource(endpointUri + "MLEs('ANewMLE')/$value" + "?$format=json").getEntity();
     assertEquals(content, content2);
   }
 
-  @Ignore("JerseyRuntimeFascade.putWebResource not working...CxfRuntimeFascade.putWebResource not implemented")
   @Test
   public void testUpdateMLE() {
+     /**
+     * There appears to be a strange race condition or something in the test environment:
+     * if the first request to the server has a payload, the server can
+     * timeout waiting for data from the client.  Not sure why or if it is a client
+     * or server issue. Workaround:  issue a GET first to prime things.
+     */
+    String contentBefore = rtFacade.getWebResource(endpointUri + "MLEs('ANewMLE')/$value" + "?$format=json").getEntity();
+    
     String content = "This MLE was updated by the test testUpdateMLE()";
-    int status = rtFacade.putWebResource(endpointUri + "MLEs", new ByteArrayInputStream(content.getBytes()), MediaType.TEXT_PLAIN_TYPE, null).getStatusCode();
-    assertEquals(Status.NO_CONTENT.getStatusCode(), status);
+    int status = rtFacade.putWebResource(endpointUri + "MLEs('ANewMLE')", new ByteArrayInputStream(content.getBytes()), MediaType.TEXT_PLAIN_TYPE, null).getStatusCode();
+    assertEquals(Status.OK.getStatusCode(), status);
 
     String content2 = rtFacade.getWebResource(endpointUri + "MLEs('ANewMLE')/$value" + "?$format=json").getEntity();
     assertEquals(content, content2);
