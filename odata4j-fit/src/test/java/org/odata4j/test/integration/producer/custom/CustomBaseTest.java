@@ -5,7 +5,6 @@ import javax.ws.rs.core.MediaType;
 import org.core4j.Func1;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.format.FormatType;
 import org.odata4j.producer.ODataProducer;
@@ -16,7 +15,6 @@ import org.odata4j.test.integration.AbstractRuntimeTest;
 /**
  *
  */
-
 public class CustomBaseTest extends AbstractRuntimeTest {
 
   public CustomBaseTest(RuntimeFacadeType type) {
