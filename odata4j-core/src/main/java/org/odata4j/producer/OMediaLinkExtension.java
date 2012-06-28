@@ -59,6 +59,13 @@ public interface OMediaLinkExtension extends OExtension<ODataProducer> {
    * @return the mime content type
    */
   String getMediaLinkContentType(OEntity mle);
+  
+   /**
+   * get the mime content disposition for the given media link entry entity
+   * @param mle
+   * @return the mime content disposition
+   */
+  String getMediaLinkContentDisposition(OEntity mle);
 
   /**
    * create an OEntity for a new media link entry request just received.

@@ -16,7 +16,7 @@ import org.odata4j.test.integration.AbstractRuntimeTest;
 /**
  *
  */
-@Ignore
+
 public class CustomBaseTest extends AbstractRuntimeTest {
 
   public CustomBaseTest(RuntimeFacadeType type) {
