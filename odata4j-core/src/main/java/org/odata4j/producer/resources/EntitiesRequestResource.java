@@ -37,6 +37,7 @@ import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.exceptions.NotFoundException;
+import org.odata4j.producer.exceptions.UnsupportedMediaTypeException;
 
 // ignoreParens below is there to trim the parentheses from the entity set name when they are present - e.g. '/my.svc/Users()'.
 @Path("{entitySetName: [^/()]+?}{ignoreParens: (?:\\(\\))?}")
@@ -55,7 +56,7 @@ public class EntitiesRequestResource extends BaseResource {
 
     // visual studio will send a soap mex request
     if (entitySetName.equals("mex") && httpHeaders.getMediaType() != null && httpHeaders.getMediaType().toString().startsWith("application/soap+xml"))
-      return Response.status(405).build();
+      throw new UnsupportedMediaTypeException("SOAP mex requests are not supported");
 
     log("createEntity", "entitySetName", entitySetName);
 

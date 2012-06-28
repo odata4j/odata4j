@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.http.Header;
@@ -114,11 +115,6 @@ public class CxfRuntimeFacade implements RuntimeFacade {
 
       HttpUriRequest httpRequest;
 
-      InputStreamEntity contentEntity = null;
-      if (content != null) {
-        contentEntity = new InputStreamEntity(content, -1);
-      }
-
       switch (method) {
       case GET:
         httpRequest = new HttpGet(uri);
@@ -128,32 +124,28 @@ public class CxfRuntimeFacade implements RuntimeFacade {
         break;
       case PATCH:
         HttpPost patch = new HttpPost(uri);
-        if (contentEntity != null) {
-          patch.setEntity(contentEntity);
-        }
+        if (content != null)
+          patch.setEntity(new InputStreamEntity(content, -1));
         patch.setHeader(Headers.X_HTTP_METHOD, "PATCH");
         httpRequest = patch;
         break;
       case MERGE:
         HttpPost merge = new HttpPost(uri);
-        if (contentEntity != null) {
-          merge.setEntity(contentEntity);
-        }
+        if (content != null)
+          merge.setEntity(new InputStreamEntity(content, -1));
         merge.setHeader(Headers.X_HTTP_METHOD, "MERGE");
         httpRequest = merge;
         break;
       case PUT:
         HttpPut put = new HttpPut(uri);
-        if (contentEntity != null) {
-          put.setEntity(contentEntity);
-        }
+        if (content != null)
+          put.setEntity(new InputStreamEntity(content, -1));
         httpRequest = put;
         break;
       case POST:
         HttpPost post = new HttpPost(uri);
-        if (contentEntity != null) {
-          post.setEntity(contentEntity);
-        }
+        if (content != null)
+          post.setEntity(new InputStreamEntity(content, -1));
         httpRequest = post;
         break;
       default:
@@ -168,8 +160,10 @@ public class CxfRuntimeFacade implements RuntimeFacade {
         }
       }
       if (mediaType != null) {
-        String mt = mediaType.toString();
-        httpRequest.addHeader("accept", mt);
+        if (content != null)
+          httpRequest.addHeader(HttpHeaders.CONTENT_TYPE, mediaType.toString());
+        if (method == HttpMethod.GET)
+          httpRequest.addHeader(HttpHeaders.ACCEPT, mediaType.toString());
       }
 
       // Execute the request
@@ -196,7 +190,7 @@ public class CxfRuntimeFacade implements RuntimeFacade {
 
   @Override
   public ResponseData putWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers) {
-    return this.getResource(HttpMethod.POST, uri, content, mediaType, headers);
+    return this.getResource(HttpMethod.PUT, uri, content, mediaType, headers);
   }
 
   private enum HttpMethod {

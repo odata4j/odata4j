@@ -23,12 +23,23 @@ public class NotImplementedException extends ODataException {
     }
   };
 
-  public NotImplementedException() {
-    super(NOT_IMPLEMENTED);
-  }
+  public NotImplementedException() {}
 
   public NotImplementedException(String message) {
-    super(NOT_IMPLEMENTED, message);
+    super(message);
+  }
+
+  public NotImplementedException(Throwable cause) {
+    super(cause);
+  }
+
+  public NotImplementedException(String message, Throwable cause) {
+    super(message, cause);
+  }
+
+  @Override
+  public StatusType getStatus() {
+    return NOT_IMPLEMENTED;
   }
 
 }

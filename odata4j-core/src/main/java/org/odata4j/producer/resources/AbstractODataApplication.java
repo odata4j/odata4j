@@ -5,8 +5,6 @@ import java.util.Set;
 
 import javax.ws.rs.core.Application;
 
-import org.odata4j.producer.exceptions.ODataException;
-
 /**
  * Abstract OData application.
  *
@@ -24,7 +22,7 @@ public abstract class AbstractODataApplication extends Application {
     classes.add(MetadataResource.class);
     classes.add(ServiceDocumentResource.class);
     classes.add(ODataBatchProvider.class);
-    classes.add(ODataException.class);
+    classes.add(ExceptionMappingProvider.class);
     return classes;
   }
 }

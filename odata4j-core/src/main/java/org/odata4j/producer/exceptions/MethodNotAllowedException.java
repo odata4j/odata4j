@@ -23,15 +23,22 @@ public class MethodNotAllowedException extends ODataException {
     }
   };
 
-  public MethodNotAllowedException() {
-    super(METHOD_NOT_ALLOWED);
-  }
+  public MethodNotAllowedException() {}
 
   public MethodNotAllowedException(String message) {
-    super(METHOD_NOT_ALLOWED, message);
+    super(message);
+  }
+
+  public MethodNotAllowedException(Throwable cause) {
+    super(cause);
   }
 
   public MethodNotAllowedException(String message, Throwable cause) {
-    super(METHOD_NOT_ALLOWED, message, cause);
+    super(message, cause);
+  }
+
+  @Override
+  public StatusType getStatus() {
+    return METHOD_NOT_ALLOWED;
   }
 }

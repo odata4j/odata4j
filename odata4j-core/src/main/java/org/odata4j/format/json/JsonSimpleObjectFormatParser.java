@@ -13,14 +13,14 @@ import org.odata4j.format.json.JsonStreamReaderFactory.JsonStreamReader.JsonEven
  * parses a response from a service operation that returns EdmSimpleType
  * 
  */
-public class JsonSimpleObjectFormatParser extends JsonFormatParser implements FormatParser<OSimpleObject> {
+public class JsonSimpleObjectFormatParser extends JsonFormatParser implements FormatParser<OSimpleObject<?>> {
 
   public JsonSimpleObjectFormatParser(Settings settings) {
     super(settings);
   }
 
   @Override
-  public OSimpleObject parse(Reader reader) {
+  public OSimpleObject<?> parse(Reader reader) {
 
     JsonStreamReaderFactory.JsonStreamReader jsr = JsonStreamReaderFactory.createJsonStreamReader(reader);
 
@@ -39,7 +39,7 @@ public class JsonSimpleObjectFormatParser extends JsonFormatParser implements Fo
     // }
     ensureEndObject(jsr.nextEvent());
 
-    return OSimpleObjects.parse((EdmSimpleType) this.parseType, endProp.asEndProperty().getValue());
+    return OSimpleObjects.parse((EdmSimpleType<?>) this.parseType, endProp.asEndProperty().getValue());
   }
 
 }

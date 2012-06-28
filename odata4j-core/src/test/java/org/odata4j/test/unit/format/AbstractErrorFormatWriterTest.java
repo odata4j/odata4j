@@ -9,7 +9,6 @@ import java.io.StringWriter;
 import java.util.regex.Pattern;
 
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import org.junit.Before;
@@ -19,15 +18,16 @@ import org.odata4j.format.FormatWriter;
 import org.odata4j.format.FormatWriterFactory;
 import org.odata4j.producer.ErrorResponse;
 import org.odata4j.producer.exceptions.ODataException;
+import org.odata4j.producer.exceptions.ServerErrorException;
 
 public abstract class AbstractErrorFormatWriterTest {
 
   private static final String MESSAGE = "This is an error message";
   private static final Throwable CAUSE = new IllegalArgumentException();
 
-  private static final ODataException ODATA_EXCEPTION = new ODataException();
-  private static final ODataException ODATA_EXCEPTION_WITH_MESSAGE = new ODataException(Status.INTERNAL_SERVER_ERROR, MESSAGE);
-  private static final ODataException ODATA_EXCEPTION_WITH_CAUSE = new ODataException(Status.INTERNAL_SERVER_ERROR, CAUSE);
+  private static final ODataException ODATA_EXCEPTION = new ServerErrorException();
+  private static final ODataException ODATA_EXCEPTION_WITH_MESSAGE = new ServerErrorException(MESSAGE);
+  private static final ODataException ODATA_EXCEPTION_WITH_CAUSE = new ServerErrorException(CAUSE);
 
   private static FormatWriter<ErrorResponse> formatWriter;
 
