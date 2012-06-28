@@ -275,6 +275,7 @@ public class CustomTest extends CustomBaseTest {
   }
 
   @Test
+  @Ignore
   public void testCreateMLE() throws InterruptedException {
     /**
      * There appears to be a strange race condition or something in the test environment:
@@ -296,6 +297,7 @@ public class CustomTest extends CustomBaseTest {
   }
 
   @Test
+  @Ignore
   public void testUpdateMLE() {
      /**
      * There appears to be a strange race condition or something in the test environment:
