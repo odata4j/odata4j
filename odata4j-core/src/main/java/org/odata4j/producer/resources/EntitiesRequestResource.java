@@ -8,8 +8,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -25,6 +27,7 @@ import javax.ws.rs.ext.ContextResolver;
 
 import org.odata4j.core.Guid;
 import org.odata4j.core.ODataConstants;
+import org.odata4j.core.ODataHttpMethod;
 import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OEntity;
 import org.odata4j.edm.EdmEntitySet;
@@ -51,6 +54,8 @@ public class EntitiesRequestResource extends BaseResource {
       @Context HttpHeaders httpHeaders,
       @Context UriInfo uriInfo,
       @Context ContextResolver<ODataProducer> producerResolver,
+      @QueryParam("$format") String format,
+      @QueryParam("$callback") String callback,
       @PathParam("entitySetName") String entitySetName,
       InputStream payload) throws Exception {
 
@@ -61,6 +66,21 @@ public class EntitiesRequestResource extends BaseResource {
     log("createEntity", "entitySetName", entitySetName);
 
     ODataProducer producer = producerResolver.getContext(ODataProducer.class);
+
+    // the OData URI scheme makes it impossible to have unique @Paths that refer
+    // to functions and entity sets
+    if (producer.getMetadata().findEdmFunctionImport(entitySetName) != null) {
+      // functions that return collections of entities should support the
+      // same set of query options as entity set queries so give them everything.
+
+      ODataHttpMethod callingMethod = ODataHttpMethod.POST;
+      List<String> xheader = httpHeaders.getRequestHeader("X-HTTP-METHOD");
+      if (xheader != null && xheader.size() > 0) {
+        callingMethod = ODataHttpMethod.fromString(xheader.get(0));
+      }
+
+      return FunctionResource.callFunction(callingMethod, httpHeaders, uriInfo, producer, entitySetName, format, callback, new QueryInfo());
+    }
 
     // is this a new media resource?
     // check for HasStream
@@ -125,6 +145,64 @@ public class EntitiesRequestResource extends BaseResource {
         mle);
   }
 
+  @PUT
+  public Response functionCallPut(
+      @Context HttpHeaders httpHeaders,
+      @Context UriInfo uriInfo,
+      @Context ContextResolver<ODataProducer> producerResolver,
+      @QueryParam("$format") String format,
+      @QueryParam("$callback") String callback,
+      @PathParam("entitySetName") String functionName,
+      InputStream payload) throws Exception {
+
+    Response response;
+    log("functionCallDelete", "function", functionName);
+
+    ODataProducer producer = producerResolver.getContext(ODataProducer.class);
+
+    // the OData URI scheme makes it impossible to have unique @Paths that refer
+    // to functions and entity sets
+    if (producer.getMetadata().findEdmFunctionImport(functionName) != null) {
+      // functions that return collections of entities should support the
+      // same set of query options as entity set queries so give them everything.
+
+      response = FunctionResource.callFunction(ODataHttpMethod.PUT, httpHeaders, uriInfo, producer, functionName, format, callback, new QueryInfo());
+    } else {
+      throw new NotFoundException(functionName);
+    }
+
+    return response;
+  }
+
+  @DELETE
+  public Response functionCallDelete(
+      @Context HttpHeaders httpHeaders,
+      @Context UriInfo uriInfo,
+      @Context ContextResolver<ODataProducer> producerResolver,
+      @QueryParam("$format") String format,
+      @QueryParam("$callback") String callback,
+      @PathParam("entitySetName") String functionName,
+      InputStream payload) throws Exception {
+
+    Response response;
+    log("functionCallDelete", "function", functionName);
+
+    ODataProducer producer = producerResolver.getContext(ODataProducer.class);
+
+    // the OData URI scheme makes it impossible to have unique @Paths that refer
+    // to functions and entity sets
+    if (producer.getMetadata().findEdmFunctionImport(functionName) != null) {
+      // functions that return collections of entities should support the
+      // same set of query options as entity set queries so give them everything.
+
+      response = FunctionResource.callFunction(ODataHttpMethod.DELETE, httpHeaders, uriInfo, producer, functionName, format, callback, new QueryInfo());
+    } else {
+      throw new NotFoundException(functionName);
+    }
+
+    return response;
+  }
+
   @GET
   @Produces({ ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8,
       ODataConstants.TEXT_JAVASCRIPT_CHARSET_UTF8,
@@ -143,7 +221,8 @@ public class EntitiesRequestResource extends BaseResource {
       @QueryParam("$callback") String callback,
       @QueryParam("$skiptoken") String skipToken,
       @QueryParam("$expand") String expand,
-      @QueryParam("$select") String select) throws Exception {
+      @QueryParam("$select") String select)
+      throws Exception {
 
     log("getEntities",
         "entitySetName", entitySetName,
@@ -239,7 +318,7 @@ public class EntitiesRequestResource extends BaseResource {
     if (producer.getMetadata().findEdmFunctionImport(entitySetName) != null) {
       // functions that return collections of entities should support the
       // same set of query options as entity set queries so give them everything.
-      return FunctionResource.callFunction(httpHeaders, uriInfo, producer, entitySetName, format, callback, query);
+      return FunctionResource.callFunction(ODataHttpMethod.GET, httpHeaders, uriInfo, producer, entitySetName, format, callback, query);
     }
 
     Response response = null;
@@ -258,6 +337,10 @@ public class EntitiesRequestResource extends BaseResource {
     }
     else {
       EntitiesResponse entitiesResponse = producer.getEntities(entitySetName, query);
+
+      if (entitiesResponse == null) {
+        throw new NotFoundException(entitySetName);
+      }
 
       StringWriter sw = new StringWriter();
       FormatWriter<EntitiesResponse> fw =
@@ -283,12 +366,15 @@ public class EntitiesRequestResource extends BaseResource {
   }
 
   @POST
+  @Path("{batch: [$]batch}")
   @Consumes(ODataBatchProvider.MULTIPART_MIXED)
   @Produces(ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8)
   public Response processBatch(
       @Context ContextResolver<ODataProducer> producerResolver,
       @Context HttpHeaders headers,
       @Context Request request,
+      @QueryParam("$format") String format,
+      @QueryParam("$callback") String callback,
       List<BatchBodyPart> bodyParts) throws Exception {
 
     log("processBatch", "bodyParts.size", bodyParts.size());
@@ -332,7 +418,7 @@ public class EntitiesRequestResource extends BaseResource {
             entityId, entityString);
         break;
       case DELETE:
-        response = er.deleteEntity(httpHeaders, uriInfo, producerResolver, entitySetName, entityId);
+        response = er.deleteEntity(httpHeaders, uriInfo, producerResolver, format, callback, entitySetName, entityId);
         break;
       case GET:
         throw new UnsupportedOperationException("Not supported yet.");

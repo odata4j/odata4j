@@ -21,6 +21,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 
 import org.odata4j.core.ODataConstants;
+import org.odata4j.core.ODataHttpMethod;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityIds;
 import org.odata4j.core.OEntityKey;
@@ -134,6 +135,7 @@ public class EntityRequestResource extends BaseResource {
   protected Response updateMediaLinkEntry(HttpHeaders httpHeaders,
       UriInfo uriInfo, ODataProducer producer, EdmEntitySet entitySet, InputStream payload, OEntityKey key) throws IOException {
 
+    @SuppressWarnings("unused")
     OEntity mle = super.createOrUpdateMediaLinkEntry(httpHeaders, uriInfo, entitySet, producer, payload, key);
 
     // TODO: hmmh..isn't this supposed to be HTTP 204 No Content?
@@ -185,12 +187,22 @@ public class EntityRequestResource extends BaseResource {
   @DELETE
   public Response deleteEntity(@Context HttpHeaders httpHeaders, @Context UriInfo uriInfo,
       @Context ContextResolver<ODataProducer> producerResolver,
+      @QueryParam("$format") String format,
+      @QueryParam("$callback") String callback,
       @PathParam("entitySetName") String entitySetName,
-      @PathParam("id") String id) {
+      @PathParam("id") String id) throws Exception {
 
     log.info(String.format("deleteEntity(%s,%s)", entitySetName, id));
 
     ODataProducer producer = producerResolver.getContext(ODataProducer.class);
+
+    // the OData URI scheme makes it impossible to have unique @Paths that refer
+    // to functions and entity sets
+    if (producer.getMetadata().findEdmFunctionImport(entitySetName) != null) {
+      // functions that return collections of entities should support the
+      // same set of query options as entity set queries so give them everything.
+      return FunctionResource.callFunction(ODataHttpMethod.DELETE, httpHeaders, uriInfo, producer, entitySetName, format, callback, null);
+    }
 
     OEntityKey entityKey = OEntityKey.parse(id);
 

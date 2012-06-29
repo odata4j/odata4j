@@ -11,7 +11,9 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
 
+import javax.ws.rs.core.MediaType;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.custommonkey.xmlunit.NamespaceContext;
@@ -21,7 +23,6 @@ import org.custommonkey.xmlunit.XpathEngine;
 import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.odata4j.core.OSimpleObjects;
 import org.odata4j.edm.EdmSimpleType;
@@ -140,7 +141,7 @@ public class FunctionImportTest extends AbstractRuntimeTest {
   }
 
   @Test
-  public void callMetaData() throws SAXException, IOException, ParserConfigurationException {
+  public void testMetaData() throws SAXException, IOException, ParserConfigurationException {
     ResponseData responseData = this.rtFacade.getWebResource(endpointUri + "$metadata/");
     String metadata = responseData.getEntity();
     assertEquals(200, responseData.getStatusCode());
@@ -148,7 +149,7 @@ public class FunctionImportTest extends AbstractRuntimeTest {
   }
 
   @Test
-  public void tesFunctionReturnStringWithAllParameter() throws XpathException, SAXException, IOException {
+  public void testFunctionReturnStringWithAllParameter() throws XpathException, SAXException, IOException {
     String query = "?p1=X'1F'&p2=true&p3=1&p4=datetime'2010-12-12T23:44:57'&p5=22.5m&p6=1d&p7=1f&p8=datetimeoffset'2012-12-12T22:07:44Z'&p9=guid'11111111-1111-1111-1111-111111111111'&p10=1&p11=1&p12=1L&p13=1&p14='hugo'&p15=time'PT10H30M'";
 
     for (FormatType format : FunctionImportTest.formats) {
@@ -175,7 +176,7 @@ public class FunctionImportTest extends AbstractRuntimeTest {
   }
 
   @Test
-  public void tesFunctionReturnBoolean() throws XpathException, IOException, SAXException {
+  public void testFunctionReturnBoolean() throws XpathException, IOException, SAXException {
     for (FormatType format : FunctionImportTest.formats) {
       ResponseData responseData = this.rtFacade.getWebResource(endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_BOOLEAN + "?" + this.formatQuery(format));
       String resource = responseData.getEntity();
@@ -199,7 +200,7 @@ public class FunctionImportTest extends AbstractRuntimeTest {
   }
 
   @Test
-  public void tesFunctionReturnString() throws XpathException, IOException, SAXException {
+  public void testFunctionReturnString() throws XpathException, IOException, SAXException {
     for (TestCase testCase : FunctionImportTest.testCases) {
 
       String query = "?" + testCase.parameterName + "=" + testCase.valueLiteral;
@@ -235,7 +236,7 @@ public class FunctionImportTest extends AbstractRuntimeTest {
   }
 
   @Test
-  public void tesFunctionReturnInt16() throws XpathException, IOException, SAXException {
+  public void testFunctionReturnInt16() throws XpathException, IOException, SAXException {
     for (FormatType format : FunctionImportTest.formats) {
       ResponseData responseData = this.rtFacade.getWebResource(endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_INT16 + "?" + this.formatQuery(format));
       String resource = responseData.getEntity();
@@ -259,7 +260,7 @@ public class FunctionImportTest extends AbstractRuntimeTest {
   }
 
   @Test
-  public void tesFunctionReturnStringWithNoQueryParameter() throws XpathException, IOException, SAXException {
+  public void testFunctionReturnStringWithNoQueryParameter() throws XpathException, IOException, SAXException {
     for (FormatType format : FunctionImportTest.formats) {
 
       ResponseData responseData = this.rtFacade.getWebResource(endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_STRING + "?" + this.formatQuery(format));
@@ -474,8 +475,7 @@ public class FunctionImportTest extends AbstractRuntimeTest {
   }
 
   @Test
-  @Ignore
-  public void tesFunctionReturnStringPost() throws XpathException, IOException, SAXException {
+  public void testFunctionReturnStringPost() throws XpathException, IOException, SAXException {
     for (FormatType format : FunctionImportTest.formats) {
       String uri = endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_STRING_POST + "?" + this.formatQuery(format);
 
@@ -500,4 +500,262 @@ public class FunctionImportTest extends AbstractRuntimeTest {
     }
   }
 
+  @Test
+  public void testFunctionReturnStringGet() throws XpathException, IOException, SAXException {
+    for (FormatType format : FunctionImportTest.formats) {
+      String uri = endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_STRING_GET + "?" + this.formatQuery(format);
+
+      ResponseData responseData = this.rtFacade.getWebResource(uri, null, null, null);
+      String resource = responseData.getEntity();
+
+      assertEquals(format.toString(), 200, responseData.getStatusCode());
+      assertNotNull(format.toString(), this.mockProducer.getQueryParameter());
+
+      switch (format) {
+      case ATOM:
+        assertXpathExists("/d:TestFunctionReturnStringGet", resource);
+        assertXpathEvaluatesTo(FunctionImportProducerMock.SOME_TEXT, "/d:TestFunctionReturnStringGet/text()", resource);
+        break;
+      case JSON:
+        assertTrue(format.toString(), resource.contains(MetadataUtil.TEST_FUNCTION_RETURN_STRING_GET));
+        assertTrue(format.toString(), resource.contains(FunctionImportProducerMock.SOME_TEXT));
+        break;
+      default:
+        throw new RuntimeException("Unknown Format Type: " + format);
+      }
+    }
+  }
+
+  @Test
+  public void testFunctionReturnStringMerge() throws XpathException, IOException, SAXException {
+    for (FormatType format : FunctionImportTest.formats) {
+      String uri = endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_STRING_MERGE + "?" + this.formatQuery(format);
+
+      ResponseData responseData = this.rtFacade.mergeWebResource(uri, null, null, null);
+      String resource = responseData.getEntity();
+
+      assertEquals(format.toString(), 200, responseData.getStatusCode());
+      assertNotNull(format.toString(), this.mockProducer.getQueryParameter());
+
+      switch (format) {
+      case ATOM:
+        assertXpathExists("/d:TestFunctionReturnStringMerge", resource);
+        assertXpathEvaluatesTo(FunctionImportProducerMock.SOME_TEXT, "/d:TestFunctionReturnStringMerge/text()", resource);
+        break;
+      case JSON:
+        assertTrue(format.toString(), resource.contains(MetadataUtil.TEST_FUNCTION_RETURN_STRING_MERGE));
+        assertTrue(format.toString(), resource.contains(FunctionImportProducerMock.SOME_TEXT));
+        break;
+      default:
+        throw new RuntimeException("Unknown Format Type: " + format);
+      }
+    }
+  }
+
+  @Test
+  public void testFunctionReturnStringPut() throws XpathException, IOException, SAXException {
+    for (FormatType format : FunctionImportTest.formats) {
+      String uri = endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_STRING_PUT + "?" + this.formatQuery(format);
+
+      ResponseData responseData = this.rtFacade.putWebResource(uri, null, null, null);
+      String resource = responseData.getEntity();
+
+      assertEquals(format.toString(), 200, responseData.getStatusCode());
+      assertNotNull(format.toString(), this.mockProducer.getQueryParameter());
+
+      switch (format) {
+      case ATOM:
+        assertXpathExists("/d:TestFunctionReturnStringPut", resource);
+        assertXpathEvaluatesTo(FunctionImportProducerMock.SOME_TEXT, "/d:TestFunctionReturnStringPut/text()", resource);
+        break;
+      case JSON:
+        assertTrue(format.toString(), resource.contains(MetadataUtil.TEST_FUNCTION_RETURN_STRING_PUT));
+        assertTrue(format.toString(), resource.contains(FunctionImportProducerMock.SOME_TEXT));
+        break;
+      default:
+        throw new RuntimeException("Unknown Format Type: " + format);
+      }
+    }
+  }
+
+  @Test
+  public void testFunctionReturnStringDelete() throws XpathException, IOException, SAXException {
+    for (FormatType format : FunctionImportTest.formats) {
+      String uri = endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_STRING_DELETE + "?" + this.formatQuery(format);
+
+      ResponseData responseData = this.rtFacade.deleteWebResource(uri, null, null, null);
+      String resource = responseData.getEntity();
+
+      assertEquals(format.toString(), 200, responseData.getStatusCode());
+      assertNotNull(format.toString(), this.mockProducer.getQueryParameter());
+
+      switch (format) {
+      case ATOM:
+        assertXpathExists("/d:TestFunctionReturnStringDelete", resource);
+        assertXpathEvaluatesTo(FunctionImportProducerMock.SOME_TEXT, "/d:TestFunctionReturnStringDelete/text()", resource);
+        break;
+      case JSON:
+        assertTrue(format.toString(), resource.contains(MetadataUtil.TEST_FUNCTION_RETURN_STRING_DELETE));
+        assertTrue(format.toString(), resource.contains(FunctionImportProducerMock.SOME_TEXT));
+        break;
+      default:
+        throw new RuntimeException("Unknown Format Type: " + format);
+      }
+    }
+  }
+
+  @Test
+  public void testFunctionReturnStringPatch() throws XpathException, IOException, SAXException {
+    for (FormatType format : FunctionImportTest.formats) {
+      String uri = endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_STRING_PATCH + "?" + this.formatQuery(format);
+
+      ResponseData responseData = this.rtFacade.patchWebResource(uri, null, null, null);
+      String resource = responseData.getEntity();
+
+      assertEquals(format.toString(), 200, responseData.getStatusCode());
+      assertNotNull(format.toString(), this.mockProducer.getQueryParameter());
+
+      switch (format) {
+      case ATOM:
+        assertXpathExists("/d:TestFunctionReturnStringPatch", resource);
+        assertXpathEvaluatesTo(FunctionImportProducerMock.SOME_TEXT, "/d:TestFunctionReturnStringPatch/text()", resource);
+        break;
+      case JSON:
+        assertTrue(format.toString(), resource.contains(MetadataUtil.TEST_FUNCTION_RETURN_STRING_PATCH));
+        assertTrue(format.toString(), resource.contains(FunctionImportProducerMock.SOME_TEXT));
+        break;
+      default:
+        throw new RuntimeException("Unknown Format Type: " + format);
+      }
+    }
+  }
+
+  @Test
+  public void testMethodNotAllowed() {
+    for (FormatType format : FunctionImportTest.formats) {
+      ResponseData responseData;
+      String uri;
+
+      uri = endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_STRING_GET + "?" + this.formatQuery(format);
+      responseData = this.rtFacade.putWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 405, responseData.getStatusCode());
+      responseData = this.rtFacade.postWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 405, responseData.getStatusCode());
+      responseData = this.rtFacade.deleteWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 405, responseData.getStatusCode());
+      responseData = this.rtFacade.patchWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 405, responseData.getStatusCode());
+      responseData = this.rtFacade.mergeWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 405, responseData.getStatusCode());
+
+      uri = endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_STRING_PUT + "?" + this.formatQuery(format);
+      responseData = this.rtFacade.getWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 405, responseData.getStatusCode());
+      responseData = this.rtFacade.postWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 405, responseData.getStatusCode());
+      responseData = this.rtFacade.deleteWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 405, responseData.getStatusCode());
+      responseData = this.rtFacade.patchWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 405, responseData.getStatusCode());
+      responseData = this.rtFacade.mergeWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 405, responseData.getStatusCode());
+
+      uri = endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_STRING_POST + "?" + this.formatQuery(format);
+      responseData = this.rtFacade.getWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 405, responseData.getStatusCode());
+      responseData = this.rtFacade.putWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 405, responseData.getStatusCode());
+      responseData = this.rtFacade.deleteWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 405, responseData.getStatusCode());
+      responseData = this.rtFacade.patchWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 405, responseData.getStatusCode());
+      responseData = this.rtFacade.mergeWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 405, responseData.getStatusCode());
+
+      uri = endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_STRING_DELETE + "?" + this.formatQuery(format);
+      responseData = this.rtFacade.getWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 405, responseData.getStatusCode());
+      responseData = this.rtFacade.postWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 405, responseData.getStatusCode());
+      responseData = this.rtFacade.putWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 405, responseData.getStatusCode());
+      responseData = this.rtFacade.patchWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 405, responseData.getStatusCode());
+      responseData = this.rtFacade.mergeWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 405, responseData.getStatusCode());
+
+      uri = endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_STRING_MERGE + "?" + this.formatQuery(format);
+      responseData = this.rtFacade.getWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 405, responseData.getStatusCode());
+      responseData = this.rtFacade.postWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 405, responseData.getStatusCode());
+      responseData = this.rtFacade.deleteWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 405, responseData.getStatusCode());
+      responseData = this.rtFacade.patchWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 405, responseData.getStatusCode());
+      responseData = this.rtFacade.putWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 405, responseData.getStatusCode());
+
+      uri = endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_STRING_PATCH + "?" + this.formatQuery(format);
+      responseData = this.rtFacade.getWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 405, responseData.getStatusCode());
+      responseData = this.rtFacade.postWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 405, responseData.getStatusCode());
+      responseData = this.rtFacade.deleteWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 405, responseData.getStatusCode());
+      responseData = this.rtFacade.putWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 405, responseData.getStatusCode());
+      responseData = this.rtFacade.mergeWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 405, responseData.getStatusCode());
+}
+  }
+
+  @Test
+  public void testMethodNotFound() throws XpathException, IOException, SAXException {
+    for (FormatType format : FunctionImportTest.formats) {
+      String uri = endpointUri + "MethodNotAllowed" + "?" + this.formatQuery(format);
+
+      ResponseData responseData;
+
+      responseData = this.rtFacade.putWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 404, responseData.getStatusCode());
+
+      responseData = this.rtFacade.deleteWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 404, responseData.getStatusCode());
+
+      responseData = this.rtFacade.postWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 404, responseData.getStatusCode());
+
+      responseData = this.rtFacade.getWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 404, responseData.getStatusCode());
+
+      responseData = this.rtFacade.patchWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 404, responseData.getStatusCode());
+
+      responseData = this.rtFacade.mergeWebResource(uri, null, null, null);
+      assertEquals(format.toString(), 404, responseData.getStatusCode());
+    }
+  }
+
+  @Test
+  public void testBatch() throws XpathException, IOException, SAXException {
+
+    /*
+     * because of we don't have batch processing test we will to a sanity batch test here because of function call support
+     * for all http methods did affect batch implementation (s. EntietiesRequestResource). 
+     */
+
+    for (FormatType format : FunctionImportTest.formats) {
+      String uri = endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_STRING_POST + "/$batch" + "?" + this.formatQuery(format);
+
+      Hashtable<String, Object> header = new Hashtable<String, Object>();
+      header.put("content-type", new MediaType("multipart", "mixed"));
+      ResponseData responseData = this.rtFacade.postWebResource(uri, null, null, header);
+      String resource = responseData.getEntity();
+
+      assertNotNull(resource);
+      assertTrue(resource.contains("batchresponse"));
+      assertEquals(format.toString(), 202, responseData.getStatusCode());
+    }
+  }
 }

@@ -74,6 +74,18 @@ public class QueryInfo {
    */
   public final List<EntitySimpleProperty> select;
 
+  public QueryInfo() {
+    this.inlineCount = null;
+    this.top = null;
+    this.skip = null;
+    this.filter = null;
+    this.orderBy = null;
+    this.skipToken = null;
+    this.select = Collections.<EntitySimpleProperty> emptyList();
+    this.expand = Collections.<EntitySimpleProperty> emptyList();
+    this.customOptions = Collections.<String, String> emptyMap();
+  }
+
   /**
    * Creates a new <code>QueryInfo</code> instance.
    */

@@ -13,6 +13,10 @@ import org.odata4j.stax2.staximpl.StaxXMLFactoryProvider2;
 
 public class MetadataUtil {
 
+  public static final String TEST_FUNCTION_RETURN_STRING_DELETE = "TestFunctionReturnStringDelete";
+  public static final String TEST_FUNCTION_RETURN_STRING_MERGE = "TestFunctionReturnStringMerge";
+  public static final String TEST_FUNCTION_RETURN_STRING_PATCH = "TestFunctionReturnStringPatch";
+  public static final String TEST_FUNCTION_RETURN_STRING_PUT = "TestFunctionReturnStringPut";
   public static final String TEST_FUNCTION_RETURN_STRING_GET = "TestFunctionReturnStringGet";
   public static final String TEST_FUNCTION_RETURN_STRING_POST = "TestFunctionReturnStringPost";
   public static final String TEST_FUNCTION_RETURN_STRING = "TestFunctionReturnString";

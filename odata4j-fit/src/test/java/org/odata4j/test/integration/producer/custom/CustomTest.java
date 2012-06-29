@@ -283,7 +283,7 @@ public class CustomTest extends CustomBaseTest {
      * or server issue. Workaround:  issue a GET first to prime things.
      */
     String contentBefore = rtFacade.getWebResource(endpointUri + "MLEs('ANewMLE')/$value" + "?$format=json").getEntity();
-    
+
     Map<String, Object> headers = new HashMap<String, Object>();
     headers.put("Slug", "ANewMLE"); // the Id
 

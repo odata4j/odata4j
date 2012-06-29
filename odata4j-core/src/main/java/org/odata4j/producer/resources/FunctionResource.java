@@ -6,12 +6,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import org.odata4j.core.ODataConstants;
+import org.odata4j.core.ODataHttpMethod;
 import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OFunctionParameter;
@@ -31,6 +33,7 @@ import org.odata4j.producer.PropertyResponse;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.Responses;
 import org.odata4j.producer.SimpleResponse;
+import org.odata4j.producer.exceptions.MethodNotAllowedException;
 import org.odata4j.producer.exceptions.NotImplementedException;
 
 /**
@@ -54,7 +57,9 @@ public class FunctionResource extends BaseResource {
    * the request and delegating to the producer.
    */
   @SuppressWarnings("rawtypes")
-  public static Response callFunction(HttpHeaders httpHeaders,
+  public static Response callFunction(
+      ODataHttpMethod callingMethod,
+      HttpHeaders httpHeaders,
       UriInfo uriInfo,
       ODataProducer producer,
       String functionName,
@@ -68,6 +73,14 @@ public class FunctionResource extends BaseResource {
       return Response.status(Status.NOT_FOUND).build();
     }
 
+    String expectedHttpMethodString = function.getHttpMethod();
+    if (null != expectedHttpMethodString && !"".equals(expectedHttpMethodString)) {
+      ODataHttpMethod expectedHttpMethod = ODataHttpMethod.fromString(expectedHttpMethodString);
+      if (expectedHttpMethod != callingMethod) {
+        throw new MethodNotAllowedException();
+      }
+    }
+    
     BaseResponse response = producer.callFunction(
         function, getFunctionParameters(function, queryInfo.customOptions), queryInfo);
 

@@ -34,6 +34,7 @@ public class EnumsAsStringsPropertyModelDelegate extends PropertyModelDelegate {
     return rt;
   }
 
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public void setPropertyValue(Object target, String propertyName, Object value) {
     Class baseType = super.getPropertyType(propertyName);
@@ -47,7 +48,7 @@ public class EnumsAsStringsPropertyModelDelegate extends PropertyModelDelegate {
 
   @Override
   public Class<?> getCollectionElementType(String collectionName) {
-    Class etype = getDelegate().getCollectionElementType(collectionName);
+    Class<?> etype = getDelegate().getCollectionElementType(collectionName);
     if (etype != null && etype.isEnum()) {
       return String.class;
     }
@@ -57,7 +58,7 @@ public class EnumsAsStringsPropertyModelDelegate extends PropertyModelDelegate {
   @Override
   public Iterable<?> getCollectionValue(Object target, String collectionName) {
     Iterable<?> iter = getDelegate().getCollectionValue(target, collectionName);
-    Class etype = getDelegate().getCollectionElementType(collectionName);
+    Class<?> etype = getDelegate().getCollectionElementType(collectionName);
     if (null != iter && null != etype && etype.isEnum()) {
       Iterator<?> i = iter.iterator();
       List<String> l = new ArrayList<String>();

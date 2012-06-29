@@ -30,4 +30,13 @@ public interface RuntimeFacade {
   public ResponseData postWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers);
 
   public ResponseData putWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers);
+
+  public ResponseData mergeWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers);
+
+  public ResponseData patchWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers);
+
+  public ResponseData getWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers);
+
+  public ResponseData deleteWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers);
+
 }

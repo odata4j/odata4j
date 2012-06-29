@@ -26,6 +26,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
 import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.core.ODataHttpMethod;
 import org.odata4j.core.ODataConstants.Headers;
 import org.odata4j.core.Throwables;
 import org.odata4j.cxf.consumer.ODataCxfConsumer;
@@ -78,7 +79,7 @@ public class CxfRuntimeFacade implements RuntimeFacade {
   @Override
   public ResponseData acceptAndReturn(String uri, MediaType mediaType) {
     uri = uri.replace(" ", "%20");
-    return this.getResource(HttpMethod.GET, uri, null, mediaType, null);
+    return this.getResource(ODataHttpMethod.GET, uri, null, mediaType, null);
   }
 
   @Override
@@ -86,7 +87,7 @@ public class CxfRuntimeFacade implements RuntimeFacade {
     uri = uri.replace(" ", "%20");
     Hashtable<String, Object> header = new Hashtable<String, Object>();
     header.put("accept", accept);
-    return this.getResource(HttpMethod.GET, uri, null, null, header);
+    return this.getResource(ODataHttpMethod.GET, uri, null, null, header);
   }
 
   @Override
@@ -96,10 +97,10 @@ public class CxfRuntimeFacade implements RuntimeFacade {
 
   @Override
   public ResponseData getWebResource(String uri) {
-    return this.getResource(HttpMethod.GET, uri, null, null, null);
+    return this.getResource(ODataHttpMethod.GET, uri, null, null, null);
   }
 
-  private ResponseData getResource(HttpMethod method, String uri, InputStream content, MediaType mediaType, Map<String, Object> headers) {
+  private ResponseData getResource(ODataHttpMethod method, String uri, InputStream content, MediaType mediaType, Map<String, Object> headers) {
     String resource = "";
     try {
       HttpClient httpClient = new DefaultHttpClient();
@@ -154,16 +155,19 @@ public class CxfRuntimeFacade implements RuntimeFacade {
 
       if (headers != null) {
         for (String key : headers.keySet()) {
-          String value = (String) headers.get(key);
+          String value = (String) headers.get(key).toString();
           Header header = new BasicHeader(key, value);
           httpRequest.addHeader(header);
         }
       }
       if (mediaType != null) {
-        if (content != null)
+        if (content != null) {
           httpRequest.addHeader(HttpHeaders.CONTENT_TYPE, mediaType.toString());
-        if (method == HttpMethod.GET)
+        }
+        if (method == ODataHttpMethod.GET)
+        {
           httpRequest.addHeader(HttpHeaders.ACCEPT, mediaType.toString());
+        }
       }
 
       // Execute the request
@@ -185,15 +189,31 @@ public class CxfRuntimeFacade implements RuntimeFacade {
 
   @Override
   public ResponseData postWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers) {
-    return this.getResource(HttpMethod.POST, uri, content, mediaType, headers);
+    return this.getResource(ODataHttpMethod.POST, uri, content, mediaType, headers);
   }
 
   @Override
   public ResponseData putWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers) {
-    return this.getResource(HttpMethod.PUT, uri, content, mediaType, headers);
+    return this.getResource(ODataHttpMethod.PUT, uri, content, mediaType, headers);
   }
 
-  private enum HttpMethod {
-    GET, POST, PUT, DELETE, MERGE, PATCH
+  @Override
+  public ResponseData mergeWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers) {
+    return this.getResource(ODataHttpMethod.MERGE, uri, content, mediaType, headers);
+  }
+
+  @Override
+  public ResponseData patchWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers) {
+    return this.getResource(ODataHttpMethod.PATCH, uri, content, mediaType, headers);
+  }
+
+  @Override
+  public ResponseData getWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers) {
+    return this.getResource(ODataHttpMethod.GET, uri, content, mediaType, headers);
+  }
+
+  @Override
+  public ResponseData deleteWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers) {
+    return this.getResource(ODataHttpMethod.DELETE, uri, content, mediaType, headers);
   }
 }

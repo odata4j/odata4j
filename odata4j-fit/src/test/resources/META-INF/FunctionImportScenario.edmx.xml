@@ -58,6 +58,14 @@
         </FunctionImport>
         <FunctionImport Name="TestFunctionReturnStringPost" ReturnType="Edm.String" m:HttpMethod="POST">
         </FunctionImport>
+        <FunctionImport Name="TestFunctionReturnStringPut" ReturnType="Edm.String" m:HttpMethod="PUT">
+        </FunctionImport>
+        <FunctionImport Name="TestFunctionReturnStringMerge" ReturnType="Edm.String" m:HttpMethod="MERGE">
+        </FunctionImport>
+        <FunctionImport Name="TestFunctionReturnStringPatch" ReturnType="Edm.String" m:HttpMethod="PATCH">
+        </FunctionImport>
+        <FunctionImport Name="TestFunctionReturnStringDelete" ReturnType="Edm.String" m:HttpMethod="DELETE">
+        </FunctionImport>
       </EntityContainer>
     </Schema>
   </edmx:DataServices>

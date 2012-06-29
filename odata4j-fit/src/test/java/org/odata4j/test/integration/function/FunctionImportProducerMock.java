@@ -150,6 +150,16 @@ public class FunctionImportProducerMock implements ODataProducer {
 
     if (MetadataUtil.TEST_FUNCTION_RETURN_STRING.equals(name.getName())) {
       response = Responses.simple(EdmSimpleType.STRING, name.getName(), FunctionImportProducerMock.SOME_TEXT);
+    } else if (MetadataUtil.TEST_FUNCTION_RETURN_STRING_PUT.equals(name.getName())) {
+      response = Responses.simple(EdmSimpleType.STRING, name.getName(), FunctionImportProducerMock.SOME_TEXT);
+    } else if (MetadataUtil.TEST_FUNCTION_RETURN_STRING_GET.equals(name.getName())) {
+      response = Responses.simple(EdmSimpleType.STRING, name.getName(), FunctionImportProducerMock.SOME_TEXT);
+    } else if (MetadataUtil.TEST_FUNCTION_RETURN_STRING_DELETE.equals(name.getName())) {
+      response = Responses.simple(EdmSimpleType.STRING, name.getName(), FunctionImportProducerMock.SOME_TEXT);
+    } else if (MetadataUtil.TEST_FUNCTION_RETURN_STRING_PATCH.equals(name.getName())) {
+      response = Responses.simple(EdmSimpleType.STRING, name.getName(), FunctionImportProducerMock.SOME_TEXT);
+    } else if (MetadataUtil.TEST_FUNCTION_RETURN_STRING_MERGE.equals(name.getName())) {
+      response = Responses.simple(EdmSimpleType.STRING, name.getName(), FunctionImportProducerMock.SOME_TEXT);
     } else if (MetadataUtil.TEST_FUNCTION_RETURN_STRING_POST.equals(name.getName())) {
       response = Responses.simple(EdmSimpleType.STRING, name.getName(), FunctionImportProducerMock.SOME_TEXT);
     } else if (MetadataUtil.TEST_FUNCTION_RETURN_BOOLEAN.equals(name.getName())) {

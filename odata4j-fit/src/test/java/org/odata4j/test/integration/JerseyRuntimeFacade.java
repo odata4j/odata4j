@@ -11,6 +11,8 @@ import javax.ws.rs.core.MediaType;
 
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.consumer.behaviors.MethodTunnelingBehavior;
+import org.odata4j.core.ODataHttpMethod;
+import org.odata4j.core.ODataConstants.Headers;
 import org.odata4j.core.Throwables;
 import org.odata4j.format.FormatType;
 import org.odata4j.jersey.consumer.ODataJerseyConsumer;
@@ -77,43 +79,11 @@ public class JerseyRuntimeFacade implements RuntimeFacade {
 
   @Override
   public ResponseData postWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers) {
-    Client client = new Client();
-    WebResource.Builder webResource = client.resource(uri).type(mediaType);
-    int statusCode;
-    String entity = "";
-    try {
-      if (null != headers) {
-        for (Entry<String, Object> entry : headers.entrySet()) {
-          webResource = webResource.header(entry.getKey(), entry.getValue());
-        }
-      }
-      ClientResponse response = webResource.post(ClientResponse.class, content);
-      statusCode = response.getStatus();
-      entity = response.getEntity(String.class);
-    } catch (UniformInterfaceException ex) {
-      statusCode = ex.getResponse().getStatus();
-    }
-    return new ResponseData(statusCode, entity);
+    return this.requestWebResource(ODataHttpMethod.POST, uri, content, mediaType, headers);
   }
 
   public ResponseData putWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers) {
-    Client client = new Client();
-    WebResource.Builder webResource = client.resource(uri).type(mediaType);
-    int statusCode;
-    String entity = "";
-    try {
-      if (null != headers) {
-        for (Entry<String, Object> entry : headers.entrySet()) {
-          webResource = webResource.header(entry.getKey(), entry.getValue());
-        }
-      }
-      ClientResponse response = webResource.put(ClientResponse.class, content);
-      statusCode = response.getStatus();
-      entity = response.getEntity(String.class);
-    } catch (UniformInterfaceException ex) {
-      statusCode = ex.getResponse().getStatus();
-    }
-    return new ResponseData(statusCode, entity);
+    return this.requestWebResource(ODataHttpMethod.PUT, uri, content, mediaType, headers);
   }
 
   @Override
@@ -143,6 +113,72 @@ public class JerseyRuntimeFacade implements RuntimeFacade {
     uri = uri.replace(" ", "%20");
     WebResource webResource = new Client().resource(uri);
     webResource.accept(mediaType);
+  }
+
+  @Override
+  public ResponseData mergeWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers) {
+    return this.requestWebResource(ODataHttpMethod.MERGE, uri, content, mediaType, headers);
+  }
+
+  @Override
+  public ResponseData patchWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers) {
+    return this.requestWebResource(ODataHttpMethod.PATCH, uri, content, mediaType, headers);
+  }
+
+  @Override
+  public ResponseData getWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers) {
+    return this.requestWebResource(ODataHttpMethod.GET, uri, content, mediaType, headers);
+  }
+
+  @Override
+  public ResponseData deleteWebResource(String uri, InputStream content, MediaType mediaType, Map<String, Object> headers) {
+    return this.requestWebResource(ODataHttpMethod.DELETE, uri, content, mediaType, headers);
+  }
+
+  private ResponseData requestWebResource(ODataHttpMethod method, String uri, InputStream content, MediaType mediaType, Map<String, Object> headers) {
+    Client client = new Client();
+    WebResource.Builder webResource = client.resource(uri).type(mediaType);
+    int statusCode;
+    String entity = "";
+    try {
+      if (null != headers) {
+        for (Entry<String, Object> entry : headers.entrySet()) {
+          webResource = webResource.header(entry.getKey(), entry.getValue());
+        }
+      }
+
+      ClientResponse response;
+      switch (method) {
+      case DELETE:
+        response = webResource.delete(ClientResponse.class, content);
+        break;
+      case PATCH:
+        webResource = webResource.header(Headers.X_HTTP_METHOD, "PATCH");
+        response = webResource.post(ClientResponse.class, content);
+        break;
+      case GET:
+        response = webResource.get(ClientResponse.class);
+        break;
+      case MERGE:
+        webResource = webResource.header(Headers.X_HTTP_METHOD, "MERGE");
+        response = webResource.post(ClientResponse.class, content);
+        break;
+      case POST:
+        response = webResource.post(ClientResponse.class, content);
+        break;
+      case PUT:
+        response = webResource.put(ClientResponse.class, content);
+        break;
+      default:
+        throw new RuntimeException("Unsupported http method: " + method);
+      }
+
+      statusCode = response.getStatus();
+      entity = response.getEntity(String.class);
+    } catch (UniformInterfaceException ex) {
+      statusCode = ex.getResponse().getStatus();
+    }
+    return new ResponseData(statusCode, entity);
   }
 
 }
