@@ -18,7 +18,7 @@ public interface OMediaLinkExtension extends OExtension<ODataProducer> {
   /**
    * get an InputStream that streams the bytes of the media resource associated
    * with the given media link entry entity.
-   * 
+   *
    * @param mle   the media link entry entity
    * @param etag  for future extension
    * @param query additional request information
@@ -28,7 +28,7 @@ public interface OMediaLinkExtension extends OExtension<ODataProducer> {
 
   /**
    * get an OutputStream for the purpose of creating a media resource.
-   * 
+   *
    * @param mle   the media link entry entity
    * @param etag  for future extension
    * @param query additional request information
@@ -38,7 +38,7 @@ public interface OMediaLinkExtension extends OExtension<ODataProducer> {
 
   /**
    * get an OutputStream for the purpose of updating an existing media resource.
-   * 
+   *
    * @param mle   the media link entry entity
    * @param etag  for future extension
    * @param query additional request information
@@ -59,8 +59,8 @@ public interface OMediaLinkExtension extends OExtension<ODataProducer> {
    * @return the mime content type
    */
   String getMediaLinkContentType(OEntity mle);
-  
-   /**
+
+  /**
    * get the mime content disposition for the given media link entry entity
    * @param mle
    * @return the mime content disposition
@@ -69,7 +69,7 @@ public interface OMediaLinkExtension extends OExtension<ODataProducer> {
 
   /**
    * create an OEntity for a new media link entry request just received.
-   * 
+   *
    * @param entitySet
    * @param httpHeaders - Atom protocol says the Slug header can contain additional create info.
    * @return 
@@ -77,13 +77,13 @@ public interface OMediaLinkExtension extends OExtension<ODataProducer> {
   OEntity createMediaLinkEntry(EdmEntitySet entitySet, HttpHeaders httpHeaders);
 
   /**
-  * get an OEntity for an existing media link entry with the given key.
-  * 
-  * @param entitySet
-  * @param key         - entity key
-  * @param httpHeaders - Atom protocol says the Slug header can contain additional create info.
-  * @return 
-  */
+   * get an OEntity for an existing media link entry with the given key.
+   *
+   * @param entitySet
+   * @param key         - entity key
+   * @param httpHeaders - Atom protocol says the Slug header can contain additional create info.
+   * @return
+   */
   OEntity getMediaLinkEntryForUpdateOrDelete(EdmEntitySet entitySet, OEntityKey key, HttpHeaders httpHeaders);
 
   /**
@@ -92,9 +92,9 @@ public interface OMediaLinkExtension extends OExtension<ODataProducer> {
    * resource bits were processed.  updateMediaLinkEntry will be called after the
    * media resource bits have been written to outStream and outStream has been
    * closed.
-   * 
+   *
    * Note: this is only necessary because OEntity is immutable
-   * 
+   *
    * @param mle
    * @param outStream
    * @return an updated Media Link Entity

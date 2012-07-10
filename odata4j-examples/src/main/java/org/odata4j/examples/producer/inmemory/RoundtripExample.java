@@ -7,9 +7,9 @@ import java.util.List;
 
 import org.core4j.Func;
 import org.odata4j.consumer.ODataClientException;
-import org.odata4j.consumer.ODataServerException;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.consumer.ODataConsumers;
+import org.odata4j.consumer.ODataServerException;
 import org.odata4j.examples.AbstractExample;
 import org.odata4j.examples.ODataServerFactory;
 import org.odata4j.producer.inmemory.InMemoryProducer;

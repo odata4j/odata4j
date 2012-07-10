@@ -353,7 +353,7 @@ public class CustomProducer implements ODataProducer {
       Map<String, Object> params) {
     if (clazz.equals(OMediaLinkExtension.class))
       return (TExtension) new MediaLinkExtension();
-    throw new UnsupportedOperationException();
+    return null;
   }
 
   private final Map<String, String> mediaResources = new HashMap<String, String>();
@@ -362,11 +362,11 @@ public class CustomProducer implements ODataProducer {
     mediaResources.put("foobar", "here we have some content for the mle with id: ('foobar')");
     mediaResources.put("blatfoo", "please delete this useless mle asap...");
   }
-  
+
   protected OEntity getMLE(EdmEntitySet entitySet, String id, String content) {
     List<OProperty<?>> props = new ArrayList<OProperty<?>>();
     props.add(OProperties.string("MLEProp1", "content length is " + content.length()));
-    return OEntities.create(entitySet, OEntityKey.create("Id", id), props, Collections.<OLink>emptyList());
+    return OEntities.create(entitySet, OEntityKey.create("Id", id), props, Collections.<OLink> emptyList());
   }
 
   private class MediaLinkExtension implements OMediaLinkExtension {

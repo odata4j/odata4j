@@ -2,8 +2,8 @@ package org.odata4j.cxf.consumer;
 
 import org.core4j.Enumerable;
 import org.odata4j.consumer.ODataClientException;
-import org.odata4j.consumer.ODataServerException;
 import org.odata4j.consumer.ODataClientRequest;
+import org.odata4j.consumer.ODataServerException;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.format.FormatType;

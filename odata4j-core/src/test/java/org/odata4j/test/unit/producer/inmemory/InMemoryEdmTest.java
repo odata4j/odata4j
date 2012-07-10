@@ -22,7 +22,7 @@ import org.odata4j.producer.inmemory.InMemoryProducer;
 
 /**
  * Test various aspects of InMemoryEdmGenerator
- * 
+ *
  * hierarchy:
  * RHS
  * Base

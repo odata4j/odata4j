@@ -11,8 +11,8 @@ import javax.ws.rs.core.MediaType;
 
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.consumer.behaviors.MethodTunnelingBehavior;
-import org.odata4j.core.ODataHttpMethod;
 import org.odata4j.core.ODataConstants.Headers;
+import org.odata4j.core.ODataHttpMethod;
 import org.odata4j.core.Throwables;
 import org.odata4j.format.FormatType;
 import org.odata4j.jersey.consumer.ODataJerseyConsumer;

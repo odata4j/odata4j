@@ -7,7 +7,7 @@ public class OErrors {
 
   /**
    * Create a new {@link OError} instance.
-   * 
+   *
    * @param code  the technical error code
    * @param message  the human-readable error message
    * @param innerError  details about the error, e.g., the stack trace

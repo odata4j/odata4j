@@ -2,10 +2,10 @@ package org.odata4j.core;
 
 public enum ODataHttpMethod {
   GET, PUT, POST, DELETE, PATCH, MERGE, OPTIONS, HEAD;
-  
+
   public static ODataHttpMethod fromString(String m) {
     ODataHttpMethod result;
-    
+
     if ("get".equalsIgnoreCase(m)) {
       result = ODataHttpMethod.GET;
     } else if ("put".equalsIgnoreCase(m)) {
@@ -22,12 +22,11 @@ public enum ODataHttpMethod {
       result = ODataHttpMethod.OPTIONS;
     } else if ("head".equalsIgnoreCase(m)) {
       result = ODataHttpMethod.HEAD;
-    }else{
+    } else {
       throw new IllegalArgumentException("unsupported OData HTTP method name: " + m);
     }
-    
+
     return result;
   }
-  
-  
+
 }

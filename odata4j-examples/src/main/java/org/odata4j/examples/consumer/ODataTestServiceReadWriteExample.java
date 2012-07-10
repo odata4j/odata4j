@@ -2,9 +2,9 @@ package org.odata4j.examples.consumer;
 
 import org.joda.time.LocalDateTime;
 import org.odata4j.consumer.ODataClientException;
-import org.odata4j.consumer.ODataServerException;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.consumer.ODataConsumers;
+import org.odata4j.consumer.ODataServerException;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OFuncs;
 import org.odata4j.core.OProperties;

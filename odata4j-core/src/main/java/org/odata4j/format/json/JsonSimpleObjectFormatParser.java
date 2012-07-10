@@ -11,7 +11,6 @@ import org.odata4j.format.json.JsonStreamReaderFactory.JsonStreamReader.JsonEven
 
 /**
  * parses a response from a service operation that returns EdmSimpleType
- * 
  */
 public class JsonSimpleObjectFormatParser extends JsonFormatParser implements FormatParser<OSimpleObject<?>> {
 

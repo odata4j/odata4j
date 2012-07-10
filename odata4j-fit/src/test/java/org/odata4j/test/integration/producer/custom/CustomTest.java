@@ -298,14 +298,14 @@ public class CustomTest extends CustomBaseTest {
 
   @Test
   public void testUpdateMLE() {
-     /**
+    /**
      * There appears to be a strange race condition or something in the test environment:
      * if the first request to the server has a payload, the server can
      * timeout waiting for data from the client.  Not sure why or if it is a client
      * or server issue. Workaround:  issue a GET first to prime things.
      */
     String contentBefore = rtFacade.getWebResource(endpointUri + "MLEs('foobar')/$value" + "?$format=json").getEntity();
-    
+
     String content = "This MLE was updated by the test testUpdateMLE()";
     int status = rtFacade.putWebResource(endpointUri + "MLEs('foobar')", new ByteArrayInputStream(content.getBytes()), MediaType.TEXT_PLAIN_TYPE, null).getStatusCode();
     assertEquals(Status.OK.getStatusCode(), status);

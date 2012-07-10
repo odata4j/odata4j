@@ -38,7 +38,7 @@ public class FormatParserFactory {
     FormatParser<OSimpleObject<?>> getSimpleObjectFormatParser(Settings settings);
 
     FormatParser<OError> getErrorFormatParser(Settings settings);
-}
+  }
 
   @SuppressWarnings("unchecked")
   public static <T> FormatParser<T> getParser(Class<T> targetType,

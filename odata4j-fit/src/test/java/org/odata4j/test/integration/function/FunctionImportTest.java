@@ -707,7 +707,7 @@ public class FunctionImportTest extends AbstractRuntimeTest {
       assertEquals(format.toString(), 405, responseData.getStatusCode());
       responseData = this.rtFacade.mergeWebResource(uri, null, null, null);
       assertEquals(format.toString(), 405, responseData.getStatusCode());
-}
+    }
   }
 
   @Test

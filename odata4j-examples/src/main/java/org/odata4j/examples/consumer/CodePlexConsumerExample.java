@@ -2,9 +2,9 @@ package org.odata4j.examples.consumer;
 
 import org.core4j.Enumerable;
 import org.odata4j.consumer.ODataClientException;
-import org.odata4j.consumer.ODataServerException;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.consumer.ODataConsumers;
+import org.odata4j.consumer.ODataServerException;
 import org.odata4j.consumer.behaviors.OClientBehaviors;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.ORelatedEntitiesLink;

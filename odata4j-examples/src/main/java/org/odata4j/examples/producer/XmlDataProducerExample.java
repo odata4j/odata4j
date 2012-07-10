@@ -308,7 +308,7 @@ public class XmlDataProducerExample extends AbstractExample {
     @Override
     public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz,
         Map<String, Object> params) {
-      throw new UnsupportedOperationException();
+      return null;
     }
 
   }

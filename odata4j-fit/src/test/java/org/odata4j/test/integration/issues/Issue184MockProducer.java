@@ -48,45 +48,36 @@ public class Issue184MockProducer implements ODataProducer {
 
   @Override
   public MetadataProducer getMetadataProducer() {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public EntitiesResponse getEntities(String entitySetName, QueryInfo queryInfo) {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public CountResponse getEntitiesCount(String entitySetName, QueryInfo queryInfo) {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public EntityResponse getEntity(String entitySetName, OEntityKey entityKey, EntityQueryInfo queryInfo) {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public BaseResponse getNavProperty(String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public CountResponse getNavPropertyCount(String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  public void close() {
-    // TODO Auto-generated method stub
-
-  }
+  public void close() {}
 
   @Override
   public EntityResponse createEntity(String entitySetName, OEntity entity) {
@@ -100,62 +91,41 @@ public class Issue184MockProducer implements ODataProducer {
 
   @Override
   public EntityResponse createEntity(String entitySetName, OEntityKey entityKey, String navProp, OEntity entity) {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  public void deleteEntity(String entitySetName, OEntityKey entityKey) {
-    // TODO Auto-generated method stub
-
-  }
+  public void deleteEntity(String entitySetName, OEntityKey entityKey) {}
 
   @Override
-  public void mergeEntity(String entitySetName, OEntity entity) {
-    // TODO Auto-generated method stub
-
-  }
+  public void mergeEntity(String entitySetName, OEntity entity) {}
 
   @Override
-  public void updateEntity(String entitySetName, OEntity entity) {
-    // TODO Auto-generated method stub
-
-  }
+  public void updateEntity(String entitySetName, OEntity entity) {}
 
   @Override
   public EntityIdResponse getLinks(OEntityId sourceEntity, String targetNavProp) {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  public void createLink(OEntityId sourceEntity, String targetNavProp, OEntityId targetEntity) {
-    // TODO Auto-generated method stub
-
-  }
+  public void createLink(OEntityId sourceEntity, String targetNavProp, OEntityId targetEntity) {}
 
   @Override
-  public void updateLink(OEntityId sourceEntity, String targetNavProp, OEntityKey oldTargetEntityKey, OEntityId newTargetEntity) {
-    // TODO Auto-generated method stub
-
-  }
+  public void updateLink(OEntityId sourceEntity, String targetNavProp, OEntityKey oldTargetEntityKey, OEntityId newTargetEntity) {}
 
   @Override
-  public void deleteLink(OEntityId sourceEntity, String targetNavProp, OEntityKey targetEntityKey) {
-    // TODO Auto-generated method stub
-
-  }
+  public void deleteLink(OEntityId sourceEntity, String targetNavProp, OEntityKey targetEntityKey) {}
 
   @Override
   public BaseResponse callFunction(EdmFunctionImport name, Map<String, OFunctionParameter> params, QueryInfo queryInfo) {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz,
       Map<String, Object> params) {
-    throw new UnsupportedOperationException();
+    return null;
   }
 
 }

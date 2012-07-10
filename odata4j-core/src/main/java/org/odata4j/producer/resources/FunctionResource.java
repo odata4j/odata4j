@@ -79,7 +79,7 @@ public class FunctionResource extends BaseResource {
         throw new MethodNotAllowedException();
       }
     }
-    
+
     BaseResponse response = producer.callFunction(
         function, getFunctionParameters(function, queryInfo.customOptions), queryInfo);
 
