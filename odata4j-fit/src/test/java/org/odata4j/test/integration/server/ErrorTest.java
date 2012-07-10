@@ -5,6 +5,8 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 import java.util.regex.Pattern;
 
@@ -15,6 +17,8 @@ import org.eclipse.jetty.client.HttpExchange;
 import org.eclipse.jetty.http.HttpHeaders;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Test;
+import org.odata4j.producer.ErrorResponseExtension;
+import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.test.integration.AbstractJettyHttpClientTest;
 import org.odata4j.test.integration.TestInMemoryProducers;
@@ -23,13 +27,25 @@ public class ErrorTest extends AbstractJettyHttpClientTest {
 
   private static final String FEED_URL = BASE_URI + TestInMemoryProducers.SIMPLE_ENTITY_SET_NAME;
 
+  private InMemoryProducer producerSpy;
+
   public ErrorTest(RuntimeFacadeType type) {
     super(type);
   }
 
   @Override
   protected void registerODataProducer() throws Exception {
-    DefaultODataProducerProvider.setInstance(TestInMemoryProducers.simple());
+    producerSpy = spy(TestInMemoryProducers.simple());
+    DefaultODataProducerProvider.setInstance(producerSpy);
+  }
+
+  private void simulateErrorResponseExtension() {
+    when(producerSpy.findExtension(ErrorResponseExtension.class, null)).thenReturn(new ErrorResponseExtension() {
+      
+      public boolean returnInnerError() {
+        return true;
+      }
+    });
   }
 
   @Test
@@ -58,7 +74,8 @@ public class ErrorTest extends AbstractJettyHttpClientTest {
 
   @Test
   public void badRequestXmlWithInnerError() throws Exception {
-    ContentExchange exchange = sendRequest(FEED_URL + "(1.2)?odata4j.debug=true");
+    simulateErrorResponseExtension();
+    ContentExchange exchange = sendRequest(FEED_URL + "(1.2)");
     exchange.waitForDone();
     assertThat(exchange.getStatus(), is(HttpExchange.STATUS_COMPLETED));
     assertThat(exchange.getResponseStatus(), is(HttpStatus.BAD_REQUEST_400));
@@ -69,7 +86,8 @@ public class ErrorTest extends AbstractJettyHttpClientTest {
 
   @Test
   public void badRequestJsonWithInnerError() throws Exception {
-    ContentExchange exchange = sendRequest(FEED_URL + "(1.2)?$format=json&odata4j.debug=true");
+    simulateErrorResponseExtension();
+    ContentExchange exchange = sendRequest(FEED_URL + "(1.2)?$format=json");
     exchange.waitForDone();
     assertThat(exchange.getStatus(), is(HttpExchange.STATUS_COMPLETED));
     assertThat(exchange.getResponseStatus(), is(HttpStatus.BAD_REQUEST_400));

@@ -7,7 +7,6 @@ import javax.ws.rs.core.Response.StatusType;
 
 import org.odata4j.core.OError;
 import org.odata4j.core.OErrors;
-import org.odata4j.producer.ErrorResponse;
 import org.odata4j.producer.resources.ExceptionMappingProvider;
 
 /**
@@ -16,7 +15,7 @@ import org.odata4j.producer.resources.ExceptionMappingProvider;
  * <p>Correct formatting of every ODataException is ensured by routing it through the
  * {@link ExceptionMappingProvider}.</p>
  */
-public abstract class ODataException extends RuntimeException implements ErrorResponse {
+public abstract class ODataException extends RuntimeException {
 
   private static final long serialVersionUID = 1L;
 
@@ -36,12 +35,17 @@ public abstract class ODataException extends RuntimeException implements ErrorRe
 
   public abstract StatusType getStatus();
 
-  public OError getError() {
-    final String message = ODataException.this.getMessage() != null ? ODataException.this.getMessage() : ODataException.this.getStatus().getReasonPhrase();
-    StringWriter sw = new StringWriter();
-    ODataException.this.printStackTrace(new PrintWriter(sw));
-    final String innerError = sw.toString();
-    return OErrors.error(ODataException.this.getClass().getSimpleName(), message, innerError);
-  }
+  public OError toOError(boolean includeInnerError) {
+    String code = getClass().getSimpleName();
+    String message = getMessage() != null ? getMessage() : getStatus().getReasonPhrase();
+    String innerError = null;
 
+    if (includeInnerError) {
+      StringWriter sw = new StringWriter();
+      printStackTrace(new PrintWriter(sw));
+      innerError = sw.toString();
+    }
+
+    return OErrors.error(code, message, innerError);
+  }
 }

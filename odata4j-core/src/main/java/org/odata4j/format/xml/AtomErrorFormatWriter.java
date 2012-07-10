@@ -15,15 +15,13 @@ import org.odata4j.stax2.XMLWriter2;
 public class AtomErrorFormatWriter extends XmlFormatWriter implements FormatWriter<ErrorResponse> {
 
   public void write(UriInfo uriInfo, Writer w, ErrorResponse target) {
-    String debugParameter = uriInfo.getQueryParameters().getFirst("odata4j.debug");
-    boolean innerError = debugParameter != null && Boolean.parseBoolean(debugParameter);
     XMLWriter2 writer = XMLFactoryProvider2.getInstance().newXMLWriterFactory2().createXMLWriter(w);
     writer.startDocument();
-    writeError(writer, target.getError(), m, innerError);
+    writeError(writer, target.getError(), m);
     writer.endDocument();
   }
 
-  private static void writeError(XMLWriter2 writer, OError error, String xmlns, boolean innerError) {
+  private static void writeError(XMLWriter2 writer, OError error, String xmlns) {
     writer.startElement(new QName2("error"), xmlns);
     writer.startElement("code");
     writer.writeText(error.getCode());
@@ -32,7 +30,7 @@ public class AtomErrorFormatWriter extends XmlFormatWriter implements FormatWrit
     writer.writeAttribute("lang", "en-US");
     writer.writeText(error.getMessage());
     writer.endElement("message");
-    if (innerError) {
+    if (error.getInnerError() != null) {
       writer.startElement("innererror");
       writer.writeText(error.getInnerError());
       writer.endElement("innererror");

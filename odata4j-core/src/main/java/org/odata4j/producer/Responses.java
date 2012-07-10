@@ -8,6 +8,7 @@ import org.odata4j.core.OCollection;
 import org.odata4j.core.OComplexObject;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityId;
+import org.odata4j.core.OError;
 import org.odata4j.core.OObject;
 import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmEntitySet;
@@ -16,7 +17,7 @@ import org.odata4j.edm.EdmSimpleType;
 
 /**
  * A static factory to create immutable {@link EntitiesResponse}, {@link EntityResponse}, {@link PropertyResponse}, {@link EntityIdResponse},
- * {@link ComplexObjectResponse}, or {@link CollectionResponse} instances.
+ * {@link ComplexObjectResponse}, {@link CollectionResponse}, or {@link ErrorResponse} instances.
  */
 public class Responses {
 
@@ -256,6 +257,22 @@ public class Responses {
       @Override
       public EdmEntitySet getEntitySet() {
         return entitySet;
+      }
+    };
+  }
+
+  /**
+   * Creates a new <code>ErrorResponse</code> instance.
+   *
+   * @param error  the OData error
+   * @return a new <code>ErrorResponse</code> instance
+   */
+  public static ErrorResponse error(final OError error) {
+    return new ErrorResponse() {
+
+      @Override
+      public OError getError() {
+        return error;
       }
     };
   }
