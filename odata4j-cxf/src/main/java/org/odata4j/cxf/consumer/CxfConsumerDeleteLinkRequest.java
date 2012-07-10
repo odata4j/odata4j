@@ -1,6 +1,8 @@
 package org.odata4j.cxf.consumer;
 
 import org.core4j.Enumerable;
+import org.odata4j.consumer.ODataClientException;
+import org.odata4j.consumer.ODataServerException;
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.core.OEntityId;
 import org.odata4j.edm.EdmDataServices;
@@ -19,17 +21,13 @@ class CxfConsumerDeleteLinkRequest extends CxfConsumerEntityRequestBase<Void> {
   }
 
   @Override
-  public Void execute() {
+  public Void execute() throws ODataServerException, ODataClientException {
     ODataCxfClient client = new ODataCxfClient(this.getFormatType());
-    try {
-      String path = Enumerable.create(getSegments()).join("/");
-      path = CxfConsumerQueryLinksRequest.linksPath(targetNavProp, targetKeyValues).apply(path);
-      ODataClientRequest request = ODataClientRequest.delete(getServiceRootUri() + path);
-      client.deleteLink(request);
-      return null;
-    } finally {
-      client.shutdown();
-    }
+    String path = Enumerable.create(getSegments()).join("/");
+    path = CxfConsumerQueryLinksRequest.linksPath(targetNavProp, targetKeyValues).apply(path);
+    ODataClientRequest request = ODataClientRequest.delete(getServiceRootUri() + path);
+    client.deleteLink(request);
+    return null;
   }
 
 }

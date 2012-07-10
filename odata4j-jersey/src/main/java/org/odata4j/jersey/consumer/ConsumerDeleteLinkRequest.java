@@ -1,6 +1,8 @@
 package org.odata4j.jersey.consumer;
 
 import org.core4j.Enumerable;
+import org.odata4j.consumer.ODataClientException;
+import org.odata4j.consumer.ODataServerException;
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.core.OEntityId;
 import org.odata4j.edm.EdmDataServices;
@@ -18,7 +20,7 @@ class ConsumerDeleteLinkRequest extends ConsumerEntityRequestBase<Void> {
   }
 
   @Override
-  public Void execute() {
+  public Void execute() throws ODataServerException, ODataClientException {
     String path = Enumerable.create(getSegments()).join("/");
     path = ConsumerQueryLinksRequest.linksPath(targetNavProp, targetKeyValues).apply(path);
     ODataClientRequest request = ODataClientRequest.delete(getServiceRootUri() + path);

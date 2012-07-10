@@ -23,7 +23,7 @@ public class CreateWithLink2Test extends NorthwindJpaProducerTest {
   }
 
   @Test
-  public void passEntityRefFromFilter() {
+  public void passEntityRefFromFilter() throws Exception {
     final long now = System.currentTimeMillis();
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
 

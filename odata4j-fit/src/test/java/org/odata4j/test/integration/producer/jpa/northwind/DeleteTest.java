@@ -20,20 +20,20 @@ public class DeleteTest extends NorthwindJpaProducerTest {
   }
 
   @Test
-  public void tunneledDeleteEntity() {
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, "PUT");
+  public void tunneledDeleteEntity() throws Exception {
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, "DELETE");
 
     deleteEntityAndTest(consumer, "QUEEN");
   }
 
   @Test
-  public void deleteEntity() {
+  public void deleteEntity() throws Exception {
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
 
     deleteEntityAndTest(consumer, "ALFKI");
   }
 
-  protected void deleteEntityAndTest(ODataConsumer consumer, String customerID) {
+  protected void deleteEntityAndTest(ODataConsumer consumer, String customerID) throws Exception {
 
     OEntity customer = consumer.getEntity("Customers", customerID).execute();
     Assert.assertNotNull(customer);

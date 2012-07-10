@@ -28,7 +28,7 @@ public class JPASkipTokenTest extends NorthwindJpaProducerTest {
   private static OEntity order;
 
   @Before
-  public void setUp() {
+  public void setUp() throws Exception {
     super.setUp(3);
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
     product = consumer.getEntity("Products", OEntityKey.create("ProductID", new Integer(1))).execute();

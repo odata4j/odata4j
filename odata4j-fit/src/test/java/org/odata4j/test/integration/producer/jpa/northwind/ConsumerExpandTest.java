@@ -22,7 +22,7 @@ public class ConsumerExpandTest extends NorthwindJpaProducerTest {
   }
 
   @Test
-  public void testConsumerExpandAndFilter() {
+  public void testConsumerExpandAndFilter() throws Exception {
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
 
     // Northwind.svc/Order_Details?$expand=Order&$select=Order&$filter=Order/CustomerID%20eq%20'VINET'

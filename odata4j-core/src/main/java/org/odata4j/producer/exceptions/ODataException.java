@@ -8,7 +8,14 @@ import javax.ws.rs.core.Response.StatusType;
 import org.odata4j.core.OError;
 import org.odata4j.core.OErrors;
 import org.odata4j.producer.ErrorResponse;
+import org.odata4j.producer.resources.ExceptionMappingProvider;
 
+/**
+ * An OData server exception with the information described in the OData documentation for
+ * <a href="http://www.odata.org/documentation/operations#ErrorConditions">error conditions</a>.
+ * <p>Correct formatting of every ODataException is ensured by routing it through the
+ * {@link ExceptionMappingProvider}.</p>
+ */
 public abstract class ODataException extends RuntimeException implements ErrorResponse {
 
   private static final long serialVersionUID = 1L;

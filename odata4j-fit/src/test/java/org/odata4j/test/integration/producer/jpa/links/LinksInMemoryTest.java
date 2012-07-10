@@ -10,32 +10,32 @@ public class LinksInMemoryTest extends LinksTest {
   }
 
   @Test
-  public void testReadDeferredAtom() {
+  public void testReadDeferredAtom() throws Exception {
     testReadDeferred(FormatType.ATOM);
   }
 
   @Test
-  public void testReadDeferredJSON() {
+  public void testReadDeferredJSON() throws Exception {
     testReadDeferred(FormatType.JSON);
   }
 
   @Test
-  public void testReadEmptyAtom() {
+  public void testReadEmptyAtom() throws Exception {
     testReadEmpty(FormatType.ATOM);
   }
 
   @Test
-  public void testReadEmptyJSON() {
+  public void testReadEmptyJSON() throws Exception {
     testReadEmpty(FormatType.JSON);
   }
 
   @Test
-  public void testReadPopulatedAtom() {
+  public void testReadPopulatedAtom() throws Exception {
     testReadPopulated(FormatType.ATOM);
   }
 
   @Test
-  public void testReadPopulatedJSON() {
+  public void testReadPopulatedJSON() throws Exception {
     testReadPopulated(FormatType.JSON);
   }
 

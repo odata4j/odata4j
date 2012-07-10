@@ -1,5 +1,7 @@
 package org.odata4j.examples.consumer;
 
+import org.odata4j.consumer.ODataClientException;
+import org.odata4j.consumer.ODataServerException;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.consumer.ODataConsumers;
 import org.odata4j.core.OEntity;
@@ -16,9 +18,15 @@ public class AgilitrainConsumerExample extends AbstractExample {
   private void run(String[] args) {
     ODataConsumer c = ODataConsumers.create(ODataEndpoints.AGILITRAIN);
 
-    OEntity event = c.getEntities("Events").top(1).execute().first();
-    ORelatedEntityLink link = event.getLink("Workshop", ORelatedEntityLink.class);
-    OEntity entity = c.getEntity(link).execute();
-    reportEntity("Workshop", entity);
+    try {
+      OEntity event = c.getEntities("Events").top(1).execute().first();
+      ORelatedEntityLink link = event.getLink("Workshop", ORelatedEntityLink.class);
+      OEntity entity = c.getEntity(link).execute();
+      reportEntity("Workshop", entity);
+    } catch (ODataServerException e) {
+      reportError(e);
+    } catch (ODataClientException e) {
+      report("Client error: " + e.getMessage());
+    }
   }
 }

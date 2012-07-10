@@ -2,6 +2,8 @@ package org.odata4j.cxf.consumer;
 
 import org.core4j.Enumerable;
 import org.core4j.Func1;
+import org.odata4j.consumer.ODataClientException;
+import org.odata4j.consumer.ODataServerException;
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.core.OEntityId;
 import org.odata4j.core.OEntityIds;
@@ -30,18 +32,13 @@ class CxfConsumerQueryLinksRequest extends CxfConsumerQueryRequestBase<OEntityId
   }
 
   @Override
-  public Enumerable<OEntityId> execute() {
-    ODataCxfClient client = new ODataCxfClient(this.getFormatType());
-    try {
-      ODataClientRequest request = buildRequest(linksPath(targetNavProp, null));
-      return Enumerable.create(client.getLinks(request)).select(new Func1<SingleLink, OEntityId>() {
-        @Override
-        public OEntityId apply(SingleLink link) {
-          return OEntityIds.parse(getServiceRootUri(), link.getUri());
-        }
-      });
-    } finally {
-      client.shutdown();
-    }
+  public Enumerable<OEntityId> execute() throws ODataServerException, ODataClientException {
+    ODataClientRequest request = buildRequest(linksPath(targetNavProp, null));
+    return Enumerable.create(getClient().getLinks(request)).select(new Func1<SingleLink, OEntityId>() {
+      @Override
+      public OEntityId apply(SingleLink link) {
+        return OEntityIds.parse(getServiceRootUri(), link.getUri());
+      }
+    });
   }
 }

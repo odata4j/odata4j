@@ -2,6 +2,8 @@ package org.odata4j.jersey.consumer;
 
 import org.core4j.Enumerable;
 import org.core4j.Func1;
+import org.odata4j.consumer.ODataClientException;
+import org.odata4j.consumer.ODataServerException;
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.core.OEntityId;
 import org.odata4j.core.OEntityIds;
@@ -29,7 +31,7 @@ class ConsumerQueryLinksRequest extends ConsumerQueryRequestBase<OEntityId> {
   }
 
   @Override
-  public Enumerable<OEntityId> execute() {
+  public Enumerable<OEntityId> execute() throws ODataServerException, ODataClientException {
     ODataClientRequest request = buildRequest(linksPath(targetNavProp, null));
     return Enumerable.create(getClient().getLinks(request)).select(new Func1<SingleLink, OEntityId>() {
       @Override

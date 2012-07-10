@@ -2,6 +2,8 @@ package org.odata4j.examples.consumer;
 
 import java.util.Date;
 
+import org.odata4j.consumer.ODataClientException;
+import org.odata4j.consumer.ODataServerException;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.consumer.ODataConsumers;
 import org.odata4j.core.OProperties;
@@ -21,8 +23,14 @@ public class RequestEntryModificationExample extends AbstractExample {
     String serviceUri = "http://services.odata.org/Northwind/Northwind.svc";
     ODataConsumer consumer = ODataConsumers.create(serviceUri);
 
-    consumer.createEntity("Categories")
-        .properties(OProperties.string("CategoryName", "Category " + new Date()))
-        .execute();
+    try {
+      consumer.createEntity("Categories")
+          .properties(OProperties.string("CategoryName", "Category " + new Date()))
+          .execute();
+    } catch (ODataServerException e) {
+      reportError(e);
+    } catch (ODataClientException e) {
+      report("Client error: " + e.getMessage());
+    }
   }
 }

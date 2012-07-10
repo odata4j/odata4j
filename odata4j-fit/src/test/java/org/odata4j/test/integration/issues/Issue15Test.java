@@ -47,7 +47,7 @@ public class Issue15Test extends AbstractRuntimeTest {
     Assert.fail("Expected a property update_date");
   }
 
-  public void repro() {
+  public void repro() throws Exception {
 
     ODataConsumer.dump.responseBody(true);
     ODataConsumer c = this.rtFacade

@@ -41,7 +41,7 @@ public class FunctionTest extends NorthwindJpaProducerTest {
   }
 
   @Test
-  public void functionComplexObjectTest() {
+  public void functionComplexObjectTest() throws Exception {
     String inp = "FunctionComplexObjectTest";
     String uri = "TestFunction1?Param1='Testing'&Param2=false";
     this.utils.testJSONResult(endpointUri, uri, inp);
@@ -85,7 +85,7 @@ public class FunctionTest extends NorthwindJpaProducerTest {
   }
 
   @Test
-  public void functionCollectionComplexObjectTest() {
+  public void functionCollectionComplexObjectTest() throws Exception {
     String inp = "FunctionCollectionComplexObjectTest";
     String uri = "TestFunction2?NResults=3";
     this.utils.testJSONResult(endpointUri, uri, inp);
@@ -120,7 +120,7 @@ public class FunctionTest extends NorthwindJpaProducerTest {
   }
 
   @Test
-  public void functionWithNoReturnTypeTest() {
+  public void functionWithNoReturnTypeTest() throws Exception {
     // test client call JSON
     ODataConsumer c = this.rtFacade.createODataConsumer(endpointUri, FormatType.JSON, null);
 

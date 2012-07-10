@@ -1,6 +1,5 @@
 package org.odata4j.test.integration.expressions;
 
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,7 +43,7 @@ public class JsonTest extends AbstractRuntimeTest {
   }
 
   @Test
-  public void testJsonEntity() throws InstantiationException, IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException {
+  public void testJsonEntity() throws Exception {
 
     try {
       setup();
@@ -63,7 +62,7 @@ public class JsonTest extends AbstractRuntimeTest {
   }
 
   @Test
-  public void testGetNavProps() throws NoSuchMethodException {
+  public void testGetNavProps() throws Exception {
 
     try {
       setup();
@@ -81,7 +80,7 @@ public class JsonTest extends AbstractRuntimeTest {
   }
 
   @Test
-  public void testSelect() throws NoSuchMethodException {
+  public void testSelect() throws Exception {
     // $select now supported in InMemoryProducer.
     try {
       setup();
@@ -121,7 +120,7 @@ public class JsonTest extends AbstractRuntimeTest {
     return new Entity1("Neil DeGrasse-Tyson", 1);
   }
 
-  private void setup() throws NoSuchMethodException {
+  private void setup() throws Exception {
 
     producer = new InMemoryProducer("JsonTest");
     DefaultODataProducerProvider.setInstance(producer);
@@ -207,11 +206,11 @@ public class JsonTest extends AbstractRuntimeTest {
       assertPojoEqualsOEntity(pojoC.getComplexType(), null, (List<OProperty<?>>) getPropertyValue("ComplexType", props));
 
       // embedded collection(Edm.String)
-      OCollection<OSimpleObject> scollection = (OCollection<OSimpleObject>) getPropertyValue("StringList", props);
+      OCollection<OSimpleObject<String>> scollection = (OCollection<OSimpleObject<String>>) getPropertyValue("StringList", props);
       Assert.assertEquals(scollection.size(), pojoC.getStringList().size());
       for (String sl : pojoC.getStringList()) {
         boolean found = false;
-        for (OSimpleObject so : scollection) {
+        for (OSimpleObject<String> so : scollection) {
           if (((String) so.getValue()).equals(sl)) {
             found = true;
             break;

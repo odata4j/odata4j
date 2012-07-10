@@ -3,6 +3,10 @@ package org.odata4j.producer.jpa;
 import java.util.Collections;
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
+
+import org.odata4j.producer.exceptions.NotFoundException;
+
 public class Chain implements Command {
 
   List<Command> commands;
@@ -54,10 +58,12 @@ public class Chain implements Command {
     }
 
     // Return the exception or result state from the last execute()
-    if ((saveException != null) && !handled) {
-      throw saveException;
-    } else {
+    if ((saveException != null) && !handled)
+      if (saveException instanceof EntityNotFoundException)
+        throw new NotFoundException(saveException);
+      else
+        throw saveException;
+    else
       return saveResult;
-    }
   }
 }

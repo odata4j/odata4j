@@ -22,66 +22,66 @@ public class CreateTest extends NorthwindJpaProducerTest {
   }
 
   @Test
-  public void tunneledInsertEntityToExistingEntityRelationAtom() {
+  public void tunneledInsertEntityToExistingEntityRelationAtom() throws Exception {
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, "PUT");
     insertEntityToExistingEntityRelationAndTest(consumer);
   }
 
   @Test
-  public void tunneledInsertEntityToExistingEntityRelationJson() {
+  public void tunneledInsertEntityToExistingEntityRelationJson() throws Exception {
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, FormatType.JSON, "PUT");
     insertEntityToExistingEntityRelationAndTest(consumer);
   }
 
   @Test
-  public void insertEntityToExistingEntityRelationAtom() {
+  public void insertEntityToExistingEntityRelationAtom() throws Exception {
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
     insertEntityToExistingEntityRelationAndTest(consumer);
   }
 
   @Test
-  public void insertEntityToExistingEntityRelationJson() {
+  public void insertEntityToExistingEntityRelationJson() throws Exception {
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, FormatType.JSON, null);
     insertEntityToExistingEntityRelationAndTest(consumer);
   }
 
   @Test
-  public void tunneledInsertEntityUsingLinksAtom() {
+  public void tunneledInsertEntityUsingLinksAtom() throws Exception {
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, "PUT");
     insertEntityUsingLinksAndTest(consumer);
   }
 
   @Test
-  public void tunneledInsertEntityUsingLinksJson() {
+  public void tunneledInsertEntityUsingLinksJson() throws Exception {
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, FormatType.JSON, "PUT");
     insertEntityUsingLinksAndTest(consumer);
   }
 
   @Test
-  public void insertEntityUsingLinksAtom() {
+  public void insertEntityUsingLinksAtom() throws Exception {
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
     insertEntityUsingLinksAndTest(consumer);
   }
 
   @Test
-  public void insertEntityUsingLinksJson() {
+  public void insertEntityUsingLinksJson() throws Exception {
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, FormatType.JSON, null);
     insertEntityUsingLinksAndTest(consumer);
   }
 
   @Test
-  public void insertEntityWithInlinedEntitiesAtom() {
+  public void insertEntityWithInlinedEntitiesAtom() throws Exception {
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
     insertEntityWithInlinedEntities(consumer);
   }
 
   @Test
-  public void insertEntityWithInlinedEntitiesJson() {
+  public void insertEntityWithInlinedEntitiesJson() throws Exception {
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, FormatType.JSON, null);
     insertEntityWithInlinedEntities(consumer);
   }
 
-  protected void insertEntityWithInlinedEntities(ODataConsumer consumer) {
+  protected void insertEntityWithInlinedEntities(ODataConsumer consumer) throws Exception {
 
     final long now = System.currentTimeMillis();
     OEntity prod1 = consumer
@@ -125,30 +125,30 @@ public class CreateTest extends NorthwindJpaProducerTest {
   }
 
   @Test
-  public void insertEntityWithInlinedEntityAtom() {
+  public void insertEntityWithInlinedEntityAtom() throws Exception {
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
     insertEntityWithInlinedEntity(consumer);
   }
 
   @Test
-  public void insertEntityWithInlinedEntityJson() {
+  public void insertEntityWithInlinedEntityJson() throws Exception {
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, FormatType.JSON, null);
     insertEntityWithInlinedEntity(consumer);
   }
 
   @Test
-  public void expandEntitiesWithNullReferenceAtom() {
+  public void expandEntitiesWithNullReferenceAtom() throws Exception {
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
     expandEntitiesWithNullReference(consumer);
   }
 
   @Test
-  public void expandEntitiesWithNullReferenceJson() {
+  public void expandEntitiesWithNullReferenceJson() throws Exception {
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, FormatType.JSON, null);
     expandEntitiesWithNullReference(consumer);
   }
 
-  public void insertEntityWithInlinedEntity(ODataConsumer consumer) {
+  public void insertEntityWithInlinedEntity(ODataConsumer consumer) throws Exception {
     final long now = System.currentTimeMillis();
     OEntity category = consumer
         .createEntity("Categories")
@@ -172,7 +172,7 @@ public class CreateTest extends NorthwindJpaProducerTest {
     Assert.assertEquals("C" + now, category.getProperty("CategoryName").getValue());
   }
 
-  protected void insertEntityToExistingEntityRelationAndTest(ODataConsumer consumer) {
+  protected void insertEntityToExistingEntityRelationAndTest(ODataConsumer consumer) throws Exception {
     OEntity category = consumer.getEntity("Categories", 1).execute();
 
     final long now = System.currentTimeMillis();
@@ -191,7 +191,7 @@ public class CreateTest extends NorthwindJpaProducerTest {
     Assert.assertEquals("P" + now, product.getProperty("ProductName").getValue());
   }
 
-  protected void insertEntityUsingLinksAndTest(ODataConsumer consumer) {
+  protected void insertEntityUsingLinksAndTest(ODataConsumer consumer) throws Exception {
 
     OEntity category = consumer.getEntity("Categories", 1).execute();
 
@@ -223,7 +223,7 @@ public class CreateTest extends NorthwindJpaProducerTest {
     Assert.assertEquals(true, product.getProperty("Discontinued").getValue());
   }
 
-  protected void expandEntitiesWithNullReference(ODataConsumer consumer) {
+  protected void expandEntitiesWithNullReference(ODataConsumer consumer) throws Exception {
 
     final long now = System.currentTimeMillis();
 

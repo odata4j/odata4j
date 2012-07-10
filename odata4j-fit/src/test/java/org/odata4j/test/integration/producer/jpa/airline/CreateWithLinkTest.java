@@ -38,7 +38,7 @@ public class CreateWithLinkTest extends AirlineJPAProducerBaseTest {
   /**
    * Linking to entities with string key
    */
-  public void linkToStringId() {
+  public void linkToStringId() throws Exception {
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
 
     OEntity muc = consumer.getEntities("Airport")
@@ -108,7 +108,7 @@ public class CreateWithLinkTest extends AirlineJPAProducerBaseTest {
   /**
    * Linking to entities with long key
    */
-  public void linkToLongId() {
+  public void linkToLongId() throws Exception {
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
 
     OEntity flightSchedule = consumer.getEntities("FlightSchedule")
@@ -131,7 +131,7 @@ public class CreateWithLinkTest extends AirlineJPAProducerBaseTest {
   /**
    * Linking to entities with long key (use only the entity-key)
    */
-  public void linkToLongIdUsingKey() {
+  public void linkToLongIdUsingKey() throws Exception {
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
 
     OEntity flightSchedule = consumer.getEntities("FlightSchedule")

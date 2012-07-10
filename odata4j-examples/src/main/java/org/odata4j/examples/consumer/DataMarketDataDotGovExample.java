@@ -1,5 +1,7 @@
 package org.odata4j.examples.consumer;
 
+import org.odata4j.consumer.ODataClientException;
+import org.odata4j.consumer.ODataServerException;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.consumer.ODataConsumers;
 import org.odata4j.consumer.behaviors.OClientBehaviors;
@@ -22,8 +24,14 @@ public class DataMarketDataDotGovExample extends AbstractExample {
         .setClientBehaviors(OClientBehaviors.basicAuth("accountKey", datamarketCreds[0]))
         .build();
 
-    OEntity cityCrime115856 = c.getEntity("CityCrime", 115856).execute();
-    reportEntity("cityCrime115856", cityCrime115856);
+    try {
+      OEntity cityCrime115856 = c.getEntity("CityCrime", 115856).execute();
+      reportEntity("cityCrime115856", cityCrime115856);
+    } catch (ODataServerException e) {
+      reportError(e);
+    } catch (ODataClientException e) {
+      report("Client error: " + e.getMessage());
+    }
   }
 
 }

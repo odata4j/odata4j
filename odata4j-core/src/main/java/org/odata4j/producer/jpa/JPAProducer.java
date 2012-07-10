@@ -52,6 +52,7 @@ import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.Responses;
 import org.odata4j.producer.edm.MetadataProducer;
+import org.odata4j.producer.exceptions.BadRequestException;
 import org.odata4j.producer.exceptions.NotImplementedException;
 
 public class JPAProducer implements ODataProducer {
@@ -507,8 +508,13 @@ public class JPAProducer implements ODataProducer {
 
     Class<?> javaType = jpaEntityType.getIdType().getJavaType();
 
-    return TypeConverter.convert(
-        entityKey == null ? null : entityKey.asSingleValue(), javaType);
+    try {
+      return TypeConverter.convert(entityKey == null ? null : entityKey.asSingleValue(), javaType);
+    } catch (UnsupportedOperationException e) {
+      throw new BadRequestException("Invalid key type", e);
+    } catch (IllegalArgumentException e) {
+      throw new BadRequestException("Invalid key value", e);
+    }
   }
 
   @SuppressWarnings("unchecked")

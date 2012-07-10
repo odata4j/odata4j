@@ -23,7 +23,7 @@ public class Oneoff04_ExpandMultiLevelTest extends AbstractOneoffBaseTest {
   }
 
   @Test
-  public void expandMultiLevel() {
+  public void expandMultiLevel() throws Exception {
     consumer = rtFacade.createODataConsumer(endpointUri, null, null);
 
     List<OEntity> coursesOneAndTwo = new ArrayList<OEntity>();
@@ -75,7 +75,7 @@ public class Oneoff04_ExpandMultiLevelTest extends AbstractOneoffBaseTest {
         .get());
   }
 
-  private void createSchoolEntityWithStudentsAndCoursesInlined(String schoolName, List<OEntity> students) {
+  private void createSchoolEntityWithStudentsAndCoursesInlined(String schoolName, List<OEntity> students) throws Exception {
     consumer
         .createEntity("School")
         .properties(OProperties.string("SchoolName", schoolName))

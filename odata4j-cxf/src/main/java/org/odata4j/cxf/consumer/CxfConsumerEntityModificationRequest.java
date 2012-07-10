@@ -6,6 +6,8 @@ import java.util.List;
 import org.core4j.Enumerable;
 import org.core4j.Predicate1;
 import org.odata4j.consumer.AbstractConsumerEntityPayloadRequest;
+import org.odata4j.consumer.ODataClientException;
+import org.odata4j.consumer.ODataServerException;
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
@@ -43,36 +45,31 @@ class CxfConsumerEntityModificationRequest<T> extends AbstractConsumerEntityPayl
   }
 
   @Override
-  public boolean execute() {
+  public void execute() throws ODataServerException, ODataClientException {
     ODataCxfClient client = new ODataCxfClient(this.formatType);
-    try {
 
-      List<OProperty<?>> requestProps = props;
-      if (updateRoot != null) {
-        OEntity updateRootEntity = (OEntity) updateRoot;
-        requestProps = Enumerable.create(updateRootEntity.getProperties()).toList();
-        for (final OProperty<?> prop : props) {
-          OProperty<?> requestProp = Enumerable.create(requestProps).firstOrNull(new Predicate1<OProperty<?>>() {
-            public boolean apply(OProperty<?> input) {
-              return input.getName().equals(prop.getName());
-            }
-          });
-          requestProps.remove(requestProp);
-          requestProps.add(prop);
-        }
+    List<OProperty<?>> requestProps = props;
+    if (updateRoot != null) {
+      OEntity updateRootEntity = (OEntity) updateRoot;
+      requestProps = Enumerable.create(updateRootEntity.getProperties()).toList();
+      for (final OProperty<?> prop : props) {
+        OProperty<?> requestProp = Enumerable.create(requestProps).firstOrNull(new Predicate1<OProperty<?>>() {
+          public boolean apply(OProperty<?> input) {
+            return input.getName().equals(prop.getName());
+          }
+        });
+        requestProps.remove(requestProp);
+        requestProps.add(prop);
       }
-
-      OEntityKey entityKey = Enumerable.create(segments).last().key;
-      Entry entry = client.createRequestEntry(entitySet, entityKey, requestProps, links);
-
-      String path = Enumerable.create(segments).join("/");
-
-      ODataClientRequest request = updateRoot != null ? ODataClientRequest.put(serviceRootUri + path, entry) : ODataClientRequest.merge(serviceRootUri + path, entry);
-      boolean rt = client.updateEntity(request);
-      return rt;
-    } finally {
-      client.shutdown();
     }
+
+    OEntityKey entityKey = Enumerable.create(segments).last().key;
+    Entry entry = client.createRequestEntry(entitySet, entityKey, requestProps, links);
+
+    String path = Enumerable.create(segments).join("/");
+
+    ODataClientRequest request = updateRoot != null ? ODataClientRequest.put(serviceRootUri + path, entry) : ODataClientRequest.merge(serviceRootUri + path, entry);
+    client.updateEntity(request);
   }
 
   @Override

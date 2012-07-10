@@ -2,7 +2,6 @@ package org.odata4j.jersey.consumer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -151,11 +150,6 @@ public abstract class ConsumerQueryRequestBase<T> implements OQueryRequest<T> {
   public OQueryRequest<T> custom(String name, String value) {
     customs.put(name, value);
     return this;
-  }
-
-  @Override
-  public Iterator<T> iterator() {
-    return execute().iterator();
   }
 
   protected List<EntitySegment> getSegments() {

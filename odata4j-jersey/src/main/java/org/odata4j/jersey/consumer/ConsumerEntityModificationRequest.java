@@ -6,6 +6,8 @@ import java.util.List;
 import org.core4j.Enumerable;
 import org.core4j.Predicate1;
 import org.odata4j.consumer.AbstractConsumerEntityPayloadRequest;
+import org.odata4j.consumer.ODataClientException;
+import org.odata4j.consumer.ODataServerException;
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
@@ -42,7 +44,7 @@ class ConsumerEntityModificationRequest<T> extends AbstractConsumerEntityPayload
   }
 
   @Override
-  public boolean execute() {
+  public void execute() throws ODataServerException, ODataClientException {
 
     List<OProperty<?>> requestProps = props;
     if (updateRoot != null) {
@@ -65,8 +67,7 @@ class ConsumerEntityModificationRequest<T> extends AbstractConsumerEntityPayload
     String path = Enumerable.create(segments).join("/");
 
     ODataClientRequest request = updateRoot != null ? ODataClientRequest.put(serviceRootUri + path, entry) : ODataClientRequest.merge(serviceRootUri + path, entry);
-    boolean rt = client.updateEntity(request);
-    return rt;
+    client.updateEntity(request);
   }
 
   @Override

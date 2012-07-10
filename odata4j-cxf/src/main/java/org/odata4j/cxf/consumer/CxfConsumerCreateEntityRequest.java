@@ -3,6 +3,7 @@ package org.odata4j.cxf.consumer;
 import org.apache.http.HttpResponse;
 import org.core4j.Enumerable;
 import org.odata4j.consumer.AbstractConsumerEntityPayloadRequest;
+import org.odata4j.consumer.ODataServerException;
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.core.OCreateRequest;
 import org.odata4j.core.ODataConstants;
@@ -38,7 +39,7 @@ class CxfConsumerCreateEntityRequest<T> extends AbstractConsumerEntityPayloadReq
 
   @SuppressWarnings("unchecked")
   @Override
-  public T execute() {
+  public T execute() throws ODataServerException {
     ODataCxfClient client = new ODataCxfClient(this.formatType);
     try {
       EdmEntitySet ees = metadata.getEdmEntitySet(entitySetName);
@@ -65,8 +66,6 @@ class CxfConsumerCreateEntityRequest<T> extends AbstractConsumerEntityPayloadReq
       return (T) entry.getEntity();
     } catch (Exception e) {
       throw Throwables.propagate(e);
-    } finally {
-      client.shutdown();
     }
   }
 

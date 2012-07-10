@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.core4j.Func;
+import org.odata4j.consumer.ODataClientException;
+import org.odata4j.consumer.ODataServerException;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.consumer.ODataConsumers;
 import org.odata4j.examples.AbstractExample;
@@ -81,10 +83,12 @@ public class RoundtripExample extends AbstractExample {
 
       reportEntities("Customers", consumer.getEntities("Customers").execute());
 
-      for (Customer customer : consumer.getEntities(Customer.class, "Customers").execute()) {
+      for (Customer customer : consumer.getEntities(Customer.class, "Customers").execute())
         report(customer.toString());
-      }
-
+    } catch (ODataServerException e) {
+      reportError(e);
+    } catch (ODataClientException e) {
+      report("Client error: " + e.getMessage());
     } finally {
       // stop the server
       server.stop();

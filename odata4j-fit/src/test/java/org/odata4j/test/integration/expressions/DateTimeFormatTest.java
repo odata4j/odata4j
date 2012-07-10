@@ -23,7 +23,7 @@ public class DateTimeFormatTest extends AbstractRuntimeTest {
   }
 
   @Test
-  public void testDateTimeRoundtrip() {
+  public void testDateTimeRoundtrip() throws Exception {
     String endpointUri = "http://localhost:8810/DateTimeFormatTest.svc/";
 
     final long now = 1292865839424L;

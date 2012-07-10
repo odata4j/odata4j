@@ -1,6 +1,8 @@
 package org.odata4j.jersey.consumer;
 
 import org.core4j.Enumerable;
+import org.odata4j.consumer.ODataClientException;
+import org.odata4j.consumer.ODataServerException;
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OEntityGetRequest;
@@ -47,7 +49,7 @@ class ConsumerGetEntityRequest<T> extends ConsumerEntityRequestBase<T> implement
   }
 
   @Override
-  public T execute() {
+  public T execute() throws ODataServerException, ODataClientException {
 
     String path = Enumerable.create(getSegments()).join("/");
 

@@ -17,16 +17,22 @@ public class AtomErrorFormatParserTest extends AbstractErrorFormatParserTest {
   }
 
   @Test(expected = RuntimeException.class)
-  public void emptyError() throws Exception {
+  public void errorWithoutNamespace() throws Exception {
     formatParser.parse(new StringReader("<error>wrong error format</error>"));
+  }
+
+  @Test(expected = RuntimeException.class)
+  public void errorWrongFormat() throws Exception {
+    formatParser.parse(new StringReader("<error xmlns=\"http://schemas.microsoft.com/ado/2007/08/dataservices/metadata\">wrong error format</error>"));
   }
 
   @Override
   protected StringReader buildError(String code, String message, String innerError) {
-    return new StringReader("<error xmlns=\"http://schemas.microsoft.com/ado/2007/08/dataservices/metadata\">"
-        + (code == null ? "" : "<code>" + code + "</code>")
-        + (message == null ? "" : "<message lang=\"en-US\">" + message + "</message>")
-        + (innerError == null ? "" : "<innererror>" + innerError + "</innererror>")
+    return new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+        + "<error xmlns=\"http://schemas.microsoft.com/ado/2007/08/dataservices/metadata\">\n"
+        + (code == null ? "" : "  <code>" + code + "</code>\n")
+        + (message == null ? "" : "  <message lang=\"en-US\">" + message + "</message>\n")
+        + (innerError == null ? "" : "  <innererror>" + innerError + "</innererror>\n")
         + "</error>");
   }
 }

@@ -8,7 +8,7 @@ import org.core4j.Enumerable;
 import org.joda.time.LocalDateTime;
 
 /**
- * A consumer-side function-request builder.  Call {@link #execute()} or simply iterate to issue the request.
+ * A consumer-side function-request builder.  Call {@link #execute()} to issue the request.
  *
  * <p>Usage example:
  * <pre>

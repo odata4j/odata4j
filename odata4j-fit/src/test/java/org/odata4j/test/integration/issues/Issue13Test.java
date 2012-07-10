@@ -22,7 +22,7 @@ public class Issue13Test extends AbstractRuntimeTest {
   }
 
   @Test
-  public void issue13() {
+  public void issue13() throws Exception {
 
     String endpointUri = "http://localhost:8813/Issue13.svc/";
 

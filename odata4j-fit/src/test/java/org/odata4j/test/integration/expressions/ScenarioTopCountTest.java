@@ -25,7 +25,7 @@ public class ScenarioTopCountTest extends AbstractRuntimeTest {
   }
 
   @Test
-  public void testScenario() {
+  public void testScenario() throws Exception {
     String uri = "http://localhost:18888/TestService.svc/";
     InMemoryProducer producer = new InMemoryProducer("ScenarioTest");
     DefaultODataProducerProvider.setInstance(producer);

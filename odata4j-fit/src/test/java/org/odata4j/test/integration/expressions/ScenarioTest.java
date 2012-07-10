@@ -21,7 +21,7 @@ public class ScenarioTest extends AbstractRuntimeTest {
   }
 
   @Test
-  public void testScenario() {
+  public void testScenario() throws Exception {
 
     ExpressionParser.DUMP_EXPRESSION_INFO = true;
 

@@ -24,7 +24,7 @@ public class ConsumerLinksTest extends NorthwindJpaProducerTest {
   }
 
   @Test
-  public void linksReturnedToClient() {
+  public void linksReturnedToClient() throws Exception {
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
 
     OEntity order = consumer.getEntity("Orders", 10248).execute();

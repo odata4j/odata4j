@@ -100,7 +100,7 @@ public class LinksTest extends NorthwindJpaProducerTest {
   public static Object populatedId = "a1";
   public static int numberOfRelatedEntities = 2;
 
-  protected void testReadDeferred(FormatType formatType) {
+  protected void testReadDeferred(FormatType formatType) throws Exception {
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, formatType, null);
 
     ODataConsumer.dump.all(true);
@@ -122,7 +122,7 @@ public class LinksTest extends NorthwindJpaProducerTest {
     Assert.assertTrue(cs.getRelatedEntities() == null);
   }
 
-  protected void testReadEmpty(FormatType formatType) {
+  protected void testReadEmpty(FormatType formatType) throws Exception {
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, formatType, null);
 
     ODataConsumer.dump.all(true);
@@ -143,7 +143,7 @@ public class LinksTest extends NorthwindJpaProducerTest {
     Assert.assertTrue(cs.getRelatedEntities() == null || cs.getRelatedEntities().isEmpty());
   }
 
-  protected void testReadPopulated(FormatType formatType) {
+  protected void testReadPopulated(FormatType formatType) throws Exception {
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, formatType, null);
 
     ODataConsumer.dump.all(true);

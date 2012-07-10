@@ -1,5 +1,7 @@
 package org.odata4j.examples.consumer;
 
+import org.odata4j.consumer.ODataClientException;
+import org.odata4j.consumer.ODataServerException;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.consumer.ODataConsumers;
 import org.odata4j.consumer.behaviors.OClientBehaviors;
@@ -23,9 +25,15 @@ public class DataMarketUnitedNationsExample extends AbstractExample {
         .setClientBehaviors(OClientBehaviors.basicAuth("accountKey", datamarketCreds[0]))
         .build();
 
-    OEntity firstDataSeries = c.getEntities("DataSeries").top(1).execute().first();
-    String filter = String.format("DataSeriesId eq '%s'", firstDataSeries.getProperty("Id").getValue());
-    reportEntities(firstDataSeries.getProperty("Name", String.class).getValue(), c.getEntities("Values").filter(filter).top(10).execute());
+    try {
+      OEntity firstDataSeries = c.getEntities("DataSeries").top(1).execute().first();
+      String filter = String.format("DataSeriesId eq '%s'", firstDataSeries.getProperty("Id").getValue());
+      reportEntities(firstDataSeries.getProperty("Name", String.class).getValue(), c.getEntities("Values").filter(filter).top(10).execute());
+    } catch (ODataServerException e) {
+      reportError(e);
+    } catch (ODataClientException e) {
+      report("Client error: " + e.getMessage());
+    }
   }
 
 }

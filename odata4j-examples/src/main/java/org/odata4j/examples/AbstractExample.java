@@ -1,8 +1,11 @@
 package org.odata4j.examples;
 
 import org.core4j.Enumerable;
+import org.odata4j.consumer.ODataClientException;
 import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.consumer.ODataServerException;
 import org.odata4j.core.OEntity;
+import org.odata4j.core.OError;
 import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmAssociation;
 import org.odata4j.edm.EdmAssociationSet;
@@ -38,7 +41,7 @@ public abstract class AbstractExample {
     }
   }
 
-  protected static int reportEntities(ODataConsumer c, String entitySetHref, int limit) {
+  protected static int reportEntities(ODataConsumer c, String entitySetHref, int limit) throws ODataServerException, ODataClientException {
     report("entitySetHref: " + entitySetHref);
     Enumerable<OEntity> entities = c.getEntities(entitySetHref).execute().take(limit);
     return reportEntities(entitySetHref, entities);
@@ -139,5 +142,12 @@ public abstract class AbstractExample {
         }
       }
     }
+  }
+
+  protected static void reportError(OError error) {
+    report("Error code=%s", error.getCode());
+    report("Error message=%s", error.getMessage());
+    if (error.getInnerError() != null)
+      report("Inner error=%s", error.getInnerError());
   }
 }

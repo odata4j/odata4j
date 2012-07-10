@@ -10,25 +10,30 @@ import java.util.List;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response.StatusType;
 
 import org.core4j.Enumerable;
 import org.core4j.xml.XDocument;
 import org.core4j.xml.XmlFormat;
 import org.odata4j.consumer.AbstractODataClient;
+import org.odata4j.consumer.ODataClientException;
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.consumer.ODataServerException;
 import org.odata4j.consumer.behaviors.OClientBehavior;
 import org.odata4j.consumer.behaviors.OClientBehaviors;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
+import org.odata4j.core.OError;
 import org.odata4j.core.OLink;
 import org.odata4j.core.OProperty;
 import org.odata4j.core.Throwables;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.format.Entry;
+import org.odata4j.format.FormatParserFactory;
 import org.odata4j.format.FormatType;
 import org.odata4j.format.FormatWriter;
 import org.odata4j.format.FormatWriterFactory;
@@ -43,7 +48,9 @@ import org.odata4j.internal.InternalUtil;
 import org.odata4j.stax2.XMLEventReader2;
 
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.ClientResponse.Status;
 import com.sun.jersey.api.client.PartialRequestBuilder;
 import com.sun.jersey.api.client.WebResource;
 
@@ -63,71 +70,56 @@ class ODataJerseyClient extends AbstractODataClient {
     this.client = JerseyClientUtil.newClient(clientFactory, behaviors);
   }
 
-  public EdmDataServices getMetadata(ODataClientRequest request) {
-    ClientResponse response = doRequest(FormatType.ATOM, request, 200, 404, 400);
-    if (response.getStatus() == 404 || response.getStatus() == 400)
-      return null;
-    XMLEventReader2 reader = doXmlRequest(response);
-    return new EdmxFormatParser().parseMetadata(reader);
+  public EdmDataServices getMetadata(ODataClientRequest request) throws ODataServerException, ODataClientException {
+    ClientResponse response = doRequest(FormatType.ATOM, request, Status.OK);
+    return new EdmxFormatParser().parseMetadata(doXmlRequest(response));
   }
 
-  public Iterable<AtomCollectionInfo> getCollections(ODataClientRequest request) {
-    ClientResponse response = doRequest(FormatType.ATOM, request, 200);
-    XMLEventReader2 reader = doXmlRequest(response);
-    return Enumerable.create(AtomServiceDocumentFormatParser.parseWorkspaces(reader))
+  public Iterable<AtomCollectionInfo> getCollections(ODataClientRequest request) throws ODataServerException, ODataClientException {
+    ClientResponse response = doRequest(FormatType.ATOM, request, Status.OK);
+    return Enumerable.create(AtomServiceDocumentFormatParser.parseWorkspaces(doXmlRequest(response)))
         .selectMany(AtomWorkspaceInfo.GET_COLLECTIONS);
   }
 
-  public Iterable<SingleLink> getLinks(ODataClientRequest request) {
-    ClientResponse response = doRequest(FormatType.ATOM, request, 200);
-    XMLEventReader2 reader = doXmlRequest(response);
-    return AtomSingleLinkFormatParser.parseLinks(reader);
+  public Iterable<SingleLink> getLinks(ODataClientRequest request) throws ODataServerException, ODataClientException {
+    ClientResponse response = doRequest(FormatType.ATOM, request, Status.OK);
+    return AtomSingleLinkFormatParser.parseLinks(doXmlRequest(response));
   }
 
-  public ClientResponse getEntity(ODataClientRequest request) {
-    ClientResponse response = doRequest(this.getFormatType(), request, 404, 200, 204);
-    if (response.getStatus() == 404)
-      return null;
-    if (response.getStatus() == 204)
-      return null;
-
-    return response;
+  public ClientResponse getEntity(ODataClientRequest request) throws ODataServerException, ODataClientException {
+    return doRequest(this.getFormatType(), request, Status.OK, Status.NO_CONTENT);
   }
 
-  public ClientResponse getEntities(ODataClientRequest request) {
-    ClientResponse response = doRequest(this.getFormatType(), request, 200);
-    return response;
+  public ClientResponse getEntities(ODataClientRequest request) throws ODataServerException, ODataClientException {
+    return doRequest(this.getFormatType(), request, Status.OK);
   }
 
-  public ClientResponse callFunction(ODataClientRequest request) {
-    ClientResponse response = doRequest(this.getFormatType(), request, 200, 204);
-    return response;
+  public ClientResponse callFunction(ODataClientRequest request) throws ODataServerException, ODataClientException {
+    return doRequest(this.getFormatType(), request, Status.OK, Status.NO_CONTENT);
   }
 
-  public ClientResponse createEntity(ODataClientRequest request) {
-    return doRequest(this.getFormatType(), request, 201);
+  public ClientResponse createEntity(ODataClientRequest request) throws ODataServerException, ODataClientException {
+    return doRequest(this.getFormatType(), request, Status.CREATED);
   }
 
-  public boolean updateEntity(ODataClientRequest request) {
-    doRequest(this.getFormatType(), request, 200, 204);
-    return true;
+  public void updateEntity(ODataClientRequest request) throws ODataServerException, ODataClientException {
+    doRequest(this.getFormatType(), request, Status.OK, Status.NO_CONTENT);
   }
 
-  public boolean deleteEntity(ODataClientRequest request) {
-    doRequest(this.getFormatType(), request, 200, 204, 404);
-    return true;
+  public void deleteEntity(ODataClientRequest request) throws ODataServerException, ODataClientException {
+    doRequest(this.getFormatType(), request, Status.OK, Status.NO_CONTENT);
   }
 
-  public void deleteLink(ODataClientRequest request) {
-    doRequest(this.getFormatType(), request, 204);
+  public void deleteLink(ODataClientRequest request) throws ODataServerException, ODataClientException {
+    doRequest(this.getFormatType(), request, Status.NO_CONTENT);
   }
 
-  public void createLink(ODataClientRequest request) {
-    doRequest(this.getFormatType(), request, 204);
+  public void createLink(ODataClientRequest request) throws ODataServerException, ODataClientException {
+    doRequest(this.getFormatType(), request, Status.NO_CONTENT);
   }
 
-  public void updateLink(ODataClientRequest request) {
-    doRequest(this.getFormatType(), request, 204);
+  public void updateLink(ODataClientRequest request) throws ODataServerException, ODataClientException {
+    doRequest(this.getFormatType(), request, Status.NO_CONTENT);
   }
 
   Entry createRequestEntry(EdmEntitySet entitySet, OEntityKey entityKey, List<OProperty<?>> props, List<OLink> links) {
@@ -155,7 +147,7 @@ class ODataJerseyClient extends AbstractODataClient {
   }
 
   @SuppressWarnings("unchecked")
-  private ClientResponse doRequest(FormatType reqType, ODataClientRequest request, Integer... expectedResponseStatus) {
+  private ClientResponse doRequest(FormatType reqType, ODataClientRequest request, StatusType... expectedResponseStatus) throws ODataServerException, ODataClientException {
 
     if (behaviors != null) {
       for (OClientBehavior behavior : behaviors)
@@ -165,18 +157,16 @@ class ODataJerseyClient extends AbstractODataClient {
     WebResource webResource = JerseyClientUtil.resource(client, request.getUrl(), behaviors);
 
     // set query params
-    for (String qpn : request.getQueryParams().keySet()) {
+    for (String qpn : request.getQueryParams().keySet())
       webResource = webResource.queryParam(qpn, request.getQueryParams().get(qpn));
-    }
 
     WebResource.Builder b = webResource.getRequestBuilder();
 
     // set headers
     b = b.accept(reqType.getAcceptableMediaTypes());
 
-    for (String header : request.getHeaders().keySet()) {
+    for (String header : request.getHeaders().keySet())
       b.header(header, request.getHeaders().get(header));
-    }
     if (!request.getHeaders().containsKey(ODataConstants.Headers.USER_AGENT))
       b.header(ODataConstants.Headers.USER_AGENT, "odata4j.org");
 
@@ -192,10 +182,10 @@ class ODataJerseyClient extends AbstractODataClient {
       else if (request.getPayload() instanceof SingleLink)
         payloadClass = SingleLink.class;
       else
-        throw new UnsupportedOperationException("Unsupported payload: " + request.getPayload());
+        throw new ODataClientException("Unsupported payload: " + request.getPayload());
 
       StringWriter sw = new StringWriter();
-      FormatWriter<Object> fw = (FormatWriter<Object>) (Object)
+      FormatWriter<Object> fw = (FormatWriter<Object>)
           FormatWriterFactory.getFormatWriter(payloadClass, null, this.getFormatType().toString(), null);
       fw.write(null, sw, request.getPayload());
 
@@ -212,18 +202,34 @@ class ODataJerseyClient extends AbstractODataClient {
     }
 
     // execute request
-    ClientResponse response = b.method(request.getMethod(), ClientResponse.class);
+    ClientResponse response;
+    try {
+      response = b.method(request.getMethod(), ClientResponse.class);
+    } catch (ClientHandlerException e) {
+      throw new ODataClientException("HTTP error occurred", e);
+    }
 
     if (ODataConsumer.dump.responseHeaders())
       dumpHeaders(response);
-    int status = response.getStatus();
-    for (int expStatus : expectedResponseStatus) {
-      if (status == expStatus) {
+    StatusType status = response.getClientResponseStatus();
+    for (StatusType expStatus : expectedResponseStatus)
+      if (expStatus.equals(status))
         return response;
-      }
+
+    // the server responded with an unexpected status
+    RuntimeException exception;
+    String textEntity = response.getEntity(String.class); // input stream can only be consumed once
+    try {
+      // report error as ODataServerException in case we get a well-formed OData error...
+      MediaType contentType = response.getType();
+      OError error = FormatParserFactory.getParser(OError.class, contentType, null).parse(new StringReader(textEntity));
+      exception = new ODataServerException(status, error);
+    } catch (RuntimeException e) {
+      // ... otherwise throw a RuntimeError
+      exception = new RuntimeException(String.format("Expected status %s, found %s. Server response:",
+          Enumerable.create(expectedResponseStatus).join(" or "), status) + "\n" + textEntity);
     }
-    throw new RuntimeException(String.format("Expected status %s, found %s:",
-        Enumerable.create(expectedResponseStatus).join(" or "), status) + "\n" + response.getEntity(String.class));
+    throw exception;
   }
 
   Reader getFeedReader(ClientResponse response) {

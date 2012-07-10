@@ -127,20 +127,23 @@ public interface ODataConsumer {
    * Lists all top-level entity-sets for the OData service.
    *
    * @return the entity-set information
+   * @throws ODataServerException  error from the server
+   * @throws ODataClientException  error due to client problem
    */
-  Enumerable<EntitySetInfo> getEntitySets();
+  Enumerable<EntitySetInfo> getEntitySets() throws ODataServerException, ODataClientException;
 
   /**
    * Gets the OData service metadata.
    *
    * @return the service metadata
+   * @throws ODataServerException  error from the server
    * @see <a href="http://msdn.microsoft.com/en-us/library/dd541087(v=prot.10).aspx">[msdn] 2.2 &lt;edmx:DataServices&gt;</a>
    */
-  EdmDataServices getMetadata();
+  EdmDataServices getMetadata() throws ODataServerException;
 
   /**
    * Gets entities referred to by the given related-entities link.
-   * <p>The query-request builder returned can be used for further server-side filtering.  Call {@link OQueryRequest#execute()} or simply iterate to issue request.</p>
+   * <p>The query-request builder returned can be used for further server-side filtering.  Call {@link OQueryRequest#execute()} to issue request.</p>
    *
    * @param link  the link
    * @return a new query-request builder
@@ -149,7 +152,7 @@ public interface ODataConsumer {
 
   /**
    * Gets entities from the given entity-set.
-   * <p>The query-request builder returned can be used for further server-side filtering.  Call {@link OQueryRequest#execute()} or simply iterate to issue request.</p>
+   * <p>The query-request builder returned can be used for further server-side filtering.  Call {@link OQueryRequest#execute()} to issue request.</p>
    *
    * @param entitySetHref  the entity-set href
    * @return a new query-request builder
@@ -158,7 +161,7 @@ public interface ODataConsumer {
 
   /**
    * Gets entities from the given entity-set.  The entities will be represented as the given java-type.
-   * <p>The query-request builder returned can be used for further server-side filtering.  Call {@link OQueryRequest#execute()} or simply iterate to issue request.</p>
+   * <p>The query-request builder returned can be used for further server-side filtering.  Call {@link OQueryRequest#execute()} to issue request.</p>
    *
    * @param <T>  the entity representation as a java type
    * @param entityType  the entity representation as a java type
@@ -355,7 +358,8 @@ public interface ODataConsumer {
    *
    * @param functionName  the function name
    * @return the functioncall-builder
+   * @throws ODataServerException  if the function name is not defined in the metadata
    */
-  OFunctionRequest<OObject> callFunction(String functionName);
+  OFunctionRequest<OObject> callFunction(String functionName) throws ODataServerException;
 
 }

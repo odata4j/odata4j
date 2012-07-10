@@ -20,26 +20,22 @@ public class UpdateTest extends NorthwindJpaProducerTest {
   }
 
   @Test
-  public void tunneledUpdateEntity() {
+  public void tunneledUpdateEntity() throws Exception {
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, "PUT");
     updateEntityAndTest(consumer);
   }
 
   @Test
-  public void updateEntity() {
+  public void updateEntity() throws Exception {
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
 
     updateEntityAndTest(consumer);
   }
 
-  protected void updateEntityAndTest(ODataConsumer consumer) {
+  protected void updateEntityAndTest(ODataConsumer consumer) throws Exception {
     OEntity customer = consumer.getEntity("Customers", "ALFKI").execute();
 
-    boolean ret = consumer
-        .updateEntity(customer)
-        .properties(OProperties.string("ContactName", "Maria Gleich"))
-        .execute();
-    Assert.assertTrue(ret);
+    consumer.updateEntity(customer).properties(OProperties.string("ContactName", "Maria Gleich")).execute();
 
     customer = consumer.getEntity("Customers", "ALFKI").execute();
     Assert.assertEquals("Maria Gleich", customer.getProperty("ContactName").getValue());
@@ -47,20 +43,13 @@ public class UpdateTest extends NorthwindJpaProducerTest {
   }
 
   @Test
-  public void mergeEntityTest() {
+  public void mergeEntityTest() throws Exception {
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
 
     final long now = System.currentTimeMillis();
-    boolean res = consumer
-        .mergeEntity("Categories", 1)
-        .properties(OProperties.string("Description", "D" + now))
-        .execute();
+    consumer.mergeEntity("Categories", 1).properties(OProperties.string("Description", "D" + now)).execute();
 
-    Assert.assertTrue(res);
-
-    OEntity category = consumer
-        .getEntity("Categories", 1)
-        .execute();
+    OEntity category = consumer.getEntity("Categories", 1).execute();
 
     Assert.assertEquals("Beverages", category.getProperty("CategoryName").getValue());
     Assert.assertEquals("D" + now, category.getProperty("Description").getValue());

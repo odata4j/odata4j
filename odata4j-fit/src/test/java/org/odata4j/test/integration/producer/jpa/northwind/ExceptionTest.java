@@ -1,62 +1,120 @@
 package org.odata4j.test.integration.producer.jpa.northwind;
 
-import junit.framework.Assert;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+
+import javax.ws.rs.core.Response.Status;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.matchers.JUnitMatchers;
-import org.junit.rules.ExpectedException;
+import org.odata4j.consumer.ODataServerException;
 import org.odata4j.consumer.ODataConsumer;
-import org.odata4j.core.OEntity;
+import org.odata4j.core.OEntityIds;
 
 public class ExceptionTest extends NorthwindJpaProducerTest {
+
+  protected ODataConsumer consumer;
 
   public ExceptionTest(RuntimeFacadeType type) {
     super(type);
   }
 
-  @Rule
-  public ExpectedException thrown = ExpectedException.none();
-
   @Before
   public void setUp() {
     super.setUp(20);
+    consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
   }
 
   @Test
-  public void test404NoEntityType() {
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
-    OEntity customer = null;
+  public void noEntityType() throws Exception {
     try {
-      customer = consumer.getEntity("UnknownEntity", 1).execute();
-    } catch (Exception e) {
-      Assert.fail(e.getMessage());
+      consumer.getEntities("UnknownEntity").execute();
+      fail("Expected exception missing");
+    } catch (ODataServerException e) {
+      assertThat(e.getStatus().getStatusCode(), is(Status.NOT_FOUND.getStatusCode()));
+      assertThat(e.getMessage(), containsString("UnknownEntity"));
+    }
+  }
+
+  @Test
+  public void noEntity() throws Exception {
+    try {
+      consumer.getEntity("Customers", "NOUSER").execute();
+      fail("Expected exception missing");
+    } catch (ODataServerException e) {
+      assertThat(e.getStatus().getStatusCode(), is(Status.NOT_FOUND.getStatusCode()));
+      assertThat(e.getCode(), containsString("NotFound"));
+      assertThat(e.getMessage(), containsString("NOUSER"));
+    }
+  }
+
+  @Test
+  public void invalidKey() throws Exception {
+    try {
+      consumer.getEntity("Customers", 1).execute();
+      fail("Expected exception missing");
+    } catch (ODataServerException e) {
+      assertThat(e.getStatus().getStatusCode(), is(Status.BAD_REQUEST.getStatusCode()));
     }
 
-    Assert.assertNull(customer);
-  }
-
-  @Test
-  public void test404NoEntity() {
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
-    OEntity customer = null;
     try {
-      customer = consumer.getEntity("Customers", "NOUSER").execute();
-    } catch (Exception e) {
-      Assert.fail(e.getMessage());
+      consumer.getEntity("Employees", "WrongKey").execute();
+      fail("Expected exception missing");
+    } catch (ODataServerException e) {
+      assertThat(e.getStatus().getStatusCode(), is(Status.BAD_REQUEST.getStatusCode()));
     }
-
-    Assert.assertNull(customer);
   }
 
   @Test
-  public void test500InvalidKey() {
+  public void noNavigation() throws Exception {
+    try {
+      consumer.getEntity("Customers", "QUEEN").nav("NoNavigation").execute();
+      fail("Expected exception missing");
+    } catch (ODataServerException e) {
+      assertThat(e.getStatus().getStatusCode(), is(Status.NOT_FOUND.getStatusCode()));
+    }
+  }
 
-    thrown.expect(RuntimeException.class);
-    thrown.expectMessage(JUnitMatchers.containsString("found 500"));
+  @Test
+  public void noLinks() throws Exception {
+    try {
+      consumer.getLinks(OEntityIds.create("Customers", "QUEEN"), "NoNavigation").execute();
+      fail("Expected exception missing");
+    } catch (ODataServerException e) {
+      assertThat(e.getStatus().getStatusCode(), is(Status.NOT_FOUND.getStatusCode()));
+    }
+  }
 
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
-    consumer.getEntity("Customers", 1).execute();
+  @Test
+  public void noFunction() throws Exception {
+    try {
+      consumer.callFunction("NoFunction").execute();
+    } catch (ODataServerException e) {
+      assertThat(e.getStatus().getStatusCode(), is(Status.NOT_FOUND.getStatusCode()));
+      assertThat(e.getMessage(), containsString("NoFunction"));
+    }
+  }
+
+  @Test
+  public void deleteNotExistingEntity() throws Exception {
+    try {
+      consumer.deleteEntity("Customers", "NOUSER").execute();
+      fail("Expected exception missing");
+    } catch (ODataServerException e) {
+      assertThat(e.getStatus().getStatusCode(), is(Status.NOT_FOUND.getStatusCode()));
+      assertThat(e.getMessage(), containsString("NOUSER"));
+    }
+  }
+
+  @Test
+  public void deleteLink() throws Exception {
+    try {
+      consumer.deleteLink(OEntityIds.create("Customers", "CENTC"), "Orders", 10259).execute();
+      fail("Expected exception missing");
+    } catch (ODataServerException e) {
+      assertThat(e.getCode(), containsString("NotImplemented"));
+    }
   }
 }

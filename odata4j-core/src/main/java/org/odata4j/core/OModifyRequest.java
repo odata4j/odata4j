@@ -1,5 +1,8 @@
 package org.odata4j.core;
 
+import org.odata4j.consumer.ODataClientException;
+import org.odata4j.consumer.ODataServerException;
+
 /**
  * A consumer-side modification-request builder, used for operations such as MERGE and UPDATE.  Call {@link #execute()} to issue the request.
  *
@@ -8,11 +11,11 @@ package org.odata4j.core;
 public interface OModifyRequest<T> {
 
   /**
-    * Set properties on the new entity.
-    * 
-    * @param props  the properties
-    * @return the modification-request builder 
-    */
+   * Set properties on the new entity.
+   *
+   * @param props  the properties
+   * @return the modification-request builder
+   */
   OModifyRequest<T> properties(OProperty<?>... props);
 
   /**
@@ -24,12 +27,12 @@ public interface OModifyRequest<T> {
   OModifyRequest<T> properties(Iterable<OProperty<?>> props);
 
   /**
-  * Define an explicit link to another related entity.
-  * 
-  * @param navProperty  the entity's relationship navigation property
-  * @param target  the link target entity
-  * @return the modification-request builder
-  */
+   * Define an explicit link to another related entity.
+   *
+   * @param navProperty  the entity's relationship navigation property
+   * @param target  the link target entity
+   * @return the modification-request builder
+   */
   OModifyRequest<T> link(String navProperty, OEntity target);
 
   /**
@@ -42,11 +45,12 @@ public interface OModifyRequest<T> {
   OModifyRequest<T> link(String navProperty, OEntityKey targetKey);
 
   /**
-  * Sends the modification-request to the OData service and returns success or failure.
-  * 
-  * @return success or failure
-  */
-  boolean execute();
+   * Sends the modification request to the OData service.
+   *
+   * @throws ODataServerException  error from the server
+   * @throws ODataClientException  error due to client problem
+   */
+  void execute() throws ODataServerException, ODataClientException;
 
   /**
    * Select a new modification entity by navigating to a referenced entity in a child collection.

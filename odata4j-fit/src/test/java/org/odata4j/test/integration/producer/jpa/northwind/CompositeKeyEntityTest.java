@@ -23,7 +23,7 @@ public class CompositeKeyEntityTest extends NorthwindJpaProducerTest {
   }
 
   @Test
-  public void updateCompositeKeyEntity() {
+  public void updateCompositeKeyEntity() throws Exception {
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
 
     OEntity orderDetails = consumer.getEntities("Order_Details").top(1).execute().first();
@@ -37,7 +37,7 @@ public class CompositeKeyEntityTest extends NorthwindJpaProducerTest {
   }
 
   @Test
-  public void mergeCompositeKeyEntity() {
+  public void mergeCompositeKeyEntity() throws Exception {
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
 
     OEntity orderDetails = consumer.getEntities("Order_Details").top(1).execute().first();
@@ -51,7 +51,7 @@ public class CompositeKeyEntityTest extends NorthwindJpaProducerTest {
   }
 
   @Test
-  public void createCompositeKeyEntityUsingLinks() {
+  public void createCompositeKeyEntityUsingLinks() throws Exception {
     final long now = System.currentTimeMillis();
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
 
@@ -85,7 +85,7 @@ public class CompositeKeyEntityTest extends NorthwindJpaProducerTest {
   }
 
   @Test
-  public void createCompositeKeyEntityUsingProperties() {
+  public void createCompositeKeyEntityUsingProperties() throws Exception {
     final long now = System.currentTimeMillis();
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
 
@@ -119,7 +119,7 @@ public class CompositeKeyEntityTest extends NorthwindJpaProducerTest {
   }
 
   @Test
-  public void deleteCompositeKeyEntityUsingLinks() {
+  public void deleteCompositeKeyEntityUsingLinks() throws Exception {
     final long now = System.currentTimeMillis();
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
 

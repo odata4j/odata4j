@@ -2,6 +2,8 @@ package org.odata4j.cxf.consumer;
 
 import org.apache.http.HttpResponse;
 import org.core4j.Enumerable;
+import org.odata4j.consumer.ODataClientException;
+import org.odata4j.consumer.ODataServerException;
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OEntityGetRequest;
@@ -47,46 +49,40 @@ class CxfConsumerGetEntityRequest<T> extends CxfConsumerEntityRequestBase<T> imp
   }
 
   @Override
-  public T execute() {
+  public T execute() throws ODataServerException, ODataClientException {
     ODataCxfClient client = new ODataCxfClient(this.getFormatType());
-    try {
-      String path = Enumerable.create(getSegments()).join("/");
+    String path = Enumerable.create(getSegments()).join("/");
 
-      ODataClientRequest request = ODataClientRequest.get(getServiceRootUri() + path);
+    ODataClientRequest request = ODataClientRequest.get(getServiceRootUri() + path);
 
-      if (select != null) {
-        request = request.queryParam("$select", select);
-      }
+    if (select != null)
+      request = request.queryParam("$select", select);
 
-      if (expand != null) {
-        request = request.queryParam("$expand", expand);
-      }
+    if (expand != null)
+      request = request.queryParam("$expand", expand);
 
-      HttpResponse response = client.getEntity(request);
-      if (response == null)
-        return null;
+    HttpResponse response = client.getEntity(request);
+    if (response == null)
+      return null;
 
-      //  the first segment contains the entitySetName we start from
-      EdmEntitySet entitySet = getMetadata().getEdmEntitySet(getSegments().get(0).segment);
-      for (EntitySegment segment : getSegments().subList(1, getSegments().size())) {
-        EdmNavigationProperty navProperty = entitySet.getType().findNavigationProperty(segment.segment);
-        entitySet = getMetadata().getEdmEntitySet(navProperty.getToRole().getType());
-      }
-
-      OEntityKey key = Enumerable.create(getSegments()).last().key;
-
-      // TODO determine the service version from header (and metadata?)
-      FormatParser<Feed> parser = FormatParserFactory
-          .getParser(Feed.class, client.getFormatType(),
-              new Settings(ODataConstants.DATA_SERVICE_VERSION, getMetadata(), entitySet.getName(), key, fcMapping));
-
-      Entry entry = Enumerable.create(parser.parse(client.getFeedReader(response)).getEntries())
-          .firstOrNull();
-
-      return (T) InternalUtil.toEntity(entityType, entry.getEntity());
-    } finally {
-      client.shutdown();
+    //  the first segment contains the entitySetName we start from
+    EdmEntitySet entitySet = getMetadata().getEdmEntitySet(getSegments().get(0).segment);
+    for (EntitySegment segment : getSegments().subList(1, getSegments().size())) {
+      EdmNavigationProperty navProperty = entitySet.getType().findNavigationProperty(segment.segment);
+      entitySet = getMetadata().getEdmEntitySet(navProperty.getToRole().getType());
     }
+
+    OEntityKey key = Enumerable.create(getSegments()).last().key;
+
+    // TODO determine the service version from header (and metadata?)
+    FormatParser<Feed> parser = FormatParserFactory
+        .getParser(Feed.class, client.getFormatType(),
+            new Settings(ODataConstants.DATA_SERVICE_VERSION, getMetadata(), entitySet.getName(), key, fcMapping));
+
+    Entry entry = Enumerable.create(parser.parse(client.getFeedReader(response)).getEntries())
+        .firstOrNull();
+
+    return (T) InternalUtil.toEntity(entityType, entry.getEntity());
   }
 
 }

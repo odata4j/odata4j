@@ -7,6 +7,8 @@ import javax.ws.rs.ext.RuntimeDelegate;
 
 import org.core4j.Enumerable;
 import org.odata4j.consumer.AbstractODataConsumer;
+import org.odata4j.consumer.ODataClientException;
+import org.odata4j.consumer.ODataServerException;
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.consumer.behaviors.OClientBehavior;
@@ -110,11 +112,10 @@ public class ODataCxfConsumer extends AbstractODataConsumer {
   }
 
   @Override
-  public Enumerable<EntitySetInfo> getEntitySets() {
+  public Enumerable<EntitySetInfo> getEntitySets() throws ODataServerException, ODataClientException {
     ODataCxfClient client = new ODataCxfClient(this.formatType, this.clientBehaviors);
     ODataClientRequest request = ODataClientRequest.get(this.getServiceRootUri());
     Enumerable<EntitySetInfo> result = Enumerable.create(client.getCollections(request)).cast(EntitySetInfo.class);
-    client.shutdown();
     return result;
   }
 
@@ -205,7 +206,7 @@ public class ODataCxfConsumer extends AbstractODataConsumer {
   }
 
   @Override
-  public OFunctionRequest<OObject> callFunction(String functionName) {
+  public OFunctionRequest<OObject> callFunction(String functionName) throws ODataServerException {
     return new CxfConsumerFunctionCallRequest<OObject>(this.formatType, this.getServiceRootUri(), getMetadata(), functionName);
   }
 
@@ -256,9 +257,13 @@ public class ODataCxfConsumer extends AbstractODataConsumer {
     private void refreshDelegate() {
       ODataClientRequest request = ODataClientRequest.get(ODataCxfConsumer.this.getServiceRootUri() + "$metadata");
       ODataCxfClient client = new ODataCxfClient(ODataCxfConsumer.this.formatType, ODataCxfConsumer.this.clientBehaviors);
-      EdmDataServices metadata = client.getMetadata(request);
-      client.shutdown();
-      delegate = metadata == null ? EdmDataServices.EMPTY : metadata;
+      try {
+        delegate = client.getMetadata(request);
+      } catch (ODataServerException e) {
+        delegate = EdmDataServices.EMPTY;
+      } catch (ODataClientException e) {
+        delegate = EdmDataServices.EMPTY;
+      }
     }
 
     @Override

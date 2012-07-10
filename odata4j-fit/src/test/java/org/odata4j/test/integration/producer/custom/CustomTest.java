@@ -1,7 +1,10 @@
 package org.odata4j.test.integration.producer.custom;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
@@ -12,11 +15,9 @@ import java.util.Map;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
-import junit.framework.Assert;
-
-import org.junit.Ignore;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.consumer.ODataServerException;
 import org.odata4j.core.OCollection;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
@@ -44,7 +45,7 @@ public class CustomTest extends CustomBaseTest {
   }
 
   @Test
-  public void testPropertiesJSON() {
+  public void testPropertiesJSON() throws Exception {
     dumpResourceJSON("Type1s");
     testProperties(FormatType.JSON);
   }
@@ -102,7 +103,7 @@ public class CustomTest extends CustomBaseTest {
   }
 
   @Test
-  public void testEdmxFormatParserTypeResolution() {
+  public void testEdmxFormatParserTypeResolution() throws Exception {
     // when consumers parse an edm, they should only create one type object
     // for each unique type.
     ODataConsumer c = createConsumer(FormatType.JSON);
@@ -155,7 +156,7 @@ public class CustomTest extends CustomBaseTest {
   }
 
   @SuppressWarnings("unchecked")
-  private void testProperties(FormatType format) {
+  private void testProperties(FormatType format) throws Exception {
     ODataConsumer c = createConsumer(format);
 
     OEntity e = c.getEntity("Type1s", "0").execute();
@@ -314,18 +315,16 @@ public class CustomTest extends CustomBaseTest {
   }
 
   @Test
-  public void testDeleteMLE() {
+  public void testDeleteMLE() throws Exception {
     ODataConsumer c = this.rtFacade.createODataConsumer(endpointUri, null, null);
     OEntityKey key = OEntityKey.create("Id", "blatfoo");
     c.deleteEntity("MLEs", key).execute();
 
-    OEntity e = null;
     try {
-      e = c.getEntity("MLEs", key).execute();
-    } catch (Exception ex) {
-      Assert.fail(ex.getMessage());
+      c.getEntity("MLEs", key).execute();
+      fail("Not found exception expected but not thrown");
+    } catch (ODataServerException ex) {
+      assertThat(ex.getStatus().getStatusCode(), is(Status.NOT_FOUND.getStatusCode()));
     }
-
-    Assert.assertNull(e);
   }
 }

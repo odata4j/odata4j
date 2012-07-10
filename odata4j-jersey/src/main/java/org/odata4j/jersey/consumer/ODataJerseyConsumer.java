@@ -7,6 +7,8 @@ import javax.ws.rs.ext.RuntimeDelegate;
 
 import org.core4j.Enumerable;
 import org.odata4j.consumer.AbstractODataConsumer;
+import org.odata4j.consumer.ODataClientException;
+import org.odata4j.consumer.ODataServerException;
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.consumer.behaviors.OClientBehavior;
@@ -140,7 +142,7 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
    * @see org.odata4j.jersey.consumer.ODataConsumer#getEntitySets()
    */
   @Override
-  public Enumerable<EntitySetInfo> getEntitySets() {
+  public Enumerable<EntitySetInfo> getEntitySets() throws ODataServerException, ODataClientException {
     ODataClientRequest request = ODataClientRequest.get(this.getServiceRootUri());
     return Enumerable.create(client.getCollections(request)).cast(EntitySetInfo.class);
   }
@@ -279,7 +281,7 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
    * @see org.odata4j.jersey.consumer.ODataConsumer#callFunction(java.lang.String)
    */
   @Override
-  public OFunctionRequest<OObject> callFunction(String functionName) {
+  public OFunctionRequest<OObject> callFunction(String functionName) throws ODataServerException {
     return new ConsumerFunctionCallRequest<OObject>(client, this.getServiceRootUri(), getMetadata(), functionName);
   }
 
@@ -324,8 +326,13 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
 
     private void refreshDelegate() {
       ODataClientRequest request = ODataClientRequest.get(ODataJerseyConsumer.this.getServiceRootUri() + "$metadata");
-      EdmDataServices metadata = client.getMetadata(request);
-      delegate = metadata == null ? EdmDataServices.EMPTY : metadata;
+      try {
+        delegate = client.getMetadata(request);
+      } catch (ODataServerException e) {
+        delegate = EdmDataServices.EMPTY;
+      } catch (ODataClientException e) {
+        delegate = EdmDataServices.EMPTY;
+      }
     }
 
     @Override

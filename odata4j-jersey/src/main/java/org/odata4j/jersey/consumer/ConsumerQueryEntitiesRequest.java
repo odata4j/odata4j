@@ -7,6 +7,8 @@ import org.core4j.Enumerable;
 import org.core4j.Func;
 import org.core4j.Func1;
 import org.core4j.ReadOnlyIterator;
+import org.odata4j.consumer.ODataClientException;
+import org.odata4j.consumer.ODataServerException;
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.ODataVersion;
@@ -33,7 +35,7 @@ class ConsumerQueryEntitiesRequest<T> extends ConsumerQueryRequestBase<T> {
   }
 
   @Override
-  public Enumerable<T> execute() {
+  public Enumerable<T> execute() throws ODataServerException, ODataClientException {
     ODataClientRequest request = buildRequest(null);
     Enumerable<Entry> entries = getEntries(request);
 
@@ -44,41 +46,46 @@ class ConsumerQueryEntitiesRequest<T> extends ConsumerQueryRequestBase<T> {
     }).cast(entityType);
   }
 
-  private Enumerable<Entry> getEntries(final ODataClientRequest request) {
+  private Enumerable<Entry> getEntries(final ODataClientRequest request) throws ODataServerException, ODataClientException {
+    final Feed feed = doRequest(request);
     return Enumerable.createFromIterator(new Func<Iterator<Entry>>() {
       public Iterator<Entry> apply() {
-        return new EntryIterator(getClient(), request);
+        return new EntryIterator(request, feed);
       }
     });
   }
 
+  private Feed doRequest(ODataClientRequest request) throws ODataServerException, ODataClientException {
+    ClientResponse response = getClient().getEntities(request);
+
+    ODataVersion version = InternalUtil.getDataServiceVersion(response.getHeaders()
+        .getFirst(ODataConstants.Headers.DATA_SERVICE_VERSION));
+
+    FormatParser<Feed> parser = FormatParserFactory.getParser(Feed.class, getClient().getFormatType(),
+        new Settings(version, getMetadata(), getEntitySet().getName(), null, fcMapping));
+
+    return parser.parse(getClient().getFeedReader(response));
+  }
+
   private class EntryIterator extends ReadOnlyIterator<Entry> {
 
-    private ODataJerseyClient client;
     private ODataClientRequest request;
-    private FormatParser<Feed> parser;
     private Feed feed;
     private Iterator<Entry> feedEntries;
     private int feedEntryCount;
 
-    public EntryIterator(ODataJerseyClient client, ODataClientRequest request) {
-      this.client = client;
+    public EntryIterator(ODataClientRequest request, Feed feed) {
       this.request = request;
+      this.feed = feed;
+      feedEntries = feed.getEntries().iterator();
+      feedEntryCount = 0;
     }
 
     @Override
     protected IterationResult<Entry> advance() throws Exception {
 
       if (feed == null) {
-        ClientResponse response = client.getEntities(request);
-
-        ODataVersion version = InternalUtil.getDataServiceVersion(response.getHeaders()
-            .getFirst(ODataConstants.Headers.DATA_SERVICE_VERSION));
-
-        parser = FormatParserFactory.getParser(Feed.class, client.getFormatType(),
-            new Settings(version, getMetadata(), getEntitySet().getName(), null, fcMapping));
-
-        feed = parser.parse(client.getFeedReader(response));
+        feed = doRequest(request);
         feedEntries = feed.getEntries().iterator();
         feedEntryCount = 0;
       }

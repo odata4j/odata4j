@@ -2,7 +2,6 @@ package org.odata4j.cxf.consumer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +18,7 @@ import org.odata4j.internal.EntitySegment;
 
 public abstract class CxfConsumerQueryRequestBase<T> implements OQueryRequest<T> {
 
-  private FormatType formatType;
+  private final ODataCxfClient client;
   private final String serviceRootUri;
   private final EdmDataServices metadata;
 
@@ -37,7 +36,7 @@ public abstract class CxfConsumerQueryRequestBase<T> implements OQueryRequest<T>
   private final Map<String, String> customs = new HashMap<String, String>();
 
   public CxfConsumerQueryRequestBase(FormatType formatType, String serviceRootUri, EdmDataServices metadata, String lastSegment) {
-    this.formatType = formatType;
+    this.client = new ODataCxfClient(formatType);
     this.serviceRootUri = serviceRootUri;
     this.metadata = metadata;
     this.lastSegment = lastSegment;
@@ -50,8 +49,8 @@ public abstract class CxfConsumerQueryRequestBase<T> implements OQueryRequest<T>
     }
   }
 
-  protected FormatType getFormatType() {
-    return this.formatType;
+  protected ODataCxfClient getClient() {
+    return client;
   }
 
   protected EdmEntitySet getEntitySet() {
@@ -152,11 +151,6 @@ public abstract class CxfConsumerQueryRequestBase<T> implements OQueryRequest<T>
   public OQueryRequest<T> custom(String name, String value) {
     customs.put(name, value);
     return this;
-  }
-
-  @Override
-  public Iterator<T> iterator() {
-    return execute().iterator();
   }
 
   protected List<EntitySegment> getSegments() {

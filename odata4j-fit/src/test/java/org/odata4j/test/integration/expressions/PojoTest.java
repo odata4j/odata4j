@@ -21,7 +21,7 @@ public class PojoTest extends AbstractRuntimeTest {
   }
 
   @Test
-  public void testPojo() {
+  public void testPojo() throws Exception {
 
     String uri = "http://localhost:18889/TestService.svc/";
 
@@ -57,7 +57,7 @@ public class PojoTest extends AbstractRuntimeTest {
   }
 
   @Test
-  public void testPojoWithCompositeKey() {
+  public void testPojoWithCompositeKey() throws Exception {
 
     String uri = "http://localhost:18889/TestService.svc/";
 

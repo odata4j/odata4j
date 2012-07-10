@@ -33,11 +33,15 @@ public class AtomErrorFormatParser extends XmlFormatParser implements FormatPars
         message = xmlReader.getElementText();
       else if (isStartElement(event, INNER_ERROR))
         innerError = xmlReader.getElementText();
+      else if (!event.isStartElement() || !event.isEndElement())
+        continue;
       else
         throw new RuntimeException("Unable to parse the error message");
     }
     if (!isEndElement(event, ERROR))
       throw new RuntimeException("Unable to parse the error message");
+    if (code == null && message == null && innerError == null)
+      throw new RuntimeException("Wrong format of the error message");
     return OErrors.error(code, message, innerError);
   }
 }

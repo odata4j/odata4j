@@ -17,7 +17,7 @@ public class Oneoff07_GuidPrimaryKeyTest extends AbstractOneoffBaseTest {
   }
 
   @Test
-  public void guidPrimaryKey() {
+  public void guidPrimaryKey() throws Exception {
     ODataConsumer c = this.rtFacade.createODataConsumer(endpointUri, null, null);
     Assert.assertEquals(0, c.getEntities("CommunicationCellCarrier").execute().count());
     String id = UUID.randomUUID().toString();

@@ -43,7 +43,7 @@ public class EdmTimeTemporalTest extends AirlineJPAProducerBaseTest {
   }
 
   @Test
-  public void testMetadata() {
+  public void testMetadata() throws Exception {
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
 
     EdmDataServices metadata = consumer.getMetadata();
@@ -81,7 +81,7 @@ public class EdmTimeTemporalTest extends AirlineJPAProducerBaseTest {
   }
 
   @Test
-  public void filterTime() {
+  public void filterTime() throws Exception {
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
 
     Enumerable<OEntity> schedules = consumer.getEntities("FlightSchedule")

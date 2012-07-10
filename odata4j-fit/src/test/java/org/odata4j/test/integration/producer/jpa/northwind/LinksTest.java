@@ -43,7 +43,7 @@ public class LinksTest extends NorthwindJpaProducerTest {
   }
 
   @Test
-  public void testLinks() {
+  public void testLinks() throws Exception {
     ODataConsumer.dump.all(true);
     ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
     OEntity product1 = consumer.getEntity("Products", 1).execute();
