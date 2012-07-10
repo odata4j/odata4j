@@ -47,7 +47,7 @@ public class EdmFunctionImport extends EdmItem {
   public String getHttpMethod() {
     return httpMethod;
   }
-
+  
   public List<EdmFunctionParameter> getParameters() {
     return parameters;
   }

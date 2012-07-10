@@ -44,12 +44,18 @@ public class EdmProperty extends EdmPropertyBase {
   private final String fcKeepInContent;
   private final String fcEpmContentKind;
   private final String fcEpmKeepInContent;
+  private final String fcNsPrefix;
+  private final String fcNsUri;
+  private final String concurrencyMode;
+  private final String mimeType;
 
   private EdmProperty(EdmDocumentation documentation, ImmutableList<EdmAnnotation<?>> annotations, String name,
       EdmStructuralType declaringType, EdmType type, boolean nullable, Integer maxLength, Boolean unicode, Boolean fixedLength,
       String storeGeneratedPattern,
       String fcTargetPath, String fcContentKind, String fcKeepInContent, String fcEpmContentKind, String fcEpmKeepInContent,
-      CollectionKind collectionKind, String defaultValue, Integer precision, Integer scale) {
+      String fcNsPrefix, String fcNsUri,
+      CollectionKind collectionKind, String defaultValue, Integer precision, Integer scale, String mimeType,
+      String concurrencyMode) {
     super(documentation, annotations, name);
     this.declaringType = declaringType;
     this.type = type;
@@ -68,6 +74,10 @@ public class EdmProperty extends EdmPropertyBase {
     this.fcKeepInContent = fcKeepInContent;
     this.fcEpmContentKind = fcEpmContentKind;
     this.fcEpmKeepInContent = fcEpmKeepInContent;
+    this.fcNsPrefix = fcNsPrefix;
+    this.fcNsUri = fcNsUri;
+    this.mimeType = mimeType;
+    this.concurrencyMode = concurrencyMode;
   }
 
   public EdmType getType() {
@@ -130,6 +140,22 @@ public class EdmProperty extends EdmPropertyBase {
     return fcEpmKeepInContent;
   }
 
+  public String getFcNsPrefix() {
+    return fcNsPrefix;
+  }
+
+  public String getFcNsUri() {
+    return fcNsUri;
+  }
+
+  public String getMimeType() {
+    return mimeType;
+  }
+
+  public String getConcurrencyMode() {
+    return concurrencyMode;
+  }
+
   @Override
   public String toString() {
     return String.format("EdmProperty[%s,%s]", getName(), type);
@@ -168,6 +194,11 @@ public class EdmProperty extends EdmPropertyBase {
     private String fcKeepInContent;
     private String fcEpmContentKind;
     private String fcEpmKeepInContent;
+    private String fcNsPrefix;
+    private String fcNsUri;
+
+    private String mimeType;
+    private String concurrencyMode;
 
     private EdmProperty builtProperty;
 
@@ -201,6 +232,10 @@ public class EdmProperty extends EdmPropertyBase {
       this.fcKeepInContent = property.fcKeepInContent;
       this.fcEpmContentKind = property.fcEpmContentKind;
       this.fcEpmKeepInContent = property.fcEpmKeepInContent;
+      this.fcNsPrefix = property.fcNsPrefix;
+      this.fcNsUri = property.fcNsUri;
+      this.mimeType = property.mimeType;
+      this.concurrencyMode = property.concurrencyMode;
       return this;
     }
 
@@ -209,8 +244,8 @@ public class EdmProperty extends EdmPropertyBase {
         EdmType type = this.type != null ? this.type : typeBuilder.build();
         builtProperty = new EdmProperty(getDocumentation(), ImmutableList.copyOf(getAnnotations()),
             getName(), declaringType, type, nullable, maxLength, unicode, fixedLength, storeGeneratedPattern,
-            fcTargetPath, fcContentKind, fcKeepInContent, fcEpmContentKind, fcEpmKeepInContent, collectionKind,
-            defaultValue, precision, scale);
+            fcTargetPath, fcContentKind, fcKeepInContent, fcEpmContentKind, fcEpmKeepInContent, fcNsPrefix, fcNsUri,
+            collectionKind, defaultValue, precision, scale, mimeType, concurrencyMode);
       }
       return builtProperty;
     }
@@ -280,6 +315,16 @@ public class EdmProperty extends EdmPropertyBase {
       return this;
     }
 
+    public Builder setFcNsPrefix(String fcNsPrefix) {
+      this.fcNsPrefix = fcNsPrefix;
+      return this;
+    }
+
+    public Builder setFcNsUri(String fcNsUri) {
+      this.fcNsUri = fcNsUri;
+      return this;
+    }
+
     public Builder setCollectionKind(CollectionKind collectionKind) {
       this.collectionKind = collectionKind;
       return this;
@@ -297,6 +342,16 @@ public class EdmProperty extends EdmPropertyBase {
 
     public Builder setScale(Integer scale) {
       this.scale = scale;
+      return this;
+    }
+
+    public Builder setMimeType(String mimeType) {
+      this.mimeType = mimeType;
+      return this;
+    }
+
+    public Builder setConcurrencyMode(String concurrencyMode) {
+      this.concurrencyMode = concurrencyMode;
       return this;
     }
 
@@ -358,6 +413,22 @@ public class EdmProperty extends EdmPropertyBase {
 
     public String getFcEpmKeepInContent() {
       return fcEpmKeepInContent;
+    }
+
+    public String getFcNsPrefix() {
+      return fcNsPrefix;
+    }
+
+    public String getFcNsUri() {
+      return fcNsUri;
+    }
+
+    public String getMimeType() {
+      return mimeType;
+    }
+
+    public String getConcurrencyMode() {
+      return concurrencyMode;
     }
 
   }

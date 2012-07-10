@@ -19,12 +19,15 @@ public class EdmFunctionParameter extends EdmItem {
   private final String name;
   private final EdmType type;
   private final Mode mode;
+  private final Boolean nullable;
 
-  private EdmFunctionParameter(String name, EdmType type, Mode mode, EdmDocumentation doc, ImmutableList<EdmAnnotation<?>> annots) {
+  private EdmFunctionParameter(String name, EdmType type, Mode mode, Boolean nullable, EdmDocumentation doc,
+      ImmutableList<EdmAnnotation<?>> annots) {
     super(doc, annots);
     this.name = name;
     this.type = type;
     this.mode = mode;
+    this.nullable = nullable;
   }
 
   public String getName() {
@@ -37,6 +40,10 @@ public class EdmFunctionParameter extends EdmItem {
 
   public Mode getMode() {
     return mode;
+  }
+
+  public Boolean isNullable() {
+    return nullable;
   }
 
   public static Builder newBuilder() {
@@ -54,6 +61,7 @@ public class EdmFunctionParameter extends EdmItem {
     private EdmType type;
     private EdmType.Builder<?, ?> typeBuilder;
     private Mode mode;
+    private Boolean nullable;
 
     @Override
     Builder newBuilder(EdmFunctionParameter functionParameter, BuilderContext context) {
@@ -62,7 +70,7 @@ public class EdmFunctionParameter extends EdmItem {
 
     public EdmFunctionParameter build() {
       return new EdmFunctionParameter(name, typeBuilder != null ? typeBuilder.build() : type,
-          mode, getDocumentation(), ImmutableList.copyOf(getAnnotations()));
+          mode, nullable, getDocumentation(), ImmutableList.copyOf(getAnnotations()));
     }
 
     public Builder setName(String name) {
@@ -82,6 +90,11 @@ public class EdmFunctionParameter extends EdmItem {
 
     public Builder setMode(Mode mode) {
       this.mode = mode;
+      return this;
+    }
+
+    public Builder setNullable(Boolean nullable) {
+      this.nullable = nullable;
       return this;
     }
 
