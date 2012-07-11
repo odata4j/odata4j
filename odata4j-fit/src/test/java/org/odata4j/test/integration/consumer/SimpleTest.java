@@ -43,8 +43,8 @@ public class SimpleTest extends AbstractODataConsumerTest {
   }
 
   @Test
-  public void metaDataVersionIs1_0() throws Exception {
-    assertThat(consumer.getMetadata().getVersion(), is("1.0"));
+  public void metaDataVersionIs2_0() throws Exception {
+    assertThat(consumer.getMetadata().getVersion(), is("2.0"));
   }
 
   @Test
