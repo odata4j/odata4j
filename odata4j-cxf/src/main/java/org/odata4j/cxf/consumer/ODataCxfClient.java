@@ -319,4 +319,24 @@ public class ODataCxfClient extends AbstractODataClient {
     }
   }
 
+  public String getSingleValueRequest(ODataClientRequest request) {
+    try {
+      HttpResponse response = this.doRequest(this.getFormatType(), request, Status.OK);
+
+      InputStreamReader is = new InputStreamReader(response.getEntity().getContent());
+      BufferedReader br = new BufferedReader(is);
+      String line = br.readLine();
+      StringBuffer result = new StringBuffer();
+
+      while (line != null) {
+        result.append(line);
+        line = br.readLine();
+      }
+
+      return result.toString();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
 }

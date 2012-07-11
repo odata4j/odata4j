@@ -7,6 +7,7 @@ import javax.ws.rs.ext.RuntimeDelegate;
 
 import org.core4j.Enumerable;
 import org.odata4j.consumer.AbstractODataConsumer;
+import org.odata4j.consumer.CountRequest;
 import org.odata4j.consumer.ODataClientException;
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.consumer.ODataConsumer;
@@ -275,6 +276,13 @@ public class ODataCxfConsumer extends AbstractODataConsumer {
       }
       return rt;
     }
+  }
+
+  @Override
+  public CountRequest getEntitiesCount(String entitySetName) {
+    CountRequest request = new CxfCountRequest(this.getServiceRootUri(), this.formatType);
+    request.setEntitySetName(entitySetName);
+    return request;
   }
 
 }

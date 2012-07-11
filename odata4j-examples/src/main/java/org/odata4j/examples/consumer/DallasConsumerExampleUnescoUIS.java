@@ -27,7 +27,8 @@ public class DallasConsumerExampleUnescoUIS extends AbstractExample {
     try {
       // Public expenditure on education as % of GDP [XGDP_FSGOV]
       for (OEntity entity : c.getEntities("UNESCO/XGDP_FSGOV").execute()
-          .orderBy(OFuncs.entityPropertyValue("observationValue", Double.class)))  // client-side ordering, server-side ordering not supported on dallas
+          .orderBy(OFuncs.entityPropertyValue("observationValue", Double.class)))
+        // client-side ordering, server-side ordering not supported on dallas
         report("Public expenditure on education as pct of GDP: %s %s, %.4f",
             entity.getProperty("referenceArea").getValue(),
             entity.getProperty("timePeriod").getValue(),

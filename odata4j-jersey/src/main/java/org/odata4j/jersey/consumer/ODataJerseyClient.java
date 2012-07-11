@@ -315,4 +315,9 @@ class ODataJerseyClient extends AbstractODataClient {
     System.out.println(message);
   }
 
+  public String requestBody(FormatType formatType, ODataClientRequest request) {
+    ClientResponse response = this.doRequest(formatType, request, Status.OK);
+    return response.getEntity(String.class);
+  }
+
 }

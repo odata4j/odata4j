@@ -362,4 +362,13 @@ public interface ODataConsumer {
    */
   OFunctionRequest<OObject> callFunction(String functionName) throws ODataServerException;
 
+  /**
+   * Returns a single value request which can be extended by query options. The execution of the request will return a single value for $count.
+   * @param <T>
+   * 
+   * @param entitySetName  the entity identity entity-set name
+   * @return a new entity-request builder
+   */
+  CountRequest getEntitiesCount(String entitySetName);
+
 }

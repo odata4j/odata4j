@@ -1,23 +1,19 @@
 package org.odata4j.test.integration.expressions;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.Assert;
-
-import org.core4j.Enumerable;
 import org.core4j.Funcs;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
-import org.odata4j.core.OEntity;
-import org.odata4j.core.OQueryRequest;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.producer.server.ODataServer;
 import org.odata4j.test.integration.AbstractRuntimeTest;
 
-@Ignore("currently not working bebause of SkipToken format error detected by CXF run")
+// @Ignore("currently not working bebause of SkipToken format error detected by CXF run")
 public class ScenarioTopCountTest extends AbstractRuntimeTest {
 
   public ScenarioTopCountTest(RuntimeFacadeType type) {
@@ -39,11 +35,14 @@ public class ScenarioTopCountTest extends AbstractRuntimeTest {
       foos.add(new Foo("2", 2, 2, null, false));
       foos.add(new Foo("3", 1, 1, "Gamma", true));
 
-      OQueryRequest<OEntity> x1 = c.getEntities("Foos1");
-      OQueryRequest<OEntity> x2 = x1.top(1);
-      Enumerable<OEntity> x3 = x2.execute();
-      int x4 = x3.count();
-      Assert.assertEquals(1, x4);
+      int count;
+
+      count = c.getEntitiesCount("Foos1").execute();
+      assertEquals(3, count);
+      count = c.getEntitiesCount("Foos1").top(1).execute();
+      assertEquals(1, count);
+      count = c.getEntitiesCount("Foos1").top(2).execute();
+      assertEquals(2, count);
 
       server.stop();
     } finally {
