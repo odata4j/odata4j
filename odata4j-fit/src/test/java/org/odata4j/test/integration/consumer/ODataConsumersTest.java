@@ -63,6 +63,7 @@ public class ODataConsumersTest {
   @BeforeClass
   public static void setupClass() throws Exception {
     oldConsumerImplProperty = System.getProperty(CONSUMERIMPL_PROPERTY);
+    System.clearProperty(CONSUMERIMPL_PROPERTY);
 
     otherConsumerBuilderMock = mock(ODataConsumer.Builder.class);
     otherConsumerMock = mock(ODataConsumer.class);

@@ -347,12 +347,11 @@ public class CustomProducer implements ODataProducer {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz,
       Map<String, Object> params) {
     if (clazz.equals(OMediaLinkExtension.class))
-      return (TExtension) new MediaLinkExtension();
+      return clazz.cast(new MediaLinkExtension());
     return null;
   }
 

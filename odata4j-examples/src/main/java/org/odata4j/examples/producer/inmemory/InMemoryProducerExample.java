@@ -20,6 +20,7 @@ import org.odata4j.core.OCollection;
 import org.odata4j.core.OCollections;
 import org.odata4j.core.OComplexObject;
 import org.odata4j.core.OComplexObjects;
+import org.odata4j.core.OExtension;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
 import org.odata4j.core.OSimpleObjects;
@@ -37,6 +38,9 @@ import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.edm.EdmStructuralType;
 import org.odata4j.examples.AbstractExample;
 import org.odata4j.examples.ODataServerFactory;
+import org.odata4j.producer.ErrorResponseExtension;
+import org.odata4j.producer.ErrorResponseExtensions;
+import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.PropertyPath;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
@@ -55,7 +59,14 @@ public class InMemoryProducerExample extends AbstractExample {
 
     // InMemoryProducer is a readonly odata provider that serves up POJOs as entities using bean properties
     // call InMemoryProducer.register to declare a new entity-set, providing a entity source function and a propertyname to serve as the key
-    final InMemoryProducer producer = new InMemoryProducer("InMemoryProducerExample", null, 100, new MyEdmDecorator(), null);
+    final InMemoryProducer producer = new InMemoryProducer("InMemoryProducerExample", null, 100, new MyEdmDecorator(), null) {
+      @Override
+      public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz, Map<String, Object> params) {
+        if (clazz.equals(ErrorResponseExtension.class))
+          return clazz.cast(ErrorResponseExtensions.ALWAYS_RETURN_INNER_ERRORS);
+        return null;
+      }
+    };
 
     // expose this jvm's thread information (Thread instances) as an entity-set called "Threads"
     producer.register(Thread.class, "Threads", new Func<Iterable<Thread>>() {

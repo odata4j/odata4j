@@ -25,6 +25,8 @@ import org.odata4j.producer.exceptions.ServerErrorException;
  * Provider for correctly formatted server errors.  Every {@link RuntimeException} that
  * is not already an {@link ODataException} is wrapped into a {@link ServerErrorException}
  * (resulting in an HTTP {@link Status#INTERNAL_SERVER_ERROR}).
+ *
+ * @see ErrorResponseExtension
  */
 @Provider
 public class ExceptionMappingProvider implements ExceptionMapper<RuntimeException> {
@@ -44,7 +46,7 @@ public class ExceptionMappingProvider implements ExceptionMapper<RuntimeExceptio
       exception = new ServerErrorException(e);
 
     ErrorResponseExtension errorResponseExtension = producerResolver.getContext(ODataProducer.class).findExtension(ErrorResponseExtension.class, null);
-    boolean includeInnerError = errorResponseExtension != null && errorResponseExtension.returnInnerError();
+    boolean includeInnerError = errorResponseExtension != null && errorResponseExtension.returnInnerError(httpHeaders, uriInfo);
 
     FormatWriter<ErrorResponse> fw = FormatWriterFactory.getFormatWriter(ErrorResponse.class, httpHeaders.getAcceptableMediaTypes(),
         getFormatParameter(), getCallbackParameter());

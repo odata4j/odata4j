@@ -18,6 +18,7 @@ import org.eclipse.jetty.http.HttpHeaders;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Test;
 import org.odata4j.producer.ErrorResponseExtension;
+import org.odata4j.producer.ErrorResponseExtensions;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.test.integration.AbstractJettyHttpClientTest;
@@ -40,12 +41,7 @@ public class ErrorTest extends AbstractJettyHttpClientTest {
   }
 
   private void simulateErrorResponseExtension() {
-    when(producerSpy.findExtension(ErrorResponseExtension.class, null)).thenReturn(new ErrorResponseExtension() {
-
-      public boolean returnInnerError() {
-        return true;
-      }
-    });
+    when(producerSpy.findExtension(ErrorResponseExtension.class, null)).thenReturn(ErrorResponseExtensions.ALWAYS_RETURN_INNER_ERRORS);
   }
 
   @Test
