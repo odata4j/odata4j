@@ -3,6 +3,7 @@ package org.odata4j.consumer;
 import org.core4j.Enumerable;
 import org.odata4j.consumer.behaviors.OClientBehavior;
 import org.odata4j.core.EntitySetInfo;
+import org.odata4j.core.OCountRequest;
 import org.odata4j.core.OCreateRequest;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityGetRequest;
@@ -166,7 +167,7 @@ public interface ODataConsumer {
    * @param <T>  the entity representation as a java type
    * @param entityType  the entity representation as a java type
    * @param entitySetHref  the entity-set href
-   * @return  a new query-request builder
+   * @return a new query-request builder
    */
   <T> OQueryRequest<T> getEntities(Class<T> entityType, String entitySetHref);
 
@@ -357,18 +358,16 @@ public interface ODataConsumer {
    * <p>The functioncall-request builder returned can be used to add parameters.  Call {@link OFunctionRequest#execute()} to issue request.</p>
    *
    * @param functionName  the function name
-   * @return the functioncall-builder
+   * @return a new functioncall-request builder
    * @throws ODataServerException  if the function name is not defined in the metadata
    */
   OFunctionRequest<OObject> callFunction(String functionName) throws ODataServerException;
 
   /**
    * Returns a single value request which can be extended by query options. The execution of the request will return a single value for $count.
-   * @param <T>
-   * 
+   *
    * @param entitySetName  the entity identity entity-set name
-   * @return a new entity-request builder
+   * @return a new count-request builder
    */
-  CountRequest getEntitiesCount(String entitySetName);
-
+  OCountRequest getEntitiesCount(String entitySetName);
 }

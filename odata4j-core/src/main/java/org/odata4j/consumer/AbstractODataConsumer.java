@@ -1,15 +1,37 @@
 package org.odata4j.consumer;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.core4j.Enumerable;
+import org.odata4j.core.EntitySetInfo;
+import org.odata4j.core.OCountRequest;
+import org.odata4j.core.OCreateRequest;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityGetRequest;
+import org.odata4j.core.OEntityId;
 import org.odata4j.core.OEntityKey;
+import org.odata4j.core.OEntityRequest;
+import org.odata4j.core.OFunctionRequest;
+import org.odata4j.core.OModifyRequest;
+import org.odata4j.core.OObject;
 import org.odata4j.core.OQueryRequest;
 import org.odata4j.core.ORelatedEntitiesLink;
 import org.odata4j.core.ORelatedEntityLink;
+import org.odata4j.edm.EdmDataServices;
+import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.edm.EdmEntityType;
+import org.odata4j.edm.EdmProperty;
+import org.odata4j.internal.EdmDataServicesDecorator;
+import org.odata4j.internal.FeedCustomizationMapping;
 
 public abstract class AbstractODataConsumer implements ODataConsumer {
 
+  private static final FeedCustomizationMapping EMPTY_MAPPING = new FeedCustomizationMapping();
+
   private String serviceRootUri;
+  private EdmDataServices cachedMetadata;
+  private final Map<String, FeedCustomizationMapping> cachedMappings = new HashMap<String, FeedCustomizationMapping>();
 
   protected AbstractODataConsumer(String serviceRootUri) {
     if (!serviceRootUri.endsWith("/"))
@@ -18,47 +40,119 @@ public abstract class AbstractODataConsumer implements ODataConsumer {
     this.serviceRootUri = serviceRootUri;
   }
 
-  @Override
   public String getServiceRootUri() {
-    return this.serviceRootUri;
+    return serviceRootUri;
   }
 
-  @Override
-  public OEntityGetRequest<OEntity> getEntity(String entitySetName, Object keyValue) {
-    return this.getEntity(entitySetName, OEntityKey.create(keyValue));
+  public Enumerable<EntitySetInfo> getEntitySets() throws ODataServerException, ODataClientException {
+    ODataClientRequest request = ODataClientRequest.get(getServiceRootUri());
+    return Enumerable.create(getClient().getCollections(request)).cast(EntitySetInfo.class);
   }
 
-  @Override
-  public OEntityGetRequest<OEntity> getEntity(String entitySetName, OEntityKey key) {
-    return this.getEntity(OEntity.class, entitySetName, key);
+  public EdmDataServices getMetadata() throws ODataServerException {
+    if (cachedMetadata == null)
+      cachedMetadata = new CachedEdmDataServices();
+    return cachedMetadata;
   }
 
-  @Override
-  public <T> OEntityGetRequest<T> getEntity(Class<T> entityType, String entitySetName, Object keyValue) {
-    return this.getEntity(entityType, entitySetName, OEntityKey.create(keyValue));
-  }
-
-  @Override
-  public OEntityGetRequest<OEntity> getEntity(OEntity entity) {
-    return this.getEntity(entity.getEntitySet().getName(), entity.getEntityKey());
-  }
-
-  @Override
-  public OEntityGetRequest<OEntity> getEntity(ORelatedEntityLink link) {
-    ParsedHref parsed = ParsedHref.parse(link.getHref());
-    return (OEntityGetRequest<OEntity>) this.getEntity(parsed.entitySetName, parsed.entityKey).nav(parsed.navProperty);
-  }
-
-  @Override
   public OQueryRequest<OEntity> getEntities(ORelatedEntitiesLink link) {
     ParsedHref parsed = ParsedHref.parse(link.getHref());
     return getEntities(parsed.entitySetName).nav(parsed.entityKey, parsed.navProperty);
   }
 
-  @Override
   public OQueryRequest<OEntity> getEntities(String entitySetHref) {
     return getEntities(OEntity.class, entitySetHref);
   }
+
+  public <T> OQueryRequest<T> getEntities(Class<T> entityType, String entitySetHref) {
+    FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetHref);
+    return new ConsumerQueryEntitiesRequest<T>(getClient(), entityType, getServiceRootUri(), getMetadata(), entitySetHref, mapping);
+  }
+
+  public OEntityGetRequest<OEntity> getEntity(ORelatedEntityLink link) {
+    ParsedHref parsed = ParsedHref.parse(link.getHref());
+    return (OEntityGetRequest<OEntity>) getEntity(parsed.entitySetName, parsed.entityKey).nav(parsed.navProperty);
+  }
+
+  public OEntityGetRequest<OEntity> getEntity(String entitySetName, Object keyValue) {
+    return getEntity(entitySetName, OEntityKey.create(keyValue));
+  }
+
+  public OEntityGetRequest<OEntity> getEntity(OEntity entity) {
+    return getEntity(entity.getEntitySet().getName(), entity.getEntityKey());
+  }
+
+  public OEntityGetRequest<OEntity> getEntity(String entitySetName, OEntityKey key) {
+    return getEntity(OEntity.class, entitySetName, key);
+  }
+
+  public <T> OEntityGetRequest<T> getEntity(Class<T> entityType, String entitySetName, Object keyValue) {
+    return getEntity(entityType, entitySetName, OEntityKey.create(keyValue));
+  }
+
+  public <T> OEntityGetRequest<T> getEntity(Class<T> entityType, String entitySetName, OEntityKey key) {
+    FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
+    return new ConsumerGetEntityRequest<T>(getClient(), entityType, getServiceRootUri(), getMetadata(), entitySetName, OEntityKey.create(key), mapping);
+  }
+
+  public OQueryRequest<OEntityId> getLinks(OEntityId sourceEntity, String targetNavProp) {
+    return new ConsumerQueryLinksRequest(getClient(), getServiceRootUri(), getMetadata(), sourceEntity, targetNavProp);
+  }
+
+  public OEntityRequest<Void> createLink(OEntityId sourceEntity, String targetNavProp, OEntityId targetEntity) {
+    return new ConsumerCreateLinkRequest(getClient(), getServiceRootUri(), getMetadata(), sourceEntity, targetNavProp, targetEntity);
+  }
+
+  public OEntityRequest<Void> deleteLink(OEntityId sourceEntity, String targetNavProp, Object... targetKeyValues) {
+    return new ConsumerDeleteLinkRequest(getClient(), getServiceRootUri(), getMetadata(), sourceEntity, targetNavProp, targetKeyValues);
+  }
+
+  public OEntityRequest<Void> updateLink(OEntityId sourceEntity, OEntityId newTargetEntity, String targetNavProp, Object... oldTargetKeyValues) {
+    return new ConsumerUpdateLinkRequest(getClient(), getServiceRootUri(), getMetadata(), sourceEntity, newTargetEntity, targetNavProp, oldTargetKeyValues);
+  }
+
+  public OCreateRequest<OEntity> createEntity(String entitySetName) {
+    FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
+    return new ConsumerCreateEntityRequest<OEntity>(getClient(), getServiceRootUri(), getMetadata(), entitySetName, mapping);
+  }
+
+  public OModifyRequest<OEntity> updateEntity(OEntity entity) {
+    return new ConsumerEntityModificationRequest<OEntity>(entity, getClient(), getServiceRootUri(), getMetadata(), entity.getEntitySet().getName(), entity.getEntityKey());
+  }
+
+  public OModifyRequest<OEntity> mergeEntity(OEntity entity) {
+    return mergeEntity(entity.getEntitySet().getName(), entity.getEntityKey());
+  }
+
+  public OModifyRequest<OEntity> mergeEntity(String entitySetName, Object keyValue) {
+    return mergeEntity(entitySetName, OEntityKey.create(keyValue));
+  }
+
+  public OModifyRequest<OEntity> mergeEntity(String entitySetName, OEntityKey key) {
+    return new ConsumerEntityModificationRequest<OEntity>(null, getClient(), getServiceRootUri(), getMetadata(), entitySetName, key);
+  }
+
+  public OEntityRequest<Void> deleteEntity(OEntityId entity) {
+    return deleteEntity(entity.getEntitySetName(), entity.getEntityKey());
+  }
+
+  public OEntityRequest<Void> deleteEntity(String entitySetName, Object keyValue) {
+    return deleteEntity(entitySetName, OEntityKey.create(keyValue));
+  }
+
+  public OEntityRequest<Void> deleteEntity(String entitySetName, OEntityKey key) {
+    return new ConsumerDeleteEntityRequest(getClient(), getServiceRootUri(), getMetadata(), entitySetName, key);
+  }
+
+  public OFunctionRequest<OObject> callFunction(String functionName) throws ODataServerException {
+    return new ConsumerFunctionCallRequest<OObject>(getClient(), getServiceRootUri(), getMetadata(), functionName);
+  }
+
+  public OCountRequest getEntitiesCount(String entitySetName) {
+    return new ConsumerCountRequest(getClient(), getServiceRootUri()).setEntitySetName(entitySetName);
+  }
+
+  protected abstract ODataClient getClient();
 
   private static class ParsedHref {
     public String entitySetName;
@@ -88,4 +182,62 @@ public abstract class AbstractODataConsumer implements ODataConsumer {
     }
   }
 
+  private class CachedEdmDataServices extends EdmDataServicesDecorator {
+
+    private EdmDataServices delegate;
+
+    private CachedEdmDataServices() {}
+
+    @Override
+    protected EdmDataServices getDelegate() {
+      if (delegate == null)
+        refreshDelegate();
+      return delegate;
+    }
+
+    private void refreshDelegate() {
+      ODataClientRequest request = ODataClientRequest.get(AbstractODataConsumer.this.getServiceRootUri() + "$metadata");
+      try {
+        delegate = AbstractODataConsumer.this.getClient().getMetadata(request);
+      } catch (ODataServerException e) {
+        delegate = EdmDataServices.EMPTY;
+      } catch (ODataClientException e) {
+        delegate = EdmDataServices.EMPTY;
+      }
+    }
+
+    @Override
+    public EdmEntitySet findEdmEntitySet(String entitySetName) {
+      EdmEntitySet rt = super.findEdmEntitySet(entitySetName);
+      if (rt == null && delegate != EdmDataServices.EMPTY) {
+        refreshDelegate();
+        rt = super.findEdmEntitySet(entitySetName);
+      }
+      return rt;
+    }
+  }
+
+  private FeedCustomizationMapping getFeedCustomizationMapping(String entitySetName) {
+    if (!cachedMappings.containsKey(entitySetName)) {
+      FeedCustomizationMapping rt = new FeedCustomizationMapping();
+      EdmDataServices metadata = getMetadata();
+      if (metadata != null) {
+        EdmEntitySet ees = metadata.findEdmEntitySet(entitySetName);
+        if (ees == null) {
+          rt = EMPTY_MAPPING;
+        } else {
+          EdmEntityType eet = ees.getType();
+          for (EdmProperty ep : eet.getProperties()) {
+            if ("SyndicationTitle".equals(ep.getFcTargetPath()) && "false".equals(ep.getFcKeepInContent()))
+              rt.titlePropName = ep.getName();
+            if ("SyndicationSummary".equals(ep.getFcTargetPath()) && "false".equals(ep.getFcKeepInContent()))
+              rt.summaryPropName = ep.getName();
+          }
+        }
+      }
+      cachedMappings.put(entitySetName, rt);
+    }
+    FeedCustomizationMapping mapping = cachedMappings.get(entitySetName);
+    return mapping == null || mapping == EMPTY_MAPPING ? null : mapping;
+  }
 }

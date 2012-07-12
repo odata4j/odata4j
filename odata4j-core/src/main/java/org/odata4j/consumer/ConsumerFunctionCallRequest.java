@@ -1,4 +1,4 @@
-package org.odata4j.jersey.consumer;
+package org.odata4j.consumer;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
@@ -13,9 +13,6 @@ import org.core4j.Enumerable;
 import org.core4j.Func;
 import org.core4j.ReadOnlyIterator;
 import org.joda.time.LocalDateTime;
-import org.odata4j.consumer.ODataClientException;
-import org.odata4j.consumer.ODataClientRequest;
-import org.odata4j.consumer.ODataServerException;
 import org.odata4j.core.Guid;
 import org.odata4j.core.OCollection;
 import org.odata4j.core.ODataConstants;
@@ -40,16 +37,14 @@ import org.odata4j.format.FormatParserFactory;
 import org.odata4j.format.Settings;
 import org.odata4j.internal.InternalUtil;
 
-import com.sun.jersey.api.client.ClientResponse;
-
-class ConsumerFunctionCallRequest<T extends OObject>
+public class ConsumerFunctionCallRequest<T extends OObject>
     extends ConsumerQueryRequestBase<T>
     implements OFunctionRequest<T> {
 
   private final List<OFunctionParameter> params = new LinkedList<OFunctionParameter>();
   private final EdmFunctionImport function;
 
-  ConsumerFunctionCallRequest(ODataJerseyClient client, String serviceRootUri,
+  public ConsumerFunctionCallRequest(ODataClient client, String serviceRootUri,
       EdmDataServices metadata, String lastSegment) throws ODataServerException {
     super(client, serviceRootUri, metadata, lastSegment);
     // lastSegment is the function call name.
@@ -188,7 +183,7 @@ class ConsumerFunctionCallRequest<T extends OObject>
   }
 
   private OObject doRequest(ODataClientRequest request) throws ODataServerException, ODataClientException {
-    ClientResponse response = getClient().callFunction(request);
+    Response response = getClient().callFunction(request);
 
     ODataVersion version = InternalUtil.getDataServiceVersion(response.getHeaders().getFirst(ODataConstants.Headers.DATA_SERVICE_VERSION));
 
@@ -204,7 +199,9 @@ class ConsumerFunctionCallRequest<T extends OObject>
             true, // isResponse
             function.getReturnType()));
 
-    return parser.parse(getClient().getFeedReader(response));
+    OObject object = parser.parse(getClient().getFeedReader(response));
+    response.close();
+    return object;
   }
 
   private class FunctionResultsIterator extends ReadOnlyIterator<OObject> {

@@ -1,15 +1,12 @@
-package org.odata4j.jersey.consumer;
+package org.odata4j.consumer;
 
 import org.core4j.Enumerable;
-import org.odata4j.consumer.ODataClientException;
-import org.odata4j.consumer.ODataClientRequest;
-import org.odata4j.consumer.ODataServerException;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.edm.EdmDataServices;
 
-class ConsumerDeleteEntityRequest extends ConsumerEntityRequestBase<Void> {
+public class ConsumerDeleteEntityRequest extends ConsumerEntityRequestBase<Void> {
 
-  ConsumerDeleteEntityRequest(ODataJerseyClient client, String serviceRootUri,
+  public ConsumerDeleteEntityRequest(ODataClient client, String serviceRootUri,
       EdmDataServices metadata, String entitySetName, OEntityKey key) {
     super(client, serviceRootUri, metadata, entitySetName, key);
   }

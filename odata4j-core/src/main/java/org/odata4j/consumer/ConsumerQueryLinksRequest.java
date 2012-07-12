@@ -1,23 +1,19 @@
-package org.odata4j.cxf.consumer;
+package org.odata4j.consumer;
 
 import org.core4j.Enumerable;
 import org.core4j.Func1;
-import org.odata4j.consumer.ODataClientException;
-import org.odata4j.consumer.ODataClientRequest;
-import org.odata4j.consumer.ODataServerException;
 import org.odata4j.core.OEntityId;
 import org.odata4j.core.OEntityIds;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.edm.EdmDataServices;
-import org.odata4j.format.FormatType;
 import org.odata4j.format.SingleLink;
 
-class CxfConsumerQueryLinksRequest extends CxfConsumerQueryRequestBase<OEntityId> {
+public class ConsumerQueryLinksRequest extends ConsumerQueryRequestBase<OEntityId> {
 
   private final String targetNavProp;
 
-  CxfConsumerQueryLinksRequest(FormatType formatType, String serviceRootUri, EdmDataServices metadata, OEntityId sourceEntity, String targetNavProp) {
-    super(formatType, serviceRootUri, metadata, OEntityIds.toKeyString(sourceEntity));
+  public ConsumerQueryLinksRequest(ODataClient client, String serviceRootUri, EdmDataServices metadata, OEntityId sourceEntity, String targetNavProp) {
+    super(client, serviceRootUri, metadata, OEntityIds.toKeyString(sourceEntity));
     this.targetNavProp = targetNavProp;
   }
 

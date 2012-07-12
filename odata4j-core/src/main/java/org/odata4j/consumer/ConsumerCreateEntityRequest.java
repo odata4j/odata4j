@@ -1,10 +1,6 @@
-package org.odata4j.jersey.consumer;
+package org.odata4j.consumer;
 
 import org.core4j.Enumerable;
-import org.odata4j.consumer.AbstractConsumerEntityPayloadRequest;
-import org.odata4j.consumer.ODataClientException;
-import org.odata4j.consumer.ODataClientRequest;
-import org.odata4j.consumer.ODataServerException;
 import org.odata4j.core.OCreateRequest;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.ODataVersion;
@@ -21,17 +17,15 @@ import org.odata4j.format.Settings;
 import org.odata4j.internal.FeedCustomizationMapping;
 import org.odata4j.internal.InternalUtil;
 
-import com.sun.jersey.api.client.ClientResponse;
+public class ConsumerCreateEntityRequest<T> extends AbstractConsumerEntityPayloadRequest implements OCreateRequest<T> {
 
-class ConsumerCreateEntityRequest<T> extends AbstractConsumerEntityPayloadRequest implements OCreateRequest<T> {
-
-  private final ODataJerseyClient client;
+  private final ODataClient client;
   private OEntity parent;
   private String navProperty;
 
   private final FeedCustomizationMapping fcMapping;
 
-  ConsumerCreateEntityRequest(ODataJerseyClient client, String serviceRootUri, EdmDataServices metadata, String entitySetName, FeedCustomizationMapping fcMapping) {
+  public ConsumerCreateEntityRequest(ODataClient client, String serviceRootUri, EdmDataServices metadata, String entitySetName, FeedCustomizationMapping fcMapping) {
     super(entitySetName, serviceRootUri, metadata);
     this.client = client;
     this.fcMapping = fcMapping;
@@ -54,7 +48,7 @@ class ConsumerCreateEntityRequest<T> extends AbstractConsumerEntityPayloadReques
     }
 
     ODataClientRequest request = ODataClientRequest.post(url.toString(), entry);
-    ClientResponse response = client.createEntity(request);
+    Response response = client.createEntity(request);
 
     ODataVersion version = InternalUtil.getDataServiceVersion(response.getHeaders()
         .getFirst(ODataConstants.Headers.DATA_SERVICE_VERSION));
@@ -62,6 +56,7 @@ class ConsumerCreateEntityRequest<T> extends AbstractConsumerEntityPayloadReques
     FormatParser<Entry> parser = FormatParserFactory.getParser(Entry.class,
         client.getFormatType(), new Settings(version, metadata, entitySetName, null, fcMapping));
     entry = parser.parse(client.getFeedReader(response));
+    response.close();
 
     return (T) entry.getEntity();
   }

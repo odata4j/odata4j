@@ -1,36 +1,12 @@
 package org.odata4j.cxf.consumer;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.ws.rs.ext.RuntimeDelegate;
 
-import org.core4j.Enumerable;
 import org.odata4j.consumer.AbstractODataConsumer;
-import org.odata4j.consumer.CountRequest;
-import org.odata4j.consumer.ODataClientException;
-import org.odata4j.consumer.ODataClientRequest;
+import org.odata4j.consumer.ODataClient;
 import org.odata4j.consumer.ODataConsumer;
-import org.odata4j.consumer.ODataServerException;
 import org.odata4j.consumer.behaviors.OClientBehavior;
-import org.odata4j.core.EntitySetInfo;
-import org.odata4j.core.OCreateRequest;
-import org.odata4j.core.OEntity;
-import org.odata4j.core.OEntityGetRequest;
-import org.odata4j.core.OEntityId;
-import org.odata4j.core.OEntityKey;
-import org.odata4j.core.OEntityRequest;
-import org.odata4j.core.OFunctionRequest;
-import org.odata4j.core.OModifyRequest;
-import org.odata4j.core.OObject;
-import org.odata4j.core.OQueryRequest;
-import org.odata4j.edm.EdmDataServices;
-import org.odata4j.edm.EdmEntitySet;
-import org.odata4j.edm.EdmEntityType;
-import org.odata4j.edm.EdmProperty;
 import org.odata4j.format.FormatType;
-import org.odata4j.internal.EdmDataServicesDecorator;
-import org.odata4j.internal.FeedCustomizationMapping;
 
 /**
  * <code>ODataConsumer</code> is the client-side interface to an OData service.
@@ -39,10 +15,22 @@ import org.odata4j.internal.FeedCustomizationMapping;
  */
 public class ODataCxfConsumer extends AbstractODataConsumer {
 
-  private final Map<String, FeedCustomizationMapping> cachedMappings = new HashMap<String, FeedCustomizationMapping>();
-  private EdmDataServices cachedMetadata;
-  private FormatType formatType;
-  private OClientBehavior[] clientBehaviors = new OClientBehavior[] {};
+  private ODataCxfClient client;
+
+  private ODataCxfConsumer(FormatType type, String serviceRootUri, OClientBehavior... behaviors) {
+    super(serviceRootUri);
+
+    // ensure that the correct JAX-RS implementation (CXF) is loaded
+    if (!(RuntimeDelegate.getInstance() instanceof org.apache.cxf.jaxrs.impl.RuntimeDelegateImpl))
+      RuntimeDelegate.setInstance(new org.apache.cxf.jaxrs.impl.RuntimeDelegateImpl());
+
+    this.client = new ODataCxfClient(type, behaviors);
+  }
+
+  @Override
+  protected ODataClient getClient() {
+    return client;
+  }
 
   public static class Builder implements ODataConsumer.Builder {
 
@@ -85,204 +73,32 @@ public class ODataCxfConsumer extends AbstractODataConsumer {
      * @return a new OData consumer
      */
     public ODataCxfConsumer build() {
-      ODataCxfConsumer consumer;
-
       if (this.clientBehaviors != null) {
-        consumer = new ODataCxfConsumer(this.formatType, this.serviceRootUri, this.clientBehaviors);
+        return new ODataCxfConsumer(this.formatType, this.serviceRootUri, this.clientBehaviors);
       } else {
-        consumer = new ODataCxfConsumer(this.formatType, this.serviceRootUri);
+        return new ODataCxfConsumer(this.formatType, this.serviceRootUri);
       }
-
-      return consumer;
     }
   }
 
-  private ODataCxfConsumer(FormatType formatType, String serviceRootUri) {
-    super(serviceRootUri);
-
-    // ensure that the correct JAX-RS implementation (CXF) is loaded
-    if (!(RuntimeDelegate.getInstance() instanceof org.apache.cxf.jaxrs.impl.RuntimeDelegateImpl))
-      RuntimeDelegate.setInstance(new org.apache.cxf.jaxrs.impl.RuntimeDelegateImpl());
-
-    this.formatType = formatType;
-  }
-
-  private ODataCxfConsumer(FormatType formatType, String serviceRootUri, OClientBehavior[] clientBehaviors) {
-    this(formatType, serviceRootUri);
-    this.clientBehaviors = clientBehaviors;
-  }
-
-  @Override
-  public Enumerable<EntitySetInfo> getEntitySets() throws ODataServerException, ODataClientException {
-    ODataCxfClient client = new ODataCxfClient(this.formatType, this.clientBehaviors);
-    ODataClientRequest request = ODataClientRequest.get(this.getServiceRootUri());
-    Enumerable<EntitySetInfo> result = Enumerable.create(client.getCollections(request)).cast(EntitySetInfo.class);
-    return result;
-  }
-
-  @Override
-  public EdmDataServices getMetadata() {
-    if (cachedMetadata == null)
-      cachedMetadata = new CachedEdmDataServices();
-    return cachedMetadata;
-  }
-
-  @Override
-  public <T> OQueryRequest<T> getEntities(Class<T> entityType, String entitySetHref) {
-    FeedCustomizationMapping mapping = this.getFeedCustomizationMapping(entitySetHref);
-    CxfConsumerQueryEntitiesRequest<T> result = new CxfConsumerQueryEntitiesRequest<T>(this.formatType, entityType, this.getServiceRootUri(), getMetadata(), entitySetHref, mapping);
-    return result;
-  }
-
-  @Override
-  public <T> OEntityGetRequest<T> getEntity(Class<T> entityType, String entitySetName, OEntityKey key) {
-    FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
-    return new CxfConsumerGetEntityRequest<T>(this.formatType,
-        entityType, this.getServiceRootUri(), getMetadata(),
-        entitySetName, OEntityKey.create(key), mapping);
-  }
-
-  @Override
-  public OQueryRequest<OEntityId> getLinks(OEntityId sourceEntity, String targetNavProp) {
-    return new CxfConsumerQueryLinksRequest(this.formatType, this.getServiceRootUri(), getMetadata(), sourceEntity, targetNavProp);
-  }
-
-  @Override
-  public OEntityRequest<Void> createLink(OEntityId sourceEntity, String targetNavProp, OEntityId targetEntity) {
-    return new CxfConsumerCreateLinkRequest(this.formatType, this.getServiceRootUri(), getMetadata(), sourceEntity, targetNavProp, targetEntity);
-  }
-
-  @Override
-  public OEntityRequest<Void> deleteLink(OEntityId sourceEntity, String targetNavProp, Object... targetKeyValues) {
-    return new CxfConsumerDeleteLinkRequest(this.formatType, this.getServiceRootUri(), getMetadata(), sourceEntity, targetNavProp, targetKeyValues);
-  }
-
-  @Override
-  public OEntityRequest<Void> updateLink(OEntityId sourceEntity, OEntityId newTargetEntity, String targetNavProp, Object... oldTargetKeyValues) {
-    return new CxfConsumerUpdateLinkRequest(this.formatType, this.getServiceRootUri(), getMetadata(), sourceEntity, newTargetEntity, targetNavProp, oldTargetKeyValues);
-  }
-
-  @Override
-  public OCreateRequest<OEntity> createEntity(String entitySetName) {
-    FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
-    return new CxfConsumerCreateEntityRequest<OEntity>(this.formatType, this.getServiceRootUri(), getMetadata(),
-        entitySetName, mapping);
-  }
-
-  @Override
-  public OModifyRequest<OEntity> updateEntity(OEntity entity) {
-    return new CxfConsumerEntityModificationRequest<OEntity>(entity, this.formatType, this.getServiceRootUri(), getMetadata(),
-        entity.getEntitySet().getName(), entity.getEntityKey());
-  }
-
-  @Override
-  public OModifyRequest<OEntity> mergeEntity(OEntity entity) {
-    return mergeEntity(entity.getEntitySet().getName(), entity.getEntityKey());
-  }
-
-  @Override
-  public OModifyRequest<OEntity> mergeEntity(String entitySetName, Object keyValue) {
-    return mergeEntity(entitySetName, OEntityKey.create(keyValue));
-  }
-
-  @Override
-  public OModifyRequest<OEntity> mergeEntity(String entitySetName, OEntityKey key) {
-    return new CxfConsumerEntityModificationRequest<OEntity>(null, this.formatType, this.getServiceRootUri(),
-        getMetadata(), entitySetName, key);
-  }
-
-  @Override
-  public OEntityRequest<Void> deleteEntity(OEntityId entity) {
-    return deleteEntity(entity.getEntitySetName(), entity.getEntityKey());
-  }
-
-  @Override
-  public OEntityRequest<Void> deleteEntity(String entitySetName, Object keyValue) {
-    return deleteEntity(entitySetName, OEntityKey.create(keyValue));
-  }
-
-  @Override
-  public OEntityRequest<Void> deleteEntity(String entitySetName, OEntityKey key) {
-    return new CxfConsumerDeleteEntityRequest(this.formatType, this.getServiceRootUri(), getMetadata(), entitySetName, key);
-  }
-
-  @Override
-  public OFunctionRequest<OObject> callFunction(String functionName) throws ODataServerException {
-    return new CxfConsumerFunctionCallRequest<OObject>(this.formatType, this.getServiceRootUri(), getMetadata(), functionName);
-  }
-
-  public static ODataConsumer create(String serviceRootUri) {
-    return ODataCxfConsumer.newBuilder(serviceRootUri).build();
-  }
-
+  /**
+   * Constructs a new builder for an {@link ODataCxfConsumer} object.
+   *
+   * @param serviceRootUri  the OData service root uri
+   */
   public static Builder newBuilder(String serviceRootUri) {
     return new Builder(serviceRootUri);
   }
 
-  private FeedCustomizationMapping getFeedCustomizationMapping(String entitySetName) {
-    if (!this.cachedMappings.containsKey(entitySetName)) {
-      FeedCustomizationMapping rt = new FeedCustomizationMapping();
-      EdmDataServices metadata = getMetadata();
-      if (metadata != null) {
-        EdmEntitySet ees = metadata.findEdmEntitySet(entitySetName);
-        if (ees == null) {
-          rt = null;
-        } else {
-          EdmEntityType eet = ees.getType();
-          for (EdmProperty ep : eet.getProperties()) {
-            if ("SyndicationTitle".equals(ep.getFcTargetPath()) && "false".equals(ep.getFcKeepInContent()))
-              rt.titlePropName = ep.getName();
-            if ("SyndicationSummary".equals(ep.getFcTargetPath()) && "false".equals(ep.getFcKeepInContent()))
-              rt.summaryPropName = ep.getName();
-          }
-        }
-      }
-      this.cachedMappings.put(entitySetName, rt);
-    }
-    return this.cachedMappings.get(entitySetName);
+  /**
+   * Creates a new consumer for the given OData service uri.
+   *
+   * <p>Wrapper for {@code ODataCxfConsumer.newBuilder(serviceRootUri).build()}.
+   *
+   * @param serviceRootUri  the service uri <p>e.g. <code>http://services.odata.org/Northwind/Northwind.svc/</code></p>
+   * @return a new OData consumer
+   */
+  public static ODataCxfConsumer create(String serviceRootUri) {
+    return ODataCxfConsumer.newBuilder(serviceRootUri).build();
   }
-
-  private class CachedEdmDataServices extends EdmDataServicesDecorator {
-
-    private EdmDataServices delegate;
-
-    public CachedEdmDataServices() {}
-
-    @Override
-    protected EdmDataServices getDelegate() {
-      if (delegate == null)
-        refreshDelegate();
-      return delegate;
-    }
-
-    private void refreshDelegate() {
-      ODataClientRequest request = ODataClientRequest.get(ODataCxfConsumer.this.getServiceRootUri() + "$metadata");
-      ODataCxfClient client = new ODataCxfClient(ODataCxfConsumer.this.formatType, ODataCxfConsumer.this.clientBehaviors);
-      try {
-        delegate = client.getMetadata(request);
-      } catch (ODataServerException e) {
-        delegate = EdmDataServices.EMPTY;
-      } catch (ODataClientException e) {
-        delegate = EdmDataServices.EMPTY;
-      }
-    }
-
-    @Override
-    public EdmEntitySet findEdmEntitySet(String entitySetName) {
-      EdmEntitySet rt = super.findEdmEntitySet(entitySetName);
-      if (rt == null) {
-        refreshDelegate();
-        rt = super.findEdmEntitySet(entitySetName);
-      }
-      return rt;
-    }
-  }
-
-  @Override
-  public CountRequest getEntitiesCount(String entitySetName) {
-    CountRequest request = new CxfCountRequest(this.getServiceRootUri(), this.formatType);
-    request.setEntitySetName(entitySetName);
-    return request;
-  }
-
 }

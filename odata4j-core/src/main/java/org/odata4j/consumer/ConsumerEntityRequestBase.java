@@ -1,4 +1,4 @@
-package org.odata4j.jersey.consumer;
+package org.odata4j.consumer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,15 +12,15 @@ import org.odata4j.format.SingleLink;
 import org.odata4j.format.SingleLinks;
 import org.odata4j.internal.EntitySegment;
 
-abstract class ConsumerEntityRequestBase<T> implements OEntityRequest<T> {
+public abstract class ConsumerEntityRequestBase<T> implements OEntityRequest<T> {
 
-  private final ODataJerseyClient client;
+  private final ODataClient client;
 
   private final EdmDataServices metadata;
   private final String serviceRootUri;
   private final List<EntitySegment> segments = new ArrayList<EntitySegment>();
 
-  ConsumerEntityRequestBase(ODataJerseyClient client, String serviceRootUri,
+  public ConsumerEntityRequestBase(ODataClient client, String serviceRootUri,
       EdmDataServices metadata, String entitySetName, OEntityKey key) {
 
     this.client = client;
@@ -30,7 +30,7 @@ abstract class ConsumerEntityRequestBase<T> implements OEntityRequest<T> {
     segments.add(new EntitySegment(entitySetName, key));
   }
 
-  protected ODataJerseyClient getClient() {
+  protected ODataClient getClient() {
     return client;
   }
 

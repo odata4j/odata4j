@@ -1,4 +1,4 @@
-package org.odata4j.jersey.consumer;
+package org.odata4j.consumer;
 
 import java.net.URLDecoder;
 import java.util.Iterator;
@@ -7,9 +7,6 @@ import org.core4j.Enumerable;
 import org.core4j.Func;
 import org.core4j.Func1;
 import org.core4j.ReadOnlyIterator;
-import org.odata4j.consumer.ODataClientException;
-import org.odata4j.consumer.ODataClientRequest;
-import org.odata4j.consumer.ODataServerException;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.ODataVersion;
 import org.odata4j.edm.EdmDataServices;
@@ -21,14 +18,12 @@ import org.odata4j.format.Settings;
 import org.odata4j.internal.FeedCustomizationMapping;
 import org.odata4j.internal.InternalUtil;
 
-import com.sun.jersey.api.client.ClientResponse;
-
-class ConsumerQueryEntitiesRequest<T> extends ConsumerQueryRequestBase<T> {
+public class ConsumerQueryEntitiesRequest<T> extends ConsumerQueryRequestBase<T> {
 
   private final Class<T> entityType;
   private final FeedCustomizationMapping fcMapping;
 
-  ConsumerQueryEntitiesRequest(ODataJerseyClient client, Class<T> entityType, String serviceRootUri, EdmDataServices metadata, String entitySetName, FeedCustomizationMapping fcMapping) {
+  public ConsumerQueryEntitiesRequest(ODataClient client, Class<T> entityType, String serviceRootUri, EdmDataServices metadata, String entitySetName, FeedCustomizationMapping fcMapping) {
     super(client, serviceRootUri, metadata, entitySetName);
     this.entityType = entityType;
     this.fcMapping = fcMapping;
@@ -56,7 +51,7 @@ class ConsumerQueryEntitiesRequest<T> extends ConsumerQueryRequestBase<T> {
   }
 
   private Feed doRequest(ODataClientRequest request) throws ODataServerException, ODataClientException {
-    ClientResponse response = getClient().getEntities(request);
+    Response response = getClient().getEntities(request);
 
     ODataVersion version = InternalUtil.getDataServiceVersion(response.getHeaders()
         .getFirst(ODataConstants.Headers.DATA_SERVICE_VERSION));
@@ -64,7 +59,9 @@ class ConsumerQueryEntitiesRequest<T> extends ConsumerQueryRequestBase<T> {
     FormatParser<Feed> parser = FormatParserFactory.getParser(Feed.class, getClient().getFormatType(),
         new Settings(version, getMetadata(), getEntitySet().getName(), null, fcMapping));
 
-    return parser.parse(getClient().getFeedReader(response));
+    Feed feed = parser.parse(getClient().getFeedReader(response));
+    response.close();
+    return feed;
   }
 
   private class EntryIterator extends ReadOnlyIterator<Entry> {

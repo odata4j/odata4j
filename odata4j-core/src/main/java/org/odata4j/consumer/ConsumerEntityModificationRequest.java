@@ -1,14 +1,10 @@
-package org.odata4j.cxf.consumer;
+package org.odata4j.consumer;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.core4j.Enumerable;
 import org.core4j.Predicate1;
-import org.odata4j.consumer.AbstractConsumerEntityPayloadRequest;
-import org.odata4j.consumer.ODataClientException;
-import org.odata4j.consumer.ODataClientRequest;
-import org.odata4j.consumer.ODataServerException;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OModifyRequest;
@@ -16,22 +12,21 @@ import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.format.Entry;
-import org.odata4j.format.FormatType;
 import org.odata4j.internal.EntitySegment;
 
-class CxfConsumerEntityModificationRequest<T> extends AbstractConsumerEntityPayloadRequest implements OModifyRequest<T> {
+public class ConsumerEntityModificationRequest<T> extends AbstractConsumerEntityPayloadRequest implements OModifyRequest<T> {
 
   private final T updateRoot;
-  private final FormatType formatType;
+  private final ODataClient client;
 
   private final List<EntitySegment> segments = new ArrayList<EntitySegment>();
 
   private EdmEntitySet entitySet;
 
-  CxfConsumerEntityModificationRequest(T updateRoot, FormatType formatType, String serviceRootUri, EdmDataServices metadata, String entitySetName, OEntityKey key) {
+  public ConsumerEntityModificationRequest(T updateRoot, ODataClient client, String serviceRootUri, EdmDataServices metadata, String entitySetName, OEntityKey key) {
     super(entitySetName, serviceRootUri, metadata);
     this.updateRoot = updateRoot;
-    this.formatType = formatType;
+    this.client = client;
 
     segments.add(new EntitySegment(entitySetName, key));
     this.entitySet = metadata.getEdmEntitySet(entitySetName);
@@ -46,7 +41,6 @@ class CxfConsumerEntityModificationRequest<T> extends AbstractConsumerEntityPayl
 
   @Override
   public void execute() throws ODataServerException, ODataClientException {
-    ODataCxfClient client = new ODataCxfClient(this.formatType);
 
     List<OProperty<?>> requestProps = props;
     if (updateRoot != null) {

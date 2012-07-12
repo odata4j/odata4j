@@ -9,11 +9,11 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.util.List;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.Response.Status.Family;
 import javax.ws.rs.core.Response.StatusType;
 import javax.ws.rs.core.UriBuilder;
 
@@ -21,6 +21,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
@@ -37,30 +38,19 @@ import org.odata4j.consumer.AbstractODataClient;
 import org.odata4j.consumer.ODataClientException;
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.consumer.ODataServerException;
+import org.odata4j.consumer.Response;
 import org.odata4j.consumer.behaviors.OClientBehavior;
 import org.odata4j.consumer.behaviors.OClientBehaviors;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.ODataHttpMethod;
-import org.odata4j.core.OEntities;
-import org.odata4j.core.OEntity;
-import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OError;
-import org.odata4j.core.OLink;
-import org.odata4j.core.OProperty;
 import org.odata4j.core.Throwables;
-import org.odata4j.edm.EdmDataServices;
-import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.format.Entry;
 import org.odata4j.format.FormatParserFactory;
 import org.odata4j.format.FormatType;
 import org.odata4j.format.FormatWriter;
 import org.odata4j.format.FormatWriterFactory;
 import org.odata4j.format.SingleLink;
-import org.odata4j.format.xml.AtomCollectionInfo;
-import org.odata4j.format.xml.AtomServiceDocumentFormatParser;
-import org.odata4j.format.xml.AtomSingleLinkFormatParser;
-import org.odata4j.format.xml.AtomWorkspaceInfo;
-import org.odata4j.format.xml.EdmxFormatParser;
 import org.odata4j.internal.BOMWorkaroundReader;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.stax2.XMLEventReader2;
@@ -70,11 +60,14 @@ import org.odata4j.stax2.XMLEventReader2;
  */
 public class ODataCxfClient extends AbstractODataClient {
 
-  private HttpClient httpClient;
-  private OClientBehavior[] behaviors = new OClientBehavior[] { OClientBehaviors.methodTunneling("MERGE") };
+  private final OClientBehavior[] requiredBehaviors = new OClientBehavior[] { OClientBehaviors.methodTunneling("MERGE") };
+  private final OClientBehavior[] behaviors;
 
-  public ODataCxfClient(FormatType formatType) {
-    super(formatType);
+  private final HttpClient httpClient;
+
+  public ODataCxfClient(FormatType type, OClientBehavior... behaviors) {
+    super(type);
+    this.behaviors = Enumerable.create(requiredBehaviors).concat(Enumerable.create(behaviors)).toArray(OClientBehavior.class);
     this.httpClient = new DefaultHttpClient();
 
     if (System.getProperties().containsKey("http.proxyHost") && System.getProperties().containsKey("http.proxyPort")) {
@@ -87,104 +80,25 @@ public class ODataCxfClient extends AbstractODataClient {
     }
   }
 
-  public ODataCxfClient(FormatType formatType, OClientBehavior[] additionalBehaviors) {
-    this(formatType);
-    this.behaviors = Enumerable.create(this.behaviors).concat(Enumerable.create(additionalBehaviors)).toArray(OClientBehavior.class);
-  }
-
-  public EdmDataServices getMetadata(ODataClientRequest request) throws ODataServerException, ODataClientException {
-    HttpResponse response = doRequest(FormatType.ATOM, request, Status.OK);
-    EdmDataServices metadata = new EdmxFormatParser().parseMetadata(doXmlRequest(response));
+  public Reader getFeedReader(Response response) {
+    HttpResponse httpResponse = ((CxfResponse) response).getHttpResponse();
     try {
-      response.getEntity().getContent().close();
-    } catch (IOException e) {
-      throw new ODataClientException("Error while closing socket", e);
-    }
-    return metadata;
-  }
-
-  public Iterable<AtomCollectionInfo> getCollections(ODataClientRequest request) throws ODataServerException, ODataClientException {
-    HttpResponse response = doRequest(FormatType.ATOM, request, Status.OK);
-    return Enumerable.create(AtomServiceDocumentFormatParser.parseWorkspaces(doXmlRequest(response)))
-        .selectMany(AtomWorkspaceInfo.GET_COLLECTIONS);
-  }
-
-  public Iterable<SingleLink> getLinks(ODataClientRequest request) throws ODataServerException, ODataClientException {
-    HttpResponse response = doRequest(FormatType.ATOM, request, Status.OK);
-    return AtomSingleLinkFormatParser.parseLinks(doXmlRequest(response));
-  }
-
-  public HttpResponse getEntity(ODataClientRequest request) throws ODataServerException, ODataClientException {
-    return doRequest(getFormatType(), request, Status.OK, Status.NO_CONTENT);
-  }
-
-  Entry createRequestEntry(EdmEntitySet entitySet, OEntityKey entityKey, List<OProperty<?>> props, List<OLink> links) {
-    final OEntity oentity = entityKey == null
-        ? OEntities.createRequest(entitySet, props, links)
-        : OEntities.create(entitySet, entityKey, props, links);
-
-    return new Entry() {
-
-      @Override
-      public String getUri() {
-        return null;
-      }
-
-      @Override
-      public OEntity getEntity() {
-        return oentity;
-      }
-
-      @Override
-      public String getETag() {
-        return null;
-      }
-    };
-  }
-
-  public HttpResponse getEntities(ODataClientRequest request) throws ODataServerException, ODataClientException {
-    return doRequest(getFormatType(), request, Status.OK);
-  }
-
-  public HttpResponse callFunction(ODataClientRequest request) throws ODataServerException, ODataClientException {
-    return doRequest(getFormatType(), request, Status.OK, Status.NO_CONTENT);
-  }
-
-  public HttpResponse createEntity(ODataClientRequest request) throws ODataServerException, ODataClientException {
-    return doRequest(getFormatType(), request, Status.CREATED);
-  }
-
-  public void updateEntity(ODataClientRequest request) throws ODataServerException, ODataClientException {
-    doRequest(getFormatType(), request, Status.OK, Status.NO_CONTENT);
-  }
-
-  public void deleteEntity(ODataClientRequest request) throws ODataServerException, ODataClientException {
-    doRequest(getFormatType(), request, Status.OK, Status.NO_CONTENT);
-  }
-
-  public void deleteLink(ODataClientRequest request) throws ODataServerException, ODataClientException {
-    doRequest(getFormatType(), request, Status.NO_CONTENT);
-  }
-
-  public void createLink(ODataClientRequest request) throws ODataServerException, ODataClientException {
-    doRequest(getFormatType(), request, Status.NO_CONTENT);
-  }
-
-  public void updateLink(ODataClientRequest request) throws ODataServerException, ODataClientException {
-    doRequest(getFormatType(), request, Status.NO_CONTENT);
-  }
-
-  Reader getFeedReader(HttpResponse response) {
-    try {
-      InputStream textEntity = response.getEntity().getContent();
+      InputStream textEntity = httpResponse.getEntity().getContent();
       return new BOMWorkaroundReader(new InputStreamReader(textEntity, "UTF-8"));
     } catch (Exception e) {
       throw Throwables.propagate(e);
     }
   }
 
+  public String requestBody(FormatType formatType, ODataClientRequest request) {
+    Response response = doRequest(formatType, request, Status.OK);
+    String string = entityToString(((CxfResponse) response).getHttpResponse().getEntity());
+    response.close();
+    return string;
+  }
+
   @SuppressWarnings("unchecked")
-  private HttpResponse doRequest(FormatType reqType, ODataClientRequest request, StatusType... expectedResponseStatus) throws ODataServerException, ODataClientException {
+  protected Response doRequest(FormatType reqType, ODataClientRequest request, StatusType... expectedResponseStatus) throws ODataServerException, ODataClientException {
     UriBuilder uriBuilder = UriBuilder.fromPath(request.getUrl());
     for (String key : request.getQueryParams().keySet())
       uriBuilder = uriBuilder.queryParam(key, request.getQueryParams().get(key));
@@ -255,9 +169,26 @@ public class ODataCxfClient extends AbstractODataClient {
     }
 
     StatusType status = Status.fromStatusCode(httpResponse.getStatusLine().getStatusCode());
+    if (status == null) {
+      final StatusLine statusLine = httpResponse.getStatusLine();
+      status = new StatusType() {
+
+        public int getStatusCode() {
+          return statusLine.getStatusCode();
+        }
+
+        public Family getFamily() {
+          return null;
+        }
+
+        public String getReasonPhrase() {
+          return statusLine.getReasonPhrase();
+        }
+      };
+    }
     for (StatusType expStatus : expectedResponseStatus)
-      if (expStatus.equals(status))
-        return httpResponse;
+      if (expStatus.getStatusCode() == status.getStatusCode())
+        return new CxfResponse(httpResponse);
 
     // the server responded with an unexpected status
     RuntimeException exception;
@@ -273,6 +204,16 @@ public class ODataCxfClient extends AbstractODataClient {
           Enumerable.create(expectedResponseStatus).join(" or "), status) + "\n" + textEntity);
     }
     throw exception;
+  }
+
+  protected XMLEventReader2 toXml(Response response) {
+    HttpResponse httpResponse = ((CxfResponse) response).getHttpResponse();
+    try {
+      InputStream textEntity = httpResponse.getEntity().getContent();
+      return InternalUtil.newXMLEventReader(new BOMWorkaroundReader(new InputStreamReader(textEntity, "UTF-8")));
+    } catch (Exception e) {
+      throw Throwables.propagate(e);
+    }
   }
 
   private HttpUriRequest getRequestByMethod(String method, URI uri) {
@@ -294,15 +235,6 @@ public class ODataCxfClient extends AbstractODataClient {
     }
   }
 
-  private XMLEventReader2 doXmlRequest(HttpResponse response) {
-    try {
-      InputStream textEntity = response.getEntity().getContent();
-      return InternalUtil.newXMLEventReader(new BOMWorkaroundReader(new InputStreamReader(textEntity, "UTF-8")));
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
-    }
-  }
-
   private String entityToString(HttpEntity entity) {
     try {
       BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(entity.getContent(), "UTF-8"));
@@ -318,25 +250,4 @@ public class ODataCxfClient extends AbstractODataClient {
       throw new ODataClientException(e);
     }
   }
-
-  public String getSingleValueRequest(ODataClientRequest request) {
-    try {
-      HttpResponse response = this.doRequest(this.getFormatType(), request, Status.OK);
-
-      InputStreamReader is = new InputStreamReader(response.getEntity().getContent());
-      BufferedReader br = new BufferedReader(is);
-      String line = br.readLine();
-      StringBuffer result = new StringBuffer();
-
-      while (line != null) {
-        result.append(line);
-        line = br.readLine();
-      }
-
-      return result.toString();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
 }

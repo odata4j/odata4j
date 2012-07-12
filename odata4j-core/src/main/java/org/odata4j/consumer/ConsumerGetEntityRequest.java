@@ -1,9 +1,6 @@
-package org.odata4j.jersey.consumer;
+package org.odata4j.consumer;
 
 import org.core4j.Enumerable;
-import org.odata4j.consumer.ODataClientException;
-import org.odata4j.consumer.ODataClientRequest;
-import org.odata4j.consumer.ODataServerException;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OEntityGetRequest;
 import org.odata4j.core.OEntityKey;
@@ -19,9 +16,7 @@ import org.odata4j.internal.EntitySegment;
 import org.odata4j.internal.FeedCustomizationMapping;
 import org.odata4j.internal.InternalUtil;
 
-import com.sun.jersey.api.client.ClientResponse;
-
-class ConsumerGetEntityRequest<T> extends ConsumerEntityRequestBase<T> implements OEntityGetRequest<T> {
+public class ConsumerGetEntityRequest<T> extends ConsumerEntityRequestBase<T> implements OEntityGetRequest<T> {
 
   private final Class<T> entityType;
   private final FeedCustomizationMapping fcMapping;
@@ -29,7 +24,7 @@ class ConsumerGetEntityRequest<T> extends ConsumerEntityRequestBase<T> implement
   private String select;
   private String expand;
 
-  ConsumerGetEntityRequest(ODataJerseyClient client, Class<T> entityType, String serviceRootUri,
+  public ConsumerGetEntityRequest(ODataClient client, Class<T> entityType, String serviceRootUri,
       EdmDataServices metadata, String entitySetName, OEntityKey key, FeedCustomizationMapping fcMapping) {
     super(client, serviceRootUri, metadata, entitySetName, key);
     this.entityType = entityType;
@@ -63,7 +58,7 @@ class ConsumerGetEntityRequest<T> extends ConsumerEntityRequestBase<T> implement
       request = request.queryParam("$expand", expand);
     }
 
-    ClientResponse response = getClient().getEntity(request);
+    Response response = getClient().getEntity(request);
     if (response == null)
       return null;
 
@@ -83,6 +78,7 @@ class ConsumerGetEntityRequest<T> extends ConsumerEntityRequestBase<T> implement
 
     Entry entry = Enumerable.create(parser.parse(getClient().getFeedReader(response)).getEntries())
         .firstOrNull();
+    response.close();
 
     return (T) InternalUtil.toEntity(entityType, entry.getEntity());
   }

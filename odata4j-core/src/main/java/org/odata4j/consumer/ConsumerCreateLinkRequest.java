@@ -1,18 +1,15 @@
-package org.odata4j.jersey.consumer;
+package org.odata4j.consumer;
 
 import org.core4j.Enumerable;
-import org.odata4j.consumer.ODataClientException;
-import org.odata4j.consumer.ODataClientRequest;
-import org.odata4j.consumer.ODataServerException;
 import org.odata4j.core.OEntityId;
 import org.odata4j.edm.EdmDataServices;
 
-class ConsumerCreateLinkRequest extends ConsumerEntityRequestBase<Void> {
+public class ConsumerCreateLinkRequest extends ConsumerEntityRequestBase<Void> {
 
   private final String targetNavProp;
   private final OEntityId targetEntity;
 
-  ConsumerCreateLinkRequest(ODataJerseyClient client, String serviceRootUri,
+  public ConsumerCreateLinkRequest(ODataClient client, String serviceRootUri,
       EdmDataServices metadata, OEntityId sourceEntity, String targetNavProp, OEntityId targetEntity) {
     super(client, serviceRootUri, metadata, sourceEntity.getEntitySetName(), sourceEntity.getEntityKey());
     this.targetNavProp = targetNavProp;
