@@ -97,7 +97,7 @@ public class JsonComplexObjectFormatParser extends JsonFormatParser implements F
   }
 
   public OComplexObject parseSingleObject(JsonStreamReader jsr) {
-    System.out.println("json parseSingleObject: " + returnType.getFullyQualifiedTypeName());
+    //System.out.println("json parseSingleObject: " + returnType.getFullyQualifiedTypeName());
     ensureNext(jsr);
 
     // this can be used in a context where we require an object and one
