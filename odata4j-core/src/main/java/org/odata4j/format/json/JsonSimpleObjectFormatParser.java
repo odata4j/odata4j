@@ -22,22 +22,33 @@ public class JsonSimpleObjectFormatParser extends JsonFormatParser implements Fo
   public OSimpleObject<?> parse(Reader reader) {
 
     JsonStreamReaderFactory.JsonStreamReader jsr = JsonStreamReaderFactory.createJsonStreamReader(reader);
+    JsonEvent endProp;
 
     // {
     ensureNext(jsr);
     ensureStartObject(jsr.nextEvent()); // the response object
+    {
+      // "d" : 
+      ensureNext(jsr);
+      ensureStartProperty(jsr.nextEvent(), DATA_PROPERTY);
 
-    // "d"
-    ensureNext(jsr);
-    ensureStartProperty(jsr.nextEvent(), DATA_PROPERTY);
+      // { propname : <simple type> }
 
-    // : <val>
-    JsonEvent endProp = jsr.nextEvent();
-    ensureEndProperty(endProp);
+      ensureStartObject(jsr.nextEvent());
+      {
+        ensureStartProperty(jsr.nextEvent());
+        endProp = jsr.nextEvent();
+        ensureEndProperty(endProp);
+        ensureEndObject(jsr.nextEvent());
+      }
 
-    // }
-    ensureEndObject(jsr.nextEvent());
+      // "d"
+      ensureEndProperty(jsr.nextEvent());
 
+      // }
+      ensureEndObject(jsr.nextEvent());
+    }
+    
     return OSimpleObjects.parse((EdmSimpleType<?>) this.parseType, endProp.asEndProperty().getValue());
   }
 
