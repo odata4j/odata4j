@@ -202,12 +202,12 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
       jw.endObject();
       jw.writeSeparator();
        */
-      if (null != complexObjectName) {
+      if (complexObjectName != null) {
         jw.writeName(complexObjectName);
         jw.startObject();
       }
       writeOProperties(jw, props);
-      if (null != complexObjectName) {
+      if (complexObjectName != null) {
         jw.endObject();
       }
     }

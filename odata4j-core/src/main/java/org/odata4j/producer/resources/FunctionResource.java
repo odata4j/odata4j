@@ -73,7 +73,7 @@ public class FunctionResource extends BaseResource {
     }
 
     String expectedHttpMethodString = function.getHttpMethod();
-    if (null != expectedHttpMethodString && !"".equals(expectedHttpMethodString)) {
+    if (expectedHttpMethodString != null && !"".equals(expectedHttpMethodString)) {
       ODataHttpMethod expectedHttpMethod = ODataHttpMethod.fromString(expectedHttpMethodString);
       if (expectedHttpMethod != callingMethod) {
         throw new MethodNotAllowedException();
@@ -114,7 +114,7 @@ public class FunctionResource extends BaseResource {
             callback);
 
         // collection of entities.
-        // Does anyone else see this in the v2 spec?  I sure don't.  This seems 
+        // Does anyone else see this in the v2 spec?  I sure don't.  This seems
         // reasonable though given that inlinecount and skip tokens might be included...
         ArrayList<OEntity> entities = new ArrayList<OEntity>(collectionResponse.getCollection().size());
         Iterator iter = collectionResponse.getCollection().iterator();

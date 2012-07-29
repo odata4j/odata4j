@@ -140,9 +140,9 @@ public class InMemoryEdmTest {
   @Test
   public void testHierarchyEdm() {
     InMemoryProducer p = new InMemoryProducer("myns",
-        null, // String containerName, 
-        100, // int maxResults, 
-        null, // EdmDecorator decorator, 
+        null, // String containerName,
+        100, // int maxResults,
+        null, // EdmDecorator decorator,
         null, // InMemoryTypeMapping typeMapping,
         false); // boolean flattenEdm);
 
@@ -156,8 +156,8 @@ public class InMemoryEdmTest {
     //EdmxFormatWriter.write(edm, new OutputStreamWriter(System.out));
 
     EdmEntityType rhs = (EdmEntityType) edm.findEdmEntityType("myns." + RHS.class.getSimpleName());
-    assertTrue(null != rhs);
-    assertTrue(null == rhs.getBaseType());
+    assertTrue(rhs != null);
+    assertTrue(rhs.getBaseType() == null);
     assertKeys(rhs.getKeys(), new String[] { "RHSProp1" });
     assertEquals(0, rhs.getDeclaredNavigationProperties().count());
     assertEquals(1, rhs.getDeclaredProperties().count());
@@ -165,8 +165,8 @@ public class InMemoryEdmTest {
     assertProps(rhs.getProperties(), new String[] { "RHSProp1" });
 
     EdmEntityType base = (EdmEntityType) edm.findEdmEntityType("myns." + Base.class.getSimpleName());
-    assertTrue(null != base);
-    assertTrue(null == base.getBaseType());
+    assertTrue(base != null);
+    assertTrue(base.getBaseType() == null);
     assertKeys(base.getKeys(), new String[] { "BaseProp1" });
     assertProps(base.getDeclaredProperties(), new String[] { "BaseProp1" });
     assertProps(base.getProperties(), new String[] { "BaseProp1" });
@@ -176,7 +176,7 @@ public class InMemoryEdmTest {
     assertNavProp("Base", EdmMultiplicity.ZERO_TO_ONE, "RHS", EdmMultiplicity.MANY, base.findDeclaredNavigationProperty("RHSs"));
 
     EdmEntityType sub1 = (EdmEntityType) edm.findEdmEntityType("myns." + Sub1.class.getSimpleName());
-    assertTrue(null != sub1);
+    assertTrue(sub1 != null);
     assertEquals(base, sub1.getBaseType());
     assertKeys(sub1.getKeys(), new String[] { "BaseProp1" });
     assertProps(sub1.getDeclaredProperties(), new String[] { "Sub1Prop1" });
@@ -187,7 +187,7 @@ public class InMemoryEdmTest {
     assertNavProp("Base", EdmMultiplicity.ZERO_TO_ONE, "RHS", EdmMultiplicity.MANY, sub1.findNavigationProperty("RHSs"));
 
     EdmEntityType sub2 = (EdmEntityType) edm.findEdmEntityType("myns." + Sub2.class.getSimpleName());
-    assertTrue(null != sub2);
+    assertTrue(sub2 != null);
     assertEquals(base, sub2.getBaseType());
     assertKeys(sub2.getKeys(), new String[] { "BaseProp1" });
     assertProps(sub2.getDeclaredProperties(), new String[] { "Sub2Prop1" });
@@ -198,7 +198,7 @@ public class InMemoryEdmTest {
     assertNavProp("Base", EdmMultiplicity.ZERO_TO_ONE, "RHS", EdmMultiplicity.MANY, sub2.findNavigationProperty("RHSs"));
 
     EdmEntityType sub1_2 = (EdmEntityType) edm.findEdmEntityType("myns." + Sub1_2.class.getSimpleName());
-    assertTrue(null != sub1_2);
+    assertTrue(sub1_2 != null);
     assertEquals(sub1, sub1_2.getBaseType());
     assertKeys(sub1_2.getKeys(), new String[] { "BaseProp1" });
     assertProps(sub1_2.getDeclaredProperties(), new String[] { "Sub1_2Prop1" });
@@ -221,7 +221,7 @@ public class InMemoryEdmTest {
     // EdmxFormatWriter.write(edm, new OutputStreamWriter(System.out));
 
     EdmEntityType sub1 = (EdmEntityType) edm.findEdmEntityType("myns." + Sub1.class.getSimpleName());
-    assertTrue(null != sub1);
+    assertTrue(sub1 != null);
     assertEquals(null, sub1.getBaseType());
     assertKeys(sub1.getKeys(), new String[] { "BaseProp1" });
     assertProps(sub1.getDeclaredProperties(), new String[] { "BaseProp1", "Sub1Prop1" });

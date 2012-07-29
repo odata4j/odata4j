@@ -74,7 +74,7 @@ public class XmlDataProducerExample extends AbstractExample {
 
   private void run(String[] args) {
 
-    System.out.println("Please direct your browerser to " + endpointUri + "Customers");
+    System.out.println("Please direct your browser to " + endpointUri + "Customers");
 
     // register the producer as the static instance, then launch the http server
     DefaultODataProducerProvider.setInstance(new XmlDataProducer());

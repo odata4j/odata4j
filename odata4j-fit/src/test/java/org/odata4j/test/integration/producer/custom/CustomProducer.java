@@ -374,7 +374,7 @@ public class CustomProducer implements ODataProducer {
     public InputStream getInputStreamForMediaLinkEntry(OEntity mle, String etag, EntityQueryInfo query) {
       String id = mle.getEntityKey().asSingleValue().toString();
       String content = mediaResources.get(id); //  "here we have some content for the mle with id: " +;
-      if (null == content) {
+      if (content == null) {
         throw new NotFoundException();
       }
       return new ByteArrayInputStream(content.getBytes());
@@ -445,7 +445,7 @@ public class CustomProducer implements ODataProducer {
     @Override
     public OEntity createMediaLinkEntry(EdmEntitySet entitySet, HttpHeaders httpHeaders) {
       List<String> slugs = httpHeaders.getRequestHeader("Slug");
-      if (null == slugs || slugs.isEmpty()) {
+      if (slugs == null || slugs.isEmpty()) {
         throw new BadRequestException("missing Slug header");
       }
 

@@ -770,10 +770,9 @@ public class MetadataProducer implements ODataProducer {
     // didn't find it...
   }
 
-  public void log() {
+  public void dump() {
     StringWriter sw = new StringWriter();
     EdmxFormatWriter.write(edm, sw);
-    //log.debug(sw.toString());
     System.out.println(sw.toString());
   }
 

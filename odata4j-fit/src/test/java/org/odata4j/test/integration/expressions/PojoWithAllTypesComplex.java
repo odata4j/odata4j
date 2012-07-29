@@ -201,7 +201,7 @@ public class PojoWithAllTypesComplex extends PojoWithAllTypes {
   }
 
   public PojoWithAllTypesComplex addComplex1(Complex1 c) {
-    if (null == complexes) {
+    if (complexes == null) {
       complexes = new ArrayList<Complex1>();
     }
     complexes.add(c);

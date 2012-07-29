@@ -31,6 +31,8 @@ import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.edm.EdmType;
 
 public class InMemoryEdmGenerator implements EdmGenerator {
+  private static final boolean DUMP = false;
+  private static void dump(String msg) { if (DUMP) System.out.println(msg); }
 
   private final Logger log = Logger.getLogger(getClass().getName());
 
@@ -116,7 +118,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
 
   private void createComplexTypes(EdmDecorator decorator, List<EdmComplexType.Builder> complexTypes) {
     for (String complexTypeName : complexTypeInfo.keySet()) {
-      //System.out.println("edm complexType: " + complexTypeName);
+      dump("edm complexType: " + complexTypeName);
       InMemoryComplexTypeInfo<?> typeInfo = complexTypeInfo.get(complexTypeName);
 
       List<EdmProperty.Builder> properties = new ArrayList<EdmProperty.Builder>();
@@ -146,7 +148,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
 
       // do we have this type yet?
       EdmEntityType.Builder eet = entityTypesByName.get(entityInfo.entityTypeName);
-      if (null == eet) {
+      if (eet == null) {
         eet = createStructuralType(decorator, entityInfo);
       }
 
@@ -167,7 +169,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
   }
 
   /*
-   * contains all generated InMemoryEntityInfos that get created as we walk 
+   * contains all generated InMemoryEntityInfos that get created as we walk
    * up the inheritance hierarchy and find Java types that are not registered.
    */
   private Map<Class<?>, InMemoryEntityInfo<?>> unregisteredEntityInfo =
@@ -175,7 +177,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
 
   protected InMemoryEntityInfo<?> getUnregisteredEntityInfo(Class<?> clazz, InMemoryEntityInfo<?> subclass) {
     InMemoryEntityInfo<?> ei = unregisteredEntityInfo.get(clazz);
-    if (null == ei) {
+    if (ei == null) {
       ei = new InMemoryEntityInfo();
       ei.entityTypeName = clazz.getSimpleName();
       ei.keys = subclass.keys;
@@ -199,7 +201,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
         .setHasStream(entityInfo.hasStream)
         .addProperties(properties);
 
-    if (null == superClass) {
+    if (superClass == null) {
       eet.addKeys(entityInfo.keys);
     }
 
@@ -213,13 +215,13 @@ public class InMemoryEdmGenerator implements EdmGenerator {
     if (!this.flatten && entityInfo.entityClass.getSuperclass() != null && !entityInfo.entityClass.getSuperclass().equals(Object.class)) {
       InMemoryEntityInfo<?> entityInfoSuper = findEntityInfoForClass(entityInfo.entityClass.getSuperclass());
       // may have created it along another branch in the hierarchy
-      if (null == entityInfoSuper) {
+      if (entityInfoSuper == null) {
         // synthesize...
         entityInfoSuper = getUnregisteredEntityInfo(entityInfo.entityClass.getSuperclass(), entityInfo);
       }
 
       superType = entityTypesByName.get(entityInfoSuper.entityTypeName);
-      if (null == superType) {
+      if (superType == null) {
         superType = createStructuralType(decorator, entityInfoSuper);
       }
     }
@@ -263,7 +265,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
       EdmEntityType.Builder eet1 = entityTypesByName.get(entityTypeName);
       Class<?> clazz2 = ei.properties.getPropertyType(assocProp);
       String entitySetName2 = entityNameByClass.get(clazz2);
-      InMemoryEntityInfo<?> ei2 = null == entitySetName2 ? null : eis.get(entitySetName2);
+      InMemoryEntityInfo<?> ei2 = entitySetName2 == null ? null : eis.get(entitySetName2);
 
       if (log.isLoggable(Level.FINE)) {
         log.log(Level.FINE, "genToOnNavProp {0} - {1}({2}) eetName2: {3}", new Object[] { entityTypeName, assocProp, clazz2, entitySetName2 });
@@ -291,11 +293,11 @@ public class InMemoryEdmGenerator implements EdmGenerator {
 
       EdmEntitySet.Builder ees1 = entitySetByName.get(eet1.getName());
       EdmEntitySet.Builder ees2 = entitySetByName.get(eet2.getName());
-      if (null == ees1) {
+      if (ees1 == null) {
         // entity set name different than entity type name.
         ees1 = getEntitySetForEntityTypeName(eet1.getName());
       }
-      if (null == ees2) {
+      if (ees2 == null) {
         // entity set name different than entity type name.
         ees2 = getEntitySetForEntityTypeName(eet2.getName());
       }
@@ -340,7 +342,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
 
       Class<?> clazz2 = ei.properties.getCollectionElementType(assocProp);
       String entitySetName2 = entityNameByClass.get(clazz2);
-      InMemoryEntityInfo<?> class2eiInfo = null == entitySetName2 ? null : eis.get(entitySetName2);
+      InMemoryEntityInfo<?> class2eiInfo = entitySetName2 == null ? null : eis.get(entitySetName2);
 
       if (class2eiInfo == null)
         continue;
@@ -385,11 +387,11 @@ public class InMemoryEdmGenerator implements EdmGenerator {
 
           EdmEntitySet.Builder ees1 = entitySetByName.get(eet1.getName());
           EdmEntitySet.Builder ees2 = entitySetByName.get(eet2.getName());
-          if (null == ees1) {
+          if (ees1 == null) {
             // entity set name different than entity type name.
             ees1 = getEntitySetForEntityTypeName(eet1.getName());
           }
-          if (null == ees2) {
+          if (ees2 == null) {
             // entity set name different than entity type name.
             ees2 = getEntitySetForEntityTypeName(eet2.getName());
           }
@@ -449,7 +451,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
 
     Iterable<String> propertyNames = this.flatten ? model.getPropertyNames() : model.getDeclaredPropertyNames();
     for (String propName : propertyNames) {
-      //System.out.println("edm property: " + propName);
+      dump("edm property: " + propName);
       Class<?> propType = model.getPropertyType(propName);
       EdmType type = typeMapping.findEdmType(propType);
       EdmComplexType.Builder typeBuilder = null;
@@ -457,7 +459,7 @@ public class InMemoryEdmGenerator implements EdmGenerator {
         typeBuilder = findComplexTypeForClass(propType);
       }
 
-      //System.out.println("edm property: " + propName + " type: " + type + " builder: " + typeBuilder);
+      dump("edm property: " + propName + " type: " + type + " builder: " + typeBuilder);
       if (type == null && typeBuilder == null) {
         continue;
       }
@@ -526,8 +528,8 @@ public class InMemoryEdmGenerator implements EdmGenerator {
   }
 
   /**
-   * provides an override point for applications to add application specific 
-   * EdmFunctions to their producer.  
+   * provides an override point for applications to add application specific
+   * EdmFunctions to their producer.
    * @param schema    the EdmSchema.Builder
    * @param container the EdmEntityContainer.Builder
    */

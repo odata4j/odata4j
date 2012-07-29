@@ -59,7 +59,7 @@ public class EnumsAsStringsPropertyModelDelegate extends PropertyModelDelegate {
   public Iterable<?> getCollectionValue(Object target, String collectionName) {
     Iterable<?> iter = getDelegate().getCollectionValue(target, collectionName);
     Class<?> etype = getDelegate().getCollectionElementType(collectionName);
-    if (null != iter && null != etype && etype.isEnum()) {
+    if (iter != null && etype != null && etype.isEnum()) {
       Iterator<?> i = iter.iterator();
       List<String> l = new ArrayList<String>();
       while (i.hasNext()) {

@@ -141,7 +141,7 @@ public class JerseyRuntimeFacade implements RuntimeFacade {
     int statusCode;
     String entity = "";
     try {
-      if (null != headers) {
+      if (headers != null) {
         for (Entry<String, Object> entry : headers.entrySet()) {
           webResource = webResource.header(entry.getKey(), entry.getValue());
         }

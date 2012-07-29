@@ -21,7 +21,7 @@ public class PojoTest extends AbstractRuntimeTest {
   }
 
   @Test
-  public void testPojo() throws Exception {
+  public void testPojo() {
 
     String uri = "http://localhost:18889/TestService.svc/";
 

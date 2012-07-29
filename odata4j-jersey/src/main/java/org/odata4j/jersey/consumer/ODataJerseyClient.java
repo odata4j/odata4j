@@ -126,7 +126,7 @@ class ODataJerseyClient extends AbstractODataClient {
 
       String entity = sw.toString();
       if (ODataConsumer.dump.requestBody())
-        log(entity);
+        dump(entity);
 
       // allow the client to override the default format writer content-type
       String contentType = request.getHeaders().containsKey(ODataConstants.Headers.CONTENT_TYPE)
@@ -191,11 +191,11 @@ class ODataJerseyClient extends AbstractODataClient {
         logXml = XDocument.parse(logXml).toString(XmlFormat.INDENTED);
       } catch (Exception ignore) {}
     }
-    log(logXml);
+    dump(logXml);
   }
 
   private void dumpHeaders(ClientResponse response) {
-    log("Status: " + response.getStatus());
+    dump("Status: " + response.getStatus());
     dump(response.getHeaders());
   }
 
@@ -219,7 +219,7 @@ class ODataJerseyClient extends AbstractODataClient {
   }
 
   private void dumpHeaders(ODataClientRequest request, WebResource webResource, WebResource.Builder b) {
-    log(request.getMethod() + " " + webResource);
+    dump(request.getMethod() + " " + webResource);
     dump(getRequestHeaders(b));
   }
 
@@ -229,10 +229,11 @@ class ODataJerseyClient extends AbstractODataClient {
       return;
 
     for (Object header : headers.keySet())
-      log(header + ": " + headers.getFirst(header));
+      dump(header + ": " + headers.getFirst(header));
   }
 
-  private static void log(String message) {
+  private static void dump(String message) {
     System.out.println(message);
   }
+
 }

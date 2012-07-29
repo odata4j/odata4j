@@ -71,6 +71,8 @@ import org.odata4j.producer.inmemory.InMemoryProducer.RequestContext.RequestType
  * and property model to access information within entities.
  */
 public class InMemoryProducer implements ODataProducer {
+  private static final boolean DUMP = false;
+  private static void dump(String msg) { if (DUMP) System.out.println(msg); }
 
   public static final String ID_PROPNAME = "EntityId";
 
@@ -178,7 +180,7 @@ public class InMemoryProducer implements ODataProducer {
 
   public <TEntity> void registerComplexType(Class<TEntity> complexTypeClass, String typeName, PropertyModel propertyModel) {
     InMemoryComplexTypeInfo<TEntity> i = new InMemoryComplexTypeInfo<TEntity>();
-    i.typeName = (null == typeName) ? complexTypeClass.getSimpleName() : typeName;
+    i.typeName = (typeName == null) ? complexTypeClass.getSimpleName() : typeName;
     i.entityClass = complexTypeClass;
     i.propertyModel = propertyModel;
 
@@ -327,7 +329,7 @@ public class InMemoryProducer implements ODataProducer {
    * @param properties put properties into this list.
    */
   protected void addPropertiesFromObject(Object obj, PropertyModel propertyModel, EdmStructuralType structuralType, List<OProperty<?>> properties, PropertyPathHelper pathHelper) {
-    //System.out.println("addPropertiesFromObject: " + obj.getClass().getName());
+    dump("addPropertiesFromObject: " + obj.getClass().getName());
     for (Iterator<EdmProperty> it = structuralType.getProperties().iterator(); it.hasNext();) {
       EdmProperty property = it.next();
 
@@ -337,7 +339,7 @@ public class InMemoryProducer implements ODataProducer {
       }
 
       Object value = propertyModel.getPropertyValue(obj, property.getName());
-      //System.out.println("  prop: " + property.getName() + " val: " + value);
+      dump("  prop: " + property.getName() + " val: " + value);
       if (value == null && !this.includeNullPropertyValues) {
         // this is not permitted by the spec but makes debugging wide entity types
         // much easier.
@@ -354,7 +356,7 @@ public class InMemoryProducer implements ODataProducer {
           } else {
             Class<?> propType = propertyModel.getPropertyType(property.getName());
             InMemoryComplexTypeInfo<?> typeInfo = findComplexTypeInfoForClass(propType);
-            if (null == typeInfo) {
+            if (typeInfo == null) {
               continue;
             }
             List<OProperty<?>> cprops = new ArrayList<OProperty<?>>();
@@ -369,7 +371,7 @@ public class InMemoryProducer implements ODataProducer {
         if (values != null) {
           Class<?> propType = propertyModel.getCollectionElementType(property.getName());
           InMemoryComplexTypeInfo<?> typeInfo = property.getType().isSimple() ? null : findComplexTypeInfoForClass(propType);
-          if ((!property.getType().isSimple()) && null == typeInfo) {
+          if ((!property.getType().isSimple()) && typeInfo == null) {
             continue;
           }
           for (Object v : values) {
@@ -388,7 +390,7 @@ public class InMemoryProducer implements ODataProducer {
                 property.getType()), b.build()));
       }
     }
-    //System.out.println("done addPropertiesFromObject: " + obj.getClass().getName());
+    dump("done addPropertiesFromObject: " + obj.getClass().getName());
   }
 
   protected OEntity toOEntity(EdmEntitySet ees, Object obj, PropertyPathHelper pathHelper) {
@@ -465,7 +467,7 @@ public class InMemoryProducer implements ODataProducer {
   protected Iterable<?> getRelatedPojos(EdmNavigationProperty navProp, Object srcObject, InMemoryEntityInfo<?> srcInfo) {
     if (navProp.getToRole().getMultiplicity() == EdmMultiplicity.MANY) {
       Iterable<?> i = srcInfo.getPropertyModel().getCollectionValue(srcObject, navProp.getName());
-      return null == i ? Collections.EMPTY_LIST : i;
+      return i == null ? Collections.EMPTY_LIST : i;
     } else {
       // can be null
       return Collections.singletonList(srcInfo.getPropertyModel().getPropertyValue(srcObject, navProp.getName()));
@@ -491,7 +493,7 @@ public class InMemoryProducer implements ODataProducer {
 
     final InMemoryEntityInfo<?> ei = eis.get(entitySetName);
 
-    Enumerable<Object> objects = null == ei.getWithContext
+    Enumerable<Object> objects = ei.getWithContext == null
         ? Enumerable.create(ei.get.apply()).cast(Object.class)
         : Enumerable.create(ei.getWithContext.apply(rc)).cast(Object.class);
 
@@ -580,7 +582,7 @@ public class InMemoryProducer implements ODataProducer {
 
     final PropertyPathHelper pathHelper = new PropertyPathHelper(queryInfo);
 
-    Enumerable<Object> objects = null == ei.getWithContext
+    Enumerable<Object> objects = ei.getWithContext == null
         ? Enumerable.create(ei.get.apply()).cast(Object.class)
         : Enumerable.create(ei.getWithContext.apply(rc)).cast(Object.class);
 
@@ -926,7 +928,7 @@ public class InMemoryProducer implements ODataProducer {
 
     final String[] keyList = ei.keys;
 
-    Iterable<Object> iter = null == ei.getWithContext ? ((Iterable<Object>) ei.get.apply())
+    Iterable<Object> iter = ei.getWithContext == null ? ((Iterable<Object>) ei.get.apply())
         : ((Iterable<Object>) ei.getWithContext.apply(rc));
 
     final Object rt = Enumerable.create(iter).firstOrNull(new Predicate1<Object>() {
@@ -969,7 +971,7 @@ public class InMemoryProducer implements ODataProducer {
       throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
     try {
       Method m = pojo.getClass().getMethod(ttype == TriggerType.Before ? "beforeOEntityUnmarshal" : "afterOEntityUnmarshal", OStructuralObject.class);
-      if (null != m) {
+      if (m != null) {
         m.invoke(pojo, sobj);
       }
     } catch (NoSuchMethodException ex) {}
@@ -1039,7 +1041,7 @@ public class InMemoryProducer implements ODataProducer {
           propertyModel.setPropertyValue(
               pojo,
               property.getName(),
-              null == value
+              value == null
                   ? null
                   : toPojo(
                       OComplexObjects.create((EdmComplexType) property.getType(), (List<OProperty<?>>) value),

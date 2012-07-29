@@ -85,7 +85,7 @@ public class EntitiesRequestResource extends BaseResource {
     // is this a new media resource?
     // check for HasStream
     EdmEntitySet entitySet = producer.getMetadata().findEdmEntitySet(entitySetName);
-    if (null == entitySet) {
+    if (entitySet == null) {
       throw new NotFoundException();
     }
 

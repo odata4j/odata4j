@@ -12,7 +12,7 @@ import java.util.Map;
 public interface OExtensible<T> {
 
   /**
-   * Find extension instance given an interface, if one exists.
+   * Finds an extension instance given an interface, if one exists.
    *
    * @param clazz  the extension interface
    * @param <TExtension>  type of extension

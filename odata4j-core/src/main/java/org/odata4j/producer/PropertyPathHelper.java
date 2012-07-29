@@ -66,7 +66,7 @@ public class PropertyPathHelper {
   }
 
   public PropertyPathHelper(QueryInfo qi) {
-    setup(null == qi ? null : qi.select, null == qi ? null : qi.expand, null, null);
+    setup(qi == null ? null : qi.select, qi == null ? null : qi.expand, null, null);
   }
 
   public PropertyPathHelper(String select, String expand) {

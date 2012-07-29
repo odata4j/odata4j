@@ -57,7 +57,7 @@ public abstract class BaseResource {
         new Settings(version, metadata, entitySetName, entityKey, null, false));
 
     String charset = httpHeaders.getMediaType().getParameters().get("charset");
-    if (null == charset) {
+    if (charset == null) {
       charset = "ISO-8859-1"; // from HTTP 1.1
     }
 
@@ -91,7 +91,7 @@ public abstract class BaseResource {
       UriInfo uriInfo, EdmEntitySet entitySet, ODataProducer producer,
       InputStream payload, OEntityKey key) throws IOException {
 
-    /* 
+    /*
      * this post has a great descriptions of the twists and turns of creating
      * a media resource + media link entry:  http://blogs.msdn.com/b/astoriateam/archive/2010/08/04/data-services-streaming-provider-series-implementing-a-streaming-provider-part-1.aspx
      */
@@ -100,12 +100,12 @@ public abstract class BaseResource {
     OMediaLinkExtension mediaLinkExtension = getMediaLinkExtension(httpHeaders, uriInfo, entitySet, producer);
 
     // get a media link entry from the extension
-    OEntity mle = null == key
+    OEntity mle = key == null
         ? mediaLinkExtension.createMediaLinkEntry(entitySet, httpHeaders)
         : mediaLinkExtension.getMediaLinkEntryForUpdateOrDelete(entitySet, key, httpHeaders);
 
     // now get a stream we can write the incoming bytes into.
-    OutputStream outStream = null == key
+    OutputStream outStream = key == null
         ? mediaLinkExtension.getOutputStreamForMediaLinkEntryCreate(mle, null /*etag*/, null /*QueryInfo, may get rid of this */)
         : mediaLinkExtension.getOutputStreamForMediaLinkEntryUpdate(mle, null, null);
 

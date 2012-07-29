@@ -26,6 +26,8 @@ import org.odata4j.format.json.JsonStreamReaderFactory.JsonStreamReader.JsonStar
  * Parser for OComplexObjects in JSON
  */
 public class JsonComplexObjectFormatParser extends JsonFormatParser implements FormatParser<OComplexObject> {
+  private static final boolean DUMP = false;
+  private static void dump(String msg) { if (DUMP) System.out.println(msg); }
 
   public JsonComplexObjectFormatParser(Settings s) {
     super(s);
@@ -97,7 +99,7 @@ public class JsonComplexObjectFormatParser extends JsonFormatParser implements F
   }
 
   public OComplexObject parseSingleObject(JsonStreamReader jsr) {
-    //System.out.println("json parseSingleObject: " + returnType.getFullyQualifiedTypeName());
+    dump("json parseSingleObject: " + returnType.getFullyQualifiedTypeName());
     ensureNext(jsr);
 
     // this can be used in a context where we require an object and one
@@ -109,7 +111,7 @@ public class JsonComplexObjectFormatParser extends JsonFormatParser implements F
       result = eatProps(props, jsr);
     } // else not a start object.
 
-    //System.out.println("json done parseSingleObject: " + returnType.getFullyQualifiedTypeName());
+    dump("json done parseSingleObject: " + returnType.getFullyQualifiedTypeName());
     return result;
   }
 
@@ -124,7 +126,7 @@ public class JsonComplexObjectFormatParser extends JsonFormatParser implements F
   }
 
   private OComplexObject eatProps(List<OProperty<?>> props, JsonStreamReader jsr) {
-    // System.out.println("json eatProps: " + returnType.getFullyQualifiedTypeName());
+    dump("json eatProps: " + returnType.getFullyQualifiedTypeName());
     ensureNext(jsr);
     while (jsr.hasNext()) {
       JsonEvent event = jsr.nextEvent();
@@ -137,7 +139,7 @@ public class JsonComplexObjectFormatParser extends JsonFormatParser implements F
         throw new JsonParseException("unexpected parse event: " + event.toString());
       }
     }
-    //System.out.println("json done eatProps: " + returnType.getFullyQualifiedTypeName());
+    dump("json done eatProps: " + returnType.getFullyQualifiedTypeName());
     return OComplexObjects.create(returnType, props);
   }
 
@@ -145,7 +147,7 @@ public class JsonComplexObjectFormatParser extends JsonFormatParser implements F
 
     JsonEvent event = jsr.nextEvent();
 
-    //System.out.println("json addProperty: " + name);
+    dump("json addProperty: " + name);
     if (event.isEndProperty()) {
       // scalar property
       EdmProperty ep = returnType.findProperty(name);
@@ -155,7 +157,7 @@ public class JsonComplexObjectFormatParser extends JsonFormatParser implements F
       }
 
       if (!ep.getType().isSimple()) {
-        if (null == event.asEndProperty().getValue()) {
+        if (event.asEndProperty().getValue() == null) {
           // a complex property can be null in which case it looks like a simple property
           props.add(OProperties.complex(name, (EdmComplexType) ep.getType(), null));
         } else {
@@ -171,12 +173,12 @@ public class JsonComplexObjectFormatParser extends JsonFormatParser implements F
     } else {
       throw new JsonParseException("expecting endproperty or startobject, got: " + event.toString());
     }
-    //System.out.println("json done addProperty: " + name);
+    dump("json done addProperty: " + name);
   }
 
   protected void parseEmbedded(String propName, JsonEvent event, JsonStreamReader jsr, List<OProperty<?>> props) {
 
-    //System.out.println("json parseEmbedded " + propName);
+    dump("json parseEmbedded " + propName);
     ensureStartObject(event);
     event = jsr.nextEvent();
     ensureStartProperty(event);
@@ -186,7 +188,7 @@ public class JsonComplexObjectFormatParser extends JsonFormatParser implements F
     if (RESULTS_PROPERTY.equals(startProp.getName())) {
       // embedded collection
 
-      //System.out.println("json embeddedCollection" + (null != eprop ? eprop.getName() : "null"));
+      dump("json embeddedCollection" + (eprop != null ? eprop.getName() : "null"));
       if (eprop != null && eprop.getCollectionKind() != EdmProperty.CollectionKind.NONE) {
         EdmCollectionType collectionType = new EdmCollectionType(eprop.getCollectionKind(), eprop.getType());
         JsonCollectionFormatParser cfp = new JsonCollectionFormatParser(collectionType, this.metadata);
@@ -199,13 +201,13 @@ public class JsonComplexObjectFormatParser extends JsonFormatParser implements F
       } else {
         throw new RuntimeException("unhandled property: " + startProp.getName());
       }
-      //System.out.println("json done embeddedCollection" + (null != eprop ? eprop.getName() : "null"));
+      dump("json done embeddedCollection" + (eprop != null ? eprop.getName() : "null"));
 
     } else if (eprop.getType() instanceof EdmComplexType) {
       // a "regular property", must be an embedded complex object
       EdmComplexType outerType = this.returnType;
       this.returnType = (EdmComplexType) eprop.getType();
-      //System.out.println("json embedded complex" + returnType.getFullyQualifiedTypeName());
+      dump("json embedded complex" + returnType.getFullyQualifiedTypeName());
       try {
         OComplexObject o = this.parseSingleObject(jsr, startProp);
         ensureEndObject(jsr.previousEvent());
@@ -214,11 +216,11 @@ public class JsonComplexObjectFormatParser extends JsonFormatParser implements F
       } finally {
         this.returnType = outerType;
       }
-      //System.out.println("json done embedded complex" + returnType.getFullyQualifiedTypeName());
+      dump("json done embedded complex" + returnType.getFullyQualifiedTypeName());
     } else {
       throw new RuntimeException("unhandled property: " + startProp.getName());
     }
-    //System.out.println("json done parseEmbedded " + propName);
+    dump("json done parseEmbedded " + propName);
   }
 
 }

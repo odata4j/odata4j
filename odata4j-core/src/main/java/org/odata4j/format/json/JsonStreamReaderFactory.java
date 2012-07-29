@@ -68,7 +68,7 @@ public class JsonStreamReaderFactory {
     }
 
     public static interface JsonEndPropertyEvent extends JsonEvent {
-      // returns a value if it is a simple property and 
+      // returns a value if it is a simple property and
       // not an other JsonObject or JsonArray
       String getValue();
 
@@ -85,7 +85,7 @@ public class JsonStreamReaderFactory {
 
     /**
      * returns the JsonEvent that the last call to nextEvent() returned.
-     * 
+     *
      * @return the last JsonEvent returned by nextEvent()
      */
     JsonEvent previousEvent();
@@ -505,6 +505,8 @@ enum ReaderState {
 }
 
 class JsonStreamReaderImpl implements JsonStreamReader {
+  private static final boolean DUMP = false;
+  private static void dump(String msg) { if (DUMP) System.out.println(msg); }
 
   private JsonStreamTokenizerImpl tokenizer;
   private Stack<ReaderState> state = new Stack<ReaderState>();
@@ -629,7 +631,7 @@ class JsonStreamReaderImpl implements JsonStreamReader {
 
   private JsonEvent createStartPropertyEvent(final String name) {
     state.push(ReaderState.PROPERTY);
-    //System.out.println("jsonp start property: " + name);
+    dump("jsonp start property: " + name);
     this.previousEvent = new JsonStartPropertyEventImpl() {
 
       @Override
@@ -642,7 +644,7 @@ class JsonStreamReaderImpl implements JsonStreamReader {
 
   private JsonEvent createEndPropertyEvent(final String value, final JsonTokenType valueTokenType) {
     state.pop();
-    //System.out.println("jsonp end property: " + value);
+    dump("jsonp end property: " + value);
 
     this.previousEvent = new JsonEndPropertyEventImpl() {
       @Override
@@ -660,7 +662,7 @@ class JsonStreamReaderImpl implements JsonStreamReader {
 
   private JsonEvent createStartObjectEvent() {
     state.push(ReaderState.OBJECT);
-    //System.out.println("jsonp start object");
+    dump("jsonp start object");
 
     expectCommaOrEndStack.push(expectCommaOrEnd);
     expectCommaOrEnd = false;
@@ -675,11 +677,11 @@ class JsonStreamReaderImpl implements JsonStreamReader {
 
   private JsonEvent createEndObjectEvent() {
     state.pop();
-    //System.out.println("jsonp end object");
+    dump("jsonp end object");
     expectCommaOrEnd = expectCommaOrEndStack.pop();
 
     // if the end of the object is also the of
-    // a property, we need to fire the 
+    // a property, we need to fire the
     //  endPropertyEvent before going forward.
     if (state.peek() == ReaderState.PROPERTY) {
       fireEndPropertyEvent = true;
@@ -696,7 +698,7 @@ class JsonStreamReaderImpl implements JsonStreamReader {
 
   private JsonEvent createStartArrayEvent() {
     state.push(ReaderState.ARRAY);
-    //System.out.println("jsonp start array");
+    dump("jsonp start array");
     expectCommaOrEndStack.push(expectCommaOrEnd);
     expectCommaOrEnd = false;
     this.previousEvent = new JsonEventImpl() {
@@ -710,11 +712,11 @@ class JsonStreamReaderImpl implements JsonStreamReader {
 
   private JsonEvent createEndArrayEvent() {
     state.pop();
-    //System.out.println("jsonp end array");
+    dump("jsonp end array");
     expectCommaOrEnd = expectCommaOrEndStack.pop();
 
     // if the end of the array is also the of
-    // a property, we need to fire the 
+    // a property, we need to fire the
     // endPropertyEvent before going forward.
     if (state.peek() == ReaderState.PROPERTY) {
       fireEndPropertyEvent = true;
@@ -730,7 +732,7 @@ class JsonStreamReaderImpl implements JsonStreamReader {
   }
 
   private JsonEvent createValueEvent(final String value) {
-    //System.out.println("jsonp value: " + value);
+    dump("jsonp value: " + value);
     this.previousEvent = new JsonValueEventImpl() {
       @Override
       public String getValue() {
