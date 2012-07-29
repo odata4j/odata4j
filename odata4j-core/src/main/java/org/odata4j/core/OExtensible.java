@@ -1,6 +1,5 @@
 package org.odata4j.core;
 
-import java.util.Map;
 
 /**
  * Basic extension mechanism.
@@ -16,13 +15,8 @@ public interface OExtensible<T> {
    *
    * @param clazz  the extension interface
    * @param <TExtension>  type of extension
-   * @param params optional additional parameters to assist in finding/creating the extension
-   * @return the extension instance or null
-   *
-   * @see OAtomStreamEntity
-   * @see OAtomEntity
+   * @return the extension instance, or null if no extension exists for this type
    */
-  <TExtension extends OExtension<T>> TExtension findExtension(Class<TExtension> clazz,
-      Map<String, Object> params);
+  <TExtension extends OExtension<T>> TExtension findExtension(Class<TExtension> clazz);
 
 }

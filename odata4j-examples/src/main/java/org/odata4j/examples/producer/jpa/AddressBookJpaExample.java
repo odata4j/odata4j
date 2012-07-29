@@ -2,8 +2,6 @@ package org.odata4j.examples.producer.jpa;
 
 import static org.odata4j.examples.JaxRsImplementation.JERSEY;
 
-import java.util.Map;
-
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
@@ -23,7 +21,7 @@ public class AddressBookJpaExample {
     String namespace = "AddressBook";
     JPAProducer producer = new JPAProducer(entityManagerFactory, namespace, 50) {
       @Override
-      public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz, Map<String, Object> params) {
+      public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz) {
         if (clazz.equals(ErrorResponseExtension.class))
           return clazz.cast(ErrorResponseExtensions.ALWAYS_RETURN_INNER_ERRORS);
         return null;

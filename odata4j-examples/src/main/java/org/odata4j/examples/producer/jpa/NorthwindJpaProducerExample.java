@@ -2,8 +2,6 @@ package org.odata4j.examples.producer.jpa;
 
 import static org.odata4j.examples.JaxRsImplementation.JERSEY;
 
-import java.util.Map;
-
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
@@ -27,7 +25,7 @@ public class NorthwindJpaProducerExample extends AbstractExample {
 
     String endpointUri = "http://localhost:8886/NorthwindJpaProducerExample.svc/";
 
-    // this example assumes you have an appropriate persistence.xml containing a valid persistence unit definition 
+    // this example assumes you have an appropriate persistence.xml containing a valid persistence unit definition
     // (in this case named NorthwindServiceEclipseLink) mapping your jpa entity classes, etc
 
     // create a JPAProducer by giving it a EntityManagerFactory
@@ -37,7 +35,7 @@ public class NorthwindJpaProducerExample extends AbstractExample {
 
     JPAProducer producer = new JPAProducer(emf, namespace, 50) {
       @Override
-      public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz, Map<String, Object> params) {
+      public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz) {
         if (clazz.equals(ErrorResponseExtension.class))
           return clazz.cast(ErrorResponseExtensions.ALWAYS_RETURN_INNER_ERRORS);
         return null;

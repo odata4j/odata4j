@@ -4,7 +4,6 @@ import static org.odata4j.examples.JaxRsImplementation.JERSEY;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.core4j.Func;
 import org.odata4j.consumer.ODataClientException;
@@ -70,7 +69,7 @@ public class RoundtripExample extends AbstractExample {
 
     InMemoryProducer producer = new InMemoryProducer("RoundtripExample") {
       @Override
-      public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz, Map<String, Object> params) {
+      public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz) {
         if (clazz.equals(ErrorResponseExtension.class))
           return clazz.cast(ErrorResponseExtensions.ALWAYS_RETURN_INNER_ERRORS);
         return null;

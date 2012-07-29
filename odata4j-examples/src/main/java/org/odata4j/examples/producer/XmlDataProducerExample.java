@@ -308,8 +308,7 @@ public class XmlDataProducerExample extends AbstractExample {
     }
 
     @Override
-    public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz,
-        Map<String, Object> params) {
+    public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz) {
       if (clazz.equals(ErrorResponseExtension.class))
         return clazz.cast(ErrorResponseExtensions.ALWAYS_RETURN_INNER_ERRORS);
       return null;

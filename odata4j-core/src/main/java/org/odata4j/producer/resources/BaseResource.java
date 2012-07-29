@@ -7,8 +7,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -69,16 +67,7 @@ public abstract class BaseResource {
 
   // some helpers for media link entries
   protected OMediaLinkExtension getMediaLinkExtension(HttpHeaders httpHeaders, UriInfo uriInfo, EdmEntitySet entitySet, ODataProducer producer) {
-    OMediaLinkExtension mediaLinkExtension = null;
-    try {
-      Map<String, Object> params = new HashMap<String, Object>();
-      params.put(ODataConstants.Params.EdmEntitySet, entitySet);
-      params.put(ODataConstants.Params.HttpHeaders, httpHeaders);
-      params.put(ODataConstants.Params.ODataProducer, producer);
-      params.put(ODataConstants.Params.UriInfo, uriInfo);
-
-      mediaLinkExtension = producer.findExtension(OMediaLinkExtension.class, params);
-    } catch (UnsupportedOperationException e) {}
+    OMediaLinkExtension mediaLinkExtension = producer.findExtension(OMediaLinkExtension.class);
 
     if (mediaLinkExtension == null) {
       throw new NotImplementedException();

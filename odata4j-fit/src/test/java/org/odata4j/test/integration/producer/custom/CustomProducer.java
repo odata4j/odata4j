@@ -348,8 +348,7 @@ public class CustomProducer implements ODataProducer {
   }
 
   @Override
-  public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz,
-      Map<String, Object> params) {
+  public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz) {
     if (clazz.equals(OMediaLinkExtension.class))
       return clazz.cast(new MediaLinkExtension());
     return null;

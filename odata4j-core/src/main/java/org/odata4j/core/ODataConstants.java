@@ -34,11 +34,4 @@ public class ODataConstants {
     public static final String USER_AGENT = "User-Agent";
   }
 
-  // parameters for OExtensible.findService
-  public static class Params {
-    public static final String HttpHeaders = "HttpHeaders";
-    public static final String UriInfo = "UriInfo";
-    public static final String ODataProducer = "ODataProducer";
-    public static final String EdmEntitySet = "EdmEntitySet";
-  }
 }

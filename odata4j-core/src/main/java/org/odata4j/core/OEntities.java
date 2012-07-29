@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.core4j.Enumerable;
 import org.odata4j.edm.EdmEntitySet;
@@ -223,8 +222,7 @@ public class OEntities {
     }
 
     @Override
-    public <TExtension extends OExtension<OEntity>> TExtension findExtension(Class<TExtension> clazz,
-        Map<String, Object> params) {
+    public <TExtension extends OExtension<OEntity>> TExtension findExtension(Class<TExtension> clazz) {
       for (Object extension : extensions) {
         if (clazz.isInstance(extension)) {
           return clazz.cast(extension);
