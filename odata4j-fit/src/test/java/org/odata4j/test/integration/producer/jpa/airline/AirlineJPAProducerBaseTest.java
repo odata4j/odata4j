@@ -13,6 +13,7 @@ import javax.persistence.EntityManagerFactory;
 import org.core4j.ThrowingFunc1;
 import org.junit.After;
 import org.junit.Ignore;
+import org.odata4j.core.ODataConstants.Charsets;
 import org.odata4j.core.Throwables;
 import org.odata4j.producer.server.ODataServer;
 import org.odata4j.test.integration.AbstractRuntimeTest;
@@ -76,7 +77,7 @@ public class AirlineJPAProducerBaseTest extends AbstractRuntimeTest {
           InputStream xml = AirlineJPAProducerBaseTest.class
               .getResourceAsStream("/META-INF/airline_insert.sql");
 
-          br = new BufferedReader(new InputStreamReader(xml, "UTF-8"));
+          br = new BufferedReader(new InputStreamReader(xml, Charsets.Upper.UTF_8));
 
           while ((line = br.readLine()) != null) {
             if (line.length() > 5) {

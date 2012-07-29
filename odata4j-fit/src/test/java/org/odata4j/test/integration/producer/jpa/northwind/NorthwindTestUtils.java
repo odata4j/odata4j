@@ -21,6 +21,8 @@ import javax.ws.rs.core.MediaType;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.junit.Assert;
+import org.odata4j.core.ODataConstants;
+import org.odata4j.core.ODataConstants.Charsets;
 import org.odata4j.core.Throwables;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.internal.InternalUtil;
@@ -75,7 +77,7 @@ public class NorthwindTestUtils {
       uri = uri.replace(" ", "%20");
       String result = this.rtFacade.getWebResource(endpointUri + uri, "application/json").getEntity();
 
-      result = URLDecoder.decode(result, "UTF-8");
+      result = URLDecoder.decode(result, Charsets.Upper.UTF_8);
 
       // different naming
       result = result.replace(
@@ -102,9 +104,9 @@ public class NorthwindTestUtils {
               RESOURCES_TYPE +
               "/" + inp + "."
               + RESOURCES_TYPE,
-          "ISO-8859-15");
+          ODataConstants.Charsets.Upper.ISO_8859_15);
 
-      expect = URLDecoder.decode(expect, "UTF-8");
+      expect = URLDecoder.decode(expect, Charsets.Upper.UTF_8);
 
       expect = expect.replace(
           "http://services.odata.org/Northwind",
@@ -158,7 +160,7 @@ public class NorthwindTestUtils {
                 + RESOURCES_TYPE
                 + "/" + inp + "."
                 + RESOURCES_TYPE,
-            "utf-8");
+            Charsets.Upper.UTF_8);
     expect = expect.replace("http://services.odata.org/Northwind", "http://services.odata.org/northwind");
 
     //System.out.println("result: " + result);
@@ -528,7 +530,7 @@ public class NorthwindTestUtils {
   public void writeStringToFile(String fileName, String contents) {
     Writer out = null;
     try {
-      out = new OutputStreamWriter(new FileOutputStream(fileName), "utf-8");
+      out = new OutputStreamWriter(new FileOutputStream(fileName), Charsets.Upper.UTF_8);
       out.write(contents);
     } catch (Exception e) {
       throw Throwables.propagate(e);

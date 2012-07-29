@@ -11,6 +11,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 
 import org.core4j.Enumerable;
+import org.odata4j.core.ODataConstants.Charsets;
 import org.odata4j.core.Throwables;
 import org.odata4j.stax2.QName2;
 import org.odata4j.stax2.XMLWriter2;
@@ -124,7 +125,7 @@ public class StaxXMLWriter2 implements XMLWriter2 {
 
   public void startDocument() {
     try {
-      eventWriter.add(eventFactory.createStartDocument("utf-8", "1.0", true));
+      eventWriter.add(eventFactory.createStartDocument(Charsets.Lower.UTF_8, "1.0", true));
     } catch (XMLStreamException e) {
       throw Throwables.propagate(e);
     }

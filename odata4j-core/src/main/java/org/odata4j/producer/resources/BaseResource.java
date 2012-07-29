@@ -56,7 +56,7 @@ public abstract class BaseResource {
 
     String charset = httpHeaders.getMediaType().getParameters().get("charset");
     if (charset == null) {
-      charset = "ISO-8859-1"; // from HTTP 1.1
+      charset = ODataConstants.Charsets.Upper.ISO_8859_1; // from HTTP 1.1
     }
 
     Entry entry = parser.parse(new BufferedReader(

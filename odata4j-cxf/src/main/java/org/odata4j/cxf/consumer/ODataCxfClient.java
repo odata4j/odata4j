@@ -42,6 +42,7 @@ import org.odata4j.consumer.Response;
 import org.odata4j.consumer.behaviors.OClientBehavior;
 import org.odata4j.consumer.behaviors.OClientBehaviors;
 import org.odata4j.core.ODataConstants;
+import org.odata4j.core.ODataConstants.Charsets;
 import org.odata4j.core.ODataHttpMethod;
 import org.odata4j.core.OError;
 import org.odata4j.core.Throwables;
@@ -84,7 +85,7 @@ public class ODataCxfClient extends AbstractODataClient {
     HttpResponse httpResponse = ((CxfResponse) response).getHttpResponse();
     try {
       InputStream textEntity = httpResponse.getEntity().getContent();
-      return new BOMWorkaroundReader(new InputStreamReader(textEntity, "UTF-8"));
+      return new BOMWorkaroundReader(new InputStreamReader(textEntity, Charsets.Upper.UTF_8));
     } catch (Exception e) {
       throw Throwables.propagate(e);
     }
@@ -210,7 +211,7 @@ public class ODataCxfClient extends AbstractODataClient {
     HttpResponse httpResponse = ((CxfResponse) response).getHttpResponse();
     try {
       InputStream textEntity = httpResponse.getEntity().getContent();
-      return InternalUtil.newXMLEventReader(new BOMWorkaroundReader(new InputStreamReader(textEntity, "UTF-8")));
+      return InternalUtil.newXMLEventReader(new BOMWorkaroundReader(new InputStreamReader(textEntity, Charsets.Upper.UTF_8)));
     } catch (Exception e) {
       throw Throwables.propagate(e);
     }
@@ -237,7 +238,7 @@ public class ODataCxfClient extends AbstractODataClient {
 
   private String entityToString(HttpEntity entity) {
     try {
-      BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(entity.getContent(), "UTF-8"));
+      BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(entity.getContent(), Charsets.Upper.UTF_8));
       StringBuilder stringBuilder = new StringBuilder();
       String line = null;
 

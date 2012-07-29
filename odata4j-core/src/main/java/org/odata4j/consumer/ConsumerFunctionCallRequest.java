@@ -234,37 +234,7 @@ public class ConsumerFunctionCallRequest<T extends OObject>
         return IterationResult.done();
       }
 
-      /* TODO support paging, this code was from ConsumerQueryEntitiesRequest...we'll need something like this.
-      // old-style paging: $page and $itemsPerPage
-      if (request.getQueryParams().containsKey("$page") && request.getQueryParams().containsKey("$itemsPerPage")) {
-          if (feedEntryCount == 0) {
-              return IterationResult.done();
-          }
-
-          int page = Integer.parseInt(request.getQueryParams().get("$page"));
-          // int itemsPerPage = Integer.parseInt(request.getQueryParams().get("$itemsPerPage"));
-
-          request = request.queryParam("$page", Integer.toString(page + 1));
-      } // new-style paging: $skiptoken
-      else {
-          if (feed.getNext() == null) {
-              return IterationResult.done();
-          }
-
-          int skipTokenIndex = feed.getNext().indexOf("$skiptoken=");
-          if (skipTokenIndex > -1) {
-              String skiptoken = feed.getNext().substring(skipTokenIndex + "$skiptoken=".length());
-              // decode the skiptoken first since it gets encoded as a query param
-              skiptoken = URLDecoder.decode(skiptoken, "UTF-8");
-              request = request.queryParam("$skiptoken", skiptoken);
-          } else if (feed.getNext().toLowerCase().startsWith("http")) {
-              request = ODataClientRequest.get(feed.getNext());
-          } else {
-              throw new UnsupportedOperationException();
-          }
-
-      } */
-
+      /* TODO support paging */
     }
   }
 

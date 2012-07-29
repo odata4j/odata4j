@@ -8,6 +8,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.odata4j.core.ODataConstants.Charsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +38,7 @@ public class DatabaseUtils {
           pathToSqlFile);
 
       BufferedReader br = new BufferedReader(
-          new InputStreamReader(xml, "UTF-8"));
+          new InputStreamReader(xml, Charsets.Upper.UTF_8));
 
       while ((line = br.readLine()) != null) {
         line = line.replace("`", "");

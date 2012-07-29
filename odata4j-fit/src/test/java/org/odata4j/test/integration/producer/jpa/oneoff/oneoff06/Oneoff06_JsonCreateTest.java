@@ -5,6 +5,7 @@ import junit.framework.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.core.ODataConstants.Charsets;
 import org.odata4j.test.integration.producer.jpa.oneoff.AbstractOneoffBaseTest;
 
 import com.sun.jersey.api.client.Client;
@@ -32,7 +33,7 @@ public class Oneoff06_JsonCreateTest extends AbstractOneoffBaseTest {
     System.out.println(this.getResponseEntity());
     Assert.assertEquals(1, c.getEntities("Country").execute().count());
     Assert.assertEquals(201, this.getResponseStatus());
-    Assert.assertEquals("application/json;charset=utf-8", this.getResponseType());
+    Assert.assertEquals("application/json;charset=" + Charsets.Lower.UTF_8, this.getResponseType());
   }
 
   private String getResponseEntity() {
@@ -52,7 +53,7 @@ public class Oneoff06_JsonCreateTest extends AbstractOneoffBaseTest {
     this.response = client.resource(endpointUri)
         .path("Country")
         .accept("application/json") // will fail without this line
-        .type("application/json;charset=utf-8")
+        .type("application/json;charset=" + Charsets.Lower.UTF_8)
         .post(ClientResponse.class, "{ \"name\":\"Ireland\"}");
   }
 

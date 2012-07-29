@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Stack;
 
+import org.odata4j.core.ODataConstants.Charsets;
 import org.odata4j.core.Throwables;
 import org.odata4j.stax2.QName2;
 import org.odata4j.stax2.XMLWriter2;
@@ -55,7 +56,7 @@ public class ManualXMLWriter2 implements XMLWriter2 {
 
   @Override
   public void startDocument() {
-    write("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\" ?>");
+    write("<?xml version=\"1.0\" encoding=\"" + Charsets.Lower.UTF_8 + "\" standalone=\"yes\" ?>");
   }
 
   @Override

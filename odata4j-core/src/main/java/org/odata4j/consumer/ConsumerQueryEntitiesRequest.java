@@ -8,6 +8,7 @@ import org.core4j.Func;
 import org.core4j.Func1;
 import org.core4j.ReadOnlyIterator;
 import org.odata4j.core.ODataConstants;
+import org.odata4j.core.ODataConstants.Charsets;
 import org.odata4j.core.ODataVersion;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.format.Entry;
@@ -112,7 +113,7 @@ public class ConsumerQueryEntitiesRequest<T> extends ConsumerQueryRequestBase<T>
         if (skipTokenIndex > -1) {
           String skiptoken = feed.getNext().substring(skipTokenIndex + "$skiptoken=".length());
           // decode the skiptoken first since it gets encoded as a query param
-          skiptoken = URLDecoder.decode(skiptoken, "UTF-8");
+          skiptoken = URLDecoder.decode(skiptoken, Charsets.Upper.UTF_8);
           request = request.queryParam("$skiptoken", skiptoken);
         } else if (feed.getNext().toLowerCase().startsWith("http")) {
           request = ODataClientRequest.get(feed.getNext());

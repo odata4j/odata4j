@@ -23,6 +23,7 @@ import org.odata4j.consumer.Response;
 import org.odata4j.consumer.behaviors.OClientBehavior;
 import org.odata4j.consumer.behaviors.OClientBehaviors;
 import org.odata4j.core.ODataConstants;
+import org.odata4j.core.ODataConstants.Charsets;
 import org.odata4j.core.OError;
 import org.odata4j.core.Throwables;
 import org.odata4j.format.Entry;
@@ -68,7 +69,7 @@ class ODataJerseyClient extends AbstractODataClient {
 
     InputStream textEntity = clientResponse.getEntityInputStream();
     try {
-      return new BOMWorkaroundReader(new InputStreamReader(textEntity, "UTF-8"));
+      return new BOMWorkaroundReader(new InputStreamReader(textEntity, Charsets.Upper.UTF_8));
     } catch (Exception e) {
       throw Throwables.propagate(e);
     }
@@ -178,7 +179,7 @@ class ODataJerseyClient extends AbstractODataClient {
 
     InputStream textEntity = clientResponse.getEntityInputStream();
     try {
-      return InternalUtil.newXMLEventReader(new BOMWorkaroundReader(new InputStreamReader(textEntity, "UTF-8")));
+      return InternalUtil.newXMLEventReader(new BOMWorkaroundReader(new InputStreamReader(textEntity, Charsets.Upper.UTF_8)));
     } catch (Exception e) {
       throw Throwables.propagate(e);
     }

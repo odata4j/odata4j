@@ -24,6 +24,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 
+import org.odata4j.core.ODataConstants.Charsets;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityId;
@@ -105,10 +106,10 @@ public class XmlDataProducerExample extends AbstractExample {
 
       // marshal them to the test data file
       Marshaller marshaller = JAXBContext.newInstance(CustomersList.class).createMarshaller();
-      marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+      marshaller.setProperty(Marshaller.JAXB_ENCODING, Charsets.Upper.UTF_8);
       marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
-      Writer out = new OutputStreamWriter(new FileOutputStream("/META-INF/xmlDataProducerExampleTestData.xml"), "utf-8");
+      Writer out = new OutputStreamWriter(new FileOutputStream("/META-INF/xmlDataProducerExampleTestData.xml"), Charsets.Upper.UTF_8);
       try {
         List<?> res = q.getResultList();
         CustomersList c = new CustomersList();
