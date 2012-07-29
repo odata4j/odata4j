@@ -9,6 +9,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.odata4j.consumer.ODataClientException;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.consumer.ODataServerException;
 import org.odata4j.core.OEntityIds;
@@ -91,8 +92,7 @@ public class ExceptionTest extends NorthwindJpaProducerTest {
   public void noFunction() throws Exception {
     try {
       consumer.callFunction("NoFunction").execute();
-    } catch (ODataServerException e) {
-      assertThat(e.getStatus().getStatusCode(), is(Status.NOT_FOUND.getStatusCode()));
+    } catch (ODataClientException e) {
       assertThat(e.getMessage(), containsString("NoFunction"));
     }
   }

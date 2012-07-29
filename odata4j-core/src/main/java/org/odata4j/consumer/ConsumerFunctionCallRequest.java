@@ -7,8 +7,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.ws.rs.core.Response.Status;
-
 import org.core4j.Enumerable;
 import org.core4j.Func;
 import org.core4j.ReadOnlyIterator;
@@ -17,7 +15,6 @@ import org.odata4j.core.Guid;
 import org.odata4j.core.OCollection;
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.ODataVersion;
-import org.odata4j.core.OErrors;
 import org.odata4j.core.OFunctionParameter;
 import org.odata4j.core.OFunctionParameters;
 import org.odata4j.core.OFunctionRequest;
@@ -50,7 +47,7 @@ public class ConsumerFunctionCallRequest<T extends OObject>
     // lastSegment is the function call name.
     function = metadata.findEdmFunctionImport(lastSegment);
     if (function == null)
-      throw new ODataServerException(Status.NOT_FOUND, OErrors.error(null, "Function Import " + lastSegment + " not defined", null));
+      throw new ODataClientException("Function Import " + lastSegment + " not defined");
   }
 
   @SuppressWarnings("unchecked")

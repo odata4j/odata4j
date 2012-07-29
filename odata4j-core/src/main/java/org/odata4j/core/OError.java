@@ -7,21 +7,25 @@ package org.odata4j.core;
 public interface OError {
 
   /**
-   * Get the error code.
+   * Gets the error code, a mandatory service-defined string.
+   *
+   * <p>This value may be used to provide a more specific substatus to the returned HTTP response code.
    *
    * @return the error code
    */
   String getCode();
 
   /**
-   * Get the error-message text.
+   * Gets the error-message text, a human readable message describing the error.
    *
    * @return the error-message text
    */
   String getMessage();
 
   /**
-   * Get the inner error.
+   * Gets the inner error, service specific debugging information that might assist a service implementer in determining the cause of an error.
+   *
+   * <p>Should only be used in development environments in order to guard against potential security concerns around information disclosure.
    *
    * @return the inner error
    */

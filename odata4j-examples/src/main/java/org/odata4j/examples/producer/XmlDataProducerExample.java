@@ -52,8 +52,6 @@ import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityIdResponse;
 import org.odata4j.producer.EntityQueryInfo;
 import org.odata4j.producer.EntityResponse;
-import org.odata4j.producer.ErrorResponseExtension;
-import org.odata4j.producer.ErrorResponseExtensions;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.Responses;
@@ -310,8 +308,6 @@ public class XmlDataProducerExample extends AbstractExample {
 
     @Override
     public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz) {
-      if (clazz.equals(ErrorResponseExtension.class))
-        return clazz.cast(ErrorResponseExtensions.ALWAYS_RETURN_INNER_ERRORS);
       return null;
     }
 

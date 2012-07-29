@@ -9,12 +9,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.core4j.Func;
-import org.odata4j.core.OExtension;
 import org.odata4j.examples.ODataServerFactory;
 import org.odata4j.examples.producer.inmemory.addressbook.Employee;
-import org.odata4j.producer.ErrorResponseExtension;
-import org.odata4j.producer.ErrorResponseExtensions;
-import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 
@@ -31,14 +27,7 @@ public class AddressBookInMemoryExample {
   }
 
   public static InMemoryProducer createProducer() {
-    InMemoryProducer producer = new InMemoryProducer(AddressBookInMemoryExample.class.getName()) {
-      @Override
-      public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz) {
-        if (clazz.equals(ErrorResponseExtension.class))
-          return clazz.cast(ErrorResponseExtensions.ALWAYS_RETURN_INNER_ERRORS);
-        return null;
-      }
-    };
+    InMemoryProducer producer = new InMemoryProducer(AddressBookInMemoryExample.class.getName());
 
     producer.register(Employee.class, "Employees", new Func<Iterable<Employee>>() {
       public Iterable<Employee> apply() {

@@ -189,7 +189,7 @@ public interface ODataProducer extends OExtensible<ODataProducer> {
   void deleteLink(OEntityId sourceEntity, String targetNavProp, OEntityKey targetEntityKey);
 
   /**
-   * Call a function (aka Service Operation)
+   * Calls a function (aka Service Operation).
    *
    * @param name  the name of the function
    * @param params  the parameters to the function

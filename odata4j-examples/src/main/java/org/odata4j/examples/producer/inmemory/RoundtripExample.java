@@ -10,12 +10,8 @@ import org.odata4j.consumer.ODataClientException;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.consumer.ODataConsumers;
 import org.odata4j.consumer.ODataServerException;
-import org.odata4j.core.OExtension;
 import org.odata4j.examples.AbstractExample;
 import org.odata4j.examples.ODataServerFactory;
-import org.odata4j.producer.ErrorResponseExtension;
-import org.odata4j.producer.ErrorResponseExtensions;
-import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.producer.server.ODataServer;
@@ -67,14 +63,7 @@ public class RoundtripExample extends AbstractExample {
     // create/start the server
     String endpointUri = "http://localhost:8885/RoundtripExample.svc/";
 
-    InMemoryProducer producer = new InMemoryProducer("RoundtripExample") {
-      @Override
-      public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz) {
-        if (clazz.equals(ErrorResponseExtension.class))
-          return clazz.cast(ErrorResponseExtensions.ALWAYS_RETURN_INNER_ERRORS);
-        return null;
-      }
-    };
+    InMemoryProducer producer = new InMemoryProducer("RoundtripExample");
 
     producer.register(Customer.class, "Customers", new Func<Iterable<Customer>>() {
       public Iterable<Customer> apply() {

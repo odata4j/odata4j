@@ -18,7 +18,7 @@ public class ErrorResponseExtensionTest {
 
   @Test
   public void alwaysReturnInnerErrors() throws Exception {
-    assertThat(ErrorResponseExtensions.ALWAYS_RETURN_INNER_ERRORS.returnInnerError(null, null), is(true));
+    assertThat(ErrorResponseExtensions.returnInnerErrors().returnInnerError(null, null, null), is(true));
   }
 
   @Test
@@ -63,24 +63,24 @@ public class ErrorResponseExtensionTest {
 
   private void callReturnInnerErrorWithSystemPropertyAndVerifyResult(String propertyValue, boolean expectedResult) {
     String oldDebugProperty = System.setProperty(ODATA4J_DEBUG, propertyValue);
-    assertThat(ErrorResponseExtensions.RETURN_INNER_ERRORS_BASED_ON_DEFAULT_SYSTEM_PROPERTY.returnInnerError(null, null), is(expectedResult));
+    assertThat(ErrorResponseExtensions.returnInnerErrorsBasedOnDefaultSystemProperty().returnInnerError(null, null, null), is(expectedResult));
     restoreProperty(ODATA4J_DEBUG, oldDebugProperty);
   }
 
   private void callReturnInnerErrorWithSystemPropertyAndVerifyResult(String customProperty, String propertyValue, boolean expectedResult) {
     String oldCustomProperty = System.setProperty(customProperty, propertyValue);
-    assertThat(ErrorResponseExtensions.RETURN_INNER_ERRORS_BASED_ON_CUSTOM_SYSTEM_PROPERTY(customProperty).returnInnerError(null, null), is(expectedResult));
+    assertThat(ErrorResponseExtensions.returnInnerErrorsBasedOnSystemProperty(customProperty).returnInnerError(null, null, null), is(expectedResult));
     restoreProperty(customProperty, oldCustomProperty);
   }
 
   private void callReturnInnerErrorWithQueryParameterAndVerifyResult(String parameterValue, boolean expectedResult) {
     UriInfo uriInfoMock = mockUriInfo(ODATA4J_DEBUG, parameterValue);
-    assertThat(ErrorResponseExtensions.RETURN_INNER_ERRORS_BASED_ON_DEFAULT_QUERY_PARAMETER.returnInnerError(null, uriInfoMock), is(expectedResult));
+    assertThat(ErrorResponseExtensions.returnInnerErrorsBasedOnDefaultQueryParameter().returnInnerError(null, uriInfoMock, null), is(expectedResult));
   }
 
   private void callReturnInnerErrorWithQueryParameterAndVerifyResult(String customParameter, String parameterValue, boolean expectedResult) {
     UriInfo uriInfoMock = mockUriInfo(customParameter, parameterValue);
-    assertThat(ErrorResponseExtensions.RETURN_INNER_ERRORS_BASED_ON_CUSTOM_QUERY_PARAMETER(customParameter).returnInnerError(null, uriInfoMock), is(expectedResult));
+    assertThat(ErrorResponseExtensions.returnInnerErrorsBasedOnQueryParameter(customParameter).returnInnerError(null, uriInfoMock, null), is(expectedResult));
   }
 
   private void restoreProperty(String propertyKey, String propertyValue) {

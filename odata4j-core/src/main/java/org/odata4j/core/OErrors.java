@@ -6,7 +6,7 @@ package org.odata4j.core;
 public class OErrors {
 
   /**
-   * Create a new {@link OError} instance.
+   * Creates a new {@link OError} instance.
    *
    * @param code  the technical error code
    * @param message  the human-readable error message

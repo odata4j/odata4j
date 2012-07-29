@@ -12,6 +12,7 @@ import org.odata4j.producer.resources.ExceptionMappingProvider;
 /**
  * An OData server exception with the information described in the OData documentation for
  * <a href="http://www.odata.org/documentation/operations#ErrorConditions">error conditions</a>.
+ *
  * <p>Correct formatting of every ODataException is ensured by routing it through the
  * {@link ExceptionMappingProvider}.</p>
  */
