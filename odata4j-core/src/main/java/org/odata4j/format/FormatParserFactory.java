@@ -4,11 +4,13 @@ import javax.ws.rs.core.MediaType;
 
 import org.odata4j.core.OCollection;
 import org.odata4j.core.OComplexObject;
+import org.odata4j.core.OEntity;
 import org.odata4j.core.OError;
 import org.odata4j.core.OObject;
 import org.odata4j.core.OSimpleObject;
 import org.odata4j.format.json.JsonCollectionFormatParser;
 import org.odata4j.format.json.JsonComplexObjectFormatParser;
+import org.odata4j.format.json.JsonEntityFormatParser;
 import org.odata4j.format.json.JsonEntryFormatParser;
 import org.odata4j.format.json.JsonErrorFormatParser;
 import org.odata4j.format.json.JsonFeedFormatParser;
@@ -38,6 +40,8 @@ public class FormatParserFactory {
     FormatParser<OSimpleObject<?>> getSimpleObjectFormatParser(Settings settings);
 
     FormatParser<OError> getErrorFormatParser(Settings settings);
+    
+    FormatParser<OEntity> getEntityFormatParser(Settings settings);
   }
 
   @SuppressWarnings("unchecked")
@@ -61,6 +65,8 @@ public class FormatParserFactory {
       return (FormatParser<T>) formatParsers.getSimpleObjectFormatParser(settings);
     } else if (OError.class.isAssignableFrom(targetType)) {
       return (FormatParser<T>) formatParsers.getErrorFormatParser(settings);
+    } else if (OEntity.class.isAssignableFrom(targetType)) {
+      return (FormatParser<T>) formatParsers.getEntityFormatParser(settings);
     }
     throw new IllegalArgumentException("Unable to locate format parser for " + targetType.getName() + " and format " + type);
   }
@@ -116,6 +122,11 @@ public class FormatParserFactory {
       return new JsonErrorFormatParser(settings);
     }
 
+    @Override
+    public FormatParser<OEntity> getEntityFormatParser(Settings settings) {
+      return new JsonEntityFormatParser(settings);
+    }
+
   }
 
   public static class AtomParsers implements FormatParsers {
@@ -153,6 +164,11 @@ public class FormatParserFactory {
     @Override
     public FormatParser<OError> getErrorFormatParser(Settings settings) {
       return new AtomErrorFormatParser();
+    }
+
+    @Override
+    public FormatParser<OEntity> getEntityFormatParser(Settings settings) {
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
   }
