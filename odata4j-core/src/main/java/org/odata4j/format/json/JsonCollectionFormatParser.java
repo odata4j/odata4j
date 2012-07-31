@@ -12,6 +12,7 @@ import org.odata4j.edm.EdmCollectionType;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.edm.EdmType;
+import org.odata4j.exceptions.NotImplementedException;
 import org.odata4j.format.FormatParser;
 import org.odata4j.format.FormatParserFactory;
 import org.odata4j.format.FormatType;
@@ -19,7 +20,6 @@ import org.odata4j.format.Settings;
 import org.odata4j.format.json.JsonStreamReaderFactory.JsonStreamReader;
 import org.odata4j.format.json.JsonStreamReaderFactory.JsonStreamReader.JsonEvent;
 import org.odata4j.format.json.JsonStreamReaderFactory.JsonStreamReader.JsonValueEvent;
-import org.odata4j.producer.exceptions.NotImplementedException;
 
 /**
  * Parses an OCollection in JSON format.

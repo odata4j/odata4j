@@ -16,11 +16,11 @@ import javax.ws.rs.ext.ContextResolver;
 
 import org.odata4j.core.ODataConstants;
 import org.odata4j.edm.EdmDataServices;
+import org.odata4j.exceptions.NotImplementedException;
 import org.odata4j.format.FormatType;
 import org.odata4j.format.xml.EdmxFormatWriter;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.edm.MetadataProducer;
-import org.odata4j.producer.exceptions.NotImplementedException;
 
 @Path("{first: \\$}metadata")
 public class MetadataResource {

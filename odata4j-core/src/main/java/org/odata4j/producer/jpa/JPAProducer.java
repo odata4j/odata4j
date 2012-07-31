@@ -40,6 +40,8 @@ import org.odata4j.core.Throwables;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmDecorator;
 import org.odata4j.edm.EdmFunctionImport;
+import org.odata4j.exceptions.BadRequestException;
+import org.odata4j.exceptions.NotImplementedException;
 import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.internal.TypeConverter;
 import org.odata4j.producer.BaseResponse;
@@ -52,8 +54,6 @@ import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.Responses;
 import org.odata4j.producer.edm.MetadataProducer;
-import org.odata4j.producer.exceptions.BadRequestException;
-import org.odata4j.producer.exceptions.NotImplementedException;
 
 public class JPAProducer implements ODataProducer {
 

@@ -17,7 +17,6 @@ import javax.ws.rs.core.Response.Status;
 
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
-import org.odata4j.consumer.ODataServerException;
 import org.odata4j.core.OCollection;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
@@ -36,6 +35,7 @@ import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.edm.EdmStructuralType;
 import org.odata4j.edm.EdmType;
+import org.odata4j.exceptions.ODataProducerException;
 import org.odata4j.format.FormatType;
 
 public class CustomTest extends CustomBaseTest {
@@ -323,8 +323,8 @@ public class CustomTest extends CustomBaseTest {
     try {
       c.getEntity("MLEs", key).execute();
       fail("Not found exception expected but not thrown");
-    } catch (ODataServerException ex) {
-      assertThat(ex.getStatus().getStatusCode(), is(Status.NOT_FOUND.getStatusCode()));
+    } catch (ODataProducerException ex) {
+      assertThat(ex.getHttpStatus().getStatusCode(), is(Status.NOT_FOUND.getStatusCode()));
     }
   }
 }

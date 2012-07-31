@@ -47,6 +47,8 @@ import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.edm.EdmStructuralType;
 import org.odata4j.edm.EdmType;
+import org.odata4j.exceptions.NotFoundException;
+import org.odata4j.exceptions.NotImplementedException;
 import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.OrderByExpression;
 import org.odata4j.expression.OrderByExpression.Direction;
@@ -62,8 +64,6 @@ import org.odata4j.producer.PropertyPathHelper;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.Responses;
 import org.odata4j.producer.edm.MetadataProducer;
-import org.odata4j.producer.exceptions.NotFoundException;
-import org.odata4j.producer.exceptions.NotImplementedException;
 import org.odata4j.producer.inmemory.InMemoryProducer.RequestContext.RequestType;
 
 /**

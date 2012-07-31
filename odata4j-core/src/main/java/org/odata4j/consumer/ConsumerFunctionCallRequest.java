@@ -27,6 +27,7 @@ import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.edm.EdmType;
+import org.odata4j.exceptions.ODataProducerException;
 import org.odata4j.expression.Expression;
 import org.odata4j.expression.LiteralExpression;
 import org.odata4j.format.FormatParser;
@@ -42,17 +43,17 @@ public class ConsumerFunctionCallRequest<T extends OObject>
   private final EdmFunctionImport function;
 
   public ConsumerFunctionCallRequest(ODataClient client, String serviceRootUri,
-      EdmDataServices metadata, String lastSegment) throws ODataServerException {
+      EdmDataServices metadata, String lastSegment) {
     super(client, serviceRootUri, metadata, lastSegment);
     // lastSegment is the function call name.
     function = metadata.findEdmFunctionImport(lastSegment);
     if (function == null)
-      throw new ODataClientException("Function Import " + lastSegment + " not defined");
+      throw new IllegalArgumentException("Function Import " + lastSegment + " not defined");
   }
 
   @SuppressWarnings("unchecked")
   @Override
-  public Enumerable<T> execute() throws ODataServerException, ODataClientException {
+  public Enumerable<T> execute() throws ODataProducerException {
     // turn each param into a custom query option
     for (OFunctionParameter p : params)
       custom(p.getName(), toUriString(p));
@@ -179,7 +180,7 @@ public class ConsumerFunctionCallRequest<T extends OObject>
     return parameter(name, OSimpleObjects.create(EdmSimpleType.STRING, value));
   }
 
-  private OObject doRequest(ODataClientRequest request) throws ODataServerException, ODataClientException {
+  private OObject doRequest(ODataClientRequest request) throws ODataProducerException {
     Response response = getClient().callFunction(request);
 
     ODataVersion version = InternalUtil.getDataServiceVersion(response.getHeaders().getFirst(ODataConstants.Headers.DATA_SERVICE_VERSION));

@@ -1,10 +1,8 @@
 package org.odata4j.examples.consumer;
 
 import org.core4j.Enumerable;
-import org.odata4j.consumer.ODataClientException;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.consumer.ODataConsumers;
-import org.odata4j.consumer.ODataServerException;
 import org.odata4j.core.EntitySetInfo;
 import org.odata4j.examples.AbstractExample;
 
@@ -72,28 +70,16 @@ public class ServiceListingConsumerExample extends AbstractExample {
   private void printOutFirstEntities(Iterable<String> services) {
     for (String endpoint : services) {
       ODataConsumer c = ODataConsumers.create(endpoint);
-      try {
-        for (EntitySetInfo entitySet : c.getEntitySets())
-          reportEntities(entitySet.getHref(), c.getEntities(entitySet.getHref()).top(1).execute());
-      } catch (ODataServerException e) {
-        reportError(e);
-      } catch (ODataClientException e) {
-        report("Client error: " + e.getMessage());
-      }
+      for (EntitySetInfo entitySet : c.getEntitySets())
+        reportEntities(entitySet.getHref(), c.getEntities(entitySet.getHref()).top(1).execute());
     }
   }
 
   private void printOutAllEntities(Iterable<String> services) {
     for (String endpoint : services) {
       ODataConsumer c = ODataConsumers.create(endpoint);
-      try {
-        for (EntitySetInfo entitySet : c.getEntitySets())
-          reportEntities(entitySet.getTitle(), c.getEntities(entitySet.getHref()).execute());
-      } catch (ODataServerException e) {
-        reportError(e);
-      } catch (ODataClientException e) {
-        report("Client error: " + e.getMessage());
-      }
+      for (EntitySetInfo entitySet : c.getEntitySets())
+        reportEntities(entitySet.getTitle(), c.getEntities(entitySet.getHref()).execute());
     }
   }
 

@@ -18,6 +18,8 @@ import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.exceptions.NotAcceptableException;
+import org.odata4j.exceptions.NotImplementedException;
 import org.odata4j.format.Entry;
 import org.odata4j.format.FormatParser;
 import org.odata4j.format.FormatParserFactory;
@@ -25,13 +27,10 @@ import org.odata4j.format.Settings;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.OMediaLinkExtension;
-import org.odata4j.producer.exceptions.NotAcceptableException;
-import org.odata4j.producer.exceptions.NotImplementedException;
-import org.odata4j.producer.exceptions.ODataException;
 
 public abstract class BaseResource {
 
-  protected OEntity getRequestEntity(HttpHeaders httpHeaders, UriInfo uriInfo, String payload, EdmDataServices metadata, String entitySetName, OEntityKey entityKey) throws ODataException {
+  protected OEntity getRequestEntity(HttpHeaders httpHeaders, UriInfo uriInfo, String payload, EdmDataServices metadata, String entitySetName, OEntityKey entityKey) {
     // TODO validation of MaxDataServiceVersion against DataServiceVersion
     // see spec [ms-odata] section 1.7
 
@@ -46,7 +45,7 @@ public abstract class BaseResource {
     return entry.getEntity();
   }
 
-  protected OEntity getRequestEntity(HttpHeaders httpHeaders, UriInfo uriInfo, InputStream payload, EdmDataServices metadata, String entitySetName, OEntityKey entityKey) throws ODataException, UnsupportedEncodingException {
+  protected OEntity getRequestEntity(HttpHeaders httpHeaders, UriInfo uriInfo, InputStream payload, EdmDataServices metadata, String entitySetName, OEntityKey entityKey) throws UnsupportedEncodingException {
     // TODO validation of MaxDataServiceVersion against DataServiceVersion
     // see spec [ms-odata] section 1.7
 

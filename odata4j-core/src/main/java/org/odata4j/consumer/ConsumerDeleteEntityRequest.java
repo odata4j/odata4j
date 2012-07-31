@@ -3,6 +3,7 @@ package org.odata4j.consumer;
 import org.core4j.Enumerable;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.edm.EdmDataServices;
+import org.odata4j.exceptions.ODataProducerException;
 
 public class ConsumerDeleteEntityRequest extends ConsumerEntityRequestBase<Void> {
 
@@ -12,7 +13,7 @@ public class ConsumerDeleteEntityRequest extends ConsumerEntityRequestBase<Void>
   }
 
   @Override
-  public Void execute() throws ODataServerException, ODataClientException {
+  public Void execute() throws ODataProducerException {
     String path = Enumerable.create(getSegments()).join("/");
     ODataClientRequest request = ODataClientRequest.delete(getServiceRootUri() + path);
     getClient().deleteEntity(request);

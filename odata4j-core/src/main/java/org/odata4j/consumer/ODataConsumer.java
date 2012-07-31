@@ -17,6 +17,7 @@ import org.odata4j.core.OQueryRequest;
 import org.odata4j.core.ORelatedEntitiesLink;
 import org.odata4j.core.ORelatedEntityLink;
 import org.odata4j.edm.EdmDataServices;
+import org.odata4j.exceptions.ODataProducerException;
 import org.odata4j.format.FormatType;
 
 public interface ODataConsumer {
@@ -128,19 +129,17 @@ public interface ODataConsumer {
    * Lists all top-level entity-sets for the OData service.
    *
    * @return the entity-set information
-   * @throws ODataServerException  error from the server
-   * @throws ODataClientException  error due to client problem
+   * @throws ODataProducerException  error from the producer
    */
-  Enumerable<EntitySetInfo> getEntitySets() throws ODataServerException, ODataClientException;
+  Enumerable<EntitySetInfo> getEntitySets() throws ODataProducerException;
 
   /**
    * Gets the OData service metadata.
    *
    * @return the service metadata
-   * @throws ODataServerException  error from the server
    * @see <a href="http://msdn.microsoft.com/en-us/library/dd541087(v=prot.10).aspx">[msdn] 2.2 &lt;edmx:DataServices&gt;</a>
    */
-  EdmDataServices getMetadata() throws ODataServerException;
+  EdmDataServices getMetadata();
 
   /**
    * Gets entities referred to by the given related-entities link.
@@ -359,9 +358,8 @@ public interface ODataConsumer {
    *
    * @param functionName  the function name
    * @return a new functioncall-request builder
-   * @throws ODataServerException  if the function name is not defined in the metadata
    */
-  OFunctionRequest<OObject> callFunction(String functionName) throws ODataServerException;
+  OFunctionRequest<OObject> callFunction(String functionName);
 
   /**
    * Returns a single value request which can be extended by query options. The execution of the request will return a single value for $count.

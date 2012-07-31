@@ -11,8 +11,8 @@ import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OPredicates;
 import org.odata4j.core.PrefixedNamespace;
 import org.odata4j.edm.EdmItem.BuilderContext;
+import org.odata4j.exceptions.NotFoundException;
 import org.odata4j.internal.AndroidCompat;
-import org.odata4j.producer.exceptions.NotFoundException;
 
 /**
  * The &lt;edmx:DataServices&gt; element contains the service metadata of a Data Service. This service metadata contains zero or more EDM conceptual schemas.

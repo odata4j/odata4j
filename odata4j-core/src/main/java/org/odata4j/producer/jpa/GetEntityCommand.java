@@ -2,7 +2,7 @@ package org.odata4j.producer.jpa;
 
 import javax.persistence.metamodel.EntityType;
 
-import org.odata4j.producer.exceptions.NotFoundException;
+import org.odata4j.exceptions.NotFoundException;
 import org.odata4j.producer.jpa.JPAContext.EntityAccessor;
 
 public class GetEntityCommand implements Command {

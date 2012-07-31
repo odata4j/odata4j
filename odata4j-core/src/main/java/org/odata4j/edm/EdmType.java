@@ -9,7 +9,7 @@ import org.odata4j.core.OCollection;
 import org.odata4j.core.OComplexObject;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OObject;
-import org.odata4j.producer.exceptions.NotImplementedException;
+import org.odata4j.exceptions.NotImplementedException;
 
 /**
  * A type in the EDM type system.

@@ -6,6 +6,7 @@ import org.odata4j.core.OEntityId;
 import org.odata4j.core.OEntityIds;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.edm.EdmDataServices;
+import org.odata4j.exceptions.ODataProducerException;
 import org.odata4j.format.SingleLink;
 
 public class ConsumerQueryLinksRequest extends ConsumerQueryRequestBase<OEntityId> {
@@ -28,7 +29,7 @@ public class ConsumerQueryLinksRequest extends ConsumerQueryRequestBase<OEntityI
   }
 
   @Override
-  public Enumerable<OEntityId> execute() throws ODataServerException, ODataClientException {
+  public Enumerable<OEntityId> execute() throws ODataProducerException {
     ODataClientRequest request = buildRequest(linksPath(targetNavProp, null));
     return Enumerable.create(getClient().getLinks(request)).select(new Func1<SingleLink, OEntityId>() {
       @Override

@@ -31,6 +31,8 @@ import org.odata4j.core.ODataHttpMethod;
 import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OEntity;
 import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.exceptions.NotFoundException;
+import org.odata4j.exceptions.UnsupportedMediaTypeException;
 import org.odata4j.format.FormatWriter;
 import org.odata4j.format.FormatWriterFactory;
 import org.odata4j.internal.InternalUtil;
@@ -39,8 +41,6 @@ import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
-import org.odata4j.producer.exceptions.NotFoundException;
-import org.odata4j.producer.exceptions.UnsupportedMediaTypeException;
 
 // ignoreParens below is there to trim the parentheses from the entity set name when they are present - e.g. '/my.svc/Users()'.
 @Path("{entitySetName: [^/()]+?}{ignoreParens: (?:\\(\\))?}")

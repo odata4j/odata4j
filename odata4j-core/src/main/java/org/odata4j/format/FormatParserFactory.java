@@ -7,6 +7,7 @@ import org.odata4j.core.OComplexObject;
 import org.odata4j.core.OError;
 import org.odata4j.core.OObject;
 import org.odata4j.core.OSimpleObject;
+import org.odata4j.exceptions.UnsupportedMediaTypeException;
 import org.odata4j.format.json.JsonCollectionFormatParser;
 import org.odata4j.format.json.JsonComplexObjectFormatParser;
 import org.odata4j.format.json.JsonEntryFormatParser;
@@ -18,7 +19,6 @@ import org.odata4j.format.xml.AtomEntryFormatParser;
 import org.odata4j.format.xml.AtomErrorFormatParser;
 import org.odata4j.format.xml.AtomFeedFormatParser;
 import org.odata4j.format.xml.AtomSingleLinkFormatParser;
-import org.odata4j.producer.exceptions.UnsupportedMediaTypeException;
 
 public class FormatParserFactory {
 

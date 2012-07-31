@@ -13,22 +13,22 @@ import javax.ws.rs.core.UriInfo;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.odata4j.exceptions.ODataProducerException;
+import org.odata4j.exceptions.ServerErrorException;
 import org.odata4j.format.FormatType;
 import org.odata4j.format.FormatWriter;
 import org.odata4j.format.FormatWriterFactory;
 import org.odata4j.producer.ErrorResponse;
-import org.odata4j.producer.Responses;
-import org.odata4j.producer.exceptions.ODataException;
-import org.odata4j.producer.exceptions.ServerErrorException;
+import org.odata4j.producer.resources.ExceptionMappingProvider;
 
 public abstract class AbstractErrorFormatWriterTest {
 
   private static final String MESSAGE = "This is an error message";
   private static final Throwable CAUSE = new IllegalArgumentException();
 
-  private static final ODataException ODATA_EXCEPTION = new ServerErrorException();
-  private static final ODataException ODATA_EXCEPTION_WITH_MESSAGE = new ServerErrorException(MESSAGE);
-  private static final ODataException ODATA_EXCEPTION_WITH_CAUSE = new ServerErrorException(CAUSE);
+  private static final ODataProducerException ODATA_EXCEPTION = new ServerErrorException();
+  private static final ODataProducerException ODATA_EXCEPTION_WITH_MESSAGE = new ServerErrorException(MESSAGE);
+  private static final ODataProducerException ODATA_EXCEPTION_WITH_CAUSE = new ServerErrorException(CAUSE);
 
   private static FormatWriter<ErrorResponse> formatWriter;
 
@@ -52,10 +52,6 @@ public abstract class AbstractErrorFormatWriterTest {
     stringWriter = new StringWriter();
   }
 
-  private ErrorResponse getErrorResponse(ODataException exception, boolean includeInnerError) {
-    return Responses.error(exception.toOError(includeInnerError));
-  }
-
   private void assertErrorResponse(String code, String message, String innerError) {
     assertTrue(Pattern.compile(buildRegex(code, message, innerError), Pattern.DOTALL).matcher(stringWriter.toString()).matches());
   }
@@ -64,25 +60,25 @@ public abstract class AbstractErrorFormatWriterTest {
 
   @Test
   public void code() throws Exception {
-    formatWriter.write(uriInfoMock, stringWriter, getErrorResponse(ODATA_EXCEPTION, false));
+    formatWriter.write(uriInfoMock, stringWriter, ExceptionMappingProvider.getErrorResponse(ODATA_EXCEPTION, false));
     assertErrorResponse(ODATA_EXCEPTION.getClass().getSimpleName(), ".+", null);
   }
 
   @Test
   public void message() throws Exception {
-    formatWriter.write(uriInfoMock, stringWriter, getErrorResponse(ODATA_EXCEPTION_WITH_MESSAGE, false));
+    formatWriter.write(uriInfoMock, stringWriter, ExceptionMappingProvider.getErrorResponse(ODATA_EXCEPTION_WITH_MESSAGE, false));
     assertErrorResponse(".+", MESSAGE, null);
   }
 
   @Test
   public void innerError() throws Exception {
-    formatWriter.write(uriInfoMock, stringWriter, getErrorResponse(ODATA_EXCEPTION, true));
+    formatWriter.write(uriInfoMock, stringWriter, ExceptionMappingProvider.getErrorResponse(ODATA_EXCEPTION, true));
     assertErrorResponse(".+", ".+", ODATA_EXCEPTION.getClass().getName() + ".+");
   }
 
   @Test
   public void innerErrorWithCausedBy() throws Exception {
-    formatWriter.write(uriInfoMock, stringWriter, getErrorResponse(ODATA_EXCEPTION_WITH_CAUSE, true));
+    formatWriter.write(uriInfoMock, stringWriter, ExceptionMappingProvider.getErrorResponse(ODATA_EXCEPTION_WITH_CAUSE, true));
     assertErrorResponse(".+", ".+", ODATA_EXCEPTION_WITH_CAUSE.getClass().getName() + ".+Caused by: " + CAUSE.getClass().getName() + ".+");
   }
 }

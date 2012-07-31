@@ -21,6 +21,7 @@ import org.odata4j.core.OEntityId;
 import org.odata4j.core.OEntityIds;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.edm.EdmMultiplicity;
+import org.odata4j.exceptions.NotFoundException;
 import org.odata4j.format.FormatParser;
 import org.odata4j.format.FormatParserFactory;
 import org.odata4j.format.FormatWriter;
@@ -29,7 +30,6 @@ import org.odata4j.format.SingleLink;
 import org.odata4j.format.SingleLinks;
 import org.odata4j.producer.EntityIdResponse;
 import org.odata4j.producer.ODataProducer;
-import org.odata4j.producer.exceptions.NotFoundException;
 
 public class LinksRequestResource extends BaseResource {
 

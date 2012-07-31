@@ -1,5 +1,6 @@
 package org.odata4j.cxf.consumer;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,8 +9,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.HttpResponse;
-import org.odata4j.consumer.ODataClientException;
 import org.odata4j.consumer.Response;
+import org.odata4j.core.Throwables;
 import org.odata4j.producer.resources.HeaderMap;
 
 public class CxfResponse implements Response {
@@ -43,8 +44,8 @@ public class CxfResponse implements Response {
     try {
       if (httpResponse.getEntity() != null)
         httpResponse.getEntity().getContent().close();
-    } catch (Exception e) {
-      throw new ODataClientException("Error while closing socket", e);
+    } catch (IOException e) {
+      Throwables.propagate(e);
     }
   }
 }

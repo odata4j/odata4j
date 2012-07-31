@@ -37,6 +37,9 @@ import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.edm.EdmProperty.CollectionKind;
 import org.odata4j.edm.EdmSimpleType;
+import org.odata4j.exceptions.BadRequestException;
+import org.odata4j.exceptions.NotFoundException;
+import org.odata4j.exceptions.NotImplementedException;
 import org.odata4j.producer.BaseResponse;
 import org.odata4j.producer.CountResponse;
 import org.odata4j.producer.EntitiesResponse;
@@ -49,9 +52,6 @@ import org.odata4j.producer.PropertyPathHelper;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.Responses;
 import org.odata4j.producer.edm.MetadataProducer;
-import org.odata4j.producer.exceptions.BadRequestException;
-import org.odata4j.producer.exceptions.NotFoundException;
-import org.odata4j.producer.exceptions.NotImplementedException;
 
 /**
  * A custom producer for various test scenarios that aren't possible with

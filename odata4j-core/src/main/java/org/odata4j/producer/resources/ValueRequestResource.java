@@ -12,12 +12,12 @@ import javax.ws.rs.ext.ContextResolver;
 
 import org.odata4j.core.OEntityKey;
 import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.exceptions.NotFoundException;
+import org.odata4j.exceptions.NotImplementedException;
 import org.odata4j.producer.EntityQueryInfo;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.OMediaLinkExtension;
-import org.odata4j.producer.exceptions.NotFoundException;
-import org.odata4j.producer.exceptions.NotImplementedException;
 
 public class ValueRequestResource {
 

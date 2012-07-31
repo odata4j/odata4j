@@ -1,7 +1,6 @@
 package org.odata4j.core;
 
-import org.odata4j.consumer.ODataClientException;
-import org.odata4j.consumer.ODataServerException;
+import org.odata4j.exceptions.ODataProducerException;
 
 /**
  * A consumer-side modification-request builder, used for operations such as MERGE and UPDATE.  Call {@link #execute()} to issue the request.
@@ -47,10 +46,9 @@ public interface OModifyRequest<T> {
   /**
    * Sends the modification request to the OData service.
    *
-   * @throws ODataServerException  error from the server
-   * @throws ODataClientException  error due to client problem
+   * @throws ODataProducerException  error from the producer
    */
-  void execute() throws ODataServerException, ODataClientException;
+  void execute() throws ODataProducerException;
 
   /**
    * Select a new modification entity by navigating to a referenced entity in a child collection.

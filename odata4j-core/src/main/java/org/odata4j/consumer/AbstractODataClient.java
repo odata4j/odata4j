@@ -13,6 +13,7 @@ import org.odata4j.core.OLink;
 import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.exceptions.ODataProducerException;
 import org.odata4j.format.Entry;
 import org.odata4j.format.FormatType;
 import org.odata4j.format.SingleLink;
@@ -35,14 +36,14 @@ public abstract class AbstractODataClient implements ODataClient {
     return this.formatType;
   }
 
-  public EdmDataServices getMetadata(ODataClientRequest request) throws ODataServerException, ODataClientException {
+  public EdmDataServices getMetadata(ODataClientRequest request) throws ODataProducerException {
     Response response = doRequest(FormatType.ATOM, request, Status.OK);
     EdmDataServices metadata = new EdmxFormatParser().parseMetadata(toXml(response));
     response.close();
     return metadata;
   }
 
-  public Iterable<AtomCollectionInfo> getCollections(ODataClientRequest request) throws ODataServerException, ODataClientException {
+  public Iterable<AtomCollectionInfo> getCollections(ODataClientRequest request) throws ODataProducerException {
     Response response = doRequest(FormatType.ATOM, request, Status.OK);
     Enumerable<AtomCollectionInfo> collections = Enumerable.create(AtomServiceDocumentFormatParser.parseWorkspaces(toXml(response)))
         .selectMany(AtomWorkspaceInfo.GET_COLLECTIONS);
@@ -50,46 +51,46 @@ public abstract class AbstractODataClient implements ODataClient {
     return collections;
   }
 
-  public Iterable<SingleLink> getLinks(ODataClientRequest request) throws ODataServerException, ODataClientException {
+  public Iterable<SingleLink> getLinks(ODataClientRequest request) throws ODataProducerException {
     Response response = doRequest(FormatType.ATOM, request, Status.OK);
     Iterable<SingleLink> links = AtomSingleLinkFormatParser.parseLinks(toXml(response));
     response.close();
     return links;
   }
 
-  public Response getEntity(ODataClientRequest request) throws ODataServerException, ODataClientException {
+  public Response getEntity(ODataClientRequest request) throws ODataProducerException {
     return doRequest(getFormatType(), request, Status.OK, Status.NO_CONTENT);
   }
 
-  public Response getEntities(ODataClientRequest request) throws ODataServerException, ODataClientException {
+  public Response getEntities(ODataClientRequest request) throws ODataProducerException {
     return doRequest(getFormatType(), request, Status.OK);
   }
 
-  public Response callFunction(ODataClientRequest request) throws ODataServerException, ODataClientException {
+  public Response callFunction(ODataClientRequest request) throws ODataProducerException {
     return doRequest(getFormatType(), request, Status.OK, Status.NO_CONTENT);
   }
 
-  public Response createEntity(ODataClientRequest request) throws ODataServerException, ODataClientException {
+  public Response createEntity(ODataClientRequest request) throws ODataProducerException {
     return doRequest(getFormatType(), request, Status.CREATED);
   }
 
-  public void updateEntity(ODataClientRequest request) throws ODataServerException, ODataClientException {
+  public void updateEntity(ODataClientRequest request) throws ODataProducerException {
     doRequest(getFormatType(), request, Status.OK, Status.NO_CONTENT).close();
   }
 
-  public void deleteEntity(ODataClientRequest request) throws ODataServerException, ODataClientException {
+  public void deleteEntity(ODataClientRequest request) throws ODataProducerException {
     doRequest(getFormatType(), request, Status.OK, Status.NO_CONTENT).close();
   }
 
-  public void deleteLink(ODataClientRequest request) throws ODataServerException, ODataClientException {
+  public void deleteLink(ODataClientRequest request) throws ODataProducerException {
     doRequest(getFormatType(), request, Status.NO_CONTENT).close();
   }
 
-  public void createLink(ODataClientRequest request) throws ODataServerException, ODataClientException {
+  public void createLink(ODataClientRequest request) throws ODataProducerException {
     doRequest(getFormatType(), request, Status.NO_CONTENT).close();
   }
 
-  public void updateLink(ODataClientRequest request) throws ODataServerException, ODataClientException {
+  public void updateLink(ODataClientRequest request) throws ODataProducerException {
     doRequest(getFormatType(), request, Status.NO_CONTENT).close();
   }
 
@@ -114,7 +115,7 @@ public abstract class AbstractODataClient implements ODataClient {
     };
   }
 
-  protected abstract Response doRequest(FormatType reqType, ODataClientRequest request, StatusType... expectedResponseStatus) throws ODataServerException, ODataClientException;
+  protected abstract Response doRequest(FormatType reqType, ODataClientRequest request, StatusType... expectedResponseStatus) throws ODataProducerException;
 
   protected abstract XMLEventReader2 toXml(Response response);
 }

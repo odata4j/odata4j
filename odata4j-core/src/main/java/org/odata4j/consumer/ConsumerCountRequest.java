@@ -1,6 +1,7 @@
 package org.odata4j.consumer;
 
 import org.odata4j.core.OCountRequest;
+import org.odata4j.exceptions.ODataProducerException;
 
 public class ConsumerCountRequest implements OCountRequest {
 
@@ -24,7 +25,7 @@ public class ConsumerCountRequest implements OCountRequest {
     return this;
   }
 
-  public int execute() {
+  public int execute() throws ODataProducerException {
     String uri = baseUri;
 
     if (entitySetName != null) {

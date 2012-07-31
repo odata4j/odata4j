@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
 
-import org.odata4j.producer.exceptions.NotFoundException;
+import org.odata4j.exceptions.NotFoundException;
 
 public class Chain implements Command {
 

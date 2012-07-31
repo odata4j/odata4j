@@ -1,7 +1,6 @@
 package org.odata4j.core;
 
-import org.odata4j.consumer.ODataClientException;
-import org.odata4j.consumer.ODataServerException;
+import org.odata4j.exceptions.ODataProducerException;
 
 /**
  * A consumer-side create-request builder.  Call {@link #execute()} to issue the request.
@@ -90,10 +89,9 @@ public interface OCreateRequest<T> {
    * created entity.
    * 
    * @return newly created entity
-   * @throws ODataServerException  error from the server
-   * @throws ODataClientException  error due to client problem
+   * @throws ODataProducerException  error from the producer
    */
-  T execute() throws ODataServerException, ODataClientException;
+  T execute() throws ODataProducerException;
 
   /**
    * Returns a locally-built entity and does not send the create-request

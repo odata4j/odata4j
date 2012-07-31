@@ -2,11 +2,11 @@ package org.odata4j.core;
 
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.edm.EdmType;
+import org.odata4j.exceptions.NotImplementedException;
 import org.odata4j.expression.CommonExpression;
 import org.odata4j.expression.Expression;
 import org.odata4j.expression.ExpressionParser;
 import org.odata4j.expression.LiteralExpression;
-import org.odata4j.producer.exceptions.NotImplementedException;
 
 /**
  * A static factory to create immutable {@link OFunctionParameter} instances.

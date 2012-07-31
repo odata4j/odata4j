@@ -7,6 +7,7 @@ import org.odata4j.core.OEntityKey;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmNavigationProperty;
+import org.odata4j.exceptions.ODataProducerException;
 import org.odata4j.format.Entry;
 import org.odata4j.format.Feed;
 import org.odata4j.format.FormatParser;
@@ -44,7 +45,7 @@ public class ConsumerGetEntityRequest<T> extends ConsumerEntityRequestBase<T> im
   }
 
   @Override
-  public T execute() throws ODataServerException, ODataClientException {
+  public T execute() throws ODataProducerException {
 
     String path = Enumerable.create(getSegments()).join("/");
 

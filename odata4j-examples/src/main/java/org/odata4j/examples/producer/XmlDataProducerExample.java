@@ -46,6 +46,7 @@ import org.odata4j.examples.AbstractExample;
 import org.odata4j.examples.ODataServerFactory;
 import org.odata4j.examples.producer.jpa.DatabaseUtils;
 import org.odata4j.examples.producer.jpa.northwind.Customers;
+import org.odata4j.exceptions.NotImplementedException;
 import org.odata4j.producer.BaseResponse;
 import org.odata4j.producer.CountResponse;
 import org.odata4j.producer.EntitiesResponse;
@@ -56,7 +57,6 @@ import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.Responses;
 import org.odata4j.producer.edm.MetadataProducer;
-import org.odata4j.producer.exceptions.NotImplementedException;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 
 /**

@@ -3,6 +3,7 @@ package org.odata4j.consumer;
 import org.core4j.Enumerable;
 import org.odata4j.core.OEntityId;
 import org.odata4j.edm.EdmDataServices;
+import org.odata4j.exceptions.ODataProducerException;
 
 public class ConsumerUpdateLinkRequest extends ConsumerEntityRequestBase<Void> {
 
@@ -19,7 +20,7 @@ public class ConsumerUpdateLinkRequest extends ConsumerEntityRequestBase<Void> {
   }
 
   @Override
-  public Void execute() throws ODataServerException, ODataClientException {
+  public Void execute() throws ODataProducerException {
     String path = Enumerable.create(getSegments()).join("/");
     path = ConsumerQueryLinksRequest.linksPath(targetNavProp, oldTargetKeyValues).apply(path);
 

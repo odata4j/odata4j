@@ -35,9 +35,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.core4j.Enumerable;
 import org.odata4j.consumer.AbstractODataClient;
-import org.odata4j.consumer.ODataClientException;
 import org.odata4j.consumer.ODataClientRequest;
-import org.odata4j.consumer.ODataServerException;
 import org.odata4j.consumer.Response;
 import org.odata4j.consumer.behaviors.OClientBehavior;
 import org.odata4j.consumer.behaviors.OClientBehaviors;
@@ -46,6 +44,8 @@ import org.odata4j.core.ODataConstants.Charsets;
 import org.odata4j.core.ODataHttpMethod;
 import org.odata4j.core.OError;
 import org.odata4j.core.Throwables;
+import org.odata4j.exceptions.ODataProducerException;
+import org.odata4j.exceptions.ODataProducerExceptions;
 import org.odata4j.format.Entry;
 import org.odata4j.format.FormatParserFactory;
 import org.odata4j.format.FormatType;
@@ -91,7 +91,7 @@ public class ODataCxfClient extends AbstractODataClient {
     }
   }
 
-  public String requestBody(FormatType formatType, ODataClientRequest request) {
+  public String requestBody(FormatType formatType, ODataClientRequest request) throws ODataProducerException {
     Response response = doRequest(formatType, request, Status.OK);
     String string = entityToString(((CxfResponse) response).getHttpResponse().getEntity());
     response.close();
@@ -99,7 +99,7 @@ public class ODataCxfClient extends AbstractODataClient {
   }
 
   @SuppressWarnings("unchecked")
-  protected Response doRequest(FormatType reqType, ODataClientRequest request, StatusType... expectedResponseStatus) throws ODataServerException, ODataClientException {
+  protected Response doRequest(FormatType reqType, ODataClientRequest request, StatusType... expectedResponseStatus) throws ODataProducerException {
     UriBuilder uriBuilder = UriBuilder.fromPath(request.getUrl());
     for (String key : request.getQueryParams().keySet())
       uriBuilder = uriBuilder.queryParam(key, request.getQueryParams().get(key));
@@ -137,7 +137,7 @@ public class ODataCxfClient extends AbstractODataClient {
       else if (request.getPayload() instanceof SingleLink)
         payloadClass = SingleLink.class;
       else
-        throw new ODataClientException("Unsupported payload: " + request.getPayload());
+        throw new IllegalArgumentException("Unsupported payload: " + request.getPayload());
 
       StringWriter sw = new StringWriter();
       FormatWriter<Object> fw = (FormatWriter<Object>)
@@ -157,16 +157,16 @@ public class ODataCxfClient extends AbstractODataClient {
 
         entityRequest.setEntity(entity);
       } catch (UnsupportedEncodingException e) {
-        throw new ODataClientException(e);
+        Throwables.propagate(e);
       }
     }
 
     // execute request
-    HttpResponse httpResponse;
+    HttpResponse httpResponse = null;
     try {
       httpResponse = this.httpClient.execute(httpRequest);
     } catch (IOException e) {
-      throw new ODataClientException("HTTP error occurred", e);
+      Throwables.propagate(e);
     }
 
     StatusType status = Status.fromStatusCode(httpResponse.getStatusLine().getStatusCode());
@@ -195,10 +195,10 @@ public class ODataCxfClient extends AbstractODataClient {
     RuntimeException exception;
     String textEntity = entityToString(httpResponse.getEntity()); // input stream can only be consumed once
     try {
-      // report error as ODataServerException in case we get a well-formed OData error...
+      // report error as ODataProducerException in case we get a well-formed OData error...
       MediaType contentType = MediaType.valueOf(httpResponse.getEntity().getContentType().getValue());
       OError error = FormatParserFactory.getParser(OError.class, contentType, null).parse(new StringReader(textEntity));
-      exception = new ODataServerException(status, error);
+      exception = ODataProducerExceptions.create(status, error);
     } catch (RuntimeException e) {
       // ... otherwise throw a RuntimeError
       exception = new RuntimeException(String.format("Expected status %s, found %s. Server response:",
@@ -248,7 +248,8 @@ public class ODataCxfClient extends AbstractODataClient {
       bufferedReader.close();
       return stringBuilder.toString();
     } catch (IOException e) {
-      throw new ODataClientException(e);
+      Throwables.propagate(e);
+      return null;
     }
   }
 }

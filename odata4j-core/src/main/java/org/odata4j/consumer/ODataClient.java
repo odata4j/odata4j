@@ -8,6 +8,7 @@ import org.odata4j.core.OLink;
 import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.exceptions.ODataProducerException;
 import org.odata4j.format.Entry;
 import org.odata4j.format.FormatType;
 import org.odata4j.format.SingleLink;
@@ -17,33 +18,33 @@ public interface ODataClient {
 
   FormatType getFormatType();
 
-  EdmDataServices getMetadata(ODataClientRequest request) throws ODataServerException, ODataClientException;
+  EdmDataServices getMetadata(ODataClientRequest request) throws ODataProducerException;
 
-  Iterable<AtomCollectionInfo> getCollections(ODataClientRequest request) throws ODataServerException, ODataClientException;
+  Iterable<AtomCollectionInfo> getCollections(ODataClientRequest request) throws ODataProducerException;
 
-  Iterable<SingleLink> getLinks(ODataClientRequest request) throws ODataServerException, ODataClientException;
+  Iterable<SingleLink> getLinks(ODataClientRequest request) throws ODataProducerException;
 
-  Response getEntity(ODataClientRequest request) throws ODataServerException, ODataClientException;
+  Response getEntity(ODataClientRequest request) throws ODataProducerException;
 
-  Response getEntities(ODataClientRequest request) throws ODataServerException, ODataClientException;
+  Response getEntities(ODataClientRequest request) throws ODataProducerException;
 
-  Response callFunction(ODataClientRequest request) throws ODataServerException, ODataClientException;
+  Response callFunction(ODataClientRequest request) throws ODataProducerException;
 
-  Response createEntity(ODataClientRequest request) throws ODataServerException, ODataClientException;
+  Response createEntity(ODataClientRequest request) throws ODataProducerException;
 
-  void updateEntity(ODataClientRequest request) throws ODataServerException, ODataClientException;
+  void updateEntity(ODataClientRequest request) throws ODataProducerException;
 
-  void deleteEntity(ODataClientRequest request) throws ODataServerException, ODataClientException;
+  void deleteEntity(ODataClientRequest request) throws ODataProducerException;
 
-  void deleteLink(ODataClientRequest request) throws ODataServerException, ODataClientException;
+  void deleteLink(ODataClientRequest request) throws ODataProducerException;
 
-  void createLink(ODataClientRequest request) throws ODataServerException, ODataClientException;
+  void createLink(ODataClientRequest request) throws ODataProducerException;
 
-  void updateLink(ODataClientRequest request) throws ODataServerException, ODataClientException;
+  void updateLink(ODataClientRequest request) throws ODataProducerException;
 
   Entry createRequestEntry(EdmEntitySet entitySet, OEntityKey entityKey, List<OProperty<?>> props, List<OLink> links);
 
-  String requestBody(FormatType formatType, ODataClientRequest request);
+  String requestBody(FormatType formatType, ODataClientRequest request) throws ODataProducerException;
 
   Reader getFeedReader(Response response);
 }

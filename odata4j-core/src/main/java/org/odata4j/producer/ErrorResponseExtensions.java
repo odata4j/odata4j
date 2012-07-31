@@ -3,7 +3,7 @@ package org.odata4j.producer;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.UriInfo;
 
-import org.odata4j.producer.exceptions.ODataException;
+import org.odata4j.exceptions.ODataProducerException;
 
 /**
  * This class provides implementations of the {@link ErrorResponseExtension} interface for common
@@ -16,7 +16,7 @@ public class ErrorResponseExtensions {
    */
   public static final ErrorResponseExtension returnInnerErrors() {
     return new ErrorResponseExtension() {
-      public boolean returnInnerError(HttpHeaders httpHeaders, UriInfo uriInfo, ODataException exception) {
+      public boolean returnInnerError(HttpHeaders httpHeaders, UriInfo uriInfo, ODataProducerException exception) {
         return true;
       }
     };
@@ -46,7 +46,7 @@ public class ErrorResponseExtensions {
    */
   public static final ErrorResponseExtension returnInnerErrorsBasedOnSystemProperty(final String propertyName) {
     return new ErrorResponseExtension() {
-      public boolean returnInnerError(HttpHeaders httpHeaders, UriInfo uriInfo, ODataException exception) {
+      public boolean returnInnerError(HttpHeaders httpHeaders, UriInfo uriInfo, ODataProducerException exception) {
         return Boolean.parseBoolean(System.getProperty(propertyName));
       }
     };
@@ -68,7 +68,7 @@ public class ErrorResponseExtensions {
    */
   public static final ErrorResponseExtension returnInnerErrorsBasedOnQueryParameter(final String queryParameterName) {
     return new ErrorResponseExtension() {
-      public boolean returnInnerError(HttpHeaders httpHeaders, UriInfo uriInfo, ODataException exception) {
+      public boolean returnInnerError(HttpHeaders httpHeaders, UriInfo uriInfo, ODataProducerException exception) {
         return Boolean.parseBoolean(uriInfo.getQueryParameters().getFirst(queryParameterName));
       }
     };

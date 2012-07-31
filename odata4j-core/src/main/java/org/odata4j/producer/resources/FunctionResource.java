@@ -20,6 +20,8 @@ import org.odata4j.core.OFunctionParameters;
 import org.odata4j.edm.EdmEntityType;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.edm.EdmFunctionParameter;
+import org.odata4j.exceptions.MethodNotAllowedException;
+import org.odata4j.exceptions.NotImplementedException;
 import org.odata4j.format.FormatWriter;
 import org.odata4j.format.FormatWriterFactory;
 import org.odata4j.producer.BaseResponse;
@@ -32,8 +34,6 @@ import org.odata4j.producer.PropertyResponse;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.Responses;
 import org.odata4j.producer.SimpleResponse;
-import org.odata4j.producer.exceptions.MethodNotAllowedException;
-import org.odata4j.producer.exceptions.NotImplementedException;
 
 /**
  * Handles function calls.

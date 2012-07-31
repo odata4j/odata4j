@@ -11,6 +11,7 @@ import org.odata4j.core.OModifyRequest;
 import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.exceptions.ODataProducerException;
 import org.odata4j.format.Entry;
 import org.odata4j.internal.EntitySegment;
 
@@ -40,7 +41,7 @@ public class ConsumerEntityModificationRequest<T> extends AbstractConsumerEntity
   }
 
   @Override
-  public void execute() throws ODataServerException, ODataClientException {
+  public void execute() throws ODataProducerException {
 
     List<OProperty<?>> requestProps = props;
     if (updateRoot != null) {

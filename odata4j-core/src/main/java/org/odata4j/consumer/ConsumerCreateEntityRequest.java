@@ -10,6 +10,7 @@ import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.exceptions.ODataProducerException;
 import org.odata4j.format.Entry;
 import org.odata4j.format.FormatParser;
 import org.odata4j.format.FormatParserFactory;
@@ -33,7 +34,7 @@ public class ConsumerCreateEntityRequest<T> extends AbstractConsumerEntityPayloa
 
   @SuppressWarnings("unchecked")
   @Override
-  public T execute() throws ODataServerException, ODataClientException {
+  public T execute() throws ODataProducerException {
 
     EdmEntitySet ees = metadata.getEdmEntitySet(entitySetName);
     Entry entry = client.createRequestEntry(ees, null, props, links);

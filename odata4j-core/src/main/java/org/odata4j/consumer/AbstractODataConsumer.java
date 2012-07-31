@@ -22,6 +22,7 @@ import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmEntityType;
 import org.odata4j.edm.EdmProperty;
+import org.odata4j.exceptions.ODataProducerException;
 import org.odata4j.internal.EdmDataServicesDecorator;
 import org.odata4j.internal.FeedCustomizationMapping;
 
@@ -44,12 +45,12 @@ public abstract class AbstractODataConsumer implements ODataConsumer {
     return serviceRootUri;
   }
 
-  public Enumerable<EntitySetInfo> getEntitySets() throws ODataServerException, ODataClientException {
+  public Enumerable<EntitySetInfo> getEntitySets() throws ODataProducerException {
     ODataClientRequest request = ODataClientRequest.get(getServiceRootUri());
     return Enumerable.create(getClient().getCollections(request)).cast(EntitySetInfo.class);
   }
 
-  public EdmDataServices getMetadata() throws ODataServerException {
+  public EdmDataServices getMetadata() {
     if (cachedMetadata == null)
       cachedMetadata = new CachedEdmDataServices();
     return cachedMetadata;
@@ -144,7 +145,7 @@ public abstract class AbstractODataConsumer implements ODataConsumer {
     return new ConsumerDeleteEntityRequest(getClient(), getServiceRootUri(), getMetadata(), entitySetName, key);
   }
 
-  public OFunctionRequest<OObject> callFunction(String functionName) throws ODataServerException {
+  public OFunctionRequest<OObject> callFunction(String functionName) {
     return new ConsumerFunctionCallRequest<OObject>(getClient(), getServiceRootUri(), getMetadata(), functionName);
   }
 
@@ -199,9 +200,8 @@ public abstract class AbstractODataConsumer implements ODataConsumer {
       ODataClientRequest request = ODataClientRequest.get(AbstractODataConsumer.this.getServiceRootUri() + "$metadata");
       try {
         delegate = AbstractODataConsumer.this.getClient().getMetadata(request);
-      } catch (ODataServerException e) {
-        delegate = EdmDataServices.EMPTY;
-      } catch (ODataClientException e) {
+      } catch (ODataProducerException e) {
+        // to support services that do not expose metadata information
         delegate = EdmDataServices.EMPTY;
       }
     }

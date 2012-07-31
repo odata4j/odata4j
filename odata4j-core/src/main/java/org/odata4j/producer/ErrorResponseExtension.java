@@ -4,7 +4,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.UriInfo;
 
 import org.odata4j.core.OExtension;
-import org.odata4j.producer.exceptions.ODataException;
+import org.odata4j.exceptions.ODataProducerException;
 
 /**
  * An optional extension that a producer can expose to control error responses.
@@ -28,5 +28,5 @@ public interface ErrorResponseExtension extends OExtension<ODataProducer> {
    * @return flag indicating whether to return an inner error as part of the error response to the
    *         client or not
    */
-  boolean returnInnerError(HttpHeaders httpHeaders, UriInfo uriInfo, ODataException exception);
+  boolean returnInnerError(HttpHeaders httpHeaders, UriInfo uriInfo, ODataProducerException exception);
 }
