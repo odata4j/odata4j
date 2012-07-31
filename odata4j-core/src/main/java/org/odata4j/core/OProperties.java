@@ -257,7 +257,7 @@ public class OProperties {
    * @return a new OData property instance
    */
   public static OProperty<LocalDateTime> datetime(String name, Instant value) {
-    return new Impl<LocalDateTime>(name, EdmSimpleType.DATETIME, new LocalDateTime(value));
+    return new Impl<LocalDateTime>(name, EdmSimpleType.DATETIME, value != null ? new LocalDateTime(value) : null);
   }
 
   /**
@@ -268,7 +268,7 @@ public class OProperties {
    * @return a new OData property instance
    */
   public static OProperty<LocalDateTime> datetime(String name, Date value) {
-    return new Impl<LocalDateTime>(name, EdmSimpleType.DATETIME, LocalDateTime.fromDateFields(value));
+    return new Impl<LocalDateTime>(name, EdmSimpleType.DATETIME, value != null ? LocalDateTime.fromDateFields(value) : null);
   }
 
   /**
@@ -279,7 +279,7 @@ public class OProperties {
    * @return a new OData property instance
    */
   public static OProperty<LocalDateTime> datetime(String name, Calendar value) {
-    return new Impl<LocalDateTime>(name, EdmSimpleType.DATETIME, LocalDateTime.fromCalendarFields(value));
+    return new Impl<LocalDateTime>(name, EdmSimpleType.DATETIME, value != null ? LocalDateTime.fromCalendarFields(value) : null);
   }
 
   /**
@@ -290,7 +290,7 @@ public class OProperties {
    * @return a new OData property instance
    */
   public static OProperty<LocalDateTime> datetime(String name, Timestamp value) {
-    return new Impl<LocalDateTime>(name, EdmSimpleType.DATETIME, new LocalDateTime(value));
+    return new Impl<LocalDateTime>(name, EdmSimpleType.DATETIME, value != null ? new LocalDateTime(value) : null);
   }
 
   /**
@@ -301,7 +301,7 @@ public class OProperties {
    * @return a new OData property instance
    */
   public static OProperty<LocalDateTime> datetime(String name, java.sql.Date value) {
-    return new Impl<LocalDateTime>(name, EdmSimpleType.DATETIME, new LocalDateTime(value));
+    return new Impl<LocalDateTime>(name, EdmSimpleType.DATETIME, value != null ? new LocalDateTime(value) : null);
   }
 
   /**
@@ -312,7 +312,7 @@ public class OProperties {
    * @return a new OData property instance
    */
   public static OProperty<LocalDateTime> datetime(String name, Time value) {
-    return new Impl<LocalDateTime>(name, EdmSimpleType.DATETIME, new LocalDateTime(value));
+    return new Impl<LocalDateTime>(name, EdmSimpleType.DATETIME, value != null ? new LocalDateTime(value) : null);
   }
 
   /**
@@ -345,7 +345,7 @@ public class OProperties {
    * @return a new OData property instance
    */
   public static OProperty<LocalTime> time(String name, Date value) {
-    return new Impl<LocalTime>(name, EdmSimpleType.TIME, LocalTime.fromDateFields(value));
+    return new Impl<LocalTime>(name, EdmSimpleType.TIME, value != null ? LocalTime.fromDateFields(value) : null);
   }
 
   /**
@@ -356,7 +356,7 @@ public class OProperties {
    * @return a new OData property instance
    */
   public static OProperty<LocalTime> time(String name, Calendar value) {
-    return new Impl<LocalTime>(name, EdmSimpleType.TIME, LocalTime.fromCalendarFields(value));
+    return new Impl<LocalTime>(name, EdmSimpleType.TIME, value != null ? LocalTime.fromCalendarFields(value) : null);
   }
 
   /**
@@ -367,7 +367,7 @@ public class OProperties {
    * @return a new OData property instance
    */
   public static OProperty<LocalTime> time(String name, Timestamp value) {
-    return new Impl<LocalTime>(name, EdmSimpleType.TIME, new LocalTime(value));
+    return new Impl<LocalTime>(name, EdmSimpleType.TIME, value != null ? new LocalTime(value) : null);
   }
 
   /**
@@ -378,7 +378,7 @@ public class OProperties {
    * @return a new OData property instance
    */
   public static OProperty<LocalTime> time(String name, Time value) {
-    return new Impl<LocalTime>(name, EdmSimpleType.TIME, new LocalTime(value));
+    return new Impl<LocalTime>(name, EdmSimpleType.TIME, value != null ? new LocalTime(value) : null);
   }
 
   /**
@@ -400,7 +400,7 @@ public class OProperties {
    * @return a new OData property instance
    */
   public static OProperty<BigDecimal> decimal(String name, BigInteger value) {
-    return new Impl<BigDecimal>(name, EdmSimpleType.DECIMAL, BigDecimal.valueOf(value.longValue()));
+    return new Impl<BigDecimal>(name, EdmSimpleType.DECIMAL, value != null ? BigDecimal.valueOf(value.longValue()) : null);
   }
 
   /**
