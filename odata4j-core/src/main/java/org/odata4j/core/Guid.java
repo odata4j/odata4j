@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
  */
 public class Guid {
 
-  private static final Pattern GUID_FORMAT = Pattern.compile("^\\p{XDigit}{8}-\\p{XDigit}{4}-\\p{XDigit}{4}-\\p{XDigit}{4}-\\p{XDigit}{12}$");
+  private static final Pattern GUID_FORMAT = Pattern.compile("^(urn\\:uuid\\:)?\\p{XDigit}{8}-?\\p{XDigit}{4}-?\\p{XDigit}{4}-?\\p{XDigit}{4}-?\\p{XDigit}{12}$");
   private final String value;
 
   private Guid(String value) {

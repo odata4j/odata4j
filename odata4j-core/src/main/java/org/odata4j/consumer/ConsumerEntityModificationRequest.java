@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.core4j.Enumerable;
 import org.core4j.Predicate1;
+import org.odata4j.core.ODataConstants.Headers;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OModifyRequest;
@@ -23,11 +24,14 @@ public class ConsumerEntityModificationRequest<T> extends AbstractConsumerEntity
   private final List<EntitySegment> segments = new ArrayList<EntitySegment>();
 
   private EdmEntitySet entitySet;
+  private String ifMatch;
 
-  public ConsumerEntityModificationRequest(T updateRoot, ODataClient client, String serviceRootUri, EdmDataServices metadata, String entitySetName, OEntityKey key) {
+  public ConsumerEntityModificationRequest(T updateRoot, ODataClient client, String serviceRootUri, EdmDataServices metadata,
+      String entitySetName, OEntityKey key, String ifMatch) {
     super(entitySetName, serviceRootUri, metadata);
     this.updateRoot = updateRoot;
     this.client = client;
+    this.ifMatch = ifMatch;
 
     segments.add(new EntitySegment(entitySetName, key));
     this.entitySet = metadata.getEdmEntitySet(entitySetName);
@@ -63,7 +67,13 @@ public class ConsumerEntityModificationRequest<T> extends AbstractConsumerEntity
 
     String path = Enumerable.create(segments).join("/");
 
-    ODataClientRequest request = updateRoot != null ? ODataClientRequest.put(serviceRootUri + path, entry) : ODataClientRequest.merge(serviceRootUri + path, entry);
+    ODataClientRequest request = updateRoot != null ?
+        ODataClientRequest.put(serviceRootUri + path, entry) :
+        ODataClientRequest.merge(serviceRootUri + path, entry);
+
+    if (ifMatch != null)
+      request.header(Headers.IF_MATCH, ifMatch);
+
     client.updateEntity(request);
   }
 
@@ -85,6 +95,12 @@ public class ConsumerEntityModificationRequest<T> extends AbstractConsumerEntity
   @Override
   public OModifyRequest<T> link(String navProperty, OEntityKey targetKey) {
     return super.link(this, navProperty, targetKey);
+  }
+
+  @Override
+  public OModifyRequest<T> ifMatch(String precondition) {
+    ifMatch = precondition;
+    return this;
   }
 
 }

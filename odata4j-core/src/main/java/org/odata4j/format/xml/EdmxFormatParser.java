@@ -93,6 +93,11 @@ public class EdmxFormatParser extends XmlFormatParser {
         .create(dataServices.getEntityTypes())
         .toMap(EdmEntityType.Builder.func1_getFullyQualifiedTypeName());
 
+    final Map<String, EdmEntityType.Builder> allEetsByFQAliasName = Enumerable
+        .create(dataServices.getEntityTypes())
+        .where(EdmEntityType.Builder.pred1_hasAlias())
+        .toMap(EdmEntityType.Builder.func1_getFQAliasName());
+
     final Map<String, EdmAssociation.Builder> allEasByFQName = Enumerable
         .create(dataServices.getAssociations())
         .toMap(EdmAssociation.Builder.func1_getFQNamespaceName());
@@ -135,6 +140,8 @@ public class EdmxFormatParser extends XmlFormatParser {
         for (int i = 0; i < edmEntityContainer.getEntitySets().size(); i++) {
           final EdmEntitySet.Builder tmpEes = edmEntityContainer.getEntitySets().get(i);
           EdmEntityType.Builder eet = allEetsByFQName.get(tmpEes.getEntityTypeName());
+          if (eet == null)
+              eet = allEetsByFQAliasName.get(tmpEes.getEntityTypeName());
           if (eet == null)
             throw new IllegalArgumentException("Invalid entity type " + tmpEes.getEntityTypeName());
           edmEntityContainer.getEntitySets().set(i, EdmEntitySet.newBuilder().setName(tmpEes.getName()).setEntityType(eet));
@@ -405,6 +412,7 @@ public class EdmxFormatParser extends XmlFormatParser {
     String scale = getAttributeValueIfExists(startElement, "Scale");
 
     String storeGeneratedPattern = getAttributeValueIfExists(startElement, new QName2(NS_EDMANNOTATION, "StoreGeneratedPattern"));
+    String concurrencyMode = getAttributeValueIfExists(startElement, "ConcurrencyMode");
 
     String fcTargetPath = getAttributeValueIfExists(startElement, M_FC_TARGETPATH);
     String fcContentKind = getAttributeValueIfExists(startElement, M_FC_CONTENTKIND);
@@ -419,6 +427,7 @@ public class EdmxFormatParser extends XmlFormatParser {
         .setUnicode("true".equalsIgnoreCase(unicode))
         .setFixedLength("true".equalsIgnoreCase(fixedLength))
         .setStoreGeneratedPattern(storeGeneratedPattern)
+        .setConcurrencyMode(concurrencyMode)
         .setFcTargetPath(fcTargetPath)
         .setFcContentKind(fcContentKind)
         .setFcKeepInContent(fcKeepInContent)

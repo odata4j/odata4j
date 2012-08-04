@@ -29,6 +29,12 @@ public class ODataProducerException extends RuntimeException {
     this.error = OErrors.error(code(), message(), innerError());
   }
 
+  protected ODataProducerException(StatusType status, OError error) {
+    super(status.getReasonPhrase());
+    this.status = status;
+    this.error = error;
+  }
+
   private String code() {
     return getClass().getSimpleName();
   }
@@ -47,11 +53,6 @@ public class ODataProducerException extends RuntimeException {
     return sw.toString();
   }
 
-  protected ODataProducerException(StatusType status, OError error) {
-    this.status = status;
-    this.error = error;
-  }
-
   /**
    * Gets the HTTP status.
    *
@@ -65,7 +66,7 @@ public class ODataProducerException extends RuntimeException {
   /**
    * Gets the OData error message.
    *
-   * @return the OData error message or {@code null} in case the exceptions has not (yet) been 
+   * @return the OData error message or {@code null}.
    */
   public OError getOError() {
     return error;

@@ -95,7 +95,7 @@ public abstract class AbstractODataClient implements ODataClient {
   }
 
   public Entry createRequestEntry(EdmEntitySet entitySet, OEntityKey entityKey, List<OProperty<?>> props, List<OLink> links) {
-    final OEntity oentity = entityKey == null
+    final OEntity entity = entityKey == null
         ? OEntities.createRequest(entitySet, props, links)
         : OEntities.create(entitySet, entityKey, props, links);
 
@@ -106,12 +106,9 @@ public abstract class AbstractODataClient implements ODataClient {
       }
 
       public OEntity getEntity() {
-        return oentity;
+        return entity;
       }
 
-      public String getETag() {
-        return null;
-      }
     };
   }
 

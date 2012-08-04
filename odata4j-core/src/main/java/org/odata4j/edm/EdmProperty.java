@@ -34,6 +34,7 @@ public class EdmProperty extends EdmPropertyBase {
   private final Boolean unicode;
   private final Boolean fixedLength;
   private final String storeGeneratedPattern;
+  private final String concurrencyMode;
   private final CollectionKind collectionKind;
   private final String defaultValue;
   private final Integer precision;
@@ -46,16 +47,15 @@ public class EdmProperty extends EdmPropertyBase {
   private final String fcEpmKeepInContent;
   private final String fcNsPrefix;
   private final String fcNsUri;
-  private final String concurrencyMode;
   private final String mimeType;
 
   private EdmProperty(EdmDocumentation documentation, ImmutableList<EdmAnnotation<?>> annotations, String name,
       EdmStructuralType declaringType, EdmType type, boolean nullable, Integer maxLength, Boolean unicode, Boolean fixedLength,
-      String storeGeneratedPattern,
-      String fcTargetPath, String fcContentKind, String fcKeepInContent, String fcEpmContentKind, String fcEpmKeepInContent,
-      String fcNsPrefix, String fcNsUri,
-      CollectionKind collectionKind, String defaultValue, Integer precision, Integer scale, String mimeType,
-      String concurrencyMode) {
+      String storeGeneratedPattern, String concurrencyMode,
+      String fcTargetPath, String fcContentKind, String fcKeepInContent, String fcEpmContentKind,
+      String fcEpmKeepInContent, String fcNsPrefix,
+      String fcNsUri, CollectionKind collectionKind, String defaultValue, Integer precision, Integer scale,
+      String mimeType) {
     super(documentation, annotations, name);
     this.declaringType = declaringType;
     this.type = type;
@@ -244,8 +244,8 @@ public class EdmProperty extends EdmPropertyBase {
         EdmType type = this.type != null ? this.type : typeBuilder.build();
         builtProperty = new EdmProperty(getDocumentation(), ImmutableList.copyOf(getAnnotations()),
             getName(), declaringType, type, nullable, maxLength, unicode, fixedLength, storeGeneratedPattern,
-            fcTargetPath, fcContentKind, fcKeepInContent, fcEpmContentKind, fcEpmKeepInContent, fcNsPrefix, fcNsUri,
-            collectionKind, defaultValue, precision, scale, mimeType, concurrencyMode);
+            concurrencyMode, fcTargetPath, fcContentKind, fcKeepInContent, fcEpmContentKind, fcEpmKeepInContent, fcNsPrefix,
+            fcNsUri, collectionKind, defaultValue, precision, scale, mimeType);
       }
       return builtProperty;
     }

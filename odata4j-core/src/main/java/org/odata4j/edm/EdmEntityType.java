@@ -7,6 +7,7 @@ import java.util.List;
 import org.core4j.Enumerable;
 import org.core4j.Func;
 import org.core4j.Func1;
+import org.core4j.Predicate1;
 import org.odata4j.core.ImmutableList;
 import org.odata4j.core.Named;
 import org.odata4j.core.OPredicates;
@@ -59,7 +60,7 @@ public class EdmEntityType extends EdmStructuralType {
   private List<String> findConventionalKeys() {
     for (EdmProperty prop : getProperties()) {
       if (prop.getName().equalsIgnoreCase("Id") && prop.getType().isSimple() && !prop.isNullable()) {
-        Enumerable.create(prop.getName()).toList();
+        return Enumerable.create(prop.getName()).toList();
       }
     }
     return null;
@@ -216,6 +217,10 @@ public class EdmEntityType extends EdmStructuralType {
       return this;
     }
 
+    public String getAlias() {
+      return alias;
+    }
+
     public String getFQAliasName() {
       // TODO share or remove
       return alias == null ? null : (alias + "." + getName());
@@ -245,6 +250,24 @@ public class EdmEntityType extends EdmStructuralType {
         @Override
         public String apply(Builder input) {
           return input.getFullyQualifiedTypeName();
+        }
+      };
+    }
+
+    public static Func1<EdmEntityType.Builder, String> func1_getFQAliasName() {
+      return new Func1<EdmEntityType.Builder, String>() {
+        @Override
+        public String apply(Builder input) {
+          return input.getFQAliasName();
+        }
+      };
+    }
+
+    public static Predicate1<Builder> pred1_hasAlias() {
+      return new Predicate1<EdmEntityType.Builder>() {
+        @Override
+        public boolean apply(Builder input) {
+          return input.getAlias() != null;
         }
       };
     }

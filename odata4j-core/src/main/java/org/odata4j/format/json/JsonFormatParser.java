@@ -113,9 +113,9 @@ public class JsonFormatParser {
   }
 
   protected JsonEntry parseEntry(JsonEntryMetaData jemd, EdmEntitySet ees, JsonStreamReader jsr) {
-
     JsonEntry entry = new JsonEntry(ees, jemd);
-    resolveEntityType(entry);
+    if (jemd != null)
+      resolveEntityType(entry);
     entry.properties = new ArrayList<OProperty<?>>();
     entry.links = new ArrayList<OLink>();
     while (jsr.hasNext()) {
@@ -126,39 +126,23 @@ public class JsonFormatParser {
         break;
       }
     }
-    List<OLink> links = Collections.emptyList();
-    entry.oentity = toOEntity(ees, entry.getEntityType(), entry.getEntityKey(), entry.properties, links);
+    entry.oentity = toOEntity(ees, entry.getEntityType(), entry.getEntityKey(), entry.getETag(), entry.properties, entry.links);
     return entry;
   }
 
   protected JsonEntry parseEntry(EdmEntitySet ees, JsonStreamReader jsr) {
-    JsonEntry entry = new JsonEntry(ees);
-    entry.properties = new ArrayList<OProperty<?>>();
-    entry.links = new ArrayList<OLink>();
-
-    while (jsr.hasNext()) {
-      JsonEvent event = jsr.nextEvent();
-
-      if (event.isStartProperty()) {
-        ees = addProperty(entry, ees, event.asStartProperty().getName(), jsr);
-      } else if (event.isEndObject()) {
-        break;
-      }
-    }
-
-    entry.oentity = toOEntity(ees, entry.getEntityType(), entry.getEntityKey(), entry.properties, entry.links);
-    return entry;
+    return parseEntry(null, ees, jsr);
   }
 
-  private OEntity toOEntity(EdmEntitySet entitySet, EdmEntityType entityType, OEntityKey key, List<OProperty<?>> properties, List<OLink> links) {
+  private OEntity toOEntity(EdmEntitySet entitySet, EdmEntityType entityType, OEntityKey key, String entityTag, List<OProperty<?>> properties, List<OLink> links) {
 
     // key is what we pulled out of the _metadata, use it first.
     if (key != null) {
-      return OEntities.create(entitySet, entityType, key, properties, links);
+      return OEntities.create(entitySet, entityType, key, entityTag, properties, links);
     }
 
     if (entityKey != null) {
-      return OEntities.create(entitySet, entityType, entityKey, properties, links);
+      return OEntities.create(entitySet, entityType, entityKey, entityTag, properties, links);
     }
 
     return OEntities.createRequest(entitySet, properties, links);
@@ -388,30 +372,30 @@ public class JsonFormatParser {
       if (navProp != null) {
         ees = metadata.getEdmEntitySet(navProp.getToRole().getType());
 
-        JsonEntry refentry = new JsonEntry(ees);
-        refentry.properties = new ArrayList<OProperty<?>>();
-        refentry.links = new ArrayList<OLink>();
+        JsonEntry refEntry = new JsonEntry(ees, null);
+        refEntry.properties = new ArrayList<OProperty<?>>();
+        refEntry.links = new ArrayList<OLink>();
         do {
-          addProperty(refentry, ees, event.asStartProperty().getName(), jsr);
+          addProperty(refEntry, ees, event.asStartProperty().getName(), jsr);
           event = jsr.nextEvent();
         } while (!event.isEndObject());
-        rt.entity = toOEntity(ees, refentry.getEntityType(), refentry.getEntityKey(), refentry.properties, refentry.links);
+        rt.entity = toOEntity(ees, refEntry.getEntityType(), refEntry.getEntityKey(), refEntry.getETag(), refEntry.properties, refEntry.links);
       } else {
-        EdmProperty eprop = entry.getEntityType().findProperty(name);
-        if (eprop == null) {
+        EdmProperty prop = entry.getEntityType().findProperty(name);
+        if (prop == null) {
           throw new RuntimeException("can't find property: " + name + " on type: " + entry.getEntityType().getName());
         } else {
           // why the lookup?  well, during metadata parsing, currently, EdmProperties with type=EdmComplexType are created
           // by using EdmType.get(typname).  This results in a useless instance of EdmNonSimpleType.  To fix,
           // someone is going to have to make EdmxFormatParser resolve property types at parse time.
-          EdmComplexType ct = (eprop.getType() instanceof EdmComplexType) ? ((EdmComplexType) eprop.getType())
-              : metadata.findEdmComplexType(eprop.getType().getFullyQualifiedTypeName());
+          EdmComplexType ct = (prop.getType() instanceof EdmComplexType) ? ((EdmComplexType) prop.getType())
+              : metadata.findEdmComplexType(prop.getType().getFullyQualifiedTypeName());
 
           if (ct != null) {
             JsonComplexObjectFormatParser cofp = new JsonComplexObjectFormatParser(ct);
             rt.complexObject = cofp.parseSingleObject(jsr, event);
           } else {
-            throw new RuntimeException("unhandled property type: " + eprop.getType().getFullyQualifiedTypeName());
+            throw new RuntimeException("unhandled property type: " + prop.getType().getFullyQualifiedTypeName());
           }
         }
       }

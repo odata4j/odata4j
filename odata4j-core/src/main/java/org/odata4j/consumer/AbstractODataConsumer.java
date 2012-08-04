@@ -8,6 +8,7 @@ import org.odata4j.core.EntitySetInfo;
 import org.odata4j.core.OCountRequest;
 import org.odata4j.core.OCreateRequest;
 import org.odata4j.core.OEntity;
+import org.odata4j.core.OEntityDeleteRequest;
 import org.odata4j.core.OEntityGetRequest;
 import org.odata4j.core.OEntityId;
 import org.odata4j.core.OEntityKey;
@@ -118,11 +119,12 @@ public abstract class AbstractODataConsumer implements ODataConsumer {
   }
 
   public OModifyRequest<OEntity> updateEntity(OEntity entity) {
-    return new ConsumerEntityModificationRequest<OEntity>(entity, getClient(), getServiceRootUri(), getMetadata(), entity.getEntitySet().getName(), entity.getEntityKey());
+    return new ConsumerEntityModificationRequest<OEntity>(entity, getClient(), getServiceRootUri(), getMetadata(),
+        entity.getEntitySet().getName(), entity.getEntityKey(), entity.getEntityTag());
   }
 
   public OModifyRequest<OEntity> mergeEntity(OEntity entity) {
-    return mergeEntity(entity.getEntitySet().getName(), entity.getEntityKey());
+    return mergeEntity(entity.getEntitySet().getName(), entity.getEntityKey(), entity.getEntityTag());
   }
 
   public OModifyRequest<OEntity> mergeEntity(String entitySetName, Object keyValue) {
@@ -130,19 +132,24 @@ public abstract class AbstractODataConsumer implements ODataConsumer {
   }
 
   public OModifyRequest<OEntity> mergeEntity(String entitySetName, OEntityKey key) {
-    return new ConsumerEntityModificationRequest<OEntity>(null, getClient(), getServiceRootUri(), getMetadata(), entitySetName, key);
+    return mergeEntity(entitySetName, key, null);
   }
 
-  public OEntityRequest<Void> deleteEntity(OEntityId entity) {
-    return deleteEntity(entity.getEntitySetName(), entity.getEntityKey());
+  public OModifyRequest<OEntity> mergeEntity(String entitySetName, OEntityKey key, String entityTag) {
+    return new ConsumerEntityModificationRequest<OEntity>(null, getClient(), getServiceRootUri(), getMetadata(), entitySetName, key, entityTag);
   }
 
-  public OEntityRequest<Void> deleteEntity(String entitySetName, Object keyValue) {
+  public OEntityDeleteRequest deleteEntity(OEntity entity) {
+    return new ConsumerDeleteEntityRequest(getClient(), getServiceRootUri(), getMetadata(),
+        entity.getEntitySetName(), entity.getEntityKey(), entity.getEntityTag());
+  }
+
+  public OEntityDeleteRequest deleteEntity(String entitySetName, Object keyValue) {
     return deleteEntity(entitySetName, OEntityKey.create(keyValue));
   }
 
-  public OEntityRequest<Void> deleteEntity(String entitySetName, OEntityKey key) {
-    return new ConsumerDeleteEntityRequest(getClient(), getServiceRootUri(), getMetadata(), entitySetName, key);
+  public OEntityDeleteRequest deleteEntity(String entitySetName, OEntityKey key) {
+    return new ConsumerDeleteEntityRequest(getClient(), getServiceRootUri(), getMetadata(), entitySetName, key, null);
   }
 
   public OFunctionRequest<OObject> callFunction(String functionName) {

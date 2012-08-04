@@ -31,6 +31,8 @@ public abstract class AbstractExample {
 
   protected static void reportEntity(String caption, OEntity entity) {
     report(caption);
+    if (entity.getEntityTag() != null)
+      report("  ETag: %s", entity.getEntityTag());
     for (OProperty<?> p : entity.getProperties()) {
       Object v = p.getValue();
       if (p.getType().equals(EdmSimpleType.BINARY) && v != null)
@@ -70,6 +72,8 @@ public abstract class AbstractExample {
 
       if (property.getStoreGeneratedPattern() != null)
         p = p + " StoreGeneratedPattern=" + property.getStoreGeneratedPattern();
+      if (property.getConcurrencyMode() != null)
+        p = p + " ConcurrencyMode=" + property.getConcurrencyMode();
 
       if (property.getFcTargetPath() != null)
         p = p + " TargetPath=" + property.getFcTargetPath();
@@ -88,7 +92,7 @@ public abstract class AbstractExample {
   protected static void reportMetadata(EdmDataServices services) {
 
     for (EdmSchema schema : services.getSchemas()) {
-      report("Schema Namespace=%s", schema.getNamespace());
+      report("Schema Namespace=%s, Alias=%s", schema.getNamespace(), schema.getAlias());
 
       for (EdmEntityType et : schema.getEntityTypes()) {
         String ets = String.format("  EntityType Name=%s", et.getName());

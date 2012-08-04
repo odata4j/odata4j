@@ -27,7 +27,7 @@ public class OEntities {
    * @return the new entity
    */
   public static OEntity create(EdmEntitySet entitySet, OEntityKey entityKey, List<OProperty<?>> properties, List<OLink> links) {
-    return new OEntityImpl(entitySet, null, entityKey, true, properties, links);
+    return new OEntityImpl(entitySet, null, entityKey, true, null, properties, links);
   }
 
   /**
@@ -41,7 +41,7 @@ public class OEntities {
    * @return the new entity
    */
   public static OEntity create(EdmEntitySet entitySet, OEntityKey entityKey, List<OProperty<?>> properties, List<OLink> links, Object... extensions) {
-    return new OEntityImpl(entitySet, null, entityKey, true, properties, links, extensions);
+    return new OEntityImpl(entitySet, null, entityKey, true, null, properties, links, extensions);
   }
 
   /**
@@ -55,7 +55,7 @@ public class OEntities {
   * @return the new entity
   */
   public static OEntity create(EdmEntitySet entitySet, EdmEntityType entityType, OEntityKey entityKey, List<OProperty<?>> properties, List<OLink> links, Object... extensions) {
-    return new OEntityImpl(entitySet, entityType, entityKey, true, properties, links, extensions);
+    return new OEntityImpl(entitySet, entityType, entityKey, true, null, properties, links, extensions);
   }
 
   /**
@@ -69,7 +69,22 @@ public class OEntities {
    * @return the new entity
    */
   public static OEntity create(EdmEntitySet entitySet, EdmEntityType entityType, OEntityKey entityKey, List<OProperty<?>> properties, List<OLink> links) {
-    return new OEntityImpl(entitySet, entityType, entityKey, true, properties, links);
+    return new OEntityImpl(entitySet, entityType, entityKey, true, null, properties, links);
+  }
+
+  /**
+   * Creates a new entity.
+   *
+   * @param entitySet  the entity-set
+   * @param entityType  the entity type
+   * @param entityKey  the entity-key
+   * @param entityTag  the entity-tag
+   * @param properties  the entity properties, if any
+   * @param links  the entity links, if any
+   * @return the new entity
+   */
+  public static OEntity create(EdmEntitySet entitySet, EdmEntityType entityType, OEntityKey entityKey, String entityTag, List<OProperty<?>> properties, List<OLink> links) {
+    return new OEntityImpl(entitySet, entityType, entityKey, true, entityTag, properties, links);
   }
 
   /**
@@ -82,7 +97,7 @@ public class OEntities {
    * @return the new entity
    */
   public static OEntity createRequest(EdmEntitySet entitySet, List<OProperty<?>> properties, List<OLink> links) {
-    return new OEntityImpl(entitySet, null, null, false, properties, links);
+    return new OEntityImpl(entitySet, null, null, false, null, properties, links);
   }
 
   /**
@@ -91,14 +106,15 @@ public class OEntities {
    * @param entitySet  the entity-set
    * @param entityType  the entity type
    * @param entityKey  the entity-key
+   * @param entityTag  the entity-tag, if applicable
    * @param properties  the entity properties, if any
    * @param links  the entity links, if any
    * @param title  the Atom title
    * @param categoryTerm  the Atom category term
    * @return the new entity
    */
-  public static OEntity create(EdmEntitySet entitySet, EdmEntityType entityType, OEntityKey entityKey, List<OProperty<?>> properties, List<OLink> links, String title, String categoryTerm) {
-    return new OEntityAtomImpl(entitySet, entityType, entityKey, true, properties, links, title, categoryTerm);
+  public static OEntity create(EdmEntitySet entitySet, EdmEntityType entityType, OEntityKey entityKey, String entityTag, List<OProperty<?>> properties, List<OLink> links, String title, String categoryTerm) {
+    return new OEntityAtomImpl(entitySet, entityType, entityKey, true, entityTag, properties, links, title, categoryTerm);
   }
 
   /**
@@ -113,7 +129,7 @@ public class OEntities {
    * @return the new entity
    */
   public static OEntity createRequest(EdmEntitySet entitySet, List<OProperty<?>> properties, List<OLink> links, String title, String categoryTerm) {
-    return new OEntityAtomImpl(entitySet, null, null, false, properties, links, title, categoryTerm);
+    return new OEntityAtomImpl(entitySet, null, null, false, null, properties, links, title, categoryTerm);
   }
 
   private static class OEntityAtomImpl extends OEntityImpl implements AtomInfo {
@@ -121,8 +137,9 @@ public class OEntities {
     private final String title;
     private final String categoryTerm;
 
-    public OEntityAtomImpl(EdmEntitySet entitySet, EdmEntityType entityType, OEntityKey entityKey, boolean entityKeyRequired, List<OProperty<?>> properties, List<OLink> links, String title, String categoryTerm) {
-      super(entitySet, entityType, entityKey, entityKeyRequired, properties, links);
+    public OEntityAtomImpl(EdmEntitySet entitySet, EdmEntityType entityType, OEntityKey entityKey, boolean entityKeyRequired, String entityTag,
+        List<OProperty<?>> properties, List<OLink> links, String title, String categoryTerm) {
+      super(entitySet, entityType, entityKey, entityKeyRequired, entityTag, properties, links);
       this.title = title;
       this.categoryTerm = categoryTerm;
     }
@@ -145,9 +162,14 @@ public class OEntities {
     private final OEntityKey entityKey;
     private final List<OProperty<?>> properties;
     private final List<OLink> links;
+    private final String entityTag;
     private final Collection<Object> extensions;
 
-    OEntityImpl(EdmEntitySet entitySet, EdmEntityType entityType, OEntityKey entityKey, boolean entityKeyRequired, List<OProperty<?>> properties, List<OLink> links, Object... extensions) {
+    OEntityImpl(EdmEntitySet entitySet, EdmEntityType entityType,
+        OEntityKey entityKey, boolean entityKeyRequired,
+        String entityTag,
+        List<OProperty<?>> properties, List<OLink> links,
+        Object... extensions) {
       if (entitySet == null)
         throw new IllegalArgumentException("entitySet cannot be null");
       if (entityKeyRequired && entityKey == null)
@@ -156,6 +178,7 @@ public class OEntities {
       this.entitySet = entitySet;
       this.entityType = entityType;
       this.entityKey = entityKey;
+      this.entityTag = entityTag;
       this.properties = Collections.unmodifiableList(properties);
       this.links = links == null ? Collections.<OLink> emptyList() : Collections.unmodifiableList(links);
       this.extensions = Arrays.asList(extensions);
@@ -214,6 +237,11 @@ public class OEntities {
         if (link.getTitle().equals(title))
           return (T) link;
       throw new IllegalArgumentException("No link with title: " + title);
+    }
+
+    @Override
+    public String getEntityTag() {
+      return entityTag;
     }
 
     @Override

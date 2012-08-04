@@ -18,6 +18,7 @@ import org.odata4j.format.json.JsonSingleLinkFormatParser;
 import org.odata4j.format.xml.AtomEntryFormatParser;
 import org.odata4j.format.xml.AtomErrorFormatParser;
 import org.odata4j.format.xml.AtomFeedFormatParser;
+import org.odata4j.format.xml.AtomSimpleObjectFormatParser;
 import org.odata4j.format.xml.AtomSingleLinkFormatParser;
 
 public class FormatParserFactory {
@@ -147,7 +148,7 @@ public class FormatParserFactory {
 
     @Override
     public FormatParser<OSimpleObject<?>> getSimpleObjectFormatParser(Settings settings) {
-      throw new UnsupportedOperationException("Not supported yet.");
+      return new AtomSimpleObjectFormatParser(settings);
     }
 
     @Override

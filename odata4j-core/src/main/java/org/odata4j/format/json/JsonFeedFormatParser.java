@@ -49,10 +49,6 @@ public class JsonFeedFormatParser extends JsonFormatParser implements FormatPars
     List<OLink> links;
     OEntity oentity;
 
-    public JsonEntry(EdmEntitySet eset) {
-      this(eset, null);
-    }
-
     public JsonEntry(EdmEntitySet eset, JsonEntryMetaData jemd) {
       this.entitySet = eset;
       this.entityType = eset != null ? eset.getType() : null;
@@ -84,7 +80,6 @@ public class JsonFeedFormatParser extends JsonFormatParser implements FormatPars
       return jemd == null ? null : jemd.uri;
     }
 
-    @Override
     public String getETag() {
       return jemd == null ? null : jemd.etag;
     }

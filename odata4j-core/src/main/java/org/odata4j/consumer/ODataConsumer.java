@@ -6,6 +6,7 @@ import org.odata4j.core.EntitySetInfo;
 import org.odata4j.core.OCountRequest;
 import org.odata4j.core.OCreateRequest;
 import org.odata4j.core.OEntity;
+import org.odata4j.core.OEntityDeleteRequest;
 import org.odata4j.core.OEntityGetRequest;
 import org.odata4j.core.OEntityId;
 import org.odata4j.core.OEntityKey;
@@ -119,6 +120,7 @@ public interface ODataConsumer {
 
   /**
    * Gets the OData service uri.
+   *
    * <p>e.g. <code>http://services.odata.org/Northwind/Northwind.svc/</code></p>
    *
    * @return the service uri
@@ -143,6 +145,7 @@ public interface ODataConsumer {
 
   /**
    * Gets entities referred to by the given related-entities link.
+   *
    * <p>The query-request builder returned can be used for further server-side filtering.  Call {@link OQueryRequest#execute()} to issue request.</p>
    *
    * @param link  the link
@@ -152,6 +155,7 @@ public interface ODataConsumer {
 
   /**
    * Gets entities from the given entity-set.
+   *
    * <p>The query-request builder returned can be used for further server-side filtering.  Call {@link OQueryRequest#execute()} to issue request.</p>
    *
    * @param entitySetHref  the entity-set href
@@ -161,6 +165,7 @@ public interface ODataConsumer {
 
   /**
    * Gets entities from the given entity-set.  The entities will be represented as the given java-type.
+   *
    * <p>The query-request builder returned can be used for further server-side filtering.  Call {@link OQueryRequest#execute()} to issue request.</p>
    *
    * @param <T>  the entity representation as a java type
@@ -172,6 +177,7 @@ public interface ODataConsumer {
 
   /**
    * Gets the entity referred to by the given related entity link.
+   *
    * <p>The entity-request builder returned can be used for further navigation.  Call {@link OEntityRequest#execute()} to issue request.</p>
    *
    * @param link  the link
@@ -181,6 +187,7 @@ public interface ODataConsumer {
 
   /**
    * Gets the entity by entity-set name and entity-key value.
+   *
    * <p>The entity-request builder returned can be used for further navigation.  Call {@link OEntityRequest#execute()} to issue request.</p>
    *
    * @param entitySetName  the name of the entity-set
@@ -191,6 +198,7 @@ public interface ODataConsumer {
 
   /**
    * Gets the latest version of an entity using the given entity as a template.
+   *
    * <p>The entity-request builder returned can be used for further navigation.  Call {@link OEntityRequest#execute()} to issue request.</p>
    *
    * @param entity  an existing entity to use as a template, using its entity-set and entity-key
@@ -200,6 +208,7 @@ public interface ODataConsumer {
 
   /**
    * Gets the entity by entity-set name and entity-key.
+   *
    * <p>The entity-request builder returned can be used for further navigation.  Call {@link OEntityRequest#execute()} to issue request.</p>
    *
    * @param entitySetName  the name of the entity-set
@@ -210,6 +219,7 @@ public interface ODataConsumer {
 
   /**
    * Gets the entity by entity-set name and entity-key value.  The entity will be represented as the given java-type.
+   *
    * <p>The entity-request builder returned can be used for further navigation.  Call {@link OEntityRequest#execute()} to issue request.</p>
    *
    * @param <T>  the entity representation as a java type
@@ -222,6 +232,7 @@ public interface ODataConsumer {
 
   /**
    * Gets the entity by entity-set name and entity-key.  The entity will be represented as the given java-type.
+   *
    * <p>The entity-request builder returned can be used for further navigation.  Call {@link OEntityRequest#execute()} to issue request.</p>
    *
    * @param <T>  the entity representation as a java type
@@ -234,6 +245,7 @@ public interface ODataConsumer {
 
   /**
    * Gets related entity links for a given source entity by navigation property.
+   *
    * <p>The entityid-request builder returned can be used for further server-side filtering.  Call {@link OQueryRequest#execute()} to issue request.</p>
    *
    * @param sourceEntity  the entity to start from
@@ -244,6 +256,7 @@ public interface ODataConsumer {
 
   /**
    * Creates a new related entity link between two entities.
+   *
    * <p>Call {@link OEntityRequest#execute()} on the returned request builder to issue request.</p>
    *
    * @param sourceEntity  the entity to start from
@@ -255,6 +268,7 @@ public interface ODataConsumer {
 
   /**
    * Deletes related entity links between two entities by navigation property.
+   *
    * <p>Call {@link OEntityRequest#execute()} on the returned request builder to issue request.</p>
    *
    * @param sourceEntity  the entity to start from
@@ -266,6 +280,7 @@ public interface ODataConsumer {
 
   /**
    * Updates related entity links between two entities by navigation property.
+   *
    * <p>Call {@link OEntityRequest#execute()} on the returned request builder to issue request.</p>
    *
    * @param sourceEntity  the entity to start from
@@ -278,6 +293,7 @@ public interface ODataConsumer {
 
   /**
    * Creates a new entity in the given entity-set.
+   *
    * <p>The create-request builder returned can be used to construct the new entity.  Call {@link OCreateRequest#execute()} to issue request.</p>
    *
    * @param entitySetName  the name of the entity-set
@@ -287,6 +303,7 @@ public interface ODataConsumer {
 
   /**
    * Modifies an existing entity using update semantics.
+   *
    * <p>The modification-request builder returned can be used to redefine the new entity.  Call {@link OModifyRequest#execute()} to issue request.</p>
    *
    * @param entity  the entity identity
@@ -296,6 +313,7 @@ public interface ODataConsumer {
 
   /**
    * Modifies an existing entity using merge semantics.
+   *
    * <p>The modification-request builder returned can be used to modify the new entity.  Call {@link OModifyRequest#execute()} to issue request.</p>
    *
    * @param entity  the entity identity
@@ -305,6 +323,7 @@ public interface ODataConsumer {
 
   /**
    * Modifies an existing entity using merge semantics.
+   *
    * <p>The modification-request builder returned can be used to modify the new entity.  Call {@link OModifyRequest#execute()} to issue request.</p>
    *
    * @param entitySetName  the entity identity entity-set name
@@ -315,6 +334,7 @@ public interface ODataConsumer {
 
   /**
    * Modifies an existing entity using merge semantics.
+   *
    * <p>The modification-request builder returned can be used to modify the new entity.  Call {@link OModifyRequest#execute()} to issue request.</p>
    *
    * @param entitySetName  the entity identity entity-set name
@@ -325,35 +345,39 @@ public interface ODataConsumer {
 
   /**
    * Deletes an existing entity.
-   * <p>The entity-request builder returned can be used for further navigation.  Call {@link OEntityRequest#execute()} to issue request.</p>
+   *
+   * <p>The delete-request builder returned can be used for further navigation.  Call {@link OEntityRequest#execute()} to issue request.</p>
    *
    * @param entity  the entity identity
-   * @return a new entity-request builder
+   * @return a new delete-request builder
    */
-  OEntityRequest<Void> deleteEntity(OEntityId entity);
+  OEntityDeleteRequest deleteEntity(OEntity entity);
 
   /**
    * Deletes an existing entity.
-   * <p>The entity-request builder returned can be used for further navigation.  Call {@link OEntityRequest#execute()} to issue request.</p>
+   *
+   * <p>The delete-request builder returned can be used for further navigation.  Call {@link OEntityRequest#execute()} to issue request.</p>
    *
    * @param entitySetName  the entity identity entity-set name
    * @param keyValue  the entity identity key value
    * @return a new entity-request builder
    */
-  OEntityRequest<Void> deleteEntity(String entitySetName, Object keyValue);
+  OEntityDeleteRequest deleteEntity(String entitySetName, Object keyValue);
 
   /**
    * Deletes an existing entity.
-   * <p>The entity-request builder returned can be used for further navigation.  Call {@link OEntityRequest#execute()} to issue request.</p>
+   *
+   * <p>The delete-request builder returned can be used for further navigation.  Call {@link OEntityRequest#execute()} to issue request.</p>
    *
    * @param entitySetName  the entity identity entity-set name
    * @param key  the entity identity key
    * @return a new entity-request builder
    */
-  OEntityRequest<Void> deleteEntity(String entitySetName, OEntityKey key);
+  OEntityDeleteRequest deleteEntity(String entitySetName, OEntityKey key);
 
   /**
    * Call a server-side function (also known as a service operation).
+   *
    * <p>The functioncall-request builder returned can be used to add parameters.  Call {@link OFunctionRequest#execute()} to issue request.</p>
    *
    * @param functionName  the function name

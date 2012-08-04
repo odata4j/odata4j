@@ -7,6 +7,7 @@ import org.odata4j.core.OEntity;
 import org.odata4j.core.OFuncs;
 import org.odata4j.core.OProperties;
 import org.odata4j.examples.AbstractExample;
+import org.odata4j.exceptions.ODataProducerException;
 
 public class ODataTestServiceReadWriteExample extends AbstractExample {
 
@@ -69,7 +70,9 @@ public class ODataTestServiceReadWriteExample extends AbstractExample {
 
     // clean up, delete the new product
     c.deleteEntity("Products", 10).execute();
-    report("newProduct " + (c.getEntity("Products", 10).execute() == null ? "does not exist" : "exists"));
+    boolean exists = true;
+    try { c.getEntity("Products", 10).execute(); } catch (ODataProducerException e) { if (e.getHttpStatus().getStatusCode() == 404) exists = false; }
+    report("newProduct " + (exists ? "exists" : "does not exist"));
   }
 
 }

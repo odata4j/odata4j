@@ -32,6 +32,7 @@ public class ODataConstants {
     public static final String DATA_SERVICE_VERSION = "DataServiceVersion";
     public static final String CONTENT_TYPE = "Content-Type";
     public static final String USER_AGENT = "User-Agent";
+    public static final String IF_MATCH = "If-Match";
   }
 
   public static class Charsets {

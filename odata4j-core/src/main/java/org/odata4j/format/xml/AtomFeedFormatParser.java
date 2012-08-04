@@ -126,12 +126,15 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
   }
 
   public static class DataServicesAtomEntry extends AtomEntry {
-    public String etag;
-    // remove properties and links because they are already in the oentity
-    public List<OProperty<?>> properties;
-    public List<OLink> links;
+    public final String etag;
+    public final List<OProperty<?>> properties;
 
-    private OEntity oentity;
+    private OEntity entity;
+
+    private DataServicesAtomEntry(String etag, List<OProperty<?>> properties) {
+      this.etag = etag;
+      this.properties = properties;
+    }
 
     @Override
     public String toString() {
@@ -140,11 +143,11 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
 
     @Override
     public OEntity getEntity() {
-      return this.oentity;
+      return this.entity;
     }
 
-    void setOEntity(OEntity oentity) {
-      this.oentity = oentity;
+    void setEntity(OEntity entity) {
+      this.entity = entity;
     }
   }
 
@@ -268,10 +271,8 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
   }
 
   private DataServicesAtomEntry parseDSAtomEntry(String etag, EdmEntityType entityType, XMLEventReader2 reader, XMLEvent2 event) {
-    DataServicesAtomEntry dsae = new DataServicesAtomEntry();
-    dsae.etag = etag;
-    dsae.properties = Enumerable.create(parseProperties(reader, event.asStartElement(), metadata, entityType)).toList();
-    return dsae;
+    List<OProperty<?>> properties = Enumerable.create(parseProperties(reader, event.asStartElement(), metadata, entityType)).toList();
+    return new DataServicesAtomEntry(etag, properties);
   }
 
   private static String innerText(XMLEventReader2 reader, StartElement2 element) {
@@ -347,7 +348,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
         if (rt instanceof DataServicesAtomEntry) {
           DataServicesAtomEntry dsae = (DataServicesAtomEntry) rt;
           OEntity entity = entityFromAtomEntry(metadata, entitySet, dsae, fcMapping);
-          dsae.setOEntity(entity);
+          dsae.setEntity(entity);
         }
         return rt;
       }
@@ -450,6 +451,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
         entitySet,
         entityType,
         key,
+        dsae.etag,
         props,
         toOLinks(metadata, entitySet, dsae.atomLinks, mapping),
         dsae.title,
