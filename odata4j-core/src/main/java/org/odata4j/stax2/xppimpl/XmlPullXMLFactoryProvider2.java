@@ -98,6 +98,8 @@ public class XmlPullXMLFactoryProvider2 extends XMLFactoryProvider2 {
   private static class XmlPullXMLEventReader2 implements XMLEventReader2 {
 
     private final XmlPullParser xpp;
+    private boolean peeked;
+    private boolean hasNext;
 
     public XmlPullXMLEventReader2(XmlPullParser xpp) {
       this.xpp = xpp;
@@ -106,6 +108,9 @@ public class XmlPullXMLFactoryProvider2 extends XMLFactoryProvider2 {
     @Override
     public String getElementText() {
       try {
+        if (xpp.getEventType() == XmlPullParser.TEXT)
+          return xpp.getText();
+        peeked = false;
         return xpp.nextText();
       } catch (Exception e) {
         throw Throwables.propagate(e);
@@ -114,18 +119,29 @@ public class XmlPullXMLFactoryProvider2 extends XMLFactoryProvider2 {
 
     @Override
     public boolean hasNext() {
-      try {
-        int eventType = xpp.next();
-        return eventType != XmlPullParser.END_DOCUMENT;
-      } catch (Exception e) {
-        throw Throwables.propagate(e);
-      }
-
+      if (peeked)
+        return hasNext;
+      int eventType = advance();
+      peeked = true;
+      hasNext = eventType != XmlPullParser.END_DOCUMENT;
+      return hasNext;
     }
 
     @Override
     public XMLEvent2 nextEvent() {
+      if (peeked)
+        peeked = false;
+      else
+        advance();
       return new XmlPullXMLEvent2(xpp);
+    }
+
+    private int advance() {
+      try {
+        return xpp.next();
+      } catch (Exception e) {
+        throw Throwables.propagate(e);
+      }
     }
 
   }
@@ -135,6 +151,32 @@ public class XmlPullXMLFactoryProvider2 extends XMLFactoryProvider2 {
 
     public XmlPullXMLEvent2(XmlPullParser xpp) {
       this.xpp = xpp;
+    }
+
+    @Override
+    public String toString() {
+      return String.format("%s[%s]", XmlPullXMLEvent2.class.getSimpleName(), getEventTypeName());
+    }
+
+    private String getEventTypeName() {
+      try {
+        switch(xpp.getEventType()) {
+          case XmlPullParser.START_DOCUMENT: return "START_DOCUMENT";
+          case XmlPullParser.END_DOCUMENT: return "END_DOCUMENT";
+          case XmlPullParser.START_TAG: return "START_TAG";
+          case XmlPullParser.END_TAG: return "END_TAG";
+          case XmlPullParser.TEXT: return "TEXT";
+          case XmlPullParser.CDSECT: return "CDSECT";
+          case XmlPullParser.ENTITY_REF: return "ENTITY_REF";
+          case XmlPullParser.IGNORABLE_WHITESPACE: return "IGNORABLE_WHITESPACE";
+          case XmlPullParser.PROCESSING_INSTRUCTION: return "PROCESSING_INSTRUCTION";
+          case XmlPullParser.COMMENT: return "COMMENT";
+          case XmlPullParser.DOCDECL: return "DOCDECL";
+          default: return "UNKNOWN TYPE " + xpp.getEventType();
+        }
+      } catch (XmlPullParserException e) {
+        throw Throwables.propagate(e);
+      }
     }
 
     @Override
@@ -174,6 +216,7 @@ public class XmlPullXMLFactoryProvider2 extends XMLFactoryProvider2 {
   private static class XmlPullStartElement2 implements StartElement2 {
     private final XmlPullParser xpp;
     private final QName2 name;
+    private CachedAttributes attributes;
 
     public XmlPullStartElement2(XmlPullParser xpp) {
       this.xpp = xpp;
@@ -181,43 +224,15 @@ public class XmlPullXMLFactoryProvider2 extends XMLFactoryProvider2 {
     }
 
     @Override
-    public Attribute2 getAttributeByName(final QName2 arg0) {
-      final String value = xpp.getAttributeValue(arg0.getNamespaceUri(), arg0.getLocalPart());
-      if (value == null)
-        return null;
-
-      return new Attribute2() {
-        public String getValue() {
-          return value;
-        }
-
-        @Override
-        public QName2 getName() {
-          throw new UnsupportedOperationException("Not supported yet.");
-        }
-      };
-
+    public Attribute2 getAttributeByName(QName2 name) {
+      ensureAttributesCached();
+      return attributes.getAttributeByName(name);
     }
 
     @Override
-    public Attribute2 getAttributeByName(final String arg0) {
-
-      final String value = xpp.getAttributeValue(null, arg0);
-      if (value == null)
-        return null;
-
-      return new Attribute2() {
-
-        @Override
-        public String getValue() {
-          return value;
-        }
-
-        @Override
-        public QName2 getName() {
-          throw new UnsupportedOperationException("Not supported yet.");
-        }
-      };
+    public Attribute2 getAttributeByName(String name) {
+      ensureAttributesCached();
+      return attributes.getAttributeByName(name);
     }
 
     @Override
@@ -225,9 +240,24 @@ public class XmlPullXMLFactoryProvider2 extends XMLFactoryProvider2 {
       return name;
     }
 
+    private void ensureAttributesCached() {
+      if (attributes != null)
+        return;
+      attributes = new CachedAttributes();
+      for (int i = 0; i < xpp.getAttributeCount(); i++) {
+        String ns = xpp.getAttributeNamespace(i);
+        attributes.put(
+            ns == null || ns.length() == 0 ? null : ns,
+            xpp.getAttributeName(i),
+            xpp.getAttributePrefix(i),
+            xpp.getAttributeValue(i));
+      }
+    }
+
     @Override
     public Enumerable<Attribute2> getAttributes() {
-      throw new UnsupportedOperationException("Not supported yet.");
+      ensureAttributesCached();
+      return attributes.getAttributes();
     }
 
     @Override

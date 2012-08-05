@@ -24,8 +24,10 @@ public class AtomErrorFormatParser extends XmlFormatParser implements FormatPars
     String innerError = null;
     XMLEventReader2 xmlReader = InternalUtil.newXMLEventReader(reader);
     XMLEvent2 event = xmlReader.nextEvent();
-    if (!isStartElement(event = xmlReader.nextEvent(), ERROR))
-      throw new RuntimeException("Unable to parse the error message");
+    while (!event.isStartElement())
+      event = xmlReader.nextEvent();
+    if (!isStartElement(event, ERROR))
+      throw new RuntimeException("Bad error response: <" + ERROR.getLocalPart() + "> not found");
     while (!isEndElement(event = xmlReader.nextEvent(), ERROR)) {
       if (isStartElement(event, CODE))
         code = xmlReader.getElementText();
@@ -36,12 +38,12 @@ public class AtomErrorFormatParser extends XmlFormatParser implements FormatPars
       else if (!event.isStartElement() || !event.isEndElement())
         continue;
       else
-        throw new RuntimeException("Unable to parse the error message");
+        throw new RuntimeException("Bad error response: Unexpected structure");
     }
     if (!isEndElement(event, ERROR))
-      throw new RuntimeException("Unable to parse the error message");
+      throw new RuntimeException("Bad error response: Expected </" + ERROR.getLocalPart() + ">");
     if (code == null && message == null && innerError == null)
-      throw new RuntimeException("Wrong format of the error message");
+      throw new RuntimeException("Bad error response: Unknown elements");
     return OErrors.error(code, message, innerError);
   }
 }

@@ -11,6 +11,7 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.EndElement;
@@ -164,6 +165,27 @@ public class StaxXMLFactoryProvider2 extends XMLFactoryProvider2 {
 
     public StaxXMLEvent2(XMLEvent real) {
       this.real = real;
+    }
+
+    @Override
+    public String toString() {
+      return String.format("%s[%s]", StaxXMLEvent2.class.getSimpleName(), getEventTypeName());
+    }
+
+    private String getEventTypeName() {
+      switch (real.getEventType()) {
+        case XMLStreamConstants.START_ELEMENT: return "START_ELEMENT";
+        case XMLStreamConstants.END_ELEMENT: return "END_ELEMENT";
+        case XMLStreamConstants.CHARACTERS: return "CHARACTERS";
+        case XMLStreamConstants.ATTRIBUTE: return "ATTRIBUTE";
+        case XMLStreamConstants.NAMESPACE: return "NAMESPACE";
+        case XMLStreamConstants.PROCESSING_INSTRUCTION: return "PROCESSING_INSTRUCTION";
+        case XMLStreamConstants.COMMENT: return "COMMENT";
+        case XMLStreamConstants.START_DOCUMENT: return "START_DOCUMENT";
+        case XMLStreamConstants.END_DOCUMENT: return "END_DOCUMENT";
+        case XMLStreamConstants.DTD: return "DTD";
+        default: return "UNKNOWN TYPE " + real.getEventType();
+      }
     }
 
     public XMLEvent getXMLEvent() {

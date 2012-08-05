@@ -224,9 +224,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
           op = OProperties.parseSimple(name, (EdmSimpleType<?>) et, isNull ? null : reader.getElementText());
         }
         rt.add(op);
-
       }
-
     }
 
     throw new RuntimeException();
