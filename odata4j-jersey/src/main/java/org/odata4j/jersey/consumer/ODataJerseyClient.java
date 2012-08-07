@@ -33,8 +33,8 @@ import org.odata4j.format.FormatWriter;
 import org.odata4j.format.FormatWriterFactory;
 import org.odata4j.format.SingleLink;
 import org.odata4j.internal.BOMWorkaroundReader;
-import org.odata4j.internal.InternalUtil;
 import org.odata4j.stax2.XMLEventReader2;
+import org.odata4j.stax2.util.StaxUtil;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientHandlerException;
@@ -174,12 +174,12 @@ class ODataJerseyClient extends AbstractODataClient {
     if (ODataConsumer.dump.responseBody()) {
       String textEntity = clientResponse.getEntity(String.class);
       dumpResponseBody(textEntity, clientResponse.getType());
-      return InternalUtil.newXMLEventReader(new BOMWorkaroundReader(new StringReader(textEntity)));
+      return StaxUtil.newXMLEventReader(new BOMWorkaroundReader(new StringReader(textEntity)));
     }
 
     InputStream textEntity = clientResponse.getEntityInputStream();
     try {
-      return InternalUtil.newXMLEventReader(new BOMWorkaroundReader(new InputStreamReader(textEntity, Charsets.Upper.UTF_8)));
+      return StaxUtil.newXMLEventReader(new BOMWorkaroundReader(new InputStreamReader(textEntity, Charsets.Upper.UTF_8)));
     } catch (Exception e) {
       throw Throwables.propagate(e);
     }

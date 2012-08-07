@@ -1,15 +1,15 @@
-package org.odata4j.stax2.xppimpl;
+package org.odata4j.stax2.util;
 
 import org.core4j.Predicate1;
 import org.odata4j.stax2.Attribute2;
 import org.odata4j.stax2.QName2;
 
-public class CachedAttribute implements Attribute2 {
+public class InMemoryAttribute2 implements Attribute2 {
 
   private final QName2 name;
   private final String value;
 
-  public CachedAttribute(QName2 name, String value) {
+  public InMemoryAttribute2(QName2 name, String value) {
     this.name = name;
     this.value = value;
   }
@@ -32,7 +32,7 @@ public class CachedAttribute implements Attribute2 {
     return new Predicate1<Attribute2>() {
       @Override
       public boolean apply(Attribute2 attribute) {
-        return equal(attribute.getName().getNamespaceUri(),name.getNamespaceUri()) && equal(attribute.getName().getLocalPart(),name.getLocalPart());
+        return equal(attribute.getName().getNamespaceUri(), name.getNamespaceUri()) && equal(attribute.getName().getLocalPart(), name.getLocalPart());
       }};
   }
 

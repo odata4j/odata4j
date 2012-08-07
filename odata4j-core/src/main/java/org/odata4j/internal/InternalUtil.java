@@ -3,7 +3,6 @@ package org.odata4j.internal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
@@ -36,9 +35,6 @@ import org.odata4j.core.ORelatedEntityLink;
 import org.odata4j.core.Throwables;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.producer.inmemory.BeanModel;
-import org.odata4j.stax2.XMLEventReader2;
-import org.odata4j.stax2.XMLFactoryProvider2;
-import org.odata4j.stax2.XMLInputFactory2;
 
 public class InternalUtil {
 
@@ -214,12 +210,6 @@ public class InternalUtil {
 
   public static String toString(DateTime utc) {
     return utc.toString("yyyy-MM-dd'T'HH:mm:ss'Z'");
-  }
-
-  public static XMLEventReader2 newXMLEventReader(Reader reader) {
-    XMLInputFactory2 f = XMLFactoryProvider2.getInstance()
-        .newXMLInputFactory2();
-    return f.createXMLEventReader(reader);
   }
 
   public static String reflectionToString(final Object obj) {

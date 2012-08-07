@@ -6,6 +6,7 @@ import java.io.Writer;
 import org.core4j.Enumerable;
 import org.odata4j.core.Throwables;
 import org.odata4j.stax2.Attribute2;
+import org.odata4j.stax2.Characters2;
 import org.odata4j.stax2.EndElement2;
 import org.odata4j.stax2.Namespace2;
 import org.odata4j.stax2.QName2;
@@ -19,6 +20,7 @@ import org.odata4j.stax2.XMLOutputFactory2;
 import org.odata4j.stax2.XMLWriter2;
 import org.odata4j.stax2.XMLWriterFactory2;
 import org.odata4j.stax2.domimpl.ManualXMLWriter2;
+import org.odata4j.stax2.util.InMemoryAttributes;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -194,6 +196,13 @@ public class XmlPullXMLFactoryProvider2 extends XMLFactoryProvider2 {
     }
 
     @Override
+    public Characters2 asCharacters() {
+      if (!isCharacters())
+        return null;
+      return new XmlPullCharacters2(xpp);
+    }
+
+    @Override
     public boolean isEndElement() {
       try {
         return xpp.getEventType() == XmlPullParser.END_TAG;
@@ -211,12 +220,21 @@ public class XmlPullXMLFactoryProvider2 extends XMLFactoryProvider2 {
       }
     }
 
+    @Override
+    public boolean isCharacters() {
+      try {
+        return xpp.getEventType() == XmlPullParser.TEXT;
+      } catch (XmlPullParserException e) {
+        throw Throwables.propagate(e);
+      }
+    }
+
   }
 
   private static class XmlPullStartElement2 implements StartElement2 {
     private final XmlPullParser xpp;
     private final QName2 name;
-    private CachedAttributes attributes;
+    private InMemoryAttributes attributes;
 
     public XmlPullStartElement2(XmlPullParser xpp) {
       this.xpp = xpp;
@@ -243,7 +261,7 @@ public class XmlPullXMLFactoryProvider2 extends XMLFactoryProvider2 {
     private void ensureAttributesCached() {
       if (attributes != null)
         return;
-      attributes = new CachedAttributes();
+      attributes = new InMemoryAttributes();
       for (int i = 0; i < xpp.getAttributeCount(); i++) {
         String ns = xpp.getAttributeNamespace(i);
         attributes.put(
@@ -277,6 +295,20 @@ public class XmlPullXMLFactoryProvider2 extends XMLFactoryProvider2 {
     @Override
     public QName2 getName() {
       return name;
+    }
+
+  }
+
+  private static class XmlPullCharacters2 implements Characters2 {
+    private final XmlPullParser xpp;
+
+    public XmlPullCharacters2(XmlPullParser xpp) {
+      this.xpp = xpp;
+    }
+
+    @Override
+    public String getData() {
+      return xpp.getText();
     }
 
   }

@@ -53,8 +53,8 @@ import org.odata4j.format.FormatWriter;
 import org.odata4j.format.FormatWriterFactory;
 import org.odata4j.format.SingleLink;
 import org.odata4j.internal.BOMWorkaroundReader;
-import org.odata4j.internal.InternalUtil;
 import org.odata4j.stax2.XMLEventReader2;
+import org.odata4j.stax2.util.StaxUtil;
 
 /**
  * OData client based on Apache's HTTP client implementation.
@@ -211,7 +211,7 @@ public class ODataCxfClient extends AbstractODataClient {
     HttpResponse httpResponse = ((CxfResponse) response).getHttpResponse();
     try {
       InputStream textEntity = httpResponse.getEntity().getContent();
-      return InternalUtil.newXMLEventReader(new BOMWorkaroundReader(new InputStreamReader(textEntity, Charsets.Upper.UTF_8)));
+      return StaxUtil.newXMLEventReader(new BOMWorkaroundReader(new InputStreamReader(textEntity, Charsets.Upper.UTF_8)));
     } catch (Exception e) {
       throw Throwables.propagate(e);
     }

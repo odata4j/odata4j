@@ -5,10 +5,10 @@ import java.io.Reader;
 import org.odata4j.core.OError;
 import org.odata4j.core.OErrors;
 import org.odata4j.format.FormatParser;
-import org.odata4j.internal.InternalUtil;
 import org.odata4j.stax2.QName2;
 import org.odata4j.stax2.XMLEvent2;
 import org.odata4j.stax2.XMLEventReader2;
+import org.odata4j.stax2.util.StaxUtil;
 
 public class AtomErrorFormatParser extends XmlFormatParser implements FormatParser<OError> {
 
@@ -22,7 +22,7 @@ public class AtomErrorFormatParser extends XmlFormatParser implements FormatPars
     String code = null;
     String message = null;
     String innerError = null;
-    XMLEventReader2 xmlReader = InternalUtil.newXMLEventReader(reader);
+    XMLEventReader2 xmlReader = StaxUtil.newXMLEventReader(reader);
     XMLEvent2 event = xmlReader.nextEvent();
     while (!event.isStartElement())
       event = xmlReader.nextEvent();
@@ -34,7 +34,7 @@ public class AtomErrorFormatParser extends XmlFormatParser implements FormatPars
       else if (isStartElement(event, MESSAGE))
         message = xmlReader.getElementText();
       else if (isStartElement(event, INNER_ERROR))
-        innerError = xmlReader.getElementText();
+        innerError = StaxUtil.innerXml(event, xmlReader);
       else if (!event.isStartElement() || !event.isEndElement())
         continue;
       else

@@ -40,6 +40,7 @@ import org.odata4j.stax2.XMLEvent2;
 import org.odata4j.stax2.XMLEventReader2;
 import org.odata4j.stax2.XMLEventWriter2;
 import org.odata4j.stax2.XMLFactoryProvider2;
+import org.odata4j.stax2.util.StaxUtil;
 
 public class AtomFeedFormatParser extends XmlFormatParser implements FormatParser<Feed> {
 
@@ -153,7 +154,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
 
   @Override
   public AtomFeed parse(Reader reader) {
-    return parseFeed(InternalUtil.newXMLEventReader(reader), getEntitySet());
+    return parseFeed(StaxUtil.newXMLEventReader(reader), getEntitySet());
   }
 
   AtomFeed parseFeed(XMLEventReader2 reader, EdmEntitySet entitySet) {

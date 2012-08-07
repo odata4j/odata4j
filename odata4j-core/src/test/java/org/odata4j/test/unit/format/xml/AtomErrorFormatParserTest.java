@@ -36,4 +36,5 @@ public class AtomErrorFormatParserTest extends AbstractErrorFormatParserTest {
         + (innerError == null ? "" : "  <innererror>" + innerError + "</innererror>\n")
         + "</error>");
   }
+
 }

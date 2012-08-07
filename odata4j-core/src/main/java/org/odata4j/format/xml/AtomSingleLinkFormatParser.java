@@ -7,10 +7,10 @@ import java.util.List;
 import org.odata4j.format.FormatParser;
 import org.odata4j.format.SingleLink;
 import org.odata4j.format.SingleLinks;
-import org.odata4j.internal.InternalUtil;
 import org.odata4j.stax2.QName2;
 import org.odata4j.stax2.XMLEvent2;
 import org.odata4j.stax2.XMLEventReader2;
+import org.odata4j.stax2.util.StaxUtil;
 
 public class AtomSingleLinkFormatParser extends XmlFormatParser implements FormatParser<SingleLink> {
 
@@ -29,7 +29,7 @@ public class AtomSingleLinkFormatParser extends XmlFormatParser implements Forma
 
   @Override
   public SingleLink parse(Reader reader) {
-    return parseLinks(InternalUtil.newXMLEventReader(reader)).iterator().next();
+    return parseLinks(StaxUtil.newXMLEventReader(reader)).iterator().next();
   }
 
 }

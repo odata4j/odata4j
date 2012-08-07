@@ -14,8 +14,8 @@ import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntityType;
 import org.odata4j.format.xml.EdmxFormatParser;
 import org.odata4j.format.xml.EdmxFormatWriter;
-import org.odata4j.internal.InternalUtil;
 import org.odata4j.stax2.XMLEventReader2;
+import org.odata4j.stax2.util.StaxUtil;
 
 public class EdmxFormatParserTest {
 
@@ -30,7 +30,7 @@ public class EdmxFormatParserTest {
   public void testInheritance() throws FileNotFoundException, InterruptedException {
 
     // do the raw xml first...
-    XMLEventReader2 reader = InternalUtil.newXMLEventReader(new BufferedReader(
+    XMLEventReader2 reader = StaxUtil.newXMLEventReader(new BufferedReader(
         new InputStreamReader(getClass().getResourceAsStream(edmxFile))));
     EdmDataServices d = new EdmxFormatParser().parseMetadata(reader);
     assertTrue("parsed", d != null);
@@ -41,7 +41,7 @@ public class EdmxFormatParserTest {
     StringWriter sw = new StringWriter();
     EdmxFormatWriter.write(d, sw);
 
-    EdmDataServices d2 = new EdmxFormatParser().parseMetadata(InternalUtil.newXMLEventReader(new StringReader(sw.toString())));
+    EdmDataServices d2 = new EdmxFormatParser().parseMetadata(StaxUtil.newXMLEventReader(new StringReader(sw.toString())));
     assertTrue("parsed", d2 != null);
 
     checkTypeHierarchy(d2);
@@ -49,7 +49,7 @@ public class EdmxFormatParserTest {
 
   @Test
   public void parseSapDsSample() {
-    XMLEventReader2 reader = InternalUtil.newXMLEventReader(new BufferedReader(
+    XMLEventReader2 reader = StaxUtil.newXMLEventReader(new BufferedReader(
         new InputStreamReader(getClass().getResourceAsStream(sapDsSampleEdmxFile))));
     EdmDataServices d = new EdmxFormatParser().parseMetadata(reader);
     assertTrue("parsed", d != null);

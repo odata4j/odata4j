@@ -32,11 +32,11 @@ import org.odata4j.edm.EdmProperty;
 import org.odata4j.edm.EdmStructuralType;
 import org.odata4j.examples.producer.jpa.airline.Airport;
 import org.odata4j.format.xml.EdmxFormatParser;
-import org.odata4j.internal.InternalUtil;
 import org.odata4j.producer.PropertyPath;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.producer.server.ODataServer;
+import org.odata4j.stax2.util.StaxUtil;
 import org.odata4j.test.integration.AbstractRuntimeTest;
 import org.odata4j.test.integration.producer.jpa.northwind.NorthwindTestUtils;
 import org.xml.sax.SAXException;
@@ -85,7 +85,7 @@ public class EdmxFormatWriterTest extends AbstractRuntimeTest implements EdmDeco
 
     assertXMLEqual("bad $metadata", myDiff, true);
 
-    EdmDataServices pds = new EdmxFormatParser().parseMetadata(InternalUtil.newXMLEventReader(new StringReader(metadata)));
+    EdmDataServices pds = new EdmxFormatParser().parseMetadata(StaxUtil.newXMLEventReader(new StringReader(metadata)));
     Assert.assertTrue(pds != null); // we parsed it!
 
     // TODO: once EdmxFormatParser supports doc and annotations we can check pds

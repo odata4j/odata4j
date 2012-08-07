@@ -10,4 +10,8 @@ public interface XMLEvent2 {
 
   EndElement2 asEndElement();
 
+  boolean isCharacters();
+
+  Characters2 asCharacters();
+
 }

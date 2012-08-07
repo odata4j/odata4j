@@ -23,6 +23,7 @@ import org.odata4j.stax2.XMLInputFactory2;
 import org.odata4j.stax2.XMLOutputFactory2;
 import org.odata4j.stax2.XMLWriter2;
 import org.odata4j.stax2.XMLWriterFactory2;
+import org.odata4j.stax2.util.InMemoryXMLEvent2;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -140,14 +141,14 @@ public class DomXMLFactoryProvider2 extends XMLFactoryProvider2 {
       }
 
       private IterationResult<XMLEvent2> startElement2() {
-        Object o = new DomStartElement2(current);
-        XMLEvent2 event = new DomXMLEvent2(o);
+        DomStartElement2 start = new DomStartElement2(current);
+        XMLEvent2 event = new InMemoryXMLEvent2(start, null, null);
         return IterationResult.next(event);
       }
 
       private IterationResult<XMLEvent2> endElement2() {
-        Object o = new DomEndElement2(current);
-        XMLEvent2 event = new DomXMLEvent2(o);
+        DomEndElement2 end = new DomEndElement2(current);
+        XMLEvent2 event = new InMemoryXMLEvent2(null, end, null);
         return IterationResult.next(event);
       }
 
@@ -279,41 +280,6 @@ public class DomXMLFactoryProvider2 extends XMLFactoryProvider2 {
     @Override
     public String toString() {
       return "EndElement " + getName() + " " + AndroidCompat.getTextContent(element);
-    }
-
-  }
-
-  private static class DomXMLEvent2 implements XMLEvent2 {
-
-    private final Object event;
-
-    public DomXMLEvent2(Object event) {
-      this.event = event;
-    }
-
-    @Override
-    public EndElement2 asEndElement() {
-      return (EndElement2) event;
-    }
-
-    @Override
-    public StartElement2 asStartElement() {
-      return (StartElement2) event;
-    }
-
-    @Override
-    public boolean isEndElement() {
-      return event instanceof EndElement2;
-    }
-
-    @Override
-    public boolean isStartElement() {
-      return event instanceof StartElement2;
-    }
-
-    @Override
-    public String toString() {
-      return event.toString();
     }
 
   }

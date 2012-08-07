@@ -7,9 +7,8 @@ import org.odata4j.core.OSimpleObjects;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.format.FormatParser;
 import org.odata4j.format.Settings;
-import org.odata4j.internal.InternalUtil;
-import org.odata4j.stax2.XMLEvent2;
 import org.odata4j.stax2.XMLEventReader2;
+import org.odata4j.stax2.util.StaxUtil;
 
 public class AtomSimpleObjectFormatParser implements FormatParser<OSimpleObject<?>>{
 
@@ -20,7 +19,7 @@ public class AtomSimpleObjectFormatParser implements FormatParser<OSimpleObject<
   }
   @Override
   public OSimpleObject<?> parse(Reader reader) {
-    XMLEventReader2 xmlReader = InternalUtil.newXMLEventReader(reader);
+    XMLEventReader2 xmlReader = StaxUtil.newXMLEventReader(reader);
     xmlReader.nextEvent();	// start doc
     xmlReader.nextEvent();	// start element
 
