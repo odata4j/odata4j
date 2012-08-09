@@ -12,26 +12,30 @@ import org.odata4j.core.OErrors;
 /**
  * An OData producer exception with the information described in the OData documentation for
  * <a href="http://www.odata.org/documentation/operations#ErrorConditions">error conditions</a>.
- *
  * <p>OData producer exceptions can be either created by using one of its sub-classes or by the
  * static factory {@link ODataProducerExceptions}.</p>
  */
-public class ODataProducerException extends RuntimeException {
+public abstract class ODataProducerException extends RuntimeException {
 
   private static final long serialVersionUID = 1L;
 
-  private final StatusType status;
   private final OError error;
 
-  protected ODataProducerException(String message, Throwable cause, StatusType status) {
+  /**
+   * Constructor used by sub-classes to instantiate an exception that is thrown by an OData provider at runtime.
+   * <p>Parameters are delegated to {@link RuntimeException#RuntimeException(String, Throwable)}.</p>
+   */
+  protected ODataProducerException(String message, Throwable cause) {
     super(message, cause);
-    this.status = status;
-    this.error = OErrors.error(code(), message(), innerError());
+    error = OErrors.error(code(), message(), innerError());
   }
 
-  protected ODataProducerException(StatusType status, OError error) {
-    super(status.getReasonPhrase());
-    this.status = status;
+  /**
+   * Constructor used by sub-classes to instantiate an exception based on the given OError
+   * that has been received and parsed by an OData consumer.
+   */
+  protected ODataProducerException(OError error) {
+    super(error.getMessage());
     this.error = error;
   }
 
@@ -59,14 +63,12 @@ public class ODataProducerException extends RuntimeException {
    * @return the HTTP status
    * @see Status
    */
-  public StatusType getHttpStatus() {
-    return status;
-  }
+  public abstract StatusType getHttpStatus();
 
   /**
    * Gets the OData error message.
    *
-   * @return the OData error message or {@code null}.
+   * @return the OData error message
    */
   public OError getOError() {
     return error;

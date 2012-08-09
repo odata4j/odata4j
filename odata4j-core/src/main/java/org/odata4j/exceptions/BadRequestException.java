@@ -1,6 +1,9 @@
 package org.odata4j.exceptions;
 
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.Response.StatusType;
+
+import org.odata4j.core.OError;
 
 public class BadRequestException extends ODataProducerException {
 
@@ -19,6 +22,28 @@ public class BadRequestException extends ODataProducerException {
   }
 
   public BadRequestException(String message, Throwable cause) {
-    super(message, cause, Status.BAD_REQUEST);
+    super(message, cause);
+  }
+
+  @Override
+  public StatusType getHttpStatus() {
+    return Status.BAD_REQUEST;
+  }
+
+  private BadRequestException(OError error) {
+    super(error);
+  }
+
+  public static class Factory implements ExceptionFactory<BadRequestException> {
+
+    @Override
+    public int getStatusCode() {
+      return Status.BAD_REQUEST.getStatusCode();
+    }
+
+    @Override
+    public BadRequestException createException(OError error) {
+      return new BadRequestException(error);
+    }
   }
 }

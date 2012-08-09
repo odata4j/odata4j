@@ -202,7 +202,7 @@ public class ODataCxfClient extends AbstractODataClient {
     } catch (RuntimeException e) {
       // ... otherwise throw a RuntimeError
       exception = new RuntimeException(String.format("Expected status %s, found %s. Server response:",
-          Enumerable.create(expectedResponseStatus).join(" or "), status) + "\n" + textEntity);
+          Enumerable.create(expectedResponseStatus).join(" or "), status) + "\n" + textEntity, e);
     }
     throw exception;
   }

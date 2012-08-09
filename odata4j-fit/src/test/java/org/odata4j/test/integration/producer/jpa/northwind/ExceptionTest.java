@@ -1,17 +1,16 @@
 package org.odata4j.test.integration.producer.jpa.northwind;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-
-import javax.ws.rs.core.Response.Status;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntityIds;
-import org.odata4j.exceptions.ODataProducerException;
+import org.odata4j.exceptions.BadRequestException;
+import org.odata4j.exceptions.NotFoundException;
+import org.odata4j.exceptions.NotImplementedException;
 
 public class ExceptionTest extends NorthwindJpaProducerTest {
 
@@ -32,9 +31,9 @@ public class ExceptionTest extends NorthwindJpaProducerTest {
     try {
       consumer.getEntities("UnknownEntity").execute();
       fail("Expected exception missing");
-    } catch (ODataProducerException e) {
-      assertThat(e.getHttpStatus().getStatusCode(), is(Status.NOT_FOUND.getStatusCode()));
+    } catch (NotFoundException e) {
       assertThat(e.getOError().getMessage(), containsString("UnknownEntity"));
+      assertThat(e.getMessage(), containsString("UnknownEntity"));
     }
   }
 
@@ -43,48 +42,46 @@ public class ExceptionTest extends NorthwindJpaProducerTest {
     try {
       consumer.getEntity("Customers", "NOUSER").execute();
       fail("Expected exception missing");
-    } catch (ODataProducerException e) {
-      assertThat(e.getHttpStatus().getStatusCode(), is(Status.NOT_FOUND.getStatusCode()));
-      assertThat(e.getOError().getCode(), containsString("NotFound"));
+    } catch (NotFoundException e) {
       assertThat(e.getOError().getMessage(), containsString("NOUSER"));
+      assertThat(e.getMessage(), containsString("NOUSER"));
     }
   }
 
-  @Test
-  public void invalidKey() throws Exception {
-    try {
-      consumer.getEntity("Customers", 1).execute();
-      fail("Expected exception missing");
-    } catch (ODataProducerException e) {
-      assertThat(e.getHttpStatus().getStatusCode(), is(Status.BAD_REQUEST.getStatusCode()));
-    }
-
-    try {
-      consumer.getEntity("Employees", "WrongKey").execute();
-      fail("Expected exception missing");
-    } catch (ODataProducerException e) {
-      assertThat(e.getHttpStatus().getStatusCode(), is(Status.BAD_REQUEST.getStatusCode()));
-    }
+  @Test(expected = BadRequestException.class)
+  public void invalidKeyInteger() throws Exception {
+    consumer.getEntity("Customers", 1).execute();
   }
 
-  @Test
+  @Test(expected = BadRequestException.class)
+  public void invalidKeyString() throws Exception {
+    consumer.getEntity("Employees", "WrongKey").execute();
+  }
+
+  @Test(expected = NotFoundException.class)
   public void noNavigation() throws Exception {
-    try {
-      consumer.getEntity("Customers", "QUEEN").nav("NoNavigation").execute();
-      fail("Expected exception missing");
-    } catch (ODataProducerException e) {
-      assertThat(e.getHttpStatus().getStatusCode(), is(Status.NOT_FOUND.getStatusCode()));
-    }
+    consumer.getEntity("Customers", "QUEEN").nav("NoNavigation").execute();
+  }
+
+  @Test(expected = NotFoundException.class)
+  public void noLinks() throws Exception {
+    consumer.getLinks(OEntityIds.create("Customers", "QUEEN"), "NoNavigation").execute();
   }
 
   @Test
-  public void noLinks() throws Exception {
+  public void deleteNotExistingEntity() throws Exception {
     try {
-      consumer.getLinks(OEntityIds.create("Customers", "QUEEN"), "NoNavigation").execute();
+      consumer.deleteEntity("Customers", "NOUSER").execute();
       fail("Expected exception missing");
-    } catch (ODataProducerException e) {
-      assertThat(e.getHttpStatus().getStatusCode(), is(Status.NOT_FOUND.getStatusCode()));
+    } catch (NotFoundException e) {
+      assertThat(e.getOError().getMessage(), containsString("NOUSER"));
+      assertThat(e.getMessage(), containsString("NOUSER"));
     }
+  }
+
+  @Test(expected = NotImplementedException.class)
+  public void deleteLink() throws Exception {
+    consumer.deleteLink(OEntityIds.create("Customers", "CENTC"), "Orders", 10259).execute();
   }
 
   @Test
@@ -93,27 +90,6 @@ public class ExceptionTest extends NorthwindJpaProducerTest {
       consumer.callFunction("NoFunction").execute();
     } catch (IllegalArgumentException e) {
       assertThat(e.getMessage(), containsString("NoFunction"));
-    }
-  }
-
-  @Test
-  public void deleteNotExistingEntity() throws Exception {
-    try {
-      consumer.deleteEntity("Customers", "NOUSER").execute();
-      fail("Expected exception missing");
-    } catch (ODataProducerException e) {
-      assertThat(e.getHttpStatus().getStatusCode(), is(Status.NOT_FOUND.getStatusCode()));
-      assertThat(e.getOError().getMessage(), containsString("NOUSER"));
-    }
-  }
-
-  @Test
-  public void deleteLink() throws Exception {
-    try {
-      consumer.deleteLink(OEntityIds.create("Customers", "CENTC"), "Orders", 10259).execute();
-      fail("Expected exception missing");
-    } catch (ODataProducerException e) {
-      assertThat(e.getOError().getCode(), containsString("NotImplemented"));
     }
   }
 }
