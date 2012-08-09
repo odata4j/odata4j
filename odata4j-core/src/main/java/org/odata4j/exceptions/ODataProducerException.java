@@ -39,11 +39,28 @@ public abstract class ODataProducerException extends RuntimeException {
     this.error = error;
   }
 
-  private String code() {
+  /**
+   * Returns the code that is put into the OError object created during construction of this exception.
+   * <p>The default implementation returns the simple name of the underlying class. Sub-classes can override
+   * this method and specify a different code.</p>
+   *
+   * @return the code
+   * @see {@link OError#getCode()}
+   */
+  protected String code() {
     return getClass().getSimpleName();
   }
 
-  private String message() {
+  /**
+   * Returns the message that is put into the OError object created during construction of this exception.
+   * <p>The default implementation returns the exception's message ({@link RuntimeException#getMessage()}) if set.
+   * Otherwise the reason phrase of the mapped HTTP status is returned ({@link StatusType#getReasonPhrase()}).
+   * Sub-classes can override this method and specify a different message.</p>
+   *
+   * @return the message
+   * @see {@link OError#getMessage()}
+   */
+  protected String message() {
     if (getMessage() != null)
       return getMessage();
     if (getHttpStatus() != null)
@@ -51,7 +68,15 @@ public abstract class ODataProducerException extends RuntimeException {
     return null;
   }
 
-  private String innerError() {
+  /**
+   * Returns the inner error that is put into the OError object created during construction of this exception.
+   * <p>The default implementation returns the exception's stack trace ({@link RuntimeException#printStackTrace(PrintWriter)}).
+   * Sub-classes can override this method and specify a different inner error.</p>
+   *
+   * @return the inner error
+   * @see {@link OError#getInnerError()}
+   */
+  protected String innerError() {
     StringWriter sw = new StringWriter();
     printStackTrace(new PrintWriter(sw));
     return sw.toString();
