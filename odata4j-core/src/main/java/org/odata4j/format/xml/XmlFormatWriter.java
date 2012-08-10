@@ -174,7 +174,7 @@ public class XmlFormatWriter {
 
   private OAtomEntity getAtomInfo(OEntity oe) {
     if (oe != null) {
-      OAtomEntity atomEntity = oe.findExtension(OAtomEntity.class);
+      OAtomEntity atomEntity = oe.findExtension(OAtomEntity.class, null);
       if (atomEntity != null)
         return atomEntity;
     }
@@ -297,7 +297,7 @@ public class XmlFormatWriter {
 
     boolean hasStream = false;
     if (oe != null) {
-      OAtomStreamEntity stream = oe.findExtension(OAtomStreamEntity.class);
+      OAtomStreamEntity stream = oe.findExtension(OAtomStreamEntity.class, null);
       if (stream != null) {
         hasStream = true;
         writer.startElement("content");

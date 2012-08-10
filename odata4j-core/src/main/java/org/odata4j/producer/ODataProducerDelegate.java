@@ -26,28 +26,28 @@ public abstract class ODataProducerDelegate implements Delegate<ODataProducer>, 
   }
 
   @Override
-  public EntitiesResponse getEntities(String entitySetName, QueryInfo queryInfo) {
-    return getDelegate().getEntities(entitySetName, queryInfo);
+  public EntitiesResponse getEntities(ODataContext context, String entitySetName, QueryInfo queryInfo) {
+    return getDelegate().getEntities(context, entitySetName, queryInfo);
   }
 
   @Override
-  public CountResponse getEntitiesCount(String entitySetName, QueryInfo queryInfo) {
-    return getDelegate().getEntitiesCount(entitySetName, queryInfo);
+  public CountResponse getEntitiesCount(ODataContext context, String entitySetName, QueryInfo queryInfo) {
+    return getDelegate().getEntitiesCount(context, entitySetName, queryInfo);
   }
 
   @Override
-  public EntityResponse getEntity(String entitySetName, OEntityKey entityKey, EntityQueryInfo queryInfo) {
-    return getDelegate().getEntity(entitySetName, entityKey, queryInfo);
+  public EntityResponse getEntity(ODataContext context, String entitySetName, OEntityKey entityKey, EntityQueryInfo queryInfo) {
+    return getDelegate().getEntity(context, entitySetName, entityKey, queryInfo);
   }
 
   @Override
-  public BaseResponse getNavProperty(String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
-    return getDelegate().getNavProperty(entitySetName, entityKey, navProp, queryInfo);
+  public BaseResponse getNavProperty(ODataContext context, String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
+    return getDelegate().getNavProperty(context, entitySetName, entityKey, navProp, queryInfo);
   }
 
   @Override
-  public CountResponse getNavPropertyCount(String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
-    return getDelegate().getNavPropertyCount(entitySetName, entityKey, navProp, queryInfo);
+  public CountResponse getNavPropertyCount(ODataContext context, String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
+    return getDelegate().getNavPropertyCount(context, entitySetName, entityKey, navProp, queryInfo);
   }
 
   @Override
@@ -56,57 +56,57 @@ public abstract class ODataProducerDelegate implements Delegate<ODataProducer>, 
   }
 
   @Override
-  public EntityResponse createEntity(String entitySetName, OEntity entity) {
-    return getDelegate().createEntity(entitySetName, entity);
+  public EntityResponse createEntity(ODataContext context, String entitySetName, OEntity entity) {
+    return getDelegate().createEntity(context, entitySetName, entity);
   }
 
   @Override
-  public EntityResponse createEntity(String entitySetName, OEntityKey entityKey, String navProp, OEntity entity) {
-    return getDelegate().createEntity(entitySetName, entityKey, navProp, entity);
+  public EntityResponse createEntity(ODataContext context, String entitySetName, OEntityKey entityKey, String navProp, OEntity entity) {
+    return getDelegate().createEntity(context, entitySetName, entityKey, navProp, entity);
   }
 
   @Override
-  public void deleteEntity(String entitySetName, OEntityKey entityKey) {
-    getDelegate().deleteEntity(entitySetName, entityKey);
+  public void deleteEntity(ODataContext context, String entitySetName, OEntityKey entityKey) {
+    getDelegate().deleteEntity(context, entitySetName, entityKey);
   }
 
   @Override
-  public void mergeEntity(String entitySetName, OEntity entity) {
-    getDelegate().mergeEntity(entitySetName, entity);
+  public void mergeEntity(ODataContext context, String entitySetName, OEntity entity) {
+    getDelegate().mergeEntity(context, entitySetName, entity);
   }
 
   @Override
-  public void updateEntity(String entitySetName, OEntity entity) {
-    getDelegate().updateEntity(entitySetName, entity);
+  public void updateEntity(ODataContext context, String entitySetName, OEntity entity) {
+    getDelegate().updateEntity(context, entitySetName, entity);
   }
 
   @Override
-  public EntityIdResponse getLinks(OEntityId sourceEntity, String targetNavProp) {
-    return getDelegate().getLinks(sourceEntity, targetNavProp);
+  public EntityIdResponse getLinks(ODataContext context, OEntityId sourceEntity, String targetNavProp) {
+    return getDelegate().getLinks(context, sourceEntity, targetNavProp);
   }
 
   @Override
-  public void createLink(OEntityId sourceEntity, String targetNavProp, OEntityId targetEntity) {
-    getDelegate().createLink(sourceEntity, targetNavProp, targetEntity);
+  public void createLink(ODataContext context, OEntityId sourceEntity, String targetNavProp, OEntityId targetEntity) {
+    getDelegate().createLink(context, sourceEntity, targetNavProp, targetEntity);
   }
 
   @Override
-  public void updateLink(OEntityId sourceEntity, String targetNavProp, OEntityKey oldTargetEntityKey, OEntityId newTargetEntity) {
-    getDelegate().updateLink(sourceEntity, targetNavProp, oldTargetEntityKey, newTargetEntity);
+  public void updateLink(ODataContext context, OEntityId sourceEntity, String targetNavProp, OEntityKey oldTargetEntityKey, OEntityId newTargetEntity) {
+    getDelegate().updateLink(context, sourceEntity, targetNavProp, oldTargetEntityKey, newTargetEntity);
   }
 
   @Override
-  public void deleteLink(OEntityId sourceEntity, String targetNavProp, OEntityKey targetEntityKey) {
-    getDelegate().deleteLink(sourceEntity, targetNavProp, targetEntityKey);
+  public void deleteLink(ODataContext context, OEntityId sourceEntity, String targetNavProp, OEntityKey targetEntityKey) {
+    getDelegate().deleteLink(context, sourceEntity, targetNavProp, targetEntityKey);
   }
 
   @Override
-  public BaseResponse callFunction(EdmFunctionImport name, Map<String, OFunctionParameter> params, QueryInfo queryInfo) {
-    return getDelegate().callFunction(name, params, queryInfo);
+  public BaseResponse callFunction(ODataContext context, EdmFunctionImport name, Map<String, OFunctionParameter> params, QueryInfo queryInfo) {
+    return getDelegate().callFunction(context, name, params, queryInfo);
   }
 
   @Override
-  public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz) {
-    return getDelegate().findExtension(clazz);
+  public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz, Map<String, Object> params) {
+    return getDelegate().findExtension(clazz, params);
   }
 }

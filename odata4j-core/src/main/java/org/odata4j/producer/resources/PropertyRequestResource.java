@@ -34,6 +34,7 @@ import org.odata4j.producer.BaseResponse;
 import org.odata4j.producer.CountResponse;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityResponse;
+import org.odata4j.producer.ODataContextImpl;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.PropertyResponse;
 import org.odata4j.producer.QueryInfo;
@@ -79,7 +80,7 @@ public class PropertyRequestResource extends BaseResource {
       OEntity entity = getRequestEntity(httpHeaders, uriInfo, payload, metadata, ees.getName(), OEntityKey.parse(id));
 
       // execute the create
-      EntityResponse response = producer.createEntity(entitySetName, OEntityKey.parse(id), navProp, entity);
+      EntityResponse response = producer.createEntity(ODataContextImpl.builder().aspect(httpHeaders).build(), entitySetName, OEntityKey.parse(id), navProp, entity);
 
       if (response == null) {
         throw new NotFoundException();
@@ -161,6 +162,7 @@ public class PropertyRequestResource extends BaseResource {
       navProp = navProp.replace("/$count", "");
 
       CountResponse response = producer.getNavPropertyCount(
+          ODataContextImpl.builder().aspect(httpHeaders).build(), 
           entitySetName,
           OEntityKey.parse(id),
           navProp,
@@ -183,6 +185,7 @@ public class PropertyRequestResource extends BaseResource {
     else {
 
       BaseResponse response = producer.getNavProperty(
+          ODataContextImpl.builder().aspect(httpHeaders).build(),
           entitySetName,
           OEntityKey.parse(id),
           navProp,

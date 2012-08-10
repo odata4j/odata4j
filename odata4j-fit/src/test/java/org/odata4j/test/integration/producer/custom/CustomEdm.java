@@ -14,6 +14,8 @@ import org.odata4j.edm.EdmDecorator;
 import org.odata4j.edm.EdmEntityContainer;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmEntityType;
+import org.odata4j.edm.EdmFunctionImport;
+import org.odata4j.edm.EdmFunctionParameter;
 import org.odata4j.edm.EdmGenerator;
 import org.odata4j.edm.EdmMultiplicity;
 import org.odata4j.edm.EdmNavigationProperty;
@@ -56,6 +58,20 @@ public class CustomEdm implements EdmGenerator {
         .addAssociations(associations)
         .addEntityContainers(container);
 
+    List<EdmFunctionParameter.Builder> params = new ArrayList<EdmFunctionParameter.Builder>(1);
+    params.add(EdmFunctionParameter.newBuilder()
+            .setName("p")
+            .setType(EdmSimpleType.STRING)
+            .setMode(EdmFunctionParameter.Mode.In));
+
+    EdmFunctionImport.Builder f = EdmFunctionImport.newBuilder()
+            .setName("f")
+            .setHttpMethod("GET")
+            .setReturnType(EdmSimpleType.BOOLEAN)
+            .addParameters(params);
+
+    container.addFunctionImports(f);
+        
     return EdmDataServices.newBuilder().addSchemas(schema);
   }
 

@@ -29,6 +29,7 @@ import org.odata4j.format.FormatWriterFactory;
 import org.odata4j.format.SingleLink;
 import org.odata4j.format.SingleLinks;
 import org.odata4j.producer.EntityIdResponse;
+import org.odata4j.producer.ODataContextImpl;
 import org.odata4j.producer.ODataProducer;
 
 public class LinksRequestResource extends BaseResource {
@@ -57,7 +58,7 @@ public class LinksRequestResource extends BaseResource {
     ODataProducer producer = producerResolver.getContext(ODataProducer.class);
 
     OEntityId newTargetEntity = parseRequestUri(httpHeaders, uriInfo, payload);
-    producer.createLink(sourceEntity, targetNavProp, newTargetEntity);
+    producer.createLink(ODataContextImpl.builder().aspect(httpHeaders).build(), sourceEntity, targetNavProp, newTargetEntity);
     return noContent();
   }
 
@@ -73,7 +74,7 @@ public class LinksRequestResource extends BaseResource {
     ODataProducer producer = producerResolver.getContext(ODataProducer.class);
 
     OEntityId newTargetEntity = parseRequestUri(httpHeaders, uriInfo, payload);
-    producer.updateLink(sourceEntity, targetNavProp, targetEntityKey, newTargetEntity);
+    producer.updateLink(ODataContextImpl.builder().aspect(httpHeaders).build(), sourceEntity, targetNavProp, targetEntityKey, newTargetEntity);
     return noContent();
   }
 
@@ -98,7 +99,7 @@ public class LinksRequestResource extends BaseResource {
 
     ODataProducer producer = producerResolver.getContext(ODataProducer.class);
 
-    producer.deleteLink(sourceEntity, targetNavProp, targetEntityKey);
+    producer.deleteLink(ODataContextImpl.builder().aspect(httpHeaders).build(), sourceEntity, targetNavProp, targetEntityKey);
     return noContent();
   }
 
@@ -116,7 +117,7 @@ public class LinksRequestResource extends BaseResource {
 
     ODataProducer producer = producerResolver.getContext(ODataProducer.class);
 
-    EntityIdResponse response = producer.getLinks(sourceEntity, targetNavProp);
+    EntityIdResponse response = producer.getLinks(ODataContextImpl.builder().aspect(httpHeaders).build(), sourceEntity, targetNavProp);
 
     StringWriter sw = new StringWriter();
     String serviceRootUri = uriInfo.getBaseUri().toString();

@@ -10,6 +10,7 @@ import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.producer.EntityQueryInfo;
 import org.odata4j.producer.EntityResponse;
+import org.odata4j.producer.ODataContext;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.producer.server.ODataServer;
@@ -29,9 +30,9 @@ public class Issue13Test extends AbstractRuntimeTest {
     final OEntityKey[] lastEntityKey = new OEntityKey[1];
     InMemoryProducer producer = new InMemoryProducer("Issue13") {
       @Override
-      public EntityResponse getEntity(String entitySetName, OEntityKey entityKey, EntityQueryInfo queryInfo) {
+      public EntityResponse getEntity(ODataContext context, String entitySetName, OEntityKey entityKey, EntityQueryInfo queryInfo) {
         lastEntityKey[0] = entityKey;
-        return super.getEntity(entitySetName, entityKey, queryInfo);
+        return super.getEntity(context, entitySetName, entityKey, queryInfo);
       }
     };
     producer.register(Long.class, Long.class, "Entity", new Func<Iterable<Long>>() {

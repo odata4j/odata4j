@@ -50,6 +50,7 @@ import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityIdResponse;
 import org.odata4j.producer.EntityQueryInfo;
 import org.odata4j.producer.EntityResponse;
+import org.odata4j.producer.ODataContext;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.Responses;
@@ -272,79 +273,74 @@ public class JPAProducer implements ODataProducer {
   }
 
   @Override
-  public EntitiesResponse getEntities(String entitySetName,
-      QueryInfo queryInfo) {
-    JPAContext context = new JPAContext(metadata, entitySetName, queryInfo);
-    getEntitiesCommand.execute(context);
-    return (EntitiesResponse) context.getResponse();
+  public EntitiesResponse getEntities(ODataContext context, String entitySetName, QueryInfo queryInfo) {
+    JPAContext jpaContext = new JPAContext(metadata, entitySetName, queryInfo);
+    getEntitiesCommand.execute(jpaContext);
+    return (EntitiesResponse) jpaContext.getResponse();
   }
 
   @Override
-  public EntityResponse getEntity(String entitySetName, OEntityKey entityKey,
-      EntityQueryInfo queryInfo) {
-    JPAContext context = new JPAContext(metadata, entitySetName, entityKey, null,
+  public EntityResponse getEntity(ODataContext context, String entitySetName, OEntityKey entityKey, EntityQueryInfo queryInfo) {
+    JPAContext jpaContext = new JPAContext(metadata, entitySetName, entityKey, null,
         queryInfo);
-    getEntityCommand.execute(context);
-    return (EntityResponse) context.getResponse();
+    getEntityCommand.execute(jpaContext);
+    return (EntityResponse) jpaContext.getResponse();
   }
 
   @Override
-  public BaseResponse getNavProperty(String entitySetName,
-      OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
-    JPAContext context = new JPAContext(metadata, entitySetName, entityKey,
+  public BaseResponse getNavProperty(ODataContext context, String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
+    JPAContext jpaContext = new JPAContext(metadata, entitySetName, entityKey,
         navProp, queryInfo);
-    getEntitiesCommand.execute(context);
-    return context.getResponse();
+    getEntitiesCommand.execute(jpaContext);
+    return jpaContext.getResponse();
   }
 
   @Override
   public void close() {}
 
   @Override
-  public EntityResponse createEntity(String entitySetName, OEntity entity) {
-    JPAContext context = new JPAContext(metadata, entitySetName, null, entity);
-    createEntityCommand.execute(context);
-    return (EntityResponse) context.getResponse();
+  public EntityResponse createEntity(ODataContext context, String entitySetName, OEntity entity) {
+    JPAContext jpaContext = new JPAContext(metadata, entitySetName, null, entity);
+    createEntityCommand.execute(jpaContext);
+    return (EntityResponse) jpaContext.getResponse();
   }
 
   @Override
-  public EntityResponse createEntity(String entitySetName,
-      OEntityKey entityKey, String navProp, OEntity entity) {
-    JPAContext context = new JPAContext(metadata, entitySetName, entityKey,
+  public EntityResponse createEntity(ODataContext context, String entitySetName, OEntityKey entityKey, String navProp, OEntity entity) {
+    JPAContext jpaContext = new JPAContext(metadata, entitySetName, entityKey,
         navProp, entity);
-    createAndLinkCommand.execute(context);
-    return (EntityResponse) context.getResponse();
+    createAndLinkCommand.execute(jpaContext);
+    return (EntityResponse) jpaContext.getResponse();
   }
 
   @Override
-  public void deleteEntity(String entitySetName, OEntityKey entityKey) {
-    JPAContext context = new JPAContext(metadata, entitySetName, entityKey, null);
-    deleteEntityCommand.execute(context);
+  public void deleteEntity(ODataContext context, String entitySetName, OEntityKey entityKey) {
+    JPAContext jpaContext = new JPAContext(metadata, entitySetName, entityKey, null);
+    deleteEntityCommand.execute(jpaContext);
   }
 
   @Override
-  public void mergeEntity(String entitySetName, OEntity entity) {
-    JPAContext context = new JPAContext(metadata, entitySetName,
+  public void mergeEntity(ODataContext context, String entitySetName, OEntity entity) {
+    JPAContext jpaContext = new JPAContext(metadata, entitySetName,
         entity.getEntityKey(), entity);
-    mergeEntityCommand.execute(context);
+    mergeEntityCommand.execute(jpaContext);
   }
 
   @Override
-  public void updateEntity(String entitySetName, OEntity entity) {
-    JPAContext context = new JPAContext(metadata, entitySetName,
+  public void updateEntity(ODataContext context, String entitySetName, OEntity entity) {
+    JPAContext jpaContext = new JPAContext(metadata, entitySetName,
         entity.getEntityKey(), entity);
-    updateEntityCommand.execute(context);
+    updateEntityCommand.execute(jpaContext);
   }
 
   @Override
-  public EntityIdResponse getLinks(OEntityId sourceEntity,
-      String targetNavProp) {
-    JPAContext context = new JPAContext(metadata,
+  public EntityIdResponse getLinks(ODataContext context, OEntityId sourceEntity, String targetNavProp) {
+    JPAContext jpaContext = new JPAContext(metadata,
         sourceEntity.getEntitySetName(),
         sourceEntity.getEntityKey(), targetNavProp, (QueryInfo) null);
-    getLinksCommand.execute(context);
+    getLinksCommand.execute(jpaContext);
 
-    BaseResponse r = context.getResponse();
+    BaseResponse r = jpaContext.getResponse();
     if (r instanceof EntitiesResponse) {
       EntitiesResponse er = (EntitiesResponse) r;
       return Responses.multipleIds(er.getEntities());
@@ -365,48 +361,43 @@ public class JPAProducer implements ODataProducer {
   }
 
   @Override
-  public void createLink(OEntityId sourceEntity, String targetNavProp,
-      OEntityId targetEntity) {
+  public void createLink(ODataContext context, OEntityId sourceEntity, String targetNavProp, OEntityId targetEntity) {
     throw new NotImplementedException();
   }
 
   @Override
-  public void updateLink(OEntityId sourceEntity, String targetNavProp,
-      OEntityKey oldTargetEntityKey, OEntityId newTargetEntity) {
+  public void updateLink(ODataContext context, OEntityId sourceEntity, String targetNavProp, OEntityKey oldTargetEntityKey, OEntityId newTargetEntity) {
     throw new NotImplementedException();
   }
 
   @Override
-  public void deleteLink(OEntityId sourceEntity, String targetNavProp,
-      OEntityKey targetEntityKey) {
+  public void deleteLink(ODataContext context, OEntityId sourceEntity, String targetNavProp, OEntityKey targetEntityKey) {
     throw new NotImplementedException();
   }
 
   @Override
-  public BaseResponse callFunction(EdmFunctionImport name,
+  public BaseResponse callFunction(ODataContext context, EdmFunctionImport name,
       Map<String, OFunctionParameter> params, QueryInfo queryInfo) {
     return null;
   }
 
   @Override
-  public CountResponse getEntitiesCount(String entitySetName,
-      QueryInfo queryInfo) {
-    JPAContext context = new JPAContext(metadata, entitySetName, queryInfo);
-    getCountCommand.execute(context);
-    return (CountResponse) context.getResponse();
+  public CountResponse getEntitiesCount(ODataContext context, String entitySetName, QueryInfo queryInfo) {
+    JPAContext jpaContext = new JPAContext(metadata, entitySetName, queryInfo);
+    getCountCommand.execute(jpaContext);
+    return (CountResponse) jpaContext.getResponse();
   }
 
   @Override
-  public CountResponse getNavPropertyCount(String entitySetName,
-      OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
-    JPAContext context = new JPAContext(metadata, entitySetName, entityKey,
+  public CountResponse getNavPropertyCount(ODataContext context, String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
+    JPAContext jpaContext = new JPAContext(metadata, entitySetName, entityKey,
         navProp, queryInfo);
-    getCountCommand.execute(context);
-    return (CountResponse) context.getResponse();
+    getCountCommand.execute(jpaContext);
+    return (CountResponse) jpaContext.getResponse();
   }
 
   @Override
-  public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz) {
+  public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz, Map<String, Object> params) {
     return null;
   }
 

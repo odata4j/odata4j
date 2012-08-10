@@ -8,6 +8,7 @@ import org.core4j.Funcs;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.producer.EntitiesResponse;
+import org.odata4j.producer.ODataContext;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
@@ -27,9 +28,9 @@ public class Issue10Test extends AbstractRuntimeTest {
 
     final QueryInfo[] lastQuery = new QueryInfo[1];
     InMemoryProducer producer = new InMemoryProducer("Issue10") {
-      public EntitiesResponse getEntities(String entitySetName, QueryInfo queryInfo) {
+      public EntitiesResponse getEntities(ODataContext context, String entitySetName, QueryInfo queryInfo) {
         lastQuery[0] = queryInfo;
-        return super.getEntities(entitySetName, queryInfo);
+        return super.getEntities(context, entitySetName, queryInfo);
       }
     };
     producer.register(String.class, String.class, "Entity", new Func<Iterable<String>>() {

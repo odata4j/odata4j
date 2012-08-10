@@ -41,11 +41,11 @@ public class InMemoryProducerTest {
     };
     producer.register(String.class, String.class, "TestData", getTestData, Funcs.identity(String.class));
 
-    EntitiesResponse response = producer.getEntities("TestData", null);
+    EntitiesResponse response = producer.getEntities(null, "TestData", null);
     Assert.assertEquals(3, response.getEntities().size());
     Assert.assertNull(response.getInlineCount());
 
-    response = producer.getEntities("TestData", NULL_QUERY);
+    response = producer.getEntities(null, "TestData", NULL_QUERY);
     Assert.assertEquals(3, response.getEntities().size());
     Assert.assertEquals(Integer.valueOf(3), response.getInlineCount());
   }
@@ -87,8 +87,8 @@ public class InMemoryProducerTest {
       }
     }, "Id");
 
-    Assert.assertEquals(2, p.getEntities("setName", NULL_QUERY).getEntities().size());
-    Assert.assertNotNull(p.getEntity("setName", OEntityKey.create(e1.getId()), NULL_ENTITY_QUERY).getEntity());
+    Assert.assertEquals(2, p.getEntities(null, "setName", NULL_QUERY).getEntities().size());
+    Assert.assertNotNull(p.getEntity(null, "setName", OEntityKey.create(e1.getId()), NULL_ENTITY_QUERY).getEntity());
 
     Assert.assertNotNull(p.getMetadata().findEdmEntitySet("setName"));
     Assert.assertNotNull(p.getMetadata().findEdmEntityType(namespace + ".typeName"));
@@ -124,7 +124,7 @@ public class InMemoryProducerTest {
 
     QueryInfo qi = new QueryInfo(InlineCount.ALLPAGES, null, null,
         OptionsQueryParser.parseFilter("(Foo ne null) and substringof('common',tolower(Foo))"), null, null, null, null, null);
-    EntitiesResponse data = producer.getEntities("TestData", qi);
+    EntitiesResponse data = producer.getEntities(null, "TestData", qi);
     Assert.assertEquals(data.getEntities().size(), 2);
   }
 
@@ -138,7 +138,7 @@ public class InMemoryProducerTest {
       }
     }, "Id");
 
-    CountResponse response = p.getEntitiesCount("setName", null);
+    CountResponse response = p.getEntitiesCount(null, "setName", null);
     Assert.assertEquals(2L, response.getCount());
   }
 
@@ -153,7 +153,7 @@ public class InMemoryProducerTest {
     }, "Id");
 
     BoolCommonExpression filter = Expression.gt(Expression.simpleProperty("Integer"), Expression.integral(1));
-    CountResponse response = p.getEntitiesCount("setName", new QueryInfo(InlineCount.NONE, null, null, filter, null, null, null, null, null));
+    CountResponse response = p.getEntitiesCount(null, "setName", new QueryInfo(InlineCount.NONE, null, null, filter, null, null, null, null, null));
     Assert.assertEquals(1L, response.getCount());
   }
 
@@ -167,7 +167,7 @@ public class InMemoryProducerTest {
       }
     }, "Id");
 
-    CountResponse response = p.getEntitiesCount("setName", new QueryInfo(InlineCount.NONE, 3, null, null, null, null, null, null, null));
+    CountResponse response = p.getEntitiesCount(null, "setName", new QueryInfo(InlineCount.NONE, 3, null, null, null, null, null, null, null));
     Assert.assertEquals(3L, response.getCount());
   }
 
@@ -181,7 +181,7 @@ public class InMemoryProducerTest {
       }
     }, "Id");
 
-    CountResponse response = p.getEntitiesCount("setName", new QueryInfo(InlineCount.NONE, null, 3, null, null, null, null, null, null));
+    CountResponse response = p.getEntitiesCount(null, "setName", new QueryInfo(InlineCount.NONE, null, 3, null, null, null, null, null, null));
     Assert.assertEquals(2L, response.getCount());
   }
 

@@ -92,7 +92,7 @@ public class JdbcProducerTest {
     Assert.assertEquals(CUSTOMER, customerEntitySet.getName());
 
     // getEntity - simple key
-    EntityResponse entityResponse = producer.getEntity(CUSTOMER, OEntityKey.create(1), null);
+    EntityResponse entityResponse = producer.getEntity(null, CUSTOMER, OEntityKey.create(1), null);
     Assert.assertNotNull(entityResponse);
     Assert.assertNotNull(entityResponse.getEntity());
     Assert.assertEquals("Customer One", entityResponse.getEntity().getProperty(CUSTOMER_NAME).getValue());
@@ -105,12 +105,12 @@ public class JdbcProducerTest {
     Asserts.assertThrows(NotFoundException.class, getEntity(producer, CUSTOMER, OEntityKey.create(1), EntityQueryInfo.newBuilder().setFilter(filter).build()));
 
     // getEntity - complex key
-    entityResponse = producer.getEntity(CUSTOMER_PRODUCT, OEntityKey.create("CustomerId", 1, "ProductId", 1), null);
+    entityResponse = producer.getEntity(null, CUSTOMER_PRODUCT, OEntityKey.create("CustomerId", 1, "ProductId", 1), null);
     Assert.assertNotNull(entityResponse);
     Assert.assertNotNull(entityResponse.getEntity());
 
     // getEntities - no query
-    EntitiesResponse entitiesResponse = producer.getEntities(CUSTOMER, null);
+    EntitiesResponse entitiesResponse = producer.getEntities(null, CUSTOMER, null);
     Assert.assertNotNull(entitiesResponse);
     Assert.assertEquals(CUSTOMER, entitiesResponse.getEntitySet().getName());
     Assert.assertEquals(2, entitiesResponse.getEntities().size());
@@ -120,7 +120,7 @@ public class JdbcProducerTest {
 
     // getEntities - id = 1
     filter = Expression.eq(Expression.simpleProperty(CUSTOMER_ID), Expression.literal(1));
-    entitiesResponse = producer.getEntities(CUSTOMER, QueryInfo.newBuilder().setFilter(filter).build());
+    entitiesResponse = producer.getEntities(null, CUSTOMER, QueryInfo.newBuilder().setFilter(filter).build());
     Assert.assertNotNull(entitiesResponse);
     Assert.assertEquals(CUSTOMER, entitiesResponse.getEntitySet().getName());
     Assert.assertEquals(1, entitiesResponse.getEntities().size());
@@ -128,7 +128,7 @@ public class JdbcProducerTest {
 
     // getEntities - name = 'Customer Two'
     filter = Expression.eq(Expression.simpleProperty(CUSTOMER_NAME), Expression.literal("Customer Two"));
-    entitiesResponse = producer.getEntities(CUSTOMER, QueryInfo.newBuilder().setFilter(filter).build());
+    entitiesResponse = producer.getEntities(null, CUSTOMER, QueryInfo.newBuilder().setFilter(filter).build());
     Assert.assertNotNull(entitiesResponse);
     Assert.assertEquals(CUSTOMER, entitiesResponse.getEntitySet().getName());
     Assert.assertEquals(1, entitiesResponse.getEntities().size());
@@ -136,7 +136,7 @@ public class JdbcProducerTest {
 
     // getEntities - 1 = id
     filter = Expression.eq(Expression.literal(1), Expression.simpleProperty(CUSTOMER_ID));
-    entitiesResponse = producer.getEntities(CUSTOMER, QueryInfo.newBuilder().setFilter(filter).build());
+    entitiesResponse = producer.getEntities(null, CUSTOMER, QueryInfo.newBuilder().setFilter(filter).build());
     Assert.assertNotNull(entitiesResponse);
     Assert.assertEquals(CUSTOMER, entitiesResponse.getEntitySet().getName());
     Assert.assertEquals(1, entitiesResponse.getEntities().size());
@@ -144,14 +144,14 @@ public class JdbcProducerTest {
 
     // getEntities - no results
     filter = Expression.eq(Expression.simpleProperty(CUSTOMER_ID), Expression.literal(-1));
-    entitiesResponse = producer.getEntities(CUSTOMER, QueryInfo.newBuilder().setFilter(filter).build());
+    entitiesResponse = producer.getEntities(null, CUSTOMER, QueryInfo.newBuilder().setFilter(filter).build());
     Assert.assertNotNull(entitiesResponse);
     Assert.assertEquals(CUSTOMER, entitiesResponse.getEntitySet().getName());
     Assert.assertEquals(0, entitiesResponse.getEntities().size());
 
     // getEntities - id <> 1
     filter = Expression.ne(Expression.simpleProperty(CUSTOMER_ID), Expression.literal(1));
-    entitiesResponse = producer.getEntities(CUSTOMER, QueryInfo.newBuilder().setFilter(filter).build());
+    entitiesResponse = producer.getEntities(null, CUSTOMER, QueryInfo.newBuilder().setFilter(filter).build());
     Assert.assertNotNull(entitiesResponse);
     Assert.assertEquals(CUSTOMER, entitiesResponse.getEntitySet().getName());
     Assert.assertEquals(1, entitiesResponse.getEntities().size());
@@ -159,44 +159,44 @@ public class JdbcProducerTest {
 
     // getEntities - id > 1
     filter = Expression.gt(Expression.simpleProperty(CUSTOMER_ID), Expression.literal(1));
-    entitiesResponse = producer.getEntities(CUSTOMER, QueryInfo.newBuilder().setFilter(filter).build());
+    entitiesResponse = producer.getEntities(null, CUSTOMER, QueryInfo.newBuilder().setFilter(filter).build());
     Assert.assertNotNull(entitiesResponse);
     Assert.assertEquals(CUSTOMER, entitiesResponse.getEntitySet().getName());
     Assert.assertEquals(1, entitiesResponse.getEntities().size());
 
     // getEntities - id >= 1
     filter = Expression.ge(Expression.simpleProperty(CUSTOMER_ID), Expression.literal(1));
-    entitiesResponse = producer.getEntities(CUSTOMER, QueryInfo.newBuilder().setFilter(filter).build());
+    entitiesResponse = producer.getEntities(null, CUSTOMER, QueryInfo.newBuilder().setFilter(filter).build());
     Assert.assertNotNull(entitiesResponse);
     Assert.assertEquals(CUSTOMER, entitiesResponse.getEntitySet().getName());
     Assert.assertEquals(2, entitiesResponse.getEntities().size());
 
     // getEntities - id < 2
     filter = Expression.lt(Expression.simpleProperty(CUSTOMER_ID), Expression.literal(2));
-    entitiesResponse = producer.getEntities(CUSTOMER, QueryInfo.newBuilder().setFilter(filter).build());
+    entitiesResponse = producer.getEntities(null, CUSTOMER, QueryInfo.newBuilder().setFilter(filter).build());
     Assert.assertNotNull(entitiesResponse);
     Assert.assertEquals(CUSTOMER, entitiesResponse.getEntitySet().getName());
     Assert.assertEquals(1, entitiesResponse.getEntities().size());
 
     // getEntities - id <= 2
     filter = Expression.le(Expression.simpleProperty(CUSTOMER_ID), Expression.literal(2));
-    entitiesResponse = producer.getEntities(CUSTOMER, QueryInfo.newBuilder().setFilter(filter).build());
+    entitiesResponse = producer.getEntities(null, CUSTOMER, QueryInfo.newBuilder().setFilter(filter).build());
     Assert.assertNotNull(entitiesResponse);
     Assert.assertEquals(CUSTOMER, entitiesResponse.getEntitySet().getName());
     Assert.assertEquals(2, entitiesResponse.getEntities().size());
 
     // createEntity - id = 3
-    entityResponse = producer.createEntity(CUSTOMER, newCustomer(customerEntitySet, 3, "Customer Three"));
+    entityResponse = producer.createEntity(null, CUSTOMER, newCustomer(customerEntitySet, 3, "Customer Three"));
     Assert.assertNotNull(entityResponse);
     Assert.assertNotNull(entityResponse.getEntity());
-    entitiesResponse = producer.getEntities(CUSTOMER, null);
+    entitiesResponse = producer.getEntities(null, CUSTOMER, null);
     Assert.assertNotNull(entitiesResponse);
     Assert.assertEquals(CUSTOMER, entitiesResponse.getEntitySet().getName());
     Assert.assertEquals(3, entitiesResponse.getEntities().size());
 
     // deleteEntity - id = 3
-    producer.deleteEntity(CUSTOMER, OEntityKey.create(3));
-    entitiesResponse = producer.getEntities(CUSTOMER, null);
+    producer.deleteEntity(null, CUSTOMER, OEntityKey.create(3));
+    entitiesResponse = producer.getEntities(null, CUSTOMER, null);
     Assert.assertNotNull(entitiesResponse);
     Assert.assertEquals(CUSTOMER, entitiesResponse.getEntitySet().getName());
     Assert.assertEquals(2, entitiesResponse.getEntities().size());
@@ -216,7 +216,7 @@ public class JdbcProducerTest {
     return new Func<EntitiesResponse>() {
       @Override
       public EntitiesResponse apply() {
-        return producer.getEntities(entitySet, queryInfo);
+        return producer.getEntities(null, entitySet, queryInfo);
       }
     };
   }
@@ -225,7 +225,7 @@ public class JdbcProducerTest {
     return new Func<EntityResponse>() {
       @Override
       public EntityResponse apply() {
-        return producer.getEntity(entitySet, key, queryInfo);
+        return producer.getEntity(null, entitySet, key, queryInfo);
       }
     };
   }

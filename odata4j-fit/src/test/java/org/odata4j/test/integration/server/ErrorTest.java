@@ -1,5 +1,6 @@
 package org.odata4j.test.integration.server;
 
+import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
@@ -41,7 +42,7 @@ public class ErrorTest extends AbstractJettyHttpClientTest {
   }
 
   private void simulateErrorResponseExtension() {
-    when(producerSpy.findExtension(ErrorResponseExtension.class)).thenReturn(ErrorResponseExtensions.returnInnerErrors());
+    when(producerSpy.findExtension(ErrorResponseExtension.class, null)).thenReturn(ErrorResponseExtensions.returnInnerErrors());
   }
 
   @Test

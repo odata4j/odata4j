@@ -2,6 +2,7 @@ package org.odata4j.test.integration.producer.jpa.northwind;
 
 import org.odata4j.core.OEntityId;
 import org.odata4j.core.OEntityKey;
+import org.odata4j.producer.ODataContext;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.ODataProducerDelegate;
 
@@ -42,17 +43,17 @@ public class InterceptLinkModificationCalls extends ODataProducerDelegate {
   }
 
   @Override
-  public void updateLink(OEntityId sourceEntity, String targetNavProp, OEntityKey oldTargetEntityKey, OEntityId newTargetEntity) {
+  public void updateLink(ODataContext context, OEntityId sourceEntity, String targetNavProp, OEntityKey oldTargetEntityKey, OEntityId newTargetEntity) {
     lastCall = new LinksProducerCall(LinksMethod.UPDATE, sourceEntity, targetNavProp, oldTargetEntityKey, newTargetEntity);
   }
 
   @Override
-  public void createLink(OEntityId sourceEntity, String targetNavProp, OEntityId targetEntity) {
+  public void createLink(ODataContext context, OEntityId sourceEntity, String targetNavProp, OEntityId targetEntity) {
     lastCall = new LinksProducerCall(LinksMethod.CREATE, sourceEntity, targetNavProp, null, targetEntity);
   }
 
   @Override
-  public void deleteLink(OEntityId sourceEntity, String targetNavProp, OEntityKey targetEntityKey) {
+  public void deleteLink(ODataContext context, OEntityId sourceEntity, String targetNavProp, OEntityKey targetEntityKey) {
     lastCall = new LinksProducerCall(LinksMethod.DELETE, sourceEntity, targetNavProp, targetEntityKey, null);
   }
 }

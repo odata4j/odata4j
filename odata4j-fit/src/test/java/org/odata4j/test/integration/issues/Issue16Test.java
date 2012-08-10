@@ -8,6 +8,7 @@ import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.producer.EntitiesResponse;
+import org.odata4j.producer.ODataContext;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.Responses;
 import org.odata4j.producer.inmemory.InMemoryProducer;
@@ -26,7 +27,7 @@ public class Issue16Test extends AbstractJettyHttpClientTest {
   protected void registerODataProducer() throws Exception {
     InMemoryProducer producer = new InMemoryProducer("Issue16") {
       @Override
-      public EntitiesResponse getNavProperty(String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
+      public EntitiesResponse getNavProperty(ODataContext context, String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
         actualNavProp[0] = navProp;
         return Responses.entities(Enumerable.<OEntity> create().toList(), EdmEntitySet.newBuilder().setName("messageLog").build(), null, null);
       }

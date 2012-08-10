@@ -29,6 +29,7 @@ import org.odata4j.producer.CollectionResponse;
 import org.odata4j.producer.ComplexObjectResponse;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityResponse;
+import org.odata4j.producer.ODataContextImpl;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.PropertyResponse;
 import org.odata4j.producer.QueryInfo;
@@ -80,7 +81,7 @@ public class FunctionResource extends BaseResource {
       }
     }
 
-    BaseResponse response = producer.callFunction(
+    BaseResponse response = producer.callFunction(ODataContextImpl.builder().aspect(httpHeaders).build(),
         function, getFunctionParameters(function, queryInfo.customOptions), queryInfo);
 
     if (response == null) {

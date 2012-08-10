@@ -21,6 +21,7 @@ import org.odata4j.edm.EdmProperty.CollectionKind;
 import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.producer.BaseResponse;
+import org.odata4j.producer.ODataContext;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.ODataProducerDelegate;
 import org.odata4j.producer.QueryInfo;
@@ -52,7 +53,7 @@ public class NorthwindProducerWithFunctions extends ODataProducerDelegate {
   }
 
   @Override
-  public BaseResponse callFunction(EdmFunctionImport function, java.util.Map<String, OFunctionParameter> params, QueryInfo queryInfo) {
+  public BaseResponse callFunction(ODataContext context, EdmFunctionImport function, java.util.Map<String, OFunctionParameter> params, QueryInfo queryInfo) {
     if (function.getName().equals("TestFunction1")) {
       return testFunction1(function, params, queryInfo);
     } else if (function.getName().equals("TestFunction2")) {

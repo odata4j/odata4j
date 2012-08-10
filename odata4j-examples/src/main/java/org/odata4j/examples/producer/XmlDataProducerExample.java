@@ -53,6 +53,7 @@ import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityIdResponse;
 import org.odata4j.producer.EntityQueryInfo;
 import org.odata4j.producer.EntityResponse;
+import org.odata4j.producer.ODataContext;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.Responses;
@@ -175,7 +176,7 @@ public class XmlDataProducerExample extends AbstractExample {
      * <code>queryInfo.top</code> and <code>queryInfo.skip</code>.
      */
     @Override
-    public EntitiesResponse getEntities(String entitySetName, QueryInfo queryInfo) {
+    public EntitiesResponse getEntities(ODataContext context, String entitySetName, QueryInfo queryInfo) {
       EdmEntitySet ees = getMetadata().getEdmEntitySet(entitySetName);
 
       InputStream is = getClass().getResourceAsStream("/META-INF/xmlDataProducerExampleTestData.xml");
@@ -229,17 +230,17 @@ public class XmlDataProducerExample extends AbstractExample {
     }
 
     @Override
-    public CountResponse getEntitiesCount(String entitySetName, QueryInfo queryInfo) {
+    public CountResponse getEntitiesCount(ODataContext context, String entitySetName, QueryInfo queryInfo) {
       throw new NotImplementedException();
     }
 
     @Override
-    public EntitiesResponse getNavProperty(String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
+    public EntitiesResponse getNavProperty(ODataContext context, String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
       throw new NotImplementedException();
     }
 
     @Override
-    public CountResponse getNavPropertyCount(String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
+    public CountResponse getNavPropertyCount(ODataContext context, String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
       throw new NotImplementedException();
     }
 
@@ -247,57 +248,57 @@ public class XmlDataProducerExample extends AbstractExample {
     public void close() {}
 
     @Override
-    public EntityResponse createEntity(String entitySetName, OEntity entity) {
+    public EntityResponse createEntity(ODataContext context, String entitySetName, OEntity entity) {
       throw new NotImplementedException();
     }
 
     @Override
-    public EntityResponse createEntity(String entitySetName, OEntityKey entityKey, String navProp, OEntity entity) {
+    public EntityResponse createEntity(ODataContext context, String entitySetName, OEntityKey entityKey, String navProp, OEntity entity) {
       throw new NotImplementedException();
     }
 
     @Override
-    public void deleteEntity(String entitySetName, OEntityKey entityKey) {
+    public void deleteEntity(ODataContext context, String entitySetName, OEntityKey entityKey) {
       throw new NotImplementedException();
     }
 
     @Override
-    public void mergeEntity(String entitySetName, OEntity entity) {
+    public void mergeEntity(ODataContext context, String entitySetName, OEntity entity) {
       throw new NotImplementedException();
     }
 
     @Override
-    public void updateEntity(String entitySetName, OEntity entity) {
+    public void updateEntity(ODataContext context, String entitySetName, OEntity entity) {
       throw new NotImplementedException();
     }
 
     @Override
-    public EntityResponse getEntity(String entitySetName, OEntityKey entityKey, EntityQueryInfo queryInfo) {
+    public EntityResponse getEntity(ODataContext context, String entitySetName, OEntityKey entityKey, EntityQueryInfo queryInfo) {
       throw new NotImplementedException();
     }
 
     @Override
-    public EntityIdResponse getLinks(OEntityId sourceEntity, String targetNavProp) {
+    public EntityIdResponse getLinks(ODataContext context, OEntityId sourceEntity, String targetNavProp) {
       throw new NotImplementedException();
     }
 
     @Override
-    public void createLink(OEntityId sourceEntity, String targetNavProp, OEntityId targetEntity) {
+    public void createLink(ODataContext context, OEntityId sourceEntity, String targetNavProp, OEntityId targetEntity) {
       throw new NotImplementedException();
     }
 
     @Override
-    public void updateLink(OEntityId sourceEntity, String targetNavProp, OEntityKey oldTargetEntityKey, OEntityId newTargetEntity) {
+    public void updateLink(ODataContext context, OEntityId sourceEntity, String targetNavProp, OEntityKey oldTargetEntityKey, OEntityId newTargetEntity) {
       throw new NotImplementedException();
     }
 
     @Override
-    public void deleteLink(OEntityId sourceEntity, String targetNavProp, OEntityKey targetEntityKey) {
+    public void deleteLink(ODataContext context, OEntityId sourceEntity, String targetNavProp, OEntityKey targetEntityKey) {
       throw new NotImplementedException();
     }
 
     @Override
-    public BaseResponse callFunction(EdmFunctionImport name, Map<String, OFunctionParameter> params, QueryInfo queryInfo) {
+    public BaseResponse callFunction(ODataContext context, EdmFunctionImport name, Map<String, OFunctionParameter> params, QueryInfo queryInfo) {
       throw new NotImplementedException();
     }
 
@@ -307,7 +308,7 @@ public class XmlDataProducerExample extends AbstractExample {
     }
 
     @Override
-    public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz) {
+    public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz, Map<String, Object> params) {
       return null;
     }
 

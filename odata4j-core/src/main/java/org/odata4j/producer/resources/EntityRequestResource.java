@@ -33,6 +33,8 @@ import org.odata4j.format.FormatWriter;
 import org.odata4j.format.FormatWriterFactory;
 import org.odata4j.producer.EntityQueryInfo;
 import org.odata4j.producer.EntityResponse;
+import org.odata4j.producer.ODataContext;
+import org.odata4j.producer.ODataContextImpl;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.OMediaLinkExtension;
 
@@ -64,7 +66,7 @@ public class EntityRequestResource extends BaseResource {
     }
 
     OEntity entity = this.getRequestEntity(httpHeaders, uriInfo, payload, producer.getMetadata(), entitySetName, OEntityKey.parse(id));
-    producer.updateEntity(entitySetName, entity);
+    producer.updateEntity(ODataContextImpl.builder().aspect(httpHeaders).build(), entitySetName, entity);
 
     // TODO: hmmh..isn't this supposed to be HTTP 204 No Content?
     return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
@@ -113,7 +115,7 @@ public class EntityRequestResource extends BaseResource {
     }
 
     OEntity entity = this.getRequestEntity(httpHeaders, uriInfo, payload, producer.getMetadata(), entitySetName, OEntityKey.parse(id));
-    producer.updateEntity(entitySetName, entity);
+    producer.updateEntity(ODataContextImpl.builder().aspect(httpHeaders).build(), entitySetName, entity);
 
     // TODO: hmmh..isn't this supposed to be HTTP 204 No Content?
     return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
@@ -153,18 +155,19 @@ public class EntityRequestResource extends BaseResource {
     ODataProducer producer = producerResolver.getContext(ODataProducer.class);
 
     OEntityKey entityKey = OEntityKey.parse(id);
-
+    ODataContext context = ODataContextImpl.builder().aspect(httpHeaders).build();
+    
     String method = httpHeaders.getRequestHeaders().getFirst(ODataConstants.Headers.X_HTTP_METHOD);
     if ("MERGE".equals(method)) {
       OEntity entity = this.getRequestEntity(httpHeaders, uriInfo, payload, producer.getMetadata(), entitySetName, entityKey);
-      producer.mergeEntity(entitySetName, entity);
+      producer.mergeEntity(context, entitySetName, entity);
 
       // TODO: hmmh..isn't this supposed to be HTTP 204 No Content?
       return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
     }
 
     if ("DELETE".equals(method)) {
-      producer.deleteEntity(entitySetName, entityKey);
+      producer.deleteEntity(context, entitySetName, entityKey);
 
       // TODO: hmmh..isn't this supposed to be HTTP 204 No Content?
       return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
@@ -172,7 +175,7 @@ public class EntityRequestResource extends BaseResource {
 
     if ("PUT".equals(method)) {
       OEntity entity = this.getRequestEntity(httpHeaders, uriInfo, payload, producer.getMetadata(), entitySetName, OEntityKey.parse(id));
-      producer.updateEntity(entitySetName, entity);
+      producer.updateEntity(context, entitySetName, entity);
 
       // TODO: hmmh..isn't this supposed to be HTTP 204 No Content?
       return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
@@ -225,7 +228,7 @@ public class EntityRequestResource extends BaseResource {
       return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
     }
 
-    producer.deleteEntity(entitySetName, entityKey);
+    producer.deleteEntity(ODataContextImpl.builder().aspect(httpHeaders).build(), entitySetName, entityKey);
 
     // TODO: hmmh..isn't this supposed to be HTTP 204 No Content?
     return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
@@ -268,7 +271,7 @@ public class EntityRequestResource extends BaseResource {
 
     EntityResponse response;
     try {
-      response = producer.getEntity(entitySetName, OEntityKey.parse(id), query);
+      response = producer.getEntity(ODataContextImpl.builder().aspect(httpHeaders).build(), entitySetName, OEntityKey.parse(id), query);
     } catch (IllegalArgumentException e) {
       throw new BadRequestException("Illegal key " + id, e);
     }

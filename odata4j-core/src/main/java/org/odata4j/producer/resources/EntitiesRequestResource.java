@@ -39,6 +39,9 @@ import org.odata4j.internal.InternalUtil;
 import org.odata4j.producer.CountResponse;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityResponse;
+import org.odata4j.producer.ODataContext;
+import org.odata4j.producer.ODataContextImpl;
+import org.odata4j.producer.ODataHeadersImpl;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
 
@@ -106,7 +109,7 @@ public class EntitiesRequestResource extends BaseResource {
       String entitySetName,
       OEntity entity) throws Exception {
 
-    EntityResponse response = producer.createEntity(entitySetName, entity);
+    EntityResponse response = producer.createEntity(ODataContextImpl.builder().aspect(httpHeaders).build(), entitySetName, entity);
 
     FormatWriter<EntityResponse> writer = FormatWriterFactory
         .getFormatWriter(EntityResponse.class, httpHeaders.getAcceptableMediaTypes(), null, null);
@@ -313,6 +316,8 @@ public class EntitiesRequestResource extends BaseResource {
         OptionsQueryParser.parseExpand(expand),
         OptionsQueryParser.parseSelect(select));
 
+    ODataContextImpl odataContext = ODataContextImpl.builder().aspect(httpHeaders).build();
+    
     // the OData URI scheme makes it impossible to have unique @Paths that refer
     // to functions and entity sets
     if (producer.getMetadata().findEdmFunctionImport(entitySetName) != null) {
@@ -323,7 +328,7 @@ public class EntitiesRequestResource extends BaseResource {
 
     Response response = null;
     if (isCount) {
-      CountResponse countResponse = producer.getEntitiesCount(entitySetName, query);
+      CountResponse countResponse = producer.getEntitiesCount(odataContext, entitySetName, query);
 
       String entity = Long.toString(countResponse.getCount());
 
@@ -336,7 +341,7 @@ public class EntitiesRequestResource extends BaseResource {
           .build();
     }
     else {
-      EntitiesResponse entitiesResponse = producer.getEntities(entitySetName, query);
+      EntitiesResponse entitiesResponse = producer.getEntities(odataContext, entitySetName, query);
 
       if (entitiesResponse == null) {
         throw new NotFoundException(entitySetName);
