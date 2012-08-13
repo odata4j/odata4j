@@ -35,8 +35,11 @@ import org.odata4j.format.FormatParserFactory;
 import org.odata4j.format.Settings;
 import org.odata4j.internal.InternalUtil;
 
+/**
+ * Function-call-request implementation.
+ */
 public class ConsumerFunctionCallRequest<T extends OObject>
-    extends ConsumerQueryRequestBase<T>
+    extends AbstractConsumerQueryRequestBase<T>
     implements OFunctionRequest<T> {
 
   private final List<OFunctionParameter> params = new LinkedList<OFunctionParameter>();
@@ -181,7 +184,7 @@ public class ConsumerFunctionCallRequest<T extends OObject>
   }
 
   private OObject doRequest(ODataClientRequest request) throws ODataProducerException {
-    Response response = getClient().callFunction(request);
+    ODataClientResponse response = getClient().callFunction(request);
 
     ODataVersion version = InternalUtil.getDataServiceVersion(response.getHeaders().getFirst(ODataConstants.Headers.DATA_SERVICE_VERSION));
 

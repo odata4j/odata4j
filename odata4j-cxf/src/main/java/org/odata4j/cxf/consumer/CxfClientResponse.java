@@ -9,15 +9,15 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.HttpResponse;
-import org.odata4j.consumer.Response;
+import org.odata4j.consumer.ODataClientResponse;
 import org.odata4j.core.Throwables;
 import org.odata4j.producer.resources.HeaderMap;
 
-public class CxfResponse implements Response {
+public class CxfClientResponse implements ODataClientResponse {
 
   private final HttpResponse httpResponse;
 
-  public CxfResponse(HttpResponse httpResponse) {
+  public CxfClientResponse(HttpResponse httpResponse) {
     this.httpResponse = httpResponse;
   }
 

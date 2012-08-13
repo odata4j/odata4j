@@ -3,6 +3,9 @@ package org.odata4j.consumer;
 import org.odata4j.core.OCountRequest;
 import org.odata4j.exceptions.ODataProducerException;
 
+/**
+ * Count-request implementation.
+ */
 public class ConsumerCountRequest implements OCountRequest {
 
   private ODataClient client;

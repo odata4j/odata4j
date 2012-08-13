@@ -8,8 +8,9 @@ import org.odata4j.core.Throwables;
 import org.odata4j.format.FormatType;
 
 /**
- * Helper class allowing the creation of {@link ODataConsumer} objects without using an
- * implementation-specific sub-class.
+ * <code>ODataConsumer</code> is the client-side interface to an OData service.
+ *
+ * <p>Use {@link ODataConsumers#create(String)} or {@link ODataConsumers#newBuilder(String)} to connect to an existing OData service.</p>
  *
  * <p>If found, the Jersey implementation of {@link ODataConsumer} is used by default. Otherwise
  * the CXF implementation is loaded. If specified the {@code odata4j.consumerimpl} system property
@@ -17,6 +18,8 @@ import org.odata4j.format.FormatType;
  * jersey} and {@code cxf} or any other concrete full class name, e.g. {@code
  * foo.bar.OtherConsumer}. By convention, {@code foo.bar.OtherConsumer} must implement a factory
  * method {@code public static ODataConsumer.Builder newBuilder(String serviceRootUri)}.</p>
+ *
+ * @see ODataConsumer
  */
 public class ODataConsumers {
 

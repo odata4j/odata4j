@@ -12,7 +12,10 @@ import org.odata4j.format.SingleLink;
 import org.odata4j.format.SingleLinks;
 import org.odata4j.internal.EntitySegment;
 
-public abstract class ConsumerEntityRequestBase<T> implements OEntityRequest<T> {
+/**
+ * Shared consumer request implementation for operations dealing with a single response entity.
+ */
+public abstract class AbstractConsumerEntityRequest<T> implements OEntityRequest<T> {
 
   private final ODataClient client;
 
@@ -20,7 +23,7 @@ public abstract class ConsumerEntityRequestBase<T> implements OEntityRequest<T> 
   private final String serviceRootUri;
   private final List<EntitySegment> segments = new ArrayList<EntitySegment>();
 
-  public ConsumerEntityRequestBase(ODataClient client, String serviceRootUri,
+  public AbstractConsumerEntityRequest(ODataClient client, String serviceRootUri,
       EdmDataServices metadata, String entitySetName, OEntityKey key) {
 
     this.client = client;

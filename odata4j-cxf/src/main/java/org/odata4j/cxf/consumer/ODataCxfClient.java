@@ -36,7 +36,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.core4j.Enumerable;
 import org.odata4j.consumer.AbstractODataClient;
 import org.odata4j.consumer.ODataClientRequest;
-import org.odata4j.consumer.Response;
+import org.odata4j.consumer.ODataClientResponse;
 import org.odata4j.consumer.behaviors.OClientBehavior;
 import org.odata4j.consumer.behaviors.OClientBehaviors;
 import org.odata4j.core.ODataConstants;
@@ -81,8 +81,8 @@ public class ODataCxfClient extends AbstractODataClient {
     }
   }
 
-  public Reader getFeedReader(Response response) {
-    HttpResponse httpResponse = ((CxfResponse) response).getHttpResponse();
+  public Reader getFeedReader(ODataClientResponse response) {
+    HttpResponse httpResponse = ((CxfClientResponse) response).getHttpResponse();
     try {
       InputStream textEntity = httpResponse.getEntity().getContent();
       return new BOMWorkaroundReader(new InputStreamReader(textEntity, Charsets.Upper.UTF_8));
@@ -92,14 +92,14 @@ public class ODataCxfClient extends AbstractODataClient {
   }
 
   public String requestBody(FormatType formatType, ODataClientRequest request) throws ODataProducerException {
-    Response response = doRequest(formatType, request, Status.OK);
-    String string = entityToString(((CxfResponse) response).getHttpResponse().getEntity());
+    ODataClientResponse response = doRequest(formatType, request, Status.OK);
+    String string = entityToString(((CxfClientResponse) response).getHttpResponse().getEntity());
     response.close();
     return string;
   }
 
   @SuppressWarnings("unchecked")
-  protected Response doRequest(FormatType reqType, ODataClientRequest request, StatusType... expectedResponseStatus) throws ODataProducerException {
+  protected ODataClientResponse doRequest(FormatType reqType, ODataClientRequest request, StatusType... expectedResponseStatus) throws ODataProducerException {
     UriBuilder uriBuilder = UriBuilder.fromPath(request.getUrl());
     for (String key : request.getQueryParams().keySet())
       uriBuilder = uriBuilder.queryParam(key, request.getQueryParams().get(key));
@@ -189,7 +189,7 @@ public class ODataCxfClient extends AbstractODataClient {
     }
     for (StatusType expStatus : expectedResponseStatus)
       if (expStatus.getStatusCode() == status.getStatusCode())
-        return new CxfResponse(httpResponse);
+        return new CxfClientResponse(httpResponse);
 
     // the server responded with an unexpected status
     RuntimeException exception;
@@ -207,8 +207,8 @@ public class ODataCxfClient extends AbstractODataClient {
     throw exception;
   }
 
-  protected XMLEventReader2 toXml(Response response) {
-    HttpResponse httpResponse = ((CxfResponse) response).getHttpResponse();
+  protected XMLEventReader2 toXml(ODataClientResponse response) {
+    HttpResponse httpResponse = ((CxfClientResponse) response).getHttpResponse();
     try {
       InputStream textEntity = httpResponse.getEntity().getContent();
       return StaxUtil.newXMLEventReader(new BOMWorkaroundReader(new InputStreamReader(textEntity, Charsets.Upper.UTF_8)));

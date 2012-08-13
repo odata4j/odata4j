@@ -27,6 +27,9 @@ import org.odata4j.exceptions.ODataProducerException;
 import org.odata4j.internal.EdmDataServicesDecorator;
 import org.odata4j.internal.FeedCustomizationMapping;
 
+/**
+ * Useful base class for {@link ODataConsumer} implementations with common functionality.
+ */
 public abstract class AbstractODataConsumer implements ODataConsumer {
 
   private static final FeedCustomizationMapping EMPTY_MAPPING = new FeedCustomizationMapping();
@@ -247,4 +250,5 @@ public abstract class AbstractODataConsumer implements ODataConsumer {
     FeedCustomizationMapping mapping = cachedMappings.get(entitySetName);
     return mapping == null || mapping == EMPTY_MAPPING ? null : mapping;
   }
+
 }

@@ -5,7 +5,10 @@ import org.odata4j.core.OEntityId;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.exceptions.ODataProducerException;
 
-public class ConsumerCreateLinkRequest extends ConsumerEntityRequestBase<Void> {
+/**
+ * Create-link-request implementation.
+ */
+public class ConsumerCreateLinkRequest extends AbstractConsumerEntityRequest<Void> {
 
   private final String targetNavProp;
   private final OEntityId targetEntity;

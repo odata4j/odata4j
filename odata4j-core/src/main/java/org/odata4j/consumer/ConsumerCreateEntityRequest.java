@@ -18,6 +18,9 @@ import org.odata4j.format.Settings;
 import org.odata4j.internal.FeedCustomizationMapping;
 import org.odata4j.internal.InternalUtil;
 
+/**
+ * Create-request implementation.
+ */
 public class ConsumerCreateEntityRequest<T> extends AbstractConsumerEntityPayloadRequest implements OCreateRequest<T> {
 
   private final ODataClient client;
@@ -49,7 +52,7 @@ public class ConsumerCreateEntityRequest<T> extends AbstractConsumerEntityPayloa
     }
 
     ODataClientRequest request = ODataClientRequest.post(url.toString(), entry);
-    Response response = client.createEntity(request);
+    ODataClientResponse response = client.createEntity(request);
 
     ODataVersion version = InternalUtil.getDataServiceVersion(response.getHeaders()
         .getFirst(ODataConstants.Headers.DATA_SERVICE_VERSION));

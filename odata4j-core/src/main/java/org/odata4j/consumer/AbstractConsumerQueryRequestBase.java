@@ -14,7 +14,10 @@ import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.internal.EntitySegment;
 
-public abstract class ConsumerQueryRequestBase<T> implements OQueryRequest<T> {
+/**
+ * Shared consumer request implementation for operations dealing with multiple response entities.
+ */
+public abstract class AbstractConsumerQueryRequestBase<T> implements OQueryRequest<T> {
 
   private final ODataClient client;
   private final String serviceRootUri;
@@ -33,7 +36,7 @@ public abstract class ConsumerQueryRequestBase<T> implements OQueryRequest<T> {
   private final List<EntitySegment> segments = new ArrayList<EntitySegment>();
   private final Map<String, String> customs = new HashMap<String, String>();
 
-  public ConsumerQueryRequestBase(ODataClient client, String serviceRootUri, EdmDataServices metadata, String lastSegment) {
+  public AbstractConsumerQueryRequestBase(ODataClient client, String serviceRootUri, EdmDataServices metadata, String lastSegment) {
     this.client = client;
     this.serviceRootUri = serviceRootUri;
     this.metadata = metadata;

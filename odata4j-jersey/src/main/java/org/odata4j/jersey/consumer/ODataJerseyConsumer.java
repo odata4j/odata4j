@@ -9,9 +9,7 @@ import org.odata4j.consumer.behaviors.OClientBehavior;
 import org.odata4j.format.FormatType;
 
 /**
- * <code>ODataConsumer</code> is the client-side interface to an OData service.
- *
- * <p>Use {@link #create(String)} or one of the other static factory methods to connect to an existing OData service.</p>
+ * OData consumer based on Jersey.
  */
 public class ODataJerseyConsumer extends AbstractODataConsumer {
 

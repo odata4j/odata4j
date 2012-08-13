@@ -20,7 +20,10 @@ import org.odata4j.format.Settings;
 import org.odata4j.internal.FeedCustomizationMapping;
 import org.odata4j.internal.InternalUtil;
 
-public class ConsumerQueryEntitiesRequest<T> extends ConsumerQueryRequestBase<T> {
+/**
+ * Query-request implementation.
+ */
+public class ConsumerQueryEntitiesRequest<T> extends AbstractConsumerQueryRequestBase<T> {
 
   private final Class<T> entityType;
   private final FeedCustomizationMapping fcMapping;
@@ -53,7 +56,7 @@ public class ConsumerQueryEntitiesRequest<T> extends ConsumerQueryRequestBase<T>
   }
 
   private Feed doRequest(ODataClientRequest request) throws ODataProducerException {
-    Response response = getClient().getEntities(request);
+    ODataClientResponse response = getClient().getEntities(request);
 
     ODataVersion version = InternalUtil.getDataServiceVersion(response.getHeaders()
         .getFirst(ODataConstants.Headers.DATA_SERVICE_VERSION));

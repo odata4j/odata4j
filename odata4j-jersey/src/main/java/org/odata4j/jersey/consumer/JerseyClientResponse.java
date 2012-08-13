@@ -2,15 +2,15 @@ package org.odata4j.jersey.consumer;
 
 import javax.ws.rs.core.MultivaluedMap;
 
-import org.odata4j.consumer.Response;
+import org.odata4j.consumer.ODataClientResponse;
 
 import com.sun.jersey.api.client.ClientResponse;
 
-public class JerseyResponse implements Response {
+public class JerseyClientResponse implements ODataClientResponse {
 
   private ClientResponse clientResponse;
 
-  public JerseyResponse(ClientResponse clientResponse) {
+  public JerseyClientResponse(ClientResponse clientResponse) {
     this.clientResponse = clientResponse;
   }
 
