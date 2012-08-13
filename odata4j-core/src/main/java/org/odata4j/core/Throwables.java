@@ -1,5 +1,8 @@
 package org.odata4j.core;
 
+/**
+ * Helper methods for dealing with exceptions in catch clauses.
+ */
 public class Throwables {
 
   public static RuntimeException propagate(Throwable throwable) {

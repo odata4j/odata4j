@@ -12,6 +12,7 @@ import org.odata4j.core.OErrors;
 /**
  * An OData producer exception with the information described in the OData documentation for
  * <a href="http://www.odata.org/documentation/operations#ErrorConditions">error conditions</a>.
+ *
  * <p>OData producer exceptions can be either created by using one of its sub-classes or by the
  * static factory {@link ODataProducerExceptions}.</p>
  */
@@ -23,6 +24,7 @@ public abstract class ODataProducerException extends RuntimeException {
 
   /**
    * Constructor used by sub-classes to instantiate an exception that is thrown by an OData provider at runtime.
+   *
    * <p>Parameters are delegated to {@link RuntimeException#RuntimeException(String, Throwable)}.</p>
    */
   protected ODataProducerException(String message, Throwable cause) {
@@ -41,11 +43,12 @@ public abstract class ODataProducerException extends RuntimeException {
 
   /**
    * Returns the code that is put into the OError object created during construction of this exception.
+   *
    * <p>The default implementation returns the simple name of the underlying class. Sub-classes can override
    * this method and specify a different code.</p>
    *
    * @return the code
-   * @see {@link OError#getCode()}
+   * @see OError#getCode()
    */
   protected String code() {
     return getClass().getSimpleName();
@@ -53,12 +56,13 @@ public abstract class ODataProducerException extends RuntimeException {
 
   /**
    * Returns the message that is put into the OError object created during construction of this exception.
+   *
    * <p>The default implementation returns the exception's message ({@link RuntimeException#getMessage()}) if set.
    * Otherwise the reason phrase of the mapped HTTP status is returned ({@link StatusType#getReasonPhrase()}).
    * Sub-classes can override this method and specify a different message.</p>
    *
    * @return the message
-   * @see {@link OError#getMessage()}
+   * @see OError#getMessage()
    */
   protected String message() {
     if (getMessage() != null)
@@ -70,11 +74,12 @@ public abstract class ODataProducerException extends RuntimeException {
 
   /**
    * Returns the inner error that is put into the OError object created during construction of this exception.
+   *
    * <p>The default implementation returns the exception's stack trace ({@link RuntimeException#printStackTrace(PrintWriter)}).
    * Sub-classes can override this method and specify a different inner error.</p>
    *
    * @return the inner error
-   * @see {@link OError#getInnerError()}
+   * @see OError#getInnerError()
    */
   protected String innerError() {
     StringWriter sw = new StringWriter();

@@ -71,20 +71,12 @@ public class EntityRequestResource extends BaseResource {
   }
 
   /**
-   * update an entity given a String payload.
+   * Updates an entity given a String payload.
    * Note: currently this exists because EntitiesRequestResource processBatch needs
    *       a version with a String payload.  It may be possible (desirable?) to
    *       re-write batch handling completely such that it streamed individual batch
    *       items instead of loading the entire batch payload into memory and then
    *       processing the batch items.
-   * @param httpHeaders
-   * @param uriInfo
-   * @param producerResolver
-   * @param entitySetName
-   * @param id
-   * @param payload
-   * @return
-   * @throws Exception
    */
   protected Response updateEntity(HttpHeaders httpHeaders, UriInfo uriInfo, ContextResolver<ODataProducer> producerResolver,
       String entitySetName,
@@ -120,17 +112,10 @@ public class EntityRequestResource extends BaseResource {
   }
 
   /**
-   * update the media resource found in the payload for the media link entry (mle)
+   * Updates the media resource found in the payload for the media link entry (mle)
    * identified by the given key.
    *
-   * @param httpHeaders
-   * @param uriInfo
-   * @param producer
-   * @param entitySet
-   * @param payload
-   * @param key
    * @return HTTP 204 No Content response if successful.
-   * @throws IOException
    */
   protected Response updateMediaLinkEntry(HttpHeaders httpHeaders,
       UriInfo uriInfo, ODataProducer producer, EdmEntitySet entitySet, InputStream payload, OEntityKey key) throws IOException {

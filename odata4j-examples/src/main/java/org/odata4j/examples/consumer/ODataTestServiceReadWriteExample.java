@@ -7,6 +7,7 @@ import org.odata4j.core.OEntity;
 import org.odata4j.core.OFuncs;
 import org.odata4j.core.OProperties;
 import org.odata4j.examples.AbstractExample;
+import org.odata4j.exceptions.NotFoundException;
 import org.odata4j.exceptions.ODataProducerException;
 
 public class ODataTestServiceReadWriteExample extends AbstractExample {
@@ -36,7 +37,7 @@ public class ODataTestServiceReadWriteExample extends AbstractExample {
     reportEntity("DVD Player", dvdPlayer);
 
     // we are about to add a new product, first make sure it does not exist
-    c.deleteEntity("Products", 10).execute();
+    try { c.deleteEntity("Products", 10).execute(); } catch (NotFoundException e) {}
 
     // create the new product
     OEntity newProduct = c.createEntity("Products")

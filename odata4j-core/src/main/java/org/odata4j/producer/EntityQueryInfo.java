@@ -28,6 +28,7 @@ public class EntityQueryInfo extends QueryInfo {
     return new EntityQueryInfo.Builder();
   }
 
+  /** Mutable builder for {@link EntityQueryInfo} objects. */
   public static class Builder extends QueryInfo.Builder {
 
     private BoolCommonExpression filter;

@@ -15,7 +15,7 @@ public class ConsumerCountRequest implements OCountRequest {
     this.baseUri = serviceRootUri;
   }
 
-  public ConsumerCountRequest setEntitySetName(String entitySetName) {
+  public ConsumerCountRequest entitySetName(String entitySetName) {
     this.entitySetName = entitySetName;
     return this;
   }

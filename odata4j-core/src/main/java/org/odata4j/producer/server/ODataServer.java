@@ -30,7 +30,8 @@ public interface ODataServer {
    *
    * @param odataApp  the OData application class
    * @return this server
-   * @see {@link AbstractODataApplication}, {@link DefaultODataApplication}
+   * @see AbstractODataApplication
+   * @see DefaultODataApplication
    */
   ODataServer setODataApplication(Class<? extends Application> odataApp);
 
@@ -39,7 +40,7 @@ public interface ODataServer {
    *
    * @param rootApp  the root application class
    * @return this server
-   * @see {@link RootApplication}
+   * @see RootApplication
    */
   ODataServer setRootApplication(Class<? extends Application> rootApp);
 }

@@ -114,6 +114,7 @@ public class QueryInfo {
     return new Builder();
   }
 
+  /** Mutable builder for {@link QueryInfo} objects. */
   public static class Builder {
     private InlineCount inlineCount;
     private Integer top;

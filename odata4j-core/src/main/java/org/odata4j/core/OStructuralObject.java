@@ -2,17 +2,23 @@ package org.odata4j.core;
 
 import java.util.List;
 
+/**
+ * An OData instance object with properties.
+ *
+ * @see OComplexObject
+ * @see OEntity
+ */
 public interface OStructuralObject extends OObject {
 
   /**
-   * Get all properties of this instance.
+   * Gets all properties of this instance.
    *
    * @return the properties
    */
   List<OProperty<?>> getProperties();
 
   /**
-   * Get a property by name.
+   * Gets a property by name.
    *
    * @param propName  the property name
    * @return the property
@@ -20,7 +26,7 @@ public interface OStructuralObject extends OObject {
   OProperty<?> getProperty(String propName);
 
   /**
-   * Get a property by name as a strongly-typed OProperty.
+   * Gets a property by name as a strongly-typed OProperty.
    *
    * @param <T>  the java-type of the property
    * @param propName  the property name

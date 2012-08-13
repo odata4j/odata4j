@@ -24,9 +24,7 @@ public class ODataConstants {
   public static final ODataVersion DATA_SERVICE_VERSION = ODataVersion.V1;
   public static final String DATA_SERVICE_VERSION_HEADER = DATA_SERVICE_VERSION.asString;
 
-  /**
-   * Http header names.
-   */
+  /** Common http header names. */
   public static class Headers {
     public static final String X_HTTP_METHOD = "X-HTTP-METHOD";
     public static final String DATA_SERVICE_VERSION = "DataServiceVersion";
@@ -35,12 +33,15 @@ public class ODataConstants {
     public static final String IF_MATCH = "If-Match";
   }
 
+  /** Common character sets. */
   public static class Charsets {
+    /** Common character sets. (UPPER-CASE) */
     public static class Upper {
       public static final String UTF_8 = "UTF-8";
       public static final String ISO_8859_1 = "ISO-8859-1"; // latin1
       public static final String ISO_8859_15 = "ISO-8859-15"; // latin9
     }
+    /** Common character sets. (lower-case) */
     public static class Lower {
       public static final String UTF_8 = "utf-8";
       public static final String ISO_8859_1 = "iso-8859-1";

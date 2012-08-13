@@ -121,9 +121,10 @@ public class ODataJerseyServer implements ODataServer {
   }
 
   /**
-   * stop synchronously, handy for unit test scenarios.
-   * @param delaySeconds
-   * @return
+   * Stops synchronously, handy for unit test scenarios.
+   *
+   * @param delaySeconds  seconds to wait for clean termination
+   * @return this instance for call chaining
    */
   public ODataJerseyServer stop(int delaySeconds) {
     server.stop(delaySeconds);

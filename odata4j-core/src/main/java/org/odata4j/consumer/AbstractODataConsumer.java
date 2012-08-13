@@ -157,7 +157,7 @@ public abstract class AbstractODataConsumer implements ODataConsumer {
   }
 
   public OCountRequest getEntitiesCount(String entitySetName) {
-    return new ConsumerCountRequest(getClient(), getServiceRootUri()).setEntitySetName(entitySetName);
+    return new ConsumerCountRequest(getClient(), getServiceRootUri()).entitySetName(entitySetName);
   }
 
   protected abstract ODataClient getClient();

@@ -7,14 +7,17 @@ import java.util.Set;
 
 /**
  * A Map implementation whose structure is immutable after construction.
- * <p>Useful for apis that assume a returned map remains unmodified.
- * <p>All mutation methods throw <code>UnsupportedOperationException</code>
+ *
+ * <p>Useful for apis that assume a returned map remains unmodified.</p>
+ *
+ * <p>All mutation methods throw <code>UnsupportedOperationException</code></p>
  *
  * @param <K>  the map key type
  * @param <V>  the map value type
  */
 public class ImmutableMap<K, V> implements Map<K, V> {
 
+  /** Mutable builder for {@link ImmutableMap} objects. */
   public static class Builder<K, V> {
     private final LinkedHashMap<K, V> map = new LinkedHashMap<K, V>();
 
