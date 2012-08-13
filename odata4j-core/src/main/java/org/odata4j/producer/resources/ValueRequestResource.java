@@ -8,6 +8,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 
@@ -28,6 +29,7 @@ public class ValueRequestResource {
       @Context HttpHeaders httpHeaders,
       @Context UriInfo uriInfo,
       @Context ContextResolver<ODataProducer> producerResolver,
+      @Context SecurityContext securityContext,
       @PathParam("entitySetName") String entitySetName,
       @PathParam("id") String id,
       @QueryParam("$expand") String expand,
@@ -40,18 +42,20 @@ public class ValueRequestResource {
           null,
           OptionsQueryParser.parseCustomOptions(uriInfo),
           OptionsQueryParser.parseExpand(expand),
-          OptionsQueryParser.parseSelect(select)));
+          OptionsQueryParser.parseSelect(select)),
+          securityContext);
     }
     throw new NotFoundException();
   }
 
-  protected Response getStreamResponse(HttpHeaders httpHeaders, ODataProducer producer, EdmEntitySet entitySet, String entityId, EntityQueryInfo queryInfo) {
+  protected Response getStreamResponse(HttpHeaders httpHeaders, ODataProducer producer, EdmEntitySet entitySet, String entityId, EntityQueryInfo queryInfo,
+          SecurityContext securityContext) {
     OMediaLinkExtension mediaLinkExtension = producer.findExtension(OMediaLinkExtension.class, null);
 
     if (mediaLinkExtension == null)
       throw new NotImplementedException();
 
-    EntityResponse entityResponse = producer.getEntity(ODataContextImpl.builder().aspect(httpHeaders).build(), 
+    EntityResponse entityResponse = producer.getEntity(ODataContextImpl.builder().aspect(httpHeaders).aspect(securityContext).build(), 
             entitySet.getName(), OEntityKey.parse(entityId), queryInfo);
     InputStream entityStream = mediaLinkExtension.getInputStreamForMediaLinkEntry(entityResponse.getEntity(), null, queryInfo);
     String contentType = mediaLinkExtension.getMediaLinkContentType(entityResponse.getEntity());

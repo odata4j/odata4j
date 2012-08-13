@@ -1,6 +1,7 @@
 
 package org.odata4j.producer;
 
+import java.util.List;
 import javax.ws.rs.core.HttpHeaders;
 
 /**
@@ -19,9 +20,15 @@ public class ODataHeadersImpl implements ODataHeadersContext {
   }
 
   @Override
-  public Iterable<String> getRequestHeaderValue(String fieldName) {
+  public Iterable<String> getRequestHeaderValues(String fieldName) {
     return this.headers.getRequestHeader(fieldName);
   }
 
-  private HttpHeaders headers;
+  @Override
+  public String getRequestHeaderValue(String fieldName) {
+    List<String> l = this.headers.getRequestHeader(fieldName);
+    return l == null || l.isEmpty() ? null : l.get(0);
+  }
+    
+   private HttpHeaders headers;
 }

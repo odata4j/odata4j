@@ -20,5 +20,13 @@ public interface ODataHeadersContext {
    * @param fieldName
    * @return the Iterable
    */
-  public Iterable<String> getRequestHeaderValue(String fieldName);
+  public Iterable<String> getRequestHeaderValues(String fieldName);
+  
+   /**
+   * Get the value of a header, makes things easier when you are only
+   * expecting one.
+   * @param fieldName
+   * @return first value of the given header, null if the header is not present
+   */
+  public String getRequestHeaderValue(String fieldName);
 }

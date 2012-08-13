@@ -490,6 +490,7 @@ public class InMemoryProducer implements ODataProducer {
         .entitySetName(entitySetName)
         .entitySet(getMetadata().getEdmEntitySet(entitySetName))
         .queryInfo(queryInfo)
+        .odataContext(context)
         .pathHelper(new PropertyPathHelper(queryInfo)).build();
 
     final InMemoryEntityInfo<?> ei = eis.get(entitySetName);
@@ -577,6 +578,7 @@ public class InMemoryProducer implements ODataProducer {
         .entitySetName(entitySetName)
         .entitySet(getMetadata().getEdmEntitySet(entitySetName))
         .queryInfo(queryInfo)
+        .odataContext(context)
         .build();
 
     final InMemoryEntityInfo<?> ei = eis.get(entitySetName);
@@ -653,7 +655,8 @@ public class InMemoryProducer implements ODataProducer {
             .getEdmEntitySet(entitySetName))
         .entityKey(entityKey)
         .queryInfo(queryInfo)
-        .pathHelper(pathHelper).build();
+        .pathHelper(pathHelper)
+        .odataContext(context).build();
 
     final Object rt = getEntityPojo(rc);
     if (rt == null)
@@ -700,7 +703,9 @@ public class InMemoryProducer implements ODataProducer {
         .entityKey(entityKey)
         .navPropName(navProp)
         .queryInfo(queryInfo)
-        .pathHelper(new PropertyPathHelper(queryInfo)).build();
+        .pathHelper(new PropertyPathHelper(queryInfo))
+        .odataContext(context)
+        .build();
 
     EdmNavigationProperty navProperty = rc.getEntitySet().getType().findNavigationProperty(navProp);
     if (navProperty != null) {
@@ -819,6 +824,7 @@ public class InMemoryProducer implements ODataProducer {
     private final OEntityKey entityKey;
     private final QueryInfo queryInfo;
     private final PropertyPathHelper pathHelper;
+    private ODataContext odataContext;
 
     public RequestType getRequestType() {
       return requestType;
@@ -847,6 +853,10 @@ public class InMemoryProducer implements ODataProducer {
     public PropertyPathHelper getPathHelper() {
       return pathHelper;
     }
+    
+    public ODataContext getODataContext() {
+      return odataContext;
+    }
 
     public static Builder newBuilder(RequestType requestType) {
       return new Builder().requestType(requestType);
@@ -861,6 +871,7 @@ public class InMemoryProducer implements ODataProducer {
       private OEntityKey entityKey;
       private QueryInfo queryInfo;
       private PropertyPathHelper pathHelper;
+      private ODataContext odataContext;
 
       public Builder requestType(RequestType value) {
         this.requestType = value;
@@ -896,14 +907,20 @@ public class InMemoryProducer implements ODataProducer {
         this.pathHelper = value;
         return this;
       }
+      
+      public Builder odataContext(ODataContext value) {
+        this.odataContext = value;
+        return this;
+      }
 
       public RequestContext build() {
-        return new RequestContext(requestType, entitySetName, entitySet, navPropName, entityKey, queryInfo, pathHelper);
+        return new RequestContext(requestType, entitySetName, entitySet, navPropName, entityKey, queryInfo, pathHelper, odataContext);
       }
     }
 
     private RequestContext(RequestType requestType, String entitySetName, EdmEntitySet entitySet,
-        String navPropName, OEntityKey entityKey, QueryInfo queryInfo, PropertyPathHelper pathHelper) {
+        String navPropName, OEntityKey entityKey, QueryInfo queryInfo, PropertyPathHelper pathHelper,
+        ODataContext odataContext) {
       this.requestType = requestType;
       this.entitySetName = entitySetName;
       this.entitySet = entitySet;
@@ -911,6 +928,7 @@ public class InMemoryProducer implements ODataProducer {
       this.entityKey = entityKey;
       this.queryInfo = queryInfo;
       this.pathHelper = pathHelper;
+      this.odataContext = odataContext;
     }
   }
 

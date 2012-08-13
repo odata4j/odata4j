@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.odata4j.core.ODataConstants;
@@ -61,6 +62,7 @@ public class FunctionResource extends BaseResource {
       ODataHttpMethod callingMethod,
       HttpHeaders httpHeaders,
       UriInfo uriInfo,
+      SecurityContext securityContext,
       ODataProducer producer,
       String functionName,
       String format,
@@ -81,7 +83,7 @@ public class FunctionResource extends BaseResource {
       }
     }
 
-    BaseResponse response = producer.callFunction(ODataContextImpl.builder().aspect(httpHeaders).build(),
+    BaseResponse response = producer.callFunction(ODataContextImpl.builder().aspect(httpHeaders).aspect(securityContext).build(),
         function, getFunctionParameters(function, queryInfo.customOptions), queryInfo);
 
     if (response == null) {

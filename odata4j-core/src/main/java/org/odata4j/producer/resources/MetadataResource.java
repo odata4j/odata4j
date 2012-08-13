@@ -1,6 +1,7 @@
 package org.odata4j.producer.resources;
 
 import java.io.StringWriter;
+import javax.ws.rs.DefaultValue;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -11,6 +12,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 
@@ -73,6 +75,7 @@ public class MetadataResource {
       @Context HttpHeaders httpHeaders,
       @Context UriInfo uriInfo,
       @Context ContextResolver<ODataProducer> producerResolver,
+      @Context SecurityContext securityContext,
       @PathParam("entitySetName") String entitySetName,
       @PathParam("optionalId") String optionalId,
       @QueryParam("$inlinecount") String inlineCount,
@@ -94,7 +97,7 @@ public class MetadataResource {
     }
 
     EntitiesRequestResource r = new EntitiesRequestResource();
-    return r.getEntitiesImpl(httpHeaders, uriInfo, metadataProducer, entitySetName, false, inlineCount, top, skip, filter, orderBy, format, callback, skipToken, expand, select);
+    return r.getEntitiesImpl(httpHeaders, uriInfo, securityContext, metadataProducer, entitySetName, false, inlineCount, top, skip, filter, orderBy, format, callback, skipToken, expand, select);
   }
 
   @GET
@@ -106,6 +109,7 @@ public class MetadataResource {
       @Context HttpHeaders httpHeaders,
       @Context UriInfo uriInfo,
       @Context ContextResolver<ODataProducer> producerResolver,
+      @Context SecurityContext securityContext,
       @PathParam("entitySetName") String entitySetName,
       @PathParam("id") String id,
       @QueryParam("$format") String format,
@@ -121,7 +125,7 @@ public class MetadataResource {
     }
 
     EntityRequestResource r = new EntityRequestResource();
-    return r.getEntityImpl(httpHeaders, uriInfo, metadataProducer, entitySetName, id, format, callback, expand, select);
+    return r.getEntityImpl(httpHeaders, uriInfo, securityContext, metadataProducer, entitySetName, id, format, callback, expand, select);
   }
 
   private static NotImplementedException newMetadataNotImplementedException() {

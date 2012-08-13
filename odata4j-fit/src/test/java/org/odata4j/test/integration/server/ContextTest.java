@@ -151,13 +151,18 @@ public class ContextTest  extends AbstractJettyHttpClientTest {
   private void assertHeaders() {
     ODataHeadersContext got = context.getValue().getRequestHeadersContext();
     for (Entry<String, List<String>> e : myHeaders.entrySet()) {
-      Iterable<String> gotVals = got.getRequestHeaderValue(e.getKey());
+      Iterable<String> gotVals = got.getRequestHeaderValues(e.getKey());
       int n = 0;
+      String firstGotVal = null;
       for (String gotV : gotVals) {
+        if (n == 0) { firstGotVal = gotV; }
         assertTrue(e.getValue().contains(gotV));
         n += 1;
       }
       assertEquals(e.getValue().size(), n);
+      if (n == 1) {
+        assertEquals(firstGotVal, got.getRequestHeaderValue(e.getKey()));
+      }
     }
   }
   
