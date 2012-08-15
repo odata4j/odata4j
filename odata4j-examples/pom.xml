@@ -31,4 +31,36 @@
     </dependency>
   </dependencies>
 
+  <profiles>
+    <profile>
+      <id>release.build</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>bundle-javadocs</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+                <configuration>
+                  <nodeprecated>true</nodeprecated>
+                  <bottom><![CDATA[<i><a href="http://odata4j.org">http://odata4j.org</a></i>]]></bottom>
+                  <archive>
+                    <manifestEntries>
+                      <Built-By>${built.by}</Built-By>
+                    </manifestEntries>
+                  </archive>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
 </project>

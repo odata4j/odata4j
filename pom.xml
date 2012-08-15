@@ -129,8 +129,8 @@
     <module>odata4j-core</module>
     <module>odata4j-jersey</module>
     <module>odata4j-cxf</module>
-    <module>odata4j-fit</module>
     <module>odata4j-examples</module>
+    <module>odata4j-fit</module>
     <module>odata4j-dist</module>
   </modules>
 
@@ -268,12 +268,14 @@
             <artifactId>maven-javadoc-plugin</artifactId>
             <executions>
               <execution>
+                <id>aggregate-javadocs</id>
                 <phase>package</phase>
                 <goals>
                   <goal>aggregate-jar</goal>
                 </goals>
                 <configuration>
                   <finalName>odata4j-${project.version}</finalName>
+                  <excludePackageNames>org.odata4j.examples</excludePackageNames> <!-- from module odata4j-examples -->
                   <nodeprecated>true</nodeprecated>
                   <bottom><![CDATA[<i><a href="http://odata4j.org">http://odata4j.org</a></i>]]></bottom>
                   <links>

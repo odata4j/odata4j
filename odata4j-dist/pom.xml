@@ -14,11 +14,11 @@
   </parent>
 
   <properties>
+    <odata4j.cxfbundle>odata4j-${project.version}-cxfbundle</odata4j.cxfbundle>
+    <odata4j.core>odata4j-${project.version}-core</odata4j.core>
     <odata4j.clientbundle>odata4j-${project.version}-clientbundle</odata4j.clientbundle>
     <odata4j.nojpabundle>odata4j-${project.version}-nojpabundle</odata4j.nojpabundle>
-    <odata4j.cxfbundle>odata4j-${project.version}-cxfbundle</odata4j.cxfbundle>
     <odata4j.bundle>odata4j-${project.version}-bundle</odata4j.bundle>
-    <odata4j.core>odata4j-${project.version}-core</odata4j.core>
   </properties>
 
   <build>
@@ -130,6 +130,16 @@
             <configuration>
               <artifacts>
                 <artifact>
+                  <file>${project.build.directory}/${odata4j.core}.jar</file>
+                  <type>jar</type>
+                  <classifier>core</classifier>
+                </artifact>
+                <artifact>
+                  <file>${project.build.directory}/${odata4j.cxfbundle}.jar</file>
+                  <type>jar</type>
+                  <classifier>cxfbundle</classifier>
+                </artifact>
+                <artifact>
                   <file>${project.build.directory}/${odata4j.clientbundle}.jar</file>
                   <type>jar</type>
                   <classifier>clientbundle</classifier>
@@ -143,11 +153,6 @@
                   <file>${project.build.directory}/${odata4j.bundle}.jar</file>
                   <type>jar</type>
                   <classifier>bundle</classifier>
-                </artifact>
-                <artifact>
-                  <file>${project.build.directory}/${odata4j.cxfbundle}.jar</file>
-                  <type>jar</type>
-                  <classifier>cxfbundle</classifier>
                 </artifact>
               </artifacts>
             </configuration>
