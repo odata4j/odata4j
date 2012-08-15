@@ -5,6 +5,7 @@ org.odata4j.core
 org.odata4j.cxf.consumer
 org.odata4j.cxf.producer.server
 org.odata4j.edm
+org.odata4j.exceptions
 org.odata4j.expression
 org.odata4j.format
 org.odata4j.format.json
@@ -18,7 +19,6 @@ org.odata4j.jersey.producer.server
 org.odata4j.producer
 org.odata4j.producer.command
 org.odata4j.producer.edm
-org.odata4j.producer.exceptions
 org.odata4j.producer.inmemory
 org.odata4j.producer.jdbc
 org.odata4j.producer.jpa
@@ -30,4 +30,5 @@ org.odata4j.repack.org.apache.commons.codec.binary
 org.odata4j.stax2
 org.odata4j.stax2.domimpl
 org.odata4j.stax2.staximpl
+org.odata4j.stax2.util
 org.odata4j.stax2.xppimpl
