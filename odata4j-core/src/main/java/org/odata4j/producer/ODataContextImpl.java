@@ -6,7 +6,7 @@ import java.util.Map.Entry;
 import javax.ws.rs.core.HttpHeaders;
 
 /**
- * An implementation (prolly the only one ever) of ODataContext
+ * An implementation of ODataContext
  */
 public class ODataContextImpl implements ODataContext {
 
@@ -41,7 +41,7 @@ public class ODataContextImpl implements ODataContext {
       // HttpRequestContext, Traceable, HttpHeaders, Reqeust, SecurityContext).
       
       // JohnS wants to avoid coupling with javax.ws.rs things whenever
-      // possible.  So, we wrap things we provid wrappers for (and also expose
+      // possible.  So, we wrap things we provide wrappers for (and also expose
       // them as their native things).  I'm not really sure of the value
       // of this...isn't odata4j intrinsically linked to javax.ws.rs already?
       // it's not like we are going to swap that out...

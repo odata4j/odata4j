@@ -27,8 +27,10 @@ import org.odata4j.format.FormatParser;
 import org.odata4j.format.FormatParserFactory;
 import org.odata4j.format.Settings;
 import org.odata4j.internal.InternalUtil;
+import org.odata4j.producer.ODataContext;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.OMediaLinkExtension;
+import org.odata4j.producer.OMediaLinkExtensions;
 
 public abstract class BaseResource {
 
@@ -67,26 +69,21 @@ public abstract class BaseResource {
   }
 
   // some helpers for media link entries
-  protected OMediaLinkExtension getMediaLinkExtension(HttpHeaders httpHeaders, UriInfo uriInfo, EdmEntitySet entitySet, ODataProducer producer) {
+  protected OMediaLinkExtension getMediaLinkExtension(HttpHeaders httpHeaders, UriInfo uriInfo, EdmEntitySet entitySet, ODataProducer producer,
+          ODataContext context) {
 
-    Map<String, Object> params = new HashMap<String, Object>();
-    params.put(ODataConstants.Params.EdmEntitySet, entitySet);
-    params.put(ODataConstants.Params.HttpHeaders, httpHeaders);
-    params.put(ODataConstants.Params.ODataProducer, producer);
-    params.put(ODataConstants.Params.UriInfo, uriInfo);
+    OMediaLinkExtensions mediaLinkExtensions = producer.findExtension(OMediaLinkExtensions.class);
 
-    OMediaLinkExtension mediaLinkExtension = producer.findExtension(OMediaLinkExtension.class, params);
-
-    if (mediaLinkExtension == null) {
+    if (mediaLinkExtensions == null) {
       throw new NotImplementedException();
     }
 
-    return mediaLinkExtension;
+    return mediaLinkExtensions.create(context);
   }
 
   protected OEntity createOrUpdateMediaLinkEntry(HttpHeaders httpHeaders,
       UriInfo uriInfo, EdmEntitySet entitySet, ODataProducer producer,
-      InputStream payload, OEntityKey key) throws IOException {
+      InputStream payload, OEntityKey key, ODataContext context) throws IOException {
 
     /*
      * this post has a great descriptions of the twists and turns of creating
@@ -94,7 +91,7 @@ public abstract class BaseResource {
      */
 
     // first, the producer must support OMediaLinkExtension
-    OMediaLinkExtension mediaLinkExtension = getMediaLinkExtension(httpHeaders, uriInfo, entitySet, producer);
+    OMediaLinkExtension mediaLinkExtension = getMediaLinkExtension(httpHeaders, uriInfo, entitySet, producer, context);
 
     // get a media link entry from the extension
     OEntity mle = key == null

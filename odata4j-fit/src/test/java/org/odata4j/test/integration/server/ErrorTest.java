@@ -42,7 +42,7 @@ public class ErrorTest extends AbstractJettyHttpClientTest {
   }
 
   private void simulateErrorResponseExtension() {
-    when(producerSpy.findExtension(ErrorResponseExtension.class, null)).thenReturn(ErrorResponseExtensions.returnInnerErrors());
+    when(producerSpy.findExtension(ErrorResponseExtension.class)).thenReturn(ErrorResponseExtensions.returnInnerErrors());
   }
 
   @Test

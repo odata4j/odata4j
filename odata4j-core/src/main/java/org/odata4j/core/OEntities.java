@@ -251,7 +251,7 @@ public class OEntities {
     }
 
     @Override
-    public <TExtension extends OExtension<OEntity>> TExtension findExtension(Class<TExtension> clazz, Map<String, Object> params) {
+    public <TExtension extends OExtension<OEntity>> TExtension findExtension(Class<TExtension> clazz) {
       for (Object extension : extensions) {
         if (clazz.isInstance(extension)) {
           return clazz.cast(extension);

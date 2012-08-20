@@ -93,15 +93,23 @@ public class EntitiesRequestResource extends BaseResource {
     if (entitySet == null) {
       throw new NotFoundException();
     }
+    
+    ODataContext odataContext = ODataContextImpl.builder()
+            .aspect(httpHeaders)
+            .aspect(securityContext)
+            .aspect(producer)
+            .aspect(entitySet)
+            .aspect(uriInfo)
+            .build();
 
     if (Boolean.TRUE.equals(entitySet.getType().getHasStream())) { // getHasStream can return null
       // yes it is!
-      return createMediaLinkEntry(httpHeaders, uriInfo, securityContext, producer, entitySet, payload);
+      return createMediaLinkEntry(httpHeaders, uriInfo, securityContext, producer, entitySet, payload, odataContext);
     }
 
     // also on the plus side we can now parse the stream directly off the wire....
     return createEntity(httpHeaders, uriInfo, securityContext, producer, entitySetName,
-        this.getRequestEntity(httpHeaders, uriInfo, payload, producer.getMetadata(), entitySetName, null));
+        this.getRequestEntity(httpHeaders, uriInfo, payload, producer.getMetadata(), entitySetName, null), odataContext);
   }
 
   protected Response createEntity(
@@ -110,9 +118,10 @@ public class EntitiesRequestResource extends BaseResource {
       SecurityContext securityContext,
       ODataProducer producer,
       String entitySetName,
-      OEntity entity) throws Exception {
+      OEntity entity,
+      ODataContext odataContext) throws Exception {
 
-    EntityResponse response = producer.createEntity(ODataContextImpl.builder().aspect(httpHeaders).aspect(securityContext).build(), entitySetName, entity);
+    EntityResponse response = producer.createEntity(odataContext, entitySetName, entity);
 
     FormatWriter<EntityResponse> writer = FormatWriterFactory
         .getFormatWriter(EntityResponse.class, httpHeaders.getAcceptableMediaTypes(), null, null);
@@ -138,11 +147,12 @@ public class EntitiesRequestResource extends BaseResource {
       SecurityContext securityContext,
       ODataProducer producer,
       EdmEntitySet entitySet,
-      InputStream payload) throws Exception {
+      InputStream payload,
+      ODataContext odataContext) throws Exception {
 
     log("createMediaLinkEntity", "entitySetName", entitySet.getName());
 
-    OEntity mle = super.createOrUpdateMediaLinkEntry(httpHeaders, uriInfo, entitySet, producer, payload, null);
+    OEntity mle = super.createOrUpdateMediaLinkEntry(httpHeaders, uriInfo, entitySet, producer, payload, null, odataContext);
 
     // return the mle
     return createEntity(httpHeaders,
@@ -150,7 +160,8 @@ public class EntitiesRequestResource extends BaseResource {
         securityContext,
         producer,
         entitySet.getName(),
-        mle);
+        mle,
+        odataContext);
   }
 
   @PUT
@@ -326,7 +337,12 @@ public class EntitiesRequestResource extends BaseResource {
         OptionsQueryParser.parseExpand(expand),
         OptionsQueryParser.parseSelect(select));
 
-    ODataContextImpl odataContext = ODataContextImpl.builder().aspect(httpHeaders).aspect(securityContext).build();
+    ODataContextImpl odataContext = ODataContextImpl.builder()
+            .aspect(httpHeaders)
+            .aspect(uriInfo)
+            .aspect(securityContext)
+            .aspect(producer)
+            .build();
     
     // the OData URI scheme makes it impossible to have unique @Paths that refer
     // to functions and entity sets
@@ -411,6 +427,12 @@ public class EntitiesRequestResource extends BaseResource {
 
     ODataProducer producer = producerResolver.getContext(ODataProducer.class);
 
+    ODataContext odataContext = ODataContextImpl.builder()
+            .aspect(headers)
+            .aspect(securityContext)
+            .aspect(producer)
+            .build();
+    
     for (BatchBodyPart bodyPart : bodyParts) {
       HttpHeaders httpHeaders = bodyPart.getHttpHeaders();
       UriInfo uriInfo = bodyPart.getUriInfo();
@@ -423,11 +445,11 @@ public class EntitiesRequestResource extends BaseResource {
       case POST:
         response = this.createEntity(httpHeaders, uriInfo, securityContext, producer,
             entitySetName,
-            getRequestEntity(httpHeaders, uriInfo, entityString, producer.getMetadata(), entitySetName, null));
+            getRequestEntity(httpHeaders, uriInfo, entityString, producer.getMetadata(), entitySetName, null), odataContext);
         break;
       case PUT:
         response = er.updateEntity(httpHeaders, uriInfo, securityContext, producerResolver,
-            entitySetName, entityId, entityString);
+            entitySetName, entityId, entityString, odataContext);
         break;
       case MERGE:
         response = er.mergeEntity(httpHeaders, uriInfo,  producerResolver, securityContext, entitySetName,

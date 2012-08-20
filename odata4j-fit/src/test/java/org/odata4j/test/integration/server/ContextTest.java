@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import javax.ws.rs.core.SecurityContext;
 import org.eclipse.jetty.client.ContentExchange;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
@@ -18,6 +19,8 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import org.mockito.ArgumentCaptor;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
@@ -28,6 +31,8 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.spy;
+import org.odata4j.core.ODataConstants;
+import org.odata4j.core.ODataConstants.Headers;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityId;
 import org.odata4j.core.OEntityKey;
@@ -47,17 +52,21 @@ import org.odata4j.producer.EntityQueryInfo;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.ODataContext;
 import org.odata4j.producer.ODataHeadersContext;
+import org.odata4j.producer.OMediaLinkExtensions;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.test.integration.producer.custom.CustomEdm;
 import org.odata4j.test.integration.producer.custom.CustomProducer;
 
 /**
  * test for the new ODataContext producer parameter.
+ * 
  */
+@RunWith(JUnit4.class)
 public class ContextTest  extends AbstractJettyHttpClientTest {
 
-  public ContextTest(RuntimeFacadeType type) {
-    super(type);
+  
+  public ContextTest() { //RuntimeFacadeType type) {
+    super(RuntimeFacadeType.JERSEY);
   }
   
   @Override
@@ -65,7 +74,7 @@ public class ContextTest  extends AbstractJettyHttpClientTest {
     DefaultODataProducerProvider.setInstance(mockProducer());
   }
 
-  ODataProducer producer;
+  CustomProducer producer;
   protected ODataProducer mockProducer() {
     CustomProducer cp = new CustomProducer();
     producer = spy(cp); // mock(ODataProducer.class);
@@ -76,12 +85,19 @@ public class ContextTest  extends AbstractJettyHttpClientTest {
   
   @BeforeClass
   public static void initClass() {
-    myHeaders = new HashMap<String, List<String>>();
-    myHeaders.put("X-Foo", Collections.singletonList("Bar"));
+    myHeaders = getHeaders();
+  }
+  
+  private static Map<String, List<String>> getHeaders() {
+    
+    Map<String, List<String>> h = new HashMap<String, List<String>>();
+    h.put("X-Foo", Collections.singletonList("Bar"));
     List<String> cookies = new ArrayList<String>();
     cookies.add("Cookie 1");
     cookies.add("Cookie 2");
-    myHeaders.put("Cookie", cookies);
+    h.put("Cookie", cookies);
+    h.put("Content-Type", Collections.singletonList("application/json"));
+    return h;
   }
   
   private static Map<String, List<String>> myHeaders;
@@ -103,7 +119,7 @@ public class ContextTest  extends AbstractJettyHttpClientTest {
     
     verify(producer).getEntities(context.capture(), eq("Directories"), any(QueryInfo.class));
     
-    assertHeaders();
+    assertContext();
   }
   
   @Test
@@ -113,7 +129,7 @@ public class ContextTest  extends AbstractJettyHttpClientTest {
     
     verify(producer).getEntitiesCount(context.capture(), eq("Directories"), any(QueryInfo.class));
     
-    assertHeaders();
+    assertContext();
   }
   
   @Test
@@ -123,7 +139,7 @@ public class ContextTest  extends AbstractJettyHttpClientTest {
     
     verify(producer).getEntity(context.capture(), eq("Directories"), any(OEntityKey.class), any(EntityQueryInfo.class));
     
-    assertHeaders();
+    assertContext();
   }
   
   @Test
@@ -133,7 +149,7 @@ public class ContextTest  extends AbstractJettyHttpClientTest {
     
     verify(producer).getNavProperty(context.capture(), eq("Directories"), any(OEntityKey.class), eq("Files"), any(QueryInfo.class));
     
-    assertHeaders();
+    assertContext();
   }
   
   @Test
@@ -143,14 +159,142 @@ public class ContextTest  extends AbstractJettyHttpClientTest {
     
     verify(producer).getNavPropertyCount(context.capture(), eq("Directories"), any(OEntityKey.class), eq("Files"), any(QueryInfo.class));
     
-    assertHeaders();
+    assertContext();
   }
   
-  // TODO: finish the rest of the ODataProducer methods....
+  @Test
+  public void testCreateEntity() throws IOException, Exception {
+    
+    ContentExchange exchange = sendRequestWithHeaders(BASE_URI + "Directories", myHeaders, "POST", "{ \"Name\" : \"NewDir\" }");
+    
+    verify(producer).createEntity(context.capture(), eq("Directories"), any(OEntity.class));
+    
+    assertContext();
+  }
   
-  private void assertHeaders() {
+  @Test
+  public void testCreateRelatedEntity() throws IOException, Exception {
+    
+    ContentExchange exchange = sendRequestWithHeaders(BASE_URI + "Directories('MyDir')/Items", myHeaders, "POST", "{ \"Name\" : \"NewFile\" }");
+    
+    verify(producer).createEntity(context.capture(), eq("Directories"), any(OEntityKey.class), eq("Items"), any(OEntity.class));
+    
+    assertContext();
+  }
+  
+  @Test
+  public void testDeleteEntity() throws IOException, Exception {
+    
+    ContentExchange exchange = sendRequestWithHeaders(BASE_URI + "Directories('MyDir')", myHeaders, "DELETE", "");
+    
+    verify(producer).deleteEntity(context.capture(), eq("Directories"), any(OEntityKey.class));
+    
+    assertContext();
+  }
+  
+  @Test
+  public void testMergeEntity() throws IOException, Exception {
+    
+    Map<String, List<String>> headers = getHeaders();
+    headers.put(Headers.X_HTTP_METHOD, Collections.singletonList("MERGE"));
+    ContentExchange exchange = sendRequestWithHeaders(BASE_URI + "Directories('MyDir')", headers, "POST", "{ \"DirProp1\" : \"prop1value\" }");
+    
+    verify(producer).mergeEntity(context.capture(), eq("Directories"), any(OEntity.class));
+    
+    assertContext(headers);
+  }
+  
+  @Test
+  public void testUpdateEntity() throws IOException, Exception {
+    
+    Map<String, List<String>> headers = getHeaders();
+    ContentExchange exchange = sendRequestWithHeaders(BASE_URI + "Directories('MyDir')", headers, "PUT", "{ \"DirProp1\" : \"prop1value\" }");
+    
+    verify(producer).updateEntity(context.capture(), eq("Directories"), any(OEntity.class));
+    
+    assertContext(headers);
+  }
+   
+  @Test
+  public void testGetLinks() throws IOException, Exception {
+    
+    ContentExchange exchange = sendRequestWithHeaders(BASE_URI + "Directories('Dir-0')/$links/Files", myHeaders);
+    
+    verify(producer).getLinks(context.capture(), any(OEntityId.class), eq("Files"));
+    
+    assertContext();
+  }
+   
+  @Test
+  public void testCreateLink() throws IOException, Exception {
+    
+    ContentExchange exchange = sendRequestWithHeaders(BASE_URI + "Directories('Dir-0')/$links/Files", myHeaders, "POST", "{\"uri\": \"http://host/service.svc/Files('myfile')\"}");
+    
+    verify(producer).createLink(context.capture(), any(OEntityId.class), eq("Files"), any(OEntityId.class));
+    
+    assertContext();
+  }
+  
+  @Test
+  public void testUpdateLink() throws IOException, Exception {
+    
+    ContentExchange exchange = sendRequestWithHeaders(BASE_URI + "Directories('Dir-0')/$links/Files", myHeaders, "PUT", "{\"uri\": \"http://host/service.svc/Files('myfile2')\"}");
+    
+    verify(producer).updateLink(context.capture(), any(OEntityId.class), eq("Files"), any(OEntityKey.class), any(OEntityId.class));
+    
+    assertContext();
+  }
+  
+  @Test
+  public void testDeleteLink() throws IOException, Exception {
+    
+    ContentExchange exchange = sendRequestWithHeaders(BASE_URI + "Directories('Dir-0')/$links/Files", myHeaders, "DELETE", "{\"uri\": \"http://host/service.svc/Files('myfile2')\"}");
+    
+    verify(producer).deleteLink(context.capture(), any(OEntityId.class), eq("Files"), any(OEntityKey.class));
+    
+    assertContext();
+  }
+  
+  @Test
+  public void testCallFunction() throws IOException, Exception {
+    
+    ContentExchange exchange = sendRequestWithHeaders(BASE_URI + "f?p='foo'", myHeaders);
+    
+    verify(producer).callFunction(context.capture(), any(EdmFunctionImport.class), any(Map.class), any(QueryInfo.class));
+    
+    assertContext();
+  }
+  
+  @Test
+  public void testMLE() throws IOException, Exception {
+    
+    producer.extensionFactory = mock(OMediaLinkExtensions.class);
+    
+    ContentExchange exchange = sendRequestWithHeaders(BASE_URI + "MLEs('foobar')/$value", myHeaders);
+    
+    verify(producer).findExtension(OMediaLinkExtensions.class);
+    verify(producer.extensionFactory).create(context.capture());
+    assertContext();
+  }
+   
+  
+  private void assertContext() {
+    assertContext(myHeaders);
+  }
+  
+  private void assertContext(Map<String, List<String>> headers) {
+    
+    // first: did all of the headers we sent make it into the producer via ODataContext?
+    assertHeaders(headers);
+    
+    // next: did the SecurityContext make it into the producer via ODataContext?
+    Object o = context.getValue().getContextAspect(SecurityContext.class);
+    assertTrue(o != null && SecurityContext.class.isAssignableFrom(o.getClass()));
+  }
+  
+  private void assertHeaders(Map<String, List<String>> headers) {
     ODataHeadersContext got = context.getValue().getRequestHeadersContext();
-    for (Entry<String, List<String>> e : myHeaders.entrySet()) {
+    for (Entry<String, List<String>> e : headers.entrySet()) {
       Iterable<String> gotVals = got.getRequestHeaderValues(e.getKey());
       int n = 0;
       String firstGotVal = null;

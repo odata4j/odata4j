@@ -63,13 +63,24 @@ public class EntityRequestResource extends BaseResource {
       throw new NotFoundException();
     }
 
+    OEntityKey entityKey = OEntityKey.parse(id);
+    
+    ODataContext odataContext = ODataContextImpl.builder()
+            .aspect(httpHeaders)
+            .aspect(securityContext)
+            .aspect(producer)
+            .aspect(entitySet)
+            .aspect(uriInfo)
+            .aspect(entityKey)
+            .build();
+            
     if (Boolean.TRUE.equals(entitySet.getType().getHasStream())) { // getHasStream can return null
       // yes it is!
-      return updateMediaLinkEntry(httpHeaders, uriInfo, producer, entitySet, payload, OEntityKey.parse(id));
+      return updateMediaLinkEntry(httpHeaders, uriInfo, producer, entitySet, payload, OEntityKey.parse(id), odataContext);
     }
 
     OEntity entity = this.getRequestEntity(httpHeaders, uriInfo, payload, producer.getMetadata(), entitySetName, OEntityKey.parse(id));
-    producer.updateEntity(ODataContextImpl.builder().aspect(httpHeaders).aspect(securityContext).build(), entitySetName, entity);
+    producer.updateEntity(odataContext, entitySetName, entity);
 
     // TODO: hmmh..isn't this supposed to be HTTP 204 No Content?
     return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
@@ -87,7 +98,8 @@ public class EntityRequestResource extends BaseResource {
       ContextResolver<ODataProducer> producerResolver,
       String entitySetName,
       String id,
-      String payload) throws Exception {
+      String payload,
+      ODataContext odataContext) throws Exception {
 
     log.info(String.format("updateEntity(%s,%s)", entitySetName, id));
 
@@ -99,19 +111,21 @@ public class EntityRequestResource extends BaseResource {
     if (entitySet == null) {
       throw new NotFoundException();
     }
-
+    
+    OEntityKey entityKey = OEntityKey.parse(id);
+  
     if (Boolean.TRUE.equals(entitySet.getType().getHasStream())) { // getHasStream can return null
       // yes it is!
       ByteArrayInputStream inStream = new ByteArrayInputStream(payload.getBytes());
       try {
-        return updateMediaLinkEntry(httpHeaders, uriInfo, producer, entitySet, inStream, OEntityKey.parse(id));
+        return updateMediaLinkEntry(httpHeaders, uriInfo, producer, entitySet, inStream, OEntityKey.parse(id), odataContext);
       } finally {
         inStream.close();
       }
     }
 
     OEntity entity = this.getRequestEntity(httpHeaders, uriInfo, payload, producer.getMetadata(), entitySetName, OEntityKey.parse(id));
-    producer.updateEntity(ODataContextImpl.builder().aspect(httpHeaders).aspect(securityContext).build(), entitySetName, entity);
+    producer.updateEntity(odataContext, entitySetName, entity);
 
     // TODO: hmmh..isn't this supposed to be HTTP 204 No Content?
     return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
@@ -124,10 +138,11 @@ public class EntityRequestResource extends BaseResource {
    * @return HTTP 204 No Content response if successful.
    */
   protected Response updateMediaLinkEntry(HttpHeaders httpHeaders,
-      UriInfo uriInfo, ODataProducer producer, EdmEntitySet entitySet, InputStream payload, OEntityKey key) throws IOException {
+      UriInfo uriInfo, ODataProducer producer, EdmEntitySet entitySet, InputStream payload, OEntityKey key,
+      ODataContext odataContext) throws IOException {
 
     @SuppressWarnings("unused")
-    OEntity mle = super.createOrUpdateMediaLinkEntry(httpHeaders, uriInfo, entitySet, producer, payload, key);
+    OEntity mle = super.createOrUpdateMediaLinkEntry(httpHeaders, uriInfo, entitySet, producer, payload, key, odataContext);
 
     // TODO: hmmh..isn't this supposed to be HTTP 204 No Content?
     return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
@@ -146,7 +161,7 @@ public class EntityRequestResource extends BaseResource {
     ODataProducer producer = producerResolver.getContext(ODataProducer.class);
 
     OEntityKey entityKey = OEntityKey.parse(id);
-    ODataContext context = ODataContextImpl.builder().aspect(httpHeaders).aspect(securityContext).build();
+    ODataContext context = ODataContextImpl.builder().aspect(httpHeaders).aspect(securityContext).aspect(producer).build();
     
     String method = httpHeaders.getRequestHeaders().getFirst(ODataConstants.Headers.X_HTTP_METHOD);
     if ("MERGE".equals(method)) {
@@ -208,10 +223,19 @@ public class EntityRequestResource extends BaseResource {
       throw new NotFoundException();
     }
 
+    ODataContext odataContext = ODataContextImpl.builder()
+            .aspect(httpHeaders)
+            .aspect(securityContext)
+            .aspect(producer)
+            .aspect(entitySet)
+            .aspect(uriInfo)
+            .aspect(entityKey)
+            .build();
+    
     if (Boolean.TRUE.equals(entitySet.getType().getHasStream())) { // getHasStream can return null
       // yes it is!
       // first, the producer must support OMediaLinkExtension
-      OMediaLinkExtension mediaLinkExtension = getMediaLinkExtension(httpHeaders, uriInfo, entitySet, producer);
+      OMediaLinkExtension mediaLinkExtension = getMediaLinkExtension(httpHeaders, uriInfo, entitySet, producer, odataContext);
 
       // get a media link entry from the extension
       OEntity mle = mediaLinkExtension.getMediaLinkEntryForUpdateOrDelete(entitySet, entityKey, httpHeaders);
@@ -220,7 +244,7 @@ public class EntityRequestResource extends BaseResource {
       return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
     }
 
-    producer.deleteEntity(ODataContextImpl.builder().aspect(httpHeaders).aspect(securityContext).build(), entitySetName, entityKey);
+    producer.deleteEntity(odataContext, entitySetName, entityKey);
 
     // TODO: hmmh..isn't this supposed to be HTTP 204 No Content?
     return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
@@ -268,7 +292,8 @@ public class EntityRequestResource extends BaseResource {
 
     EntityResponse response;
     try {
-      response = producer.getEntity(ODataContextImpl.builder().aspect(httpHeaders).aspect(securityContext).build(), entitySetName, OEntityKey.parse(id), query);
+      response = producer.getEntity(ODataContextImpl.builder().aspect(httpHeaders).aspect(securityContext).aspect(producer).build(),
+              entitySetName, OEntityKey.parse(id), query);
     } catch (IllegalArgumentException e) {
       throw new BadRequestException("Illegal key " + id, e);
     }

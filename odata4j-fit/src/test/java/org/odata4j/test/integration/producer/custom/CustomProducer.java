@@ -49,6 +49,7 @@ import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.ODataContext;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.OMediaLinkExtension;
+import org.odata4j.producer.OMediaLinkExtensions;
 import org.odata4j.producer.PropertyPathHelper;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.Responses;
@@ -349,12 +350,13 @@ public class CustomProducer implements ODataProducer {
   }
 
   @Override
-  public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz, Map<String, Object> params) {
-    if (clazz.equals(OMediaLinkExtension.class))
-      return clazz.cast(new MediaLinkExtension());
+  public <TExtension extends OExtension<ODataProducer>> TExtension findExtension(Class<TExtension> clazz) {
+    if (clazz.equals(OMediaLinkExtensions.class))
+      return clazz.cast(extensionFactory);
     return null;
   }
 
+  public OMediaLinkExtensions extensionFactory = new MediaLinkExtensionFactory();
   private final Map<String, String> mediaResources = new HashMap<String, String>();
 
   public void initResources() {
@@ -368,6 +370,15 @@ public class CustomProducer implements ODataProducer {
     return OEntities.create(entitySet, OEntityKey.create("Id", id), props, Collections.<OLink> emptyList());
   }
 
+  private class MediaLinkExtensionFactory implements OMediaLinkExtensions {
+
+    @Override
+    public OMediaLinkExtension create(ODataContext context) {
+      return new MediaLinkExtension();
+    }
+    
+  }
+  
   private class MediaLinkExtension implements OMediaLinkExtension {
 
     @Override

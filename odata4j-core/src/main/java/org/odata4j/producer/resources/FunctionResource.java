@@ -83,7 +83,7 @@ public class FunctionResource extends BaseResource {
       }
     }
 
-    BaseResponse response = producer.callFunction(ODataContextImpl.builder().aspect(httpHeaders).aspect(securityContext).build(),
+    BaseResponse response = producer.callFunction(ODataContextImpl.builder().aspect(httpHeaders).aspect(securityContext).aspect(producer).build(),
         function, getFunctionParameters(function, queryInfo.customOptions), queryInfo);
 
     if (response == null) {
