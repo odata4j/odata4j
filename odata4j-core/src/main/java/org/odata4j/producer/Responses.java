@@ -213,7 +213,6 @@ public class Responses {
    * Creates a new <code>CollectionResponse</code> instance.
    *
    * @param collection  the collection
-   * @param collectionName the name used for collection
    * @return a new <code>ComplexObjectResponse</code> instance
    */
   public static <T extends OObject> CollectionResponse<?> collection(final OCollection<T> collection) {

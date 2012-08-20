@@ -17,7 +17,10 @@ import org.odata4j.internal.EntitySegment;
 import org.odata4j.internal.FeedCustomizationMapping;
 import org.odata4j.internal.InternalUtil;
 
-public class ConsumerGetEntityRequest<T> extends ConsumerEntityRequestBase<T> implements OEntityGetRequest<T> {
+/**
+ * Get-entity-request implementation.
+ */
+public class ConsumerGetEntityRequest<T> extends AbstractConsumerEntityRequest<T> implements OEntityGetRequest<T> {
 
   private final Class<T> entityType;
   private final FeedCustomizationMapping fcMapping;
@@ -59,7 +62,7 @@ public class ConsumerGetEntityRequest<T> extends ConsumerEntityRequestBase<T> im
       request = request.queryParam("$expand", expand);
     }
 
-    Response response = getClient().getEntity(request);
+    ODataClientResponse response = getClient().getEntity(request);
     if (response == null)
       return null;
 

@@ -169,7 +169,7 @@ public class InMemoryProducer implements ODataProducer {
   }
 
   /**
-   * register a POJO class as an EdmComplexType.
+   * Registers a POJO class as an EdmComplexType.
    *
    * @param complexTypeClass    The POJO Class
    * @param typeName            The name of the EdmComplexType
@@ -320,7 +320,7 @@ public class InMemoryProducer implements ODataProducer {
   }
 
   /**
-   * transforms a POJO into a list of OProperties based on a given
+   * Transforms a POJO into a list of OProperties based on a given
    * EdmStructuralType.
    *
    * @param obj the POJO to transform
@@ -745,11 +745,10 @@ public class InMemoryProducer implements ODataProducer {
   }
 
   /**
-   * gets the entity(s) on the target end of a NavigationProperty
-   * @param set         the entityset of the source entity
-   * @param entityKey   the key of the source entity
-   * @param navProp     the navigation property
-   * @param queryInfo   the query information
+   * Gets the entity(s) on the target end of a NavigationProperty.
+   *
+   * @param navProp  the navigation property
+   * @param rc  the request context
    * @return a BaseResponse with either a single Entity (can be null) or a set of entities.
    */
   protected BaseResponse getNavProperty(EdmNavigationProperty navProp, RequestContext rc) {
@@ -803,14 +802,6 @@ public class InMemoryProducer implements ODataProducer {
     return null;
   }
 
-  /*
-   * Design Note:
-   * I took a look at the CommandProducer stuff as a way of carrying context into
-   * POJO get functions.  The command pattern is cool and stuff but it doesn't quite
-   * fit the needs of POJO get functions.  A single POJO get function can be called
-   * from different request types like getEntity, getEntities, etc.  The CommandProducer
-   * requires a type specific CommandContext for each request type.
-   */
   public static class RequestContext {
 
     public enum RequestType {
@@ -933,12 +924,12 @@ public class InMemoryProducer implements ODataProducer {
   }
 
   /**
-   * given an entity set and an entity key, return the pojo that is that entity instance.
+   * Given an entity set and an entity key, returns the pojo that is that entity instance.
    * The default implementation iterates over the entire set of pojos to find the
    * desired instance.
    *
-   * @param rc - the current ReqeustContext, may be valuable to the ei.getWithContext impl
-   * @return
+   * @param rc  the current ReqeustContext, may be valuable to the ei.getWithContext impl
+   * @return the pojo
    */
   @SuppressWarnings("unchecked")
   protected Object getEntityPojo(final RequestContext rc) {
@@ -996,14 +987,7 @@ public class InMemoryProducer implements ODataProducer {
   }
 
   /**
-   * transform an OComplexObject into a POJO of the given class
-   *
-   * @param <T>
-   * @param entity
-   * @param pojoClass
-   * @return
-   * @throws InstantiationException
-   * @throws IllegalAccessException
+   * Transforms an OComplexObject into a POJO of the given class
    */
   public <T> T toPojo(OComplexObject entity, Class<T> pojoClass) throws InstantiationException,
       IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -1017,16 +1001,7 @@ public class InMemoryProducer implements ODataProducer {
   }
 
   /**
-   * populate a new POJO instance of type pojoClass using data fromn the given structural object
-   *
-   * @param <T>
-   * @param sobj
-   * @param stype
-   * @param propertyModel
-   * @param pojoClass
-   * @return
-   * @throws InstantiationException
-   * @throws IllegalAccessException
+   * Populates a new POJO instance of type pojoClass using data from the given structural object.
    */
   protected <T> T fillInPojo(OStructuralObject sobj, EdmStructuralType stype, PropertyModel propertyModel,
       Class<T> pojoClass) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -1098,14 +1073,7 @@ public class InMemoryProducer implements ODataProducer {
    */
 
   /**
-   * transform the given entity into a POJO of type pojoClass.
-   *
-   * @param <T>
-   * @param entity
-   * @param pojoClass
-   * @return
-   * @throws InstantiationException
-   * @throws IllegalAccessException
+   * Transforms the given entity into a POJO of type pojoClass.
    */
   public <T> T toPojo(OEntity entity, Class<T> pojoClass) throws InstantiationException,
       IllegalAccessException, IllegalArgumentException, InvocationTargetException {

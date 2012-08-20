@@ -14,6 +14,12 @@ import org.odata4j.format.FormatType;
 import org.odata4j.format.SingleLink;
 import org.odata4j.format.xml.AtomCollectionInfo;
 
+/**
+ * <code>ODataClient</code> is one abstraction layer below <code>ODataConsumer</code>.
+ *
+ * <p>This api is mostly implemented in terms of request + response objects that closely
+ * resemble the underlying http request + response.</p>
+ */
 public interface ODataClient {
 
   FormatType getFormatType();
@@ -24,13 +30,13 @@ public interface ODataClient {
 
   Iterable<SingleLink> getLinks(ODataClientRequest request) throws ODataProducerException;
 
-  Response getEntity(ODataClientRequest request) throws ODataProducerException;
+  ODataClientResponse getEntity(ODataClientRequest request) throws ODataProducerException;
 
-  Response getEntities(ODataClientRequest request) throws ODataProducerException;
+  ODataClientResponse getEntities(ODataClientRequest request) throws ODataProducerException;
 
-  Response callFunction(ODataClientRequest request) throws ODataProducerException;
+  ODataClientResponse callFunction(ODataClientRequest request) throws ODataProducerException;
 
-  Response createEntity(ODataClientRequest request) throws ODataProducerException;
+  ODataClientResponse createEntity(ODataClientRequest request) throws ODataProducerException;
 
   void updateEntity(ODataClientRequest request) throws ODataProducerException;
 
@@ -46,5 +52,5 @@ public interface ODataClient {
 
   String requestBody(FormatType formatType, ODataClientRequest request) throws ODataProducerException;
 
-  Reader getFeedReader(Response response);
+  Reader getFeedReader(ODataClientResponse response);
 }

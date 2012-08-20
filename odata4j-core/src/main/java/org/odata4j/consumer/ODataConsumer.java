@@ -21,6 +21,13 @@ import org.odata4j.edm.EdmDataServices;
 import org.odata4j.exceptions.ODataProducerException;
 import org.odata4j.format.FormatType;
 
+/**
+ * <code>ODataConsumer</code> is the client-side interface to an OData service.
+ *
+ * <p>Use {@link ODataConsumers#create(String)} or {@link ODataConsumers#newBuilder(String)} to connect to an existing OData service.</p>
+ *
+ * @see ODataConsumers
+ */
 public interface ODataConsumer {
 
   /**
@@ -108,12 +115,32 @@ public interface ODataConsumer {
    */
   public static final Dump dump = Dump.INSTANCE;
 
+  /** Mutable builder for {@link ODataConsumer} instances. */
   public interface Builder {
 
+    /**
+     * Sets the desired format type for all requests.  e.g. ATOM or JSON.
+     *
+     * <p>Note: some services do not support all formats.</p>
+     *
+     * @param formatType  desired format
+     * @return the consumer-builder
+     */
     Builder setFormatType(FormatType formatType);
 
+    /**
+     * Sets the client behavior extensions associated with the consumer.
+     *
+     * @param clientBehaviors  extensions used for client request modification
+     * @return the consumer-builder
+     */
     Builder setClientBehaviors(OClientBehavior... clientBehaviors);
 
+    /**
+     * Returns the immutable consumer instance for interacting with an OData service.
+     *
+     * @return the newly-created consumer instance
+     */
     ODataConsumer build();
 
   }

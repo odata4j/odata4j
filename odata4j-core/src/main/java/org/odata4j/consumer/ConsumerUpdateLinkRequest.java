@@ -5,7 +5,10 @@ import org.odata4j.core.OEntityId;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.exceptions.ODataProducerException;
 
-public class ConsumerUpdateLinkRequest extends ConsumerEntityRequestBase<Void> {
+/**
+ * Update-link-request implementation.
+ */
+public class ConsumerUpdateLinkRequest extends AbstractConsumerEntityRequest<Void> {
 
   private final String targetNavProp;
   private final Object[] oldTargetKeyValues;

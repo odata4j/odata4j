@@ -9,7 +9,10 @@ import org.odata4j.edm.EdmDataServices;
 import org.odata4j.exceptions.ODataProducerException;
 import org.odata4j.format.SingleLink;
 
-public class ConsumerQueryLinksRequest extends ConsumerQueryRequestBase<OEntityId> {
+/**
+ * Query-links-request implementation.
+ */
+public class ConsumerQueryLinksRequest extends AbstractConsumerQueryRequestBase<OEntityId> {
 
   private final String targetNavProp;
 
@@ -38,4 +41,5 @@ public class ConsumerQueryLinksRequest extends ConsumerQueryRequestBase<OEntityI
       }
     });
   }
+
 }

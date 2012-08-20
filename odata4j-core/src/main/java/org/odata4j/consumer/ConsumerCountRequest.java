@@ -3,6 +3,9 @@ package org.odata4j.consumer;
 import org.odata4j.core.OCountRequest;
 import org.odata4j.exceptions.ODataProducerException;
 
+/**
+ * Count-request implementation.
+ */
 public class ConsumerCountRequest implements OCountRequest {
 
   private ODataClient client;
@@ -15,7 +18,7 @@ public class ConsumerCountRequest implements OCountRequest {
     this.baseUri = serviceRootUri;
   }
 
-  public ConsumerCountRequest setEntitySetName(String entitySetName) {
+  public ConsumerCountRequest entitySetName(String entitySetName) {
     this.entitySetName = entitySetName;
     return this;
   }

@@ -16,6 +16,9 @@ import org.odata4j.exceptions.ODataProducerException;
 import org.odata4j.format.Entry;
 import org.odata4j.internal.EntitySegment;
 
+/**
+ * Modification-request implementation.
+ */
 public class ConsumerEntityModificationRequest<T> extends AbstractConsumerEntityPayloadRequest implements OModifyRequest<T> {
 
   private final T updateRoot;

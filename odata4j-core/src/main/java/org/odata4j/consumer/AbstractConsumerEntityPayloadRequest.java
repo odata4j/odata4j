@@ -16,6 +16,9 @@ import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.format.xml.XmlFormatWriter;
 import org.odata4j.internal.InternalUtil;
 
+/**
+ * Shared consumer request implementation for operations with an entity as the request payload.
+ */
 public abstract class AbstractConsumerEntityPayloadRequest {
 
   protected final List<OProperty<?>> props = new ArrayList<OProperty<?>>();
@@ -101,4 +104,5 @@ public abstract class AbstractConsumerEntityPayloadRequest {
 
     return rt;
   }
+
 }

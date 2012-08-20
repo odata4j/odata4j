@@ -5,7 +5,10 @@ import org.odata4j.core.OEntityId;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.exceptions.ODataProducerException;
 
-public class ConsumerDeleteLinkRequest extends ConsumerEntityRequestBase<Void> {
+/**
+ * Delete-link-request implementation.
+ */
+public class ConsumerDeleteLinkRequest extends AbstractConsumerEntityRequest<Void> {
 
   private final String targetNavProp;
   private final Object[] targetKeyValues;

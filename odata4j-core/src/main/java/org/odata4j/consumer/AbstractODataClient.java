@@ -24,6 +24,9 @@ import org.odata4j.format.xml.AtomWorkspaceInfo;
 import org.odata4j.format.xml.EdmxFormatParser;
 import org.odata4j.stax2.XMLEventReader2;
 
+/**
+ * Useful base class for {@link ODataClient} implementations with common functionality.
+ */
 public abstract class AbstractODataClient implements ODataClient {
 
   private FormatType formatType;
@@ -37,14 +40,14 @@ public abstract class AbstractODataClient implements ODataClient {
   }
 
   public EdmDataServices getMetadata(ODataClientRequest request) throws ODataProducerException {
-    Response response = doRequest(FormatType.ATOM, request, Status.OK);
+    ODataClientResponse response = doRequest(FormatType.ATOM, request, Status.OK);
     EdmDataServices metadata = new EdmxFormatParser().parseMetadata(toXml(response));
     response.close();
     return metadata;
   }
 
   public Iterable<AtomCollectionInfo> getCollections(ODataClientRequest request) throws ODataProducerException {
-    Response response = doRequest(FormatType.ATOM, request, Status.OK);
+    ODataClientResponse response = doRequest(FormatType.ATOM, request, Status.OK);
     Enumerable<AtomCollectionInfo> collections = Enumerable.create(AtomServiceDocumentFormatParser.parseWorkspaces(toXml(response)))
         .selectMany(AtomWorkspaceInfo.GET_COLLECTIONS);
     response.close();
@@ -52,25 +55,25 @@ public abstract class AbstractODataClient implements ODataClient {
   }
 
   public Iterable<SingleLink> getLinks(ODataClientRequest request) throws ODataProducerException {
-    Response response = doRequest(FormatType.ATOM, request, Status.OK);
+    ODataClientResponse response = doRequest(FormatType.ATOM, request, Status.OK);
     Iterable<SingleLink> links = AtomSingleLinkFormatParser.parseLinks(toXml(response));
     response.close();
     return links;
   }
 
-  public Response getEntity(ODataClientRequest request) throws ODataProducerException {
+  public ODataClientResponse getEntity(ODataClientRequest request) throws ODataProducerException {
     return doRequest(getFormatType(), request, Status.OK, Status.NO_CONTENT);
   }
 
-  public Response getEntities(ODataClientRequest request) throws ODataProducerException {
+  public ODataClientResponse getEntities(ODataClientRequest request) throws ODataProducerException {
     return doRequest(getFormatType(), request, Status.OK);
   }
 
-  public Response callFunction(ODataClientRequest request) throws ODataProducerException {
+  public ODataClientResponse callFunction(ODataClientRequest request) throws ODataProducerException {
     return doRequest(getFormatType(), request, Status.OK, Status.NO_CONTENT);
   }
 
-  public Response createEntity(ODataClientRequest request) throws ODataProducerException {
+  public ODataClientResponse createEntity(ODataClientRequest request) throws ODataProducerException {
     return doRequest(getFormatType(), request, Status.CREATED);
   }
 
@@ -112,7 +115,8 @@ public abstract class AbstractODataClient implements ODataClient {
     };
   }
 
-  protected abstract Response doRequest(FormatType reqType, ODataClientRequest request, StatusType... expectedResponseStatus) throws ODataProducerException;
+  protected abstract ODataClientResponse doRequest(FormatType reqType, ODataClientRequest request, StatusType... expectedResponseStatus) throws ODataProducerException;
 
-  protected abstract XMLEventReader2 toXml(Response response);
+  protected abstract XMLEventReader2 toXml(ODataClientResponse response);
+
 }

@@ -17,7 +17,7 @@ import org.core4j.xml.XmlFormat;
 import org.odata4j.consumer.AbstractODataClient;
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.consumer.ODataConsumer;
-import org.odata4j.consumer.Response;
+import org.odata4j.consumer.ODataClientResponse;
 import org.odata4j.consumer.behaviors.OClientBehavior;
 import org.odata4j.consumer.behaviors.OClientBehaviors;
 import org.odata4j.core.ODataConstants;
@@ -59,8 +59,8 @@ class ODataJerseyClient extends AbstractODataClient {
     this.client = JerseyClientUtil.newClient(clientFactory, behaviors);
   }
 
-  public Reader getFeedReader(Response response) {
-    ClientResponse clientResponse = ((JerseyResponse) response).getClientResponse();
+  public Reader getFeedReader(ODataClientResponse response) {
+    ClientResponse clientResponse = ((JerseyClientResponse) response).getClientResponse();
     if (ODataConsumer.dump.responseBody()) {
       String textEntity = clientResponse.getEntity(String.class);
       dumpResponseBody(textEntity, clientResponse.getType());
@@ -76,14 +76,14 @@ class ODataJerseyClient extends AbstractODataClient {
   }
 
   public String requestBody(FormatType formatType, ODataClientRequest request) throws ODataProducerException {
-    Response response = doRequest(formatType, request, Status.OK);
-    String entity = ((JerseyResponse) response).getClientResponse().getEntity(String.class);
+    ODataClientResponse response = doRequest(formatType, request, Status.OK);
+    String entity = ((JerseyClientResponse) response).getClientResponse().getEntity(String.class);
     response.close();
     return entity;
   }
 
   @SuppressWarnings("unchecked")
-  protected Response doRequest(FormatType reqType, ODataClientRequest request, StatusType... expectedResponseStatus) throws ODataProducerException {
+  protected ODataClientResponse doRequest(FormatType reqType, ODataClientRequest request, StatusType... expectedResponseStatus) throws ODataProducerException {
 
     if (behaviors != null) {
       for (OClientBehavior behavior : behaviors)
@@ -150,7 +150,7 @@ class ODataJerseyClient extends AbstractODataClient {
     StatusType status = response.getClientResponseStatus();
     for (StatusType expStatus : expectedResponseStatus)
       if (expStatus.getStatusCode() == status.getStatusCode())
-        return new JerseyResponse(response);
+        return new JerseyClientResponse(response);
 
     // the server responded with an unexpected status
     RuntimeException exception;
@@ -168,8 +168,8 @@ class ODataJerseyClient extends AbstractODataClient {
     throw exception;
   }
 
-  protected XMLEventReader2 toXml(Response response) {
-    ClientResponse clientResponse = ((JerseyResponse) response).getClientResponse();
+  protected XMLEventReader2 toXml(ODataClientResponse response) {
+    ClientResponse clientResponse = ((JerseyClientResponse) response).getClientResponse();
 
     if (ODataConsumer.dump.responseBody()) {
       String textEntity = clientResponse.getEntity(String.class);

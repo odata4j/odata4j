@@ -1,5 +1,6 @@
 package org.odata4j.core;
 
+/** Common http methods supported by the OData protocol. */
 public enum ODataHttpMethod {
   GET, PUT, POST, DELETE, PATCH, MERGE, OPTIONS, HEAD;
 

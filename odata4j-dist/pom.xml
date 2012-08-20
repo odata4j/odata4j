@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>odata4j-dist</artifactId>
@@ -9,16 +8,16 @@
   <parent>
     <groupId>org.odata4j</groupId>
     <artifactId>odata4j-parent</artifactId>
-    <version>0.7.0-SNAPSHOT</version>
+    <version>0.8.0-SNAPSHOT</version>
     <relativePath>..</relativePath>
   </parent>
 
   <properties>
+    <odata4j.cxfbundle>odata4j-${project.version}-cxfbundle</odata4j.cxfbundle>
+    <odata4j.core>odata4j-${project.version}-core</odata4j.core>
     <odata4j.clientbundle>odata4j-${project.version}-clientbundle</odata4j.clientbundle>
     <odata4j.nojpabundle>odata4j-${project.version}-nojpabundle</odata4j.nojpabundle>
-    <odata4j.cxfbundle>odata4j-${project.version}-cxfbundle</odata4j.cxfbundle>
     <odata4j.bundle>odata4j-${project.version}-bundle</odata4j.bundle>
-    <odata4j.core>odata4j-${project.version}-core</odata4j.core>
   </properties>
 
   <build>
@@ -130,6 +129,16 @@
             <configuration>
               <artifacts>
                 <artifact>
+                  <file>${project.build.directory}/${odata4j.core}.jar</file>
+                  <type>jar</type>
+                  <classifier>core</classifier>
+                </artifact>
+                <artifact>
+                  <file>${project.build.directory}/${odata4j.cxfbundle}.jar</file>
+                  <type>jar</type>
+                  <classifier>cxfbundle</classifier>
+                </artifact>
+                <artifact>
                   <file>${project.build.directory}/${odata4j.clientbundle}.jar</file>
                   <type>jar</type>
                   <classifier>clientbundle</classifier>
@@ -143,11 +152,6 @@
                   <file>${project.build.directory}/${odata4j.bundle}.jar</file>
                   <type>jar</type>
                   <classifier>bundle</classifier>
-                </artifact>
-                <artifact>
-                  <file>${project.build.directory}/${odata4j.cxfbundle}.jar</file>
-                  <type>jar</type>
-                  <classifier>cxfbundle</classifier>
                 </artifact>
               </artifacts>
             </configuration>
