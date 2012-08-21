@@ -61,12 +61,11 @@ import org.odata4j.test.integration.producer.custom.CustomProducer;
  * test for the new ODataContext producer parameter.
  * 
  */
-@RunWith(JUnit4.class)
 public class ContextTest  extends AbstractJettyHttpClientTest {
 
   
-  public ContextTest() { //RuntimeFacadeType type) {
-    super(RuntimeFacadeType.JERSEY);
+  public ContextTest(RuntimeFacadeType type) {
+    super(type);
   }
   
   @Override
@@ -78,8 +77,7 @@ public class ContextTest  extends AbstractJettyHttpClientTest {
   protected ODataProducer mockProducer() {
     CustomProducer cp = new CustomProducer();
     producer = spy(cp); // mock(ODataProducer.class);
-    // when(producer.getEntities(any(ODataContext.class), any(String.class), any(QueryInfo.class))).thenThrow(new NotImplementedException());
-   
+    
     return producer;
   }
   
