@@ -2,7 +2,6 @@ package org.odata4j.test.integration.server;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,45 +15,27 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 import org.mockito.ArgumentCaptor;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.test.integration.AbstractJettyHttpClientTest;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.spy;
-import org.odata4j.core.ODataConstants;
 import org.odata4j.core.ODataConstants.Headers;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityId;
 import org.odata4j.core.OEntityKey;
-import org.odata4j.core.OFunctionParameter;
-import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmFunctionImport;
-import org.odata4j.edm.EdmFunctionParameter;
-import org.odata4j.edm.EdmSimpleType;
-import org.odata4j.exceptions.NotFoundException;
-import org.odata4j.exceptions.NotImplementedException;
-import org.odata4j.format.xml.EdmxFormatWriter;
-import org.odata4j.producer.BaseResponse;
-import org.odata4j.producer.CountResponse;
-import org.odata4j.producer.EntitiesResponse;
-import org.odata4j.producer.EntityIdResponse;
 import org.odata4j.producer.EntityQueryInfo;
-import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.ODataContext;
 import org.odata4j.producer.ODataHeadersContext;
 import org.odata4j.producer.OMediaLinkExtensions;
 import org.odata4j.producer.QueryInfo;
-import org.odata4j.test.integration.producer.custom.CustomEdm;
 import org.odata4j.test.integration.producer.custom.CustomProducer;
 
 /**
@@ -91,9 +72,9 @@ public class ContextTest  extends AbstractJettyHttpClientTest {
     Map<String, List<String>> h = new HashMap<String, List<String>>();
     h.put("X-Foo", Collections.singletonList("Bar"));
     List<String> cookies = new ArrayList<String>();
-    cookies.add("Cookie 1");
-    cookies.add("Cookie 2");
-    h.put("Cookie", cookies);
+    cookies.add("Cookie1=c1val");
+    cookies.add("Cookie2=c2val");
+    h.put("Set-Cookie", cookies);
     h.put("Content-Type", Collections.singletonList("application/json"));
     return h;
   }
@@ -292,6 +273,7 @@ public class ContextTest  extends AbstractJettyHttpClientTest {
   
   private void assertHeaders(Map<String, List<String>> headers) {
     ODataHeadersContext got = context.getValue().getRequestHeadersContext();
+    
     for (Entry<String, List<String>> e : headers.entrySet()) {
       Iterable<String> gotVals = got.getRequestHeaderValues(e.getKey());
       int n = 0;
@@ -321,12 +303,14 @@ public class ContextTest  extends AbstractJettyHttpClientTest {
     if (null != payload) {
       exchange.setRequestContentSource(new ByteArrayInputStream(payload.getBytes()));
     }
-    client.send(exchange);
+    
     for (Entry<String, List<String>> e : headers.entrySet()) {
       for (String val : e.getValue()) {
         exchange.addRequestHeader(e.getKey(), val);
       }
     }
+    
+    client.send(exchange);
     exchange.waitForDone();
     return exchange;
   }
