@@ -2,6 +2,7 @@
 package org.odata4j.producer;
 
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Carries the request headers into a producer
@@ -29,4 +30,11 @@ public interface ODataHeadersContext {
    * @return first value of the given header, null if the header is not present
    */
   public String getRequestHeaderValue(String fieldName);
+  
+  /**
+   * Get the list of languages that are acceptable for the response.
+   * 
+   * @return The list of acceptable languages for the response
+   */
+  public List<Locale> getAcceptableLanguages();
 }

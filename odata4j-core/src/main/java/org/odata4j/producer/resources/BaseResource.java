@@ -95,13 +95,13 @@ public abstract class BaseResource {
 
     // get a media link entry from the extension
     OEntity mle = key == null
-        ? mediaLinkExtension.createMediaLinkEntry(entitySet, httpHeaders)
-        : mediaLinkExtension.getMediaLinkEntryForUpdateOrDelete(entitySet, key, httpHeaders);
+        ? mediaLinkExtension.createMediaLinkEntry(context, entitySet, httpHeaders)
+        : mediaLinkExtension.getMediaLinkEntryForUpdateOrDelete(context, entitySet, key, httpHeaders);
 
     // now get a stream we can write the incoming bytes into.
     OutputStream outStream = key == null
-        ? mediaLinkExtension.getOutputStreamForMediaLinkEntryCreate(mle, null /*etag*/, null /*QueryInfo, may get rid of this */)
-        : mediaLinkExtension.getOutputStreamForMediaLinkEntryUpdate(mle, null, null);
+        ? mediaLinkExtension.getOutputStreamForMediaLinkEntryCreate(context, mle, null /*etag*/, null /*QueryInfo, may get rid of this */)
+        : mediaLinkExtension.getOutputStreamForMediaLinkEntryUpdate(context, mle, null, null);
 
     // write the stream
     try {
@@ -111,6 +111,6 @@ public abstract class BaseResource {
     }
 
     // more info about the mle may be available now.
-    return mediaLinkExtension.updateMediaLinkEntry(mle, outStream);
+    return mediaLinkExtension.updateMediaLinkEntry(context, mle, outStream);
   }
 }

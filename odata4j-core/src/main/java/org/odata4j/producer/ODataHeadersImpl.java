@@ -2,6 +2,7 @@
 package org.odata4j.producer;
 
 import java.util.List;
+import java.util.Locale;
 import javax.ws.rs.core.HttpHeaders;
 
 /**
@@ -30,5 +31,10 @@ public class ODataHeadersImpl implements ODataHeadersContext {
     return l == null || l.isEmpty() ? null : l.get(0);
   }
     
-   private HttpHeaders headers;
+  @Override
+  public List<Locale> getAcceptableLanguages() {
+    return headers.getAcceptableLanguages();
+  }
+  
+  private HttpHeaders headers;
 }

@@ -382,7 +382,10 @@ public class CustomProducer implements ODataProducer {
   private class MediaLinkExtension implements OMediaLinkExtension {
 
     @Override
-    public InputStream getInputStreamForMediaLinkEntry(OEntity mle, String etag, EntityQueryInfo query) {
+    public InputStream getInputStreamForMediaLinkEntry(ODataContext odataContext, OEntity mle, String etag, EntityQueryInfo query) {
+      
+      if (null == odataContext) { throw new IllegalArgumentException("no odataContext?"); }
+      
       String id = mle.getEntityKey().asSingleValue().toString();
       String content = mediaResources.get(id); //  "here we have some content for the mle with id: " +;
       if (content == null) {
@@ -392,12 +395,16 @@ public class CustomProducer implements ODataProducer {
     }
 
     @Override
-    public String getMediaLinkContentType(OEntity mle) {
+    public String getMediaLinkContentType(ODataContext odataContext, OEntity mle) {
+      if (null == odataContext) { throw new IllegalArgumentException("no odataContext?"); }
+      
       return "text/plain";
     }
 
     @Override
-    public OutputStream getOutputStreamForMediaLinkEntryCreate(OEntity mle, String etag, QueryInfo query) {
+    public OutputStream getOutputStreamForMediaLinkEntryCreate(ODataContext odataContext, OEntity mle, String etag, QueryInfo query) {
+      if (null == odataContext) { throw new IllegalArgumentException("no odataContext?"); }
+      
       // create:
       String id = mle.getEntityKey().asSingleValue().toString();
       if (mediaResources.containsKey(id)) {
@@ -407,7 +414,9 @@ public class CustomProducer implements ODataProducer {
     }
 
     @Override
-    public OutputStream getOutputStreamForMediaLinkEntryUpdate(OEntity mle, String etag, QueryInfo query) {
+    public OutputStream getOutputStreamForMediaLinkEntryUpdate(ODataContext odataContext, OEntity mle, String etag, QueryInfo query) {
+      if (null == odataContext) { throw new IllegalArgumentException("no odataContext?"); }
+      
       String id = mle.getEntityKey().asSingleValue().toString();
       if (!mediaResources.containsKey(id)) {
         throw new NotFoundException("MLE with id: " + id + " not found");
@@ -416,7 +425,9 @@ public class CustomProducer implements ODataProducer {
     }
 
     @Override
-    public OEntity getMediaLinkEntryForUpdateOrDelete(EdmEntitySet entitySet, OEntityKey key, HttpHeaders httpHeaders) {
+    public OEntity getMediaLinkEntryForUpdateOrDelete(ODataContext odataContext, EdmEntitySet entitySet, OEntityKey key, HttpHeaders httpHeaders) {
+      if (null == odataContext) { throw new IllegalArgumentException("no odataContext?"); }
+      
       String id = key.asSingleValue().toString();
       if (!mediaResources.containsKey(id)) {
         throw new NotFoundException("MLE with id: " + id + " not found");
@@ -425,7 +436,9 @@ public class CustomProducer implements ODataProducer {
     }
 
     @Override
-    public String getMediaLinkContentDisposition(OEntity mle) {
+    public String getMediaLinkContentDisposition(ODataContext odataContext, OEntity mle) {
+      if (null == odataContext) { throw new IllegalArgumentException("no odataContext?"); }
+      
       return "inline";
     }
 
@@ -444,7 +457,9 @@ public class CustomProducer implements ODataProducer {
     }
 
     @Override
-    public void deleteStream(OEntity mle, QueryInfo query) {
+    public void deleteStream(ODataContext odataContext, OEntity mle, QueryInfo query) {
+      if (null == odataContext) { throw new IllegalArgumentException("no odataContext?"); }
+      
       String id = mle.getEntityKey().asSingleValue().toString();
       if (mediaResources.containsKey(id)) {
         mediaResources.remove(id);
@@ -454,7 +469,9 @@ public class CustomProducer implements ODataProducer {
     }
 
     @Override
-    public OEntity createMediaLinkEntry(EdmEntitySet entitySet, HttpHeaders httpHeaders) {
+    public OEntity createMediaLinkEntry(ODataContext odataContext, EdmEntitySet entitySet, HttpHeaders httpHeaders) {
+      if (null == odataContext) { throw new IllegalArgumentException("no odataContext?"); }
+      
       List<String> slugs = httpHeaders.getRequestHeader("Slug");
       if (slugs == null || slugs.isEmpty()) {
         throw new BadRequestException("missing Slug header");
@@ -467,7 +484,9 @@ public class CustomProducer implements ODataProducer {
     }
 
     @Override
-    public OEntity updateMediaLinkEntry(OEntity mle, OutputStream outStream) {
+    public OEntity updateMediaLinkEntry(ODataContext odataContext, OEntity mle, OutputStream outStream) {
+      if (null == odataContext) { throw new IllegalArgumentException("no odataContext?"); }
+      
       // sometimes after processing the blob we know more about the entity...
       String id = mle.getEntityKey().asSingleValue().toString();
       return getMLE(mle.getEntitySet(), id, mediaResources.get(id));

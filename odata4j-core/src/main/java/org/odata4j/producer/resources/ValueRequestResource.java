@@ -69,9 +69,9 @@ public class ValueRequestResource extends BaseResource {
     
     EntityResponse entityResponse = producer.getEntity(odataContext, 
             entitySet.getName(), OEntityKey.parse(entityId), queryInfo);
-    InputStream entityStream = mediaLinkExtension.getInputStreamForMediaLinkEntry(entityResponse.getEntity(), null, queryInfo);
-    String contentType = mediaLinkExtension.getMediaLinkContentType(entityResponse.getEntity());
-    String contentDisposition = mediaLinkExtension.getMediaLinkContentDisposition(entityResponse.getEntity());
+    InputStream entityStream = mediaLinkExtension.getInputStreamForMediaLinkEntry(odataContext, entityResponse.getEntity(), null, queryInfo);
+    String contentType = mediaLinkExtension.getMediaLinkContentType(odataContext, entityResponse.getEntity());
+    String contentDisposition = mediaLinkExtension.getMediaLinkContentDisposition(odataContext, entityResponse.getEntity());
     return Response.ok(entityStream, contentType).header("Content-Disposition", contentDisposition).build();
   }
 

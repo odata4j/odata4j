@@ -238,8 +238,8 @@ public class EntityRequestResource extends BaseResource {
       OMediaLinkExtension mediaLinkExtension = getMediaLinkExtension(httpHeaders, uriInfo, entitySet, producer, odataContext);
 
       // get a media link entry from the extension
-      OEntity mle = mediaLinkExtension.getMediaLinkEntryForUpdateOrDelete(entitySet, entityKey, httpHeaders);
-      mediaLinkExtension.deleteStream(mle, null /* QueryInfo, may need to get rid of */);
+      OEntity mle = mediaLinkExtension.getMediaLinkEntryForUpdateOrDelete(odataContext, entitySet, entityKey, httpHeaders);
+      mediaLinkExtension.deleteStream(odataContext, mle, null /* QueryInfo, may need to get rid of */);
       // TODO: hmmh..isn't this supposed to be HTTP 204 No Content?
       return Response.ok().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
     }
