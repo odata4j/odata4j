@@ -16,7 +16,7 @@ import org.odata4j.producer.server.ODataServer;
 
 public class RoundtripExample extends AbstractExample {
 
-  public class Customer {
+  public static class Customer {
 
     private int id;
     private String name;
