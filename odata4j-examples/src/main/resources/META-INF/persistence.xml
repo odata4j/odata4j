@@ -90,7 +90,7 @@
 	<persistence-unit name="AddressBookServiceEclipseLink"
 		transaction-type="RESOURCE_LOCAL">
 		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-		<class>org.odata4j.examples.producer.jpa.addressbook.Employees</class>
+		<class>org.odata4j.examples.producer.jpa.addressbook.Persons</class>
 		<properties>
 			<property name="eclipselink.target-database" value="HSQL" />
 			<property name="eclipselink.jdbc.driver" value="org.hsqldb.jdbcDriver" />
@@ -106,7 +106,7 @@
 	<persistence-unit name="AddressBookServiceHibernate"
 		transaction-type="RESOURCE_LOCAL">
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
-		<class>org.odata4j.examples.producer.jpa.addressbook.Employees</class>
+		<class>org.odata4j.examples.producer.jpa.addressbook.Persons</class>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.hsqldb.jdbcDriver" />

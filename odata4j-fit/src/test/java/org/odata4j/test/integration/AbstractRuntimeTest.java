@@ -2,16 +2,76 @@ package org.odata4j.test.integration;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 import java.util.StringTokenizer;
 
+import org.apache.log4j.PropertyConfigurator;
+import org.junit.Rule;
+import org.junit.rules.MethodRule;
+import org.junit.rules.TestWatchman;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.model.FrameworkMethod;
+import org.odata4j.core.Throwables;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Run all JUnit test cases twice. Once for Jersey and once for CXF runtime.
  */
 @RunWith(Parameterized.class)
-public abstract class AbstractRuntimeTest extends AbstractTest {
+public abstract class AbstractRuntimeTest {
+
+  protected Logger logger = LoggerFactory.getLogger(this.getClass());
+
+  protected void log(String key, String value) {
+    this.logger.info(String.format("# %-30s : %-50s #", key, value));
+  }
+
+  protected void logRule() {
+    this.logger.info("#######################################################################################");
+  }
+
+  static {
+    try { // configure CXF logging
+      System.setProperty("org.apache.cxf.Logger", "org.apache.cxf.common.logging.Slf4jLogger");
+
+      // configure log4j
+      Properties p = new Properties();
+      p.load(AbstractRuntimeTest.class.getResourceAsStream("/log4j.properties"));
+      PropertyConfigurator.configure(p);
+
+      // configure JUL
+      java.util.logging.LogManager.getLogManager().readConfiguration(AbstractRuntimeTest.class.getResourceAsStream("/logging.properties"));
+    } catch (Exception e) {
+      throw Throwables.propagate(e);
+    }
+  }
+
+  /**
+   * trace each junit error
+   */
+  @Rule
+  public MethodRule watch = new TestWatchman() {
+    @Override
+    public void failed(Throwable e, FrameworkMethod method) {
+      super.failed(e, method);
+      AbstractRuntimeTest.this.logger.error(method.getName(), e);
+    }
+
+    @Override
+    public void starting(FrameworkMethod method) {
+      super.starting(method);
+
+      AbstractRuntimeTest.this.logTestClassContext(AbstractRuntimeTest.this.getClass(), method);
+    }
+  };
+
+  private <T> void logTestClassContext(Class<T> c, FrameworkMethod method) {
+    this.log("test class", c.getSimpleName());
+    this.log("test method", method.getName());
+    this.logRule();
+  }
 
   private final static String RUNTIME_ENVIRONMENT_PROPERTY = "org.odata4j.jaxrs.runtime";
 
@@ -47,9 +107,8 @@ public abstract class AbstractRuntimeTest extends AbstractTest {
     default:
       throw new RuntimeException("JAX-RS runtime type not supported: " + type);
     }
-    this.logger.info("******************************************************************");
-    this.logger.info("Activated Runtime Facade: " + type);
-    this.logger.info("******************************************************************");
+    this.logRule();
+    this.log("parameterized runtime facade", type.toString());
   }
 
   @Parameterized.Parameters
