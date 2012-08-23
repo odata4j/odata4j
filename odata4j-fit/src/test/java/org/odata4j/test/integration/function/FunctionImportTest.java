@@ -15,6 +15,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response.Status;
 import javax.xml.parsers.ParserConfigurationException;
 import org.core4j.Enumerable;
 import org.core4j.Predicate1;
@@ -630,6 +631,15 @@ public class FunctionImportTest extends AbstractRuntimeTest {
                         && e.getProperty("EmployeeId", String.class).getValue().equals(FunctionImportProducerMock.EMPLOYEE_ID);
               }
             });
+  }
+
+  @Test
+  public void testFunctionReturnEntitySet() throws Exception {
+    for (FormatType format : FunctionImportTest.formats) {
+      ResponseData responseData = rtFacade.getWebResource(endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_ENTITYSET + "?" + formatQuery(format));
+      logger.debug(responseData.getEntity());
+      assertEquals(format.toString(), Status.OK.getStatusCode(), responseData.getStatusCode());
+    }
   }
 
   @Test

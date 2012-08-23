@@ -140,7 +140,15 @@ public class FunctionResource extends BaseResource {
         fw.write(uriInfo, sw, collectionResponse);
         fwBase = fw;
       }
+    } else if (response instanceof EntitiesResponse) {
+      FormatWriter<EntitiesResponse> fw = FormatWriterFactory.getFormatWriter(
+          EntitiesResponse.class,
+          httpHeaders.getAcceptableMediaTypes(),
+          format,
+          callback);
 
+      fw.write(uriInfo, sw, (EntitiesResponse) response);
+      fwBase = fw;
     } else if (response instanceof PropertyResponse) {
       FormatWriter<PropertyResponse> fw =
           FormatWriterFactory.getFormatWriter(

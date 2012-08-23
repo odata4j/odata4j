@@ -26,6 +26,7 @@
       </ComplexType>
       <EntityContainer Name="Container1" m:IsDefaultEntityContainer="true">
         <EntitySet Name="Employees" EntityType="RefScenario.Employee" />
+        <FunctionImport Name="TestFunctionReturnEmployees" ReturnType="Collection(RefScenario.Employee)" EntitySet="Employees" m:HttpMethod="GET" />
         <FunctionImport Name="TestFunctionReturnCollectionEmployees" ReturnType="Collection(RefScenario.Employee)" EntitySet="Employees"
           m:HttpMethod="GET" />
         <FunctionImport Name="TestFunctionReturnCollectionComplexType" ReturnType="Collection(RefScenario.c_Location)"

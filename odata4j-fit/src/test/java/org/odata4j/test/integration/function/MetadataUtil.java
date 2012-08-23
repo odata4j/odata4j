@@ -28,6 +28,7 @@ public class MetadataUtil {
   public static final String TEST_FUNCTION_RETURN_COLLECTION_DOUBLE = "TestFunctionReturnCollectionDouble";
   public static final String TEST_FUNCTION_RETURN_COLLECTION_COMPLEX_TYPE = "TestFunctionReturnCollectionComplexType";
   public static final String TEST_FUNCTION_RETURN_COLLECTION_ENTITY = "TestFunctionReturnCollectionEmployees";
+  public static final String TEST_FUNCTION_RETURN_ENTITYSET = "TestFunctionReturnEmployees";
 
   private static final String REF_SCENARIO_EDMX = "/META-INF/FunctionImportScenario.edmx.xml";
 

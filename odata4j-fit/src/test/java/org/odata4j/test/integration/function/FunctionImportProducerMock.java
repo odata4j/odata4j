@@ -1,6 +1,7 @@
 package org.odata4j.test.integration.function;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.odata4j.core.OCollection;
@@ -205,6 +206,10 @@ public class FunctionImportProducerMock implements ODataProducer {
       OCollection<OObject> collection = collectionBuilder.build();
 
       response = Responses.collection(collection, entity.getEntitySet(), null, null, MetadataUtil.TEST_FUNCTION_RETURN_COLLECTION_ENTITY);
+    } else if (MetadataUtil.TEST_FUNCTION_RETURN_ENTITYSET.equals(name.getName())) {
+      List<OEntity> entities = new ArrayList<OEntity>();
+      entities.add(createEmployeeEntity());
+      response = Responses.entities(entities, name.getEntitySet(), null, null);
     }
     else {
       throw new RuntimeException("Unsupported Test Case for FunctionImport: " + name.getName());
