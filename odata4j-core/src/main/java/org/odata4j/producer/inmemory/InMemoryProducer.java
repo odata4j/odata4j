@@ -349,7 +349,7 @@ public class InMemoryProducer implements ODataProducer {
 
       if (property.getCollectionKind() == EdmProperty.CollectionKind.NONE) {
         if (property.getType().isSimple()) {
-          properties.add(OProperties.simple(property.getName(), (EdmSimpleType) property.getType(), value));
+          properties.add(OProperties.simple(property.getName(), (EdmSimpleType<? extends Object>) property.getType(), value));
         } else {
           // complex.
           if (value == null) {
@@ -377,7 +377,7 @@ public class InMemoryProducer implements ODataProducer {
           }
           for (Object v : values) {
             if (property.getType().isSimple()) {
-              b.add(OSimpleObjects.create((EdmSimpleType) property.getType(), v));
+              b.add(OSimpleObjects.create((EdmSimpleType<?>) property.getType(), v));
             } else {
               List<OProperty<?>> cprops = new ArrayList<OProperty<?>>();
               addPropertiesFromObject(v, typeInfo.getPropertyModel(), (EdmComplexType) property.getType(), cprops, pathHelper);
@@ -1046,7 +1046,7 @@ public class InMemoryProducer implements ODataProducer {
         List<Object> pojos = new ArrayList<Object>();
         for (OObject item : collection) {
           if (collection.getType().isSimple()) {
-            pojos.add(((OSimpleObject) item).getValue());
+            pojos.add(((OSimpleObject<?>) item).getValue());
           } else {
             // turn OComplexObject into a pojo
             pojos.add(toPojo((OComplexObject) item, propertyModel.getCollectionElementType(property.getName())));

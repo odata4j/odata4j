@@ -13,7 +13,6 @@ import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.producer.server.ODataServer;
 import org.odata4j.test.integration.AbstractRuntimeTest;
 
-// @Ignore("currently not working bebause of SkipToken format error detected by CXF run")
 public class ScenarioTopCountTest extends AbstractRuntimeTest {
 
   public ScenarioTopCountTest(RuntimeFacadeType type) {

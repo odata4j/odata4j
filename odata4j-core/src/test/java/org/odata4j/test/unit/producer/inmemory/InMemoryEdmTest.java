@@ -100,7 +100,7 @@ public class InMemoryEdmTest {
     public void setSub2(Sub2 value) {}
   }
 
-  private void register(InMemoryProducer p, Class clazz, boolean flat, String... keys) {
+  private void register(InMemoryProducer p, Class<? extends Object> clazz, boolean flat, String... keys) {
     p.register(clazz, new EnumsAsStringsPropertyModelDelegate(new BeanBasedPropertyModel(clazz, flat)),
         clazz.getSimpleName() + "s", // set
         clazz.getSimpleName(), // type

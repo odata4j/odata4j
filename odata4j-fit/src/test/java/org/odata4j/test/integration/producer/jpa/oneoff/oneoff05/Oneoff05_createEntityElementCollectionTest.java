@@ -1,6 +1,5 @@
 package org.odata4j.test.integration.producer.jpa.oneoff.oneoff05;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.OProperties;
@@ -12,7 +11,6 @@ public class Oneoff05_createEntityElementCollectionTest extends AbstractOneoffBa
     super(type);
   }
 
-  @Ignore
   @Test
   public void createEntityElementCollection() throws Exception {
     final long now = System.currentTimeMillis();

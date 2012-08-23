@@ -266,7 +266,7 @@ public class StaxXMLFactoryProvider2 extends XMLFactoryProvider2 {
 
     @Override
     public Enumerable<Attribute2> getAttributes() {
-      Iterator i = real.getAttributes();
+      Iterator<?> i = real.getAttributes();
       List<Attribute2> atts = new ArrayList<Attribute2>();
       while (i.hasNext()) {
         atts.add(new StaxAttribute2((Attribute) i.next()));
@@ -276,7 +276,7 @@ public class StaxXMLFactoryProvider2 extends XMLFactoryProvider2 {
 
     @Override
     public Enumerable<Namespace2> getNamespaces() {
-      Iterator i = real.getNamespaces();
+      Iterator<?> i = real.getNamespaces();
       List<Namespace2> namespaces = new ArrayList<Namespace2>();
       while (i.hasNext()) {
         namespaces.add(new StaxNamespace2((Namespace) i.next()));

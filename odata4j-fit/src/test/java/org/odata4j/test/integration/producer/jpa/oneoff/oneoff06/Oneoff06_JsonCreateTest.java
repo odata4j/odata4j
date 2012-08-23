@@ -2,7 +2,6 @@ package org.odata4j.test.integration.producer.jpa.oneoff.oneoff06;
 
 import junit.framework.Assert;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.ODataConstants.Charsets;
@@ -23,7 +22,6 @@ public class Oneoff06_JsonCreateTest extends AbstractOneoffBaseTest {
   private ClientResponse response;
 
   @Test
-  @Ignore
   public void createCountry() throws Exception {
     ODataConsumer c = this.rtFacade.createODataConsumer(endpointUri, null, null);
     Assert.assertEquals(0, c.getEntities("Country").execute().count());
