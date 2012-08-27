@@ -301,7 +301,7 @@ public class InMemoryProducer implements ODataProducer {
 
   protected InMemoryEntityInfo<?> findEntityInfoForClass(Class<?> clazz) {
     for (InMemoryEntityInfo<?> typeInfo : this.eis.values()) {
-      if (typeInfo.entityClass.equals(clazz)) {
+      if (typeInfo.entityClass.isAssignableFrom(clazz)) {
         return typeInfo;
       }
     }
