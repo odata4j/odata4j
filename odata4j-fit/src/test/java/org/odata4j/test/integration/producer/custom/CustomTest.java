@@ -316,7 +316,7 @@ public class CustomTest extends CustomBaseTest {
 
   @Test
   public void testDeleteMLE() throws Exception {
-    ODataConsumer c = this.rtFacade.createODataConsumer(endpointUri, null, null);
+    ODataConsumer c = this.rtFacade.createODataConsumer(endpointUri, null);
     OEntityKey key = OEntityKey.create("Id", "blatfoo");
     c.deleteEntity("MLEs", key).execute();
 

@@ -101,7 +101,7 @@ public class LinksTest extends NorthwindJpaProducerTest {
   public static int numberOfRelatedEntities = 2;
 
   protected void testReadDeferred(FormatType formatType) throws Exception {
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, formatType, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, formatType);
 
     ODataConsumer.dump.all(true);
     OEntity a0 = consumer.getEntity(entitySetName, deferredId).execute();
@@ -123,7 +123,7 @@ public class LinksTest extends NorthwindJpaProducerTest {
   }
 
   protected void testReadEmpty(FormatType formatType) throws Exception {
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, formatType, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, formatType);
 
     ODataConsumer.dump.all(true);
     OEntity a0 = consumer.getEntity(entitySetName, emptyId).expand(toOneNavPropName + "," + toManyNavPropName).execute();
@@ -144,7 +144,7 @@ public class LinksTest extends NorthwindJpaProducerTest {
   }
 
   protected void testReadPopulated(FormatType formatType) throws Exception {
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, formatType, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, formatType);
 
     ODataConsumer.dump.all(true);
     OEntity a0 = consumer.getEntity(entitySetName, populatedId).expand(toOneNavPropName + "," + toManyNavPropName).execute();

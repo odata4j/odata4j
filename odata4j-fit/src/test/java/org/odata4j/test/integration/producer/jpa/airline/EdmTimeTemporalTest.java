@@ -44,7 +44,7 @@ public class EdmTimeTemporalTest extends AirlineJPAProducerBaseTest {
 
   @Test
   public void testMetadata() throws Exception {
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null);
 
     EdmDataServices metadata = consumer.getMetadata();
 
@@ -57,7 +57,7 @@ public class EdmTimeTemporalTest extends AirlineJPAProducerBaseTest {
    *handling of Date fields with different @Temporal
    */
   public void createWithDifferentTemporal() throws Exception {
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null);
 
     OEntity flightSchedule = consumer.createEntity("FlightSchedule")
         .properties(OProperties.string("flightNo", "LH460"))
@@ -82,7 +82,7 @@ public class EdmTimeTemporalTest extends AirlineJPAProducerBaseTest {
 
   @Test
   public void filterTime() throws Exception {
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null);
 
     Enumerable<OEntity> schedules = consumer.getEntities("FlightSchedule")
         .filter("departureTime ge time'PT11H' and departureTime lt time'PT12H'")

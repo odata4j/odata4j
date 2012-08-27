@@ -30,7 +30,7 @@ public abstract class AbstractODataConsumerTest extends AbstractIntegrationTest 
 
   @Override
   protected void startClient() throws Exception {
-    consumer = rtFacade.createODataConsumer(BASE_URI, format, null);
+    consumer = rtFacade.createODataConsumer(BASE_URI, format);
   }
 
   @Override

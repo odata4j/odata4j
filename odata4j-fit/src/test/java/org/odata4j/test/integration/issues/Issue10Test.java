@@ -42,7 +42,7 @@ public class Issue10Test extends AbstractRuntimeTest {
     DefaultODataProducerProvider.setInstance(producer);
     ODataServer server = this.rtFacade.startODataServer(endpointUri);
 
-    ODataConsumer c = this.rtFacade.createODataConsumer(endpointUri, null, null);
+    ODataConsumer c = this.rtFacade.createODataConsumer(endpointUri, null);
 
     lastQuery[0] = null;
     c.getEntities("Entity").execute().toList();

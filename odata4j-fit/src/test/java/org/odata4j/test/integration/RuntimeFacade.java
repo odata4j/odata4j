@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.ws.rs.core.MediaType;
 
 import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.consumer.behaviors.OClientBehavior;
 import org.odata4j.format.FormatType;
 import org.odata4j.producer.server.ODataServer;
 
@@ -17,7 +18,7 @@ public interface RuntimeFacade {
 
   public ODataServer createODataServer(String baseUri);
 
-  public ODataConsumer createODataConsumer(String endpointUri, FormatType format, String methodToTunnel);
+  public ODataConsumer createODataConsumer(String endpointUri, FormatType format, OClientBehavior... clientBehaviors);
 
   public ResponseData acceptAndReturn(String uri, MediaType mediaType);
 

@@ -10,6 +10,7 @@ import javax.ws.rs.ext.RuntimeDelegate;
 
 import org.apache.cxf.jaxrs.servlet.CXFNonSpringJaxrsServlet;
 import org.core4j.Enumerable;
+import org.eclipse.jetty.security.SecurityHandler;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerCollection;
@@ -27,6 +28,7 @@ public class ODataCxfServer implements ODataServer {
   private Class<? extends Application> odataApp;
   private Class<? extends Application> rootApp;
   private final List<Handler> jettyRequestHandlers = new ArrayList<Handler>();
+  private SecurityHandler jettySecurityHandler;
   private Server server;
 
   public ODataCxfServer(String appBaseUri) {
@@ -60,6 +62,11 @@ public class ODataCxfServer implements ODataServer {
     return this;
   }
 
+  public ODataCxfServer setJettySecurityHandler(SecurityHandler securityHandler) {
+    jettySecurityHandler = securityHandler;
+    return this;
+  }
+
   @Override
   public ODataServer start() {
     if (odataApp == null)
@@ -86,6 +93,9 @@ public class ODataCxfServer implements ODataServer {
 
       contextHandler.addServlet(rootServletHolder, "/*");
     }
+
+    if (jettySecurityHandler != null)
+      contextHandler.setSecurityHandler(jettySecurityHandler);
 
     server = new Server(url.getPort());
     server.setHandler(getHandlerCollection(contextHandler));

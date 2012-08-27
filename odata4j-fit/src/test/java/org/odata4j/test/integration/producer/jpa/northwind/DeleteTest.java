@@ -5,6 +5,7 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.consumer.behaviors.OClientBehaviors;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OPredicates;
 
@@ -21,14 +22,14 @@ public class DeleteTest extends NorthwindJpaProducerTest {
 
   @Test
   public void tunneledDeleteEntity() throws Exception {
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, "DELETE");
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, OClientBehaviors.methodTunneling("DELETE"));
 
     deleteEntityAndTest(consumer, "QUEEN");
   }
 
   @Test
   public void deleteEntity() throws Exception {
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null);
 
     deleteEntityAndTest(consumer, "ALFKI");
   }

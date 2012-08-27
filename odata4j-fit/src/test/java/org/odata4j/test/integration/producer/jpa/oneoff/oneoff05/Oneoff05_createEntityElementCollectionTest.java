@@ -14,7 +14,7 @@ public class Oneoff05_createEntityElementCollectionTest extends AbstractOneoffBa
   @Test
   public void createEntityElementCollection() throws Exception {
     final long now = System.currentTimeMillis();
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null);
 
     consumer
         .createEntity("Student")

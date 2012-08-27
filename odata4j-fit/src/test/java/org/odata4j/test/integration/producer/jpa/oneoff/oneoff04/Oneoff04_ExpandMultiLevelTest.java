@@ -24,7 +24,7 @@ public class Oneoff04_ExpandMultiLevelTest extends AbstractOneoffBaseTest {
 
   @Test
   public void expandMultiLevel() throws Exception {
-    consumer = rtFacade.createODataConsumer(endpointUri, null, null);
+    consumer = rtFacade.createODataConsumer(endpointUri, null);
 
     List<OEntity> coursesOneAndTwo = new ArrayList<OEntity>();
     addLocallyCreatedCourseEntity(coursesOneAndTwo, "Course1");

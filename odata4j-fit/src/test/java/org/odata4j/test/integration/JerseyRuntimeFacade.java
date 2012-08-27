@@ -10,7 +10,7 @@ import java.util.Map.Entry;
 import javax.ws.rs.core.MediaType;
 
 import org.odata4j.consumer.ODataConsumer;
-import org.odata4j.consumer.behaviors.MethodTunnelingBehavior;
+import org.odata4j.consumer.behaviors.OClientBehavior;
 import org.odata4j.core.ODataConstants.Headers;
 import org.odata4j.core.ODataHttpMethod;
 import org.odata4j.core.Throwables;
@@ -55,15 +55,15 @@ public class JerseyRuntimeFacade implements RuntimeFacade {
   }
 
   @Override
-  public ODataConsumer createODataConsumer(String endpointUri, FormatType format, String methodToTunnel) {
+  public ODataConsumer createODataConsumer(String endpointUri, FormatType format, OClientBehavior... clientBehaviors) {
     Builder builder = ODataJerseyConsumer.newBuilder(endpointUri);
 
     if (format != null) {
       builder = builder.setFormatType(format);
     }
 
-    if (methodToTunnel != null) {
-      builder = builder.setClientBehaviors(new MethodTunnelingBehavior(methodToTunnel));
+    if (clientBehaviors != null) {
+      builder = builder.setClientBehaviors(clientBehaviors);
     }
 
     return builder.build();

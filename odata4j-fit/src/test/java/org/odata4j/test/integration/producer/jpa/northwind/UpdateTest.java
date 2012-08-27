@@ -5,6 +5,7 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.consumer.behaviors.OClientBehaviors;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OProperties;
 
@@ -21,13 +22,13 @@ public class UpdateTest extends NorthwindJpaProducerTest {
 
   @Test
   public void tunneledUpdateEntity() throws Exception {
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, "PUT");
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, OClientBehaviors.methodTunneling("PUT"));
     updateEntityAndTest(consumer);
   }
 
   @Test
   public void updateEntity() throws Exception {
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null);
 
     updateEntityAndTest(consumer);
   }
@@ -44,7 +45,7 @@ public class UpdateTest extends NorthwindJpaProducerTest {
 
   @Test
   public void mergeEntityTest() throws Exception {
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null);
 
     final long now = System.currentTimeMillis();
     consumer.mergeEntity("Categories", 1).properties(OProperties.string("Description", "D" + now)).execute();

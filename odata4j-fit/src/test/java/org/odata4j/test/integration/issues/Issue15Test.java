@@ -51,7 +51,7 @@ public class Issue15Test extends AbstractRuntimeTest {
 
     ODataConsumer.dump.responseBody(true);
     ODataConsumer c = this.rtFacade
-        .createODataConsumer("http://localhost:6794/WcfDataService2.svc/", null, null);
+        .createODataConsumer("http://localhost:6794/WcfDataService2.svc/", null);
 
     // @SuppressWarnings("unused")
     // OEntity newEntity = c.createEntity("entity1").properties(

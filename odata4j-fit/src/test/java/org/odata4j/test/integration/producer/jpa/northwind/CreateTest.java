@@ -5,6 +5,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.consumer.behaviors.OClientBehaviors;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OPredicates;
 import org.odata4j.core.OProperties;
@@ -23,61 +24,61 @@ public class CreateTest extends NorthwindJpaProducerTest {
 
   @Test
   public void tunneledInsertEntityToExistingEntityRelationAtom() throws Exception {
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, "PUT");
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, OClientBehaviors.methodTunneling("PUT"));
     insertEntityToExistingEntityRelationAndTest(consumer);
   }
 
   @Test
   public void tunneledInsertEntityToExistingEntityRelationJson() throws Exception {
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, FormatType.JSON, "PUT");
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, FormatType.JSON, OClientBehaviors.methodTunneling("PUT"));
     insertEntityToExistingEntityRelationAndTest(consumer);
   }
 
   @Test
   public void insertEntityToExistingEntityRelationAtom() throws Exception {
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null);
     insertEntityToExistingEntityRelationAndTest(consumer);
   }
 
   @Test
   public void insertEntityToExistingEntityRelationJson() throws Exception {
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, FormatType.JSON, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, FormatType.JSON);
     insertEntityToExistingEntityRelationAndTest(consumer);
   }
 
   @Test
   public void tunneledInsertEntityUsingLinksAtom() throws Exception {
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, "PUT");
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, OClientBehaviors.methodTunneling("PUT"));
     insertEntityUsingLinksAndTest(consumer);
   }
 
   @Test
   public void tunneledInsertEntityUsingLinksJson() throws Exception {
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, FormatType.JSON, "PUT");
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, FormatType.JSON, OClientBehaviors.methodTunneling("PUT"));
     insertEntityUsingLinksAndTest(consumer);
   }
 
   @Test
   public void insertEntityUsingLinksAtom() throws Exception {
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null);
     insertEntityUsingLinksAndTest(consumer);
   }
 
   @Test
   public void insertEntityUsingLinksJson() throws Exception {
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, FormatType.JSON, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, FormatType.JSON);
     insertEntityUsingLinksAndTest(consumer);
   }
 
   @Test
   public void insertEntityWithInlinedEntitiesAtom() throws Exception {
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null);
     insertEntityWithInlinedEntities(consumer);
   }
 
   @Test
   public void insertEntityWithInlinedEntitiesJson() throws Exception {
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, FormatType.JSON, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, FormatType.JSON);
     insertEntityWithInlinedEntities(consumer);
   }
 
@@ -126,25 +127,25 @@ public class CreateTest extends NorthwindJpaProducerTest {
 
   @Test
   public void insertEntityWithInlinedEntityAtom() throws Exception {
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null);
     insertEntityWithInlinedEntity(consumer);
   }
 
   @Test
   public void insertEntityWithInlinedEntityJson() throws Exception {
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, FormatType.JSON, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, FormatType.JSON);
     insertEntityWithInlinedEntity(consumer);
   }
 
   @Test
   public void expandEntitiesWithNullReferenceAtom() throws Exception {
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null);
     expandEntitiesWithNullReference(consumer);
   }
 
   @Test
   public void expandEntitiesWithNullReferenceJson() throws Exception {
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, FormatType.JSON, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, FormatType.JSON);
     expandEntitiesWithNullReference(consumer);
   }
 

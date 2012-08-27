@@ -23,7 +23,7 @@ public class ExceptionTest extends NorthwindJpaProducerTest {
   @Before
   public void setUp() {
     super.setUp(20);
-    consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
+    consumer = this.rtFacade.createODataConsumer(endpointUri, null);
   }
 
   @Test

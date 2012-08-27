@@ -24,7 +24,7 @@ public class CompositeKeyEntityTest extends NorthwindJpaProducerTest {
 
   @Test
   public void updateCompositeKeyEntity() throws Exception {
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null);
 
     OEntity orderDetails = consumer.getEntities("Order_Details").top(1).execute().first();
     Assert.assertNotNull(orderDetails);
@@ -38,7 +38,7 @@ public class CompositeKeyEntityTest extends NorthwindJpaProducerTest {
 
   @Test
   public void mergeCompositeKeyEntity() throws Exception {
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null);
 
     OEntity orderDetails = consumer.getEntities("Order_Details").top(1).execute().first();
     Assert.assertNotNull(orderDetails);
@@ -53,7 +53,7 @@ public class CompositeKeyEntityTest extends NorthwindJpaProducerTest {
   @Test
   public void createCompositeKeyEntityUsingLinks() throws Exception {
     final long now = System.currentTimeMillis();
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null);
 
     OEntity product = consumer
         .createEntity("Products")
@@ -87,7 +87,7 @@ public class CompositeKeyEntityTest extends NorthwindJpaProducerTest {
   @Test
   public void createCompositeKeyEntityUsingProperties() throws Exception {
     final long now = System.currentTimeMillis();
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null);
 
     OEntity product = consumer
         .createEntity("Products")
@@ -121,7 +121,7 @@ public class CompositeKeyEntityTest extends NorthwindJpaProducerTest {
   @Test
   public void deleteCompositeKeyEntityUsingLinks() throws Exception {
     final long now = System.currentTimeMillis();
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null);
 
     OEntity product = consumer
         .createEntity("Products")

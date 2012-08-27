@@ -127,7 +127,7 @@ public class JsonTest extends AbstractRuntimeTest {
 
     server = this.rtFacade.startODataServer(uri);
 
-    consumer = this.rtFacade.createODataConsumer(uri, FormatType.JSON, null);
+    consumer = this.rtFacade.createODataConsumer(uri, FormatType.JSON);
     Assert.assertEquals(0, consumer.getEntitySets().count());
 
     // register a complex type:

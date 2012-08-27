@@ -19,7 +19,7 @@ public class Oneoff01_UnidirectionalTest extends AbstractOneoffBaseTest {
   @Test
   public void createOnetoManyUniDirectional() throws Exception {
     final long now = System.currentTimeMillis();
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null);
 
     OEntity comment = consumer
         .createEntity("Comment")
@@ -40,7 +40,7 @@ public class Oneoff01_UnidirectionalTest extends AbstractOneoffBaseTest {
   @Test
   public void mergeOnetoManyUniDirectional() throws Exception {
     final long now = System.currentTimeMillis();
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null);
 
     OEntity comment = consumer
         .createEntity("Comment")
@@ -71,7 +71,7 @@ public class Oneoff01_UnidirectionalTest extends AbstractOneoffBaseTest {
   @Test
   public void mergeOnetoManyUniDirectional2() throws Exception {
     final long now = System.currentTimeMillis();
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null);
 
     OEntity comment = consumer
         .createEntity("Comment")
@@ -102,7 +102,7 @@ public class Oneoff01_UnidirectionalTest extends AbstractOneoffBaseTest {
   @Test
   public void deleteOnetoManyUniDirectional() throws Exception {
     final long now = System.currentTimeMillis();
-    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null, null);
+    ODataConsumer consumer = this.rtFacade.createODataConsumer(endpointUri, null);
 
     OEntity comment = consumer
         .createEntity("Comment")
