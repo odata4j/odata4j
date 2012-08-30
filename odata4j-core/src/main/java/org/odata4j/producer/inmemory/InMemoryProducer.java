@@ -290,23 +290,41 @@ public class InMemoryProducer implements ODataProducer {
   }
 
   protected InMemoryComplexTypeInfo<?> findComplexTypeInfoForClass(Class<?> clazz) {
+    // drill down the hierarchy as far as we can go.
+    InMemoryComplexTypeInfo<?> found = null;
+    
     for (InMemoryComplexTypeInfo<?> typeInfo : this.complexTypes.values()) {
       if (typeInfo.entityClass.equals(clazz)) {
-        return typeInfo;
-      }
+        return typeInfo; // as far down as we can go
+      } else if (typeInfo.entityClass.isAssignableFrom(clazz)) {
+        // somewhere in the ancestors of clazz
+        if (null == found || found.entityClass.isAssignableFrom(typeInfo.entityClass)) {
+          // we found a lower ancestor
+          found = typeInfo;
+        }
+      } 
     }
 
-    return null;
+    return found;
   }
 
   protected InMemoryEntityInfo<?> findEntityInfoForClass(Class<?> clazz) {
+    // drill down the hierarchy as far as we can go.
+    InMemoryEntityInfo<?> found = null;
+    
     for (InMemoryEntityInfo<?> typeInfo : this.eis.values()) {
-      if (typeInfo.entityClass.isAssignableFrom(clazz)) {
-        return typeInfo;
+       if (typeInfo.entityClass.equals(clazz)) {
+        return typeInfo; // as far down as we can go
+      } else if (typeInfo.entityClass.isAssignableFrom(clazz)) {
+        // somewhere in the ancestors of clazz
+        if (null == found || found.entityClass.isAssignableFrom(typeInfo.entityClass)) {
+          // we found a lower ancestor
+          found = typeInfo;
+        }
       }
     }
 
-    return null;
+    return found;
   }
 
   protected InMemoryEntityInfo<?> findEntityInfoForEntitySet(String entitySetName) {
