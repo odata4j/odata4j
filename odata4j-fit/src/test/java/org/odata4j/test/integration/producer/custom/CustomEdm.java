@@ -60,18 +60,18 @@ public class CustomEdm implements EdmGenerator {
 
     List<EdmFunctionParameter.Builder> params = new ArrayList<EdmFunctionParameter.Builder>(1);
     params.add(EdmFunctionParameter.newBuilder()
-            .setName("p")
-            .setType(EdmSimpleType.STRING)
-            .setMode(EdmFunctionParameter.Mode.In));
+        .setName("p")
+        .setType(EdmSimpleType.STRING)
+        .setMode(EdmFunctionParameter.Mode.In));
 
     EdmFunctionImport.Builder f = EdmFunctionImport.newBuilder()
-            .setName("f")
-            .setHttpMethod("GET")
-            .setReturnType(EdmSimpleType.BOOLEAN)
-            .addParameters(params);
+        .setName("f")
+        .setHttpMethod("GET")
+        .setReturnType(EdmSimpleType.BOOLEAN)
+        .addParameters(params);
 
     container.addFunctionImports(f);
-        
+
     return EdmDataServices.newBuilder().addSchemas(schema);
   }
 

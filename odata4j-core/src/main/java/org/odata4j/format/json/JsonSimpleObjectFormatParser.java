@@ -48,7 +48,7 @@ public class JsonSimpleObjectFormatParser extends JsonFormatParser implements Fo
       // }
       ensureEndObject(jsr.nextEvent());
     }
-    
+
     return OSimpleObjects.parse((EdmSimpleType<?>) this.parseType, endProp.asEndProperty().getValue());
   }
 

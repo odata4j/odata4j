@@ -1,6 +1,4 @@
-
 package org.odata4j.format.json;
-
 
 import java.io.Reader;
 
@@ -25,7 +23,6 @@ import org.odata4j.format.Settings;
  */
 public class JsonEntityFormatParser extends JsonFormatParser implements FormatParser<OEntity> {
 
-  
   public JsonEntityFormatParser(Settings settings) {
     super(settings);
   }
@@ -50,7 +47,7 @@ public class JsonEntityFormatParser extends JsonFormatParser implements FormatPa
 
       // parse the entry
       EdmFunctionImport fi = metadata.findEdmFunctionImport(entitySetName);
-      
+
       return parseEntry(fi.getEntitySet(), jsr).getEntity();
 
       // no interest in the closing events

@@ -31,13 +31,14 @@ public class AbstractODataConsumerTest {
     protected MockConsumer() {
       super("MockServiceRoot");
 
-      InvocationHandler h = new InvocationHandler(){
+      InvocationHandler h = new InvocationHandler() {
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
           lastMethodName = method.getName();
           lastMethodArgs = args;
           return null;
-        }};
+        }
+      };
       client = (ODataClient) Proxy.newProxyInstance(ODataClient.class.getClassLoader(), new Class<?>[] { ODataClient.class }, h);
     }
 

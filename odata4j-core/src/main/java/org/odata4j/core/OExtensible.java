@@ -1,7 +1,5 @@
 package org.odata4j.core;
 
-
-
 /**
  * Basic extension mechanism.
  *

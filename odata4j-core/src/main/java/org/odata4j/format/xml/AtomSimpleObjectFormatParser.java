@@ -10,18 +10,19 @@ import org.odata4j.format.Settings;
 import org.odata4j.stax2.XMLEventReader2;
 import org.odata4j.stax2.util.StaxUtil;
 
-public class AtomSimpleObjectFormatParser implements FormatParser<OSimpleObject<?>>{
+public class AtomSimpleObjectFormatParser implements FormatParser<OSimpleObject<?>> {
 
   private final Settings settings;
 
   public AtomSimpleObjectFormatParser(Settings settings) {
     this.settings = settings;
   }
+
   @Override
   public OSimpleObject<?> parse(Reader reader) {
     XMLEventReader2 xmlReader = StaxUtil.newXMLEventReader(reader);
-    xmlReader.nextEvent();	// start doc
-    xmlReader.nextEvent();	// start element
+    xmlReader.nextEvent(); // start doc
+    xmlReader.nextEvent(); // start element
 
     String text = xmlReader.getElementText();
     EdmSimpleType<?> type = EdmSimpleType.STRING;

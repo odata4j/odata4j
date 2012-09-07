@@ -82,8 +82,8 @@ public class PropertyRequestResource extends BaseResource {
       OEntity entity = getRequestEntity(httpHeaders, uriInfo, payload, metadata, ees.getName(), OEntityKey.parse(id));
 
       // execute the create
-      EntityResponse response = producer.createEntity(ODataContextImpl.builder().aspect(httpHeaders).aspect(securityContext).build(), 
-              entitySetName, OEntityKey.parse(id), navProp, entity);
+      EntityResponse response = producer.createEntity(ODataContextImpl.builder().aspect(httpHeaders).aspect(securityContext).build(),
+          entitySetName, OEntityKey.parse(id), navProp, entity);
 
       if (response == null) {
         throw new NotFoundException();
@@ -166,7 +166,7 @@ public class PropertyRequestResource extends BaseResource {
       navProp = navProp.replace("/$count", "");
 
       CountResponse response = producer.getNavPropertyCount(
-          ODataContextImpl.builder().aspect(httpHeaders).aspect(securityContext).build(), 
+          ODataContextImpl.builder().aspect(httpHeaders).aspect(securityContext).build(),
           entitySetName,
           OEntityKey.parse(id),
           navProp,

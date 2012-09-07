@@ -17,9 +17,9 @@ import java.util.List;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 import javax.xml.parsers.ParserConfigurationException;
+
 import org.core4j.Enumerable;
 import org.core4j.Predicate1;
-
 import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -31,12 +31,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.odata4j.consumer.ODataConsumer;
-import org.odata4j.consumer.behaviors.OClientBehavior;
 import org.odata4j.core.OComplexObject;
 import org.odata4j.core.OComplexObjects;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OObject;
-import org.odata4j.core.OProperty;
 import org.odata4j.core.OSimpleObject;
 import org.odata4j.core.OSimpleObjects;
 import org.odata4j.edm.EdmSimpleType;
@@ -54,7 +52,7 @@ public class FunctionImportTest extends AbstractRuntimeTest {
   public FunctionImportTest() {
     super(RuntimeFacadeType.JERSEY);
   }
-  
+
   /*
   public FunctionImportTest(RuntimeFacadeType type) {
     super(type);
@@ -219,16 +217,16 @@ public class FunctionImportTest extends AbstractRuntimeTest {
       }
     }
   }
-  
+
   @Test
   public void testFunctionReturnBooleanConsumer() {
     testFunctionConsumer(MetadataUtil.TEST_FUNCTION_RETURN_BOOLEAN, EdmSimpleType.BOOLEAN, 1,
-            new Predicate1<OObject>() {
-      @Override
-      public boolean apply(OObject t) {
-        return ((OSimpleObject)t).getValue().equals(FunctionImportProducerMock.BOOLEAN_VALUE);
-      }
-    });
+        new Predicate1<OObject>() {
+          @Override
+          public boolean apply(OObject t) {
+            return ((OSimpleObject) t).getValue().equals(FunctionImportProducerMock.BOOLEAN_VALUE);
+          }
+        });
   }
 
   @Test
@@ -266,13 +264,15 @@ public class FunctionImportTest extends AbstractRuntimeTest {
       }
     }
   }
-  
+
   protected void testFunctionConsumer(String functionName, EdmType expectedType, int nExpected, Predicate1<OObject> alsoTrue) {
     for (FormatType format : FunctionImportTest.formats) {
-      if (format.equals(FormatType.ATOM)) { continue; } // maybe someday.
+      if (format.equals(FormatType.ATOM)) {
+        continue;
+      } // maybe someday.
       ODataConsumer consumer = rtFacade.createODataConsumer(endpointUri, format, null);
       Enumerable<OObject> objects = consumer.callFunction(functionName).execute();
-      
+
       assertEquals(nExpected, objects.count());
       for (OObject obj : objects) {
         assertEquals(obj.getType(), expectedType);
@@ -282,17 +282,17 @@ public class FunctionImportTest extends AbstractRuntimeTest {
       }
     }
   }
-  
+
   @Test
   public void testFunctionReturnStringConsumer() {
     testFunctionConsumer(MetadataUtil.TEST_FUNCTION_RETURN_STRING, EdmSimpleType.STRING, 1,
-            new Predicate1<OObject>() {
+        new Predicate1<OObject>() {
 
-              @Override
-              public boolean apply(OObject t) {
-                return ((OSimpleObject) t).getValue().equals(FunctionImportProducerMock.SOME_TEXT);
-              }
-            });
+          @Override
+          public boolean apply(OObject t) {
+            return ((OSimpleObject) t).getValue().equals(FunctionImportProducerMock.SOME_TEXT);
+          }
+        });
   }
 
   @Test
@@ -318,17 +318,17 @@ public class FunctionImportTest extends AbstractRuntimeTest {
       }
     }
   }
-  
+
   @Test
   public void testFunctionReturnInt16Consumer() {
     testFunctionConsumer(MetadataUtil.TEST_FUNCTION_RETURN_INT16, EdmSimpleType.INT16, 1,
-            new Predicate1<OObject>() {
+        new Predicate1<OObject>() {
 
-              @Override
-              public boolean apply(OObject t) {
-                return ((OSimpleObject) t).getValue().equals(FunctionImportProducerMock.INT16_VALUE);
-              }
-            });
+          @Override
+          public boolean apply(OObject t) {
+            return ((OSimpleObject) t).getValue().equals(FunctionImportProducerMock.INT16_VALUE);
+          }
+        });
   }
 
   @Test
@@ -401,19 +401,19 @@ public class FunctionImportTest extends AbstractRuntimeTest {
       }
     }
   }
-  
+
   @Test
   public void testFunctionReturnEntityConsumer() {
-    
+
     testFunctionConsumer(MetadataUtil.TEST_FUNCTION_RETURN_ENTITY, mockProducer.getMetadata().findEdmEntitySet("Employees").getType(), 1,
-            new Predicate1<OObject>() {
-      @Override
-      public boolean apply(OObject t) {
-        OEntity e = (OEntity) t;
-        return e.getProperty("EmployeeName", String.class).getValue().equals(FunctionImportProducerMock.EMPLOYEE_NAME) &&
-               e.getProperty("EmployeeId", String.class).getValue().equals(FunctionImportProducerMock.EMPLOYEE_ID); 
-      }
-    });
+        new Predicate1<OObject>() {
+          @Override
+          public boolean apply(OObject t) {
+            OEntity e = (OEntity) t;
+            return e.getProperty("EmployeeName", String.class).getValue().equals(FunctionImportProducerMock.EMPLOYEE_NAME) &&
+                e.getProperty("EmployeeId", String.class).getValue().equals(FunctionImportProducerMock.EMPLOYEE_ID);
+          }
+        });
   }
 
   @Test
@@ -449,25 +449,25 @@ public class FunctionImportTest extends AbstractRuntimeTest {
 
   @Test
   public void testFunctionReturnComplexTypeConsumer() {
-    
-    testFunctionConsumer(MetadataUtil.TEST_FUNCTION_RETURN_COMPLEX_TYPE,
-            mockProducer.getMetadata().findEdmComplexType(FunctionImportProducerMock.COMPLEY_TYPE_NAME_LOCATION),
-            1,
-            new Predicate1<OObject>() {
 
-              @Override
-              public boolean apply(OObject t) {
-                OComplexObject e = (OComplexObject) t;
-                // weird that e.getProperty("City") returns a property list and not a complex object.
-                // and furthermore...why is List<OProperty<?>> used...there should be a PropertyBag abstraction no?
-                OComplexObject city = OComplexObjects.create(mockProducer.getMetadata().findEdmComplexType(FunctionImportProducerMock.COMPLEY_TYPE_NAME_CITY), e.getProperty("City", List.class).getValue());
-                return e.getProperty("Country", String.class).getValue().equals(FunctionImportProducerMock.COUNTRY)
-                        && city.getProperty("PostalCode", String.class).getValue().equals(FunctionImportProducerMock.POSTAL_CODE)
-                        && city.getProperty("CityName", String.class).getValue().equals(FunctionImportProducerMock.CITY);
-              }
-            });
+    testFunctionConsumer(MetadataUtil.TEST_FUNCTION_RETURN_COMPLEX_TYPE,
+        mockProducer.getMetadata().findEdmComplexType(FunctionImportProducerMock.COMPLEY_TYPE_NAME_LOCATION),
+        1,
+        new Predicate1<OObject>() {
+
+          @Override
+          public boolean apply(OObject t) {
+            OComplexObject e = (OComplexObject) t;
+            // weird that e.getProperty("City") returns a property list and not a complex object.
+            // and furthermore...why is List<OProperty<?>> used...there should be a PropertyBag abstraction no?
+            OComplexObject city = OComplexObjects.create(mockProducer.getMetadata().findEdmComplexType(FunctionImportProducerMock.COMPLEY_TYPE_NAME_CITY), e.getProperty("City", List.class).getValue());
+            return e.getProperty("Country", String.class).getValue().equals(FunctionImportProducerMock.COUNTRY)
+                && city.getProperty("PostalCode", String.class).getValue().equals(FunctionImportProducerMock.POSTAL_CODE)
+                && city.getProperty("CityName", String.class).getValue().equals(FunctionImportProducerMock.CITY);
+          }
+        });
   }
-  
+
   @Test
   public void testFunctionReturnCollectionString() throws XpathException, IOException, SAXException {
     for (FormatType format : FunctionImportTest.formats) {
@@ -493,22 +493,22 @@ public class FunctionImportTest extends AbstractRuntimeTest {
       }
     }
   }
-  
+
   @Test
   public void testFunctionReturnCollectionStringConsumer() {
 
     testFunctionConsumer(MetadataUtil.TEST_FUNCTION_RETURN_COLLECTION_STRING,
-            EdmSimpleType.STRING,
-            2,
-            new Predicate1<OObject>() {
+        EdmSimpleType.STRING,
+        2,
+        new Predicate1<OObject>() {
 
-              @Override
-              public boolean apply(OObject t) {
-                String s = ((OSimpleObject)t).getValue().toString();
-                return FunctionImportProducerMock.COLLECTION_STRING1.equals(s) ||
-                        FunctionImportProducerMock.COLLECTION_STRING2.equals(s);
-              }
-            });
+          @Override
+          public boolean apply(OObject t) {
+            String s = ((OSimpleObject) t).getValue().toString();
+            return FunctionImportProducerMock.COLLECTION_STRING1.equals(s) ||
+                FunctionImportProducerMock.COLLECTION_STRING2.equals(s);
+          }
+        });
   }
 
   @Test
@@ -541,9 +541,9 @@ public class FunctionImportTest extends AbstractRuntimeTest {
   public void testFunctionReturnCollectionDoubleConsumer() {
 
     testFunctionConsumer(MetadataUtil.TEST_FUNCTION_RETURN_COLLECTION_DOUBLE,
-            EdmSimpleType.DOUBLE,
-            2,
-            null);
+        EdmSimpleType.DOUBLE,
+        2,
+        null);
   }
 
   @Test
@@ -578,14 +578,14 @@ public class FunctionImportTest extends AbstractRuntimeTest {
       }
     }
   }
-  
+
   @Test
   public void testFunctionReturnCollectionComplexTypeConsumer() {
 
     testFunctionConsumer(MetadataUtil.TEST_FUNCTION_RETURN_COLLECTION_COMPLEX_TYPE,
-            mockProducer.getMetadata().findEdmComplexType(FunctionImportProducerMock.COMPLEY_TYPE_NAME_LOCATION),
-            2,
-            null);
+        mockProducer.getMetadata().findEdmComplexType(FunctionImportProducerMock.COMPLEY_TYPE_NAME_LOCATION),
+        2,
+        null);
   }
 
   @Test
@@ -615,22 +615,22 @@ public class FunctionImportTest extends AbstractRuntimeTest {
       }
     }
   }
-  
+
   @Test
   public void testFunctionReturnCollectionEntityTypeConsumer() {
-    
-    testFunctionConsumer(MetadataUtil.TEST_FUNCTION_RETURN_COLLECTION_ENTITY,
-            mockProducer.getMetadata().findEdmEntitySet("Employees").getType(),
-            1,
-            new Predicate1<OObject>() {
 
-              @Override
-              public boolean apply(OObject t) {
-                OEntity e = (OEntity) t;
-                return e.getProperty("EmployeeName", String.class).getValue().equals(FunctionImportProducerMock.EMPLOYEE_NAME)
-                        && e.getProperty("EmployeeId", String.class).getValue().equals(FunctionImportProducerMock.EMPLOYEE_ID);
-              }
-            });
+    testFunctionConsumer(MetadataUtil.TEST_FUNCTION_RETURN_COLLECTION_ENTITY,
+        mockProducer.getMetadata().findEdmEntitySet("Employees").getType(),
+        1,
+        new Predicate1<OObject>() {
+
+          @Override
+          public boolean apply(OObject t) {
+            OEntity e = (OEntity) t;
+            return e.getProperty("EmployeeName", String.class).getValue().equals(FunctionImportProducerMock.EMPLOYEE_NAME)
+                && e.getProperty("EmployeeId", String.class).getValue().equals(FunctionImportProducerMock.EMPLOYEE_ID);
+          }
+        });
   }
 
   @Test

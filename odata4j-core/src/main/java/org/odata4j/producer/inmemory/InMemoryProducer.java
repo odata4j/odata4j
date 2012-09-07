@@ -73,7 +73,10 @@ import org.odata4j.producer.inmemory.InMemoryProducer.RequestContext.RequestType
  */
 public class InMemoryProducer implements ODataProducer {
   private static final boolean DUMP = false;
-  private static void dump(String msg) { if (DUMP) System.out.println(msg); }
+
+  private static void dump(String msg) {
+    if (DUMP) System.out.println(msg);
+  }
 
   public static final String ID_PROPNAME = "EntityId";
 
@@ -292,7 +295,7 @@ public class InMemoryProducer implements ODataProducer {
   protected InMemoryComplexTypeInfo<?> findComplexTypeInfoForClass(Class<?> clazz) {
     // drill down the hierarchy as far as we can go.
     InMemoryComplexTypeInfo<?> found = null;
-    
+
     for (InMemoryComplexTypeInfo<?> typeInfo : this.complexTypes.values()) {
       if (typeInfo.entityClass.equals(clazz)) {
         return typeInfo; // as far down as we can go
@@ -302,7 +305,7 @@ public class InMemoryProducer implements ODataProducer {
           // we found a lower ancestor
           found = typeInfo;
         }
-      } 
+      }
     }
 
     return found;
@@ -311,9 +314,9 @@ public class InMemoryProducer implements ODataProducer {
   protected InMemoryEntityInfo<?> findEntityInfoForClass(Class<?> clazz) {
     // drill down the hierarchy as far as we can go.
     InMemoryEntityInfo<?> found = null;
-    
+
     for (InMemoryEntityInfo<?> typeInfo : this.eis.values()) {
-       if (typeInfo.entityClass.equals(clazz)) {
+      if (typeInfo.entityClass.equals(clazz)) {
         return typeInfo; // as far down as we can go
       } else if (typeInfo.entityClass.isAssignableFrom(clazz)) {
         // somewhere in the ancestors of clazz
@@ -862,7 +865,7 @@ public class InMemoryProducer implements ODataProducer {
     public PropertyPathHelper getPathHelper() {
       return pathHelper;
     }
-    
+
     public ODataContext getODataContext() {
       return odataContext;
     }
@@ -916,7 +919,7 @@ public class InMemoryProducer implements ODataProducer {
         this.pathHelper = value;
         return this;
       }
-      
+
       public Builder odataContext(ODataContext value) {
         this.odataContext = value;
         return this;

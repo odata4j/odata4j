@@ -2,7 +2,6 @@ package org.odata4j.core;
 
 import org.odata4j.exceptions.ODataProducerException;
 
-
 /**
  * A consumer-side modification-request builder, used for operations such as MERGE and UPDATE.  Call {@link #execute()} to issue the request.
  *

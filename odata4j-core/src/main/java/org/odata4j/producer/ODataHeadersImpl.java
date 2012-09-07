@@ -1,4 +1,3 @@
-
 package org.odata4j.producer;
 
 import java.util.List;
@@ -15,7 +14,7 @@ public class ODataHeadersImpl implements ODataHeadersContext {
   public ODataHeadersImpl(HttpHeaders headers) {
     this.headers = headers;
   }
-  
+
   @Override
   public Iterable<String> getRequestHeaderFieldNames() {
     return this.headers.getRequestHeaders().keySet();
@@ -31,11 +30,11 @@ public class ODataHeadersImpl implements ODataHeadersContext {
     List<String> l = this.headers.getRequestHeader(fieldName);
     return l == null || l.isEmpty() ? null : l.get(0);
   }
-    
+
   @Override
   public List<Locale> getAcceptableLanguages() {
     return headers.getAcceptableLanguages();
   }
-  
+
   private HttpHeaders headers;
 }

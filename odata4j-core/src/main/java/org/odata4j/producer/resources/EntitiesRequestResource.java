@@ -92,14 +92,14 @@ public class EntitiesRequestResource extends BaseResource {
     if (entitySet == null) {
       throw new NotFoundException();
     }
-    
+
     ODataContext odataContext = ODataContextImpl.builder()
-            .aspect(httpHeaders)
-            .aspect(securityContext)
-            .aspect(producer)
-            .aspect(entitySet)
-            .aspect(uriInfo)
-            .build();
+        .aspect(httpHeaders)
+        .aspect(securityContext)
+        .aspect(producer)
+        .aspect(entitySet)
+        .aspect(uriInfo)
+        .build();
 
     if (Boolean.TRUE.equals(entitySet.getType().getHasStream())) { // getHasStream can return null
       // yes it is!
@@ -337,12 +337,12 @@ public class EntitiesRequestResource extends BaseResource {
         OptionsQueryParser.parseSelect(select));
 
     ODataContextImpl odataContext = ODataContextImpl.builder()
-            .aspect(httpHeaders)
-            .aspect(uriInfo)
-            .aspect(securityContext)
-            .aspect(producer)
-            .build();
-    
+        .aspect(httpHeaders)
+        .aspect(uriInfo)
+        .aspect(securityContext)
+        .aspect(producer)
+        .build();
+
     // the OData URI scheme makes it impossible to have unique @Paths that refer
     // to functions and entity sets
     if (producer.getMetadata().findEdmFunctionImport(entitySetName) != null) {
@@ -427,11 +427,11 @@ public class EntitiesRequestResource extends BaseResource {
     ODataProducer producer = producerResolver.getContext(ODataProducer.class);
 
     ODataContext odataContext = ODataContextImpl.builder()
-            .aspect(headers)
-            .aspect(securityContext)
-            .aspect(producer)
-            .build();
-    
+        .aspect(headers)
+        .aspect(securityContext)
+        .aspect(producer)
+        .build();
+
     for (BatchBodyPart bodyPart : bodyParts) {
       HttpHeaders httpHeaders = bodyPart.getHttpHeaders();
       UriInfo uriInfo = bodyPart.getUriInfo();
@@ -451,11 +451,11 @@ public class EntitiesRequestResource extends BaseResource {
             entitySetName, entityId, entityString, odataContext);
         break;
       case MERGE:
-        response = er.mergeEntity(httpHeaders, uriInfo,  producerResolver, securityContext, entitySetName,
+        response = er.mergeEntity(httpHeaders, uriInfo, producerResolver, securityContext, entitySetName,
             entityId, entityString);
         break;
       case DELETE:
-        response = er.deleteEntity(httpHeaders, uriInfo,  producerResolver, securityContext, format, callback, entitySetName, entityId);
+        response = er.deleteEntity(httpHeaders, uriInfo, producerResolver, securityContext, format, callback, entitySetName, entityId);
         break;
       case GET:
         throw new UnsupportedOperationException("Not supported yet.");

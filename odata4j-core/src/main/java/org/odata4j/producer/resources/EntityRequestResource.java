@@ -45,7 +45,7 @@ public class EntityRequestResource extends BaseResource {
   private static final Logger log = Logger.getLogger(EntityRequestResource.class.getName());
 
   @PUT
-  public Response updateEntity(@Context HttpHeaders httpHeaders, @Context UriInfo uriInfo, 
+  public Response updateEntity(@Context HttpHeaders httpHeaders, @Context UriInfo uriInfo,
       @Context ContextResolver<ODataProducer> producerResolver,
       @Context SecurityContext securityContext,
       @PathParam("entitySetName") String entitySetName,
@@ -64,16 +64,16 @@ public class EntityRequestResource extends BaseResource {
     }
 
     OEntityKey entityKey = OEntityKey.parse(id);
-    
+
     ODataContext odataContext = ODataContextImpl.builder()
-            .aspect(httpHeaders)
-            .aspect(securityContext)
-            .aspect(producer)
-            .aspect(entitySet)
-            .aspect(uriInfo)
-            .aspect(entityKey)
-            .build();
-            
+        .aspect(httpHeaders)
+        .aspect(securityContext)
+        .aspect(producer)
+        .aspect(entitySet)
+        .aspect(uriInfo)
+        .aspect(entityKey)
+        .build();
+
     if (Boolean.TRUE.equals(entitySet.getType().getHasStream())) { // getHasStream can return null
       // yes it is!
       return updateMediaLinkEntry(httpHeaders, uriInfo, producer, entitySet, payload, OEntityKey.parse(id), odataContext);
@@ -111,9 +111,9 @@ public class EntityRequestResource extends BaseResource {
     if (entitySet == null) {
       throw new NotFoundException();
     }
-    
+
     OEntityKey entityKey = OEntityKey.parse(id);
-  
+
     if (Boolean.TRUE.equals(entitySet.getType().getHasStream())) { // getHasStream can return null
       // yes it is!
       ByteArrayInputStream inStream = new ByteArrayInputStream(payload.getBytes());
@@ -149,7 +149,7 @@ public class EntityRequestResource extends BaseResource {
   }
 
   @POST
-  public Response mergeEntity(@Context HttpHeaders httpHeaders, @Context UriInfo uriInfo, 
+  public Response mergeEntity(@Context HttpHeaders httpHeaders, @Context UriInfo uriInfo,
       @Context ContextResolver<ODataProducer> producerResolver,
       @Context SecurityContext securityContext,
       @PathParam("entitySetName") String entitySetName,
@@ -162,7 +162,7 @@ public class EntityRequestResource extends BaseResource {
 
     OEntityKey entityKey = OEntityKey.parse(id);
     ODataContext context = ODataContextImpl.builder().aspect(httpHeaders).aspect(securityContext).aspect(producer).build();
-    
+
     String method = httpHeaders.getRequestHeaders().getFirst(ODataConstants.Headers.X_HTTP_METHOD);
     if ("MERGE".equals(method)) {
       OEntity entity = this.getRequestEntity(httpHeaders, uriInfo, payload, producer.getMetadata(), entitySetName, entityKey);
@@ -224,14 +224,14 @@ public class EntityRequestResource extends BaseResource {
     }
 
     ODataContext odataContext = ODataContextImpl.builder()
-            .aspect(httpHeaders)
-            .aspect(securityContext)
-            .aspect(producer)
-            .aspect(entitySet)
-            .aspect(uriInfo)
-            .aspect(entityKey)
-            .build();
-    
+        .aspect(httpHeaders)
+        .aspect(securityContext)
+        .aspect(producer)
+        .aspect(entitySet)
+        .aspect(uriInfo)
+        .aspect(entityKey)
+        .build();
+
     if (Boolean.TRUE.equals(entitySet.getType().getHasStream())) { // getHasStream can return null
       // yes it is!
       // first, the producer must support OMediaLinkExtension
@@ -252,8 +252,8 @@ public class EntityRequestResource extends BaseResource {
 
   @GET
   @Produces({ ODataConstants.APPLICATION_ATOM_XML_CHARSET_UTF8, ODataConstants.TEXT_JAVASCRIPT_CHARSET_UTF8, ODataConstants.APPLICATION_JAVASCRIPT_CHARSET_UTF8 })
-  public Response getEntity(@Context HttpHeaders httpHeaders, 
-      @Context UriInfo uriInfo, 
+  public Response getEntity(@Context HttpHeaders httpHeaders,
+      @Context UriInfo uriInfo,
       @Context ContextResolver<ODataProducer> producerResolver,
       @Context SecurityContext securityContext,
       @PathParam("entitySetName") String entitySetName,
@@ -267,7 +267,7 @@ public class EntityRequestResource extends BaseResource {
     return getEntityImpl(httpHeaders, uriInfo, securityContext, producer, entitySetName, id, format, callback, expand, select);
   }
 
-  protected Response getEntityImpl(HttpHeaders httpHeaders, UriInfo uriInfo, 
+  protected Response getEntityImpl(HttpHeaders httpHeaders, UriInfo uriInfo,
       SecurityContext securityContext,
       ODataProducer producer,
       String entitySetName,
@@ -293,7 +293,7 @@ public class EntityRequestResource extends BaseResource {
     EntityResponse response;
     try {
       response = producer.getEntity(ODataContextImpl.builder().aspect(httpHeaders).aspect(securityContext).aspect(producer).build(),
-              entitySetName, OEntityKey.parse(id), query);
+          entitySetName, OEntityKey.parse(id), query);
     } catch (IllegalArgumentException e) {
       throw new BadRequestException("Illegal key " + id, e);
     }

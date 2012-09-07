@@ -27,7 +27,10 @@ import org.odata4j.format.json.JsonStreamReaderFactory.JsonStreamReader.JsonStar
  */
 public class JsonComplexObjectFormatParser extends JsonFormatParser implements FormatParser<OComplexObject> {
   private static final boolean DUMP = false;
-  private static void dump(String msg) { if (DUMP) System.out.println(msg); }
+
+  private static void dump(String msg) {
+    if (DUMP) System.out.println(msg);
+  }
 
   public JsonComplexObjectFormatParser(Settings s) {
     super(s);

@@ -48,9 +48,9 @@ public class LinksRequestResource extends BaseResource {
   }
 
   @POST
-  public Response createLink(@Context HttpHeaders httpHeaders, 
-      @Context UriInfo uriInfo, 
-      @Context ContextResolver<ODataProducer> producerResolver, 
+  public Response createLink(@Context HttpHeaders httpHeaders,
+      @Context UriInfo uriInfo,
+      @Context ContextResolver<ODataProducer> producerResolver,
       @Context SecurityContext securityContext,
       String payload) {
     log.info(String.format(
@@ -68,9 +68,9 @@ public class LinksRequestResource extends BaseResource {
   }
 
   @PUT
-  public Response updateLink(@Context HttpHeaders httpHeaders, 
-      @Context UriInfo uriInfo, 
-      @Context ContextResolver<ODataProducer> producerResolver, 
+  public Response updateLink(@Context HttpHeaders httpHeaders,
+      @Context UriInfo uriInfo,
+      @Context ContextResolver<ODataProducer> producerResolver,
       @Context SecurityContext securityContext,
       String payload) {
     log.info(String.format(
@@ -98,8 +98,8 @@ public class LinksRequestResource extends BaseResource {
   }
 
   @DELETE
-  public Response deleteLink(@Context HttpHeaders httpHeaders, 
-      @Context UriInfo uriInfo, 
+  public Response deleteLink(@Context HttpHeaders httpHeaders,
+      @Context UriInfo uriInfo,
       @Context ContextResolver<ODataProducer> producerResolver,
       @Context SecurityContext securityContext) {
     log.info(String.format(
@@ -116,8 +116,8 @@ public class LinksRequestResource extends BaseResource {
   }
 
   @GET
-  public Response getLinks(@Context HttpHeaders httpHeaders, 
-      @Context UriInfo uriInfo, 
+  public Response getLinks(@Context HttpHeaders httpHeaders,
+      @Context UriInfo uriInfo,
       @Context ContextResolver<ODataProducer> producerResolver,
       @Context SecurityContext securityContext,
       @QueryParam("$format") String format,

@@ -162,19 +162,31 @@ public class XmlPullXMLFactoryProvider2 extends XMLFactoryProvider2 {
 
     private String getEventTypeName() {
       try {
-        switch(xpp.getEventType()) {
-          case XmlPullParser.START_DOCUMENT: return "START_DOCUMENT";
-          case XmlPullParser.END_DOCUMENT: return "END_DOCUMENT";
-          case XmlPullParser.START_TAG: return "START_TAG";
-          case XmlPullParser.END_TAG: return "END_TAG";
-          case XmlPullParser.TEXT: return "TEXT";
-          case XmlPullParser.CDSECT: return "CDSECT";
-          case XmlPullParser.ENTITY_REF: return "ENTITY_REF";
-          case XmlPullParser.IGNORABLE_WHITESPACE: return "IGNORABLE_WHITESPACE";
-          case XmlPullParser.PROCESSING_INSTRUCTION: return "PROCESSING_INSTRUCTION";
-          case XmlPullParser.COMMENT: return "COMMENT";
-          case XmlPullParser.DOCDECL: return "DOCDECL";
-          default: return "UNKNOWN TYPE " + xpp.getEventType();
+        switch (xpp.getEventType()) {
+        case XmlPullParser.START_DOCUMENT:
+          return "START_DOCUMENT";
+        case XmlPullParser.END_DOCUMENT:
+          return "END_DOCUMENT";
+        case XmlPullParser.START_TAG:
+          return "START_TAG";
+        case XmlPullParser.END_TAG:
+          return "END_TAG";
+        case XmlPullParser.TEXT:
+          return "TEXT";
+        case XmlPullParser.CDSECT:
+          return "CDSECT";
+        case XmlPullParser.ENTITY_REF:
+          return "ENTITY_REF";
+        case XmlPullParser.IGNORABLE_WHITESPACE:
+          return "IGNORABLE_WHITESPACE";
+        case XmlPullParser.PROCESSING_INSTRUCTION:
+          return "PROCESSING_INSTRUCTION";
+        case XmlPullParser.COMMENT:
+          return "COMMENT";
+        case XmlPullParser.DOCDECL:
+          return "DOCDECL";
+        default:
+          return "UNKNOWN TYPE " + xpp.getEventType();
         }
       } catch (XmlPullParserException e) {
         throw Throwables.propagate(e);

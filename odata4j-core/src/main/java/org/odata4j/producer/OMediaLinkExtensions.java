@@ -1,4 +1,3 @@
-
 package org.odata4j.producer;
 
 import org.odata4j.core.OExtension;
@@ -8,7 +7,7 @@ import org.odata4j.core.OExtension;
  * requests related to media link entries.
  */
 public interface OMediaLinkExtensions extends OExtension<ODataProducer> {
-  
+
   /**
    * Creates an OMediaLinkExtension object to handle the given media link entry
    * request.
@@ -17,5 +16,5 @@ public interface OMediaLinkExtensions extends OExtension<ODataProducer> {
    * @return The OMediaLinkExtension
    */
   OMediaLinkExtension create(ODataContext context);
-  
+
 }

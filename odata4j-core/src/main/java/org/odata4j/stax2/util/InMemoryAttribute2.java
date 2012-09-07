@@ -33,7 +33,8 @@ public class InMemoryAttribute2 implements Attribute2 {
       @Override
       public boolean apply(Attribute2 attribute) {
         return equal(attribute.getName().getNamespaceUri(), name.getNamespaceUri()) && equal(attribute.getName().getLocalPart(), name.getLocalPart());
-      }};
+      }
+    };
   }
 
   public static Predicate1<Attribute2> pred1_byName(final String name) {
@@ -41,7 +42,8 @@ public class InMemoryAttribute2 implements Attribute2 {
       @Override
       public boolean apply(Attribute2 attribute) {
         return attribute.getName().getLocalPart().equals(name);
-      }};
+      }
+    };
   }
 
 }

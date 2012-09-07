@@ -40,13 +40,13 @@ public class ValueRequestResource extends BaseResource {
 
     if (entitySet != null && entitySet.getType().getHasStream()) {
       ODataContext odataContext = ODataContextImpl.builder()
-            .aspect(httpHeaders)
-            .aspect(securityContext)
-            .aspect(producer)
-            .aspect(entitySet)
-            .aspect(uriInfo)
-            .build();
-    
+          .aspect(httpHeaders)
+          .aspect(securityContext)
+          .aspect(producer)
+          .aspect(entitySet)
+          .aspect(uriInfo)
+          .build();
+
       return getStreamResponse(httpHeaders, uriInfo, producer, entitySet, id, new EntityQueryInfo(
           null,
           OptionsQueryParser.parseCustomOptions(uriInfo),
@@ -59,16 +59,15 @@ public class ValueRequestResource extends BaseResource {
   }
 
   protected Response getStreamResponse(HttpHeaders httpHeaders, UriInfo uriInfo, ODataProducer producer, EdmEntitySet entitySet, String entityId, EntityQueryInfo queryInfo,
-          SecurityContext securityContext, ODataContext odataContext) {
-    
+      SecurityContext securityContext, ODataContext odataContext) {
+
     OMediaLinkExtension mediaLinkExtension = this.getMediaLinkExtension(httpHeaders, uriInfo, entitySet, producer, odataContext);
-    
+
     if (mediaLinkExtension == null)
       throw new NotImplementedException();
 
-    
-    EntityResponse entityResponse = producer.getEntity(odataContext, 
-            entitySet.getName(), OEntityKey.parse(entityId), queryInfo);
+    EntityResponse entityResponse = producer.getEntity(odataContext,
+        entitySet.getName(), OEntityKey.parse(entityId), queryInfo);
     InputStream entityStream = mediaLinkExtension.getInputStreamForMediaLinkEntry(odataContext, entityResponse.getEntity(), null, queryInfo);
     String contentType = mediaLinkExtension.getMediaLinkContentType(odataContext, entityResponse.getEntity());
     String contentDisposition = mediaLinkExtension.getMediaLinkContentDisposition(odataContext, entityResponse.getEntity());

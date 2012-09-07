@@ -41,6 +41,7 @@ public class ODataConstants {
       public static final String ISO_8859_1 = "ISO-8859-1"; // latin1
       public static final String ISO_8859_15 = "ISO-8859-15"; // latin9
     }
+
     /** Common character sets. (lower-case) */
     public static class Lower {
       public static final String UTF_8 = "utf-8";

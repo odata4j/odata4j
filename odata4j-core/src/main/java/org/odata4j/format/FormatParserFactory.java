@@ -41,7 +41,7 @@ public class FormatParserFactory {
     FormatParser<OSimpleObject<?>> getSimpleObjectFormatParser(Settings settings);
 
     FormatParser<OError> getErrorFormatParser(Settings settings);
-    
+
     FormatParser<OEntity> getEntityFormatParser(Settings settings);
   }
 

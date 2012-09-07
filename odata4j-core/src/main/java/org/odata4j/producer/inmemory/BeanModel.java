@@ -25,7 +25,10 @@ import org.odata4j.core.Throwables;
  */
 public class BeanModel {
   private static final boolean DUMP = false;
-  private static void dump(String msg) { if (DUMP) System.out.println(msg); }
+
+  private static void dump(String msg) {
+    if (DUMP) System.out.println(msg);
+  }
 
   private final Class<?> beanClass;
   private final Map<String, Method> getters;
@@ -337,7 +340,7 @@ public class BeanModel {
         Class<?> setterType = setters.containsKey(propertyName)
             ? setters.get(propertyName).getParameterTypes()[0]
             : null;
-            dump("bean colllectionProp?: " + propertyName + " getterType: " + getterType.getName() + " setterType: " + setterType);
+        dump("bean colllectionProp?: " + propertyName + " getterType: " + getterType.getName() + " setterType: " + setterType);
 
         if (setterType != null) {
           if (!getterType.equals(setterType))

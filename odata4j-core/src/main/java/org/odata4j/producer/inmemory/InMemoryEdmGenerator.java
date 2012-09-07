@@ -32,7 +32,10 @@ import org.odata4j.edm.EdmType;
 
 public class InMemoryEdmGenerator implements EdmGenerator {
   private static final boolean DUMP = false;
-  private static void dump(String msg) { if (DUMP) System.out.println(msg); }
+
+  private static void dump(String msg) {
+    if (DUMP) System.out.println(msg);
+  }
 
   private final Logger log = Logger.getLogger(getClass().getName());
 

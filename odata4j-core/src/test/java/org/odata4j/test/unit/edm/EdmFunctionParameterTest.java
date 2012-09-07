@@ -18,21 +18,21 @@ public class EdmFunctionParameterTest {
     EdmFunctionParameter parameter = builder.setNullable(NULLABLE).setType(EdmSimpleType.STRING).build();
     assertEquals(NULLABLE, parameter.isNullable());
   }
-  
+
   @Test
   public void edmFunctionParameterMaxLength() {
     EdmFunctionParameter.Builder builder = EdmFunctionParameter.newBuilder();
     EdmFunctionParameter parameter = builder.setType(EdmSimpleType.INT32).setMaxLength(MAX_LENGTH).build();
     assertEquals(MAX_LENGTH, parameter.getMaxLength());
   }
-  
+
   @Test
   public void edmFunctionParameterPrecision() {
     EdmFunctionParameter.Builder builder = EdmFunctionParameter.newBuilder();
     EdmFunctionParameter parameter = builder.setType(EdmSimpleType.DECIMAL).setPrecision(PRECISION).build();
     assertEquals(PRECISION, parameter.getPrecision());
   }
-  
+
   @Test
   public void edmFunctionParameterScale() {
     EdmFunctionParameter.Builder builder = EdmFunctionParameter.newBuilder();

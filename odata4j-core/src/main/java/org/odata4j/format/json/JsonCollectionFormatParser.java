@@ -52,8 +52,8 @@ public class JsonCollectionFormatParser extends JsonFormatParser implements Form
 
   @Override
   public OCollection<? extends OObject> parse(Reader reader) {
-   
-     if (this.returnType.getItemType().getClass().isAssignableFrom(EdmEntityType.class)) {
+
+    if (this.returnType.getItemType().getClass().isAssignableFrom(EdmEntityType.class)) {
       return parseFunctionFeed(reader);
     }
 
@@ -101,25 +101,25 @@ public class JsonCollectionFormatParser extends JsonFormatParser implements Form
       jsr.close();
     }
   }
-  
+
   protected OCollection<? extends OObject> parseFunctionFeed(Reader reader) {
-    
+
     // entitySetName is a function
     // this really reveals a fundamental flaw in the parsers being driven by EdmEntitySets
     // instead of EdmEntityTypes.
-    
+
     EdmEntitySet entitySet = this.metadata.getEdmEntitySet((EdmEntityType) returnType.getItemType());
 
     Settings settings = new Settings(
-      // someone really needs to spend some time on service version negotiation....
-      ODataVersion.V2,
-      this.metadata,
-      entitySet.getName(),
-      this.entityKey,
-      null, // feed customization mapping
-      this.isResponse,
-      this.returnType.getItemType());
-    
+        // someone really needs to spend some time on service version negotiation....
+        ODataVersion.V2,
+        this.metadata,
+        entitySet.getName(),
+        this.entityKey,
+        null, // feed customization mapping
+        this.isResponse,
+        this.returnType.getItemType());
+
     JsonFeedFormatParser parser = new JsonFeedFormatParser(settings);
     JsonFeed feed = parser.parse(reader);
     OCollection.Builder<OObject> c = newCollectionBuilder();
@@ -128,7 +128,7 @@ public class JsonCollectionFormatParser extends JsonFormatParser implements Form
     }
     return c.build();
   }
-  
+
   protected OCollection<? extends OObject> parseCollection(JsonStreamReader jsr) {
     // an array of objects:
     ensureNext(jsr);
@@ -140,7 +140,7 @@ public class JsonCollectionFormatParser extends JsonFormatParser implements Form
       parseCollectionOfSimple(c, jsr);
     } else {
       FormatParser<? extends OObject> parser = createItemParser(this.returnType.getItemType());
-      
+
       while (jsr.hasNext()) {
         // this is what I really want to do next:
         // OObject o = parser.parse(jsr);

@@ -506,7 +506,10 @@ enum ReaderState {
 
 class JsonStreamReaderImpl implements JsonStreamReader {
   private static final boolean DUMP = false;
-  private static void dump(String msg) { if (DUMP) System.out.println(msg); }
+
+  private static void dump(String msg) {
+    if (DUMP) System.out.println(msg);
+  }
 
   private JsonStreamTokenizerImpl tokenizer;
   private Stack<ReaderState> state = new Stack<ReaderState>();

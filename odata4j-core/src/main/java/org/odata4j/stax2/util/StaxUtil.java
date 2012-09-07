@@ -65,7 +65,7 @@ public class StaxUtil {
     if (includeCurrent)
       writeStartElement(currentEvent.asStartElement(), xmlWriter);
     int level = 0;
-    while(true) {
+    while (true) {
       currentEvent = xmlReader.nextEvent();
       if (currentEvent.isStartElement()) {
         writeStartElement(currentEvent.asStartElement(), xmlWriter);

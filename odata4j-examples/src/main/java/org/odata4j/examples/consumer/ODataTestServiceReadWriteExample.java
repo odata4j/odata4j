@@ -37,7 +37,9 @@ public class ODataTestServiceReadWriteExample extends AbstractExample {
     reportEntity("DVD Player", dvdPlayer);
 
     // we are about to add a new product, first make sure it does not exist
-    try { c.deleteEntity("Products", 10).execute(); } catch (NotFoundException e) {}
+    try {
+      c.deleteEntity("Products", 10).execute();
+    } catch (NotFoundException e) {}
 
     // create the new product
     OEntity newProduct = c.createEntity("Products")
@@ -72,7 +74,11 @@ public class ODataTestServiceReadWriteExample extends AbstractExample {
     // clean up, delete the new product
     c.deleteEntity("Products", 10).execute();
     boolean exists = true;
-    try { c.getEntity("Products", 10).execute(); } catch (ODataProducerException e) { if (e.getHttpStatus().getStatusCode() == 404) exists = false; }
+    try {
+      c.getEntity("Products", 10).execute();
+    } catch (ODataProducerException e) {
+      if (e.getHttpStatus().getStatusCode() == 404) exists = false;
+    }
     report("newProduct " + (exists ? "exists" : "does not exist"));
   }
 

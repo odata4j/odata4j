@@ -68,7 +68,7 @@ public abstract class BaseResource {
 
   // some helpers for media link entries
   protected OMediaLinkExtension getMediaLinkExtension(HttpHeaders httpHeaders, UriInfo uriInfo, EdmEntitySet entitySet, ODataProducer producer,
-          ODataContext context) {
+      ODataContext context) {
 
     OMediaLinkExtensions mediaLinkExtensions = producer.findExtension(OMediaLinkExtensions.class);
 

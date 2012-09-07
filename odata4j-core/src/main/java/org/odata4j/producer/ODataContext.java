@@ -1,4 +1,3 @@
-
 package org.odata4j.producer;
 
 /**
@@ -32,7 +31,7 @@ package org.odata4j.producer;
  * 
  */
 public interface ODataContext {
-  
+
   /**
    * Get an aspect of the overall context in which the OData request is being
    * executed.
@@ -41,8 +40,7 @@ public interface ODataContext {
    * @return the object representing the requested context aspect.
    */
   <T> T getContextAspect(Class<T> contextClass);
-  
-  
+
   /**
    * Get the request headers of the current request. 
    * @return 

@@ -149,26 +149,26 @@ public class XmlFormatParser {
   public static final QName2 XML_BASE = new QName2(NS_XML, "base");
 
   protected static boolean isStartElement(XMLEvent2 event, QName2... names) {
-    if(!event.isStartElement()){
+    if (!event.isStartElement()) {
       return false;
     }
     QName2 name = new QName2(event.asStartElement().getName().getNamespaceUri(), event.asStartElement().getName().getLocalPart());
     return Enumerable.create(names).contains(name);
-    
+
   }
+
   protected static boolean isElement(XMLEvent2 event, QName2... names) {
     QName2 name = new QName2(event.asStartElement().getName().getNamespaceUri(), event.asStartElement().getName().getLocalPart());
     return Enumerable.create(names).contains(name);
-    
+
   }
 
-
   protected static boolean isEndElement(XMLEvent2 event, QName2 qname) {
-    if(!event.isEndElement()){
+    if (!event.isEndElement()) {
       return false;
     }
     QName2 name = event.asEndElement().getName();
-    return name.getNamespaceUri().equals(qname.getNamespaceUri()) 
+    return name.getNamespaceUri().equals(qname.getNamespaceUri())
         && name.getLocalPart().equals(qname.getLocalPart());
   }
 
