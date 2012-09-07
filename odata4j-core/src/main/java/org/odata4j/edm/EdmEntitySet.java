@@ -23,9 +23,9 @@ public class EdmEntitySet extends EdmItem implements Named {
   private final String name;
   private final Func<EdmEntityType> type;
 
-  private EdmEntitySet(String name, Func<EdmEntityType> type,
-      EdmDocumentation doc, ImmutableList<EdmAnnotation<?>> annots) {
-    super(doc, annots);
+  private EdmEntitySet(String name, Func<EdmEntityType> type, EdmDocumentation doc,
+      ImmutableList<EdmAnnotation<?>> annots, ImmutableList<EdmAnnotation<?>> annotElements) {
+    super(doc, annots, annotElements);
     this.name = name;
     this.type = type;
   }
@@ -85,7 +85,9 @@ public class EdmEntitySet extends EdmItem implements Named {
 
     public EdmEntitySet build() {
       if (builtEntitySet == null) {
-        builtEntitySet = new EdmEntitySet(name, entityType == null ? null : entityType.builtFunc(), getDocumentation(), ImmutableList.copyOf(getAnnotations()));
+        builtEntitySet = new EdmEntitySet(name,
+            entityType == null ? null : entityType.builtFunc(), getDocumentation(),
+            ImmutableList.copyOf(getAnnotations()), ImmutableList.copyOf(getAnnotationElements()));
       }
       return builtEntitySet;
     }

@@ -8,12 +8,12 @@ import org.odata4j.core.ImmutableList;
 public abstract class EdmNonSimpleType extends EdmType {
 
   public EdmNonSimpleType(String fullyQualifiedTypeName) {
-    this(fullyQualifiedTypeName, null, null);
+    this(fullyQualifiedTypeName, null, null, null);
   }
 
   public EdmNonSimpleType(String fullyQualifiedTypeName, EdmDocumentation documentation,
-      ImmutableList<EdmAnnotation<?>> annotations) {
-    super(fullyQualifiedTypeName, documentation, annotations);
+      ImmutableList<EdmAnnotation<?>> annotations, ImmutableList<EdmAnnotation<?>> annotationElements) {
+    super(fullyQualifiedTypeName, documentation, annotations, annotationElements);
   }
 
   @Override

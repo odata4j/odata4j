@@ -32,11 +32,12 @@ public abstract class EdmType extends EdmItem {
   private final String fullyQualifiedTypeName;
 
   protected EdmType(String fullyQualifiedTypeName) {
-    this(fullyQualifiedTypeName, null, null);
+    this(fullyQualifiedTypeName, null, null, null);
   }
 
-  protected EdmType(String fullyQualifiedTypeName, EdmDocumentation documentation, ImmutableList<EdmAnnotation<?>> annotations) {
-    super(documentation, annotations);
+  protected EdmType(String fullyQualifiedTypeName, EdmDocumentation documentation, ImmutableList<EdmAnnotation<?>> annotations,
+      ImmutableList<EdmAnnotation<?>> annotationElements) {
+    super(documentation, annotations, annotationElements);
     this.fullyQualifiedTypeName = fullyQualifiedTypeName;
   }
 

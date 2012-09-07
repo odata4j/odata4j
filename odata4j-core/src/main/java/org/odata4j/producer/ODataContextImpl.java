@@ -3,6 +3,7 @@ package org.odata4j.producer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import javax.ws.rs.core.HttpHeaders;
 
 /**

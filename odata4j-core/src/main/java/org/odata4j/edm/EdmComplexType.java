@@ -22,9 +22,9 @@ import org.odata4j.core.ImmutableList;
 public class EdmComplexType extends EdmStructuralType {
 
   private EdmComplexType(String namespace, String name, List<EdmProperty.Builder> properties,
-      EdmDocumentation documentation, ImmutableList<EdmAnnotation<?>> annots,
-      Boolean isAbstract) {
-    super(null, namespace, name, properties, documentation, annots, isAbstract);
+      EdmEntityType baseType, EdmDocumentation documentation, ImmutableList<EdmAnnotation<?>> annots,
+      ImmutableList<EdmAnnotation<?>> annotElements, Boolean isAbstract) {
+    super(baseType, namespace, name, properties, documentation, annots, annotElements, isAbstract);
   }
 
   public static Builder newBuilder() {
@@ -37,10 +37,16 @@ public class EdmComplexType extends EdmStructuralType {
 
   /** Mutable builder for {@link EdmComplexType} objects. */
   public static class Builder extends EdmStructuralType.Builder<EdmComplexType, Builder> {
+    private EdmEntityType.Builder baseTypeBuilder;
+    private String baseTypeNameFQ;
 
     @Override
     Builder newBuilder(EdmComplexType complexType, BuilderContext context) {
       fillBuilder(complexType, context);
+
+      if (complexType.getBaseType() != null) {
+        baseTypeBuilder = EdmEntityType.newBuilder(complexType.getBaseType(), context);
+      }
       return this;
     }
 
@@ -51,7 +57,26 @@ public class EdmComplexType extends EdmStructuralType {
 
     @Override
     protected EdmType buildImpl() {
-      return new EdmComplexType(namespace, name, properties, getDocumentation(), ImmutableList.copyOf(getAnnotations()), isAbstract);
+      return new EdmComplexType(namespace, name, properties,
+          (EdmEntityType) (this.baseTypeBuilder != null ? this.baseTypeBuilder.build() : null),
+          getDocumentation(), ImmutableList.copyOf(getAnnotations()),
+          ImmutableList.copyOf(getAnnotationElements()), isAbstract);
+    }
+
+    public Builder setBaseType(EdmEntityType.Builder baseType) {
+      this.baseTypeBuilder = baseType;
+      return this;
+    }
+
+    public Builder setBaseType(String baseTypeName) {
+      this.baseTypeNameFQ = baseTypeName;
+      return this;
+    }
+
+    public String getFQBaseTypeName() {
+      return baseTypeNameFQ != null
+          ? baseTypeNameFQ
+          : (baseType != null ? baseType.getFullyQualifiedTypeName() : null);
     }
 
   }

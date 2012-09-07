@@ -3,6 +3,7 @@ package org.odata4j.producer;
 
 import java.util.List;
 import java.util.Locale;
+
 import javax.ws.rs.core.HttpHeaders;
 
 /**

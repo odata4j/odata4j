@@ -20,14 +20,21 @@ public class EdmFunctionParameter extends EdmItem {
   private final EdmType type;
   private final Mode mode;
   private final Boolean nullable;
+  private final Integer maxLength;
+  private final Integer precision;
+  private final Integer scale;
 
-  private EdmFunctionParameter(String name, EdmType type, Mode mode, Boolean nullable, EdmDocumentation doc,
-      ImmutableList<EdmAnnotation<?>> annots) {
-    super(doc, annots);
+  private EdmFunctionParameter(String name, EdmType type, Mode mode, Boolean nullable,
+      Integer maxLength, Integer precision, Integer scale, EdmDocumentation doc,
+      ImmutableList<EdmAnnotation<?>> annots, ImmutableList<EdmAnnotation<?>> annotElements) {
+    super(doc, annots, annotElements);
     this.name = name;
     this.type = type;
     this.mode = mode;
     this.nullable = nullable;
+    this.maxLength = maxLength;
+    this.precision = precision;
+    this.scale = scale;
   }
 
   public String getName() {
@@ -46,6 +53,18 @@ public class EdmFunctionParameter extends EdmItem {
     return nullable;
   }
 
+  public Integer getMaxLength() {
+    return maxLength;
+  }
+
+  public Integer getPrecision() {
+    return precision;
+  }
+
+  public Integer getScale() {
+    return scale;
+  }
+
   public static Builder newBuilder() {
     return new Builder();
   }
@@ -62,6 +81,9 @@ public class EdmFunctionParameter extends EdmItem {
     private EdmType.Builder<?, ?> typeBuilder;
     private Mode mode;
     private Boolean nullable;
+    private Integer maxLength;
+    private Integer precision;
+    private Integer scale;
 
     @Override
     Builder newBuilder(EdmFunctionParameter functionParameter, BuilderContext context) {
@@ -70,7 +92,8 @@ public class EdmFunctionParameter extends EdmItem {
 
     public EdmFunctionParameter build() {
       return new EdmFunctionParameter(name, typeBuilder != null ? typeBuilder.build() : type,
-          mode, nullable, getDocumentation(), ImmutableList.copyOf(getAnnotations()));
+          mode, nullable, maxLength, precision, scale, getDocumentation(), ImmutableList.copyOf(getAnnotations()),
+          ImmutableList.copyOf(getAnnotationElements()));
     }
 
     public Builder setName(String name) {
@@ -95,6 +118,21 @@ public class EdmFunctionParameter extends EdmItem {
 
     public Builder setNullable(Boolean nullable) {
       this.nullable = nullable;
+      return this;
+    }
+
+    public Builder setMaxLength(Integer maxLength) {
+      this.maxLength = maxLength;
+      return this;
+    }
+
+    public Builder setPrecision(Integer precision) {
+      this.precision = precision;
+      return this;
+    }
+
+    public Builder setScale(Integer scale) {
+      this.scale = scale;
       return this;
     }
 

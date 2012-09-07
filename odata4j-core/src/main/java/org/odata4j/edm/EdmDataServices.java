@@ -85,6 +85,19 @@ public class EdmDataServices {
     return null;
   }
 
+  public EdmAssociationSet findEdmAssociationSet(String associationSetName) {
+    for (EdmSchema schema : this.schemas) {
+      for (EdmEntityContainer eec : schema.getEntityContainers()) {
+        for (EdmAssociationSet eas : eec.getAssociationSets()) {
+          if (eas.getName().equals(associationSetName)) {
+            return eas;
+          }
+        }
+      }
+    }
+    return null;
+  }
+
   public EdmFunctionImport findEdmFunctionImport(String functionImportName) {
     for (EdmSchema schema : this.schemas) {
       for (EdmEntityContainer eec : schema.getEntityContainers()) {
@@ -139,6 +152,20 @@ public class EdmDataServices {
     }
     return null;
   }
+
+  // - - - - - - - - - - -  - -
+  public EdmAssociation findEdmAssociation(String fqName) {
+    for (EdmSchema schema : this.schemas) {
+      for (EdmAssociation assoc : schema.getAssociations()) {
+        if (assoc.getName().equals(fqName)) {
+          return assoc;
+        }
+      }
+    }
+    return null;
+  }
+
+  // - - - - - - - - - - - - - - - -
 
   public Iterable<EdmEntityType> getEntityTypes() {
     List<EdmEntityType> rt = new ArrayList<EdmEntityType>();

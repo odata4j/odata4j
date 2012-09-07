@@ -1,6 +1,5 @@
 package org.odata4j.core;
 
-import java.util.Map;
 
 
 /**

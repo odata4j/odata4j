@@ -1,7 +1,6 @@
 package org.odata4j.producer.resources;
 
 import java.io.StringWriter;
-import javax.ws.rs.DefaultValue;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

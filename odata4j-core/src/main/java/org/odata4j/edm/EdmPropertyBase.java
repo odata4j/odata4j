@@ -8,8 +8,9 @@ public abstract class EdmPropertyBase extends EdmItem implements Named {
 
   private final String name;
 
-  protected EdmPropertyBase(EdmDocumentation documentation, ImmutableList<EdmAnnotation<?>> annotations, String name) {
-    super(documentation, annotations);
+  protected EdmPropertyBase(EdmDocumentation documentation, ImmutableList<EdmAnnotation<?>> annotations,
+      ImmutableList<EdmAnnotation<?>> annotationElements, String name) {
+    super(documentation, annotations, annotationElements);
     this.name = name;
   }
 

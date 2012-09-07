@@ -6,7 +6,6 @@ import org.odata4j.core.OCollection;
 import org.odata4j.core.OCollections;
 import org.odata4j.core.OComplexObject;
 import org.odata4j.core.ODataVersion;
-import org.odata4j.core.OEntity;
 import org.odata4j.core.OObject;
 import org.odata4j.core.OSimpleObjects;
 import org.odata4j.edm.EdmCollectionType;

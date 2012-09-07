@@ -19,8 +19,8 @@ public class EdmAssociationSet extends EdmItem {
   private final EdmAssociationSetEnd end2;
 
   private EdmAssociationSet(String name, EdmAssociation association, EdmAssociationSetEnd end1, EdmAssociationSetEnd end2,
-      EdmDocumentation doc, ImmutableList<EdmAnnotation<?>> annots) {
-    super(doc, annots);
+      EdmDocumentation doc, ImmutableList<EdmAnnotation<?>> annots, ImmutableList<EdmAnnotation<?>> annotElements) {
+    super(doc, annots, annotElements);
     this.name = name;
     this.association = association;
     this.end1 = end1;
@@ -70,7 +70,9 @@ public class EdmAssociationSet extends EdmItem {
     }
 
     public EdmAssociationSet build() {
-      return new EdmAssociationSet(name, association.build(), end1.build(), end2.build(), getDocumentation(), ImmutableList.copyOf(getAnnotations()));
+      return new EdmAssociationSet(name, association.build(), end1.build(), end2.build(),
+          getDocumentation(), ImmutableList.copyOf(getAnnotations()),
+          ImmutableList.copyOf(getAnnotationElements()));
     }
 
     public String getAssociationName() {

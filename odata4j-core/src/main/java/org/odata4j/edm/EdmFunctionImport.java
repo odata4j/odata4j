@@ -23,8 +23,9 @@ public class EdmFunctionImport extends EdmItem {
   private final ImmutableList<EdmFunctionParameter> parameters;
 
   private EdmFunctionImport(String name, EdmEntitySet entitySet, EdmType returnType,
-      String httpMethod, ImmutableList<EdmFunctionParameter> parameters, EdmDocumentation doc, ImmutableList<EdmAnnotation<?>> annots) {
-    super(doc, annots);
+      String httpMethod, ImmutableList<EdmFunctionParameter> parameters, EdmDocumentation doc,
+      ImmutableList<EdmAnnotation<?>> annots, ImmutableList<EdmAnnotation<?>> annotElements) {
+    super(doc, annots, annotElements);
     this.name = name;
     this.entitySet = entitySet;
     this.returnType = returnType;
@@ -88,7 +89,9 @@ public class EdmFunctionImport extends EdmItem {
       EdmType returnType =
           this.returnType != null ? this.returnType
               : returnTypeBuilder != null ? returnTypeBuilder.build() : null;
-      return new EdmFunctionImport(name, entitySet == null ? null : entitySet.build(), returnType, httpMethod, ImmutableList.copyOf(parameters), getDocumentation(), ImmutableList.copyOf(getAnnotations()));
+      return new EdmFunctionImport(name, entitySet == null ? null : entitySet.build(), returnType, httpMethod,
+          ImmutableList.copyOf(parameters), getDocumentation(), ImmutableList.copyOf(getAnnotations()),
+          ImmutableList.copyOf(getAnnotationElements()));
     }
 
     public Builder setName(String name) {

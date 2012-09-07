@@ -26,9 +26,9 @@ public class EdmSchema extends EdmItem {
 
   private EdmSchema(String namespace, String alias, ImmutableList<EdmEntityType> entityTypes,
       ImmutableList<EdmComplexType> complexTypes, ImmutableList<EdmAssociation> associations,
-      ImmutableList<EdmEntityContainer> entityContainers,
-      EdmDocumentation doc, ImmutableList<EdmAnnotation<?>> annots) {
-    super(doc, annots);
+      ImmutableList<EdmEntityContainer> entityContainers, EdmDocumentation doc,
+      ImmutableList<EdmAnnotation<?>> annots, ImmutableList<EdmAnnotation<?>> annotElements) {
+    super(doc, annots, annotElements);
     this.namespace = namespace;
     this.alias = alias;
     this.entityTypes = entityTypes;
@@ -139,7 +139,8 @@ public class EdmSchema extends EdmItem {
           ImmutableList.copyOf(associations),
           ImmutableList.copyOf(entityContainers),
           getDocumentation(),
-          ImmutableList.copyOf(getAnnotations()));
+          ImmutableList.copyOf(getAnnotations()),
+          ImmutableList.copyOf(getAnnotationElements()));
     }
 
     public Builder setNamespace(String namespace) {

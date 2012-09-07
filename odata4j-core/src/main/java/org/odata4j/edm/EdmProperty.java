@@ -39,6 +39,7 @@ public class EdmProperty extends EdmPropertyBase {
   private final String defaultValue;
   private final Integer precision;
   private final Integer scale;
+  private final String collation;
 
   private final String fcTargetPath;
   private final String fcContentKind;
@@ -49,14 +50,12 @@ public class EdmProperty extends EdmPropertyBase {
   private final String fcNsUri;
   private final String mimeType;
 
-  private EdmProperty(EdmDocumentation documentation, ImmutableList<EdmAnnotation<?>> annotations, String name,
-      EdmStructuralType declaringType, EdmType type, boolean nullable, Integer maxLength, Boolean unicode, Boolean fixedLength,
-      String storeGeneratedPattern, String concurrencyMode,
-      String fcTargetPath, String fcContentKind, String fcKeepInContent, String fcEpmContentKind,
-      String fcEpmKeepInContent, String fcNsPrefix,
-      String fcNsUri, CollectionKind collectionKind, String defaultValue, Integer precision, Integer scale,
-      String mimeType) {
-    super(documentation, annotations, name);
+  private EdmProperty(EdmDocumentation documentation, ImmutableList<EdmAnnotation<?>> annotations, ImmutableList<EdmAnnotation<?>> annotElements,
+      String name, EdmStructuralType declaringType, EdmType type, boolean nullable, Integer maxLength, Boolean unicode, Boolean fixedLength,
+      String storeGeneratedPattern, String concurrencyMode, String fcTargetPath, String fcContentKind, String fcKeepInContent, String fcEpmContentKind,
+      String fcEpmKeepInContent, String fcNsPrefix, String fcNsUri, CollectionKind collectionKind, String defaultValue,
+      Integer precision, Integer scale, String collation, String mimeType) {
+    super(documentation, annotations, annotElements, name);
     this.declaringType = declaringType;
     this.type = type;
     this.nullable = nullable;
@@ -68,6 +67,7 @@ public class EdmProperty extends EdmPropertyBase {
     this.defaultValue = defaultValue;
     this.precision = precision;
     this.scale = scale;
+    this.collation = collation;
 
     this.fcTargetPath = fcTargetPath;
     this.fcContentKind = fcContentKind;
@@ -118,6 +118,10 @@ public class EdmProperty extends EdmPropertyBase {
 
   public Integer getScale() {
     return scale;
+  }
+
+  public String getCollation() {
+    return collation;
   }
 
   public String getFcTargetPath() {
@@ -188,6 +192,7 @@ public class EdmProperty extends EdmPropertyBase {
     private String defaultValue;
     private Integer precision;
     private Integer scale;
+    private String collation;
 
     private String fcTargetPath;
     private String fcContentKind;
@@ -226,6 +231,7 @@ public class EdmProperty extends EdmPropertyBase {
       this.defaultValue = property.defaultValue;
       this.precision = property.precision;
       this.scale = property.scale;
+      this.collation = property.collation;
 
       this.fcTargetPath = property.fcTargetPath;
       this.fcContentKind = property.fcContentKind;
@@ -243,9 +249,10 @@ public class EdmProperty extends EdmPropertyBase {
       if (builtProperty == null) {
         EdmType type = this.type != null ? this.type : typeBuilder.build();
         builtProperty = new EdmProperty(getDocumentation(), ImmutableList.copyOf(getAnnotations()),
-            getName(), declaringType, type, nullable, maxLength, unicode, fixedLength, storeGeneratedPattern,
+            ImmutableList.copyOf(getAnnotationElements()), getName(), declaringType, type, nullable, maxLength, unicode,
+            fixedLength, storeGeneratedPattern,
             concurrencyMode, fcTargetPath, fcContentKind, fcKeepInContent, fcEpmContentKind, fcEpmKeepInContent, fcNsPrefix,
-            fcNsUri, collectionKind, defaultValue, precision, scale, mimeType);
+            fcNsUri, collectionKind, defaultValue, precision, scale, collation, mimeType);
       }
       return builtProperty;
     }
@@ -345,6 +352,11 @@ public class EdmProperty extends EdmPropertyBase {
       return this;
     }
 
+    public Builder setCollation(String collation) {
+      this.collation = collation;
+      return this;
+    }
+
     public Builder setMimeType(String mimeType) {
       this.mimeType = mimeType;
       return this;
@@ -393,6 +405,10 @@ public class EdmProperty extends EdmPropertyBase {
 
     public Integer getScale() {
       return scale;
+    }
+
+    public String getCollation() {
+      return collation;
     }
 
     public String getFcTargetPath() {

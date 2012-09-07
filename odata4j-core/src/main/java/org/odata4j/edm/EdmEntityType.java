@@ -34,17 +34,18 @@ public class EdmEntityType extends EdmStructuralType {
 
   private final String alias;
   private final Boolean hasStream;
+  private final Boolean openType;
   private final List<String> keys;
   private final List<EdmNavigationProperty> navigationProperties;
 
-  private EdmEntityType(String namespace, String alias, String name, Boolean hasStream,
+  private EdmEntityType(String namespace, String alias, String name, Boolean hasStream, Boolean openType,
       ImmutableList<String> keys, EdmEntityType baseType, List<EdmProperty.Builder> properties,
-      ImmutableList<EdmNavigationProperty> navigationProperties,
-      EdmDocumentation doc, ImmutableList<EdmAnnotation<?>> annotations, Boolean isAbstract) {
-    super(baseType, namespace, name, properties, doc, annotations, isAbstract);
+      ImmutableList<EdmNavigationProperty> navigationProperties, EdmDocumentation doc,
+      ImmutableList<EdmAnnotation<?>> annotations, ImmutableList<EdmAnnotation<?>> annotElements, Boolean isAbstract) {
+    super(baseType, namespace, name, properties, doc, annotations, annotElements, isAbstract);
     this.alias = alias;
     this.hasStream = hasStream;
-
+    this.openType = openType;
     this.keys = (keys == null || keys.isEmpty()) ?
         (baseType == null ? findConventionalKeys() : null) :
         keys;
@@ -72,6 +73,10 @@ public class EdmEntityType extends EdmStructuralType {
 
   public Boolean getHasStream() {
     return hasStream;
+  }
+
+  public Boolean getOpenType() {
+    return openType;
   }
 
   public String getFQAliasName() {
@@ -133,6 +138,7 @@ public class EdmEntityType extends EdmStructuralType {
 
     private String alias;
     private Boolean hasStream;
+    private Boolean openType;
     private final List<String> keys = new ArrayList<String>();
     private final List<EdmNavigationProperty.Builder> navigationProperties = new ArrayList<EdmNavigationProperty.Builder>();
     private EdmEntityType.Builder baseTypeBuilder;
@@ -144,6 +150,7 @@ public class EdmEntityType extends EdmStructuralType {
       context.register(entityType, this);
       this.alias = entityType.alias;
       this.hasStream = entityType.hasStream;
+      this.openType = entityType.openType;
       if (entityType.keys != null) {
         // subtypes don't have keys!
         this.keys.addAll(entityType.keys);
@@ -169,9 +176,10 @@ public class EdmEntityType extends EdmStructuralType {
       for (EdmNavigationProperty.Builder navigationProperty : this.navigationProperties) {
         builtNavProps.add(navigationProperty.build());
       }
-      return new EdmEntityType(namespace, alias, name, hasStream, ImmutableList.copyOf(keys),
+      return new EdmEntityType(namespace, alias, name, hasStream, openType, ImmutableList.copyOf(keys),
           (EdmEntityType) (this.baseTypeBuilder != null ? this.baseTypeBuilder.build() : null),
-          properties, ImmutableList.copyOf(builtNavProps), getDocumentation(), ImmutableList.copyOf(getAnnotations()), isAbstract);
+          properties, ImmutableList.copyOf(builtNavProps), getDocumentation(),
+          ImmutableList.copyOf(getAnnotations()), ImmutableList.copyOf(getAnnotationElements()), isAbstract);
     }
 
     public Builder addNavigationProperties(EdmNavigationProperty.Builder... navigationProperties) {
@@ -214,6 +222,11 @@ public class EdmEntityType extends EdmStructuralType {
 
     public Builder setHasStream(Boolean hasStream) {
       this.hasStream = hasStream;
+      return this;
+    }
+
+    public Builder setOpenType(Boolean openType) {
+      this.openType = openType;
       return this;
     }
 

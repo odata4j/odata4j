@@ -1,6 +1,7 @@
 package org.odata4j.test.unit.format.xml;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
@@ -10,8 +11,16 @@ import java.io.StringReader;
 import java.io.StringWriter;
 
 import org.junit.Test;
+import org.odata4j.edm.EdmAnnotationElement;
+import org.odata4j.edm.EdmAssociation;
+import org.odata4j.edm.EdmAssociationSet;
+import org.odata4j.edm.EdmComplexType;
 import org.odata4j.edm.EdmDataServices;
+import org.odata4j.edm.EdmEntityContainer;
+import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmEntityType;
+import org.odata4j.edm.EdmFunctionImport;
+import org.odata4j.edm.EdmProperty;
 import org.odata4j.format.xml.EdmxFormatParser;
 import org.odata4j.format.xml.EdmxFormatWriter;
 import org.odata4j.stax2.XMLEventReader2;
@@ -25,6 +34,8 @@ public class EdmxFormatParserTest {
   private String edmxFile = "/META-INF/edmx.xml";
   // an SAP Data Services sample edmx
   private String sapDsSampleEdmxFile = "/META-INF/sap_ds_sample_edmx.xml";
+  private final String MYNS = "bla";
+  private final String MYNAMESPACE = "http://tempuri.org/hello";
 
   @Test
   public void testInheritance() throws FileNotFoundException, InterruptedException {
@@ -56,7 +67,9 @@ public class EdmxFormatParserTest {
   }
 
   private void checkTypeHierarchy(EdmDataServices d) {
-    EdmEntityType airport = d.findEdmEntitySet("Airport").getType();
+    EdmEntitySet airportSet = d.findEdmEntitySet("Airport");
+    EdmEntityType airport = airportSet.getType();
+    //EdmEntityType airport = d.findEdmEntitySet("Airport").getType();
     EdmEntityType badAirport = d.findEdmEntitySet("BadAirport").getType();
     assertTrue(badAirport.getBaseType().equals(airport));
     assertTrue("" + badAirport.getKeys() + ":" + airport.getKeys(), badAirport.getKeys().equals(airport.getKeys()));
@@ -74,6 +87,7 @@ public class EdmxFormatParserTest {
     assertTrue(badAirport.findProperty("country") != null);
     assertTrue(badAirport.findProperty("rating") != null);
     assertTrue(badAirport.findProperty("prop2") != null);
+    assertTrue(airport.findAnnotation("http://tempuri.org/hello", "AnnotationAttribute") != null);
 
     EdmEntityType schedule = d.findEdmEntitySet("FlightSchedule").getType();
     EdmEntityType subSchedule = d.findEdmEntitySet("SubFlightSchedule").getType();
@@ -114,6 +128,172 @@ public class EdmxFormatParserTest {
     assertTrue(subsubSchedule.getProperties().count() == subsubSchedule.getDeclaredProperties().count() +
         subSchedule.getDeclaredProperties().count() +
         schedule.getDeclaredProperties().count());
+  }
+
+  @Test
+  public void testProperty() {
+    XMLEventReader2 reader = StaxUtil.newXMLEventReader(new BufferedReader(
+        new InputStreamReader(getClass().getResourceAsStream("/META-INF/property.xml"))));
+    EdmDataServices d = new EdmxFormatParser().parseMetadata(reader);
+    assertTrue("parsed", d != null);
+
+    EdmEntityType product = d.findEdmEntitySet("Products").getType();
+    EdmProperty property = product.findProperty("Name");
+    assertTrue(property != null);
+    assertTrue(property.getCollation() != null);
+    assertTrue(property.getUnicode() != null);
+    assertTrue(property.getFixedLength() != null);
+
+    assertNotNull(property.findAnnotationElement("bla", "MyElement"));
+    assertEquals("MyElement", property.findAnnotationElement("bla", "MyElement").getName());
+  }
+
+  @Test
+  public void testAssociationEnd() {
+    XMLEventReader2 reader = StaxUtil.newXMLEventReader(new BufferedReader(
+        new InputStreamReader(getClass().getResourceAsStream("/META-INF/associationEnd.xml"))));
+    EdmDataServices d = new EdmxFormatParser().parseMetadata(reader);
+    assertTrue("parsed", d != null);
+    for (EdmAssociation association : d.getAssociations()) {
+      if (association.getName().equals("ProductCategory")) {
+        if (association.getEnd1().getRole().equals("Category")) {
+          assertTrue(association.getEnd1().getOnDeleteAction() != null);
+        } else {
+          assertTrue(association.getEnd2().getOnDeleteAction() != null);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testContainer() {
+    XMLEventReader2 reader = StaxUtil.newXMLEventReader(new BufferedReader(
+        new InputStreamReader(getClass().getResourceAsStream("/META-INF/container.xml"))));
+    EdmDataServices d = new EdmxFormatParser().parseMetadata(reader);
+    assertTrue("parsed", d != null);
+    EdmEntityContainer container2 = d.findSchema("Example").findEntityContainer("Container2");
+    assertTrue(container2 != null);
+    assertTrue(container2.getExtendz() != null);
+    assertTrue(container2.getLazyLoadingEnabled() != null);
+  }
+
+  @Test
+  public void testReferentialConstraint() {
+    XMLEventReader2 reader = StaxUtil.newXMLEventReader(new BufferedReader(
+        new InputStreamReader(getClass().getResourceAsStream("/META-INF/Constraint.xml"))));
+    EdmDataServices d = new EdmxFormatParser().parseMetadata(reader);
+    assertTrue("parsed", d != null);
+    for (EdmAssociation association : d.getAssociations()) {
+      if (association.getName().equals("EmployeeManager")) {
+        assertTrue(association.getRefConstraint() != null);
+        assertEquals("Manager", association.getRefConstraint().getDependentRole());
+        assertEquals("Employee", association.getRefConstraint().getPrincipalRole());
+      }
+    }
+  }
+
+  @Test
+  public void testAnnotationElement() {
+    XMLEventReader2 reader = StaxUtil.newXMLEventReader(new BufferedReader(
+        new InputStreamReader(getClass().getResourceAsStream("/META-INF/annotation.xml"))));
+    EdmDataServices d = new EdmxFormatParser().parseMetadata(reader);
+    assertTrue("parsed", d != null);
+
+    EdmEntityContainer container = d.findSchema("Example").findEntityContainer("Container");
+    EdmEntitySet products = d.findEdmEntitySet("Products");
+    EdmEntityType product = products.getType();
+    EdmProperty property = product.findProperty("Name");
+    EdmAssociation association = d.findEdmAssociation("ProductCategory");
+    EdmComplexType complexType = d.findEdmComplexType("Example.City");
+    EdmAssociationSet associationSet = d.findEdmAssociationSet("ProductCategory");
+    EdmFunctionImport functionImport = d.findEdmFunctionImport("ProductSearch");
+
+    // ...............Schema ............//
+    assertNotNull(d.findSchema("Example").findAnnotationElement(MYNS, "MyContainer"));
+    assertEquals("AnnotElement", d.findSchema("Example").findAnnotationElement(MYNAMESPACE, "AnnotElement").getName());
+    assertEquals("MyContainer", d.findSchema("Example").findAnnotationElement(MYNS, "MyContainer").getName());
+
+    // ............... Container ............//
+    assertNotNull(container.findAnnotationElement(MYNS, "MyEntitySet"));
+    assertEquals("MyEntitySet", container.findAnnotationElement(MYNS, "MyEntitySet").getName());
+
+    // ............... EntitySet ............//
+    assertNotNull(products.findAnnotationElement(MYNS, "MySubSet"));
+
+    // ............... EntityType ............//
+    assertNotNull(product.findAnnotationElement(MYNAMESPACE, "MyEntityTypeProperty"));
+    assertEquals("MyEntityTypeProperty", product.findAnnotationElement(MYNAMESPACE, "MyEntityTypeProperty").getName());
+
+    // ............... in Property ............//
+    assertNotNull(property.findAnnotationElement(MYNS, "mySubproperty"));
+    assertEquals("mySubproperty", property.findAnnotationElement(MYNS, "mySubproperty").getName());
+
+    // ...............Association ............// 
+    assertNotNull(association.findAnnotationElement(MYNAMESPACE, "MyAssociation"));
+
+    // ...............AssociationEnd ............//
+    if (association.getEnd1().getRole().equals("r_Product")) {
+      assertNotNull(association.getEnd1().findAnnotationElement(MYNS, "MyAssociationEnd"));
+    } else {
+      assertNotNull(association.getEnd2().findAnnotationElement(MYNS, "MyAssociationEnd"));
+    }
+
+    assertNotNull(complexType.findAnnotationElement(MYNS, "MyComplexTypeProperty"));
+    assertNotNull(product.findNavigationProperty("n_Category").findAnnotationElement(MYNS, "MyNavigation"));
+
+    // ............... FunctionImport ............//
+    assertEquals("MyFunctionImport", functionImport.findAnnotationElement(MYNS, "MyFunctionImport").getName());
+
+    if (functionImport.getParameters().get(0).getName().equals("q")) {
+      assertNotNull(functionImport.getParameters().get(0).findAnnotationElement(MYNS, "MyAnnotation"));
+    }
+
+    // ............... AssociationSet ............//
+    assertEquals("MyAssociationSet", associationSet.findAnnotationElement(MYNAMESPACE, "MyAssociationSet").getName());
+
+    // ............... AssociationSetEnd ........//
+    if (associationSet.getEnd1().getRole().getRole().equals("r_Product")) {
+      assertNotNull(associationSet.getEnd1().findAnnotationElement(MYNS, "MyEndElement"));
+      assertEquals("MyEndElement", associationSet.getEnd1().findAnnotationElement(MYNS, "MyEndElement").getName());
+    } else {
+      assertNotNull(associationSet.getEnd2().findAnnotationElement(MYNS, "MyEndElement"));
+      assertEquals("MyEndElement", associationSet.getEnd2().findAnnotationElement(MYNS, "MyEndElement").getName());
+    }
+  }
+
+  @Test
+  public void testForRecursion() {
+    XMLEventReader2 reader = StaxUtil.newXMLEventReader(new BufferedReader(
+        new InputStreamReader(getClass().getResourceAsStream("/META-INF/annotation.xml"))));
+    EdmDataServices d = new EdmxFormatParser().parseMetadata(reader);
+    assertTrue("parsed", d != null);
+
+    EdmAnnotationElement<?> annot = (EdmAnnotationElement<?>) d.findSchema("Example").findAnnotationElement(MYNAMESPACE, "AnnotElement");
+
+    assertNotNull(annot);
+    assertNotNull(annot.findAnnotationElement(MYNAMESPACE, "testing"));
+    assertNotNull(annot.findAnnotationElement(MYNAMESPACE, "another"));
+
+    EdmAnnotationElement<?> annot2 = (EdmAnnotationElement<?>) annot.findAnnotationElement(MYNAMESPACE, "another");
+    assertEquals("bar", annot2.findAnnotation(MYNAMESPACE, "foo").getValue());
+    assertNotNull(annot2.findAnnotationElement(MYNAMESPACE, "yetanother"));
+    assertEquals("yetanother", annot2.findAnnotationElement(MYNAMESPACE, "yetanother").getValue().toString().trim());
+    assertEquals("mynamespace", annot2.findAnnotationElement(MYNAMESPACE, "yetanother").getNamespace().getPrefix());
+    assertEquals(MYNAMESPACE, annot2.findAnnotationElement(MYNAMESPACE, "yetanother").getNamespace().getUri());
+  }
+
+  @Test
+  public void testForAnnotationAttribute() {
+    XMLEventReader2 reader = StaxUtil.newXMLEventReader(new BufferedReader(
+        new InputStreamReader(getClass().getResourceAsStream("/META-INF/annotationAttribute.xml"))));
+    EdmDataServices d = new EdmxFormatParser().parseMetadata(reader);
+    assertTrue("parsed", d != null);
+
+    EdmEntitySet products = d.findEdmEntitySet("Products");
+    EdmEntityType product = products.getType();
+    EdmProperty property = product.findProperty("Name");
+    assertEquals("001", property.findAnnotation(MYNS, "myattr").getValue());
+    assertNotNull(property.findAnnotationElement(MYNS, "myElement"));
   }
 
 }

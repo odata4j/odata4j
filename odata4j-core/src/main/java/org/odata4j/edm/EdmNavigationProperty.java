@@ -1,5 +1,7 @@
 package org.odata4j.edm;
 
+import org.odata4j.core.ImmutableList;
+
 /**
  * A CSDL NavigationProperty element.
  *
@@ -25,12 +27,12 @@ public class EdmNavigationProperty extends EdmPropertyBase {
   private final EdmAssociationEnd fromRole;
   private final EdmAssociationEnd toRole;
 
-  private EdmNavigationProperty(
+  private EdmNavigationProperty(EdmDocumentation documentation, ImmutableList<EdmAnnotation<?>> annotations, ImmutableList<EdmAnnotation<?>> annotElements,
       String name,
       EdmAssociation relationship,
       EdmAssociationEnd fromRole,
       EdmAssociationEnd toRole) {
-    super(null, null, name);
+    super(documentation, annotations, annotElements, name);
     this.relationship = relationship;
     this.fromRole = fromRole;
     this.toRole = toRole;
@@ -95,7 +97,8 @@ public class EdmNavigationProperty extends EdmPropertyBase {
     }
 
     public EdmNavigationProperty build() {
-      return new EdmNavigationProperty(getName(), relationship.build(), fromRole.build(), toRole.build());
+      return new EdmNavigationProperty(getDocumentation(), ImmutableList.copyOf(getAnnotations()),
+          ImmutableList.copyOf(getAnnotationElements()), getName(), relationship.build(), fromRole.build(), toRole.build());
     }
 
     public String getRelationshipName() {

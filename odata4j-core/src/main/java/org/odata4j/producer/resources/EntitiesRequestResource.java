@@ -42,7 +42,6 @@ import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.EntityResponse;
 import org.odata4j.producer.ODataContext;
 import org.odata4j.producer.ODataContextImpl;
-import org.odata4j.producer.ODataHeadersImpl;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.QueryInfo;
 

@@ -21,15 +21,18 @@ public class EdmAssociation extends EdmItem {
   private final String name;
   private final EdmAssociationEnd end1;
   private final EdmAssociationEnd end2;
+  private final EdmReferentialConstraint refConstraint;
 
   private EdmAssociation(String namespace, String alias, String name, EdmAssociationEnd end1, EdmAssociationEnd end2,
-      EdmDocumentation doc, ImmutableList<EdmAnnotation<?>> annots) {
-    super(doc, annots);
+      EdmReferentialConstraint refConstraint, EdmDocumentation doc, ImmutableList<EdmAnnotation<?>> annots,
+      ImmutableList<EdmAnnotation<?>> anElements) {
+    super(doc, annots, anElements);
     this.namespace = namespace;
     this.alias = alias;
     this.name = name;
     this.end1 = end1;
     this.end2 = end2;
+    this.refConstraint = refConstraint;
   }
 
   public String getNamespace() {
@@ -50,6 +53,10 @@ public class EdmAssociation extends EdmItem {
 
   public EdmAssociationEnd getEnd2() {
     return end2;
+  }
+
+  public EdmReferentialConstraint getRefConstraint() {
+    return refConstraint;
   }
 
   public String getFQNamespaceName() {
@@ -91,6 +98,7 @@ public class EdmAssociation extends EdmItem {
     private String name;
     private EdmAssociationEnd.Builder end1;
     private EdmAssociationEnd.Builder end2;
+    private EdmReferentialConstraint.Builder refConstraint;
 
     @Override
     Builder newBuilder(EdmAssociation association, BuilderContext context) {
@@ -99,11 +107,14 @@ public class EdmAssociation extends EdmItem {
       this.namespace = association.namespace;
       this.end1 = EdmAssociationEnd.newBuilder(association.end1, context);
       this.end2 = EdmAssociationEnd.newBuilder(association.end2, context);
+      this.refConstraint = EdmReferentialConstraint.newBuilder();
       return this;
     }
 
     public EdmAssociation build() {
-      return new EdmAssociation(namespace, alias, name, end1.build(), end2.build(), getDocumentation(), ImmutableList.copyOf(getAnnotations()));
+      return new EdmAssociation(namespace, alias, name, end1.build(), end2.build(),
+          refConstraint == null ? null : refConstraint.build(), getDocumentation(),
+          ImmutableList.copyOf(getAnnotations()), ImmutableList.copyOf(getAnnotationElements()));
     }
 
     public EdmAssociationEnd.Builder getEnd1() {
@@ -112,6 +123,10 @@ public class EdmAssociation extends EdmItem {
 
     public EdmAssociationEnd.Builder getEnd2() {
       return end2;
+    }
+
+    public EdmReferentialConstraint.Builder getRefConstraint() {
+      return refConstraint;
     }
 
     public String getNamespace() {
@@ -150,6 +165,11 @@ public class EdmAssociation extends EdmItem {
     public Builder setEnds(EdmAssociationEnd.Builder end1, EdmAssociationEnd.Builder end2) {
       this.end1 = end1;
       this.end2 = end2;
+      return this;
+    }
+
+    public Builder setRefConstraint(EdmReferentialConstraint.Builder refConstraint) {
+      this.refConstraint = refConstraint;
       return this;
     }
 

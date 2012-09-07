@@ -20,17 +20,20 @@ public class EdmEntityContainer extends EdmItem {
   private final String name;
   private final boolean isDefault;
   private final Boolean lazyLoadingEnabled;
+  private final String extendz;
   private final ImmutableList<EdmEntitySet> entitySets;
   private final ImmutableList<EdmAssociationSet> associationSets;
   private final ImmutableList<EdmFunctionImport> functionImports;
 
-  private EdmEntityContainer(String name, boolean isDefault, Boolean lazyLoadingEnabled,
+  private EdmEntityContainer(String name, boolean isDefault, Boolean lazyLoadingEnabled, String extendz,
       ImmutableList<EdmEntitySet> entitySets, ImmutableList<EdmAssociationSet> associationSets,
-      ImmutableList<EdmFunctionImport> functionImports, EdmDocumentation doc, ImmutableList<EdmAnnotation<?>> annots) {
-    super(doc, annots);
+      ImmutableList<EdmFunctionImport> functionImports, EdmDocumentation doc, ImmutableList<EdmAnnotation<?>> annots,
+      ImmutableList<EdmAnnotation<?>> annotElements) {
+    super(doc, annots, annotElements);
     this.name = name;
     this.isDefault = isDefault;
     this.lazyLoadingEnabled = lazyLoadingEnabled;
+    this.extendz = extendz;
     this.entitySets = entitySets;
     this.associationSets = associationSets;
     this.functionImports = functionImports;
@@ -46,6 +49,10 @@ public class EdmEntityContainer extends EdmItem {
 
   public Boolean getLazyLoadingEnabled() {
     return lazyLoadingEnabled;
+  }
+
+  public String getExtendz() {
+    return extendz;
   }
 
   public List<EdmEntitySet> getEntitySets() {
@@ -74,6 +81,7 @@ public class EdmEntityContainer extends EdmItem {
     private String name;
     private boolean isDefault;
     private Boolean lazyLoadingEnabled;
+    private String extendz;
     private final List<EdmEntitySet.Builder> entitySets = new ArrayList<EdmEntitySet.Builder>();
     private final List<EdmAssociationSet.Builder> associationSets = new ArrayList<EdmAssociationSet.Builder>();
     private final List<EdmFunctionImport.Builder> functionImports = new ArrayList<EdmFunctionImport.Builder>();
@@ -108,11 +116,11 @@ public class EdmEntityContainer extends EdmItem {
       for (EdmAssociationSet.Builder associationSet : this.associationSets)
         associationSets.add(associationSet.build());
 
-      return new EdmEntityContainer(name, isDefault, lazyLoadingEnabled,
+      return new EdmEntityContainer(name, isDefault, lazyLoadingEnabled, extendz,
           ImmutableList.copyOf(entitySets),
           ImmutableList.copyOf(associationSets),
           ImmutableList.copyOf(functionImports),
-          getDocumentation(), ImmutableList.copyOf(getAnnotations()));
+          getDocumentation(), ImmutableList.copyOf(getAnnotations()), ImmutableList.copyOf(getAnnotationElements()));
     }
 
     public Builder setName(String name) {
@@ -127,6 +135,11 @@ public class EdmEntityContainer extends EdmItem {
 
     public Builder setLazyLoadingEnabled(Boolean lazyLoadingEnabled) {
       this.lazyLoadingEnabled = lazyLoadingEnabled;
+      return this;
+    }
+
+    public Builder setExtendz(String extendz) {
+      this.extendz = extendz;
       return this;
     }
 

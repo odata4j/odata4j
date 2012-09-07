@@ -29,8 +29,9 @@ public abstract class EdmStructuralType extends EdmNonSimpleType implements Name
   private EdmEntityType baseType;
 
   protected EdmStructuralType(EdmEntityType baseType, String namespace, String name, List<EdmProperty.Builder> declaredProperties,
-      EdmDocumentation doc, ImmutableList<EdmAnnotation<?>> annotations, Boolean isAbstract) {
-    super(namespace + "." + name, doc, annotations);
+      EdmDocumentation doc, ImmutableList<EdmAnnotation<?>> annotations, ImmutableList<EdmAnnotation<?>> annotationElements,
+      Boolean isAbstract) {
+    super(namespace + "." + name, doc, annotations, annotationElements);
     this.baseType = baseType;
     this.namespace = namespace;
     this.name = name;

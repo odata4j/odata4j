@@ -1,6 +1,7 @@
 package org.odata4j.format.xml;
 
 import static org.odata4j.format.xml.XmlFormatParser.NS_EDM2008_9;
+import static org.odata4j.format.xml.XmlFormatParser.NS_EDMANNOTATION;
 
 import java.io.Writer;
 
@@ -38,13 +39,12 @@ public class EdmxFormatWriter extends XmlFormatWriter {
     writer.writeAttribute("Version", "1.0");
     writer.writeNamespace("edmx", edmx);
     //writer.writeNamespace("d", d);
-    
+
     writeExtensionNamespaces(services, writer);
 
     writer.startElement(new QName2(edmx, "DataServices", "edmx"));
     writer.writeAttribute(new QName2(m, "DataServiceVersion", "m"), "2.0");
     writer.writeNamespace("m", m);
-
 
     // Schema
     for (EdmSchema schema : services.getSchemas()) {
@@ -58,7 +58,9 @@ public class EdmxFormatWriter extends XmlFormatWriter {
       // EntityType
       for (EdmEntityType eet : schema.getEntityTypes()) {
         writer.startElement(new QName2("EntityType"));
-
+        if (eet.getOpenType() != null) {
+          writer.writeAttribute("OpenType", eet.getOpenType().toString());
+        }
         writer.writeAttribute("Name", eet.getName());
         if (eet.getIsAbstract() != null) {
           writer.writeAttribute("Abstract", eet.getIsAbstract().toString());
@@ -67,7 +69,6 @@ public class EdmxFormatWriter extends XmlFormatWriter {
         if (Boolean.TRUE.equals(eet.getHasStream())) {
           writer.writeAttribute(new QName2(m, "HasStream", "m"), "true");
         }
-
         // keys only on base types
         if (eet.isRootType()) {
           writeAnnotationAttributes(eet, writer);
@@ -111,6 +112,9 @@ public class EdmxFormatWriter extends XmlFormatWriter {
         writer.startElement(new QName2("ComplexType"));
 
         writer.writeAttribute("Name", ect.getName());
+        if (ect.getBaseType() != null) {
+          writer.writeAttribute("BaseType", ect.getBaseType().getFullyQualifiedTypeName());
+        }
         if (ect.getIsAbstract() != null) {
           writer.writeAttribute("Abstract", ect.getIsAbstract().toString());
         }
@@ -129,22 +133,56 @@ public class EdmxFormatWriter extends XmlFormatWriter {
         writer.writeAttribute("Name", assoc.getName());
         writeAnnotationAttributes(assoc, writer);
         writeDocumentation(assoc, writer);
-        
+
         writer.startElement(new QName2("End"));
         writer.writeAttribute("Type", assoc.getEnd1().getType().getFullyQualifiedTypeName());
         writer.writeAttribute("Multiplicity", assoc.getEnd1().getMultiplicity().getSymbolString());
         writer.writeAttribute("Role", assoc.getEnd1().getRole());
+        if (assoc.getEnd1().getOnDeleteAction() != null) {
+          writer.startElement(new QName2("OnDelete"));
+          writer.writeAttribute("Action", assoc.getEnd1().getOnDeleteAction().getSymbolString());
+          writer.endElement("OnDelete");
+        }
+        writeAnnotationAttributes(assoc.getEnd1(), writer);
+        writeAnnotationElements(assoc.getEnd1(), writer);
         writer.endElement("End");
 
         writer.startElement(new QName2("End"));
         writer.writeAttribute("Type", assoc.getEnd2().getType().getFullyQualifiedTypeName());
         writer.writeAttribute("Multiplicity", assoc.getEnd2().getMultiplicity().getSymbolString());
         writer.writeAttribute("Role", assoc.getEnd2().getRole());
+        if (assoc.getEnd2().getOnDeleteAction() != null) {
+          writer.startElement(new QName2("OnDelete"));
+          writer.writeAttribute("Action", assoc.getEnd2().getOnDeleteAction().getSymbolString());
+          writer.endElement("OnDelete");
+        }
+        writeAnnotationAttributes(assoc.getEnd2(), writer);
+        writeAnnotationElements(assoc.getEnd2(), writer);
         writer.endElement("End");
 
+        if (assoc.getRefConstraint() != null && assoc.getRefConstraint().getPrincipalRole() != null && assoc.getRefConstraint().getDependentRole() != null) {
+          writer.startElement(new QName2("ReferentialConstraint"));
+          writer.startElement(new QName2("Principal"));
+          writer.writeAttribute("Role", assoc.getRefConstraint().getPrincipalRole());
+          for (String reference : assoc.getRefConstraint().getPrincipalReferences()) {
+            writer.startElement(new QName2("PropertyRef"));
+            writer.writeAttribute("Name", reference);
+            writer.endElement("PropertyRef");
+          }
+          writer.endElement("Principal");
+          writer.startElement(new QName2("Dependent"));
+          writer.writeAttribute("Role", assoc.getRefConstraint().getDependentRole());
+          for (String reference : assoc.getRefConstraint().getDependentReferences()) {
+            writer.startElement(new QName2("PropertyRef"));
+            writer.writeAttribute("Name", reference);
+            writer.endElement("PropertyRef");
+          }
+          writer.endElement("Dependent");
+          writer.endElement("ReferetialConstraint");
+        }
         writeAnnotationElements(assoc, writer);
         writer.endElement("Association");
-        
+
       }
 
       // EntityContainer
@@ -153,6 +191,14 @@ public class EdmxFormatWriter extends XmlFormatWriter {
 
         writer.writeAttribute("Name", container.getName());
         writer.writeAttribute(new QName2(m, "IsDefaultEntityContainer", "m"), Boolean.toString(container.isDefault()));
+        if (container.getLazyLoadingEnabled() != null) {
+          writer.writeAttribute(new QName2(NS_EDMANNOTATION, "LazyLoadingEnabled", "annotation")
+              , Boolean.toString(container.getLazyLoadingEnabled()));
+          writer.writeNamespace("annotation", NS_EDMANNOTATION);
+        }
+        if (container.getExtendz() != null) {
+          writer.writeAttribute("Extends", container.getExtendz());
+        }
         writeAnnotationAttributes(container, writer);
         writeDocumentation(container, writer);
 
@@ -165,7 +211,7 @@ public class EdmxFormatWriter extends XmlFormatWriter {
           writeAnnotationElements(ees, writer);
           writer.endElement("EntitySet");
         }
-        
+
         for (EdmAssociationSet eas : container.getAssociationSets()) {
           writer.startElement(new QName2("AssociationSet"));
           writer.writeAttribute("Name", eas.getName());
@@ -176,11 +222,17 @@ public class EdmxFormatWriter extends XmlFormatWriter {
           writer.startElement(new QName2("End"));
           writer.writeAttribute("EntitySet", eas.getEnd1().getEntitySet().getName());
           writer.writeAttribute("Role", eas.getEnd1().getRole().getRole());
+          writeAnnotationAttributes(eas.getEnd1(), writer);
+          writeDocumentation(eas.getEnd1(), writer);
+          writeAnnotationElements(eas.getEnd1(), writer);
           writer.endElement("End");
 
           writer.startElement(new QName2("End"));
           writer.writeAttribute("EntitySet", eas.getEnd2().getEntitySet().getName());
           writer.writeAttribute("Role", eas.getEnd2().getRole().getRole());
+          writeAnnotationAttributes(eas.getEnd2(), writer);
+          writeDocumentation(eas.getEnd2(), writer);
+          writeAnnotationElements(eas.getEnd2(), writer);
           writer.endElement("End");
 
           writeAnnotationElements(eas, writer);
@@ -207,8 +259,17 @@ public class EdmxFormatWriter extends XmlFormatWriter {
             writer.writeAttribute("Type", param.getType().getFullyQualifiedTypeName());
             if (param.getMode() != null)
               writer.writeAttribute("Mode", param.getMode().toString());
-            if (param.isNullable()!=null)
+            if (param.isNullable() != null)
               writer.writeAttribute("Nullable", param.isNullable().toString());
+            if (param.getMaxLength() != null) {
+              writer.writeAttribute("MaxLength", param.getMaxLength().toString());
+            }
+            if (param.getPrecision() != null) {
+              writer.writeAttribute("Precision", param.getPrecision().toString());
+            }
+            if (param.getScale() != null) {
+              writer.writeAttribute("Scale", param.getScale().toString());
+            }
             writeAnnotationAttributes(param, writer);
             writeDocumentation(param, writer);
             writeAnnotationElements(param, writer);
@@ -249,25 +310,35 @@ public class EdmxFormatWriter extends XmlFormatWriter {
       writer.writeAttribute("Name", prop.getName());
       writer.writeAttribute("Type", prop.getType().getFullyQualifiedTypeName());
       writer.writeAttribute("Nullable", Boolean.toString(prop.isNullable()));
+      if (prop.getDefaultValue() != null) {
+        writer.writeAttribute("DefaultValue", prop.getDefaultValue());
+      }
       if (prop.getMaxLength() != null) {
         writer.writeAttribute("MaxLength", Integer.toString(prop.getMaxLength()));
+      }
+      if (prop.getFixedLength() != null) {
+        writer.writeAttribute("FixedLength", Boolean.toString(prop.getFixedLength()));
       }
       if (!prop.getCollectionKind().equals(CollectionKind.NONE)) {
         writer.writeAttribute("CollectionKind", prop.getCollectionKind().toString());
       }
-      if (prop.getDefaultValue() != null) {
-        writer.writeAttribute("DefaultValue", prop.getDefaultValue());
-      }
+
       if (prop.getPrecision() != null) {
         writer.writeAttribute("Precision", Integer.toString(prop.getPrecision()));
       }
       if (prop.getScale() != null) {
         writer.writeAttribute("Scale", Integer.toString(prop.getScale()));
       }
-      if (prop.getConcurrencyMode()!=null){
+      if (prop.getCollation() != null) {
+        writer.writeAttribute("Collation", prop.getCollation());
+      }
+      if (prop.getUnicode() != null) {
+        writer.writeAttribute("Unicode", Boolean.toString(prop.getUnicode()));
+      }
+      if (prop.getConcurrencyMode() != null) {
         writer.writeAttribute("ConcurrencyMode", prop.getConcurrencyMode());
       }
-      if (prop.getMimeType()!=null){
+      if (prop.getMimeType() != null) {
         writer.writeAttribute(new QName2(m, "MimeType", "m"), prop.getMimeType());
       }
       if (prop.getFcTargetPath() != null) {
@@ -276,12 +347,13 @@ public class EdmxFormatWriter extends XmlFormatWriter {
       if (prop.getFcKeepInContent() != null) {
         writer.writeAttribute(new QName2(m, "FC_KeepInContent", "m"), prop.getFcKeepInContent());
       }
-      if(prop.getFcNsPrefix()!=null){
+      if (prop.getFcNsPrefix() != null) {
         writer.writeAttribute(new QName2(m, "FC_NsPrefix", "m"), prop.getFcNsPrefix());
       }
-      if(prop.getFcNsUri()!=null){
+      if (prop.getFcNsUri() != null) {
         writer.writeAttribute(new QName2(m, "FC_NsUri", "m"), prop.getFcNsUri());
       }
+
       writeAnnotationAttributes(prop, writer);
       writeAnnotationElements(prop, writer);
       writer.endElement("Property");
@@ -290,26 +362,63 @@ public class EdmxFormatWriter extends XmlFormatWriter {
 
   private static void writeAnnotationAttributes(EdmItem item, XMLWriter2 writer) {
     if (item.getAnnotations() != null) {
-      for (NamespacedAnnotation<?> a : item.getAnnotations()) {
-        if (a instanceof EdmAnnotationAttribute) {
-          writer.writeAttribute(
-              new QName2(a.getNamespace().getUri(), a.getName(), a.getNamespace().getPrefix()),
-              a.getValue() == null ? "" : a.getValue().toString());
+      writeAnnotation(item.getAnnotations(), writer, null);
+
+    }
+  }
+
+  private static void writeAnnotationAttributes(EdmAnnotationElement<?> element, XMLWriter2 writer, String prefix) {
+    if (element.getAnnotations() != null) {
+      writeAnnotation(element.getAnnotations(), writer, prefix);
+    }
+  }
+
+  private static void writeAnnotation(Iterable<? extends NamespacedAnnotation<?>> annotList, XMLWriter2 writer,
+      String prefix) {
+    String prefix1 = prefix;
+    for (NamespacedAnnotation<?> a : annotList) {
+      if (a instanceof EdmAnnotationAttribute) {
+        String prefix2 = a.getNamespace().getPrefix();
+        writer.writeAttribute(
+            new QName2(a.getNamespace().getUri(), a.getName(), a.getNamespace().getPrefix()),
+            a.getValue() == null ? "" : a.getValue().toString());
+        if (!prefix2.equals(prefix1)) {
+          writer.writeNamespace(a.getNamespace().getPrefix(), a.getNamespace().getUri());
         }
+        prefix1 = prefix2;
       }
     }
   }
 
   private static void writeAnnotationElements(EdmItem item, XMLWriter2 writer) {
-    if (item.getAnnotations() != null) {
-      for (NamespacedAnnotation<?> a : item.getAnnotations()) {
-        if (a instanceof EdmAnnotationElement) {
-          // TODO: please don't throw an exception here.
-          // this totally breaks ODataConsumer even thought it doesn't rely
-          // on annotations.  A no-op is a interim approach that allows work
-          // to proceed by those using queryable metadata to access annotations.
-          // throw new UnsupportedOperationException("Implement element annotations");
+    if (item.getAnnotationElements() != null) {
+      writeElementInAnnotation(item.getAnnotationElements(), writer);
+    }
+  }
+
+  private static void writeAnnotationElements(EdmAnnotationElement<?> element, XMLWriter2 writer) {
+    if (element.getAnnotationElements() != null) {
+      writeElementInAnnotation(element.getAnnotationElements(), writer);
+    }
+  }
+
+  private static void writeElementInAnnotation(Iterable<? extends NamespacedAnnotation<?>> annotList, XMLWriter2 writer) {
+    for (NamespacedAnnotation<?> a : annotList) {
+      if (a instanceof EdmAnnotationElement) {
+        EdmAnnotationElement<?> elem = (EdmAnnotationElement<?>) a;
+        writer.startElement(new QName2(elem.getNamespace().getUri(), elem.getName(), elem.getNamespace().getPrefix()));
+        if (elem.getNamespace().getPrefix() != null && elem.getNamespace().getUri() != null) {
+          writer.writeNamespace(elem.getNamespace().getPrefix(), elem.getNamespace().getUri());
         }
+        writeAnnotationAttributes(elem, writer, elem.getNamespace().getPrefix());
+        writer.writeText(elem.getValue().toString().trim());
+        writeAnnotationElements(elem, writer);
+        writer.endElement(a.getName());
+        // TODO: please don't throw an exception here.
+        // this totally breaks ODataConsumer even thought it doesn't rely
+        // on annotations.  A no-op is a interim approach that allows work
+        // to proceed by those using queryable metadata to access annotations.
+        // throw new UnsupportedOperationException("Implement element annotations");
       }
     }
   }

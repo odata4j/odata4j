@@ -1,7 +1,6 @@
 package org.odata4j.format.json;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.core4j.Enumerable;

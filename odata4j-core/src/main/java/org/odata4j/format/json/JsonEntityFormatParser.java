@@ -3,6 +3,7 @@ package org.odata4j.format.json;
 
 
 import java.io.Reader;
+
 import org.odata4j.core.OEntity;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.format.FormatParser;

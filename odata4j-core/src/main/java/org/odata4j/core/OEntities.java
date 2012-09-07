@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.core4j.Enumerable;
 import org.odata4j.edm.EdmEntitySet;

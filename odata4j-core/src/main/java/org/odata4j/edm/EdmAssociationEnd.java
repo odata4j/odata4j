@@ -19,13 +19,16 @@ public class EdmAssociationEnd extends EdmItem {
   private final String role;
   private final Func<EdmEntityType> type;
   private final EdmMultiplicity multiplicity;
+  private final EdmOnDeleteAction onDeleteAction;
 
   private EdmAssociationEnd(String role, Func<EdmEntityType> type, EdmMultiplicity multiplicity,
-      EdmDocumentation doc, ImmutableList<EdmAnnotation<?>> annots) {
-    super(doc, annots);
+      EdmOnDeleteAction onDeleteAction, EdmDocumentation doc, ImmutableList<EdmAnnotation<?>> annots,
+      ImmutableList<EdmAnnotation<?>> annotElements) {
+    super(doc, annots, annotElements);
     this.role = role;
     this.type = type;
     this.multiplicity = multiplicity;
+    this.onDeleteAction = onDeleteAction;
   }
 
   public String getRole() {
@@ -40,9 +43,13 @@ public class EdmAssociationEnd extends EdmItem {
     return multiplicity;
   }
 
+  public EdmOnDeleteAction getOnDeleteAction() {
+    return onDeleteAction;
+  }
+
   @Override
   public String toString() {
-    return String.format("EdmAssociationEnd[%s,%s,%s]", role, type, multiplicity);
+    return String.format("EdmAssociationEnd[%s,%s,%s,%s]", role, type, multiplicity, onDeleteAction);
   }
 
   public static Builder newBuilder() {
@@ -60,17 +67,26 @@ public class EdmAssociationEnd extends EdmItem {
     private EdmEntityType.Builder type;
     private String typeName;
     private EdmMultiplicity multiplicity;
+    private EdmOnDeleteAction onDeleteAction;
 
     @Override
     Builder newBuilder(EdmAssociationEnd associationEnd, BuilderContext context) {
       this.role = associationEnd.role;
       this.type = EdmEntityType.newBuilder(associationEnd.getType(), context);
       this.multiplicity = associationEnd.multiplicity;
+      this.onDeleteAction = associationEnd.onDeleteAction;
       return this;
     }
 
     public EdmAssociationEnd build() {
-      return new EdmAssociationEnd(role, type == null ? null : type.builtFunc(), multiplicity, getDocumentation(), ImmutableList.copyOf(getAnnotations()));
+      return new EdmAssociationEnd(role, type == null ? null : type.builtFunc(), multiplicity,
+          onDeleteAction, getDocumentation(), ImmutableList.copyOf(getAnnotations()),
+          ImmutableList.copyOf(getAnnotationElements()));
+    }
+
+    public Builder setRole(String role) {
+      this.role = role;
+      return this;
     }
 
     public Builder setType(EdmEntityType.Builder type) {
@@ -88,6 +104,11 @@ public class EdmAssociationEnd extends EdmItem {
       return this;
     }
 
+    public Builder setOnDeleteAction(EdmOnDeleteAction onDeleteAction) {
+      this.onDeleteAction = onDeleteAction;
+      return this;
+    }
+
     public EdmEntityType.Builder getType() {
       return type;
     }
@@ -98,11 +119,6 @@ public class EdmAssociationEnd extends EdmItem {
 
     public String getRole() {
       return role;
-    }
-
-    public Builder setRole(String role) {
-      this.role = role;
-      return this;
     }
 
   }

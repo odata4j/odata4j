@@ -17,8 +17,8 @@ public class EdmAssociationSetEnd extends EdmItem {
   private final EdmEntitySet entitySet;
 
   private EdmAssociationSetEnd(EdmAssociationEnd role, EdmEntitySet entitySet,
-      EdmDocumentation doc, ImmutableList<EdmAnnotation<?>> annots) {
-    super(doc, annots);
+      EdmDocumentation doc, ImmutableList<EdmAnnotation<?>> annots, ImmutableList<EdmAnnotation<?>> annotElements) {
+    super(doc, annots, annotElements);
     this.role = role;
     this.entitySet = entitySet;
   }
@@ -65,7 +65,8 @@ public class EdmAssociationSetEnd extends EdmItem {
     }
 
     public EdmAssociationSetEnd build() {
-      return new EdmAssociationSetEnd(role.build(), entitySet.build(), getDocumentation(), ImmutableList.copyOf(getAnnotations()));
+      return new EdmAssociationSetEnd(role.build(), entitySet.build(), getDocumentation(),
+          ImmutableList.copyOf(getAnnotations()), ImmutableList.copyOf(getAnnotationElements()));
     }
 
     public String getRoleName() {

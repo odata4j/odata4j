@@ -35,6 +35,10 @@ public class XmlFormatParser {
   public static final QName2 EDM2006_FUNCTIONIMPORT = new QName2(NS_EDM2006, "FunctionImport");
   public static final QName2 EDM2006_PARAMETER = new QName2(NS_EDM2006, "Parameter");
   public static final QName2 EDM2006_END = new QName2(NS_EDM2006, "End");
+  public static final QName2 EDM2006_ONDELETE = new QName2(NS_EDM2006, "OnDelete");
+  public static final QName2 EDM2006_REFCONSTRAINT = new QName2(NS_EDM2006, "ReferentialConstraint");
+  public static final QName2 EDM2006_PRINCIPAL = new QName2(NS_EDM2006, "Principal");
+  public static final QName2 EDM2006_DEPENDENT = new QName2(NS_EDM2006, "Dependent");
   public static final QName2 EDM2006_PROPERTYREF = new QName2(NS_EDM2006, "PropertyRef");
   public static final QName2 EDM2006_PROPERTY = new QName2(NS_EDM2006, "Property");
   public static final QName2 EDM2006_NAVIGATIONPROPERTY = new QName2(NS_EDM2006, "NavigationProperty");
@@ -49,6 +53,10 @@ public class XmlFormatParser {
   public static final QName2 EDM2007_FUNCTIONIMPORT = new QName2(NS_EDM2007, "FunctionImport");
   public static final QName2 EDM2007_PARAMETER = new QName2(NS_EDM2007, "Parameter");
   public static final QName2 EDM2007_END = new QName2(NS_EDM2007, "End");
+  public static final QName2 EDM2007_ONDELETE = new QName2(NS_EDM2007, "OnDelete");
+  public static final QName2 EDM2007_REFCONSTRAINT = new QName2(NS_EDM2007, "ReferentialConstraint");
+  public static final QName2 EDM2007_PRINCIPAL = new QName2(NS_EDM2007, "Principal");
+  public static final QName2 EDM2007_DEPENDENT = new QName2(NS_EDM2007, "Dependent");
   public static final QName2 EDM2007_PROPERTYREF = new QName2(NS_EDM2007, "PropertyRef");
   public static final QName2 EDM2007_PROPERTY = new QName2(NS_EDM2007, "Property");
   public static final QName2 EDM2007_NAVIGATIONPROPERTY = new QName2(NS_EDM2007, "NavigationProperty");
@@ -63,6 +71,10 @@ public class XmlFormatParser {
   public static final QName2 EDM2008_1_FUNCTIONIMPORT = new QName2(NS_EDM2008_1, "FunctionImport");
   public static final QName2 EDM2008_1_PARAMETER = new QName2(NS_EDM2008_1, "Parameter");
   public static final QName2 EDM2008_1_END = new QName2(NS_EDM2008_1, "End");
+  public static final QName2 EDM2008_1_ONDELETE = new QName2(NS_EDM2008_1, "OnDelete");
+  public static final QName2 EDM2008_1_REFCONSTRAINT = new QName2(NS_EDM2008_1, "ReferentialConstraint");
+  public static final QName2 EDM2008_1_PRINCIPAL = new QName2(NS_EDM2008_1, "Principal");
+  public static final QName2 EDM2008_1_DEPENDENT = new QName2(NS_EDM2008_1, "Dependent");
   public static final QName2 EDM2008_1_PROPERTYREF = new QName2(NS_EDM2008_1, "PropertyRef");
   public static final QName2 EDM2008_1_PROPERTY = new QName2(NS_EDM2008_1, "Property");
   public static final QName2 EDM2008_1_NAVIGATIONPROPERTY = new QName2(NS_EDM2008_1, "NavigationProperty");
@@ -77,6 +89,10 @@ public class XmlFormatParser {
   public static final QName2 EDM2008_9_FUNCTIONIMPORT = new QName2(NS_EDM2008_9, "FunctionImport");
   public static final QName2 EDM2008_9_PARAMETER = new QName2(NS_EDM2008_9, "Parameter");
   public static final QName2 EDM2008_9_END = new QName2(NS_EDM2008_9, "End");
+  public static final QName2 EDM2008_9_ONDELETE = new QName2(NS_EDM2008_9, "OnDelete");
+  public static final QName2 EDM2008_9_REFCONSTRAINT = new QName2(NS_EDM2008_9, "ReferentialConstraint");
+  public static final QName2 EDM2008_9_PRINCIPAL = new QName2(NS_EDM2008_9, "Principal");
+  public static final QName2 EDM2008_9_DEPENDENT = new QName2(NS_EDM2008_9, "Dependent");
   public static final QName2 EDM2008_9_PROPERTYREF = new QName2(NS_EDM2008_9, "PropertyRef");
   public static final QName2 EDM2008_9_PROPERTY = new QName2(NS_EDM2008_9, "Property");
   public static final QName2 EDM2008_9_NAVIGATIONPROPERTY = new QName2(NS_EDM2008_9, "NavigationProperty");
@@ -91,6 +107,10 @@ public class XmlFormatParser {
   public static final QName2 EDM2009_FUNCTIONIMPORT = new QName2(NS_EDM2009, "FunctionImport");
   public static final QName2 EDM2009_PARAMETER = new QName2(NS_EDM2009, "Parameter");
   public static final QName2 EDM2009_END = new QName2(NS_EDM2009, "End");
+  public static final QName2 EDM2009_ONDELETE = new QName2(NS_EDM2009, "OnDelete");
+  public static final QName2 EDM2009_REFCONSTRAINT = new QName2(NS_EDM2009, "ReferentialConstraint");
+  public static final QName2 EDM2009_PRINCIPAL = new QName2(NS_EDM2009, "Principal");
+  public static final QName2 EDM2009_DEPENDENT = new QName2(NS_EDM2009, "Dependent");
   public static final QName2 EDM2009_PROPERTYREF = new QName2(NS_EDM2009, "PropertyRef");
   public static final QName2 EDM2009_PROPERTY = new QName2(NS_EDM2009, "Property");
   public static final QName2 EDM2009_NAVIGATIONPROPERTY = new QName2(NS_EDM2009, "NavigationProperty");
@@ -115,22 +135,41 @@ public class XmlFormatParser {
   public static final QName2 M_TYPE = new QName2(NS_METADATA, "type");
   public static final QName2 M_NULL = new QName2(NS_METADATA, "null");
   public static final QName2 M_INLINE = new QName2(NS_METADATA, "inline");
+  public static final QName2 M_MIMETYPE = new QName2(NS_METADATA, "MimeType");
   public static final QName2 M_FC_TARGETPATH = new QName2(NS_METADATA, "FC_TargetPath");
   public static final QName2 M_FC_CONTENTKIND = new QName2(NS_METADATA, "FC_ContentKind");
   public static final QName2 M_FC_KEEPINCONTENT = new QName2(NS_METADATA, "FC_KeepInContent");
   public static final QName2 M_FC_EPMCONTENTKIND = new QName2(NS_METADATA, "FC_EpmContentKind");
   public static final QName2 M_FC_EPMKEEPINCONTENT = new QName2(NS_METADATA, "FC_EpmKeepInContent");
+  public static final QName2 M_FC_NSPREFIX = new QName2(NS_METADATA, "FC_NsPrefix");
+  public static final QName2 M_FC_NSURI = new QName2(NS_METADATA, "FC_NsUri");
 
   public static final QName2 DATASERVICES_ELEMENT = new QName2(NS_DATASERVICES, "element"); // a collection element
 
   public static final QName2 XML_BASE = new QName2(NS_XML, "base");
 
   protected static boolean isStartElement(XMLEvent2 event, QName2... names) {
-    return event.isStartElement() && Enumerable.create(names).contains(event.asStartElement().getName());
+    if(!event.isStartElement()){
+      return false;
+    }
+    QName2 name = new QName2(event.asStartElement().getName().getNamespaceUri(), event.asStartElement().getName().getLocalPart());
+    return Enumerable.create(names).contains(name);
+    
+  }
+  protected static boolean isElement(XMLEvent2 event, QName2... names) {
+    QName2 name = new QName2(event.asStartElement().getName().getNamespaceUri(), event.asStartElement().getName().getLocalPart());
+    return Enumerable.create(names).contains(name);
+    
   }
 
+
   protected static boolean isEndElement(XMLEvent2 event, QName2 qname) {
-    return event.isEndElement() && event.asEndElement().getName().equals(qname);
+    if(!event.isEndElement()){
+      return false;
+    }
+    QName2 name = event.asEndElement().getName();
+    return name.getNamespaceUri().equals(qname.getNamespaceUri()) 
+        && name.getLocalPart().equals(qname.getLocalPart());
   }
 
   protected static String urlCombine(String base, String rel) {

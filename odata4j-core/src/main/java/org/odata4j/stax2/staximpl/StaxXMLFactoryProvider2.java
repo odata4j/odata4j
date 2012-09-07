@@ -235,7 +235,7 @@ public class StaxXMLFactoryProvider2 extends XMLFactoryProvider2 {
 
     @Override
     public QName2 getName() {
-      return new QName2(real.getName().getNamespaceURI(), real.getName().getLocalPart());
+      return new QName2(real.getName().getNamespaceURI(), real.getName().getLocalPart(), real.getName().getPrefix());
     }
   }
 
@@ -248,7 +248,7 @@ public class StaxXMLFactoryProvider2 extends XMLFactoryProvider2 {
 
     @Override
     public QName2 getName() {
-      return new QName2(real.getName().getNamespaceURI(), real.getName().getLocalPart());
+      return new QName2(real.getName().getNamespaceURI(), real.getName().getLocalPart(), real.getName().getPrefix());
     }
 
     @Override

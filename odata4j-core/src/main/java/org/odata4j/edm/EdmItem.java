@@ -17,10 +17,13 @@ public class EdmItem {
 
   private final EdmDocumentation documentation;
   private final ImmutableList<? extends NamespacedAnnotation<?>> annotations;
+  private final ImmutableList<? extends NamespacedAnnotation<?>> annotationElements;
 
-  protected EdmItem(EdmDocumentation documentation, ImmutableList<EdmAnnotation<?>> annotations) {
+  protected EdmItem(EdmDocumentation documentation, ImmutableList<EdmAnnotation<?>> annotations,
+      ImmutableList<EdmAnnotation<?>> annotationElements) {
     this.documentation = documentation;
     this.annotations = annotations;
+    this.annotationElements = annotationElements;
   }
 
   public EdmDocumentation getDocumentation() {
@@ -31,11 +34,26 @@ public class EdmItem {
     return annotations;
   }
 
+  public Iterable<? extends NamespacedAnnotation<?>> getAnnotationElements() {
+    return annotationElements;
+  }
+
   public NamespacedAnnotation<?> findAnnotation(String namespaceUri, String localName) {
     if (annotations != null) {
       for (NamespacedAnnotation<?> annotation : annotations) {
         if (annotation.getNamespace().getUri().equals(namespaceUri) && annotation.getName().equals(localName))
           return annotation;
+      }
+    }
+    return null;
+  }
+
+  public NamespacedAnnotation<?> findAnnotationElement(String namespaceUri, String name) {
+    if (annotationElements != null) {
+      for (NamespacedAnnotation<?> element : annotationElements) {
+        if (element.getNamespace().getUri().equals(namespaceUri) && element.getName().equals(name))
+          return element;
+
       }
     }
     return null;
@@ -73,6 +91,7 @@ public class EdmItem {
 
     private EdmDocumentation documentation;
     private List<EdmAnnotation<?>> annotations;
+    private List<EdmAnnotation<?>> annotationElements;
 
     abstract TBuilder newBuilder(T item, BuilderContext context);
 
@@ -84,6 +103,10 @@ public class EdmItem {
       return annotations;
     }
 
+    public List<EdmAnnotation<?>> getAnnotationElements() {
+      return annotationElements;
+    }
+
     @SuppressWarnings("unchecked")
     public TBuilder setDocumentation(EdmDocumentation documentation) {
       this.documentation = documentation;
@@ -93,6 +116,12 @@ public class EdmItem {
     @SuppressWarnings("unchecked")
     public TBuilder setAnnotations(List<EdmAnnotation<?>> annotations) {
       this.annotations = annotations;
+      return (TBuilder) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public TBuilder setAnnotationElements(List<EdmAnnotation<?>> annotationElements) {
+      this.annotationElements = annotationElements;
       return (TBuilder) this;
     }
 

@@ -7,8 +7,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
