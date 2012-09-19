@@ -40,6 +40,7 @@ public class AtomEntryFormatParserTest extends AbstractEntryFormatParserTest {
     verifyDateTimePropertyValue(formatParser.parse(buildAtom("<d:DateTime m:type=\"Edm.DateTime\">2007-06-05T01:02:03.0004</d:DateTime>")), DATETIME_WITH_MILLIS.withMillisOfSecond(0));
     verifyDateTimePropertyValue(formatParser.parse(buildAtom("<d:DateTime m:type=\"Edm.DateTime\">2007-06-05T01:02:03.0005</d:DateTime>")), DATETIME_WITH_MILLIS.withMillisOfSecond(1));
     verifyDateTimePropertyValue(formatParser.parse(buildAtom("<d:DateTime m:type=\"Edm.DateTime\">2007-06-05T01:02:03.0095</d:DateTime>")), DATETIME_WITH_MILLIS.withMillisOfSecond(10));
+    verifyDateTimePropertyValue(formatParser.parse(buildAtom("<d:DateTime m:type=\"Edm.DateTime\">2007-06-05T01:02:02.999589</d:DateTime>")), DATETIME_WITH_MILLIS.withMillisOfSecond(0));
   }
 
   @Test

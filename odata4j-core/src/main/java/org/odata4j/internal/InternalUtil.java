@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -69,8 +68,6 @@ public class InternalUtil {
   private static final String DATETIME_JSON_SUFFIX = ")\\/\"";
   private static final String DATETIME_JSON_PREFIX = "\"\\/Date(";
 
-  private static final DecimalFormat MILLIS = new DecimalFormat(".###", AndroidCompat.DecimalFormatSymbols_getInstance(Locale.US));
-
   public static LocalDateTime parseDateTimeFromXml(String value) {
     Matcher matcher = DATETIME_XML_PATTERN.matcher(value);
 
@@ -91,7 +88,7 @@ public class InternalUtil {
       if (nanoSeconds.length() <= 4)
         return DATETIME_WITH_MILLIS_XML.parseDateTime(dateTime + seconds + nanoSeconds).toLocalDateTime();
 
-      return DATETIME_WITH_MILLIS_XML.parseDateTime(dateTime + seconds + roundToMillis(nanoSeconds)).toLocalDateTime();
+      return adjustMillis(DATETIME_WITH_MILLIS_XML.parseDateTime(dateTime + seconds + nanoSeconds.substring(0, 4)), nanoSeconds).toLocalDateTime();
     }
     throw new IllegalArgumentException("Illegal datetime format " + value);
   }
@@ -117,13 +114,13 @@ public class InternalUtil {
       if (nanoSeconds.length() <= 4)
         return DATETIMEOFFSET_WITH_MILLIS_XML.withOffsetParsed().parseDateTime(dateTime + nanoSeconds + offset);
 
-      return DATETIMEOFFSET_WITH_MILLIS_XML.withOffsetParsed().parseDateTime(dateTime + roundToMillis(nanoSeconds) + offset);
+      return adjustMillis(DATETIMEOFFSET_WITH_MILLIS_XML.withOffsetParsed().parseDateTime(dateTime + nanoSeconds.substring(0, 4) + offset), nanoSeconds);
     }
     throw new IllegalArgumentException("Illegal datetimeoffset format " + value);
   }
 
-  private static String roundToMillis(String nanoSeconds) {
-    return MILLIS.format(Double.valueOf(Math.round(Double.parseDouble(nanoSeconds) * 1000)) / 1000);
+  private static DateTime adjustMillis(final DateTime dateTime, final String nanoSeconds) {
+    return Math.round(Double.parseDouble("0." + nanoSeconds.substring(4))) == 0 ? dateTime : dateTime.plusMillis(1);
   }
 
   public static LocalDateTime parseDateTimeFromJson(String value) {
