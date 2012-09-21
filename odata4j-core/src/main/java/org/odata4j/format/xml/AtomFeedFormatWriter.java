@@ -1,7 +1,9 @@
 package org.odata4j.format.xml;
 
 import java.io.Writer;
+import java.util.List;
 
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import org.joda.time.DateTime;
@@ -61,7 +63,18 @@ public class AtomFeedFormatWriter extends XmlFormatWriter implements FormatWrite
 
     if (response.getSkipToken() != null) {
       //<link rel="next" href="https://odata.sqlazurelabs.com/OData.svc/v0.1/rp1uiewita/StackOverflow/Tags/?$filter=TagName%20gt%20'a'&amp;$skiptoken=52" />
-      String nextHref = uriInfo.getRequestUriBuilder().replaceQueryParam("$skiptoken", response.getSkipToken()).build().toString();
+      UriBuilder builder = uriInfo.getRequestUriBuilder().replaceQueryParam("$skiptoken", response.getSkipToken());
+      List<String> topParam = uriInfo.getQueryParameters().get("$top");
+      if (topParam != null) {
+        long top = Long.valueOf(topParam.get(0));
+        top -= response.getEntities().size();
+        if (top > 0) {
+          builder.replaceQueryParam("$top", top);
+        } else {
+          builder.replaceQueryParam("$top");
+        }
+      }
+      String nextHref = builder.build().toString();
       writeElement(writer, "link", null, "rel", "next", "href", nextHref);
     }
 
