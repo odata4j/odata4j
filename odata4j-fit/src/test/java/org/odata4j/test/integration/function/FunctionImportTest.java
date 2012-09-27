@@ -645,13 +645,18 @@ public class FunctionImportTest extends AbstractRuntimeTest {
   @Test
   public void testFunctionReturnStringPost() throws XpathException, IOException, SAXException {
     for (FormatType format : FunctionImportTest.formats) {
-      String uri = endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_STRING_POST + "?" + this.formatQuery(format);
+      String param = "p1='abc'";
+      String uri = endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_STRING_POST + "?" + param + "&" + this.formatQuery(format);
 
       ResponseData responseData = this.rtFacade.postWebResource(uri, null, null, null);
       String resource = responseData.getEntity();
 
       assertEquals(format.toString(), 200, responseData.getStatusCode());
       assertNotNull(format.toString(), this.mockProducer.getQueryParameter());
+
+      assertEquals(format.toString(), "p1", this.mockProducer.getQueryParameter().get("p1").getName());
+      assertEquals(format.toString(), EdmSimpleType.STRING, this.mockProducer.getQueryParameter().get("p1").getType());
+      assertEquals(format.toString(), "abc", OSimpleObjects.getValueDisplayString(this.mockProducer.getQueryParameter().get("p1").getValue()));
 
       switch (format) {
       case ATOM:
@@ -671,7 +676,8 @@ public class FunctionImportTest extends AbstractRuntimeTest {
   @Test
   public void testFunctionReturnStringGet() throws XpathException, IOException, SAXException {
     for (FormatType format : FunctionImportTest.formats) {
-      String uri = endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_STRING_GET + "?" + this.formatQuery(format);
+      String param = "p1='abc'";
+      String uri = endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_STRING_GET + "?" + param + "&" + this.formatQuery(format);
 
       ResponseData responseData = this.rtFacade.getWebResource(uri, null, null, null);
       String resource = responseData.getEntity();
@@ -679,6 +685,13 @@ public class FunctionImportTest extends AbstractRuntimeTest {
       assertEquals(format.toString(), 200, responseData.getStatusCode());
       assertNotNull(format.toString(), this.mockProducer.getQueryParameter());
 
+      assertNotNull(format.toString(), this.mockProducer.getQueryParameter());
+      assertTrue(format.toString(), this.mockProducer.getQueryParameter().containsKey("p1"));
+
+      assertEquals(format.toString(), "p1", this.mockProducer.getQueryParameter().get("p1").getName());
+      assertEquals(format.toString(), EdmSimpleType.STRING, this.mockProducer.getQueryParameter().get("p1").getType());
+      assertEquals(format.toString(), "abc", OSimpleObjects.getValueDisplayString(this.mockProducer.getQueryParameter().get("p1").getValue()));
+      
       switch (format) {
       case ATOM:
         assertXpathExists("/d:TestFunctionReturnStringGet", resource);
@@ -697,13 +710,18 @@ public class FunctionImportTest extends AbstractRuntimeTest {
   @Test
   public void testFunctionReturnStringMerge() throws XpathException, IOException, SAXException {
     for (FormatType format : FunctionImportTest.formats) {
-      String uri = endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_STRING_MERGE + "?" + this.formatQuery(format);
+      String param = "p1='abc'";
+      String uri = endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_STRING_MERGE + "?" + param + "&" + this.formatQuery(format);
 
       ResponseData responseData = this.rtFacade.mergeWebResource(uri, null, null, null);
       String resource = responseData.getEntity();
 
       assertEquals(format.toString(), 200, responseData.getStatusCode());
       assertNotNull(format.toString(), this.mockProducer.getQueryParameter());
+
+      assertEquals(format.toString(), "p1", this.mockProducer.getQueryParameter().get("p1").getName());
+      assertEquals(format.toString(), EdmSimpleType.STRING, this.mockProducer.getQueryParameter().get("p1").getType());
+      assertEquals(format.toString(), "abc", OSimpleObjects.getValueDisplayString(this.mockProducer.getQueryParameter().get("p1").getValue()));
 
       switch (format) {
       case ATOM:
@@ -723,13 +741,18 @@ public class FunctionImportTest extends AbstractRuntimeTest {
   @Test
   public void testFunctionReturnStringPut() throws XpathException, IOException, SAXException {
     for (FormatType format : FunctionImportTest.formats) {
-      String uri = endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_STRING_PUT + "?" + this.formatQuery(format);
+      String param = "p1='abc'";
+      String uri = endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_STRING_PUT + "?" + param + "&" + this.formatQuery(format);
 
       ResponseData responseData = this.rtFacade.putWebResource(uri, null, null, null);
       String resource = responseData.getEntity();
 
       assertEquals(format.toString(), 200, responseData.getStatusCode());
       assertNotNull(format.toString(), this.mockProducer.getQueryParameter());
+
+      assertEquals(format.toString(), "p1", this.mockProducer.getQueryParameter().get("p1").getName());
+      assertEquals(format.toString(), EdmSimpleType.STRING, this.mockProducer.getQueryParameter().get("p1").getType());
+      assertEquals(format.toString(), "abc", OSimpleObjects.getValueDisplayString(this.mockProducer.getQueryParameter().get("p1").getValue()));
 
       switch (format) {
       case ATOM:
@@ -749,13 +772,18 @@ public class FunctionImportTest extends AbstractRuntimeTest {
   @Test
   public void testFunctionReturnStringDelete() throws XpathException, IOException, SAXException {
     for (FormatType format : FunctionImportTest.formats) {
-      String uri = endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_STRING_DELETE + "?" + this.formatQuery(format);
+      String param = "p1='abc'";
+      String uri = endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_STRING_DELETE + "?" + param + "&" + this.formatQuery(format);
 
       ResponseData responseData = this.rtFacade.deleteWebResource(uri, null, null, null);
       String resource = responseData.getEntity();
 
       assertEquals(format.toString(), 200, responseData.getStatusCode());
       assertNotNull(format.toString(), this.mockProducer.getQueryParameter());
+
+      assertEquals(format.toString(), "p1", this.mockProducer.getQueryParameter().get("p1").getName());
+      assertEquals(format.toString(), EdmSimpleType.STRING, this.mockProducer.getQueryParameter().get("p1").getType());
+      assertEquals(format.toString(), "abc", OSimpleObjects.getValueDisplayString(this.mockProducer.getQueryParameter().get("p1").getValue()));
 
       switch (format) {
       case ATOM:
@@ -775,13 +803,18 @@ public class FunctionImportTest extends AbstractRuntimeTest {
   @Test
   public void testFunctionReturnStringPatch() throws XpathException, IOException, SAXException {
     for (FormatType format : FunctionImportTest.formats) {
-      String uri = endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_STRING_PATCH + "?" + this.formatQuery(format);
+      String param = "p1='abc'";
+      String uri = endpointUri + MetadataUtil.TEST_FUNCTION_RETURN_STRING_PATCH + "?" + param + "&" + this.formatQuery(format);
 
       ResponseData responseData = this.rtFacade.patchWebResource(uri, null, null, null);
       String resource = responseData.getEntity();
 
       assertEquals(format.toString(), 200, responseData.getStatusCode());
       assertNotNull(format.toString(), this.mockProducer.getQueryParameter());
+
+      assertEquals(format.toString(), "p1", this.mockProducer.getQueryParameter().get("p1").getName());
+      assertEquals(format.toString(), EdmSimpleType.STRING, this.mockProducer.getQueryParameter().get("p1").getType());
+      assertEquals(format.toString(), "abc", OSimpleObjects.getValueDisplayString(this.mockProducer.getQueryParameter().get("p1").getValue()));
 
       switch (format) {
       case ATOM:

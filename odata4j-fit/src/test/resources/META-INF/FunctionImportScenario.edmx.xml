@@ -56,16 +56,22 @@
           <Parameter Name="p15" Type="Edm.Time" Nullable="false" />
         </FunctionImport>
         <FunctionImport Name="TestFunctionReturnStringGet" ReturnType="Edm.String" m:HttpMethod="GET">
+          <Parameter Name="p1" Type="Edm.String" Nullable="false" />
         </FunctionImport>
         <FunctionImport Name="TestFunctionReturnStringPost" ReturnType="Edm.String" m:HttpMethod="POST">
+          <Parameter Name="p1" Type="Edm.String" Nullable="false" />
         </FunctionImport>
         <FunctionImport Name="TestFunctionReturnStringPut" ReturnType="Edm.String" m:HttpMethod="PUT">
+          <Parameter Name="p1" Type="Edm.String" Nullable="false" />
         </FunctionImport>
         <FunctionImport Name="TestFunctionReturnStringMerge" ReturnType="Edm.String" m:HttpMethod="MERGE">
+          <Parameter Name="p1" Type="Edm.String" Nullable="false" />
         </FunctionImport>
         <FunctionImport Name="TestFunctionReturnStringPatch" ReturnType="Edm.String" m:HttpMethod="PATCH">
+          <Parameter Name="p1" Type="Edm.String" Nullable="false" />
         </FunctionImport>
         <FunctionImport Name="TestFunctionReturnStringDelete" ReturnType="Edm.String" m:HttpMethod="DELETE">
+          <Parameter Name="p1" Type="Edm.String" Nullable="false" />
         </FunctionImport>
       </EntityContainer>
     </Schema>

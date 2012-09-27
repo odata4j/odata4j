@@ -83,7 +83,8 @@ public class EntitiesRequestResource extends BaseResource {
         callingMethod = ODataHttpMethod.fromString(xheader.get(0));
       }
 
-      return FunctionResource.callFunction(callingMethod, httpHeaders, uriInfo, securityContext, producer, entitySetName, format, callback, new QueryInfo());
+      QueryInfo query = QueryInfo.newBuilder().setCustomOptions(OptionsQueryParser.parseCustomOptions(uriInfo)).build();
+      return FunctionResource.callFunction(callingMethod, httpHeaders, uriInfo, securityContext, producer, entitySetName, format, callback, query);
     }
 
     // is this a new media resource?
@@ -185,7 +186,8 @@ public class EntitiesRequestResource extends BaseResource {
       // functions that return collections of entities should support the
       // same set of query options as entity set queries so give them everything.
 
-      response = FunctionResource.callFunction(ODataHttpMethod.PUT, httpHeaders, uriInfo, securityContext, producer, functionName, format, callback, new QueryInfo());
+      QueryInfo query = QueryInfo.newBuilder().setCustomOptions(OptionsQueryParser.parseCustomOptions(uriInfo)).build();
+      response = FunctionResource.callFunction(ODataHttpMethod.PUT, httpHeaders, uriInfo, securityContext, producer, functionName, format, callback, query);
     } else {
       throw new NotFoundException(functionName);
     }
@@ -215,7 +217,8 @@ public class EntitiesRequestResource extends BaseResource {
       // functions that return collections of entities should support the
       // same set of query options as entity set queries so give them everything.
 
-      response = FunctionResource.callFunction(ODataHttpMethod.DELETE, httpHeaders, uriInfo, securityContext, producer, functionName, format, callback, new QueryInfo());
+      QueryInfo query = QueryInfo.newBuilder().setCustomOptions(OptionsQueryParser.parseCustomOptions(uriInfo)).build();
+      response = FunctionResource.callFunction(ODataHttpMethod.DELETE, httpHeaders, uriInfo, securityContext, producer, functionName, format, callback, query);
     } else {
       throw new NotFoundException(functionName);
     }
