@@ -1,0 +1,30 @@
+<atom:entry xml:base="http://vmnwgw20.unitedplanet.de:8042/sap/opu/sdata/iwfnd/RMTSAMPLEFLIGHT/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:sap="http://www.sap.com/Protocols/SAPData">
+  <atom:author />
+  <atom:content type="application/xml">
+    <m:properties>
+      <d:carrid>AA</d:carrid>
+      <d:connid>0017</d:connid>
+      <d:fldate m:Type="Edm.DateTime">2011-08-31T00:00:00</d:fldate>
+      <d:PLANETYPE>747-400</d:PLANETYPE>
+      <d:flightDetails>
+        <d:countryFrom>US</d:countryFrom>
+        <d:cityFrom>new york</d:cityFrom>
+        <d:airportFrom>JFK</d:airportFrom>
+        <d:countryTo>US</d:countryTo>
+        <d:cityTo>SAN FRANCISCO</d:cityTo>
+        <d:airportTo>SFO</d:airportTo>
+        <d:flightTime>361</d:flightTime>
+        <d:departureTime m:Type="Edm.Time">PT11H00M00S</d:departureTime>
+        <d:arrivalTime m:Type="Edm.Time">PT14H01M00S</d:arrivalTime>
+        <d:distance m:Type="Edm.Decimal">2572.0000</d:distance>
+      </d:flightDetails>
+    </m:properties>
+  </atom:content>
+  <atom:id>http://vmnwgw20.unitedplanet.de:8042/sap/opu/sdata/iwfnd/RMTSAMPLEFLIGHT/FlightCollection(carrid=&apos;AA&apos;,connid=&apos;0017&apos;,fldate=&apos;20110831&apos;)</atom:id>
+  <atom:link href="FlightCollection(carrid=&apos;AA&apos;,connid=&apos;0017&apos;,fldate=&apos;20110831&apos;)" rel="edit" type="application/atomxml;type=entry" />
+  <atom:link href="FlightCollection(carrid=&apos;AA&apos;,connid=&apos;0017&apos;,fldate=&apos;20110831&apos;)/flightbooking" rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/flightbooking" title="RMTSAMPLEFLIGHT.BookingFlight" type="application/atom+xml;type=entry" />
+  <atom:link href="FlightCollection(carrid=&apos;AA&apos;,connid=&apos;0017&apos;,fldate=&apos;20110831&apos;)/flightBookings" rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/flightBookings" title="RMTSAMPLEFLIGHT.FlightBookings" type="application/atom+xml;type=feed" />
+  <atom:link href="FlightCollection(carrid=&apos;AA&apos;,connid=&apos;0017&apos;,fldate=&apos;20110831&apos;)/FlightCarrier" rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/FlightCarrier" title="RMTSAMPLEFLIGHT.CarrierToFlight" type="application/atom+xml;type=entry" />
+  <atom:title>Flight</atom:title>
+  <atom:updated>2012-03-08T19:04:45Z</atom:updated>
+</atom:entry>

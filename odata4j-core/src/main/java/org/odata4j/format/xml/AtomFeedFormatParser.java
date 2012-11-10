@@ -218,7 +218,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
             et = EdmSimpleType.STRING; // we must support open types
         }
 
-        if (et != null && (!et.isSimple())) {
+        if (et != null && !et.isSimple()) {
           EdmStructuralType est = (EdmStructuralType) et;
           op = OProperties.complex(name, (EdmComplexType) et, isNull ? null : Enumerable.create(parseProperties(reader, event.asStartElement(), metadata, est)).toList());
         } else {

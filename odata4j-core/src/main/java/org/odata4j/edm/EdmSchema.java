@@ -168,6 +168,11 @@ public class EdmSchema extends EdmItem {
       return this;
     }
 
+    public Builder addComplexTypes(EdmComplexType.Builder... complexTypes) {
+      this.complexTypes.addAll(Arrays.asList(complexTypes));
+      return this;
+    }
+
     public Builder addAssociations(Collection<EdmAssociation.Builder> associations) {
       this.associations.addAll(associations);
       return this;
