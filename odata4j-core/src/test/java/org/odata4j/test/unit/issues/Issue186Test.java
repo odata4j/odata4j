@@ -23,7 +23,7 @@ public class Issue186Test {
     EdmDataServices metadata = new EdmxFormatParser().parseMetadata(reader);
 
     InputStream titlesStream = getClass().getResourceAsStream("/META-INF/issue186_netflix_titles.xml");
-    AtomFeed feed = new AtomFeedFormatParser(metadata, "Titles", null, null).parse(new InputStreamReader(titlesStream));
+    AtomFeed feed = new AtomFeedFormatParser(metadata, "Titles", null).parse(new InputStreamReader(titlesStream));
     Assert.assertNotNull(feed);
   }
 

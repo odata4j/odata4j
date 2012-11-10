@@ -116,7 +116,6 @@ public class JsonCollectionFormatParser extends JsonFormatParser implements Form
         this.metadata,
         entitySet.getName(),
         this.entityKey,
-        null, // feed customization mapping
         this.isResponse,
         this.returnType.getItemType());
 
@@ -193,7 +192,6 @@ public class JsonCollectionFormatParser extends JsonFormatParser implements Form
         this.metadata,
         this.entitySetName,
         this.entityKey,
-        null, // FeedCustomizationMapping fcMapping,
         false, // boolean isResponse);
         edmType); // expected type
 

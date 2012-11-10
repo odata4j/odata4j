@@ -15,7 +15,6 @@ import org.odata4j.format.Entry;
 import org.odata4j.format.FormatParser;
 import org.odata4j.format.FormatParserFactory;
 import org.odata4j.format.Settings;
-import org.odata4j.internal.FeedCustomizationMapping;
 import org.odata4j.internal.InternalUtil;
 
 /**
@@ -27,12 +26,9 @@ public class ConsumerCreateEntityRequest<T> extends AbstractConsumerEntityPayloa
   private OEntity parent;
   private String navProperty;
 
-  private final FeedCustomizationMapping fcMapping;
-
-  public ConsumerCreateEntityRequest(ODataClient client, String serviceRootUri, EdmDataServices metadata, String entitySetName, FeedCustomizationMapping fcMapping) {
+  public ConsumerCreateEntityRequest(ODataClient client, String serviceRootUri, EdmDataServices metadata, String entitySetName) {
     super(entitySetName, serviceRootUri, metadata);
     this.client = client;
-    this.fcMapping = fcMapping;
   }
 
   @SuppressWarnings("unchecked")
@@ -58,7 +54,7 @@ public class ConsumerCreateEntityRequest<T> extends AbstractConsumerEntityPayloa
         .getFirst(ODataConstants.Headers.DATA_SERVICE_VERSION));
 
     FormatParser<Entry> parser = FormatParserFactory.getParser(Entry.class,
-        client.getFormatType(), new Settings(version, metadata, entitySetName, null, fcMapping));
+        client.getFormatType(), new Settings(version, metadata, entitySetName, null));
     entry = parser.parse(client.getFeedReader(response));
     response.close();
 

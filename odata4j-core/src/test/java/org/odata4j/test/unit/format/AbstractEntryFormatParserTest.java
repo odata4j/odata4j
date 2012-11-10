@@ -78,7 +78,7 @@ public abstract class AbstractEntryFormatParserTest {
   }
 
   private static Settings getSettings() {
-    return new Settings(ODataVersion.V1, getMetadata(), ENTITYSET_NAME, null, null);
+    return new Settings(ODataVersion.V1, getMetadata(), ENTITYSET_NAME, null);
   }
 
   private static EdmDataServices getMetadata() {

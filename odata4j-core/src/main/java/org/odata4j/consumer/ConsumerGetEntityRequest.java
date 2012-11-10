@@ -14,7 +14,6 @@ import org.odata4j.format.FormatParser;
 import org.odata4j.format.FormatParserFactory;
 import org.odata4j.format.Settings;
 import org.odata4j.internal.EntitySegment;
-import org.odata4j.internal.FeedCustomizationMapping;
 import org.odata4j.internal.InternalUtil;
 
 /**
@@ -23,16 +22,14 @@ import org.odata4j.internal.InternalUtil;
 public class ConsumerGetEntityRequest<T> extends AbstractConsumerEntityRequest<T> implements OEntityGetRequest<T> {
 
   private final Class<T> entityType;
-  private final FeedCustomizationMapping fcMapping;
 
   private String select;
   private String expand;
 
   public ConsumerGetEntityRequest(ODataClient client, Class<T> entityType, String serviceRootUri,
-      EdmDataServices metadata, String entitySetName, OEntityKey key, FeedCustomizationMapping fcMapping) {
+      EdmDataServices metadata, String entitySetName, OEntityKey key) {
     super(client, serviceRootUri, metadata, entitySetName, key);
     this.entityType = entityType;
-    this.fcMapping = fcMapping;
   }
 
   @Override
@@ -78,7 +75,7 @@ public class ConsumerGetEntityRequest<T> extends AbstractConsumerEntityRequest<T
     // TODO determine the service version from header (and metadata?)
     FormatParser<Feed> parser = FormatParserFactory
         .getParser(Feed.class, getClient().getFormatType(),
-            new Settings(ODataConstants.DATA_SERVICE_VERSION, getMetadata(), entitySet.getName(), key, fcMapping));
+            new Settings(ODataConstants.DATA_SERVICE_VERSION, getMetadata(), entitySet.getName(), key));
 
     Entry entry = Enumerable.create(parser.parse(getClient().getFeedReader(response)).getEntries())
         .firstOrNull();

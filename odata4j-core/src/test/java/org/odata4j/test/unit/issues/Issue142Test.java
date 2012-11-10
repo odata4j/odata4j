@@ -23,7 +23,7 @@ public class Issue142Test {
   public void issue142() {
     InputStream xml = getClass().getResourceAsStream("/META-INF/no_content_type.xml");
     EdmDataServices metadata = getMetadata();
-    AtomFeed feed = new AtomFeedFormatParser(metadata, "WorkflowTaskCollection", null, null).parse(new InputStreamReader(xml));
+    AtomFeed feed = new AtomFeedFormatParser(metadata, "WorkflowTaskCollection", null).parse(new InputStreamReader(xml));
     Assert.assertNotNull(feed);
   }
 

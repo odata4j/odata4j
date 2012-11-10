@@ -17,7 +17,6 @@ import org.odata4j.format.Feed;
 import org.odata4j.format.FormatParser;
 import org.odata4j.format.FormatParserFactory;
 import org.odata4j.format.Settings;
-import org.odata4j.internal.FeedCustomizationMapping;
 import org.odata4j.internal.InternalUtil;
 
 /**
@@ -26,12 +25,10 @@ import org.odata4j.internal.InternalUtil;
 public class ConsumerQueryEntitiesRequest<T> extends AbstractConsumerQueryRequestBase<T> {
 
   private final Class<T> entityType;
-  private final FeedCustomizationMapping fcMapping;
 
-  public ConsumerQueryEntitiesRequest(ODataClient client, Class<T> entityType, String serviceRootUri, EdmDataServices metadata, String entitySetName, FeedCustomizationMapping fcMapping) {
+  public ConsumerQueryEntitiesRequest(ODataClient client, Class<T> entityType, String serviceRootUri, EdmDataServices metadata, String entitySetName) {
     super(client, serviceRootUri, metadata, entitySetName);
     this.entityType = entityType;
-    this.fcMapping = fcMapping;
   }
 
   @Override
@@ -62,7 +59,7 @@ public class ConsumerQueryEntitiesRequest<T> extends AbstractConsumerQueryReques
         .getFirst(ODataConstants.Headers.DATA_SERVICE_VERSION));
 
     FormatParser<Feed> parser = FormatParserFactory.getParser(Feed.class, getClient().getFormatType(),
-        new Settings(version, getMetadata(), getEntitySet().getName(), null, fcMapping));
+        new Settings(version, getMetadata(), getEntitySet().getName(), null));
 
     Feed feed = parser.parse(getClient().getFeedReader(response));
     response.close();

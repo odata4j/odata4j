@@ -31,7 +31,6 @@ import org.odata4j.edm.EdmType;
 import org.odata4j.format.Entry;
 import org.odata4j.format.Feed;
 import org.odata4j.format.FormatParser;
-import org.odata4j.internal.FeedCustomizationMapping;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.stax2.Attribute2;
 import org.odata4j.stax2.QName2;
@@ -44,16 +43,16 @@ import org.odata4j.stax2.util.StaxUtil;
 
 public class AtomFeedFormatParser extends XmlFormatParser implements FormatParser<Feed> {
 
-  protected EdmDataServices metadata;
-  protected String entitySetName;
-  protected OEntityKey entityKey;
-  protected FeedCustomizationMapping fcMapping;
+  protected final EdmDataServices metadata;
+  protected final String entitySetName;
+  protected final OEntityKey entityKey;
 
-  public AtomFeedFormatParser(EdmDataServices metadata, String entitySetName, OEntityKey entityKey, FeedCustomizationMapping fcMapping) {
+  private FeedCustomizations feedCustomizations;
+
+  public AtomFeedFormatParser(EdmDataServices metadata, String entitySetName, OEntityKey entityKey) {
     this.metadata = metadata;
     this.entitySetName = entitySetName;
     this.entityKey = entityKey;
-    this.fcMapping = fcMapping;
   }
 
   public static class AtomFeed implements Feed {
@@ -346,7 +345,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
 
         if (rt instanceof DataServicesAtomEntry) {
           DataServicesAtomEntry dsae = (DataServicesAtomEntry) rt;
-          OEntity entity = entityFromAtomEntry(metadata, entitySet, dsae, fcMapping);
+          OEntity entity = entityFromAtomEntry(metadata, entitySet, dsae);
           dsae.setEntity(entity);
         }
         return rt;
@@ -404,21 +403,22 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
   private OEntity entityFromAtomEntry(
       EdmDataServices metadata,
       EdmEntitySet entitySet,
-      DataServicesAtomEntry dsae,
-      FeedCustomizationMapping mapping) {
-
-    List<OProperty<?>> props = dsae.properties;
-    if (mapping != null) {
-      Enumerable<OProperty<?>> properties = Enumerable.create(dsae.properties);
-      if (mapping.titlePropName != null)
-        properties = properties.concat(OProperties.string(mapping.titlePropName, dsae.title));
-      if (mapping.summaryPropName != null)
-        properties = properties.concat(OProperties.string(mapping.summaryPropName, dsae.summary));
-
-      props = properties.toList();
-    }
+      DataServicesAtomEntry dsae) {
 
     EdmEntityType entityType = entitySet.getType();
+    List<OProperty<?>> props = dsae.properties;
+
+    // apply feed-customized properties not included in content
+    if (feedCustomizations == null)
+      feedCustomizations = new FeedCustomizations(metadata);
+    FeedCustomizations.FeedCustomization fc = feedCustomizations.get(entitySet.getType());
+    if (fc != null) {
+      if (fc.syndicationTitle != null && !fc.syndicationTitle.keepInContent)
+        props.add(OProperties.string(fc.syndicationTitle.propertyName, dsae.title));
+      if (fc.syndicationSummary != null && !fc.syndicationSummary.keepInContent)
+        props.add(OProperties.string(fc.syndicationSummary.propertyName, dsae.summary));
+    }
+
     if (dsae.categoryTerm != null) {
       // The type of an entity set is polymorphic...
       entityType = (EdmEntityType) metadata.findEdmEntityType(dsae.categoryTerm);
@@ -442,7 +442,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
       return OEntities.createRequest(
           entitySet,
           props,
-          toOLinks(metadata, entitySet, dsae.atomLinks, mapping),
+          toOLinks(metadata, entitySet, dsae.atomLinks),
           dsae.title,
           dsae.categoryTerm);
 
@@ -452,7 +452,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
         key,
         dsae.etag,
         props,
-        toOLinks(metadata, entitySet, dsae.atomLinks, mapping),
+        toOLinks(metadata, entitySet, dsae.atomLinks),
         dsae.title,
         dsae.categoryTerm);
   }
@@ -460,8 +460,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
   private List<OLink> toOLinks(
       final EdmDataServices metadata,
       EdmEntitySet fromRoleEntitySet,
-      List<AtomLink> links,
-      final FeedCustomizationMapping mapping) {
+      List<AtomLink> links) {
     List<OLink> rt = new ArrayList<OLink>(links.size());
     for (final AtomLink link : links) {
 
@@ -489,7 +488,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
                     @Override
                     public OEntity apply(
                         DataServicesAtomEntry input) {
-                      return entityFromAtomEntry(metadata, toRoleEntitySet, input, mapping);
+                      return entityFromAtomEntry(metadata, toRoleEntitySet, input);
                     }
                   }).toList();
             } // else empty feed.
@@ -513,8 +512,7 @@ public class AtomFeedFormatParser extends XmlFormatParser implements FormatParse
                   ? metadata.getEdmEntitySet(navProperty.getToRole().getType())
                   : null;
               relatedEntity = entityFromAtomEntry(metadata, toRoleEntitySet,
-                  (DataServicesAtomEntry) link.inlineEntry,
-                  mapping);
+                  (DataServicesAtomEntry) link.inlineEntry);
             }
             rt.add(OLinks.relatedEntityInline(link.relation,
                 link.title, link.href, relatedEntity));

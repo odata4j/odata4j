@@ -28,7 +28,7 @@ public class Issue143Test {
   public void issue143() {
     InputStream xml = getClass().getResourceAsStream("/META-INF/sap_no_property_type.xml");
     EdmDataServices metadata = getMetadata();
-    AtomFeedFormatParser.AtomFeed feed = new AtomFeedFormatParser(metadata, "FlightCollection", null, null).parse(new InputStreamReader(xml));
+    AtomFeedFormatParser.AtomFeed feed = new AtomFeedFormatParser(metadata, "FlightCollection", null).parse(new InputStreamReader(xml));
     Assert.assertNotNull(feed);
     Entry entry = feed.getEntries().iterator().next();
     OProperty<?> complexTypeProp = entry.getEntity().getProperty("flightDetails");

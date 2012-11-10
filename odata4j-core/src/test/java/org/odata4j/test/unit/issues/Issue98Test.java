@@ -23,7 +23,7 @@ public class Issue98Test {
     EdmDataServices metadata = new EdmxFormatParser().parseMetadata(reader);
 
     InputStream titlesStream = getClass().getResourceAsStream("/META-INF/issue98_payload.json");
-    Settings settings = new Settings(ODataVersion.V1, metadata, "People", null, null);
+    Settings settings = new Settings(ODataVersion.V1, metadata, "People", null);
     Feed feed = new JsonFeedFormatParser(settings).parse(new InputStreamReader(titlesStream));
     Assert.assertNotNull(feed);
   }

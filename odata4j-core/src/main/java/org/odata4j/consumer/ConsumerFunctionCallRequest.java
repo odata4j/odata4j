@@ -196,7 +196,6 @@ public class ConsumerFunctionCallRequest<T extends OObject>
             getMetadata(),
             function.getName(),
             null, // entitykey
-            null, // fcMapping
             true, // isResponse
             function.getReturnType()));
 
