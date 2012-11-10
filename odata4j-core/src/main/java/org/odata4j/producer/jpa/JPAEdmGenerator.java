@@ -261,7 +261,7 @@ public class JPAEdmGenerator implements EdmGenerator {
     EdmType type;
     if (sa.getPersistentAttributeType() == PersistentAttributeType.EMBEDDED) {
       String simpleName = sa.getJavaType().getSimpleName();
-      // this will map to an edm complex.  If anyone ever im;plements this you
+      // this will map to an edm complex.  If anyone ever implements this you
       // should not create an EdmComplexType.  Instead, you should maintain
       // a cache of EdmComplexType.Builders and re-use instances with the same
       // namespace.name.  (multiple Entity classes may have properties of this
@@ -279,8 +279,11 @@ public class JPAEdmGenerator implements EdmGenerator {
     Integer maxLength = null;
     if (sa.getJavaMember() instanceof AnnotatedElement) {
       Column col = ((AnnotatedElement) sa.getJavaMember()).getAnnotation(Column.class);
-      if (col != null && Enumerable.<EdmType> create(EdmSimpleType.BINARY, EdmSimpleType.STRING).contains(type))
-        maxLength = col.length();
+      if (col != null) {
+        if (Enumerable.<EdmType> create(EdmSimpleType.BINARY, EdmSimpleType.STRING).contains(type))
+          maxLength = col.length();
+        nullable &= col.nullable();
+      }
     }
 
     return EdmProperty.newBuilder(name).setType(type).setNullable(nullable).setMaxLength(maxLength);
