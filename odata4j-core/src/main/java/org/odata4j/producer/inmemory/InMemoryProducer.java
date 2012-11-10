@@ -330,16 +330,6 @@ public class InMemoryProducer implements ODataProducer {
     return found;
   }
 
-  protected InMemoryEntityInfo<?> findEntityInfoForEntitySet(String entitySetName) {
-    for (InMemoryEntityInfo<?> typeInfo : this.eis.values()) {
-      if (typeInfo.entitySetName.equals(entitySetName)) {
-        return typeInfo;
-      }
-    }
-
-    return null;
-  }
-
   /**
    * Transforms a POJO into a list of OProperties based on a given
    * EdmStructuralType.
@@ -417,7 +407,7 @@ public class InMemoryProducer implements ODataProducer {
 
   protected OEntity toOEntity(EdmEntitySet ees, Object obj, PropertyPathHelper pathHelper) {
 
-    InMemoryEntityInfo<?> ei = this.findEntityInfoForClass(obj.getClass()); //  eis.get(ees.getName());
+    InMemoryEntityInfo<?> ei = eis.get(ees.getName());
     final List<OLink> links = new ArrayList<OLink>();
     final List<OProperty<?>> properties = new ArrayList<OProperty<?>>();
 
@@ -782,7 +772,7 @@ public class InMemoryProducer implements ODataProducer {
 
     if (navProp.getToRole().getMultiplicity() == EdmMultiplicity.MANY) {
       // apply filter, orderby, etc.
-      return getEntitiesResponse(rc, targetEntitySet, Enumerable.create(relatedPojos), findEntityInfoForEntitySet(targetEntitySet.getName()).getPropertyModel());
+      return getEntitiesResponse(rc, targetEntitySet, Enumerable.create(relatedPojos), eis.get(targetEntitySet.getName()).getPropertyModel());
     } else {
       return Responses.entity(this.toOEntity(targetEntitySet, relatedPojos.iterator().next(), rc.getPathHelper()));
     }
