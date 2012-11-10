@@ -69,6 +69,7 @@ public class InternalUtil {
   private static final String DATETIME_JSON_PREFIX = "\"\\/Date(";
 
   public static LocalDateTime parseDateTimeFromXml(String value) {
+    value = normalizeXmlValue(value);
     Matcher matcher = DATETIME_XML_PATTERN.matcher(value);
 
     if (matcher.matches()) {
@@ -94,6 +95,7 @@ public class InternalUtil {
   }
 
   public static DateTime parseDateTimeOffsetFromXml(String value) {
+    value = normalizeXmlValue(value);
     Matcher matcher = DATETIMEOFFSET_XML_PATTERN.matcher(value);
 
     if (matcher.matches()) {
@@ -117,6 +119,10 @@ public class InternalUtil {
       return adjustMillis(DATETIMEOFFSET_WITH_MILLIS_XML.withOffsetParsed().parseDateTime(dateTime + nanoSeconds.substring(0, 4) + offset), nanoSeconds);
     }
     throw new IllegalArgumentException("Illegal datetimeoffset format " + value);
+  }
+
+  private static String normalizeXmlValue(String value) {
+    return value.replace("%3A", ":");
   }
 
   private static DateTime adjustMillis(final DateTime dateTime, final String nanoSeconds) {
