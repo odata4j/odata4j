@@ -288,8 +288,9 @@ public class EdmDataServices {
     public EdmComplexType.Builder findEdmComplexType(String complexTypeFQName) {
       // TODO share or remove
       for (EdmSchema.Builder schema : this.schemas) {
+        String fqName = schema.dealias(complexTypeFQName);
         for (EdmComplexType.Builder ect : schema.getComplexTypes()) {
-          if (ect.getFullyQualifiedTypeName().equals(complexTypeFQName)) {
+          if (ect.getFullyQualifiedTypeName().equals(fqName)) {
             return ect;
           }
         }

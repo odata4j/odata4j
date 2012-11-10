@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?><edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx" xmlns:dr="http://schemas.microsoft.com/dallas/2010/04">
+  <edmx:DataServices xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" m:DataServiceVersion="1.0">
+    <Schema xmlns="http://schemas.microsoft.com/ado/2009/08/edm" Namespace="Microsoft.Dataplex.Services.WCEX" Alias="WCEX">
+      <EntityContainer Name="WCEX">
+        <EntitySet Name="HourlyDataSet" EntityType="WCEX.HourlyResult" />
+        <EntitySet Name="DailyDataSet" EntityType="WCEX.DailyResult" />
+        <FunctionImport Name="HourlyFcst" EntitySet="HourlyDataSet" ReturnType="Collection(WCEX.HourlyResult)" dr:QueryResourceCost="1">
+          <Parameter Name="tag" Nullable="false" Mode="In" Type="Edm.String" dr:SampleValues="Basic" />
+          <Parameter Name="recordId" Nullable="true" Mode="In" Type="Edm.Guid" dr:SampleValues="2CB2B224-E934-4353-A421-1D8AA29BAF15" />
+          <Parameter Name="time" Nullable="true" Mode="In" Type="Edm.DateTime" dr:SampleValues="2010-07-30T23:00:00" />
+          <Parameter Name="latitude" Nullable="true" Mode="In" Type="Edm.Single" dr:SampleValues="47.6062" />
+          <Parameter Name="longitude" Nullable="true" Mode="In" Type="Edm.Single" dr:SampleValues="-122.3321" />
+          <Parameter Name="offset" Mode="In" Type="Edm.String" dr:SampleValues="-6:00" />
+          <Parameter Name="units" Mode="In" Type="Edm.String" dr:Enum="english|metric|raw|error" dr:SampleValues="english|metric|raw|error" />
+          <Parameter Name="visitsPerHour" Nullable="true" Mode="In" Type="Edm.Int16" dr:SampleValues="-32768" />
+          <Parameter Name="visitsPerDay" Nullable="true" Mode="In" Type="Edm.Int32" dr:SampleValues="2147483647" />
+        </FunctionImport>
+        <FunctionImport Name="DailyFcst" EntitySet="DailyDataSet" ReturnType="Collection(WCEX.DailyResult)" dr:QueryResourceCost="1">
+          <Parameter Name="tag" Nullable="false" Mode="In" Type="Edm.String" dr:SampleValues="Basic" />
+          <Parameter Name="latitude" Nullable="false" Mode="In" Type="Edm.Double" dr:SampleValues="47.6062" />
+          <Parameter Name="longitude" Nullable="false" Mode="In" Type="Edm.Double" dr:SampleValues="-122.3321" />
+          <Parameter Name="offset" Mode="In" Type="Edm.String" dr:SampleValues="-6:00" />
+          <Parameter Name="units" Mode="In" Type="Edm.String" dr:SampleValues="english|metric|raw|error" />
+          <Parameter Name="isHistoryLow" Mode="In" Type="Edm.Boolean" />
+          <Parameter Name="visitsPerYear" Nullable="true" Mode="In" Type="Edm.Int64" dr:SampleValues="64" />
+          <Parameter Name="averageVisits" Mode="In" Type="Edm.Decimal" dr:SampleValues="128.367" />
+        </FunctionImport>
+        <FunctionImport Name="GetError" EntitySet="DailyDataSet" ReturnType="Collection(WCEX.DailyResult)" dr:QueryResourceCost="1">
+          <Parameter Name="error" Nullable="true" Mode="In" Type="Edm.String" dr:SampleValues="NULL" />
+        </FunctionImport>
+        <FunctionImport Name="GetHttpStatusCode" EntitySet="DailyDataSet" ReturnType="Collection(WCEX.DailyResult)" dr:QueryResourceCost="1">
+          <Parameter Name="statusCode" Nullable="false" Mode="In" Type="Edm.Int32" dr:SampleValues="200" />
+        </FunctionImport>
+        <FunctionImport Name="QueryWithSpecialSymbol" EntitySet="HourlyDataSet" ReturnType="Collection(WCEX.HourlyResult)" dr:QueryResourceCost="1">
+          <Parameter Name="query" Nullable="false" Mode="In" Type="Edm.String" dr:SampleValues="Test &amp; Test" />
+        </FunctionImport>
+        <FunctionImport Name="GetPage" EntitySet="DailyDataSet" ReturnType="Collection(WCEX.DailyResult)" dr:QueryResourceCost="1" />
+        <FunctionImport Name="MaxPageService" EntitySet="DailyDataSet" ReturnType="Collection(WCEX.DailyResult)" dr:MaxPageSize="25" dr:QueryResourceCost="1" />
+      </EntityContainer>
+      <ComplexType Name="Name">
+        <Property Name="FirstName" Type="Edm.String" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="LastName" Type="Edm.String" dr:Queryable="false" dr:Returned="true" />
+      </ComplexType>
+      <EntityType Name="HourlyResult">
+        <Key>
+          <PropertyRef Name="Time" />
+        </Key>
+        <Property Name="FullName" Type="WCEX.Name" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="Time" Type="Edm.DateTime" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="Temperature" Type="Edm.Double" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="FeelsLike" Type="Edm.Double" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="DewPoint" Type="Edm.Double" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="RelativeHumidity" Type="Edm.Int32" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="WindDirection_10m" Type="Edm.Double" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="WindSpeed_10m" Type="Edm.Double" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="Clouds" Type="Edm.Double" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="AccumRainTotal" Type="Edm.Double" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="AccumSnowTotal" Type="Edm.Double" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="AccumIceTotal" Type="Edm.Double" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="Icon" Type="Edm.String" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="Updated" Type="Edm.DateTime" Nullable="false" dr:Queryable="false" dr:Returned="true" />
+      </EntityType>
+      <EntityType Name="DailyResult">
+        <Key>
+          <PropertyRef Name="Day" />
+        </Key>
+        <Property Name="Day" Type="Edm.String" Nullable="false" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="Start" Type="Edm.DateTime" Nullable="false" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="End" Type="Edm.DateTime" Nullable="false" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="TemperatureMin" Type="Edm.Double" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="TemperatureMax" Type="Edm.Double" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="FeelsLikeMin" Type="Edm.Double" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="FeelsLikeMax" Type="Edm.Double" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="DewPointMin" Type="Edm.Double" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="DewPointMax" Type="Edm.Double" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="RelativeHumidityMin" Type="Edm.Int32" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="RelativeHumidityMax" Type="Edm.Int32" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="WindDirection_10m" Type="Edm.String" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="WindDirection_10mMin" Type="Edm.Double" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="WindDirection_10mMax" Type="Edm.Double" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="WindSpeed_10mMin" Type="Edm.Double" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="WindSpeed_10mMax" Type="Edm.Double" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="Clouds" Type="Edm.Double" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="CloudsMin" Type="Edm.Double" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="CloudsMax" Type="Edm.Double" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="AccumRainTotalMin" Type="Edm.Double" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="AccumRainTotalMax" Type="Edm.Double" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="AccumSnowTotalMin" Type="Edm.Double" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="AccumSnowTotalMax" Type="Edm.Double" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="AccumIceTotalMin" Type="Edm.Double" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="AccumIceTotalMax" Type="Edm.Double" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="Icon" Type="Edm.String" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="Updated" Type="Edm.DateTime" Nullable="false" dr:Queryable="false" dr:Returned="true" />
+        <Property Name="IsHistoryLow" Type="Edm.Boolean" dr:Queryable="false" dr:Returned="true" />
+      </EntityType>
+    </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>
