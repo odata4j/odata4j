@@ -203,7 +203,7 @@ public class EdmxFormatParserTest {
     EdmEntitySet products = d.findEdmEntitySet("Products");
     EdmEntityType product = products.getType();
     EdmProperty property = product.findProperty("Name");
-    EdmAssociation association = d.findEdmAssociation("ProductCategory");
+    EdmAssociation association = d.findEdmAssociation("Example.ProductCategory");
     EdmComplexType complexType = d.findEdmComplexType("Example.City");
     EdmAssociationSet associationSet = d.findEdmAssociationSet("ProductCategory");
     EdmFunctionImport functionImport = d.findEdmFunctionImport("ProductSearch");

@@ -157,7 +157,7 @@ public class EdmDataServices {
   public EdmAssociation findEdmAssociation(String fqName) {
     for (EdmSchema schema : this.schemas) {
       for (EdmAssociation assoc : schema.getAssociations()) {
-        if (assoc.getName().equals(fqName)) {
+        if (assoc.getFQNamespaceName().equals(fqName)) {
           return assoc;
         }
       }
