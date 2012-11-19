@@ -62,7 +62,8 @@ public abstract class AbstractODataClient implements ODataClient {
   }
 
   public ODataClientResponse getEntity(ODataClientRequest request) throws ODataProducerException {
-    return doRequest(getFormatType(), request, Status.OK, Status.NO_CONTENT);
+    ODataClientResponse response = doRequest(getFormatType(), request, Status.OK, Status.NO_CONTENT);
+    return response;
   }
 
   public ODataClientResponse getEntities(ODataClientRequest request) throws ODataProducerException {

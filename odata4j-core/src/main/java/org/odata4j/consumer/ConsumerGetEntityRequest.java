@@ -59,16 +59,18 @@ public class ConsumerGetEntityRequest<T> extends AbstractConsumerEntityRequest<T
       request = request.queryParam("$expand", expand);
     }
 
-    ODataClientResponse response = getClient().getEntity(request);
-    if (response == null)
-      return null;
-
     //  the first segment contains the entitySetName we start from
     EdmEntitySet entitySet = getMetadata().getEdmEntitySet(getSegments().get(0).segment);
     for (EntitySegment segment : getSegments().subList(1, getSegments().size())) {
       EdmNavigationProperty navProperty = entitySet.getType().findNavigationProperty(segment.segment);
-      entitySet = getMetadata().getEdmEntitySet(navProperty.getToRole().getType());
+      if (navProperty != null) {
+        entitySet = getMetadata().getEdmEntitySet(navProperty.getToRole().getType());
+      }
     }
+
+    ODataClientResponse response = getClient().getEntity(request);
+    if (response == null)
+      return null;
 
     OEntityKey key = Enumerable.create(getSegments()).last().key;
 
