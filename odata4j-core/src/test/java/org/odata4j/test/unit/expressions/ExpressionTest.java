@@ -134,6 +134,7 @@ public class ExpressionTest {
 
     t(Expression.simpleProperty("LastName"), "LastName");
     t(Expression.simpleProperty("LastName2"), "   LastName2  ");
+    t(Expression.simpleProperty("*"), "*");
 
     t(Expression.eq(Expression.simpleProperty("LastName"), Expression.string("foo")), "LastName eq 'foo'");
     t(Expression.eq(Expression.simpleProperty("LastName"), Expression.string("foo")), "    LastName    eq     'foo'   ");
@@ -549,5 +550,12 @@ public class ExpressionTest {
             Expression.simpleProperty("t"),
             Expression.string("Beautiful"))),
         "Tags/any(t:t eq 'Beautiful')");
+  }
+
+  @Test
+  public void testWildcardSimpleProperty() {
+    Assert.assertTrue(Expression.simpleProperty("*").isSelectionMatch("SomeProperty"));
+    Assert.assertTrue(Expression.simpleProperty("Actors/*").isSelectionMatch("Actors/SomeProperty"));
+    Assert.assertFalse(Expression.simpleProperty("Actors/*").isSelectionMatch("SomeProperty"));
   }
 }

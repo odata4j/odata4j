@@ -634,10 +634,15 @@ public class Expression {
 
   private static class EntitySimplePropertyImpl extends ExpressionImpl implements EntitySimpleProperty {
     private final String propertyName;
+    private final String propertyPath;
 
     protected EntitySimplePropertyImpl(String propertyName) {
       super(EntitySimpleProperty.class);
+      if (propertyName == null) {
+        throw new IllegalArgumentException("propertyName must not be null");
+      }
       this.propertyName = propertyName;
+      this.propertyPath = parsePropertyPath(propertyName);
     }
 
     @Override
@@ -648,6 +653,24 @@ public class Expression {
     @Override
     public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
+    }
+
+    @Override
+    public boolean isSelectionMatch(String propertyName) {
+      if (isWildcard()) {
+        return this.propertyPath.equals(parsePropertyPath(propertyName));
+      } else {
+        return this.propertyName.equals(propertyName);
+      }
+    }
+
+    private String parsePropertyPath(String propertyName) {
+      int idx = propertyName.lastIndexOf('/');
+      return (idx == -1) ? "" : propertyName.substring(0, idx);
+    }
+
+    private boolean isWildcard() {
+      return propertyName.equals("*") || propertyName.endsWith("/*");
     }
   }
 

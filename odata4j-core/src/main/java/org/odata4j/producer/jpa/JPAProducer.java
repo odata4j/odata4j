@@ -686,18 +686,14 @@ public class JPAProducer implements ODataProducer {
   }
 
   static boolean isSelected(String name, List<EntitySimpleProperty> select) {
-
     if (select != null && !select.isEmpty()) {
       for (EntitySimpleProperty prop : select) {
-        String sname = prop.getPropertyName();
-        if (name.equals(sname)) {
+        if (prop.isSelectionMatch(name)) {
           return true;
         }
       }
-
       return false;
     }
-
     return true;
   }
 

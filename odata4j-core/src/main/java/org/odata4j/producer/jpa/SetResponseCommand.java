@@ -246,7 +246,7 @@ public class SetResponseCommand implements Command {
                       relatedEntityType,
                       relatedEntity,
                       remainingPropPath,
-                      null)));
+                      shiftSelectListDown(select))));
             }
 
           }
@@ -281,6 +281,19 @@ public class SetResponseCommand implements Command {
     } catch (Exception e) {
       throw Throwables.propagate(e);
     }
+  }
+
+  private static List<EntitySimpleProperty> shiftSelectListDown(List<EntitySimpleProperty> select) {
+    List<EntitySimpleProperty> newList = new ArrayList<EntitySimpleProperty>(select.size());
+    for (EntitySimpleProperty selectItem : select) {
+      int idx = selectItem.getPropertyName().indexOf('/');
+      if (idx > -1) {
+        String newValue = selectItem.getPropertyName().substring(idx + 1);
+        newList.add(Expression.simpleProperty(newValue));
+      }
+
+    }
+    return newList;
   }
 
   static Object getIdValue(
