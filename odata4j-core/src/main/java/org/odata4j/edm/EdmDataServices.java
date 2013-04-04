@@ -73,8 +73,31 @@ public class EdmDataServices {
   }
 
   public EdmEntitySet findEdmEntitySet(String entitySetName) {
+    int idx = entitySetName.indexOf('.');
+    if (idx != -1) {
+      EdmEntitySet ees = findEdmEntitySet(entitySetName.substring(0, idx), entitySetName.substring(idx+1));
+      if (ees != null) {
+        return ees;
+      }
+    }
     for (EdmSchema schema : this.schemas) {
       for (EdmEntityContainer eec : schema.getEntityContainers()) {
+        for (EdmEntitySet ees : eec.getEntitySets()) {
+          if (ees.getName().equals(entitySetName)) {
+            return ees;
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  private EdmEntitySet findEdmEntitySet(String entityContainerName, String entitySetName) {
+    for (EdmSchema schema : this.schemas) {
+      for (EdmEntityContainer eec : schema.getEntityContainers()) {
+        if (!eec.getName().equals(entityContainerName)) {
+          continue;
+        }
         for (EdmEntitySet ees : eec.getEntitySets()) {
           if (ees.getName().equals(entitySetName)) {
             return ees;
@@ -98,7 +121,30 @@ public class EdmDataServices {
     return null;
   }
 
+  private EdmFunctionImport findEdmFunctionImport(String entityContainerName, String functionImportName) {
+    for (EdmSchema schema : this.schemas) {
+      for (EdmEntityContainer eec : schema.getEntityContainers()) {
+        if (!eec.getName().equals(entityContainerName)) {
+          continue;
+        }
+        for (EdmFunctionImport efi : eec.getFunctionImports()) {
+          if (efi.getName().equals(functionImportName)) {
+            return efi;
+          }
+        }
+      }
+    }
+    return null;
+  }
+
   public EdmFunctionImport findEdmFunctionImport(String functionImportName) {
+    int idx = functionImportName.indexOf('.');
+    if (idx != -1) {
+      EdmFunctionImport efi = findEdmFunctionImport(functionImportName.substring(0, idx), functionImportName.substring(idx+1));
+      if (efi != null) {
+        return efi;
+      }
+    }
     for (EdmSchema schema : this.schemas) {
       for (EdmEntityContainer eec : schema.getEntityContainers()) {
         for (EdmFunctionImport efi : eec.getFunctionImports()) {

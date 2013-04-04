@@ -4,7 +4,7 @@ import org.odata4j.expression.OrderByExpression.Direction;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
 
-public class FilterExpressionVisitor implements ExpressionVisitor {
+public class FilterExpressionVisitor extends PreOrderVisitor {
 
   // only literals supported, so this suffices for now
   private String fragment;

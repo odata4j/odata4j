@@ -17,7 +17,7 @@ public class GenerateSqlQuery {
     List<SqlParameter> params = new ArrayList<SqlParameter>();
     if (filter != null) {
       GenerateWhereClause whereClauseGen = newWhereClauseGenerator(entitySet, mapping);
-      filter.visit(whereClauseGen);
+      whereClauseGen.visitNode(filter);
       whereClauseGen.append(sb, params);
     }
     return new SqlStatement(sb.toString(), ImmutableList.copyOf(params));

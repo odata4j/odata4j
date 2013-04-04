@@ -10,7 +10,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.Providers;
 
 import org.odata4j.core.ODataConstants;
 import org.odata4j.edm.EdmDataServices;
@@ -19,18 +19,18 @@ import org.odata4j.format.FormatWriterFactory;
 import org.odata4j.producer.ODataProducer;
 
 @Path("")
-public class ServiceDocumentResource {
+public class ServiceDocumentResource extends BaseResource {
 
   @GET
   @Produces({ ODataConstants.APPLICATION_XML_CHARSET_UTF8, ODataConstants.TEXT_JAVASCRIPT_CHARSET_UTF8, ODataConstants.APPLICATION_JAVASCRIPT_CHARSET_UTF8 })
   public Response getServiceDocument(
       @Context HttpHeaders httpHeaders,
       @Context UriInfo uriInfo,
-      @Context ContextResolver<ODataProducer> producerResolver,
+      @Context Providers providers,
       @QueryParam("$format") String format,
       @QueryParam("$callback") String callback) {
 
-    ODataProducer producer = producerResolver.getContext(ODataProducer.class);
+    ODataProducer producer = getODataProducer(providers);
 
     EdmDataServices metadata = producer.getMetadata();
 

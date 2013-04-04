@@ -17,7 +17,7 @@ public class GenerateSqlDelete {
     List<SqlParameter> params = new ArrayList<SqlParameter>();
     if (filter != null) {
       GenerateWhereClause whereClauseGen = newWhereClauseGenerator(entitySet, mapping);
-      filter.visit(whereClauseGen);
+      whereClauseGen.visitNode(filter);
       whereClauseGen.append(sql, params);
     }
     return new SqlStatement(sql.toString(), ImmutableList.copyOf(params));

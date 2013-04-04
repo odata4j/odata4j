@@ -140,6 +140,7 @@ public class ExpressionTest {
     t(Expression.eq(Expression.string("foo"), Expression.simpleProperty("LastName")), "'foo' eq LastName");
 
     t(Expression.ne(Expression.simpleProperty("LastName"), Expression.string("foo")), "LastName ne 'foo'");
+    t(Expression.ne(Expression.simpleProperty("entity.LastName"), Expression.string("foo")), "entity.LastName ne 'foo'");
 
     EqExpression exp = Expression.eq(Expression.simpleProperty("a"), Expression.integral(1));
     t(Expression.and(exp, exp), "a eq 1 and a eq 1");

@@ -23,13 +23,13 @@ public class Expression {
 
   public static String asPrintString(CommonExpression expr) {
     PrintExpressionVisitor v = new PrintExpressionVisitor();
-    expr.visit(v);
+    v.visitNode(expr);
     return v.toString();
   }
 
   public static String asFilterString(CommonExpression expr) {
     FilterExpressionVisitor v = new FilterExpressionVisitor();
-    expr.visit(v);
+    v.visitNode(expr);
     return v.toString();
   }
 
@@ -392,13 +392,6 @@ public class Expression {
     public String toString() {
       return interfaceType.getSimpleName();
     }
-
-    @Override
-    public void visit(ExpressionVisitor visitor) {
-      visitThis(visitor);
-    }
-
-    abstract void visitThis(ExpressionVisitor visitor);
   }
 
   private static class NullLiteralImpl extends ExpressionImpl implements NullLiteral {
@@ -409,7 +402,7 @@ public class Expression {
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
@@ -430,7 +423,7 @@ public class Expression {
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
@@ -449,7 +442,7 @@ public class Expression {
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
@@ -468,7 +461,7 @@ public class Expression {
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
@@ -487,7 +480,7 @@ public class Expression {
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
@@ -506,7 +499,7 @@ public class Expression {
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
@@ -525,7 +518,7 @@ public class Expression {
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
@@ -544,7 +537,7 @@ public class Expression {
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
@@ -568,7 +561,7 @@ public class Expression {
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
@@ -579,7 +572,7 @@ public class Expression {
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
@@ -590,7 +583,7 @@ public class Expression {
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
@@ -601,7 +594,7 @@ public class Expression {
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
@@ -612,7 +605,7 @@ public class Expression {
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
@@ -623,7 +616,7 @@ public class Expression {
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
@@ -634,7 +627,7 @@ public class Expression {
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
@@ -653,7 +646,7 @@ public class Expression {
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
@@ -677,36 +670,26 @@ public class Expression {
     public CommonExpression getRHS() {
       return rhs;
     }
-
-    @Override
-    public void visit(ExpressionVisitor visitor) {
-      visitThis(visitor);
-      visitor.beforeDescend();
-      getLHS().visit(visitor);
-      visitor.betweenDescend();
-      getRHS().visit(visitor);
-      visitor.afterDescend();
-    }
   }
 
-  private static class EqExpressionImpl extends BinaryCommonExpressionImpl implements EqExpression {
+  static class EqExpressionImpl extends BinaryCommonExpressionImpl implements EqExpression {
     public EqExpressionImpl(CommonExpression lhs, CommonExpression rhs) {
       super(EqExpression.class, lhs, rhs);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
 
-  private static class NeExpressionImpl extends BinaryCommonExpressionImpl implements NeExpression {
+  static class NeExpressionImpl extends BinaryCommonExpressionImpl implements NeExpression {
     public NeExpressionImpl(CommonExpression lhs, CommonExpression rhs) {
       super(NeExpression.class, lhs, rhs);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
@@ -732,134 +715,134 @@ public class Expression {
     }
   }
 
-  private static class AndExpressionImpl extends BinaryBoolCommonExpressionImpl implements AndExpression {
+  static class AndExpressionImpl extends BinaryBoolCommonExpressionImpl implements AndExpression {
     public AndExpressionImpl(BoolCommonExpression lhs, BoolCommonExpression rhs) {
       super(AndExpression.class, lhs, rhs);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
 
-  private static class OrExpressionImpl extends BinaryBoolCommonExpressionImpl implements OrExpression {
+  static class OrExpressionImpl extends BinaryBoolCommonExpressionImpl implements OrExpression {
     public OrExpressionImpl(BoolCommonExpression lhs, BoolCommonExpression rhs) {
       super(OrExpression.class, lhs, rhs);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
 
-  private static class LtExpressionImpl extends BinaryCommonExpressionImpl implements LtExpression {
+  static class LtExpressionImpl extends BinaryCommonExpressionImpl implements LtExpression {
     public LtExpressionImpl(CommonExpression lhs, CommonExpression rhs) {
       super(LtExpression.class, lhs, rhs);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
 
-  private static class GtExpressionImpl extends BinaryCommonExpressionImpl implements GtExpression {
+  static class GtExpressionImpl extends BinaryCommonExpressionImpl implements GtExpression {
     public GtExpressionImpl(CommonExpression lhs, CommonExpression rhs) {
       super(GtExpression.class, lhs, rhs);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
 
-  private static class LeExpressionImpl extends BinaryCommonExpressionImpl implements LeExpression {
+  static class LeExpressionImpl extends BinaryCommonExpressionImpl implements LeExpression {
     public LeExpressionImpl(CommonExpression lhs, CommonExpression rhs) {
       super(LeExpression.class, lhs, rhs);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
 
-  private static class GeExpressionImpl extends BinaryCommonExpressionImpl implements GeExpression {
+  static class GeExpressionImpl extends BinaryCommonExpressionImpl implements GeExpression {
     public GeExpressionImpl(CommonExpression lhs, CommonExpression rhs) {
       super(GeExpression.class, lhs, rhs);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
 
-  private static class AddExpressionImpl extends BinaryCommonExpressionImpl implements AddExpression {
+  static class AddExpressionImpl extends BinaryCommonExpressionImpl implements AddExpression {
     public AddExpressionImpl(CommonExpression lhs, CommonExpression rhs) {
       super(AddExpression.class, lhs, rhs);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
 
-  private static class SubExpressionImpl extends BinaryCommonExpressionImpl implements SubExpression {
+  static class SubExpressionImpl extends BinaryCommonExpressionImpl implements SubExpression {
     public SubExpressionImpl(CommonExpression lhs, CommonExpression rhs) {
       super(SubExpression.class, lhs, rhs);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
 
-  private static class MulExpressionImpl extends BinaryCommonExpressionImpl implements MulExpression {
+  static class MulExpressionImpl extends BinaryCommonExpressionImpl implements MulExpression {
     public MulExpressionImpl(CommonExpression lhs, CommonExpression rhs) {
       super(MulExpression.class, lhs, rhs);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
 
-  private static class DivExpressionImpl extends BinaryCommonExpressionImpl implements DivExpression {
+  static class DivExpressionImpl extends BinaryCommonExpressionImpl implements DivExpression {
     public DivExpressionImpl(CommonExpression lhs, CommonExpression rhs) {
       super(DivExpression.class, lhs, rhs);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
 
-  private static class ModExpressionImpl extends BinaryCommonExpressionImpl implements ModExpression {
+  static class ModExpressionImpl extends BinaryCommonExpressionImpl implements ModExpression {
     public ModExpressionImpl(CommonExpression lhs, CommonExpression rhs) {
       super(ModExpression.class, lhs, rhs);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
 
-  private static class ConcatMethodCallExpressionImpl extends BinaryCommonExpressionImpl implements ConcatMethodCallExpression {
+  static class ConcatMethodCallExpressionImpl extends BinaryCommonExpressionImpl implements ConcatMethodCallExpression {
     public ConcatMethodCallExpressionImpl(CommonExpression lhs, CommonExpression rhs) {
       super(ConcatMethodCallExpression.class, lhs, rhs);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
@@ -881,56 +864,48 @@ public class Expression {
     protected UnaryExpressionImpl(Class<?> interfaceType, CommonExpression expression) {
       super(interfaceType, expression);
     }
-
-    @Override
-    public void visit(ExpressionVisitor visitor) {
-      visitThis(visitor);
-      visitor.beforeDescend();
-      getExpression().visit(visitor);
-      visitor.afterDescend();
-    }
   }
 
-  private static class ParenExpressionImpl extends UnaryExpressionImpl implements ParenExpression {
+  static class ParenExpressionImpl extends UnaryExpressionImpl implements ParenExpression {
     protected ParenExpressionImpl(CommonExpression expression) {
       super(ParenExpression.class, expression);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
 
-  private static class BoolParenExpressionImpl extends UnaryExpressionImpl implements BoolParenExpression {
+  static class BoolParenExpressionImpl extends UnaryExpressionImpl implements BoolParenExpression {
     protected BoolParenExpressionImpl(CommonExpression expression) {
       super(BoolParenExpression.class, expression);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
 
-  private static class NotExpressionImpl extends UnaryExpressionImpl implements NotExpression {
+  static class NotExpressionImpl extends UnaryExpressionImpl implements NotExpression {
     protected NotExpressionImpl(CommonExpression expression) {
       super(NotExpression.class, expression);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
 
-  private static class NegateExpressionImpl extends UnaryExpressionImpl implements NegateExpression {
+  static class NegateExpressionImpl extends UnaryExpressionImpl implements NegateExpression {
     protected NegateExpressionImpl(CommonExpression expression) {
       super(NegateExpression.class, expression);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
@@ -946,88 +921,64 @@ public class Expression {
     public String getType() {
       return type;
     }
-
-    @Override
-    public void visit(ExpressionVisitor visitor) {
-      visitThis(visitor);
-      visitor.beforeDescend();
-      if (getExpression() != null) {
-        getExpression().visit(visitor);
-        visitor.betweenDescend();
-      }
-      visitor.visit(getType());
-      visitor.afterDescend();
-    }
   }
 
-  private static class CastExpressionImpl extends ExpressionAndTypeImpl implements CastExpression {
+  static class CastExpressionImpl extends ExpressionAndTypeImpl implements CastExpression {
     protected CastExpressionImpl(CommonExpression expression, String type) {
       super(CastExpression.class, expression, type);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
 
-  private static class IsofExpressionImpl extends ExpressionAndTypeImpl implements IsofExpression {
+  static class IsofExpressionImpl extends ExpressionAndTypeImpl implements IsofExpression {
     protected IsofExpressionImpl(CommonExpression expression, String type) {
       super(IsofExpression.class, expression, type);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
 
-  private static class EndsWithMethodCallExpressionImpl extends TargetValueExpressionImpl implements EndsWithMethodCallExpression {
+  static class EndsWithMethodCallExpressionImpl extends TargetValueExpressionImpl implements EndsWithMethodCallExpression {
     protected EndsWithMethodCallExpressionImpl(CommonExpression target, CommonExpression value) {
       super(EndsWithMethodCallExpression.class, target, value);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
 
-  private static class StartsWithMethodCallExpressionImpl extends TargetValueExpressionImpl implements StartsWithMethodCallExpression {
+  static class StartsWithMethodCallExpressionImpl extends TargetValueExpressionImpl implements StartsWithMethodCallExpression {
     protected StartsWithMethodCallExpressionImpl(CommonExpression target, CommonExpression value) {
       super(StartsWithMethodCallExpression.class, target, value);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
 
-  private static class SubstringOfMethodCallExpressionImpl extends TargetValueExpressionImpl implements SubstringOfMethodCallExpression {
+  static class SubstringOfMethodCallExpressionImpl extends TargetValueExpressionImpl implements SubstringOfMethodCallExpression {
     protected SubstringOfMethodCallExpressionImpl(CommonExpression target, CommonExpression value) {
       super(SubstringOfMethodCallExpression.class, target, value);
     }
 
     @Override
-    public void visit(ExpressionVisitor visitor) {
-      visitThis(visitor);
-      visitor.beforeDescend();
-      getValue().visit(visitor);
-      if (getTarget() != null) {
-        visitor.betweenDescend();
-        getTarget().visit(visitor);
-      }
-      visitor.afterDescend();
-    }
-
-    @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
 
-  private static class ReplaceMethodCallExpressionImpl extends TargetExpressionImpl implements ReplaceMethodCallExpression {
+  static class ReplaceMethodCallExpressionImpl extends TargetExpressionImpl implements ReplaceMethodCallExpression {
     private final CommonExpression find;
     private final CommonExpression replace;
 
@@ -1048,19 +999,7 @@ public class Expression {
     }
 
     @Override
-    public void visit(ExpressionVisitor visitor) {
-      visitThis(visitor);
-      visitor.beforeDescend();
-      getTarget().visit(visitor);
-      visitor.betweenDescend();
-      getFind().visit(visitor);
-      visitor.betweenDescend();
-      getReplace().visit(visitor);
-      visitor.afterDescend();
-    }
-
-    @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
@@ -1076,25 +1015,15 @@ public class Expression {
     public CommonExpression getValue() {
       return value;
     }
-
-    @Override
-    public void visit(ExpressionVisitor visitor) {
-      visitThis(visitor);
-      visitor.beforeDescend();
-      getTarget().visit(visitor);
-      visitor.betweenDescend();
-      getValue().visit(visitor);
-      visitor.afterDescend();
-    }
   }
 
-  private static class IndexOfMethodCallExpressionImpl extends TargetValueExpressionImpl implements IndexOfMethodCallExpression {
+  static class IndexOfMethodCallExpressionImpl extends TargetValueExpressionImpl implements IndexOfMethodCallExpression {
     protected IndexOfMethodCallExpressionImpl(CommonExpression target, CommonExpression value) {
       super(IndexOfMethodCallExpression.class, target, value);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
@@ -1112,7 +1041,7 @@ public class Expression {
     }
   }
 
-  private static class SubstringMethodCallExpressionImpl extends TargetExpressionImpl implements SubstringMethodCallExpression {
+  static class SubstringMethodCallExpressionImpl extends TargetExpressionImpl implements SubstringMethodCallExpression {
     private final CommonExpression start;
     private final CommonExpression length;
 
@@ -1133,21 +1062,7 @@ public class Expression {
     }
 
     @Override
-    public void visit(ExpressionVisitor visitor) {
-      visitThis(visitor);
-      visitor.beforeDescend();
-      getTarget().visit(visitor);
-      visitor.betweenDescend();
-      getStart().visit(visitor);
-      if (getLength() != null) {
-        visitor.betweenDescend();
-        getLength().visit(visitor);
-      }
-      visitor.afterDescend();
-    }
-
-    @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
@@ -1160,160 +1075,152 @@ public class Expression {
     public CommonExpression getTarget() {
       return getExpression();
     }
-
-    @Override
-    public void visit(ExpressionVisitor visitor) {
-      visitThis(visitor);
-      visitor.beforeDescend();
-      getTarget().visit(visitor);
-      visitor.afterDescend();
-    }
   }
 
-  private static class LengthMethodCallExpressionImpl extends OneTargetExpressionImpl implements LengthMethodCallExpression {
+  static class LengthMethodCallExpressionImpl extends OneTargetExpressionImpl implements LengthMethodCallExpression {
     protected LengthMethodCallExpressionImpl(CommonExpression expression) {
       super(LengthMethodCallExpression.class, expression);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
 
-  private static class FloorMethodCallExpressionImpl extends OneTargetExpressionImpl implements FloorMethodCallExpression {
+  static class FloorMethodCallExpressionImpl extends OneTargetExpressionImpl implements FloorMethodCallExpression {
     protected FloorMethodCallExpressionImpl(CommonExpression expression) {
       super(FloorMethodCallExpression.class, expression);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
 
-  private static class CeilingMethodCallExpressionImpl extends OneTargetExpressionImpl implements CeilingMethodCallExpression {
+  static class CeilingMethodCallExpressionImpl extends OneTargetExpressionImpl implements CeilingMethodCallExpression {
     protected CeilingMethodCallExpressionImpl(CommonExpression expression) {
       super(CeilingMethodCallExpression.class, expression);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
 
-  private static class RoundMethodCallExpressionImpl extends OneTargetExpressionImpl implements RoundMethodCallExpression {
+  static class RoundMethodCallExpressionImpl extends OneTargetExpressionImpl implements RoundMethodCallExpression {
     protected RoundMethodCallExpressionImpl(CommonExpression expression) {
       super(RoundMethodCallExpression.class, expression);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
 
-  private static class SecondMethodCallExpressionImpl extends OneTargetExpressionImpl implements SecondMethodCallExpression {
+  static class SecondMethodCallExpressionImpl extends OneTargetExpressionImpl implements SecondMethodCallExpression {
     protected SecondMethodCallExpressionImpl(CommonExpression expression) {
       super(SecondMethodCallExpression.class, expression);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
 
-  private static class MinuteMethodCallExpressionImpl extends OneTargetExpressionImpl implements MinuteMethodCallExpression {
+  static class MinuteMethodCallExpressionImpl extends OneTargetExpressionImpl implements MinuteMethodCallExpression {
     protected MinuteMethodCallExpressionImpl(CommonExpression expression) {
       super(MinuteMethodCallExpression.class, expression);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
 
-  private static class HourMethodCallExpressionImpl extends OneTargetExpressionImpl implements HourMethodCallExpression {
+  static class HourMethodCallExpressionImpl extends OneTargetExpressionImpl implements HourMethodCallExpression {
     protected HourMethodCallExpressionImpl(CommonExpression expression) {
       super(HourMethodCallExpression.class, expression);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
 
-  private static class DayMethodCallExpressionImpl extends OneTargetExpressionImpl implements DayMethodCallExpression {
+  static class DayMethodCallExpressionImpl extends OneTargetExpressionImpl implements DayMethodCallExpression {
     protected DayMethodCallExpressionImpl(CommonExpression expression) {
       super(DayMethodCallExpression.class, expression);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
 
-  private static class YearMethodCallExpressionImpl extends OneTargetExpressionImpl implements YearMethodCallExpression {
+  static class YearMethodCallExpressionImpl extends OneTargetExpressionImpl implements YearMethodCallExpression {
     protected YearMethodCallExpressionImpl(CommonExpression expression) {
       super(YearMethodCallExpression.class, expression);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
 
-  private static class MonthMethodCallExpressionImpl extends OneTargetExpressionImpl implements MonthMethodCallExpression {
+  static class MonthMethodCallExpressionImpl extends OneTargetExpressionImpl implements MonthMethodCallExpression {
     protected MonthMethodCallExpressionImpl(CommonExpression expression) {
       super(MonthMethodCallExpression.class, expression);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
 
-  private static class ToLowerMethodCallExpressionImpl extends OneTargetExpressionImpl implements ToLowerMethodCallExpression {
+  static class ToLowerMethodCallExpressionImpl extends OneTargetExpressionImpl implements ToLowerMethodCallExpression {
     protected ToLowerMethodCallExpressionImpl(CommonExpression expression) {
       super(ToLowerMethodCallExpression.class, expression);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
 
-  private static class ToUpperMethodCallExpressionImpl extends OneTargetExpressionImpl implements ToUpperMethodCallExpression {
+  static class ToUpperMethodCallExpressionImpl extends OneTargetExpressionImpl implements ToUpperMethodCallExpression {
     protected ToUpperMethodCallExpressionImpl(CommonExpression expression) {
       super(ToUpperMethodCallExpression.class, expression);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
 
-  private static class TrimMethodCallExpressionImpl extends OneTargetExpressionImpl implements TrimMethodCallExpression {
+  static class TrimMethodCallExpressionImpl extends OneTargetExpressionImpl implements TrimMethodCallExpression {
     protected TrimMethodCallExpressionImpl(CommonExpression expression) {
       super(LengthMethodCallExpression.class, expression);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
 
-  private static class OrderByExpressionImpl extends OneExpressionImpl implements OrderByExpression {
+  static class OrderByExpressionImpl extends OneExpressionImpl implements OrderByExpression {
     private final Direction direction;
 
     protected OrderByExpressionImpl(CommonExpression expression, Direction direction) {
@@ -1327,22 +1234,12 @@ public class Expression {
     }
 
     @Override
-    public void visit(ExpressionVisitor visitor) {
-      visitThis(visitor);
-      visitor.beforeDescend();
-      getExpression().visit(visitor);
-      visitor.betweenDescend();
-      visitor.visit(getDirection());
-      visitor.afterDescend();
-    }
-
-    @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
   }
 
-  private abstract static class AggregateBoolFunctionImpl extends ExpressionImpl implements AggregateBoolFunction {
+  abstract static class AggregateBoolFunctionImpl extends ExpressionImpl implements AggregateBoolFunction {
     private final CommonExpression source;
     private final String variable;
     private final BoolCommonExpression predicate;
@@ -1365,30 +1262,18 @@ public class Expression {
     }
 
     @Override
-    public void visit(ExpressionVisitor visitor) {
-      visitThis(visitor);
-      visitor.beforeDescend();
-      getSource().visit(visitor);
-      visitor.betweenDescend();
-      if (getPredicate() != null) {
-        getPredicate().visit(visitor);
-      }
-      visitor.afterDescend();
-    }
-
-    @Override
     public String getVariable() {
       return variable;
     }
   }
 
-  private static class AggregateAnyFunctionImpl extends AggregateBoolFunctionImpl implements AggregateAnyFunction {
+  static class AggregateAnyFunctionImpl extends AggregateBoolFunctionImpl implements AggregateAnyFunction {
     public AggregateAnyFunctionImpl(CommonExpression source, String variable, BoolCommonExpression predicate) {
       super(source, variable, predicate);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
 
@@ -1398,13 +1283,13 @@ public class Expression {
     }
   }
 
-  private static class AggregateAllFunctionImpl extends AggregateBoolFunctionImpl implements AggregateAllFunction {
+  static class AggregateAllFunctionImpl extends AggregateBoolFunctionImpl implements AggregateAllFunction {
     public AggregateAllFunctionImpl(CommonExpression source, String variable, BoolCommonExpression predicate) {
       super(source, variable, predicate);
     }
 
     @Override
-    void visitThis(ExpressionVisitor visitor) {
+    public void visitThis(ExpressionVisitor visitor) {
       visitor.visit(this);
     }
 

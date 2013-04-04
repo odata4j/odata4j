@@ -7,9 +7,9 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
+import javax.ws.rs.ext.Providers;
 
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.OError;
@@ -20,7 +20,6 @@ import org.odata4j.format.FormatWriter;
 import org.odata4j.format.FormatWriterFactory;
 import org.odata4j.producer.ErrorResponse;
 import org.odata4j.producer.ErrorResponseExtension;
-import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.Responses;
 
 /**
@@ -31,15 +30,17 @@ import org.odata4j.producer.Responses;
  * @see ErrorResponseExtension
  */
 @Provider
-public class ExceptionMappingProvider implements ExceptionMapper<RuntimeException> {
+public class ExceptionMappingProvider extends BaseResource implements ExceptionMapper<RuntimeException> {
 
   @Context
-  protected ContextResolver<ODataProducer> producerResolver;
+  protected Providers providers;
+
   @Context
   protected UriInfo uriInfo;
   @Context
   protected HttpHeaders httpHeaders;
 
+  @Override
   public Response toResponse(RuntimeException e) {
     ODataProducerException exception;
     if (e instanceof ODataProducerException)
@@ -47,7 +48,7 @@ public class ExceptionMappingProvider implements ExceptionMapper<RuntimeExceptio
     else
       exception = new ServerErrorException(e);
 
-    ErrorResponseExtension errorResponseExtension = producerResolver.getContext(ODataProducer.class).findExtension(ErrorResponseExtension.class);
+    ErrorResponseExtension errorResponseExtension = getODataProducer(providers).findExtension(ErrorResponseExtension.class);
     boolean includeInnerError = errorResponseExtension != null && errorResponseExtension.returnInnerError(httpHeaders, uriInfo, exception);
 
     FormatWriter<ErrorResponse> fw = FormatWriterFactory.getFormatWriter(ErrorResponse.class, httpHeaders.getAcceptableMediaTypes(),

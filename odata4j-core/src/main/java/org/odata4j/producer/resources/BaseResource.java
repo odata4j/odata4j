@@ -11,6 +11,8 @@ import java.io.UnsupportedEncodingException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.Providers;
 
 import org.odata4j.core.ODataConstants;
 import org.odata4j.core.ODataVersion;
@@ -110,5 +112,14 @@ public abstract class BaseResource {
 
     // more info about the mle may be available now.
     return mediaLinkExtension.updateMediaLinkEntry(context, mle, outStream);
+  }
+
+  /**
+   * Not all the jax-rs engines can not directly inject ContextResolvers (not defined by JSR-311) classes
+   * into resources, however they support Context injection, from which ContextResolvers can be queried
+   */
+  protected ODataProducer getODataProducer(Providers providers) {
+    ContextResolver<ODataProducer> producerResolver = providers.getContextResolver(ODataProducer.class,MediaType.WILDCARD_TYPE);
+    return producerResolver.getContext(ODataProducer.class);
   }
 }

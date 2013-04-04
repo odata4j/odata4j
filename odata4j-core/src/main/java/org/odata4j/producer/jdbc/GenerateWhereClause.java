@@ -22,12 +22,12 @@ import org.odata4j.expression.DateTimeLiteral;
 import org.odata4j.expression.DateTimeOffsetLiteral;
 import org.odata4j.expression.DayMethodCallExpression;
 import org.odata4j.expression.DecimalLiteral;
+import org.odata4j.expression.PreOrderVisitor;
 import org.odata4j.expression.DivExpression;
 import org.odata4j.expression.DoubleLiteral;
 import org.odata4j.expression.EndsWithMethodCallExpression;
 import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.EqExpression;
-import org.odata4j.expression.ExpressionVisitor;
 import org.odata4j.expression.FloorMethodCallExpression;
 import org.odata4j.expression.GeExpression;
 import org.odata4j.expression.GtExpression;
@@ -70,7 +70,7 @@ import org.odata4j.expression.YearMethodCallExpression;
 import org.odata4j.producer.jdbc.JdbcModel.JdbcColumn;
 import org.odata4j.producer.jdbc.SqlStatement.SqlParameter;
 
-public class GenerateWhereClause implements ExpressionVisitor {
+public class GenerateWhereClause extends PreOrderVisitor {
 
   private final StringBuilder sb = new StringBuilder();
   private final List<SqlParameter> params = new ArrayList<SqlParameter>();

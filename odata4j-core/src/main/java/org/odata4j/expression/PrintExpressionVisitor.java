@@ -4,13 +4,13 @@ import org.odata4j.expression.OrderByExpression.Direction;
 import org.odata4j.internal.InternalUtil;
 import org.odata4j.repack.org.apache.commons.codec.binary.Hex;
 
-public class PrintExpressionVisitor implements ExpressionVisitor {
+public class PrintExpressionVisitor extends PreOrderVisitor {
 
   private final StringBuilder sb = new StringBuilder();
 
   public static String asString(CommonExpression expr) {
     PrintExpressionVisitor v = new PrintExpressionVisitor();
-    expr.visit(v);
+    v.visitNode(expr);
     return v.toString();
   }
 
