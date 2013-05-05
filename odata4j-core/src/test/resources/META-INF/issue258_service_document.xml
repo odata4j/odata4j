@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<service xmlns="http://www.w3.org/2007/app"
+         xmlns:atom="http://www.w3.org/2005/Atom">
+    <workspace>
+        <collection href="http://vnote:8080/InfoBaseOdata/odata/infobase.odata/Catalogs_Shops">
+            <atom:title>Catalogs_Shops</atom:title>
+        </collection>
+        <collection href="http://vnote:8080/InfoBaseOdata/odata/infobase.odata/Catalogs_Regions">
+        <atom:title>Catalogs_Regions</atom:title>
+    </collection>
+</workspace>
+ </service>

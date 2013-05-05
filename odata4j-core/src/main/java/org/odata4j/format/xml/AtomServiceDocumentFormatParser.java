@@ -3,6 +3,7 @@ package org.odata4j.format.xml;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.odata4j.stax2.Attribute2;
 import org.odata4j.stax2.StartElement2;
 import org.odata4j.stax2.XMLEvent2;
 import org.odata4j.stax2.XMLEventReader2;
@@ -15,7 +16,8 @@ public class AtomServiceDocumentFormatParser extends XmlFormatParser {
     while (reader.hasNext()) {
       XMLEvent2 event = reader.nextEvent();
       if (isStartElement(event, APP_SERVICE)) {
-        baseUrl = event.asStartElement().getAttributeByName(XML_BASE).getValue();
+        Attribute2 xmlBaseAttr =  event.asStartElement().getAttributeByName(XML_BASE);
+        baseUrl = xmlBaseAttr != null ? xmlBaseAttr.getValue() : "";
       } else if (isStartElement(event, APP_WORKSPACE)) {
         workspaces.add(parseWorkspace(baseUrl, reader, event.asStartElement()));
       } else if (isEndElement(event, APP_SERVICE)) {
