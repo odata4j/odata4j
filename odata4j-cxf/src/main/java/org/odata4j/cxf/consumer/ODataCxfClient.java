@@ -22,6 +22,8 @@ import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
@@ -66,20 +68,31 @@ public class ODataCxfClient extends AbstractODataClient {
 
   private final HttpClient httpClient;
 
-  public ODataCxfClient(FormatType type, OClientBehavior... behaviors) {
-    super(type);
-    this.behaviors = Enumerable.create(requiredBehaviors).concat(Enumerable.create(behaviors)).toArray(OClientBehavior.class);
-    this.httpClient = new DefaultHttpClient();
+    public ODataCxfClient(final FormatType type, final OClientBehavior... behaviors) {
+        super(type);
+        this.behaviors = Enumerable.create(this.requiredBehaviors).concat(Enumerable.create(behaviors))
+                .toArray(OClientBehavior.class);
+        this.httpClient = new DefaultHttpClient();
 
-    if (System.getProperties().containsKey("http.proxyHost") && System.getProperties().containsKey("http.proxyPort")) {
-      // support proxy settings
-      String hostName = System.getProperties().getProperty("http.proxyHost");
-      String hostPort = System.getProperties().getProperty("http.proxyPort");
+        if (System.getProperties().containsKey("http.proxyHost")
+                && System.getProperties().containsKey("http.proxyPort")) {
+            // support proxy settings
+            final String hostName = System.getProperties().getProperty("http.proxyHost");
+            final String hostPort = System.getProperties().getProperty("http.proxyPort");
+            final String hostUser = System.getProperties().getProperty("http.proxyUser");
+            final String hostPassword = System.getProperties().getProperty("http.proxyPassword");
+            final HttpHost proxy = new HttpHost(hostName, Integer.parseInt(hostPort));
+            if (!((hostUser == null) || hostUser.isEmpty())) {
 
-      HttpHost proxy = new HttpHost(hostName, Integer.parseInt(hostPort));
-      this.httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+                ((DefaultHttpClient) this.httpClient).getCredentialsProvider().setCredentials(
+                        new AuthScope(hostName, Integer.valueOf(hostPort)),
+                        new UsernamePasswordCredentials(hostUser, hostPassword));
+
+            }
+            this.httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+
+        }
     }
-  }
 
   public Reader getFeedReader(ODataClientResponse response) {
     HttpResponse httpResponse = ((CxfClientResponse) response).getHttpResponse();
