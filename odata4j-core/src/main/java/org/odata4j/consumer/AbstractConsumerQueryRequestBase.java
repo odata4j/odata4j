@@ -66,13 +66,16 @@ public abstract class AbstractConsumerQueryRequestBase<T> implements OQueryReque
     return metadata;
   }
 
-  protected ODataClientRequest buildRequest(Func1<String, String> pathModification) {
+  protected ODataClientRequest buildRequest(String method,
+          Func1<String, String> pathModification) {
+
     String path = Enumerable.create(segments).join("/");
     path += (path.length() == 0 ? "" : "/") + lastSegment;
     if (pathModification != null)
       path = pathModification.apply(path);
 
-    ODataClientRequest request = ODataClientRequest.get(serviceRootUri + path);
+    ODataClientRequest request = new ODataClientRequest(method,
+            serviceRootUri + path, null, null, null);
 
     if (top != null) {
       request = request.queryParam("$top", Integer.toString(top));
@@ -97,6 +100,10 @@ public abstract class AbstractConsumerQueryRequestBase<T> implements OQueryReque
     }
 
     return request;
+  }
+
+  protected ODataClientRequest buildRequest(Func1<String, String> pathModification) {
+      return buildRequest("GET", pathModification);
   }
 
   @Override
