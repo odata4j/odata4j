@@ -61,7 +61,8 @@ public class ConsumerFunctionCallRequest<T extends OObject>
     for (OFunctionParameter p : params)
       custom(p.getName(), toUriString(p));
 
-    final ODataClientRequest request = buildRequest(null);
+    final ODataClientRequest request = buildRequest(function.getHttpMethod(), null);
+
     Enumerable<OObject> results;
     if (function.getReturnType() == null) {
       results = Enumerable.empty(null);
