@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Attribute.PersistentAttributeType;
+import javax.persistence.metamodel.EmbeddableType;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.PluralAttribute;
@@ -24,6 +25,7 @@ import org.odata4j.core.OLinks;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
 import org.odata4j.core.Throwables;
+import org.odata4j.edm.EdmComplexType;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmMultiplicity;
@@ -96,7 +98,9 @@ public class SetResponseCommand implements Command {
   }
 
   private OEntity makeEntity(JPAContext context, Object jpaEntity) {
+  	// Liossis: Preliminary embeddedable support: Add context parameter.
     return jpaEntityToOEntity(
+    		context,
         context.getMetadata(),
         accessor.getEntity(context).getEdmEntitySet(),
         accessor.getEntity(context).getJPAEntityType(),
@@ -110,6 +114,7 @@ public class SetResponseCommand implements Command {
   }
 
   private OEntity jpaEntityToOEntity(
+  		JPAContext jpaContext,
       EdmDataServices metadata,
       EdmEntitySet ees,
       EntityType<?> entityType,
@@ -154,7 +159,40 @@ public class SetResponseCommand implements Command {
                 (EdmSimpleType<?>) ep.getType(),
                 value));
           } else {
-            // TODO handle embedded entities
+          	// Preliminary embeddedable support start.
+            
+          	EdmComplexType edmComplexType = (EdmComplexType)ep.getType();
+            
+            ArrayList<OProperty<?>> complexOPropertiesList = 
+            	new ArrayList<OProperty<?>>(edmComplexType.getProperties().count());
+            
+            if (value != null)
+            {
+	            EmbeddableType<?> complexManagedType = 
+	            	jpaContext.getEntityManager().getMetamodel().embeddable(value.getClass());
+	
+	            for (EdmProperty complexProperty : edmComplexType.getProperties())
+	            {
+	            	Attribute<?, ?> complexAtribute = complexManagedType.getAttribute(complexProperty.getName());
+	
+	            	JPAMember complexMember = JPAMember.create(complexAtribute, value);
+	            	
+	            	Object complexValue = complexMember.get();
+	            	
+	            	if (complexProperty.getType() instanceof EdmSimpleType)
+	            	{
+		            	complexOPropertiesList.add(
+		            			OProperties.simple(
+		            					complexProperty.getName(), 
+		            					(EdmSimpleType<?>)complexProperty.getType(), 
+		            					complexValue));
+	            	}
+	            }
+            }
+          	
+          	properties.add(OProperties.complex(ep.getName(), edmComplexType, complexOPropertiesList));
+
+          	// Preliminary embeddedable support end.
           }
         }
       }
@@ -201,7 +239,9 @@ public class SetResponseCommand implements Command {
               EdmEntitySet elementEntitySet = metadata
                   .getEdmEntitySet(JPAEdmGenerator.getEntitySetName(elementEntityType));
 
+            	// Preliminary embeddedable support: Add context parameter.
               relatedEntities.add(jpaEntityToOEntity(
+              		jpaContext,
                   metadata,
                   elementEntitySet,
                   elementEntityType,
@@ -240,7 +280,9 @@ public class SetResponseCommand implements Command {
                   null,
                   prop,
                   null,
+                	// Liossis: Preliminary embeddedable support: Add context parameter.
                   jpaEntityToOEntity(
+                  		jpaContext,
                       metadata,
                       relatedEntitySet,
                       relatedEntityType,
@@ -284,6 +326,8 @@ public class SetResponseCommand implements Command {
   }
 
   private static List<EntitySimpleProperty> shiftSelectListDown(List<EntitySimpleProperty> select) {
+    if (select == null) return null;
+    
     List<EntitySimpleProperty> newList = new ArrayList<EntitySimpleProperty>(select.size());
     for (EntitySimpleProperty selectItem : select) {
       int idx = selectItem.getPropertyName().indexOf('/');

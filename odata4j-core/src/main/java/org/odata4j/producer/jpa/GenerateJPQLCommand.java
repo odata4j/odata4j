@@ -12,9 +12,11 @@ import javax.persistence.metamodel.SingularAttribute;
 
 import org.core4j.Enumerable;
 import org.odata4j.core.OEntityKey;
+import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmNavigationProperty;
 import org.odata4j.edm.EdmProperty;
 import org.odata4j.expression.BoolCommonExpression;
+import org.odata4j.expression.EntitySimpleProperty;
 import org.odata4j.expression.OrderByExpression;
 import org.odata4j.expression.OrderByExpression.Direction;
 
@@ -42,16 +44,22 @@ public class GenerateJPQLCommand implements Command {
     String from = context.getEntity().getJPAEntityType().getName()
         + " " + alias;
     String where = null;
-
-    if (context.getNavProperty() != null) {
+    
+    if (context.getEntity().getTypeSafeEntityKey() != null) {
+    	
       where = whereKeyEquals(context.getEntity().getJPAEntityType(),
           context.getEntity().getKeyAttributeName(),
           context.getEntity().getTypeSafeEntityKey(), alias);
+    	
+    }
+    
+    if (context.getNavProperty() != null) {
 
       String prop = null;
       int propCount = 0;
 
       for (String pn : context.getNavProperty().split("/")) {
+      	
         String[] propSplit = pn.split("\\(");
         prop = propSplit[0];
         propCount++;
@@ -65,10 +73,43 @@ public class GenerateJPQLCommand implements Command {
                       + "to a single resource.",
                   alias));
         }
-
-        context.setEdmPropertyBase(context.getMetadata()
-            .findEdmProperty(prop));
-
+        
+        /* This is a murderer! It picks any property in 
+         * the universe having the given name!
+         */
+//      context.setEdmPropertyBase(context.getMetadata()
+//      .findEdmProperty(prop));
+        
+        /* Replace this with the following. */
+        
+        EdmEntitySet edmEntitySet = context.getEntity().getEdmEntitySet();
+        
+        // Reset the search for property.
+        context.setEdmPropertyBase(null);
+        
+        for (EdmNavigationProperty property : edmEntitySet.getType().getNavigationProperties())
+        {
+        	if (property.getName().equals(prop))
+        	{
+        		context.setEdmPropertyBase(property);
+        		break;
+        	}
+        }
+        
+        if (context.getEdmPropertyBase() == null)
+        {
+	        // If no navigation property was found having the given name, 
+	        // search for primitive properties.
+	        for (EdmProperty property : edmEntitySet.getType().getProperties())
+	        {
+	        	if (property.getName().equals(prop))
+	        	{
+	        		context.setEdmPropertyBase(property);
+	        		break;
+	        	}
+	        }
+        }
+        
         if (context.getEdmPropertyBase() instanceof EdmNavigationProperty) {
           EdmNavigationProperty propInfo = (EdmNavigationProperty) context
               .getEdmPropertyBase();
@@ -109,9 +150,34 @@ public class GenerateJPQLCommand implements Command {
       }
     }
 
-    String select = isCount ? "COUNT(" + alias + ")" : alias;
-
+    /* Start of 'expand' support, with added eager loading of expanded relationships. */
+    
+    String select = isCount ? "COUNT(" + alias + ")" : "DISTINCT(" + alias + ")";
+    
     String jpql = String.format("SELECT %s FROM %s", select, from);
+
+    if (!isCount && context.getQueryInfo().expand != null)
+    {
+    	int fetchAliasNumber = 0;
+    	
+    	for (EntitySimpleProperty expandProperty : context.getQueryInfo().expand)
+    	{
+    		String previousAlias = alias;
+    		
+    		String nextAlias = String.format("_f%d", fetchAliasNumber++);
+    		
+    		for (String pathElement : expandProperty.getPropertyName().split("/"))
+    		{
+    			jpql += String.format(" LEFT JOIN FETCH %s.%s %s", previousAlias, pathElement, nextAlias);
+    			
+    			previousAlias = nextAlias;
+    			
+    			nextAlias = String.format("_f%d", fetchAliasNumber++);
+    		}
+    	}
+    }
+
+    /* End of 'expand' support, with added eager loading of expanded relationships. */
 
     JPQLGenerator jpqlGen = new JPQLGenerator(context.getEntity()
         .getKeyAttributeName(), alias);

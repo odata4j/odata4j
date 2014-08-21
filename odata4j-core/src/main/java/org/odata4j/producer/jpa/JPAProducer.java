@@ -176,8 +176,22 @@ public class JPAProducer implements ODataProducer {
     commands = new ArrayList<Command>();
     // create an EntityManager
     commands.add(new EntityManagerCommand(emf));
-    // get the requested JPAEntity
-    commands.add(new GetEntityCommand());
+    /* Fix for $expand support: GetEntityCommand duplicates functionality of 
+     * GenerateJPQLCommand and ExecuteJPQLQueryCommand, and it bears the same $expand bug. 
+     * As the fix is already specified in the latter two, we divert execution to these. */ 
+
+    /* We remove the following command. */ 
+//    // get the requested JPAEntity
+//    commands.add(new GetEntityCommand());
+
+    /* We use these commands instead. */
+    // parse generate the JPQL query
+    commands.add(new GenerateJPQLCommand());
+    // execute the JPQL query
+    commands.add(new ExecuteJPQLQueryCommand(1 /* maxResults is 1, we specify one entity. */));
+    // convert to single entity output.
+    commands.add(new ExpectSingleEntityCommand());
+    
     // convert the JPAEntity to OEntity and set the response
     commands.add(new SetResponseCommand());
     getEntityCommand = createChain(CommandType.GetEntity, commands);

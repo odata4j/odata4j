@@ -267,7 +267,29 @@ public class JPAEdmGenerator implements EdmGenerator {
       // namespace.name.  (multiple Entity classes may have properties of this
       // type and we don't wan't lots of instances of EdmComplex type floating
       // around that are the same conceptual type)
-      type = EdmComplexType.newBuilder().setNamespace(modelNamespace).setName(simpleName).build();
+
+      // Enumeration of sub-properties start.
+      
+      EdmComplexType.Builder builder = EdmComplexType.newBuilder().setNamespace(modelNamespace).setName(simpleName);
+      
+      EmbeddableType<?> embeddableType = (EmbeddableType<?>)sa.getType();
+      
+      List<EdmProperty.Builder> embeddedPropertyBuilders = new ArrayList<EdmProperty.Builder>(embeddableType.getSingularAttributes().size());
+      
+      for (SingularAttribute<?, ?> embeddedAttribute : embeddableType.getDeclaredSingularAttributes())
+      {
+      	if (embeddedAttribute.getPersistentAttributeType() == PersistentAttributeType.BASIC)
+      	{
+      		embeddedPropertyBuilders.add(toEdmProperty(modelNamespace, embeddedAttribute));
+      	}
+      }
+      
+      builder.addProperties(embeddedPropertyBuilders);
+      
+      type = builder.build();
+      
+      // Enumeration of sub-properties end.
+      
     } else if (sa.getBindableJavaType().isEnum()) {
       // TODO assume string mapping for now, @Enumerated info not avail in metamodel?
       type = EdmSimpleType.STRING;

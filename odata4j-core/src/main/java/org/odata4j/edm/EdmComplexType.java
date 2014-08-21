@@ -32,7 +32,7 @@ public class EdmComplexType extends EdmStructuralType {
   }
 
   static Builder newBuilder(EdmComplexType complexType, BuilderContext context) {
-    return context.newBuilder(complexType, new Builder());
+    return context.newBuilder(complexType, new Builder().newBuilder(complexType, context)); // Fill properties.
   }
 
   /** Mutable builder for {@link EdmComplexType} objects. */
