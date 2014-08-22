@@ -24,11 +24,7 @@ public class OSimpleObjects {
     if (type == EdmSimpleType.STRING) {
       String sValue = null;
       if (value != null) {
-        if (value instanceof Character) {
-          sValue = value.toString();
-        } else {
-          sValue = (String) value;
-        }
+        sValue = value.toString();
       }
       return (OSimpleObject<T>) Impl.create(EdmSimpleType.STRING, sValue);
     } else if (type == EdmSimpleType.BOOLEAN) {

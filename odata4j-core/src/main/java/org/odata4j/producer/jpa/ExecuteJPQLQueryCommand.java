@@ -3,6 +3,7 @@ package org.odata4j.producer.jpa;
 import java.util.Collections;
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.Query;
 
 import org.odata4j.edm.EdmMultiplicity;
@@ -101,10 +102,14 @@ public class ExecuteJPQLQueryCommand implements Command {
           .getEdmPropertyBase();
       if (edmNavProp.getToRole().getMultiplicity() == EdmMultiplicity.ONE
           || edmNavProp.getToRole().getMultiplicity() == EdmMultiplicity.ZERO_TO_ONE) {
-        if (results.size() != 1)
+        
+      	if (results.size() > 1)
           throw new RuntimeException(
               "Expected only one entity, found "
                   + results.size());
+      	
+      	if (results.size() == 0)
+      		throw new EntityNotFoundException("Resource not found");
 
         return JPAResults.entity(results.get(0));
       }

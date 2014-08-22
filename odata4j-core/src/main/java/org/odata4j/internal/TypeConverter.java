@@ -100,8 +100,23 @@ public class TypeConverter {
 
     if (desiredClass.equals(UUID.class) && (objClass.equals(Guid.class) || objClass.equals(String.class)))
       return (T) UUID.fromString(obj.toString());
+    
+    // enum conversions
+    if (desiredClass.isEnum() && obj instanceof String) 
+      return (T)getEnumValue(desiredClass, obj.toString());
 
     throw new UnsupportedOperationException(String.format("Unable to convert %s into %s", objClass.getName(), desiredClass.getName()));
+  }
+
+  @SuppressWarnings("unchecked")
+  private static <E extends Enum<E>> Enum<E> getEnumValue(Class<?> enumClass, String enumMemberName)
+  {
+    try {
+      return Enum.valueOf((Class<E>)enumClass, enumMemberName);
+    }
+    catch (IllegalArgumentException ex) {
+      throw new UnsupportedOperationException(String.format("The enum %s does not contain a literal %s", enumClass.getName(), enumMemberName));
+    }
   }
 
   private static Date getDateFromLocalDateTime(Object obj) {
