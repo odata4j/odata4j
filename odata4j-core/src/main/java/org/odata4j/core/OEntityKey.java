@@ -133,7 +133,7 @@ public class OEntityKey {
 
     keyString = keyString.trim();
 
-    if (keyString.startsWith("(") && keyString.endsWith(")"))
+    if (canRemoveParentheses(keyString))
       keyString = keyString.substring(1, keyString.length() - 1);
 
     keyString = keyString.trim();
@@ -213,7 +213,7 @@ public class OEntityKey {
    */
   public String toKeyStringWithoutParentheses() {
     String keyString = this.keyString;
-    if (keyString.startsWith("(") && keyString.endsWith(")"))
+    if (canRemoveParentheses(keyString))
       keyString = keyString.substring(1, keyString.length() - 1);
     return keyString;
   }
@@ -385,5 +385,39 @@ public class OEntityKey {
     LiteralExpression expr = Expression.literal(keyValue);
     return Expression.asFilterString(expr);
   }
+
+
+
+  /*
+   * This method is used for determining if a key is starts and ends with parentheses because of nesting reasons
+   * or by mere coincidence (because their first part starts with '(' and last part ends with ')').
+   */
+  private static boolean canRemoveParentheses(final String keyString) {
+    if (keyString == null) {
+      return false;
+    }
+    final int keyStringLen = keyString.length();
+    if (keyStringLen < 2 || keyString.charAt(0) != '(' || keyString.charAt(keyStringLen - 1) != ')') {
+      return false;
+    }
+    int nestLevel = 1; // Used to determine to which '(' a ')' belongs
+    for (int i = 1; i < (keyStringLen - 1); i++) {
+      final char c = keyString.charAt(i);
+      if (c == '(') {
+        nestLevel++;
+        continue;
+      }
+      if (c == ')') {
+        nestLevel--;
+        if (nestLevel == 0) {
+          // This means the parenthesis in the first char of the key string is not closed with the one at the very
+          // end, and therefore we should NOT be removing the parentheses.
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
 
 }
