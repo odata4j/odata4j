@@ -100,16 +100,14 @@ public class ODataCxfClient extends AbstractODataClient {
 
   @SuppressWarnings("unchecked")
   protected ODataClientResponse doRequest(FormatType reqType, ODataClientRequest request, StatusType... expectedResponseStatus) throws ODataProducerException {
-    UriBuilder uriBuilder = UriBuilder.fromPath(request.getUrl());
-    for (String key : request.getQueryParams().keySet())
-      uriBuilder = uriBuilder.queryParam(key, request.getQueryParams().get(key));
-    URI uri = uriBuilder.build();
-
     if (this.behaviors != null) {
       for (OClientBehavior behavior : behaviors)
         request = behavior.transform(request);
     }
-
+    UriBuilder uriBuilder = UriBuilder.fromPath(request.getUrl());
+    for (String key : request.getQueryParams().keySet())
+      uriBuilder = uriBuilder.queryParam(key, request.getQueryParams().get(key));
+    URI uri = uriBuilder.build();
     HttpUriRequest httpRequest = this.getRequestByMethod(request.getMethod(), uri);
 
     // maybe something better is needed here
